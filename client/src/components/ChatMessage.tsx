@@ -15,32 +15,66 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       return <p>Empty message</p>;
     }
     
-    // Simple markdown-like code block formatting
-    const codeBlockRegex = /```(.+?)```/gs;
-    
     try {
-      // Split the content by code blocks
-      const parts = content.split(codeBlockRegex);
-      
-      if (parts.length === 1) {
+      // Check if there are any code blocks
+      if (!content.includes('```')) {
         // No code blocks, just return the plain text
         return <p>{content}</p>;
       }
       
+      // Split content by code block markers and process each part
+      const segments = [];
+      let isCodeBlock = false;
+      let buffer = '';
+      
+      // Split by newline to process line by line
+      const lines = content.split('\n');
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        if (line.includes('```')) {
+          // We found a code block delimiter
+          // Add the current buffer as the appropriate type
+          if (buffer) {
+            segments.push({
+              type: isCodeBlock ? 'code' : 'text',
+              content: buffer.trim()
+            });
+            buffer = '';
+          }
+          // Toggle the code block state
+          isCodeBlock = !isCodeBlock;
+          // Skip the delimiter line
+          continue;
+        }
+        
+        // Add the line to our buffer with the appropriate separator
+        if (buffer) {
+          buffer += '\n' + line;
+        } else {
+          buffer = line;
+        }
+      }
+      
+      // Add any remaining content
+      if (buffer) {
+        segments.push({
+          type: isCodeBlock ? 'code' : 'text',
+          content: buffer.trim()
+        });
+      }
+      
+      // Render the segments
       return (
         <>
-          {parts.map((part, index) => {
-            // Even indices are regular text, odd indices are code
-            if (index % 2 === 0) {
-              return <p key={index}>{part}</p>;
-            } else {
-              return (
-                <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
-                  {part}
-                </pre>
-              );
-            }
-          })}
+          {segments.map((segment, index) => (
+            segment.type === 'text' ? 
+              <p key={index}>{segment.content}</p> : 
+              <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
+                {segment.content}
+              </pre>
+          ))}
         </>
       );
     } catch (error) {
@@ -88,7 +122,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 <div key={idx} className="space-y-1">
                   {items.map((item, i) => (
                     <p key={i} className="flex items-start">
-                      <span className="text-gray-500 mr-2">◇</span>
+                      <span className="text-[#6A53E7] mr-2">✧</span>
                       <span>{item.trim()}</span>
                     </p>
                   ))}
@@ -112,7 +146,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       {isUser ? (
         // User Message - Smaller and right-aligned
         <div className="flex justify-end mb-2">
-          <div className="bg-purple-50 text-gray-800 rounded-lg py-2 px-4 max-w-[85%]">
+          <div className="bg-[#F5F3FF] text-gray-800 rounded-lg py-2 px-4 max-w-[85%] border border-[#6A53E7]/10">
             {formatContent(message.content)}
           </div>
         </div>

@@ -293,10 +293,16 @@ const ChatInterface: React.FC = () => {
             {/* Sample Action Buttons (like in the reference design) */}
             {messages.length > 0 && (
               <div className="grid grid-cols-2 gap-2 mt-4">
-                <button className="w-full py-3 px-4 bg-white text-gray-700 rounded-full border border-gray-200 text-sm font-medium flex items-center justify-center">
+                <button 
+                  onClick={() => handleSendMessage("What food pairs best with this wine?")}
+                  className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
+                >
                   What food suits better
                 </button>
-                <button className="w-full py-3 px-4 bg-white text-gray-700 rounded-full border border-gray-200 text-sm font-medium flex items-center justify-center">
+                <button 
+                  onClick={() => handleSendMessage("What are good alternatives to Cabernet Sauvignon?")}
+                  className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
+                >
                   What's alternatives
                 </button>
               </div>
@@ -309,19 +315,19 @@ const ChatInterface: React.FC = () => {
             <div className="scrollbar-hide overflow-x-auto mb-3 pb-1 -mt-1 flex gap-2 w-full">
               <button 
                 onClick={() => handleSendMessage("Tasting notes")}
-                className="whitespace-nowrap py-2 px-4 bg-purple-50 text-purple-800 rounded-full border border-purple-200 text-sm font-medium"
+                className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
               >
                 Tasting notes
               </button>
               <button 
                 onClick={() => handleSendMessage("Simple recipes for this wine")}
-                className="whitespace-nowrap py-2 px-4 bg-purple-50 text-purple-800 rounded-full border border-purple-200 text-sm font-medium"
+                className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
               >
                 Simple recipes
               </button>
               <button 
                 onClick={() => handleSendMessage("Where is this wine from?")}
-                className="whitespace-nowrap py-2 px-4 bg-purple-50 text-purple-800 rounded-full border border-purple-200 text-sm font-medium"
+                className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
               >
                 Where it's from
               </button>
