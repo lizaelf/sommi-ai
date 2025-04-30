@@ -193,9 +193,8 @@ const ChatInterface: React.FC = () => {
               {messages.length === 0 ? (
                 <div 
                   ref={welcomeSheetRef}
-                  className="mx-auto bg-white rounded-lg p-5 shadow-sm overflow-y-auto max-w-lg"
+                  className="mx-auto bg-white rounded-lg p-5 shadow-sm max-w-lg"
                   style={{ 
-                    height: 'min(60vh, 500px)',
                     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
                   }}>
                   {/* Pull handle indicator */}
