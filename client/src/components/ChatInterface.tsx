@@ -157,87 +157,73 @@ const ChatInterface: React.FC = () => {
   const safeConversations: Conversation[] = Array.isArray(conversations) ? conversations : [];
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center">
-          <button 
-            onClick={toggleSidebar}
-            className="md:hidden mr-3 text-gray-500 hover:text-gray-700"
-          >
-            <i className="fas fa-bars text-xl"></i>
-          </button>
-          <h1 className="text-xl font-semibold text-gray-800">ChatGPT Interface</h1>
-        </div>
-        <div className="flex items-center space-x-3">
-          <button 
-            onClick={() => clearConversationMutation.mutate()}
-            className="text-gray-500 hover:text-gray-700" 
-            title="Clear conversation"
-          >
-            <i className="fas fa-trash-alt"></i>
-          </button>
-          <button className="text-gray-500 hover:text-gray-700" title="Settings">
-            <i className="fas fa-cog"></i>
-          </button>
-        </div>
-      </header>
-
+    <div className="flex flex-col h-[calc(100vh-100px)]"> {/* Adjusted for mobile header */}
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar 
-          isOpen={!isMobile || sidebarOpen}
-          conversations={safeConversations}
-          currentConversationId={currentConversationId}
-          onNewChat={handleNewChat}
-          onSelectConversation={setCurrentConversationId}
-        />
+        {/* Sidebar - Hidden in this design */}
+        {sidebarOpen && (
+          <Sidebar 
+            isOpen={sidebarOpen}
+            conversations={safeConversations}
+            currentConversationId={currentConversationId}
+            onNewChat={handleNewChat}
+            onSelectConversation={setCurrentConversationId}
+          />
+        )}
 
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-gray-50 overflow-hidden">
-          {/* Chat Messages */}
-          <div 
-            className="flex-1 overflow-y-auto px-4 py-6 space-y-6 scrollbar-hide"
-          >
+        <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
+          {/* User Image Section */}
+          {messages.length === 0 && (
+            <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+              <img 
+                src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" 
+                alt="User" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          {/* Chat Messages - Styled like the wine info layout */}
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-hide">
             {messages.length === 0 ? (
-              <div className="mx-auto max-w-2xl">
-                <div className="flex items-start space-x-3">
-                  <div className="min-w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                    <i className="fas fa-robot"></i>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm max-w-3xl">
-                    <div className="text-gray-700">
-                      <p className="mb-2"><span className="font-medium text-blue-500">ChatGPT</span></p>
-                      <p>Hello! I'm your AI assistant. How can I help you today?</p>
-                    </div>
-                  </div>
-                </div>
+              <div className="mx-auto max-w-lg">
+                <p className="text-xl font-medium mb-3">Select a wine or spirit to learn more</p>
+                <p className="text-gray-600 mb-4">
+                  I can help you learn about different varieties, regions, and pairings.
+                </p>
               </div>
             ) : (
-              messages.map((message) => (
-                <ChatMessage 
-                  key={message.id} 
-                  message={message} 
-                />
-              ))
+              <>
+                {messages.map((message, index) => {
+                  // Only show system welcome message for first assistant message
+                  if (message.role === 'assistant' && index === 1) {
+                    return (
+                      <div key={message.id} className="space-y-3">
+                        <p className="text-xl font-medium">Great choice! 🍷</p>
+                        <ChatMessage message={message} />
+                      </div>
+                    );
+                  }
+                  return (
+                    <ChatMessage 
+                      key={message.id} 
+                      message={message} 
+                    />
+                  );
+                })}
+              </>
             )}
 
             {/* Typing Indicator */}
             {isTyping && (
               <div className="mx-auto max-w-2xl">
-                <div className="flex items-start space-x-3">
-                  <div className="min-w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                    <i className="fas fa-robot"></i>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-gray-700">
-                      <p className="mb-2"><span className="font-medium text-blue-500">ChatGPT</span></p>
-                      <div className="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <div className="text-gray-700">
+                    <div className="typing-indicator">
+                      <span></span>
+                      <span></span>
+                      <span></span>
                     </div>
                   </div>
                 </div>
@@ -247,8 +233,10 @@ const ChatInterface: React.FC = () => {
             {/* Error Message */}
             {sendMessageMutation.isError && (
               <div className="mx-auto max-w-2xl">
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-start">
-                  <i className="fas fa-exclamation-circle text-red-500 mr-3 mt-0.5"></i>
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500 mr-2">
+                    <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+                  </svg>
                   <div>
                     <p className="font-medium">Error connecting to the API</p>
                     <p className="text-sm">{sendMessageMutation.error?.message || 'Please check your connection and try again.'}</p>
@@ -256,15 +244,48 @@ const ChatInterface: React.FC = () => {
                 </div>
               </div>
             )}
+            
+            {/* Sample Action Buttons (like in the reference design) */}
+            {messages.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                <button className="w-full py-3 px-4 bg-white text-gray-700 rounded-full border border-gray-200 text-sm font-medium flex items-center justify-center">
+                  What food suits better
+                </button>
+                <button className="w-full py-3 px-4 bg-white text-gray-700 rounded-full border border-gray-200 text-sm font-medium flex items-center justify-center">
+                  What's alternatives
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Input Area */}
-          <ChatInput 
-            onSendMessage={handleSendMessage} 
-            isProcessing={isTyping || sendMessageMutation.isPending}
-            apiConnected={!apiError && !!apiStatus}
-          />
+          {/* New Input Area - styled to match the reference */}
+          <div className="bg-white p-3">
+            <div className="relative flex items-center gap-2">
+              <ChatInput 
+                onSendMessage={handleSendMessage} 
+                isProcessing={isTyping || sendMessageMutation.isPending}
+                apiConnected={!apiError && !!apiStatus}
+              />
+            </div>
+          </div>
         </main>
+      </div>
+      
+      {/* Clear and Settings Buttons - Initially hidden in mobile view */}
+      <div className="hidden">
+        <button 
+          onClick={() => clearConversationMutation.mutate()}
+          className="text-gray-500 hover:text-gray-700" 
+          title="Clear conversation"
+        >
+          <i className="fas fa-trash-alt"></i>
+        </button>
+        <button 
+          className="text-gray-500 hover:text-gray-700" 
+          title="Settings"
+        >
+          <i className="fas fa-cog"></i>
+        </button>
       </div>
     </div>
   );
