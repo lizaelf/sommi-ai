@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,8 @@ import { Message, Conversation } from '@shared/schema';
 const ChatInterface: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const welcomeSheetRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const {
@@ -152,6 +154,28 @@ const ChatInterface: React.FC = () => {
       setSidebarOpen(false);
     }
   }, [currentConversationId, isMobile]);
+  
+  // Bottom sheet scroll behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      if (welcomeSheetRef.current) {
+        const scrollTop = welcomeSheetRef.current.scrollTop;
+        // When scrolled more than 50px, expand the sheet
+        setIsExpanded(scrollTop > 50);
+      }
+    };
+    
+    const sheetElement = welcomeSheetRef.current;
+    if (sheetElement) {
+      sheetElement.addEventListener('scroll', handleScroll);
+    }
+    
+    return () => {
+      if (sheetElement) {
+        sheetElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
 
   // Safe empty array for when conversations are not yet loaded
   const safeConversations: Conversation[] = Array.isArray(conversations) ? conversations : [];
@@ -187,13 +211,51 @@ const ChatInterface: React.FC = () => {
           {/* Chat Messages - Styled like the wine info layout */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-hide">
             {messages.length === 0 ? (
-              <div className="mx-auto max-w-lg bg-white rounded-lg p-5 shadow-sm">
+              <div 
+                ref={welcomeSheetRef}
+                className={`mx-auto max-w-lg bg-white rounded-lg p-5 shadow-sm overflow-y-auto transition-all duration-300 ease-in-out transform-gpu ${
+                  isExpanded ? 'h-[80vh]' : 'h-[60vh]'
+                }`}
+                style={{ 
+                  height: isExpanded ? 'min(80vh, 700px)' : 'min(60vh, 500px)',
+                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+                }}>
+                {/* Pull handle indicator */}
+                <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
+                
                 <p className="text-xl font-medium mb-3 text-purple-800">
                   Hi! I'm your personal sommelier.
                 </p>
                 <p className="text-gray-700 mb-4">
                   I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
                 </p>
+                
+                {/* Additional content to enable scrolling - making the bottom sheet expandable */}
+                <div className="mt-6 bg-purple-50 p-4 rounded-lg border border-purple-100">
+                  <h3 className="text-lg font-medium text-purple-800 mb-2">About Cabernet Sauvignon</h3>
+                  <p className="text-gray-700 mb-3">
+                    Cabernet Sauvignon is one of the world's most widely recognized red wine grape varieties. It is the dominant grape in Bordeaux, and is planted in virtually every major wine producing country.
+                  </p>
+                  <p className="text-gray-700 mb-3">
+                    The flavor profile typically includes notes of black currant, black cherry, cedar, and sometimes bell pepper or green olive.
+                  </p>
+                  <p className="text-gray-700">
+                    Scroll down to see more details about this exceptional wine variety, or ask me specific questions about its origin, taste profile, or food pairings.
+                  </p>
+                </div>
+                
+                <div className="mt-6 bg-white p-4 rounded-lg border border-gray-100">
+                  <h3 className="text-lg font-medium text-purple-800 mb-2">Try asking about:</h3>
+                  <ul className="text-gray-700 space-y-2 ml-2">
+                    <li>• What foods pair well with Cabernet Sauvignon?</li>
+                    <li>• What's the history of this wine?</li>
+                    <li>• Is Cabernet Sauvignon dry or sweet?</li>
+                    <li>• Best regions for Cabernet Sauvignon</li>
+                    <li>• How should I store this wine?</li>
+                  </ul>
+                </div>
+                
+                <div className="h-16"></div> {/* Small spacer at the bottom */}
               </div>
             ) : (
               <>
