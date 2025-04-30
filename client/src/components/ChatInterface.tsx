@@ -187,10 +187,12 @@ const ChatInterface: React.FC = () => {
           {/* Chat Messages - Styled like the wine info layout */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-hide">
             {messages.length === 0 ? (
-              <div className="mx-auto max-w-lg">
-                <p className="text-xl font-medium mb-3">Select a wine or spirit to learn more</p>
-                <p className="text-gray-600 mb-4">
-                  I can help you learn about different varieties, regions, and pairings.
+              <div className="mx-auto max-w-lg bg-white rounded-lg p-5 shadow-sm">
+                <p className="text-xl font-medium mb-3 text-purple-800">
+                  Hi! I'm your personal sommelier.
+                </p>
+                <p className="text-gray-700 mb-4">
+                  I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
                 </p>
               </div>
             ) : (
