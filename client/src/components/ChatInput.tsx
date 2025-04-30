@@ -44,7 +44,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
               className="w-full h-12 bg-white rounded-xl px-6 outline-none text-gray-700 shadow-input"
-              placeholder="Ask about this wine..."
+              placeholder="Ask about Cabernet Sauvignon..."
               disabled={isProcessing}
             />
 

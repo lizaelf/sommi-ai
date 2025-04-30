@@ -12,7 +12,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const formatContent = (content: string) => {
     // Handle undefined or empty content
     if (!content) {
-      return <p>Empty message</p>;
+      return <p>What would you like to know about Cabernet Sauvignon?</p>;
     }
     
     try {
