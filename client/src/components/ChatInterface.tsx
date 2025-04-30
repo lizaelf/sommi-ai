@@ -155,9 +155,6 @@ const ChatInterface: React.FC = () => {
     }
   }, [currentConversationId, isMobile]);
   
-  // Removing the scroll-based expansion behavior
-  // (Sheet will remain scrollable at a fixed height)
-
   // Safe empty array for when conversations are not yet loaded
   const safeConversations: Conversation[] = Array.isArray(conversations) ? conversations : [];
 
@@ -178,135 +175,138 @@ const ChatInterface: React.FC = () => {
 
         {/* Chat Area */}
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
-          {/* User Image Section */}
-          {messages.length === 0 && (
-            <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-              <img 
-                src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
-                alt="Wine bottle collection" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          
-          {/* Chat Messages - Styled like the wine info layout */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-hide">
-            {messages.length === 0 ? (
-              <div 
-                ref={welcomeSheetRef}
-                className="mx-auto bg-white rounded-lg p-5 shadow-sm overflow-y-auto max-w-lg"
-                style={{ 
-                  height: 'min(60vh, 500px)',
-                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
-                }}>
-                {/* Pull handle indicator */}
-                <div className="relative">
-                  <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
-                </div>
-                
-                <p className="text-xl font-medium mb-3 text-purple-800">
-                  Hi! I'm your personal sommelier.
-                </p>
-                <p className="text-gray-700 mb-4">
-                  I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
-                </p>
-                
-                {/* Additional content to enable scrolling - making the bottom sheet expandable */}
-                <div className="mt-6 bg-purple-50 p-4 rounded-lg border border-purple-100">
-                  <h3 className="text-lg font-medium text-purple-800 mb-2">About Cabernet Sauvignon</h3>
-                  <p className="text-gray-700 mb-3">
-                    Cabernet Sauvignon is one of the world's most widely recognized red wine grape varieties. It is the dominant grape in Bordeaux, and is planted in virtually every major wine producing country.
-                  </p>
-                  <p className="text-gray-700 mb-3">
-                    The flavor profile typically includes notes of black currant, black cherry, cedar, and sometimes bell pepper or green olive.
-                  </p>
-                  <p className="text-gray-700">
-                    Scroll down to see more details about this exceptional wine variety, or ask me specific questions about its origin, taste profile, or food pairings.
-                  </p>
-                </div>
-                
-                <div className="mt-6 bg-white p-4 rounded-lg border border-gray-100">
-                  <h3 className="text-lg font-medium text-purple-800 mb-2">Try asking about:</h3>
-                  <ul className="text-gray-700 space-y-2 ml-2">
-                    <li>What foods pair well with Cabernet Sauvignon?</li>
-                    <li>What's the history of this wine?</li>
-                    <li>Is Cabernet Sauvignon dry or sweet?</li>
-                    <li>Best regions for Cabernet Sauvignon</li>
-                    <li>How should I store this wine?</li>
-                  </ul>
-                </div>
-                
-                <div className="h-16"></div> {/* Small spacer at the bottom */}
-              </div>
-            ) : (
-              <>
-                {messages.map((message, index) => {
-                  // Only show system welcome message for first assistant message
-                  if (message.role === 'assistant' && index === 1) {
-                    return (
-                      <div key={message.id} className="space-y-3">
-                        <p className="text-xl font-medium">Great choice! 🍷</p>
-                        <ChatMessage message={message} />
-                      </div>
-                    );
-                  }
-                  return (
-                    <ChatMessage 
-                      key={message.id} 
-                      message={message} 
-                    />
-                  );
-                })}
-              </>
-            )}
-
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="mx-auto max-w-2xl">
-                <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <div className="text-gray-700">
-                    <div className="typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Error Message */}
-            {sendMessageMutation.isError && (
-              <div className="mx-auto max-w-2xl">
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500 mr-2">
-                    <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" />
-                  </svg>
-                  <div>
-                    <p className="font-medium">Error connecting to the API</p>
-                    <p className="text-sm">{sendMessageMutation.error?.message || 'Please check your connection and try again.'}</p>
-                  </div>
-                </div>
+          {/* Unified scrollable container */}
+          <div className="flex-1 overflow-y-auto scrollbar-hide">
+            {/* User Image Banner - only shown when no messages and sticky at the top */}
+            {messages.length === 0 && (
+              <div className="w-full h-64 bg-gray-200 flex items-center justify-center sticky top-0 z-10">
+                <img 
+                  src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
+                  alt="Wine bottle collection" 
+                  className="w-full h-full object-cover"
+                />
               </div>
             )}
             
-            {/* Sample Action Buttons (like in the reference design) */}
-            {messages.length > 0 && (
-              <div className="grid grid-cols-2 gap-2 mt-4">
-                <button 
-                  onClick={() => handleSendMessage("What food pairs best with this wine?")}
-                  className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
-                >
-                  What food suits better
-                </button>
-                <button 
-                  onClick={() => handleSendMessage("What are good alternatives to Cabernet Sauvignon?")}
-                  className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
-                >
-                  What's alternatives
-                </button>
-              </div>
-            )}
+            {/* Chat Messages Content */}
+            <div className="px-4 py-4 space-y-4">
+              {messages.length === 0 ? (
+                <div 
+                  ref={welcomeSheetRef}
+                  className="mx-auto bg-white rounded-lg p-5 shadow-sm overflow-y-auto max-w-lg"
+                  style={{ 
+                    height: 'min(60vh, 500px)',
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+                  }}>
+                  {/* Pull handle indicator */}
+                  <div className="relative">
+                    <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
+                  </div>
+                  
+                  <p className="text-xl font-medium mb-3 text-purple-800">
+                    Hi! I'm your personal sommelier.
+                  </p>
+                  <p className="text-gray-700 mb-4">
+                    I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
+                  </p>
+                  
+                  {/* Additional content to enable scrolling - making the bottom sheet expandable */}
+                  <div className="mt-6 bg-purple-50 p-4 rounded-lg border border-purple-100">
+                    <h3 className="text-lg font-medium text-purple-800 mb-2">About Cabernet Sauvignon</h3>
+                    <p className="text-gray-700 mb-3">
+                      Cabernet Sauvignon is one of the world's most widely recognized red wine grape varieties. It is the dominant grape in Bordeaux, and is planted in virtually every major wine producing country.
+                    </p>
+                    <p className="text-gray-700 mb-3">
+                      The flavor profile typically includes notes of black currant, black cherry, cedar, and sometimes bell pepper or green olive.
+                    </p>
+                    <p className="text-gray-700">
+                      Scroll down to see more details about this exceptional wine variety, or ask me specific questions about its origin, taste profile, or food pairings.
+                    </p>
+                  </div>
+                  
+                  <div className="mt-6 bg-white p-4 rounded-lg border border-gray-100">
+                    <h3 className="text-lg font-medium text-purple-800 mb-2">Try asking about:</h3>
+                    <ul className="text-gray-700 space-y-2 ml-2">
+                      <li>What foods pair well with Cabernet Sauvignon?</li>
+                      <li>What's the history of this wine?</li>
+                      <li>Is Cabernet Sauvignon dry or sweet?</li>
+                      <li>Best regions for Cabernet Sauvignon</li>
+                      <li>How should I store this wine?</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="h-16"></div> {/* Small spacer at the bottom */}
+                </div>
+              ) : (
+                <>
+                  {messages.map((message, index) => {
+                    // Only show system welcome message for first assistant message
+                    if (message.role === 'assistant' && index === 1) {
+                      return (
+                        <div key={message.id} className="space-y-3">
+                          <p className="text-xl font-medium">Great choice! 🍷</p>
+                          <ChatMessage message={message} />
+                        </div>
+                      );
+                    }
+                    return (
+                      <ChatMessage 
+                        key={message.id} 
+                        message={message} 
+                      />
+                    );
+                  })}
+                </>
+              )}
+
+              {/* Typing Indicator */}
+              {isTyping && (
+                <div className="mx-auto max-w-2xl">
+                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="text-gray-700">
+                      <div className="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {sendMessageMutation.isError && (
+                <div className="mx-auto max-w-2xl">
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500 mr-2">
+                      <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+                    </svg>
+                    <div>
+                      <p className="font-medium">Error connecting to the API</p>
+                      <p className="text-sm">{sendMessageMutation.error?.message || 'Please check your connection and try again.'}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Sample Action Buttons (like in the reference design) */}
+              {messages.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <button 
+                    onClick={() => handleSendMessage("What food pairs best with this wine?")}
+                    className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
+                  >
+                    What food suits better
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("What are good alternatives to Cabernet Sauvignon?")}
+                    className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
+                  >
+                    What's alternatives
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* New Input Area - styled to match the reference and always visible at bottom */}
