@@ -289,23 +289,7 @@ const ChatInterface: React.FC = () => {
                 </div>
               )}
               
-              {/* Sample Action Buttons (like in the reference design) */}
-              {messages.length > 0 && (
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  <button 
-                    onClick={() => handleSendMessage("What food pairs best with this wine?")}
-                    className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
-                  >
-                    What food suits better
-                  </button>
-                  <button 
-                    onClick={() => handleSendMessage("What are good alternatives to Cabernet Sauvignon?")}
-                    className="w-full py-3 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium flex items-center justify-center hover:bg-purple-50 transition-colors"
-                  >
-                    What's alternatives
-                  </button>
-                </div>
-              )}
+              {/* Sample Action Buttons removed to avoid duplication with suggestion chips at the bottom */}
             </div>
           </div>
 
