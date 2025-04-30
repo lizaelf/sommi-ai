@@ -12,68 +12,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const formatContent = (content: string) => {
     // Handle undefined or empty content
     if (!content) {
-      return <p>What would you like to know about Cabernet Sauvignon?</p>;
+      return <p>Empty message</p>;
     }
     
     try {
-      // Process bold text indicated by ** markers
-      const processBoldText = (text: string) => {
-        if (!text.includes('**')) return text;
-        
-        const parts = text.split(/(\*\*.*?\*\*)/g);
-        return parts.map((part, i) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
-            const boldText = part.slice(2, -2);
-            return <strong key={i} className="font-bold">{boldText}</strong>;
-          }
-          return part;
-        });
-      };
-      
-      // Process numbered or bulleted lists
-      const processLists = (text: string) => {
-        // Check for numbered lists (1. 2. 3. etc.)
-        if (/^\d+\.\s.+/m.test(text)) {
-          const items = text.split('\n')
-            .filter(line => /^\d+\.\s.+/.test(line))
-            .map(line => line.replace(/^\d+\.\s/, '').trim());
-          
-          if (items.length > 0) {
-            return (
-              <ol className="list-decimal pl-5 space-y-1">
-                {items.map((item, i) => (
-                  <li key={i}>{processBoldText(item)}</li>
-                ))}
-              </ol>
-            );
-          }
-        }
-        
-        // Check for bullet lists (• * - etc.)
-        if (/^[•*-]\s.+/m.test(text)) {
-          const items = text.split('\n')
-            .filter(line => /^[•*-]\s.+/.test(line))
-            .map(line => line.replace(/^[•*-]\s/, '').trim());
-          
-          if (items.length > 0) {
-            return (
-              <ul className="list-disc pl-5 space-y-1">
-                {items.map((item, i) => (
-                  <li key={i}>{processBoldText(item)}</li>
-                ))}
-              </ul>
-            );
-          }
-        }
-        
-        // Return original with bold processing if no lists found
-        return <p>{processBoldText(text)}</p>;
-      };
-      
       // Check if there are any code blocks
       if (!content.includes('```')) {
-        // No code blocks, just process for lists and bold text
-        return processLists(content);
+        // No code blocks, just return the plain text
+        return <p>{content}</p>;
       }
       
       // Split content by code block markers and process each part
@@ -124,7 +70,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <>
           {segments.map((segment, index) => (
             segment.type === 'text' ? 
-              <div key={index}>{processLists(segment.content)}</div> : 
+              <p key={index}>{segment.content}</p> : 
               <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
                 {segment.content}
               </pre>
@@ -143,20 +89,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     
     // Add wine-specific formatting
     try {
-      // Process bold text indicated by ** markers
-      const processBoldText = (text: string) => {
-        if (!text.includes('**')) return text;
-        
-        const parts = text.split(/(\*\*.*?\*\*)/g);
-        return parts.map((part, i) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
-            const boldText = part.slice(2, -2);
-            return <strong key={i} className="font-bold">{boldText}</strong>;
-          }
-          return part;
-        });
-      };
-      
       // Convert content to paragraphs
       const paragraphs = content.split('\n\n').filter(p => p.trim().length > 0);
       
@@ -178,55 +110,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               
               return (
                 <div key={idx} className="mt-3">
-                  <p className="font-medium text-gray-800">
-                    {emoji}{processBoldText(paragraph)}
-                  </p>
+                  <p className="font-medium text-gray-800">{emoji + paragraph}</p>
                 </div>
               );
             }
             
-            // Check for numbered lists (1. 2. 3. etc.)
-            if (/^\d+\.\s.+/m.test(paragraph)) {
-              const items = paragraph.split('\n')
-                .filter(line => /^\d+\.\s.+/.test(line))
-                .map(line => line.replace(/^\d+\.\s/, '').trim());
-              
-              if (items.length > 0) {
-                return (
-                  <div key={idx}>
-                    <ol className="list-decimal pl-5 space-y-1 text-gray-700">
-                      {items.map((item, i) => (
-                        <li key={i}>{processBoldText(item)}</li>
-                      ))}
-                    </ol>
-                  </div>
-                );
-              }
-            }
-            
-            // Check for bullet lists
-            if (/^[•*-]\s.+/m.test(paragraph)) {
-              const items = paragraph.split('\n')
-                .filter(line => /^[•*-]\s.+/.test(line))
-                .map(line => line.replace(/^[•*-]\s/, '').trim());
-              
-              if (items.length > 0) {
-                return (
-                  <div key={idx}>
-                    <ul className="space-y-1">
-                      {items.map((item, i) => (
-                        <li key={i} className="flex items-start">
-                          <span className="text-[#6A53E7] mr-2">✧</span>
-                          <span className="text-gray-700">{processBoldText(item)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              }
-            }
-            
-            // Check if it's the old format list-like item
+            // Check if it's a list-like item
             if (paragraph.includes('- ')) {
               const items = paragraph.split('- ').filter(item => item.trim().length > 0);
               return (
@@ -234,7 +123,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                   {items.map((item, i) => (
                     <p key={i} className="flex items-start">
                       <span className="text-[#6A53E7] mr-2">✧</span>
-                      <span className="text-gray-700">{processBoldText(item.trim())}</span>
+                      <span>{item.trim()}</span>
                     </p>
                   ))}
                 </div>
@@ -242,7 +131,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             }
             
             // Regular paragraph
-            return <p key={idx} className="text-gray-700">{processBoldText(paragraph)}</p>;
+            return <p key={idx} className="text-gray-700">{paragraph}</p>;
           })}
         </div>
       );
