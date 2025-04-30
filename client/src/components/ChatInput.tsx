@@ -6,12 +6,7 @@ interface ChatInputProps {
   apiConnected: boolean;
 }
 
-// Suggestion prompts for wine-focused chat
-const promptSuggestions = [
-  "Tasting notes",
-  "Simple recipes for this wine",
-  "Where is this wine from"
-];
+// Suggestions are now handled in the parent component
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiConnected }) => {
   const [message, setMessage] = useState('');
@@ -32,32 +27,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
     }
   };
 
-  // Handle suggestion click
-  const handleSuggestionClick = (suggestion: string) => {
-    setMessage(suggestion);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
+  // Suggestion click handler removed - now handled in parent component
 
   return (
     <div className="w-full">
       <div className="w-full">
-        {/* Suggestion Chips - always visible above input */}
-        <div className="mb-3 px-4">
-          <div className="flex flex-wrap gap-2 mb-2">
-            {promptSuggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className="py-1 px-3 bg-transparent hover:bg-purple-50 text-[#6A53E7] text-sm font-medium rounded-full border border-[#6A53E7] transition-colors"
-                disabled={isProcessing}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Removed duplicate suggestion chips - now handled in the parent component */}
 
         {/* Input styled like Somm.ai */}
         <form onSubmit={handleSubmit} className="flex items-center w-full px-2">
