@@ -155,13 +155,13 @@ const ChatInterface: React.FC = () => {
     }
   }, [currentConversationId, isMobile]);
   
-  // Bottom sheet scroll behavior
+  // Bottom sheet scroll behavior - fullscreen when scrolled
   useEffect(() => {
     const handleScroll = () => {
       if (welcomeSheetRef.current) {
         const scrollTop = welcomeSheetRef.current.scrollTop;
-        // When scrolled more than 50px, expand the sheet
-        setIsExpanded(scrollTop > 50);
+        // When scrolled more than 20px, expand the sheet to fullscreen
+        setIsExpanded(scrollTop > 20);
       }
     };
     
@@ -213,15 +213,30 @@ const ChatInterface: React.FC = () => {
             {messages.length === 0 ? (
               <div 
                 ref={welcomeSheetRef}
-                className={`mx-auto max-w-lg bg-white rounded-lg p-5 shadow-sm overflow-y-auto transition-all duration-300 ease-in-out transform-gpu ${
-                  isExpanded ? 'h-[80vh]' : 'h-[60vh]'
+                className={`mx-auto bg-white rounded-lg p-5 shadow-sm overflow-y-auto transition-all duration-300 ease-in-out transform-gpu ${
+                  isExpanded ? 'fixed inset-x-0 top-0 bottom-20 z-50 max-w-none rounded-b-3xl' : 'h-[60vh] max-w-lg'
                 }`}
                 style={{ 
-                  height: isExpanded ? 'min(80vh, 700px)' : 'min(60vh, 500px)',
-                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+                  height: isExpanded ? 'calc(100vh - 80px)' : 'min(60vh, 500px)',
+                  boxShadow: isExpanded ? '0 8px 25px rgba(0, 0, 0, 0.2)' : '0 4px 15px rgba(0, 0, 0, 0.1)',
+                  paddingBottom: isExpanded ? '80px' : '20px',
+                  paddingTop: isExpanded ? '30px' : '20px'
                 }}>
-                {/* Pull handle indicator */}
-                <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
+                {/* Pull handle and close button */}
+                <div className="relative">
+                  <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
+                  
+                  {isExpanded && (
+                    <button 
+                      onClick={() => setIsExpanded(false)}
+                      className="absolute top-0 right-0 -mt-1 text-gray-500 hover:text-purple-700 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
                 
                 <p className="text-xl font-medium mb-3 text-purple-800">
                   Hi! I'm your personal sommelier.
@@ -322,8 +337,30 @@ const ChatInterface: React.FC = () => {
             )}
           </div>
 
-          {/* New Input Area - styled to match the reference */}
-          <div className="bg-white p-3">
+          {/* New Input Area - styled to match the reference and always visible at bottom */}
+          <div className={`bg-white p-3 shadow-lg border-t border-gray-100 z-50 ${isExpanded ? 'fixed bottom-0 left-0 right-0' : ''}`}>
+            {/* Suggestion chips */}
+            <div className="scrollbar-hide overflow-x-auto mb-3 pb-1 -mt-1 flex gap-2 w-full">
+              <button 
+                onClick={() => handleSendMessage("Tasting notes")}
+                className="whitespace-nowrap py-2 px-4 bg-purple-50 text-purple-800 rounded-full border border-purple-200 text-sm font-medium"
+              >
+                Tasting notes
+              </button>
+              <button 
+                onClick={() => handleSendMessage("Simple recipes for this wine")}
+                className="whitespace-nowrap py-2 px-4 bg-purple-50 text-purple-800 rounded-full border border-purple-200 text-sm font-medium"
+              >
+                Simple recipes
+              </button>
+              <button 
+                onClick={() => handleSendMessage("Where is this wine from?")}
+                className="whitespace-nowrap py-2 px-4 bg-purple-50 text-purple-800 rounded-full border border-purple-200 text-sm font-medium"
+              >
+                Where it's from
+              </button>
+            </div>
+            
             <div className="relative flex items-center gap-2">
               <ChatInput 
                 onSendMessage={handleSendMessage} 
