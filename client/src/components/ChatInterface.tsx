@@ -273,6 +273,7 @@ const ChatInterface: React.FC = () => {
           <div className="bg-white p-3 shadow-lg border-t border-gray-100 z-50">
             {/* Suggestion chips */}
             <div className="scrollbar-hide overflow-x-auto mb-3 pb-1 -mt-1 flex gap-2 w-full">
+              {/* Core suggestions always shown */}
               <button 
                 onClick={() => handleSendMessage("Tasting notes")}
                 className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
@@ -291,6 +292,36 @@ const ChatInterface: React.FC = () => {
               >
                 Where it's from
               </button>
+              
+              {/* Additional suggestion chips that appear after interactions */}
+              {messages.length > 0 && (
+                <>
+                  <button 
+                    onClick={() => handleSendMessage("Pairing food")}
+                    className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
+                  >
+                    Pairing food
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("Winery history")}
+                    className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
+                  >
+                    Winery history
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("What makes this grape variety special")}
+                    className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
+                  >
+                    Special grape variety
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("How to serve this wine")}
+                    className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
+                  >
+                    How to serve
+                  </button>
+                </>
+              )}
             </div>
             
             <div className="relative flex items-center gap-2">
