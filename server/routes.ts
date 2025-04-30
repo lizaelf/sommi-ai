@@ -1,14 +1,28 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { chatCompletion } from "./openai";
+import { chatCompletion, checkApiStatus } from "./openai";
 import { chatCompletionRequestSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API status endpoint
-  app.get("/api/status", (_req, res) => {
-    res.json({ status: "online" });
+  app.get("/api/status", async (_req, res) => {
+    try {
+      const apiStatus = await checkApiStatus();
+      res.json({ 
+        status: "online", 
+        openai: apiStatus.isValid ? "connected" : "error",
+        message: apiStatus.message 
+      });
+    } catch (err) {
+      const error = err as any;
+      res.json({ 
+        status: "online", 
+        openai: "error",
+        message: error?.message || "Failed to check API status" 
+      });
+    }
   });
 
   // Get all conversations
@@ -142,7 +156,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         conversationId
       });
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       console.error("Error in chat completion:", error);
       
       if (error instanceof z.ZodError) {
@@ -154,7 +169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(500).json({ 
         message: "Failed to generate chat completion",
-        error: error.message 
+        error: error?.message || "Unknown error" 
       });
     }
   });
