@@ -209,18 +209,7 @@ const ChatInterface: React.FC = () => {
                     I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
                   </p>
                   
-                  {/* About section removed from default state */}
-                  
-                  <div className="mt-6 bg-white p-4 rounded-lg border border-gray-100">
-                    <h3 className="text-lg font-medium text-purple-800 mb-2">Try asking about:</h3>
-                    <ul className="text-gray-700 space-y-2 ml-2">
-                      <li>What foods pair well with Cabernet Sauvignon?</li>
-                      <li>What's the history of this wine?</li>
-                      <li>Is Cabernet Sauvignon dry or sweet?</li>
-                      <li>Best regions for Cabernet Sauvignon</li>
-                      <li>How should I store this wine?</li>
-                    </ul>
-                  </div>
+                  {/* Suggestion list section removed from default state */}
                   
                   <div className="h-16"></div> {/* Small spacer at the bottom */}
                 </div>
