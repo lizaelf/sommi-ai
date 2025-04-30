@@ -209,19 +209,7 @@ const ChatInterface: React.FC = () => {
                     I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
                   </p>
                   
-                  {/* Additional content to enable scrolling - making the bottom sheet expandable */}
-                  <div className="mt-6 bg-purple-50 p-4 rounded-lg border border-purple-100">
-                    <h3 className="text-lg font-medium text-purple-800 mb-2">About Cabernet Sauvignon</h3>
-                    <p className="text-gray-700 mb-3">
-                      Cabernet Sauvignon is one of the world's most widely recognized red wine grape varieties. It is the dominant grape in Bordeaux, and is planted in virtually every major wine producing country.
-                    </p>
-                    <p className="text-gray-700 mb-3">
-                      The flavor profile typically includes notes of black currant, black cherry, cedar, and sometimes bell pepper or green olive.
-                    </p>
-                    <p className="text-gray-700">
-                      Scroll down to see more details about this exceptional wine variety, or ask me specific questions about its origin, taste profile, or food pairings.
-                    </p>
-                  </div>
+                  {/* About section removed from default state */}
                   
                   <div className="mt-6 bg-white p-4 rounded-lg border border-gray-100">
                     <h3 className="text-lg font-medium text-purple-800 mb-2">Try asking about:</h3>
