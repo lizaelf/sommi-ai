@@ -6,8 +6,21 @@ interface ChatInputProps {
   apiConnected: boolean;
 }
 
+// Suggestion prompts for chat input
+const promptSuggestions = [
+  "Write a poem about nature",
+  "Explain quantum physics simply",
+  "Tips for productivity",
+  "Create a short story",
+  "How to learn a new language",
+  "Recipe for chocolate cake",
+  "Pros and cons of remote work",
+  "Plan a 7-day itinerary for Japan"
+];
+
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiConnected }) => {
   const [message, setMessage] = useState('');
+  const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,13 +52,55 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
     }
   };
 
+  // Handle suggestion click
+  const handleSuggestionClick = (suggestion: string) => {
+    setMessage(suggestion);
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  // Toggle showing all suggestions
+  const toggleSuggestions = () => {
+    setShowAllSuggestions(!showAllSuggestions);
+  };
+
   useEffect(() => {
     adjustTextareaHeight();
   }, [message]);
 
+  // Display only 4 suggestions initially, or all if toggled
+  const visibleSuggestions = showAllSuggestions 
+    ? promptSuggestions 
+    : promptSuggestions.slice(0, 4);
+
   return (
     <div className="border-t border-gray-200 bg-white px-4 py-3">
       <div className="mx-auto max-w-2xl">
+        {/* Suggestion Chips */}
+        <div className="mb-3">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {visibleSuggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="py-1 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded-full border border-blue-200 transition-colors"
+                disabled={isProcessing}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+          {promptSuggestions.length > 4 && (
+            <button 
+              onClick={toggleSuggestions}
+              className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+            >
+              {showAllSuggestions ? "Show less" : "More suggestions"}
+            </button>
+          )}
+        </div>
+
         <form onSubmit={handleSubmit} className="flex items-end space-x-2">
           <div className="flex-1 relative">
             <textarea

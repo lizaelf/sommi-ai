@@ -10,33 +10,43 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
   // Function to format code blocks in messages
   const formatContent = (content: string) => {
+    // Handle undefined or empty content
+    if (!content) {
+      return <p>Empty message</p>;
+    }
+    
     // Simple markdown-like code block formatting
     const codeBlockRegex = /```(.+?)```/gs;
     
-    // Split the content by code blocks
-    const parts = content.split(codeBlockRegex);
-    
-    if (parts.length === 1) {
-      // No code blocks, just return the plain text
+    try {
+      // Split the content by code blocks
+      const parts = content.split(codeBlockRegex);
+      
+      if (parts.length === 1) {
+        // No code blocks, just return the plain text
+        return <p>{content}</p>;
+      }
+      
+      return (
+        <>
+          {parts.map((part, index) => {
+            // Even indices are regular text, odd indices are code
+            if (index % 2 === 0) {
+              return <p key={index}>{part}</p>;
+            } else {
+              return (
+                <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
+                  {part}
+                </pre>
+              );
+            }
+          })}
+        </>
+      );
+    } catch (error) {
+      console.error("Error formatting message content:", error);
       return <p>{content}</p>;
     }
-    
-    return (
-      <>
-        {parts.map((part, index) => {
-          // Even indices are regular text, odd indices are code
-          if (index % 2 === 0) {
-            return <p key={index}>{part}</p>;
-          } else {
-            return (
-              <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
-                {part}
-              </pre>
-            );
-          }
-        })}
-      </>
-    );
   };
 
   return (
