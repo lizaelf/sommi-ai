@@ -177,8 +177,8 @@ const ChatInterface: React.FC = () => {
           {messages.length === 0 && (
             <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
               <img 
-                src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" 
-                alt="User" 
+                src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
+                alt="Wine bottle collection" 
                 className="w-full h-full object-cover"
               />
             </div>
