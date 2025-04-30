@@ -63,11 +63,8 @@ export async function checkApiStatus(): Promise<{ isValid: boolean; message: str
 // Function to generate chat completion from OpenAI API
 export async function chatCompletion(messages: ChatMessage[]) {
   try {
-    // Ensure system message exists
-    if (!messages.some(msg => msg.role === 'system')) {
-      messages.unshift({
-        role: 'system',
-        content: `You are a wine expert specializing ONLY in Cabernet Sauvignon. 
+    // Define the standard system message that must always be used for all conversations
+    const CABERNET_SYSTEM_PROMPT = `You are a wine expert specializing ONLY in Cabernet Sauvignon. 
         
 IMPORTANT: This conversation is exclusively about Cabernet Sauvignon wine. You should interpret ALL user questions as being about Cabernet Sauvignon, even if they don't explicitly mention it. If the user asks about another wine type, gently redirect them by answering about Cabernet Sauvignon instead.
 
@@ -92,9 +89,14 @@ Do not mention that you're redirecting - simply answer as if Cabernet Sauvignon 
 
 Present information in a friendly, conversational manner as if you're speaking to a friend who loves wine. Include interesting facts and stories about Cabernet Sauvignon when appropriate. If you don't know something specific about Cabernet Sauvignon, acknowledge this and provide the most relevant information you can.
 
-For tasting notes, be specific and detailed. For food pairings, be creative but appropriate. For region information, include some history and what makes the region special for this grape.`
-      });
-    }
+For tasting notes, be specific and detailed. For food pairings, be creative but appropriate. For region information, include some history and what makes the region special for this grape.`;
+    
+    // Always enforce the system prompt - either replace an existing one or add it
+    const filteredMessages = messages.filter(msg => msg.role !== 'system');
+    const newMessages = [
+      { role: 'system' as const, content: CABERNET_SYSTEM_PROMPT },
+      ...filteredMessages
+    ];
 
     // Call OpenAI API
     let response;
@@ -102,7 +104,7 @@ For tasting notes, be specific and detailed. For food pairings, be creative but 
       // First try with the primary model
       response = await openai.chat.completions.create({
         model: MODEL,
-        messages: messages,
+        messages: newMessages,
         temperature: 0.7,
         max_tokens: 2000
       });
@@ -114,7 +116,7 @@ For tasting notes, be specific and detailed. For food pairings, be creative but 
       if (primaryModelError?.status === 404) {
         response = await openai.chat.completions.create({
           model: FALLBACK_MODEL,
-          messages: messages,
+          messages: newMessages,
           temperature: 0.7,
           max_tokens: 2000
         });
@@ -156,12 +158,15 @@ For tasting notes, be specific and detailed. For food pairings, be creative but 
 // Function to generate a title for a conversation based on content
 export async function generateConversationTitle(firstMessage: string) {
   try {
+    // Define a constant system message for titles
+    const TITLE_SYSTEM_PROMPT = "Generate a short, concise title (maximum 5 words) for a conversation about Cabernet Sauvignon wine that starts with this message. Even if the message doesn't explicitly mention Cabernet Sauvignon, create a title that relates specifically to Cabernet Sauvignon. The title should be elegant and wine-focused, and MUST include reference to Cabernet Sauvignon or its characteristics. Respond with only the title text, nothing else.";
+    
     const response = await openai.chat.completions.create({
       model: MODEL,
       messages: [
         {
           role: "system",
-          content: "Generate a short, concise title (maximum 5 words) for a conversation about Cabernet Sauvignon wine that starts with this message. Even if the message doesn't explicitly mention Cabernet Sauvignon, create a title that relates specifically to Cabernet Sauvignon. The title should be elegant and wine-focused. Respond with only the title text, nothing else."
+          content: TITLE_SYSTEM_PROMPT
         },
         {
           role: "user",
@@ -172,9 +177,16 @@ export async function generateConversationTitle(firstMessage: string) {
       max_tokens: 20
     });
 
-    return response.choices[0].message.content?.trim() || "New Conversation";
+    let title = response.choices[0].message.content?.trim() || "Cabernet Sauvignon";
+    
+    // Ensure the title always contains a reference to Cabernet Sauvignon
+    if (!title.toLowerCase().includes("cabernet") && !title.toLowerCase().includes("sauvignon")) {
+      title = `Cabernet ${title}`;
+    }
+    
+    return title;
   } catch (error) {
     console.error("Error generating conversation title:", error);
-    return "New Conversation";
+    return "Cabernet Conversation";
   }
 }
