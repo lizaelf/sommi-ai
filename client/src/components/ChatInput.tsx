@@ -3,12 +3,11 @@ import React, { useState, useRef } from 'react';
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isProcessing: boolean;
-  apiConnected: boolean;
 }
 
 // Suggestions are now handled in the parent component
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiConnected }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing }) => {
   const [message, setMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -65,14 +64,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
             </svg>
           </button>
         </form>
-        
-        {/* API Status indicator */}
-        <div className="px-4 mt-2 mb-1 flex justify-end items-center">            
-          <span className="text-xs text-gray-400 flex items-center">
-            <span className={`inline-block h-2 w-2 rounded-full ${apiConnected ? 'bg-green-500' : 'bg-red-500'} mr-1`}></span>
-            {apiConnected ? 'Connected' : 'Disconnected'}
-          </span>
-        </div>
       </div>
     </div>
   );

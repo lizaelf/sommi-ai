@@ -297,7 +297,6 @@ const ChatInterface: React.FC = () => {
               <ChatInput 
                 onSendMessage={handleSendMessage} 
                 isProcessing={isTyping || sendMessageMutation.isPending}
-                apiConnected={!apiError && !!apiStatus}
               />
             </div>
           </div>
