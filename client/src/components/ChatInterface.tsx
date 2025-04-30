@@ -177,9 +177,9 @@ const ChatInterface: React.FC = () => {
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
           {/* Unified scrollable container */}
           <div className="flex-1 overflow-y-auto scrollbar-hide">
-            {/* User Image Banner - only shown when no messages and sticky at the top */}
+            {/* User Image Banner - only shown when no messages (not sticky, regular scrollable) */}
             {messages.length === 0 && (
-              <div className="w-full h-64 bg-gray-200 flex items-center justify-center sticky top-0 z-10">
+              <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
                 <img 
                   src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
                   alt="Wine bottle collection" 
