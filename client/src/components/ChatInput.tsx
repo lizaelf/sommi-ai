@@ -8,19 +8,13 @@ interface ChatInputProps {
 
 // Suggestion prompts for wine-focused chat
 const promptSuggestions = [
-  "Tell me about Cabernet Sauvignon",
-  "Recommend a good Chardonnay",
-  "Best wine for steak dinner",
-  "Differences between red and white wine",
-  "Popular Italian wine regions",
-  "How to store wine properly",
-  "Wine and cheese pairings",
-  "What makes a wine full-bodied"
+  "Tasting notes",
+  "Simple recipes for this wine",
+  "Where is this wine from"
 ];
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiConnected }) => {
   const [message, setMessage] = useState('');
-  const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,39 +40,23 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
     }
   };
 
-  // Toggle showing all suggestions
-  const toggleSuggestions = () => {
-    setShowAllSuggestions(!showAllSuggestions);
-  };
-
-  // Display only 4 suggestions initially, or all if toggled
-  const visibleSuggestions = showAllSuggestions 
-    ? promptSuggestions 
-    : promptSuggestions.slice(0, 4);
-
   return (
     <div className="w-full">
       <div className="w-full">
-        {/* Hidden Suggestion Chips - only shown on specific actions */}
-        <div className={`${showAllSuggestions ? 'block' : 'hidden'} mb-3 px-4`}>
+        {/* Suggestion Chips - always visible above input */}
+        <div className="mb-3 px-4">
           <div className="flex flex-wrap gap-2 mb-2">
-            {visibleSuggestions.map((suggestion, index) => (
+            {promptSuggestions.map((suggestion, index) => (
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="py-1 px-3 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-medium rounded-full border border-purple-200 transition-colors"
+                className="py-1 px-3 bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-medium rounded-full border border-purple-200 transition-colors"
                 disabled={isProcessing}
               >
                 {suggestion}
               </button>
             ))}
           </div>
-          <button 
-            onClick={toggleSuggestions}
-            className="text-xs text-purple-600 hover:text-purple-800 font-medium"
-          >
-            Hide suggestions
-          </button>
         </div>
 
         {/* Input styled like Somm.ai */}
@@ -91,7 +69,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
               className="w-full h-12 bg-gray-100 rounded-full px-6 pr-14 outline-none text-gray-700"
-              placeholder="Generate a name of ...."
+              placeholder="Ask about this wine..."
               disabled={isProcessing}
             />
             {/* Microphone icon */}
@@ -123,23 +101,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
           </button>
         </form>
         
-        {/* Show suggestions button and API status - only visible when suggestions are hidden */}
-        {!showAllSuggestions && (
-          <div className="px-4 mt-2 mb-1 flex justify-between items-center">
-            <button 
-              onClick={toggleSuggestions}
-              className="text-xs text-purple-600 hover:text-purple-800 font-medium"
-            >
-              Show suggestions
-            </button>
-            
-            {/* API Status - subtle indicator */}
-            <span className="text-xs text-gray-400 flex items-center">
-              <span className={`inline-block h-2 w-2 rounded-full ${apiConnected ? 'bg-green-500' : 'bg-red-500'} mr-1`}></span>
-              {apiConnected ? 'Connected' : 'Disconnected'}
-            </span>
-          </div>
-        )}
+        {/* API Status indicator */}
+        <div className="px-4 mt-2 mb-1 flex justify-end items-center">            
+          <span className="text-xs text-gray-400 flex items-center">
+            <span className={`inline-block h-2 w-2 rounded-full ${apiConnected ? 'bg-green-500' : 'bg-red-500'} mr-1`}></span>
+            {apiConnected ? 'Connected' : 'Disconnected'}
+          </span>
+        </div>
       </div>
     </div>
   );
