@@ -50,7 +50,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="py-1 px-3 bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-medium rounded-full border border-purple-200 transition-colors"
+                className="py-1 px-3 bg-transparent hover:bg-purple-50 text-[#6A53E7] text-sm font-medium rounded-full border border-[#6A53E7] transition-colors"
                 disabled={isProcessing}
               >
                 {suggestion}
@@ -68,7 +68,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full h-12 bg-gray-100 rounded-full px-6 pr-14 outline-none text-gray-700"
+              className="w-full h-12 bg-white rounded-xl px-6 pr-14 outline-none text-gray-700 shadow-input"
               placeholder="Ask about this wine..."
               disabled={isProcessing}
             />
@@ -90,8 +90,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, apiC
             type="submit"
             className={`ml-2 w-12 h-12 rounded-full flex items-center justify-center ${
               isProcessing || !message.trim() 
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                : 'bg-purple-600 text-white hover:bg-purple-700'
+                ? 'border border-gray-300 text-gray-300 cursor-not-allowed' 
+                : 'border border-[#6A53E7] text-[#6A53E7] hover:bg-purple-50'
             } transition-colors`}
             disabled={isProcessing || !message.trim()}
           >

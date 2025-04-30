@@ -51,10 +51,33 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply antialiased bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  button {
+    border: 1px solid #6A53E7 !important;
+    background: transparent !important;
+    color: #6A53E7 !important;
+  }
+  
+  input {
+    border-radius: 12px !important;
+    background: #FFF !important;
+    box-shadow: 0px 8px 22px -6px rgba(24, 39, 75, 0.12), 0px 14px 64px -4px rgba(24, 39, 75, 0.12) !important;
+  }
+  
+  li {
+    list-style-type: none !important;
+  }
+  
+  li::before {
+    content: "✧ ";
+    color: #6A53E7;
   }
 }
 
