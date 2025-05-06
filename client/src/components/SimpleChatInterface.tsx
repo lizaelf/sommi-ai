@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
-import ConversationSelector from './ConversationSelector';
 import { Message, Conversation } from '@shared/schema';
 
 // Save conversation ID key
@@ -16,11 +14,9 @@ const SimpleChatInterface: React.FC = () => {
   // Basic states
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [showSidebar, setShowSidebar] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
-  const isMobile = useIsMobile();
 
   // API status check
   const { data: apiStatus } = useQuery({
@@ -207,10 +203,7 @@ const SimpleChatInterface: React.FC = () => {
       // Refetch conversations list
       queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
       
-      // Close sidebar on mobile after creating new conversation
-      if (isMobile) {
-        setShowSidebar(false);
-      }
+      // New conversation created
     } catch (error) {
       console.error('Failed to create new conversation:', error);
       toast({
@@ -226,7 +219,6 @@ const SimpleChatInterface: React.FC = () => {
     try {
       // Skip if it's the same conversation
       if (id === currentConversationId) {
-        if (isMobile) setShowSidebar(false);
         return;
       }
       
@@ -241,11 +233,6 @@ const SimpleChatInterface: React.FC = () => {
           console.log(`Loaded ${messagesData.length} messages for conversation ${id}`);
           setMessages(messagesData);
         }
-      }
-      
-      // Close sidebar on mobile
-      if (isMobile) {
-        setShowSidebar(false);
       }
     } catch (error) {
       console.error(`Failed to load conversation ${id}:`, error);
@@ -277,41 +264,8 @@ const SimpleChatInterface: React.FC = () => {
     <div className="flex flex-col h-[calc(100vh-100px)]">
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        {showSidebar && (
-          <div className={`bg-white p-4 border-r border-gray-200 ${isMobile ? 'absolute top-0 bottom-0 left-0 z-50 w-64 shadow-lg' : 'w-64'}`}>
-            {conversations && conversations.length > 0 && (
-              <ConversationSelector
-                conversations={conversations}
-                currentConversationId={currentConversationId}
-                onSelectConversation={handleSelectConversation}
-                onCreateNewConversation={handleNewChat}
-              />
-            )}
-          </div>
-        )}
-        
         {/* Chat Area */}
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
-          {/* Top navigation bar with sidebar toggle */}
-          <div className="bg-white p-2 border-b border-gray-200 flex items-center">
-            <button 
-              onClick={() => setShowSidebar(!showSidebar)}
-              className="text-gray-700 hover:text-[#6A53E7] p-2 rounded-md focus:outline-none"
-            >
-              {showSidebar ? (
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-            <h2 className="ml-2 text-lg font-medium text-[#6A53E7]">Cabernet Sauvignon Chat</h2>
-          </div>
-          
           {/* Scrollable container */}
           <div className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image when no messages */}
