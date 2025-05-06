@@ -163,7 +163,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full my-2 sm:my-3">
       {isUser ? (
         // User Message - Smaller and right-aligned
         <div className="flex justify-end mb-2">
