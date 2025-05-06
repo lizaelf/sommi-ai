@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
+import ConversationSelector from './ConversationSelector';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 
@@ -21,7 +22,8 @@ const EnhancedChatInterface: React.FC = () => {
   } = useConversation();
 
   // Basic states 
-  const [isTyping, setIsTyping] = React.useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showConversations, setShowConversations] = useState(false);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -119,8 +121,89 @@ const EnhancedChatInterface: React.FC = () => {
     );
   }
 
+  // Handle conversation selection
+  const handleSelectConversation = async (id: number) => {
+    if (id === currentConversationId) return;
+    
+    try {
+      await setCurrentConversationId(id);
+      setShowConversations(false); // Hide conversation selector after selection
+      
+      // Scroll to top after changing conversation
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    } catch (error) {
+      console.error('Error selecting conversation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load conversation",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle creating a new conversation
+  const handleCreateNewConversation = async () => {
+    try {
+      const newId = await createNewConversation();
+      if (newId) {
+        setShowConversations(false); // Hide conversation selector after creation
+      }
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create new conversation",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col h-[100dvh] max-h-[100dvh]">
+      {/* Header with App Name and Conversation Toggle */}
+      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-[#6A53E7]">
+          Cabernet Companion
+        </h1>
+        <button 
+          onClick={() => setShowConversations(!showConversations)}
+          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-md bg-purple-50 text-[#6A53E7] hover:bg-purple-100 transition-colors"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-4 w-4" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+            />
+          </svg>
+          Conversations
+        </button>
+      </header>
+
+      {/* Conversation Selector (conditionally rendered) */}
+      {showConversations && (
+        <div className="bg-white border-b border-gray-200">
+          <ConversationSelector
+            conversations={conversations}
+            currentConversationId={currentConversationId}
+            onSelectConversation={handleSelectConversation}
+            onCreateNewConversation={handleCreateNewConversation}
+          />
+        </div>
+      )}
+      
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Chat Area */}
