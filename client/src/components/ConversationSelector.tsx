@@ -1,6 +1,8 @@
 import React from 'react';
-import type { Conversation } from '@shared/schema';
+import { Conversation } from '@shared/schema';
+import { truncateString, formatDate } from '@/lib/utils';
 
+// ConversationSelector props interface
 interface ConversationSelectorProps {
   conversations: Conversation[];
   currentConversationId: number | null;
@@ -8,46 +10,55 @@ interface ConversationSelectorProps {
   onCreateNewConversation: () => void;
 }
 
-export const ConversationSelector: React.FC<ConversationSelectorProps> = ({
+// ConversationSelector component
+const ConversationSelector: React.FC<ConversationSelectorProps> = ({
   conversations,
   currentConversationId,
   onSelectConversation,
   onCreateNewConversation
 }) => {
-  if (!conversations || conversations.length === 0) {
-    return null;
-  }
-
   return (
-    <div className="conversation-selector">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-medium">Conversations</h3>
-        <button 
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-[#6A53E7]">Conversations</h2>
+        <button
           onClick={onCreateNewConversation}
-          className="px-2 py-1 text-sm bg-[#6A53E7] text-white rounded hover:bg-[#5A43D7] transition-colors"
+          className="text-white bg-[#6A53E7] hover:bg-[#5846c5] px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
         >
-          New
+          New Chat
         </button>
       </div>
       
-      <ul className="space-y-1 max-h-60 overflow-y-auto">
-        {conversations.map(conversation => (
-          <li 
-            key={conversation.id}
-            className={`px-3 py-2 rounded cursor-pointer ${
-              currentConversationId === conversation.id 
-                ? 'bg-purple-100 text-purple-800' 
-                : 'hover:bg-gray-100'
-            }`}
-            onClick={() => onSelectConversation(conversation.id)}
-          >
-            <div className="truncate">{conversation.title}</div>
-            <div className="text-xs text-gray-500">
-              {new Date(conversation.createdAt).toLocaleString()}
+      {conversations.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          No conversations yet
+        </div>
+      ) : (
+        <div className="overflow-y-auto flex-1 -mx-2">
+          {conversations.map((conversation) => (
+            <div
+              key={conversation.id}
+              onClick={() => onSelectConversation(conversation.id)}
+              className={`p-3 my-1 rounded-lg cursor-pointer transition-colors ${
+                conversation.id === currentConversationId
+                  ? 'bg-purple-100 border-l-4 border-[#6A53E7]'
+                  : 'hover:bg-gray-100'
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <h3 className={`font-medium ${
+                  conversation.id === currentConversationId ? 'text-[#6A53E7]' : 'text-gray-800'
+                }`}>
+                  {truncateString(conversation.title, 20)}
+                </h3>
+                <span className="text-xs text-gray-500">
+                  {formatDate(conversation.createdAt)}
+                </span>
+              </div>
             </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
