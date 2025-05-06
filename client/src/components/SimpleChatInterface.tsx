@@ -213,7 +213,7 @@ const SimpleChatInterface: React.FC = () => {
   const handleNewChat = async () => {
     try {
       const response = await apiRequest('POST', '/api/conversations', { 
-        title: 'New Cabernet Conversation' 
+        title: 'New Conversation' 
       });
       const data = await response.json();
       

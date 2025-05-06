@@ -21,9 +21,7 @@ export interface IStorage {
   // Conversation operations
   getConversation(id: number): Promise<Conversation | undefined>;
   getAllConversations(): Promise<Conversation[]>;
-  getUserConversations(userId: number): Promise<Conversation[]>;
   getMostRecentConversation(): Promise<Conversation | undefined>;
-  getMostRecentUserConversation(userId: number): Promise<Conversation | undefined>;
   createConversation(conversation: InsertConversation): Promise<Conversation>;
   updateConversation(id: number, conversation: Partial<InsertConversation>): Promise<Conversation | undefined>;
   deleteConversation(id: number): Promise<void>;
@@ -64,7 +62,10 @@ export class DatabaseStorage implements IStorage {
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
     const result = await db
       .insert(messages)
-      .values(insertMessage)
+      .values({
+        ...insertMessage,
+        createdAt: new Date()
+      })
       .returning();
     return result[0];
   }
@@ -82,14 +83,6 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(conversations.createdAt));
   }
   
-  async getUserConversations(userId: number): Promise<Conversation[]> {
-    return await db
-      .select()
-      .from(conversations)
-      .where(eq(conversations.userId, userId))
-      .orderBy(desc(conversations.createdAt));
-  }
-  
   async getMostRecentConversation(): Promise<Conversation | undefined> {
     const results = await db
       .select()
@@ -99,22 +92,14 @@ export class DatabaseStorage implements IStorage {
     
     return results.length > 0 ? results[0] : undefined;
   }
-  
-  async getMostRecentUserConversation(userId: number): Promise<Conversation | undefined> {
-    const results = await db
-      .select()
-      .from(conversations)
-      .where(eq(conversations.userId, userId))
-      .orderBy(desc(conversations.createdAt))
-      .limit(1);
-    
-    return results.length > 0 ? results[0] : undefined;
-  }
 
   async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
     const result = await db
       .insert(conversations)
-      .values(insertConversation)
+      .values({
+        ...insertConversation,
+        createdAt: new Date()
+      })
       .returning();
     return result[0];
   }
