@@ -35,11 +35,11 @@ const EnhancedChatInterface: React.FC = () => {
   
   // Improved scroll behavior for better user experience
   useEffect(() => {
-    // When messages change or typing status changes
-    if (chatContainerRef.current && messages.length > 0) {
+    // Always scroll to bottom when messages change or typing status changes
+    if (chatContainerRef.current) {
       // Add a small delay to ensure DOM is fully updated
       setTimeout(() => {
-        // Calculate the position to scroll to (a bit above the bottom to show part of the previous message)
+        // Calculate the position to scroll to the bottom
         const scrollToPosition = chatContainerRef.current?.scrollHeight || 0;
         
         // Smooth scroll to the position
@@ -137,7 +137,7 @@ const EnhancedChatInterface: React.FC = () => {
             </div>
             
             {/* Chat Messages */}
-            <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-3 sm:space-y-4">
+            <div className="px-3 sm:px-4 py-3 sm:py-4 pb-36 space-y-3 sm:space-y-4 max-w-3xl mx-auto w-full">
               {/* Always show the welcome message */}
               <div className="mx-auto bg-white rounded-lg p-3 sm:p-5 shadow-sm max-w-lg"
                    style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)' }}>
@@ -184,35 +184,37 @@ const EnhancedChatInterface: React.FC = () => {
             </div>
           </div>
 
-          {/* Input Area */}
-          <div className="bg-white p-2 sm:p-3 shadow-lg border-t border-gray-100 z-50 sticky bottom-0">
-            {/* Suggestion chips */}
-            <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-              <button 
-                onClick={() => handleSendMessage("Tasting notes")}
-                className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
-              >
-                Tasting notes
-              </button>
-              <button 
-                onClick={() => handleSendMessage("Simple recipes for this wine")}
-                className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
-              >
-                Simple recipes
-              </button>
-              <button 
-                onClick={() => handleSendMessage("Where is this wine from?")}
-                className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
-              >
-                Where it's from
-              </button>
-            </div>
-            
-            <div className="relative flex items-center gap-1.5 sm:gap-2">
-              <ChatInput 
-                onSendMessage={handleSendMessage} 
-                isProcessing={isTyping}
-              />
+          {/* Input Area - Fixed to Bottom */}
+          <div className="bg-white p-2 sm:p-3 shadow-lg border-t border-gray-100 z-50 fixed bottom-0 left-0 right-0">
+            <div className="max-w-3xl mx-auto">
+              {/* Suggestion chips */}
+              <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                <button 
+                  onClick={() => handleSendMessage("Tasting notes")}
+                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
+                >
+                  Tasting notes
+                </button>
+                <button 
+                  onClick={() => handleSendMessage("Simple recipes for this wine")}
+                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
+                >
+                  Simple recipes
+                </button>
+                <button 
+                  onClick={() => handleSendMessage("Where is this wine from?")}
+                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
+                >
+                  Where it's from
+                </button>
+              </div>
+              
+              <div className="relative flex items-center gap-1.5 sm:gap-2">
+                <ChatInput 
+                  onSendMessage={handleSendMessage} 
+                  isProcessing={isTyping}
+                />
+              </div>
             </div>
           </div>
         </main>
