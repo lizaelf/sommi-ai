@@ -1,8 +1,9 @@
 import React from 'react';
 import { Message } from '@shared/schema';
+import { ClientMessage } from '@/lib/types';
 
 interface ChatMessageProps {
-  message: Message;
+  message: Message | ClientMessage;
 }
 
 // Helper to convert Markdown-style bold text (**text**) to actual bold elements

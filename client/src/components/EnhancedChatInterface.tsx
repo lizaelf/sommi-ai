@@ -65,7 +65,7 @@ const EnhancedChatInterface: React.FC = () => {
         content,
         role: 'user',
         conversationId: currentConversationId,
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
       };
       
       // Add message to the conversation
