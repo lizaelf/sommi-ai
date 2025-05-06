@@ -312,35 +312,6 @@ const SimpleChatInterface: React.FC = () => {
               />
             </div>
             
-            {/* Mobile conversation selector button */}
-            <div className="md:hidden px-4 py-2">
-              {conversations && conversations.length > 0 && (
-                <div className="flex justify-between items-center mb-2">
-                  <select 
-                    className="block w-2/3 px-3 py-2 bg-white border border-gray-300 rounded-md text-sm"
-                    value={currentConversationId || ''}
-                    onChange={(e) => {
-                      const id = Number(e.target.value);
-                      if (id) handleSelectConversation(id);
-                    }}
-                  >
-                    {conversations.map(conv => (
-                      <option key={conv.id} value={conv.id}>
-                        {conv.title || 'Untitled Conversation'}
-                      </option>
-                    ))}
-                  </select>
-                  <button 
-                    onClick={handleNewChat}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[#6A53E7] text-white rounded-full"
-                  >
-                    <PlusCircle size={16} />
-                    <span>New</span>
-                  </button>
-                </div>
-              )}
-            </div>
-            
             {/* Chat Messages */}
             <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-3 sm:space-y-4">
               {/* Always show the welcome message */}
