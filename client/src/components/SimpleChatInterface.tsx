@@ -348,35 +348,6 @@ const SimpleChatInterface: React.FC = () => {
 
           {/* Input Area */}
           <div className="bg-white p-3 shadow-lg border-t border-gray-100 z-50">
-            {/* Conversation Info - Always show with dropdown */}
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-xs text-gray-500">
-                {currentConversationId ? `Conversation #${currentConversationId}` : 'New Conversation'}
-              </div>
-              <div className="flex items-center gap-2">
-                {conversations && conversations.length > 0 && (
-                  <select 
-                    value={currentConversationId || ''}
-                    onChange={(e) => e.target.value && handleSelectConversation(Number(e.target.value))}
-                    className="text-xs border border-gray-200 rounded px-2 py-0.5"
-                  >
-                    <option value="" disabled>Select conversation</option>
-                    {conversations.map(conv => (
-                      <option key={conv.id} value={conv.id}>
-                        {conv.title || `Conversation #${conv.id}`}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                <button 
-                  onClick={handleNewChat}
-                  className="text-xs text-[#6A53E7] hover:text-purple-700"
-                >
-                  New Conversation
-                </button>
-              </div>
-            </div>
-            
             {/* Suggestion chips */}
             <div className="scrollbar-hide overflow-x-auto mb-3 pb-1 -mt-1 flex gap-2 w-full">
               <button 
