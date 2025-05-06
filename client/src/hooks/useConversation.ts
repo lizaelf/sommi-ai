@@ -35,7 +35,16 @@ export function useConversation() {
     return savedId ? parseInt(savedId, 10) : null;
   });
   
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Initialize messages from localStorage if we have a conversation id
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (currentConversationId) {
+      const savedMessages = loadFromLocalStorage<Message[]>(`${LS_MESSAGES_PREFIX}${currentConversationId}`, []);
+      console.log('Initial load from localStorage:', currentConversationId, savedMessages);
+      return savedMessages;
+    }
+    return [];
+  });
+  
   const [localConversations, setLocalConversations] = useState<Conversation[]>(() => 
     loadFromLocalStorage<Conversation[]>(LS_CONVERSATIONS, [])
   );
@@ -51,6 +60,7 @@ export function useConversation() {
       
       // Try to load messages from localStorage for this conversation
       const savedMessages = loadFromLocalStorage<Message[]>(`${LS_MESSAGES_PREFIX}${id}`, []);
+      console.log('Loading messages on conversation change:', id, savedMessages);
       if (savedMessages.length > 0) {
         setMessages(savedMessages);
       } else {
@@ -66,6 +76,17 @@ export function useConversation() {
   const { data: conversationsData } = useQuery({
     queryKey: ['/api/conversations'],
   });
+
+  // Force load messages from localStorage when component mounts
+  useEffect(() => {
+    if (currentConversationId) {
+      const savedMessages = loadFromLocalStorage<Message[]>(`${LS_MESSAGES_PREFIX}${currentConversationId}`, []);
+      console.log('Initial effect load from localStorage:', currentConversationId, savedMessages);
+      if (savedMessages.length > 0) {
+        setMessages(savedMessages);
+      }
+    }
+  }, []);
 
   // Query messages for the current conversation
   const { data: messagesData, refetch: refetchMessages } = useQuery({
@@ -84,6 +105,7 @@ export function useConversation() {
   // Update messages when API data changes
   useEffect(() => {
     if (messagesData && Array.isArray(messagesData) && currentConversationId) {
+      console.log('Saving messages from API:', currentConversationId, messagesData);
       setMessages(messagesData);
       saveToLocalStorage(`${LS_MESSAGES_PREFIX}${currentConversationId}`, messagesData);
     }
@@ -95,6 +117,7 @@ export function useConversation() {
       const updatedMessages = [...prev, message];
       
       if (currentConversationId) {
+        console.log('Saving message after adding:', currentConversationId, updatedMessages);
         saveToLocalStorage(`${LS_MESSAGES_PREFIX}${currentConversationId}`, updatedMessages);
       }
       

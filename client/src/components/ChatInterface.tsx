@@ -32,11 +32,9 @@ const ChatInterface: React.FC = () => {
     enabled: !!currentConversationId,
   });
 
-  // Conversation messages query
+  // Conversation messages query - only used for loading state
   const { 
-    data: messagesData,
-    isLoading: isLoadingMessages,
-    refetch: refetchMessages
+    isLoading: isLoadingMessages
   } = useQuery({
     queryKey: ['/api/conversations', currentConversationId, 'messages'],
     enabled: !!currentConversationId,
