@@ -188,8 +188,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Chat completion endpoint
-  app.post("/api/chat", isAuthenticated, async (req, res) => {
+  // Chat completion endpoint - without authentication for client-side storage
+  app.post("/api/chat", async (req, res) => {
     try {
       // Validate request
       const validatedData = chatCompletionRequestSchema.parse(req.body);
@@ -197,21 +197,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get messages from request
       const { messages, conversationId } = validatedData;
       
-      const userId = req.user?.id;
-      if (!userId) {
-        return res.status(401).json({ message: "User not authenticated" });
-      }
-      
-      // Check if conversation exists and belongs to the user
+      // If conversationId is provided, check if it exists
       if (conversationId) {
         const conversation = await storage.getConversation(conversationId);
         
         if (!conversation) {
           return res.status(404).json({ message: "Conversation not found" });
-        }
-        
-        if (conversation.userId !== userId) {
-          return res.status(403).json({ message: "Access denied to this conversation" });
         }
       }
       
@@ -229,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!formattedPreviousMessages.some(msg => msg.role === 'system')) {
           formattedPreviousMessages.unshift({
             role: 'system',
-            content: 'You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.'
+            content: 'You are a wine expert sommelier specializing in Cabernet Sauvignon. Provide detailed, friendly, and knowledgeable responses about Cabernet Sauvignon wines, including tasting notes, food pairings, history, regions, and serving recommendations. Keep responses concise but informative, and maintain a friendly, approachable tone as if speaking to a curious wine enthusiast.'
           });
         }
         
