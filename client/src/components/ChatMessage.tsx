@@ -172,8 +172,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         </div>
       ) : (
-        // AI Message - Wine info style with special formatting
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 text-sm sm:text-base">
+        // AI Message - Wine info style with special formatting (no background)
+        <div className="p-3 sm:p-4 text-sm sm:text-base">
           {formatWineInfo(message.content)}
         </div>
       )}

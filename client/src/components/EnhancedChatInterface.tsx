@@ -153,8 +153,7 @@ const EnhancedChatInterface: React.FC = () => {
             {/* Chat Messages */}
             <div className="px-3 sm:px-4 py-3 sm:py-4 pb-36 space-y-3 sm:space-y-4 max-w-3xl mx-auto w-full">
               {/* Always show the welcome message */}
-              <div className="mx-auto bg-white rounded-lg p-3 sm:p-5 shadow-sm max-w-lg"
-                   style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)' }}>
+              <div className="mx-auto p-3 sm:p-5 max-w-lg">
                 <div className="relative">
                   <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3 mt-0"></div>
                 </div>
@@ -184,7 +183,7 @@ const EnhancedChatInterface: React.FC = () => {
               {/* Typing Indicator */}
               {isTyping && (
                 <div className="mx-auto max-w-2xl">
-                  <div className="bg-white rounded-lg p-2 sm:p-4 shadow-sm">
+                  <div className="p-2 sm:p-4">
                     <div className="text-gray-700">
                       <div className="typing-indicator">
                         <span></span>
