@@ -3,9 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
+import Sidebar from './Sidebar';
 import { Message, Conversation } from '@shared/schema';
 import { indexedDBStorage } from '@/lib/indexedDB';
 import { apiRequest } from '@/lib/queryClient';
+import { Menu } from 'lucide-react';
 
 // Save conversation ID key
 const LS_CURRENT_CONVERSATION_KEY = 'chatgpt_companion_current_conversation';
@@ -17,6 +19,8 @@ const LocalChatInterface: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -45,6 +49,20 @@ const LocalChatInterface: React.FC = () => {
       }, 100);
     }
   }, [messages, isTyping]);
+
+  // Load all conversations from IndexedDB
+  useEffect(() => {
+    async function loadAllConversations() {
+      try {
+        const allConversations = await indexedDBStorage.getAllConversations();
+        setConversations(allConversations);
+      } catch (error) {
+        console.error('Failed to load all conversations:', error);
+      }
+    }
+    
+    loadAllConversations();
+  }, [currentConversationId]);
 
   // Load conversations from IndexedDB
   useEffect(() => {
@@ -263,9 +281,32 @@ const LocalChatInterface: React.FC = () => {
   return (
     <div className="flex flex-col h-[100dvh] max-h-[100dvh]">
       {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Sidebar */}
+        <Sidebar
+          isOpen={sidebarOpen}
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onNewChat={handleNewChat}
+          onSelectConversation={handleSelectConversation}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+          onClose={() => setSidebarOpen(false)}
+        />
+        
         {/* Chat Area */}
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
+          {/* Mobile menu button - only visible on small screens */}
+          <div className="lg:hidden p-2 border-b border-gray-200 bg-white flex justify-between items-center">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-md hover:bg-gray-100"
+            >
+              <Menu size={20} />
+            </button>
+            <h1 className="text-lg font-semibold text-gray-800">Cabernet AI</h1>
+            <div className="w-10"></div> {/* Empty div for centering */}
+          </div>
+          
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image (always show at top with responsive height) */}

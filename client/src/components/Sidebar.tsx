@@ -1,5 +1,8 @@
 import React from 'react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Conversation } from '@shared/schema';
+import { useIsMobile } from '@/hooks/use-mobile';
+import ConversationSelector from './ConversationSelector';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -7,6 +10,8 @@ interface SidebarProps {
   currentConversationId: number | null;
   onNewChat: () => void;
   onSelectConversation: (id: number) => void;
+  onToggle: () => void;
+  onClose: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -14,58 +19,68 @@ const Sidebar: React.FC<SidebarProps> = ({
   conversations,
   currentConversationId,
   onNewChat,
-  onSelectConversation
+  onSelectConversation,
+  onToggle,
+  onClose
 }) => {
-  if (!isOpen) {
-    return null;
-  }
-
+  const isMobile = useIsMobile();
+  
   return (
-    <aside 
-      className={`${
-        isOpen ? 'block' : 'hidden'
-      } md:block w-64 bg-white border-r border-gray-200 overflow-y-auto transition-all ${
-        isOpen ? 'md:static fixed top-14 left-0 bottom-0 z-10' : ''
-      }`}
-    >
-      <div className="p-4">
-        <button 
-          onClick={onNewChat}
-          className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md flex items-center justify-center transition-colors"
-        >
-          <i className="fas fa-plus mr-2"></i> New Chat
-        </button>
-      </div>
-      
-      {/* Conversation History */}
-      <div className="px-3 py-2">
-        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">Conversation History</h2>
-        <div className="space-y-1">
-          {conversations.length > 0 ? (
-            conversations.map((conversation) => (
-              <div 
-                key={conversation.id}
-                onClick={() => onSelectConversation(conversation.id)}
-                className={`flex items-center px-2 py-2 text-sm rounded-md text-gray-700 cursor-pointer ${
-                  currentConversationId === conversation.id 
-                    ? 'bg-blue-50 font-medium' 
-                    : 'hover:bg-gray-100'
-                }`}
-              >
-                <i className={`fas fa-comment${currentConversationId === conversation.id ? '-dots' : ''} mr-2 ${
-                  currentConversationId === conversation.id ? 'text-blue-500' : 'text-gray-400'
-                }`}></i>
-                <span className="truncate">{conversation.title}</span>
-              </div>
-            ))
-          ) : (
-            <div className="px-2 py-3 text-sm text-gray-500">
-              No conversations yet
-            </div>
-          )}
+    <>
+      {/* Mobile overlay when sidebar is open */}
+      {isMobile && isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/30 z-40"
+          onClick={onClose}
+        />
+      )}
+    
+      {/* Sidebar */}
+      <aside 
+        className={`bg-white border-r border-gray-200 shadow-lg ${
+          isMobile 
+            ? `fixed top-0 bottom-0 left-0 z-50 w-72 transition-transform duration-300 ${
+                isOpen ? 'translate-x-0' : '-translate-x-full'
+              }`
+            : `relative transition-width duration-300 ${
+                isOpen ? 'w-72' : 'w-0'
+              }`
+        }`}
+      >
+        <div className={`h-full flex flex-col overflow-hidden ${!isOpen && !isMobile ? 'invisible' : ''}`}>
+          {/* Sidebar Header */}
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-800">Conversations</h2>
+            {isMobile && (
+              <button onClick={onClose} className="rounded-full p-1 hover:bg-gray-100">
+                <X size={20} />
+              </button>
+            )}
+          </div>
+          
+          {/* Conversation List */}
+          <div className="flex-1 overflow-hidden p-3">
+            <ConversationSelector
+              conversations={conversations}
+              currentConversationId={currentConversationId}
+              onSelectConversation={onSelectConversation}
+              onCreateNewConversation={onNewChat}
+            />
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+      
+      {/* Toggle button for desktop */}
+      {!isMobile && (
+        <button 
+          onClick={onToggle}
+          className="absolute top-5 left-0 transform translate-x-full bg-white border border-gray-200 rounded-r-md p-2 shadow-md hover:bg-gray-50 z-10"
+          aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
+        >
+          {isOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+        </button>
+      )}
+    </>
   );
 };
 
