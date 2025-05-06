@@ -151,9 +151,9 @@ const EnhancedChatInterface: React.FC = () => {
             </div>
             
             {/* Chat Messages */}
-            <div className="px-3 sm:px-4 py-3 sm:py-4 pb-36 space-y-3 sm:space-y-4 max-w-3xl mx-auto w-full">
+            <div className="px-3 sm:px-4 py-3 sm:py-4 pb-36 space-y-4 max-w-3xl mx-auto w-full">
               {/* Always show the welcome message */}
-              <div className="mx-auto p-3 sm:p-5 max-w-lg">
+              <div className="mx-auto p-3 sm:p-5 max-w-lg" style={{ marginBottom: '16px' }}>
                 <div className="relative">
                   <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3 mt-0"></div>
                 </div>
