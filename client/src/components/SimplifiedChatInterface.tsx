@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
-import { Message, Conversation } from '@shared/schema';
+import { Message } from '@shared/schema';
 import { indexedDBStorage } from '@/lib/indexedDB';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -11,7 +11,7 @@ import { apiRequest } from '@/lib/queryClient';
 const LS_CURRENT_CONVERSATION_KEY = 'chatgpt_companion_current_conversation';
 
 // Create a simplified chat interface that relies on IndexedDB persistence
-const LocalChatInterface: React.FC = () => {
+const SimplifiedChatInterface: React.FC = () => {
   // Basic states
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,8 +45,6 @@ const LocalChatInterface: React.FC = () => {
       }, 100);
     }
   }, [messages, isTyping]);
-
-  // We're just using one conversation at a time in the simplified UI
 
   // Load conversations from IndexedDB
   useEffect(() => {
@@ -210,31 +208,6 @@ const LocalChatInterface: React.FC = () => {
       });
     }
   };
-  
-  // Handle selecting a conversation
-  const handleSelectConversation = async (id: number) => {
-    try {
-      // Skip if it's the same conversation
-      if (id === currentConversationId) {
-        return;
-      }
-      
-      setCurrentConversationId(id);
-      localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, String(id));
-      
-      // Load messages for this conversation
-      const messagesData = await indexedDBStorage.getMessagesByConversation(id);
-      console.log(`Loaded ${messagesData.length} messages for conversation ${id}`);
-      setMessages(messagesData);
-    } catch (error) {
-      console.error(`Failed to load conversation ${id}:`, error);
-      toast({
-        title: "Error",
-        description: "Failed to load the selected conversation",
-        variant: "destructive"
-      });
-    }
-  };
 
   // Display loading state if conversations are being loaded
   if (isLoading) {
@@ -367,4 +340,4 @@ const LocalChatInterface: React.FC = () => {
   );
 };
 
-export default LocalChatInterface;
+export default SimplifiedChatInterface;

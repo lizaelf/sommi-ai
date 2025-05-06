@@ -1,5 +1,5 @@
 import React from 'react';
-import LocalChatInterface from '@/components/LocalChatInterface';
+import SimplifiedChatInterface from '@/components/SimplifiedChatInterface';
 import { GlassWater } from 'lucide-react';
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
         </div>
       </div>
       
-      <LocalChatInterface />
+      <SimplifiedChatInterface />
     </div>
   );
 }
