@@ -1,149 +1,181 @@
 import React from 'react';
 import { Message } from '@shared/schema';
-import { User, Wine } from 'lucide-react';
 
 interface ChatMessageProps {
   message: Message;
 }
 
-// Function to process markdown bold text (e.g., **text**)
+// Helper to convert Markdown-style bold text (**text**) to actual bold elements
 function processMarkdownBold(text: string) {
-  return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-}
-
-// Function to process markdown italics (e.g., *text*)
-function processMarkdownItalics(text: string) {
-  return text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-}
-
-// Function to process markdown code blocks
-function processMarkdownCodeBlocks(text: string) {
-  // Replace ```language code``` blocks
-  text = text.replace(/```([a-z]*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
+  if (!text) return null;
   
-  // Replace inline `code` blocks
-  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Regular expression to match text between double asterisks
+  const parts = text.split(/(\*\*.*?\*\*)/g);
   
-  return text;
-}
-
-// Function to process markdown lists
-function processMarkdownLists(text: string) {
-  // Split text into lines
-  const lines = text.split('\n');
-  let inList = false;
-  let listType = '';
+  if (parts.length === 1) {
+    return text;
+  }
   
-  // Process each line
-  for (let i = 0; i < lines.length; i++) {
-    // Check for unordered list items
-    if (lines[i].match(/^[\s]*[-*+][\s]+/)) {
-      const listItem = lines[i].replace(/^[\s]*[-*+][\s]+/, '');
-      
-      // Start a new list or continue the current one
-      if (!inList || listType !== 'ul') {
-        lines[i] = inList ? '</ul><ul><li>' + listItem + '</li>' : '<ul><li>' + listItem + '</li>';
-        inList = true;
-        listType = 'ul';
-      } else {
-        lines[i] = '<li>' + listItem + '</li>';
-      }
-    } 
-    // Check for ordered list items
-    else if (lines[i].match(/^[\s]*\d+\.[\s]+/)) {
-      const listItem = lines[i].replace(/^[\s]*\d+\.[\s]+/, '');
-      
-      // Start a new list or continue the current one
-      if (!inList || listType !== 'ol') {
-        lines[i] = inList ? '</ol><ol><li>' + listItem + '</li>' : '<ol><li>' + listItem + '</li>';
-        inList = true;
-        listType = 'ol';
-      } else {
-        lines[i] = '<li>' + listItem + '</li>';
-      }
-    } 
-    // End the list if we encounter a non-list line
-    else if (inList && lines[i].trim() !== '') {
-      lines[i] = listType === 'ul' ? '</ul>' + lines[i] : '</ol>' + lines[i];
-      inList = false;
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return <strong key={i}>{boldText}</strong>;
     }
-  }
-  
-  // Close any open list at the end
-  if (inList) {
-    lines.push(listType === 'ul' ? '</ul>' : '</ol>');
-  }
-  
-  return lines.join('\n');
-}
-
-// Main function to process markdown
-function processMarkdown(text: string) {
-  let processed = text;
-  
-  // Process lists first
-  processed = processMarkdownLists(processed);
-  
-  // Process code blocks
-  processed = processMarkdownCodeBlocks(processed);
-  
-  // Process bold and italics
-  processed = processMarkdownBold(processed);
-  processed = processMarkdownItalics(processed);
-  
-  // Process paragraphs (consecutive lines)
-  processed = processed.replace(/\n\s*\n/g, '</p><p>');
-  
-  // Wrap in paragraph tags if not already wrapped
-  if (!processed.startsWith('<')) {
-    processed = '<p>' + processed + '</p>';
-  }
-  
-  return processed;
+    return part;
+  });
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
-  
-  // Process the message content to handle markdown
-  const processedContent = processMarkdown(message.content);
-  
-  return (
-    <div 
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
-    >
-      <div 
-        className={`max-w-[85%] md:max-w-[75%] rounded-lg p-3 sm:p-4 ${
-          isUser 
-            ? 'bg-purple-600 text-white' 
-            : 'bg-white text-gray-800 shadow-sm'
-        }`}
-        style={{ 
-          boxShadow: isUser 
-            ? 'none' 
-            : '0 4px 15px rgba(0, 0, 0, 0.1)' 
-        }}
-      >
-        {/* Message header */}
-        <div className="flex items-center mb-2">
-          <div className={`p-1 rounded-full ${isUser ? 'bg-purple-700' : 'bg-purple-100'}`}>
-            {isUser ? (
-              <User size={16} className="text-white" />
-            ) : (
-              <Wine size={16} className="text-purple-600" />
-            )}
-          </div>
-          <span className={`ml-2 text-sm font-medium ${isUser ? 'text-purple-100' : 'text-purple-800'}`}>
-            {isUser ? 'You' : 'Cabernet AI'}
-          </span>
-        </div>
+
+  // Function to format text with bold and code blocks
+  const formatContent = (content: string) => {
+    // Handle undefined or empty content
+    if (!content) {
+      return null;
+    }
+    
+    try {
+      // Check if there are any code blocks
+      if (!content.includes('```')) {
+        // No code blocks, apply bold formatting and return
+        return <p>{processMarkdownBold(content)}</p>;
+      }
+      
+      // Split content by code block markers and process each part
+      const segments = [];
+      let isCodeBlock = false;
+      let buffer = '';
+      
+      // Split by newline to process line by line
+      const lines = content.split('\n');
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         
-        {/* Message content */}
-        <div 
-          className={`prose prose-sm max-w-none ${isUser ? 'prose-invert' : ''}`}
-          dangerouslySetInnerHTML={{ __html: processedContent }}
-        />
-      </div>
+        if (line.includes('```')) {
+          // We found a code block delimiter
+          // Add the current buffer as the appropriate type
+          if (buffer) {
+            segments.push({
+              type: isCodeBlock ? 'code' : 'text',
+              content: buffer.trim()
+            });
+            buffer = '';
+          }
+          // Toggle the code block state
+          isCodeBlock = !isCodeBlock;
+          // Skip the delimiter line
+          continue;
+        }
+        
+        // Add the line to our buffer with the appropriate separator
+        if (buffer) {
+          buffer += '\n' + line;
+        } else {
+          buffer = line;
+        }
+      }
+      
+      // Add any remaining content
+      if (buffer) {
+        segments.push({
+          type: isCodeBlock ? 'code' : 'text',
+          content: buffer.trim()
+        });
+      }
+      
+      // Render the segments
+      return (
+        <>
+          {segments.map((segment, index) => (
+            segment.type === 'text' ? 
+              <p key={index}>{processMarkdownBold(segment.content)}</p> : 
+              <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
+                {segment.content}
+              </pre>
+          ))}
+        </>
+      );
+    } catch (error) {
+      console.error("Error formatting message content:", error);
+      return <p>{content}</p>;
+    }
+  };
+
+  // Function to detect wine information from content
+  const formatWineInfo = (content: string) => {
+    if (isUser) return formatContent(content); // Only apply special formatting to AI responses
+    
+    // Add wine-specific formatting
+    try {
+      // Convert content to paragraphs
+      const paragraphs = content.split('\n\n').filter(p => p.trim().length > 0);
+      
+      return (
+        <div className="space-y-4">
+          {/* Format paragraphs with wine-specific styling */}
+          {paragraphs.map((paragraph, idx) => {
+            // Check if paragraph might be a header or section title
+            if (paragraph.includes('Aromas') || paragraph.includes('Flavors') || 
+                paragraph.includes('Region') || paragraph.includes('Pairs with') ||
+                paragraph.includes('Story') || paragraph.includes('Origin')) {
+              
+              // It's a section header, format with wine emoji if appropriate
+              const emoji = 
+                paragraph.includes('Aromas') ? '🍷 ' :
+                paragraph.includes('Flavors') ? '✨ ' :
+                paragraph.includes('Pairs') ? '🍽️ ' :
+                paragraph.includes('Region') || paragraph.includes('Origin') ? '🌍 ' : '';
+              
+              return (
+                <div key={idx} className="mt-3">
+                  <p className="font-medium text-gray-800">{emoji}{processMarkdownBold(paragraph)}</p>
+                </div>
+              );
+            }
+            
+            // Check if it's a list-like item
+            if (paragraph.includes('- ')) {
+              const items = paragraph.split('- ').filter(item => item.trim().length > 0);
+              return (
+                <div key={idx} className="space-y-1">
+                  {items.map((item, i) => (
+                    <p key={i} className="flex items-start">
+                      <span className="text-[#6A53E7] mr-2">✧</span>
+                      <span>{processMarkdownBold(item.trim())}</span>
+                    </p>
+                  ))}
+                </div>
+              );
+            }
+            
+            // Regular paragraph with bold text formatting
+            return <p key={idx} className="text-gray-700">{processMarkdownBold(paragraph)}</p>;
+          })}
+        </div>
+      );
+    } catch (error) {
+      console.error("Error formatting wine info:", error);
+      return formatContent(content);
+    }
+  };
+
+  return (
+    <div className="w-full">
+      {isUser ? (
+        // User Message - Smaller and right-aligned
+        <div className="flex justify-end mb-2">
+          <div className="bg-[#F5F3FF] text-gray-800 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4 max-w-[85%] border border-[#6A53E7]/10 text-sm sm:text-base">
+            {formatContent(message.content)}
+          </div>
+        </div>
+      ) : (
+        // AI Message - Wine info style with special formatting
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 text-sm sm:text-base">
+          {formatWineInfo(message.content)}
+        </div>
+      )}
     </div>
   );
 };

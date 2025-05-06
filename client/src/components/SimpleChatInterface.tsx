@@ -4,6 +4,8 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
+import ConversationSelector from './ConversationSelector';
+import { PlusCircle } from 'lucide-react';
 import { Message, Conversation } from '@shared/schema';
 
 // Save conversation ID key
@@ -285,6 +287,18 @@ const SimpleChatInterface: React.FC = () => {
     <div className="flex flex-col h-[100dvh] max-h-[100dvh]">
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar with conversation selector */}
+        <div className="hidden md:block w-80 bg-gray-50 border-r border-gray-200 p-4 overflow-y-auto">
+          {conversations && conversations.length > 0 && (
+            <ConversationSelector 
+              conversations={conversations} 
+              currentConversationId={currentConversationId}
+              onSelectConversation={handleSelectConversation}
+              onCreateNewConversation={handleNewChat}
+            />
+          )}
+        </div>
+        
         {/* Chat Area */}
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
           {/* Scrollable container */}
@@ -296,6 +310,35 @@ const SimpleChatInterface: React.FC = () => {
                 alt="Wine bottle collection" 
                 className="w-full h-full object-cover"
               />
+            </div>
+            
+            {/* Mobile conversation selector button */}
+            <div className="md:hidden px-4 py-2">
+              {conversations && conversations.length > 0 && (
+                <div className="flex justify-between items-center mb-2">
+                  <select 
+                    className="block w-2/3 px-3 py-2 bg-white border border-gray-300 rounded-md text-sm"
+                    value={currentConversationId || ''}
+                    onChange={(e) => {
+                      const id = Number(e.target.value);
+                      if (id) handleSelectConversation(id);
+                    }}
+                  >
+                    {conversations.map(conv => (
+                      <option key={conv.id} value={conv.id}>
+                        {conv.title || 'Untitled Conversation'}
+                      </option>
+                    ))}
+                  </select>
+                  <button 
+                    onClick={handleNewChat}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[#6A53E7] text-white rounded-full"
+                  >
+                    <PlusCircle size={16} />
+                    <span>New</span>
+                  </button>
+                </div>
+              )}
             </div>
             
             {/* Chat Messages */}

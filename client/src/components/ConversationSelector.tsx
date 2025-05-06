@@ -1,7 +1,6 @@
 import React from 'react';
 import { Conversation } from '@shared/schema';
-import { formatDate, truncateString } from '@/lib/utils';
-import { MessageSquare, Plus } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 
 interface ConversationSelectorProps {
   conversations: Conversation[];
@@ -16,53 +15,41 @@ const ConversationSelector: React.FC<ConversationSelectorProps> = ({
   onSelectConversation,
   onCreateNewConversation
 }) => {
-  return (
-    <div className="h-full flex flex-col">
-      {/* New Chat Button */}
-      <button
-        onClick={onCreateNewConversation}
-        className="flex items-center gap-2 p-3 mb-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-      >
-        <Plus size={16} />
-        <span>New Conversation</span>
-      </button>
+  if (!conversations || conversations.length === 0) {
+    return null;
+  }
 
-      {/* Conversation List */}
-      <div className="overflow-y-auto flex-1">
-        {conversations.length === 0 ? (
-          <div className="text-center p-4 text-gray-500">No conversations yet</div>
-        ) : (
-          <ul className="space-y-1">
-            {conversations.map((conversation) => (
-              <li key={conversation.id}>
-                <button
-                  onClick={() => onSelectConversation(conversation.id)}
-                  className={`w-full text-left p-3 rounded-lg flex items-start gap-2 transition-colors ${
-                    currentConversationId === conversation.id
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'hover:bg-gray-100'
-                  }`}
-                >
-                  <MessageSquare 
-                    size={18} 
-                    className={currentConversationId === conversation.id 
-                      ? 'text-purple-600' 
-                      : 'text-gray-400'} 
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm truncate">
-                      {truncateString(conversation.title || 'New Conversation', 25)}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {formatDate(conversation.createdAt)}
-                    </div>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+  return (
+    <div className="conversation-selector bg-white p-4 rounded-lg shadow-sm mb-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-medium text-gray-800">Your Conversations</h3>
+        <button 
+          onClick={onCreateNewConversation}
+          className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[#6A53E7] text-white rounded-full hover:bg-purple-700 transition-colors"
+        >
+          <PlusCircle size={16} />
+          <span>New</span>
+        </button>
       </div>
+      
+      <ul className="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+        {conversations.map(conversation => (
+          <li 
+            key={conversation.id}
+            className={`px-3 py-2 rounded-md cursor-pointer transition-colors ${
+              currentConversationId === conversation.id 
+                ? 'bg-purple-100 text-purple-800 border-l-2 border-[#6A53E7]' 
+                : 'hover:bg-gray-100'
+            }`}
+            onClick={() => onSelectConversation(conversation.id)}
+          >
+            <div className="font-medium truncate">{conversation.title || 'Untitled Conversation'}</div>
+            <div className="text-xs text-gray-500 mt-1">
+              {new Date(conversation.createdAt).toLocaleString()}
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
