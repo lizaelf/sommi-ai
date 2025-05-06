@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Message, Conversation } from '@shared/schema';
+import { ClientMessage, ClientConversation } from '@/lib/types';
 import { apiRequest } from '@/lib/queryClient';
 import indexedDBService, { IDBMessage } from '@/lib/indexedDB';
 import { 
@@ -54,14 +55,7 @@ export function useConversation() {
           const savedMessages = recentConversation.messages;
           if (savedMessages && savedMessages.length > 0) {
             console.log(`Loaded ${savedMessages.length} messages from saved conversation ID`);
-            const convertedMessages: Message[] = savedMessages.map(msg => ({
-              id: msg.id || 0,
-              conversationId: recentConversation.id || 0,
-              role: msg.role,
-              content: msg.content,
-              createdAt: msg.createdAt
-            }));
-            setMessages(convertedMessages);
+            setMessages(adaptIDBMessagesToMessages(savedMessages));
           }
         } else {
           console.log("No conversations found, creating a new one");
@@ -72,12 +66,7 @@ export function useConversation() {
         // Load all conversations
         const allConversations = await indexedDBService.getAllConversations();
         if (allConversations && allConversations.length > 0) {
-          const convertedConversations: Conversation[] = allConversations.map(conv => ({
-            id: conv.id || 0,
-            title: conv.title,
-            createdAt: conv.createdAt
-          }));
-          setLocalConversations(convertedConversations);
+          setLocalConversations(adaptIDBConversationsToConversations(allConversations));
         }
         
         setInitialDataFetched(true);
@@ -182,16 +171,8 @@ export function useConversation() {
         const conversation = await indexedDBService.getConversation(id);
         
         if (conversation) {
-          // Convert to expected Message format
-          const convertedMessages: Message[] = conversation.messages.map(msg => ({
-            id: msg.id || 0,
-            conversationId: id,
-            role: msg.role,
-            content: msg.content,
-            createdAt: msg.createdAt
-          }));
-          
-          setMessages(convertedMessages);
+          // Convert to expected Message format using adapter
+          setMessages(adaptIDBMessagesToMessages(conversation.messages));
         } else {
           // Conversation not found, clear messages
           setMessages([]);
@@ -236,13 +217,11 @@ export function useConversation() {
     setMessages(prev => [...prev, message]);
     
     try {
-      // Add to IndexedDB
-      await indexedDBService.addMessageToConversation(currentConversationId, {
-        conversationId: message.conversationId,
-        role: message.role,
-        content: message.content,
-        createdAt: message.createdAt
-      });
+      // Add to IndexedDB using the adapter
+      await indexedDBService.addMessageToConversation(
+        currentConversationId, 
+        adaptMessageToIDBMessage(message)
+      );
     } catch (error) {
       console.error("Error adding message to IndexedDB", error);
     }
@@ -275,13 +254,7 @@ export function useConversation() {
       
       // Refresh conversations list
       const allConversations = await indexedDBService.getAllConversations();
-      const convertedConversations: Conversation[] = allConversations.map(conv => ({
-        id: conv.id || 0,
-        title: conv.title,
-        createdAt: conv.createdAt
-      }));
-      
-      setLocalConversations(convertedConversations);
+      setLocalConversations(adaptIDBConversationsToConversations(allConversations));
       
       // Also try to create on the API as a backup
       try {
