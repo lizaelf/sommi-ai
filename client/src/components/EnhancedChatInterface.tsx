@@ -4,7 +4,6 @@ import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { useConversation } from '@/hooks/useConversation';
-import { ConversationSelector } from './ConversationSelector';
 import { ClientMessage } from '@/lib/types';
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
@@ -126,18 +125,6 @@ const EnhancedChatInterface: React.FC = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Chat Area */}
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
-          {/* Conversation Selector (hidden on smaller screens) */}
-          <div className="hidden md:block px-4 py-3 bg-white border-b">
-            <div className="max-w-2xl mx-auto">
-              <ConversationSelector 
-                conversations={conversations}
-                currentConversationId={currentConversationId}
-                onSelectConversation={setCurrentConversationId}
-                onCreateNewConversation={createNewConversation}
-              />
-            </div>
-          </div>
-
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image (always show at top with responsive height) */}
@@ -199,25 +186,6 @@ const EnhancedChatInterface: React.FC = () => {
 
           {/* Input Area */}
           <div className="bg-white p-2 sm:p-3 shadow-lg border-t border-gray-100 z-50 sticky bottom-0">
-            {/* Mobile conversation selector button */}
-            <div className="md:hidden flex justify-between items-center mb-2">
-              <button 
-                onClick={createNewConversation}
-                className="text-xs px-3 py-1.5 bg-purple-100 text-[#6A53E7] rounded-full font-medium flex items-center"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                New Chat
-              </button>
-              <div className="text-xs text-gray-500 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
-                </svg>
-                {conversations.length} Conversation{conversations.length !== 1 ? 's' : ''}
-              </div>
-            </div>
-
             {/* Suggestion chips */}
             <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
               <button 
