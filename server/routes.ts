@@ -136,7 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!formattedPreviousMessages.some(msg => msg.role === 'system')) {
           formattedPreviousMessages.unshift({
             role: 'system',
-            content: 'You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.'
+            content: 'You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses concise but informative.'
           });
         }
         

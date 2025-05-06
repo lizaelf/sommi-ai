@@ -88,7 +88,21 @@ const EnhancedChatInterface: React.FC = () => {
       
       const responseData = await response.json();
       
-      // Check if we need to reload messages (they might be stored server-side)
+      // Add the assistant's response to the UI immediately
+      if (responseData.message && responseData.message.content) {
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1, // Ensure unique ID
+          content: responseData.message.content,
+          role: 'assistant',
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString()
+        };
+        
+        // Add assistant message to the conversation
+        await addMessage(assistantMessage);
+      }
+      
+      // Refresh all messages
       refetchMessages();
       
     } catch (error) {
