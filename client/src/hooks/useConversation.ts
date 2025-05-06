@@ -10,6 +10,9 @@ import {
   adaptMessageToIDBMessage
 } from '@/lib/adapters';
 
+// Key for storing the current conversation ID in localStorage
+const LS_CURRENT_CONVERSATION_KEY = 'chatgpt_wine_current_conversation_id';
+
 /**
  * Return type for the useConversation hook with client-side compatible types
  */
@@ -58,23 +61,31 @@ export function useConversation(): UseConversationReturn {
       console.log("Initializing conversation...");
       
       try {
-        // Get the most recent conversation or create one if none exists
-        const recentConversation = await indexedDBService.getMostRecentConversation();
+        // First, check if there's a specific conversation ID in localStorage
+        const savedConversationId = localStorage.getItem(LS_CURRENT_CONVERSATION_KEY);
         
-        if (recentConversation && recentConversation.id) {
-          console.log(`Using saved conversation ID: ${recentConversation.id}`);
-          setCurrentConversationIdState(recentConversation.id);
+        if (savedConversationId) {
+          const conversationId = parseInt(savedConversationId, 10);
+          const conversation = await indexedDBService.getConversation(conversationId);
           
-          // Load messages for this conversation
-          const savedMessages = recentConversation.messages;
-          if (savedMessages && savedMessages.length > 0) {
-            console.log(`Loaded ${savedMessages.length} messages from saved conversation ID`);
-            setMessages(adaptIDBMessagesToMessages(savedMessages));
+          if (conversation) {
+            console.log(`Using saved conversation ID from localStorage: ${conversationId}`);
+            setCurrentConversationIdState(conversationId);
+            
+            // Load messages for this conversation
+            const savedMessages = conversation.messages;
+            if (savedMessages && savedMessages.length > 0) {
+              console.log(`Loaded ${savedMessages.length} messages from saved conversation ID`);
+              setMessages(adaptIDBMessagesToMessages(savedMessages));
+            }
+          } else {
+            // If the conversation doesn't exist, fall back to most recent
+            console.log(`Saved conversation ID ${conversationId} not found, using most recent`);
+            await loadMostRecentConversation();
           }
         } else {
-          console.log("No conversations found, creating a new one");
-          const newId = await indexedDBService.createConversation("New Conversation");
-          setCurrentConversationIdState(newId);
+          // No saved ID in localStorage, use most recent conversation
+          await loadMostRecentConversation();
         }
         
         // Load all conversations
@@ -93,6 +104,33 @@ export function useConversation(): UseConversationReturn {
         } catch (apiError) {
           console.error("API fallback failed", apiError);
         }
+      }
+    }
+    
+    // Helper function to load most recent conversation
+    async function loadMostRecentConversation() {
+      const recentConversation = await indexedDBService.getMostRecentConversation();
+      
+      if (recentConversation && recentConversation.id) {
+        console.log(`Using most recent conversation ID: ${recentConversation.id}`);
+        setCurrentConversationIdState(recentConversation.id);
+        
+        // Save to localStorage for persistence
+        localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, recentConversation.id.toString());
+        
+        // Load messages for this conversation
+        const savedMessages = recentConversation.messages;
+        if (savedMessages && savedMessages.length > 0) {
+          console.log(`Loaded ${savedMessages.length} messages from most recent conversation`);
+          setMessages(adaptIDBMessagesToMessages(savedMessages));
+        }
+      } else {
+        console.log("No conversations found, creating a new one");
+        const newId = await indexedDBService.createConversation("New Conversation");
+        setCurrentConversationIdState(newId);
+        
+        // Save to localStorage for persistence
+        localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, newId.toString());
       }
     }
     
@@ -179,7 +217,10 @@ export function useConversation(): UseConversationReturn {
     
     setCurrentConversationIdState(id);
     
+    // Update localStorage for persistence across refreshes
     if (id) {
+      localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, id.toString());
+      
       try {
         // Get conversation from IndexedDB
         const conversation = await indexedDBService.getConversation(id);
@@ -201,6 +242,9 @@ export function useConversation(): UseConversationReturn {
                 // Store in IndexedDB
                 indexedDBService.createConversation("New Conversation")
                   .then(newId => {
+                    // Update localStorage with the new ID
+                    localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, newId.toString());
+                    
                     for (const message of fetchedMessages) {
                       indexedDBService.addMessageToConversation(newId, {
                         conversationId: message.conversationId,
@@ -219,6 +263,8 @@ export function useConversation(): UseConversationReturn {
         setMessages([]);
       }
     } else {
+      // If ID is null, remove from localStorage
+      localStorage.removeItem(LS_CURRENT_CONVERSATION_KEY);
       setMessages([]);
     }
   }, [currentConversationId]);
@@ -266,6 +312,9 @@ export function useConversation(): UseConversationReturn {
       setCurrentConversationIdState(newId);
       setMessages([]);
       
+      // Save to localStorage for persistence
+      localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, newId.toString());
+      
       // Refresh conversations list
       const allConversations = await indexedDBService.getAllConversations();
       setLocalConversations(adaptIDBConversationsToConversations(allConversations));
@@ -291,6 +340,9 @@ export function useConversation(): UseConversationReturn {
         
         setCurrentConversationIdState(data.id);
         setMessages([]);
+        
+        // Save API conversation ID to localStorage
+        localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, data.id.toString());
         
         queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
         
