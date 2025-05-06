@@ -1,50 +1,70 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Message, Conversation } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
-import { truncateString } from '@/lib/utils';
 
 // LocalStorage keys
 const LS_CURRENT_CONVERSATION_ID = 'somm_current_conversation_id';
 const LS_CONVERSATIONS = 'somm_conversations';
 const LS_MESSAGES_PREFIX = 'somm_messages_';
 
+// Helper function to safely load localStorage data
+const loadFromLocalStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const savedData = localStorage.getItem(key);
+    return savedData ? JSON.parse(savedData) : fallback;
+  } catch (error) {
+    console.error(`Failed to load data from localStorage key: ${key}`, error);
+    return fallback;
+  }
+};
+
+// Helper function to safely save to localStorage
+const saveToLocalStorage = (key: string, data: any): void => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Failed to save data to localStorage key: ${key}`, error);
+  }
+};
+
 export function useConversation() {
-  // Initialize state from localStorage if available
-  const [currentConversationId, setCurrentConversationIdRaw] = useState<number | null>(() => {
+  // Initialize from localStorage
+  const [currentConversationId, setCurrentConversationIdState] = useState<number | null>(() => {
     const savedId = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
     return savedId ? parseInt(savedId, 10) : null;
   });
   
   const [messages, setMessages] = useState<Message[]>([]);
-  const [localStorageLoaded, setLocalStorageLoaded] = useState(false);
+  const [localConversations, setLocalConversations] = useState<Conversation[]>(() => 
+    loadFromLocalStorage<Conversation[]>(LS_CONVERSATIONS, [])
+  );
+  
   const queryClient = useQueryClient();
-  
-  // Wrap setCurrentConversationId to also load from localStorage
-  const setCurrentConversationId = (id: number | null) => {
-    setCurrentConversationIdRaw(id);
-    setLocalStorageLoaded(false); // Reset so we load from localStorage for the new conversation
-  };
 
-  // Initialize with conversations from localStorage
-  const [localConversations, setLocalConversations] = useState<Conversation[]>(() => {
-    try {
-      const saved = localStorage.getItem(LS_CONVERSATIONS);
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error('Failed to parse saved conversations:', error);
-      return [];
+  // Set current conversation ID and save to localStorage
+  const setCurrentConversationId = useCallback((id: number | null) => {
+    setCurrentConversationIdState(id);
+    
+    if (id) {
+      localStorage.setItem(LS_CURRENT_CONVERSATION_ID, id.toString());
+      
+      // Try to load messages from localStorage for this conversation
+      const savedMessages = loadFromLocalStorage<Message[]>(`${LS_MESSAGES_PREFIX}${id}`, []);
+      if (savedMessages.length > 0) {
+        setMessages(savedMessages);
+      } else {
+        setMessages([]);
+      }
+    } else {
+      localStorage.removeItem(LS_CURRENT_CONVERSATION_ID);
+      setMessages([]);
     }
-  });
-  
+  }, []);
+
   // Query all conversations
   const { data: conversationsData } = useQuery({
     queryKey: ['/api/conversations'],
-    onSuccess: (data) => {
-      if (data && Array.isArray(data)) {
-        setLocalConversations(data);
-      }
-    }
   });
 
   // Query messages for the current conversation
@@ -53,96 +73,55 @@ export function useConversation() {
     enabled: !!currentConversationId,
   });
 
-  // Load initial data from localStorage
+  // Update local conversations when API data changes
   useEffect(() => {
-    // Load messages for current conversation
-    if (currentConversationId && !localStorageLoaded) {
-      const savedMessages = localStorage.getItem(`${LS_MESSAGES_PREFIX}${currentConversationId}`);
-      if (savedMessages) {
-        try {
-          const parsedMessages = JSON.parse(savedMessages) as Message[];
-          setMessages(parsedMessages);
-          setLocalStorageLoaded(true);
-        } catch (error) {
-          console.error('Failed to parse saved messages:', error);
-        }
-      }
-    }
-  }, [currentConversationId, localStorageLoaded]);
-
-  // Update messages when data changes from API
-  useEffect(() => {
-    if (messagesData && Array.isArray(messagesData)) {
-      setMessages(messagesData);
-      
-      // Save messages to localStorage
-      if (currentConversationId) {
-        localStorage.setItem(
-          `${LS_MESSAGES_PREFIX}${currentConversationId}`, 
-          JSON.stringify(messagesData)
-        );
-      }
-    }
-  }, [messagesData, currentConversationId]);
-
-  // Save current conversation ID to localStorage
-  useEffect(() => {
-    if (currentConversationId) {
-      localStorage.setItem(LS_CURRENT_CONVERSATION_ID, currentConversationId.toString());
-    } else {
-      localStorage.removeItem(LS_CURRENT_CONVERSATION_ID);
-    }
-  }, [currentConversationId]);
-
-  // Save conversations list to localStorage when it changes
-  useEffect(() => {
-    if (conversationsData) {
-      localStorage.setItem(LS_CONVERSATIONS, JSON.stringify(conversationsData));
+    if (conversationsData && Array.isArray(conversationsData)) {
+      setLocalConversations(conversationsData);
+      saveToLocalStorage(LS_CONVERSATIONS, conversationsData);
     }
   }, [conversationsData]);
 
+  // Update messages when API data changes
+  useEffect(() => {
+    if (messagesData && Array.isArray(messagesData) && currentConversationId) {
+      setMessages(messagesData);
+      saveToLocalStorage(`${LS_MESSAGES_PREFIX}${currentConversationId}`, messagesData);
+    }
+  }, [messagesData, currentConversationId]);
+
   // Add a message to the current conversation
-  const addMessage = (message: Message) => {
-    setMessages((prev) => {
+  const addMessage = useCallback((message: Message) => {
+    setMessages(prev => {
       const updatedMessages = [...prev, message];
       
-      // Save to localStorage
       if (currentConversationId) {
-        localStorage.setItem(
-          `${LS_MESSAGES_PREFIX}${currentConversationId}`, 
-          JSON.stringify(updatedMessages)
-        );
+        saveToLocalStorage(`${LS_MESSAGES_PREFIX}${currentConversationId}`, updatedMessages);
       }
       
       return updatedMessages;
     });
-  };
+  }, [currentConversationId]);
 
   // Clear all messages for the current conversation
-  const clearConversation = () => {
+  const clearConversation = useCallback(() => {
     setMessages([]);
     
-    // Remove from localStorage
     if (currentConversationId) {
       localStorage.removeItem(`${LS_MESSAGES_PREFIX}${currentConversationId}`);
     }
-  };
+  }, [currentConversationId]);
 
   // Create a new conversation
-  const createNewConversation = async () => {
+  const createNewConversation = useCallback(async () => {
     try {
       const response = await apiRequest('POST', '/api/conversations', { 
         title: 'New Conversation' 
       });
       const data = await response.json();
       
-      // Set the new conversation as current
       setCurrentConversationId(data.id);
-      
-      // Clear messages
       setMessages([]);
       
-      // Refresh conversations list
       queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
       
       return data.id;
@@ -150,14 +129,15 @@ export function useConversation() {
       console.error('Failed to create new conversation:', error);
       return null;
     }
-  };
+  }, [queryClient, setCurrentConversationId]);
 
+  // Return the public API
   return {
     currentConversationId,
     setCurrentConversationId,
     messages,
     addMessage,
-    conversations: conversationsData || localConversations || [],
+    conversations: conversationsData || localConversations,
     createNewConversation,
     clearConversation,
     refetchMessages
