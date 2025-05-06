@@ -161,24 +161,22 @@ const EnhancedChatInterface: React.FC = () => {
                 <p className="text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-purple-800">
                   Hi! I'm your personal sommelier.
                 </p>
-                <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
+                <p className="text-sm sm:text-base text-gray-700 mb-0">
                   I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
                 </p>
                 
                 {messages.length === 0 && <div className="h-10 sm:h-16"></div>}
               </div>
               
-              {/* Show any conversation messages below the welcome message */}
-              {messages.length > 0 && (
-                <>
-                  {messages.map((message, index) => (
-                    <ChatMessage 
-                      key={`${message.id}-${index}`} 
-                      message={message} 
-                    />
-                  ))}
-                </>
-              )}
+              {/* Show any conversation messages directly below the welcome message */}
+              {messages.length > 0 && 
+                messages.map((message, index) => (
+                  <ChatMessage 
+                    key={`${message.id}-${index}`} 
+                    message={message} 
+                  />
+                ))
+              }
 
               {/* Typing Indicator */}
               {isTyping && (
