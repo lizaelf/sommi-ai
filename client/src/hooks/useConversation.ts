@@ -2,323 +2,326 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Message, Conversation } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
-
-// LocalStorage keys
-const LS_CURRENT_CONVERSATION_ID = 'somm_current_conversation_id';
-const LS_CONVERSATIONS = 'somm_conversations';
-const LS_MESSAGES_PREFIX = 'somm_messages_';
+import indexedDBService, { IDBMessage } from '@/lib/indexedDB';
+import { 
+  adaptIDBMessagesToMessages, 
+  adaptIDBConversationsToConversations,
+  adaptMessageToIDBMessage
+} from '@/lib/adapters';
 
 /**
- * Hook to manage conversation state with localStorage persistence
+ * Hook to manage conversation state with IndexedDB persistence
  */
 export function useConversation() {
   const queryClient = useQueryClient();
   
-  // Get the current conversation ID from localStorage on init
-  const [currentConversationId, setCurrentConversationIdState] = useState<number | null>(() => {
-    try {
-      const saved = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
-      return saved ? parseInt(saved, 10) : null;
-    } catch (e) {
-      return null;
-    }
-  });
+  // State for the current conversation ID
+  const [currentConversationId, setCurrentConversationIdState] = useState<number | null>(null);
   
   // Initialize messages state
   const [messages, setMessages] = useState<Message[]>([]);
   
-  // Query all conversations
+  // State for locally stored conversations
+  const [localConversations, setLocalConversations] = useState<Conversation[]>([]);
+  
+  // Track if we've done the initial data fetch
+  const [initialDataFetched, setInitialDataFetched] = useState<boolean>(false);
+  
+  // Query data for API fallback
   const { data: conversationsData } = useQuery({
     queryKey: ['/api/conversations'],
   });
   
-  // Query messages for the current conversation
   const { data: messagesData, refetch: refetchMessages } = useQuery({
     queryKey: ['/api/conversations', currentConversationId, 'messages'],
     enabled: !!currentConversationId,
   });
   
-  // Load cached conversations if API doesn't return any
-  const [localConversations, setLocalConversations] = useState<Conversation[]>([]);
+  // Initialize IndexedDB and load session data
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(LS_CONVERSATIONS);
-      if (saved) {
-        setLocalConversations(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.error('Failed to load conversations from localStorage', e);
-    }
-  }, []);
-  
-  // Track if we've done the initial data fetch
-  const [initialDataFetched, setInitialDataFetched] = useState<boolean>(false);
-  
-  // On initial load only, fetch conversations from the server
-  useEffect(() => {
-    async function fetchInitialData() {
-      // Skip if we've already fetched initial data
-      if (initialDataFetched) return;
+    async function initializeConversation() {
+      console.log("Initializing conversation...");
       
       try {
-        console.log("Fetching initial data from server...");
+        // Get the most recent conversation or create one if none exists
+        const recentConversation = await indexedDBService.getMostRecentConversation();
         
-        // First load all conversations
-        const conversationsResponse = await apiRequest('GET', '/api/conversations');
-        const fetchedConversations = await conversationsResponse.json();
-        console.log("Fetched conversations:", fetchedConversations);
-        
-        // Check if we have any conversations
-        if (fetchedConversations && Array.isArray(fetchedConversations) && fetchedConversations.length > 0) {
-          // Set the conversations in local state
-          setLocalConversations(fetchedConversations);
+        if (recentConversation && recentConversation.id) {
+          console.log(`Using saved conversation ID: ${recentConversation.id}`);
+          setCurrentConversationIdState(recentConversation.id);
           
-          // Logic to decide which conversation to show on first load
-          // 1. If a current conversation ID is already set, verify it
-          if (currentConversationId) {
-            const response = await apiRequest('GET', `/api/conversations/${currentConversationId}`);
-            if (!response.ok) {
-              // If invalid, use the first conversation from the list
-              setCurrentConversationIdState(fetchedConversations[0].id);
-            }
-          } 
-          // 2. Try to use ID from localStorage
-          else {
-            const savedId = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
-            if (savedId) {
-              // Check if this conversation exists in our fetched list
-              const id = parseInt(savedId, 10);
-              const conversationExists = fetchedConversations.some(c => c.id === id);
-              
-              if (conversationExists) {
-                // Use this conversation
-                setCurrentConversationIdState(id);
-              } else {
-                // Use the first conversation
-                setCurrentConversationIdState(fetchedConversations[0].id);
-              }
-            } else {
-              // No saved ID, use first conversation
-              setCurrentConversationIdState(fetchedConversations[0].id);
-            }
+          // Load messages for this conversation
+          const savedMessages = recentConversation.messages;
+          if (savedMessages && savedMessages.length > 0) {
+            console.log(`Loaded ${savedMessages.length} messages from saved conversation ID`);
+            const convertedMessages: Message[] = savedMessages.map(msg => ({
+              id: msg.id || 0,
+              conversationId: recentConversation.id || 0,
+              role: msg.role,
+              content: msg.content,
+              createdAt: msg.createdAt
+            }));
+            setMessages(convertedMessages);
           }
+        } else {
+          console.log("No conversations found, creating a new one");
+          const newId = await indexedDBService.createConversation("New Conversation");
+          setCurrentConversationIdState(newId);
         }
         
-        // Mark as fetched so we don't do it again
+        // Load all conversations
+        const allConversations = await indexedDBService.getAllConversations();
+        if (allConversations && allConversations.length > 0) {
+          const convertedConversations: Conversation[] = allConversations.map(conv => ({
+            id: conv.id || 0,
+            title: conv.title,
+            createdAt: conv.createdAt
+          }));
+          setLocalConversations(convertedConversations);
+        }
+        
         setInitialDataFetched(true);
-      } catch (e) {
-        console.error('Failed to get initial conversation', e);
+      } catch (error) {
+        console.error("Error initializing conversation", error);
+        
+        // Fall back to API if IndexedDB fails
+        try {
+          await fallbackToAPI();
+        } catch (apiError) {
+          console.error("API fallback failed", apiError);
+        }
       }
     }
     
-    fetchInitialData();
-  }, [currentConversationId, initialDataFetched]);
-  
-  // Load messages from the API when conversation changes
-  useEffect(() => {
-    if (currentConversationId) {
-      try {
-        // Immediately fetch messages for this conversation from the API
-        apiRequest('GET', `/api/conversations/${currentConversationId}/messages`)
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error('Failed to fetch messages');
-            }
-          })
-          .then(fetchedMessages => {
-            if (Array.isArray(fetchedMessages) && fetchedMessages.length > 0) {
-              console.log('Loaded messages from API:', fetchedMessages.length);
-              setMessages(fetchedMessages);
-              
-              // Also keep a local copy
-              try {
-                localStorage.setItem(
-                  `${LS_MESSAGES_PREFIX}${currentConversationId}`,
-                  JSON.stringify(fetchedMessages)
-                );
-              } catch (e) {
-                console.error('Failed to save messages to localStorage', e);
-              }
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching messages:', error);
-          });
-      } catch (e) {
-        console.error('Failed to load messages from API', e);
-      }
-    }
-  }, [currentConversationId]);
-  
-  // Save conversation data when it changes
-  useEffect(() => {
-    if (conversationsData && Array.isArray(conversationsData)) {
-      try {
-        localStorage.setItem(LS_CONVERSATIONS, JSON.stringify(conversationsData));
-        setLocalConversations(conversationsData);
-      } catch (e) {
-        console.error('Failed to save conversations to localStorage', e);
-      }
-    }
-  }, [conversationsData]);
-  
-  // Update messages from API data when it changes
-  useEffect(() => {
-    if (messagesData && Array.isArray(messagesData) && currentConversationId) {
-      setMessages(messagesData);
-      
-      try {
-        localStorage.setItem(
-          `${LS_MESSAGES_PREFIX}${currentConversationId}`,
-          JSON.stringify(messagesData)
-        );
-        console.log('Saved messages from API to localStorage', messagesData.length);
-      } catch (e) {
-        console.error('Failed to save messages to localStorage', e);
-      }
-    }
-  }, [messagesData, currentConversationId]);
-  
-  // Validate if a conversation exists in the backend
-  const validateConversation = useCallback(async (id: number): Promise<boolean> => {
-    try {
-      const response = await apiRequest('GET', `/api/conversations/${id}`);
-      return response.ok;
-    } catch (error) {
-      console.error('Error validating conversation:', error);
-      return false;
-    }
+    initializeConversation();
   }, []);
   
-  // Clear invalid data from localStorage
-  const clearInvalidData = useCallback(() => {
+  // Fallback to API if IndexedDB is not available or fails
+  const fallbackToAPI = async () => {
+    console.log("Falling back to API for conversation data...");
+    
     try {
-      // Check and clear current conversation ID if needed
-      const savedId = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
-      if (savedId) {
-        const id = parseInt(savedId, 10);
-        validateConversation(id).then(exists => {
-          if (!exists) {
-            console.log('Clearing invalid conversation ID from localStorage');
-            localStorage.removeItem(LS_CURRENT_CONVERSATION_ID);
-            // Also clear any saved messages for this conversation
-            localStorage.removeItem(`${LS_MESSAGES_PREFIX}${id}`);
-            // Reset current state if we're using this invalid ID
-            if (currentConversationId === id) {
-              setCurrentConversationIdState(null);
-              setMessages([]);
-            }
+      // Load conversations from API
+      const conversationsResponse = await apiRequest('GET', '/api/conversations');
+      const fetchedConversations = await conversationsResponse.json();
+      
+      if (fetchedConversations && Array.isArray(fetchedConversations) && fetchedConversations.length > 0) {
+        setLocalConversations(fetchedConversations);
+        
+        // Use the first conversation by default
+        const firstConversation = fetchedConversations[0];
+        setCurrentConversationIdState(firstConversation.id);
+        
+        // Load messages for this conversation
+        const messagesResponse = await apiRequest('GET', `/api/conversations/${firstConversation.id}/messages`);
+        if (messagesResponse.ok) {
+          const fetchedMessages = await messagesResponse.json();
+          if (fetchedMessages && Array.isArray(fetchedMessages)) {
+            setMessages(fetchedMessages);
           }
-        });
+        }
       }
-    } catch (e) {
-      console.error('Error clearing invalid data:', e);
+      
+      setInitialDataFetched(true);
+    } catch (error) {
+      console.error("API fallback failed", error);
     }
-  }, [currentConversationId, validateConversation]);
+  };
   
-  // Run the validation on mount
+  // Sync with API when needed
   useEffect(() => {
-    if (currentConversationId) {
-      clearInvalidData();
+    if (initialDataFetched && currentConversationId && messagesData) {
+      // If we have API data, sync it to IndexedDB
+      const syncMessages = async () => {
+        try {
+          // Ensure messagesData is an array
+          if (!Array.isArray(messagesData)) {
+            console.warn("messagesData is not an array:", messagesData);
+            return;
+          }
+          
+          // Get current messages from IndexedDB
+          const dbMessages = await indexedDBService.getConversationMessages(currentConversationId);
+
+          // Only update if the API messages are different from what we have
+          if (messagesData.length !== dbMessages.length) {
+            // Clear existing messages
+            await indexedDBService.updateConversation(currentConversationId, { messages: [] });
+            
+            // Add all messages from API
+            for (const message of messagesData) {
+              await indexedDBService.addMessageToConversation(currentConversationId, {
+                conversationId: message.conversationId,
+                role: message.role,
+                content: message.content,
+                createdAt: message.createdAt
+              });
+            }
+            
+            // Update the messages state
+            setMessages(messagesData);
+          }
+        } catch (error) {
+          console.error("Error syncing messages with API", error);
+        }
+      };
+      
+      syncMessages();
     }
-  }, [clearInvalidData, currentConversationId]);
+  }, [initialDataFetched, currentConversationId, messagesData]);
   
   // Change current conversation
-  const setCurrentConversationId = useCallback((id: number | null) => {
+  const setCurrentConversationId = useCallback(async (id: number | null) => {
+    if (id === currentConversationId) return;
+    
     setCurrentConversationIdState(id);
     
     if (id) {
       try {
-        localStorage.setItem(LS_CURRENT_CONVERSATION_ID, id.toString());
+        // Get conversation from IndexedDB
+        const conversation = await indexedDBService.getConversation(id);
         
-        // Try to load messages from localStorage
-        const key = `${LS_MESSAGES_PREFIX}${id}`;
-        const savedMessages = localStorage.getItem(key);
-        if (savedMessages) {
-          const parsedMessages = JSON.parse(savedMessages);
-          if (Array.isArray(parsedMessages)) {
-            setMessages(parsedMessages);
-          }
+        if (conversation) {
+          // Convert to expected Message format
+          const convertedMessages: Message[] = conversation.messages.map(msg => ({
+            id: msg.id || 0,
+            conversationId: id,
+            role: msg.role,
+            content: msg.content,
+            createdAt: msg.createdAt
+          }));
+          
+          setMessages(convertedMessages);
         } else {
+          // Conversation not found, clear messages
           setMessages([]);
+          
+          // Try to get from API as fallback
+          apiRequest('GET', `/api/conversations/${id}/messages`)
+            .then(response => response.ok ? response.json() : null)
+            .then(fetchedMessages => {
+              if (fetchedMessages && Array.isArray(fetchedMessages)) {
+                setMessages(fetchedMessages);
+                
+                // Store in IndexedDB
+                indexedDBService.createConversation("New Conversation")
+                  .then(newId => {
+                    for (const message of fetchedMessages) {
+                      indexedDBService.addMessageToConversation(newId, {
+                        conversationId: message.conversationId,
+                        role: message.role,
+                        content: message.content,
+                        createdAt: message.createdAt
+                      });
+                    }
+                  });
+              }
+            })
+            .catch(error => console.error("Error fetching messages from API", error));
         }
-      } catch (e) {
-        console.error('Error setting current conversation', e);
+      } catch (error) {
+        console.error("Error setting current conversation", error);
+        setMessages([]);
       }
     } else {
-      try {
-        localStorage.removeItem(LS_CURRENT_CONVERSATION_ID);
-      } catch (e) {
-        console.error('Error removing current conversation', e);
-      }
       setMessages([]);
     }
-  }, []);
+  }, [currentConversationId]);
   
   // Add a message to the current conversation
-  const addMessage = useCallback((message: Message) => {
-    setMessages(prev => {
-      const newMessages = [...prev, message];
-      
-      if (currentConversationId) {
-        try {
-          localStorage.setItem(
-            `${LS_MESSAGES_PREFIX}${currentConversationId}`, 
-            JSON.stringify(newMessages)
-          );
-          console.log('Saved new message to localStorage');
-        } catch (e) {
-          console.error('Failed to save new message to localStorage', e);
-        }
-      }
-      
-      return newMessages;
-    });
+  const addMessage = useCallback(async (message: Message) => {
+    if (!currentConversationId) return;
+    
+    // Add to state immediately for UI responsiveness
+    setMessages(prev => [...prev, message]);
+    
+    try {
+      // Add to IndexedDB
+      await indexedDBService.addMessageToConversation(currentConversationId, {
+        conversationId: message.conversationId,
+        role: message.role,
+        content: message.content,
+        createdAt: message.createdAt
+      });
+    } catch (error) {
+      console.error("Error adding message to IndexedDB", error);
+    }
   }, [currentConversationId]);
   
   // Clear all messages for the current conversation
-  const clearConversation = useCallback(() => {
+  const clearConversation = useCallback(async () => {
+    if (!currentConversationId) return;
+    
+    // Clear state immediately
     setMessages([]);
     
-    if (currentConversationId) {
-      try {
-        localStorage.removeItem(`${LS_MESSAGES_PREFIX}${currentConversationId}`);
-      } catch (e) {
-        console.error('Error clearing conversation', e);
-      }
+    try {
+      // Update conversation in IndexedDB with empty messages
+      await indexedDBService.updateConversation(currentConversationId, { messages: [] });
+    } catch (error) {
+      console.error("Error clearing conversation in IndexedDB", error);
     }
   }, [currentConversationId]);
   
   // Create a new conversation
   const createNewConversation = useCallback(async () => {
     try {
-      const response = await apiRequest('POST', '/api/conversations', { 
-        title: 'New Conversation' 
-      });
-      const data = await response.json();
+      // Create in IndexedDB
+      const newId = await indexedDBService.createConversation("New Conversation");
       
-      setCurrentConversationId(data.id);
+      // Update state
+      setCurrentConversationIdState(newId);
       setMessages([]);
       
-      // Update the conversations list
-      queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
+      // Refresh conversations list
+      const allConversations = await indexedDBService.getAllConversations();
+      const convertedConversations: Conversation[] = allConversations.map(conv => ({
+        id: conv.id || 0,
+        title: conv.title,
+        createdAt: conv.createdAt
+      }));
       
-      return data.id;
+      setLocalConversations(convertedConversations);
+      
+      // Also try to create on the API as a backup
+      try {
+        const response = await apiRequest('POST', '/api/conversations', { title: 'New Conversation' });
+        if (response.ok) {
+          queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
+        }
+      } catch (apiError) {
+        console.error("Error creating conversation on API (continuing with local only)", apiError);
+      }
+      
+      return newId;
     } catch (error) {
-      console.error('Failed to create new conversation:', error);
-      return null;
+      console.error("Error creating new conversation in IndexedDB", error);
+      
+      // Fall back to API
+      try {
+        const response = await apiRequest('POST', '/api/conversations', { title: 'New Conversation' });
+        const data = await response.json();
+        
+        setCurrentConversationIdState(data.id);
+        setMessages([]);
+        
+        queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
+        
+        return data.id;
+      } catch (apiError) {
+        console.error("API fallback for new conversation failed", apiError);
+        return null;
+      }
     }
-  }, [queryClient, setCurrentConversationId]);
+  }, [queryClient]);
   
-  // Public API
+  // Public API - keep the interface the same as before
   return {
     currentConversationId,
     setCurrentConversationId,
     messages,
     addMessage,
-    conversations: conversationsData || localConversations || [],
+    conversations: localConversations.length > 0 ? localConversations : (conversationsData || []),
     createNewConversation,
     clearConversation,
     refetchMessages
