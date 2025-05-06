@@ -154,9 +154,6 @@ const EnhancedChatInterface: React.FC = () => {
             <div className="px-3 sm:px-4 py-3 sm:py-4 pb-36 space-y-0 max-w-3xl mx-auto w-full">
               {/* Always show the welcome message */}
               <div className="mx-auto p-3 sm:p-5 max-w-lg" style={{ marginBottom: '0' }}>
-                <div className="relative">
-                  <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3 mt-0"></div>
-                </div>
                 
                 <p className="text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-purple-800">
                   Hi! I'm your personal sommelier.
