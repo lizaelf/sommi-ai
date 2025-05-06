@@ -1,66 +1,73 @@
 import React from 'react';
-import { Conversation } from '@shared/schema';
-import { truncateString, formatDate } from '@/lib/utils';
+import { ClientConversation } from '@/lib/types';
+import { formatDate } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { PlusCircle, MessageSquare } from 'lucide-react';
 
-// ConversationSelector props interface
 interface ConversationSelectorProps {
-  conversations: Conversation[];
+  conversations: ClientConversation[];
   currentConversationId: number | null;
   onSelectConversation: (id: number) => void;
   onCreateNewConversation: () => void;
 }
 
-// ConversationSelector component
-const ConversationSelector: React.FC<ConversationSelectorProps> = ({
+export function ConversationSelector({
   conversations,
   currentConversationId,
   onSelectConversation,
   onCreateNewConversation
-}) => {
+}: ConversationSelectorProps) {
+  // Sort conversations by date (newest first)
+  const sortedConversations = [...conversations].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return dateB - dateA;
+  });
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-[#6A53E7]">Conversations</h2>
-        <button
+    <div className="w-full rounded-md border bg-background shadow-sm">
+      <div className="p-3 border-b flex justify-between items-center">
+        <h3 className="text-sm font-medium">Your Conversations</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
           onClick={onCreateNewConversation}
-          className="text-white bg-[#6A53E7] hover:bg-[#5846c5] px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
+          className="h-8 px-2 text-muted-foreground hover:text-primary"
         >
-          New Chat
-        </button>
+          <PlusCircle className="h-4 w-4 mr-1" />
+          <span className="text-xs">New</span>
+        </Button>
       </div>
-      
-      {conversations.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No conversations yet
-        </div>
-      ) : (
-        <div className="overflow-y-auto flex-1 -mx-2">
-          {conversations.map((conversation) => (
-            <div
-              key={conversation.id}
-              onClick={() => onSelectConversation(conversation.id)}
-              className={`p-3 my-1 rounded-lg cursor-pointer transition-colors ${
-                conversation.id === currentConversationId
-                  ? 'bg-purple-100 border-l-4 border-[#6A53E7]'
-                  : 'hover:bg-gray-100'
-              }`}
-            >
-              <div className="flex justify-between items-center">
-                <h3 className={`font-medium ${
-                  conversation.id === currentConversationId ? 'text-[#6A53E7]' : 'text-gray-800'
-                }`}>
-                  {truncateString(conversation.title, 20)}
-                </h3>
-                <span className="text-xs text-gray-500">
-                  {formatDate(conversation.createdAt)}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="max-h-[240px] overflow-y-auto">
+        {sortedConversations.length > 0 ? (
+          <ul className="py-1">
+            {sortedConversations.map((conversation) => (
+              <li key={conversation.id}>
+                <button
+                  onClick={() => onSelectConversation(conversation.id)}
+                  className={`w-full text-left px-3 py-2 text-sm flex items-center space-x-2
+                    ${conversation.id === currentConversationId
+                      ? 'bg-muted/50 text-primary'
+                      : 'hover:bg-muted/30 text-muted-foreground'
+                    }`}
+                >
+                  <MessageSquare className="h-4 w-4 flex-shrink-0" />
+                  <div className="flex-1 overflow-hidden">
+                    <p className="truncate">{conversation.title}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {formatDate(conversation.createdAt)}
+                    </p>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="py-3 px-3 text-center text-sm text-muted-foreground">
+            No conversations yet. Start a new one!
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default ConversationSelector;
+}

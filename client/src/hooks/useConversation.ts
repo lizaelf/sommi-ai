@@ -11,19 +11,33 @@ import {
 } from '@/lib/adapters';
 
 /**
+ * Return type for the useConversation hook with client-side compatible types
+ */
+interface UseConversationReturn {
+  currentConversationId: number | null;
+  setCurrentConversationId: (id: number | null) => Promise<void>;
+  messages: ClientMessage[];
+  addMessage: (message: Message | ClientMessage) => Promise<void>;
+  conversations: ClientConversation[];
+  createNewConversation: () => Promise<number | null>;
+  clearConversation: () => Promise<void>;
+  refetchMessages: () => Promise<any>;
+}
+
+/**
  * Hook to manage conversation state with IndexedDB persistence
  */
-export function useConversation() {
+export function useConversation(): UseConversationReturn {
   const queryClient = useQueryClient();
   
   // State for the current conversation ID
   const [currentConversationId, setCurrentConversationIdState] = useState<number | null>(null);
   
-  // Initialize messages state
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Initialize messages state using ClientMessage type for IndexedDB compatibility
+  const [messages, setMessages] = useState<ClientMessage[]>([]);
   
-  // State for locally stored conversations
-  const [localConversations, setLocalConversations] = useState<Conversation[]>([]);
+  // State for locally stored conversations using ClientConversation type
+  const [localConversations, setLocalConversations] = useState<ClientConversation[]>([]);
   
   // Track if we've done the initial data fetch
   const [initialDataFetched, setInitialDataFetched] = useState<boolean>(false);
@@ -210,7 +224,7 @@ export function useConversation() {
   }, [currentConversationId]);
   
   // Add a message to the current conversation
-  const addMessage = useCallback(async (message: Message) => {
+  const addMessage = useCallback(async (message: Message | ClientMessage) => {
     if (!currentConversationId) return;
     
     // Add to state immediately for UI responsiveness
@@ -294,7 +308,9 @@ export function useConversation() {
     setCurrentConversationId,
     messages,
     addMessage,
-    conversations: localConversations.length > 0 ? localConversations : (conversationsData || []),
+    conversations: localConversations.length > 0 
+      ? localConversations 
+      : (Array.isArray(conversationsData) ? conversationsData as ClientConversation[] : []),
     createNewConversation,
     clearConversation,
     refetchMessages

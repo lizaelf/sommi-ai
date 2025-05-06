@@ -1,5 +1,5 @@
 import React from 'react';
-import SimpleChatInterface from '@/components/SimpleChatInterface';
+import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 
 export default function Home() {
   return (
@@ -20,7 +20,7 @@ export default function Home() {
         </div>
       </div>
       
-      <SimpleChatInterface />
+      <EnhancedChatInterface />
     </div>
   );
 }
