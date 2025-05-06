@@ -39,11 +39,13 @@ export type Message = typeof messages.$inferSelect;
 export const conversations = pgTable("conversations", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
+  userId: integer("user_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const insertConversationSchema = createInsertSchema(conversations).pick({
   title: true,
+  userId: true,
 });
 
 export type InsertConversation = z.infer<typeof insertConversationSchema>;

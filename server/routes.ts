@@ -1,11 +1,32 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { chatCompletion, checkApiStatus } from "./openai";
-import { chatCompletionRequestSchema } from "@shared/schema";
+import { chatCompletionRequestSchema, User } from "@shared/schema";
 import { z } from "zod";
+import { setupAuth } from "./auth";
+
+// Extend the Express Request type to include user and authentication properties
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+      isAuthenticated(): boolean;
+    }
+  }
+}
+
+// Middleware to check if user is authenticated
+const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized" });
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication
+  setupAuth(app);
   // API status endpoint
   app.get("/api/status", async (_req, res) => {
     try {
@@ -25,10 +46,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all conversations
-  app.get("/api/conversations", async (_req, res) => {
+  // Get all conversations for the authenticated user
+  app.get("/api/conversations", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const conversations = await storage.getAllConversations();
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      const conversations = await storage.getUserConversations(userId);
       res.json(conversations);
     } catch (error) {
       console.error("Error fetching conversations:", error);
@@ -36,10 +62,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Get the most recent conversation
-  app.get("/api/conversations/recent", async (_req, res) => {
+  // Get the most recent conversation for the authenticated user
+  app.get("/api/conversations/recent", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
-      const conversation = await storage.getMostRecentConversation();
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      const conversation = await storage.getMostRecentUserConversation(userId);
       
       if (!conversation) {
         return res.status(404).json({ message: "No conversations found" });
@@ -52,11 +83,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create a new conversation
-  app.post("/api/conversations", async (req, res) => {
+  // Create a new conversation for the authenticated user
+  app.post("/api/conversations", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
       const { title } = req.body;
-      const conversation = await storage.createConversation({ title });
+      const conversation = await storage.createConversation({ 
+        title, 
+        userId 
+      });
       res.status(201).json(conversation);
     } catch (error) {
       console.error("Error creating conversation:", error);
@@ -64,14 +103,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get a specific conversation
-  app.get("/api/conversations/:id", async (req, res) => {
+  // Get a specific conversation for the authenticated user
+  app.get("/api/conversations/:id", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
       const conversation = await storage.getConversation(id);
       
       if (!conversation) {
         return res.status(404).json({ message: "Conversation not found" });
+      }
+      
+      // Check if conversation belongs to the user
+      if (conversation.userId !== userId) {
+        return res.status(403).json({ message: "Access denied to this conversation" });
       }
       
       res.json(conversation);
@@ -81,10 +131,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Delete a conversation
-  app.delete("/api/conversations/:id", async (req, res) => {
+  // Delete a conversation for the authenticated user
+  app.delete("/api/conversations/:id", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      const conversation = await storage.getConversation(id);
+      
+      if (!conversation) {
+        return res.status(404).json({ message: "Conversation not found" });
+      }
+      
+      // Check if conversation belongs to the user
+      if (conversation.userId !== userId) {
+        return res.status(403).json({ message: "Access denied to this conversation" });
+      }
+      
       await storage.deleteConversation(id);
       res.status(204).send();
     } catch (error) {
@@ -93,10 +160,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get messages for a conversation
-  app.get("/api/conversations/:id/messages", async (req, res) => {
+  // Get messages for a conversation for the authenticated user
+  app.get("/api/conversations/:id/messages", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       const conversationId = parseInt(req.params.id);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      // Check if conversation belongs to the user
+      const conversation = await storage.getConversation(conversationId);
+      if (!conversation) {
+        return res.status(404).json({ message: "Conversation not found" });
+      }
+      
+      if (conversation.userId !== userId) {
+        return res.status(403).json({ message: "Access denied to this conversation" });
+      }
+      
       const messages = await storage.getMessagesByConversation(conversationId);
       res.json(messages);
     } catch (error) {
@@ -106,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Chat completion endpoint
-  app.post("/api/chat", async (req, res) => {
+  app.post("/api/chat", isAuthenticated, async (req: AuthenticatedRequest, res) => {
     try {
       // Validate request
       const validatedData = chatCompletionRequestSchema.parse(req.body);
@@ -114,11 +197,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get messages from request
       const { messages, conversationId } = validatedData;
       
-      // Check if conversation exists
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      // Check if conversation exists and belongs to the user
       if (conversationId) {
         const conversation = await storage.getConversation(conversationId);
+        
         if (!conversation) {
           return res.status(404).json({ message: "Conversation not found" });
+        }
+        
+        if (conversation.userId !== userId) {
+          return res.status(403).json({ message: "Access denied to this conversation" });
         }
       }
       
