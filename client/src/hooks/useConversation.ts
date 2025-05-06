@@ -51,21 +51,76 @@ export function useConversation() {
     }
   }, []);
   
-  // Load initial messages from localStorage if available
+  // On initial load, if no current conversation is set but we have saved one, try to load it
+  useEffect(() => {
+    async function fetchInitialData() {
+      // If no conversation is currently selected, try to fetch the conversations
+      // from backend directly
+      if (!currentConversationId) {
+        try {
+          // First check if we have a conversation ID in localStorage
+          const savedId = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
+          if (savedId) {
+            // Try to use the saved one if available
+            const id = parseInt(savedId, 10);
+            const response = await apiRequest('GET', `/api/conversations/${id}`);
+            if (response.ok) {
+              // The conversation exists, use it
+              setCurrentConversationIdState(id);
+              return;
+            }
+          }
+          
+          // Otherwise get the first conversation from the API
+          const response = await apiRequest('GET', '/api/conversations');
+          const conversations = await response.json();
+          if (conversations && conversations.length > 0) {
+            // Use the first conversation
+            setCurrentConversationIdState(conversations[0].id);
+          }
+        } catch (e) {
+          console.error('Failed to get initial conversation', e);
+        }
+      }
+    }
+    
+    fetchInitialData();
+  }, []);
+  
+  // Load messages from the API when conversation changes
   useEffect(() => {
     if (currentConversationId) {
       try {
-        const key = `${LS_MESSAGES_PREFIX}${currentConversationId}`;
-        const savedMessages = localStorage.getItem(key);
-        if (savedMessages) {
-          const parsedMessages = JSON.parse(savedMessages);
-          if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
-            console.log('Loaded messages from localStorage:', parsedMessages.length);
-            setMessages(parsedMessages);
-          }
-        }
+        // Immediately fetch messages for this conversation from the API
+        apiRequest('GET', `/api/conversations/${currentConversationId}/messages`)
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Failed to fetch messages');
+            }
+          })
+          .then(fetchedMessages => {
+            if (Array.isArray(fetchedMessages) && fetchedMessages.length > 0) {
+              console.log('Loaded messages from API:', fetchedMessages.length);
+              setMessages(fetchedMessages);
+              
+              // Also keep a local copy
+              try {
+                localStorage.setItem(
+                  `${LS_MESSAGES_PREFIX}${currentConversationId}`,
+                  JSON.stringify(fetchedMessages)
+                );
+              } catch (e) {
+                console.error('Failed to save messages to localStorage', e);
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching messages:', error);
+          });
       } catch (e) {
-        console.error('Failed to load messages from localStorage', e);
+        console.error('Failed to load messages from API', e);
       }
     }
   }, [currentConversationId]);
