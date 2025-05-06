@@ -84,6 +84,27 @@
 /* Custom styles for chat application */
 .chat-container {
   height: calc(100vh - 80px);
+  height: calc(100dvh - 80px);
+}
+
+/* Support for dynamic viewport height */
+@supports (height: 100dvh) {
+  .h-screen, .h-\[100vh\] {
+    height: 100dvh;
+  }
+  
+  .max-h-screen, .max-h-\[100vh\] {
+    max-height: 100dvh;
+  }
+  
+  .min-h-screen, .min-h-\[100vh\] {
+    min-height: 100dvh;
+  }
+}
+
+/* Custom shadow for inputs */
+.shadow-input {
+  box-shadow: 0px 8px 22px -6px rgba(24, 39, 75, 0.12), 0px 14px 64px -4px rgba(24, 39, 75, 0.12);
 }
 
 .scrollbar-hide::-webkit-scrollbar {

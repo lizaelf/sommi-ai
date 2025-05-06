@@ -166,13 +166,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       {isUser ? (
         // User Message - Smaller and right-aligned
         <div className="flex justify-end mb-2">
-          <div className="bg-[#F5F3FF] text-gray-800 rounded-lg py-2 px-4 max-w-[85%] border border-[#6A53E7]/10">
+          <div className="bg-[#F5F3FF] text-gray-800 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4 max-w-[85%] border border-[#6A53E7]/10 text-sm sm:text-base">
             {formatContent(message.content)}
           </div>
         </div>
       ) : (
         // AI Message - Wine info style with special formatting
-        <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 text-sm sm:text-base">
           {formatWineInfo(message.content)}
         </div>
       )}
