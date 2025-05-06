@@ -2,14 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
-import { Message } from '@shared/schema';
+import ConversationSelector from './ConversationSelector';
+import { Message, Conversation } from '@shared/schema';
 
-// Create a simplified chat interface that only relies on database persistence
+// Save conversation ID key
+const LS_CURRENT_CONVERSATION_KEY = 'chatgpt_companion_current_conversation';
+
+// Create a simplified chat interface that relies on database persistence
 const SimpleChatInterface: React.FC = () => {
   // Basic states
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
@@ -25,37 +31,84 @@ const SimpleChatInterface: React.FC = () => {
     queryKey: ['/api/conversations'],
   });
 
-  // Set initial conversation on mount
+  // Initialize conversation with proper persistence
   useEffect(() => {
     async function initializeConversation() {
       try {
-        // If we have conversations loaded from the API, use the first one
+        setIsLoading(true);
+        console.log("Initializing conversation...");
+        
+        // First try to get the last used conversation ID from localStorage
+        const savedConversationId = localStorage.getItem(LS_CURRENT_CONVERSATION_KEY);
+        
+        if (savedConversationId) {
+          // Verify this conversation still exists in the database
+          try {
+            console.log(`Checking saved conversation ID: ${savedConversationId}`);
+            const response = await apiRequest('GET', `/api/conversations/${savedConversationId}`);
+            if (response.ok) {
+              // Conversation exists, use it
+              const conversationId = Number(savedConversationId);
+              console.log(`Using saved conversation ID: ${conversationId}`);
+              setCurrentConversationId(conversationId);
+              
+              // Load messages for this conversation
+              const messagesResponse = await apiRequest('GET', `/api/conversations/${conversationId}/messages`);
+              if (messagesResponse.ok) {
+                const messagesData = await messagesResponse.json();
+                if (Array.isArray(messagesData)) {
+                  console.log(`Loaded ${messagesData.length} messages from saved conversation ID`);
+                  setMessages(messagesData);
+                }
+              }
+              setIsLoading(false);
+              return; // Exit early as we found and loaded the conversation
+            }
+          } catch (error) {
+            console.warn('Saved conversation ID not found or invalid:', error);
+            // Continue to fallback options below
+          }
+        }
+        
+        // If no valid saved conversation, check if we have conversations from API
         if (conversations && Array.isArray(conversations) && conversations.length > 0) {
-          const firstConversationId = conversations[0].id;
-          setCurrentConversationId(firstConversationId);
+          const mostRecentConversation = conversations[0]; // Assuming sorted by most recent
+          const conversationId = mostRecentConversation.id;
+          
+          console.log(`Using most recent conversation ID: ${conversationId}`);
+          setCurrentConversationId(conversationId);
+          localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, String(conversationId));
           
           // Load messages for this conversation
-          const messagesResponse = await apiRequest('GET', `/api/conversations/${firstConversationId}/messages`);
+          const messagesResponse = await apiRequest('GET', `/api/conversations/${conversationId}/messages`);
           if (messagesResponse.ok) {
             const messagesData = await messagesResponse.json();
             if (Array.isArray(messagesData)) {
+              console.log(`Loaded ${messagesData.length} messages from most recent conversation`);
               setMessages(messagesData);
             }
           }
         } else {
           // If no conversations yet, create a new one
+          console.log('No existing conversations found, creating new one');
           const response = await apiRequest('POST', '/api/conversations', { 
             title: 'New Conversation' 
           });
           const data = await response.json();
           setCurrentConversationId(data.id);
+          localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, String(data.id));
+          setMessages([]);
         }
       } catch (error) {
         console.error('Failed to initialize conversation:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    if (currentConversationId === null) {
+    // Only run initialization if conversations have been loaded from API
+    // and we don't have a current conversation ID
+    if (conversations !== undefined && currentConversationId === null) {
       initializeConversation();
     }
   }, [conversations, currentConversationId]);
@@ -91,26 +144,31 @@ const SimpleChatInterface: React.FC = () => {
           title: content.slice(0, 30) + (content.length > 30 ? '...' : '') 
         });
         const newConversationData = await newConversation.json();
+        const newId = newConversationData.id;
         
         // Try again with the new conversation ID
         const newResponse = await apiRequest('POST', '/api/chat', {
           messages: [{ role: 'user', content }],
-          conversationId: newConversationData.id
+          conversationId: newId
         });
         
         // Update current conversation ID
-        setCurrentConversationId(newConversationData.id);
+        setCurrentConversationId(newId);
+        localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, String(newId));
         
         // Process the response
         const responseData = await newResponse.json();
         
         // Re-fetch messages to ensure we have the correct order
-        const messagesResponse = await apiRequest('GET', `/api/conversations/${newConversationData.id}/messages`);
+        const messagesResponse = await apiRequest('GET', `/api/conversations/${newId}/messages`);
         const messagesData = await messagesResponse.json();
         setMessages(messagesData);
       } else {
         // Process normal response
         const responseData = await response.json();
+        
+        // Ensure current conversation ID is saved
+        localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, String(currentConversationId));
         
         // Re-fetch messages to ensure we have all messages and the correct order
         const messagesResponse = await apiRequest('GET', `/api/conversations/${currentConversationId}/messages`);
@@ -141,6 +199,7 @@ const SimpleChatInterface: React.FC = () => {
       const data = await response.json();
       
       setCurrentConversationId(data.id);
+      localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, String(data.id));
       setMessages([]);
       
       // Refetch conversations list
@@ -154,6 +213,22 @@ const SimpleChatInterface: React.FC = () => {
       });
     }
   };
+
+  // Display loading state if conversations are being loaded
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+        <div className="text-center">
+          <div className="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p className="mt-4 text-gray-600">Loading conversation...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)]">
@@ -222,6 +297,21 @@ const SimpleChatInterface: React.FC = () => {
 
           {/* Input Area */}
           <div className="bg-white p-3 shadow-lg border-t border-gray-100 z-50">
+            {/* Conversation Info */}
+            {currentConversationId && (
+              <div className="flex justify-between items-center mb-2">
+                <div className="text-xs text-gray-500">
+                  Conversation #{currentConversationId}
+                </div>
+                <button 
+                  onClick={handleNewChat}
+                  className="text-xs text-blue-500 hover:text-blue-700"
+                >
+                  New Conversation
+                </button>
+              </div>
+            )}
+            
             {/* Suggestion chips */}
             <div className="scrollbar-hide overflow-x-auto mb-3 pb-1 -mt-1 flex gap-2 w-full">
               <button 

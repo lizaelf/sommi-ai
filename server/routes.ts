@@ -35,6 +35,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch conversations" });
     }
   });
+  
+  // Get the most recent conversation
+  app.get("/api/conversations/recent", async (_req, res) => {
+    try {
+      const conversation = await storage.getMostRecentConversation();
+      
+      if (!conversation) {
+        return res.status(404).json({ message: "No conversations found" });
+      }
+      
+      res.json(conversation);
+    } catch (error) {
+      console.error("Error fetching most recent conversation:", error);
+      res.status(500).json({ message: "Failed to fetch most recent conversation" });
+    }
+  });
 
   // Create a new conversation
   app.post("/api/conversations", async (req, res) => {
