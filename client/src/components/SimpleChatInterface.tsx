@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -17,12 +17,22 @@ const SimpleChatInterface: React.FC = () => {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
+  
+  // Create a ref for the chat container to allow scrolling
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // API status check
   const { data: apiStatus } = useQuery({
     queryKey: ['/api/status'],
     refetchInterval: 30000,
   });
+  
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (chatContainerRef.current && messages.length > 0) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
 
   // Query conversations data - load on component mount
   const { data: conversations } = useQuery<Conversation[]>({
@@ -267,7 +277,7 @@ const SimpleChatInterface: React.FC = () => {
         {/* Chat Area */}
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
           {/* Scrollable container */}
-          <div className="flex-1 overflow-y-auto scrollbar-hide">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image when no messages */}
             {messages.length === 0 && (
               <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
@@ -281,23 +291,25 @@ const SimpleChatInterface: React.FC = () => {
             
             {/* Chat Messages */}
             <div className="px-4 py-4 space-y-4">
-              {messages.length === 0 ? (
-                <div className="mx-auto bg-white rounded-lg p-5 shadow-sm max-w-lg"
-                     style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)' }}>
-                  <div className="relative">
-                    <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
-                  </div>
-                  
-                  <p className="text-xl font-medium mb-3 text-purple-800">
-                    Hi! I'm your personal sommelier.
-                  </p>
-                  <p className="text-gray-700 mb-4">
-                    I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
-                  </p>
-                  
-                  <div className="h-16"></div>
+              {/* Always show the welcome message */}
+              <div className="mx-auto bg-white rounded-lg p-5 shadow-sm max-w-lg"
+                   style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)' }}>
+                <div className="relative">
+                  <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
                 </div>
-              ) : (
+                
+                <p className="text-xl font-medium mb-3 text-purple-800">
+                  Hi! I'm your personal sommelier.
+                </p>
+                <p className="text-gray-700 mb-4">
+                  I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
+                </p>
+                
+                {messages.length === 0 && <div className="h-16"></div>}
+              </div>
+              
+              {/* Show any conversation messages below the welcome message */}
+              {messages.length > 0 && (
                 <>
                   {messages.map((message) => (
                     <ChatMessage 
