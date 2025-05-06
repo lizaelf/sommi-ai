@@ -51,41 +51,68 @@ export function useConversation() {
     }
   }, []);
   
-  // On initial load, if no current conversation is set but we have saved one, try to load it
+  // Track if we've done the initial data fetch
+  const [initialDataFetched, setInitialDataFetched] = useState<boolean>(false);
+  
+  // On initial load only, fetch conversations from the server
   useEffect(() => {
     async function fetchInitialData() {
-      // If no conversation is currently selected, try to fetch the conversations
-      // from backend directly
-      if (!currentConversationId) {
-        try {
-          // First check if we have a conversation ID in localStorage
-          const savedId = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
-          if (savedId) {
-            // Try to use the saved one if available
-            const id = parseInt(savedId, 10);
-            const response = await apiRequest('GET', `/api/conversations/${id}`);
-            if (response.ok) {
-              // The conversation exists, use it
-              setCurrentConversationIdState(id);
-              return;
+      // Skip if we've already fetched initial data
+      if (initialDataFetched) return;
+      
+      try {
+        console.log("Fetching initial data from server...");
+        
+        // First load all conversations
+        const conversationsResponse = await apiRequest('GET', '/api/conversations');
+        const fetchedConversations = await conversationsResponse.json();
+        console.log("Fetched conversations:", fetchedConversations);
+        
+        // Check if we have any conversations
+        if (fetchedConversations && Array.isArray(fetchedConversations) && fetchedConversations.length > 0) {
+          // Set the conversations in local state
+          setLocalConversations(fetchedConversations);
+          
+          // Logic to decide which conversation to show on first load
+          // 1. If a current conversation ID is already set, verify it
+          if (currentConversationId) {
+            const response = await apiRequest('GET', `/api/conversations/${currentConversationId}`);
+            if (!response.ok) {
+              // If invalid, use the first conversation from the list
+              setCurrentConversationIdState(fetchedConversations[0].id);
+            }
+          } 
+          // 2. Try to use ID from localStorage
+          else {
+            const savedId = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
+            if (savedId) {
+              // Check if this conversation exists in our fetched list
+              const id = parseInt(savedId, 10);
+              const conversationExists = fetchedConversations.some(c => c.id === id);
+              
+              if (conversationExists) {
+                // Use this conversation
+                setCurrentConversationIdState(id);
+              } else {
+                // Use the first conversation
+                setCurrentConversationIdState(fetchedConversations[0].id);
+              }
+            } else {
+              // No saved ID, use first conversation
+              setCurrentConversationIdState(fetchedConversations[0].id);
             }
           }
-          
-          // Otherwise get the first conversation from the API
-          const response = await apiRequest('GET', '/api/conversations');
-          const conversations = await response.json();
-          if (conversations && conversations.length > 0) {
-            // Use the first conversation
-            setCurrentConversationIdState(conversations[0].id);
-          }
-        } catch (e) {
-          console.error('Failed to get initial conversation', e);
         }
+        
+        // Mark as fetched so we don't do it again
+        setInitialDataFetched(true);
+      } catch (e) {
+        console.error('Failed to get initial conversation', e);
       }
     }
     
     fetchInitialData();
-  }, []);
+  }, [currentConversationId, initialDataFetched]);
   
   // Load messages from the API when conversation changes
   useEffect(() => {
