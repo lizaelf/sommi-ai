@@ -99,6 +99,50 @@ export function useConversation() {
     }
   }, [messagesData, currentConversationId]);
   
+  // Validate if a conversation exists in the backend
+  const validateConversation = useCallback(async (id: number): Promise<boolean> => {
+    try {
+      const response = await apiRequest('GET', `/api/conversations/${id}`);
+      return response.ok;
+    } catch (error) {
+      console.error('Error validating conversation:', error);
+      return false;
+    }
+  }, []);
+  
+  // Clear invalid data from localStorage
+  const clearInvalidData = useCallback(() => {
+    try {
+      // Check and clear current conversation ID if needed
+      const savedId = localStorage.getItem(LS_CURRENT_CONVERSATION_ID);
+      if (savedId) {
+        const id = parseInt(savedId, 10);
+        validateConversation(id).then(exists => {
+          if (!exists) {
+            console.log('Clearing invalid conversation ID from localStorage');
+            localStorage.removeItem(LS_CURRENT_CONVERSATION_ID);
+            // Also clear any saved messages for this conversation
+            localStorage.removeItem(`${LS_MESSAGES_PREFIX}${id}`);
+            // Reset current state if we're using this invalid ID
+            if (currentConversationId === id) {
+              setCurrentConversationIdState(null);
+              setMessages([]);
+            }
+          }
+        });
+      }
+    } catch (e) {
+      console.error('Error clearing invalid data:', e);
+    }
+  }, [currentConversationId, validateConversation]);
+  
+  // Run the validation on mount
+  useEffect(() => {
+    if (currentConversationId) {
+      clearInvalidData();
+    }
+  }, [clearInvalidData, currentConversationId]);
+  
   // Change current conversation
   const setCurrentConversationId = useCallback((id: number | null) => {
     setCurrentConversationIdState(id);

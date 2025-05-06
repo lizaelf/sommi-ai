@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -10,12 +10,18 @@ import { useConversation } from '@/hooks/useConversation';
 import { Message, Conversation } from '@shared/schema';
 
 const ChatInterface: React.FC = () => {
-  const [isTyping, setIsTyping] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Removed expansion behavior
+  // State hooks
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  
+  // Refs
   const welcomeSheetRef = useRef<HTMLDivElement>(null);
+  
+  // Custom hooks
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  
+  // Conversation hook
   const {
     currentConversationId,
     setCurrentConversationId,
@@ -25,139 +31,144 @@ const ChatInterface: React.FC = () => {
     createNewConversation,
     clearConversation
   } = useConversation();
-
-  // Query for active conversation
-  const { data: conversationData, isLoading: isLoadingConversation } = useQuery({
-    queryKey: ['/api/conversations', currentConversationId],
-    enabled: !!currentConversationId,
-  });
-
-  // Conversation messages query - only used for loading state
-  const { 
-    isLoading: isLoadingMessages
-  } = useQuery({
-    queryKey: ['/api/conversations', currentConversationId, 'messages'],
-    enabled: !!currentConversationId,
-  });
-
-  // API status check
-  const { data: apiStatus, isError: apiError } = useQuery({
+  
+  // API queries
+  const { data: apiStatus } = useQuery({
     queryKey: ['/api/status'],
-    refetchInterval: 30000, // Check API status every 30 seconds
+    refetchInterval: 30000,
   });
-
-  // Send message mutation
-  const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
-      // Start with a new conversation if none exists
-      let conversationId = currentConversationId;
-      
-      if (!conversationId) {
-        const newConversation = await apiRequest('POST', '/api/conversations', { 
-          title: content.slice(0, 30) + (content.length > 30 ? '...' : '') 
-        });
-        const conversationData = await newConversation.json();
-        conversationId = conversationData.id;
-        setCurrentConversationId(conversationId);
-      }
-      
-      // Add user message to UI immediately
-      const userMessage = {
-        id: Date.now(),
-        content,
-        role: 'user',
-        conversationId,
-        createdAt: new Date()
-      } as Message;
-      
-      addMessage(userMessage);
+  
+  // Handle sending a message
+  const handleSendMessage = useCallback((content: string) => {
+    if (content.trim() === '') return;
+    
+    // Create a new function to handle the message sending logic
+    async function sendMessage() {
       setIsTyping(true);
       
-      // Send to API
-      return apiRequest('POST', '/api/chat', {
-        messages: [{ role: 'user', content }],
-        conversationId
-      });
-    },
-    onSuccess: async (response) => {
-      const data = await response.json();
-      
-      // Add assistant message
-      const assistantMessage = {
-        id: Date.now() + 1,
-        content: data.message.content,
-        role: 'assistant',
-        conversationId: data.conversationId,
-        createdAt: new Date()
-      } as Message;
-      
-      addMessage(assistantMessage);
-      setIsTyping(false);
-      
-      // Update conversations list
-      queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
-    },
-    onError: (error: Error) => {
-      setIsTyping(false);
-      toast({
-        title: "Error",
-        description: `Failed to get a response: ${error.message}`,
-        variant: "destructive"
-      });
+      try {
+        // Create a conversation if needed
+        let conversationId = currentConversationId;
+        if (!conversationId) {
+          const newConversation = await apiRequest('POST', '/api/conversations', { 
+            title: content.slice(0, 30) + (content.length > 30 ? '...' : '') 
+          });
+          const data = await newConversation.json();
+          conversationId = data.id;
+          setCurrentConversationId(conversationId);
+        }
+        
+        // Add user message to UI
+        const userMessage = {
+          id: Date.now(),
+          content,
+          role: 'user',
+          conversationId,
+          createdAt: new Date()
+        } as Message;
+        
+        addMessage(userMessage);
+        
+        // Try to send to API
+        let response = await apiRequest('POST', '/api/chat', {
+          messages: [{ role: 'user', content }],
+          conversationId
+        });
+        
+        // Handle 404 conversation not found
+        if (response.status === 404) {
+          console.log('Conversation not found, creating a new one');
+          
+          // Create a new conversation
+          const newConversationRes = await apiRequest('POST', '/api/conversations', { 
+            title: content.slice(0, 30) + (content.length > 30 ? '...' : '') 
+          });
+          const newData = await newConversationRes.json();
+          const newId = newData.id;
+          setCurrentConversationId(newId);
+          
+          // Try again with new ID
+          response = await apiRequest('POST', '/api/chat', {
+            messages: [{ role: 'user', content }],
+            conversationId: newId
+          });
+        }
+        
+        // Handle successful response
+        const responseData = await response.json();
+        
+        // Add assistant response
+        const assistantMessage = {
+          id: Date.now() + 1,
+          content: responseData.message.content,
+          role: 'assistant',
+          conversationId: responseData.conversationId,
+          createdAt: new Date()
+        } as Message;
+        
+        addMessage(assistantMessage);
+        
+        // Update conversations list
+        queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
+      } catch (error) {
+        console.error('Error in chat request:', error);
+        toast({
+          title: "Error",
+          description: `Failed to get a response: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          variant: "destructive"
+        });
+      } finally {
+        setIsTyping(false);
+      }
     }
-  });
-
-  // Clear conversation mutation
-  const clearConversationMutation = useMutation({
-    mutationFn: async () => {
-      if (!currentConversationId) return null;
-      return apiRequest('DELETE', `/api/conversations/${currentConversationId}`);
-    },
-    onSuccess: () => {
+    
+    // Execute the message sending
+    sendMessage();
+  }, [currentConversationId, setCurrentConversationId, addMessage, toast]);
+  
+  // Clear conversation handler
+  const handleClearConversation = useCallback(async () => {
+    if (!currentConversationId) return;
+    
+    try {
+      await apiRequest('DELETE', `/api/conversations/${currentConversationId}`);
       clearConversation();
       createNewConversation();
       toast({
         title: "Conversation cleared",
         description: "All messages have been removed."
       });
-    },
-    onError: (error: Error) => {
+    } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to clear conversation: ${error.message}`,
+        description: `Failed to clear conversation: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive"
       });
     }
-  });
-
-  // Handle sending a message
-  const handleSendMessage = (content: string) => {
-    if (content.trim() === '') return;
-    sendMessageMutation.mutate(content);
-  };
-
+  }, [currentConversationId, clearConversation, createNewConversation, toast]);
+  
   // Toggle sidebar
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen(prev => !prev);
+  }, []);
+  
   // Handle creating a new conversation
-  const handleNewChat = async () => {
+  const handleNewChat = useCallback(async () => {
     await createNewConversation();
-  };
-
+  }, [createNewConversation]);
+  
   // Close sidebar on mobile when changing conversation
   useEffect(() => {
     if (isMobile && sidebarOpen) {
       setSidebarOpen(false);
     }
-  }, [currentConversationId, isMobile]);
+  }, [currentConversationId, isMobile, sidebarOpen]);
   
   // Safe empty array for when conversations are not yet loaded
   const safeConversations: Conversation[] = Array.isArray(conversations) ? conversations : [];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)]"> {/* Adjusted for mobile header */}
+    <div className="flex flex-col h-[calc(100vh-100px)]">
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Hidden in this design */}
@@ -247,21 +258,6 @@ const ChatInterface: React.FC = () => {
                   </div>
                 </div>
               )}
-
-              {/* Error Message */}
-              {sendMessageMutation.isError && (
-                <div className="mx-auto max-w-2xl">
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500 mr-2">
-                      <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" />
-                    </svg>
-                    <div>
-                      <p className="font-medium">Error connecting to the API</p>
-                      <p className="text-sm">{sendMessageMutation.error?.message || 'Please check your connection and try again.'}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
               
               {/* Sample Action Buttons removed to avoid duplication with suggestion chips at the bottom */}
             </div>
@@ -294,7 +290,7 @@ const ChatInterface: React.FC = () => {
             <div className="relative flex items-center gap-2">
               <ChatInput 
                 onSendMessage={handleSendMessage} 
-                isProcessing={isTyping || sendMessageMutation.isPending}
+                isProcessing={isTyping}
               />
             </div>
           </div>
@@ -304,7 +300,7 @@ const ChatInterface: React.FC = () => {
       {/* Clear and Settings Buttons - Initially hidden in mobile view */}
       <div className="hidden">
         <button 
-          onClick={() => clearConversationMutation.mutate()}
+          onClick={handleClearConversation}
           className="text-gray-500 hover:text-gray-700" 
           title="Clear conversation"
         >
