@@ -163,7 +163,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   };
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full">
       {isUser ? (
         // User Message - Smaller and right-aligned
         <div className="flex justify-end mb-2">
@@ -172,8 +172,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         </div>
       ) : (
-        // AI Message - Wine info style with special formatting (full-width)
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 text-sm sm:text-base w-full">
+        // AI Message - Wine info style with special formatting
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 text-sm sm:text-base">
           {formatWineInfo(message.content)}
         </div>
       )}
