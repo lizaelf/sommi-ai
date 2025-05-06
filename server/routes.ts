@@ -47,7 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all conversations for the authenticated user
-  app.get("/api/conversations", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/conversations", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -63,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get the most recent conversation for the authenticated user
-  app.get("/api/conversations/recent", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/conversations/recent", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -84,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create a new conversation for the authenticated user
-  app.post("/api/conversations", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/conversations", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -104,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get a specific conversation for the authenticated user
-  app.get("/api/conversations/:id", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/conversations/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const userId = req.user?.id;
@@ -132,7 +132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete a conversation for the authenticated user
-  app.delete("/api/conversations/:id", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.delete("/api/conversations/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const userId = req.user?.id;
@@ -161,7 +161,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get messages for a conversation for the authenticated user
-  app.get("/api/conversations/:id/messages", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/conversations/:id/messages", isAuthenticated, async (req, res) => {
     try {
       const conversationId = parseInt(req.params.id);
       const userId = req.user?.id;
@@ -189,7 +189,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Chat completion endpoint
-  app.post("/api/chat", isAuthenticated, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/chat", isAuthenticated, async (req, res) => {
     try {
       // Validate request
       const validatedData = chatCompletionRequestSchema.parse(req.body);
