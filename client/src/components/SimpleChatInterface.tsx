@@ -27,10 +27,21 @@ const SimpleChatInterface: React.FC = () => {
     refetchInterval: 30000,
   });
   
-  // Scroll to bottom when messages change
+  // Improved scroll behavior for better user experience
   useEffect(() => {
+    // When messages change or typing status changes
     if (chatContainerRef.current && messages.length > 0) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      // Add a small delay to ensure DOM is fully updated
+      setTimeout(() => {
+        // Calculate the position to scroll to (a bit above the bottom to show part of the previous message)
+        const scrollToPosition = chatContainerRef.current?.scrollHeight || 0;
+        
+        // Smooth scroll to the position
+        chatContainerRef.current?.scrollTo({
+          top: scrollToPosition,
+          behavior: 'smooth'
+        });
+      }, 100);
     }
   }, [messages, isTyping]);
 
@@ -278,16 +289,14 @@ const SimpleChatInterface: React.FC = () => {
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
-            {/* Wine bottle image when no messages */}
-            {messages.length === 0 && (
-              <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-                <img 
-                  src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
-                  alt="Wine bottle collection" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
+            {/* Wine bottle image (always show at top) */}
+            <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+              <img 
+                src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
+                alt="Wine bottle collection" 
+                className="w-full h-full object-cover"
+              />
+            </div>
             
             {/* Chat Messages */}
             <div className="px-4 py-4 space-y-4">
@@ -339,20 +348,34 @@ const SimpleChatInterface: React.FC = () => {
 
           {/* Input Area */}
           <div className="bg-white p-3 shadow-lg border-t border-gray-100 z-50">
-            {/* Conversation Info */}
-            {currentConversationId && (
-              <div className="flex justify-between items-center mb-2">
-                <div className="text-xs text-gray-500">
-                  Conversation #{currentConversationId}
-                </div>
+            {/* Conversation Info - Always show with dropdown */}
+            <div className="flex justify-between items-center mb-2">
+              <div className="text-xs text-gray-500">
+                {currentConversationId ? `Conversation #${currentConversationId}` : 'New Conversation'}
+              </div>
+              <div className="flex items-center gap-2">
+                {conversations && conversations.length > 0 && (
+                  <select 
+                    value={currentConversationId || ''}
+                    onChange={(e) => e.target.value && handleSelectConversation(Number(e.target.value))}
+                    className="text-xs border border-gray-200 rounded px-2 py-0.5"
+                  >
+                    <option value="" disabled>Select conversation</option>
+                    {conversations.map(conv => (
+                      <option key={conv.id} value={conv.id}>
+                        {conv.title || `Conversation #${conv.id}`}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 <button 
                   onClick={handleNewChat}
-                  className="text-xs text-blue-500 hover:text-blue-700"
+                  className="text-xs text-[#6A53E7] hover:text-purple-700"
                 >
                   New Conversation
                 </button>
               </div>
-            )}
+            </div>
             
             {/* Suggestion chips */}
             <div className="scrollbar-hide overflow-x-auto mb-3 pb-1 -mt-1 flex gap-2 w-full">
