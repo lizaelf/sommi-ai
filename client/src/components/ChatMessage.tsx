@@ -5,22 +5,41 @@ interface ChatMessageProps {
   message: Message;
 }
 
+// Helper to convert Markdown-style bold text (**text**) to actual bold elements
+function processMarkdownBold(text: string) {
+  if (!text) return null;
+  
+  // Regular expression to match text between double asterisks
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  
+  if (parts.length === 1) {
+    return text;
+  }
+  
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return <strong key={i}>{boldText}</strong>;
+    }
+    return part;
+  });
+}
+
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
 
-  // Function to format code blocks in messages
+  // Function to format text with bold and code blocks
   const formatContent = (content: string) => {
     // Handle undefined or empty content
     if (!content) {
-      // Empty content will show the actual message or suggestion
       return null;
     }
     
     try {
       // Check if there are any code blocks
       if (!content.includes('```')) {
-        // No code blocks, just return the plain text
-        return <p>{content}</p>;
+        // No code blocks, apply bold formatting and return
+        return <p>{processMarkdownBold(content)}</p>;
       }
       
       // Split content by code block markers and process each part
@@ -71,7 +90,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <>
           {segments.map((segment, index) => (
             segment.type === 'text' ? 
-              <p key={index}>{segment.content}</p> : 
+              <p key={index}>{processMarkdownBold(segment.content)}</p> : 
               <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
                 {segment.content}
               </pre>
@@ -111,7 +130,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               
               return (
                 <div key={idx} className="mt-3">
-                  <p className="font-medium text-gray-800">{emoji + paragraph}</p>
+                  <p className="font-medium text-gray-800">{emoji}{processMarkdownBold(paragraph)}</p>
                 </div>
               );
             }
@@ -124,15 +143,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                   {items.map((item, i) => (
                     <p key={i} className="flex items-start">
                       <span className="text-[#6A53E7] mr-2">✧</span>
-                      <span>{item.trim()}</span>
+                      <span>{processMarkdownBold(item.trim())}</span>
                     </p>
                   ))}
                 </div>
               );
             }
             
-            // Regular paragraph
-            return <p key={idx} className="text-gray-700">{paragraph}</p>;
+            // Regular paragraph with bold text formatting
+            return <p key={idx} className="text-gray-700">{processMarkdownBold(paragraph)}</p>;
           })}
         </div>
       );
