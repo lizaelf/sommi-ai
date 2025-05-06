@@ -114,7 +114,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       const paragraphs = content.split('\n\n').filter(p => p.trim().length > 0);
       
       return (
-        <div className="space-y-4">
+        <div className="text-sm sm:text-base space-y-4">
           {/* Format paragraphs with wine-specific styling */}
           {paragraphs.map((paragraph, idx) => {
             // Check if paragraph might be a header or section title
@@ -172,10 +172,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         </div>
       ) : (
-        // AI Message - Wine info style with special formatting (no background)
-        <div className="p-3 sm:p-4 text-sm sm:text-base">
-          {formatWineInfo(message.content)}
-        </div>
+        // AI Message - Wine info style with special formatting (direct rendering)
+        formatWineInfo(message.content)
       )}
     </div>
   );
