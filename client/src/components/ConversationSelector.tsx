@@ -18,11 +18,13 @@ export function ConversationSelector({
   onCreateNewConversation
 }: ConversationSelectorProps) {
   // Sort conversations by date (newest first)
-  const sortedConversations = [...conversations].sort((a, b) => {
-    const dateA = new Date(a.createdAt).getTime();
-    const dateB = new Date(b.createdAt).getTime();
-    return dateB - dateA;
-  });
+  const sortedConversations = Array.isArray(conversations) 
+    ? [...conversations].sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      })
+    : [];
 
   return (
     <div className="w-full rounded-md border bg-background shadow-sm">

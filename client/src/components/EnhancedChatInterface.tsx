@@ -128,12 +128,14 @@ const EnhancedChatInterface: React.FC = () => {
         <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
           {/* Conversation Selector (hidden on smaller screens) */}
           <div className="hidden md:block px-4 py-3 bg-white border-b">
-            <ConversationSelector 
-              conversations={conversations}
-              currentConversationId={currentConversationId}
-              onSelectConversation={setCurrentConversationId}
-              onCreateNewConversation={createNewConversation}
-            />
+            <div className="max-w-2xl mx-auto">
+              <ConversationSelector 
+                conversations={conversations}
+                currentConversationId={currentConversationId}
+                onSelectConversation={setCurrentConversationId}
+                onCreateNewConversation={createNewConversation}
+              />
+            </div>
           </div>
 
           {/* Scrollable container */}
@@ -169,9 +171,9 @@ const EnhancedChatInterface: React.FC = () => {
               {/* Show any conversation messages below the welcome message */}
               {messages.length > 0 && (
                 <>
-                  {messages.map((message) => (
+                  {messages.map((message, index) => (
                     <ChatMessage 
-                      key={message.id} 
+                      key={`${message.id}-${index}`} 
                       message={message} 
                     />
                   ))}
@@ -201,12 +203,18 @@ const EnhancedChatInterface: React.FC = () => {
             <div className="md:hidden flex justify-between items-center mb-2">
               <button 
                 onClick={createNewConversation}
-                className="text-xs px-3 py-1 bg-purple-100 text-purple-700 rounded-full"
+                className="text-xs px-3 py-1.5 bg-purple-100 text-[#6A53E7] rounded-full font-medium flex items-center"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
                 New Chat
               </button>
-              <div className="text-xs text-gray-500">
-                {conversations.length} Conversations
+              <div className="text-xs text-gray-500 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
+                </svg>
+                {conversations.length} Conversation{conversations.length !== 1 ? 's' : ''}
               </div>
             </div>
 
