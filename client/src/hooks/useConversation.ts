@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Message, Conversation } from '@shared/schema';
 import { ClientMessage, ClientConversation } from '@/lib/types';
 import { apiRequest } from '@/lib/queryClient';
-import indexedDBService, { IDBMessage, IDBConversation } from '@/lib/indexedDB';
+import indexedDBService, { IDBMessage } from '@/lib/indexedDB';
 import { 
   adaptIDBMessagesToMessages, 
   adaptIDBConversationsToConversations,
@@ -295,9 +295,8 @@ export function useConversation(): UseConversationReturn {
     setMessages([]);
     
     try {
-      // Clear messages in IndexedDB
-      await indexedDBService.clearConversationMessages(currentConversationId);
-      console.log(`Cleared messages for conversation ${currentConversationId}`);
+      // Update conversation in IndexedDB with empty messages
+      await indexedDBService.updateConversation(currentConversationId, { messages: [] });
     } catch (error) {
       console.error("Error clearing conversation in IndexedDB", error);
     }
@@ -306,15 +305,8 @@ export function useConversation(): UseConversationReturn {
   // Create a new conversation
   const createNewConversation = useCallback(async () => {
     try {
-      // Create new conversation with a title
-      const title = 'New Conversation';
-      
       // Create in IndexedDB
-      const newId = await indexedDBService.createConversation(title);
-      
-      if (!newId) {
-        throw new Error("Failed to create conversation");
-      }
+      const newId = await indexedDBService.createConversation("New Conversation");
       
       // Update state
       setCurrentConversationIdState(newId);

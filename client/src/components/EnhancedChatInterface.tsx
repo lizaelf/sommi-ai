@@ -1,13 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
-import { ConversationSelector } from './ConversationSelector';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Menu, MessageSquare, X } from 'lucide-react';
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
@@ -24,8 +21,7 @@ const EnhancedChatInterface: React.FC = () => {
   } = useConversation();
 
   // Basic states 
-  const [isTyping, setIsTyping] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isTyping, setIsTyping] = React.useState(false);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -137,85 +133,14 @@ const EnhancedChatInterface: React.FC = () => {
     );
   }
 
-  // Function to handle selecting a conversation 
-  const handleSelectConversation = async (id: number) => {
-    await setCurrentConversationId(id);
-    setSidebarOpen(false); // Close sidebar after selection on mobile
-  };
-
-  // Function to handle creating a new conversation
-  const handleCreateNewChat = async () => {
-    await createNewConversation();
-    setSidebarOpen(false); // Close sidebar after creating new conversation on mobile
-  };
-
   return (
     <div className="flex flex-col h-[100dvh] max-h-[100dvh]">
-      {/* Mobile Header - Fixed to top */}
-      <div className="sm:hidden bg-white border-b px-3 py-2 flex items-center justify-between shadow-sm z-20">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="h-9 w-9"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-        <h1 className="text-lg font-medium text-[#6A53E7]">Cabernet Sauvignon</h1>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={handleCreateNewChat}
-          className="h-9 w-9"
-        >
-          <MessageSquare className="h-5 w-5" />
-        </Button>
-      </div>
-
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Mobile Sidebar - Slide in from left */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 bg-black/50 z-40 sm:hidden" onClick={() => setSidebarOpen(false)}>
-            <div 
-              className="absolute left-0 top-0 bottom-0 w-3/4 max-w-xs bg-white shadow-lg z-50" 
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center p-4 border-b">
-                <h2 className="font-semibold text-[#6A53E7]">Conversations</h2>
-                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}>
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-              <div className="p-3">
-                <ConversationSelector 
-                  conversations={conversations}
-                  currentConversationId={currentConversationId}
-                  onSelectConversation={handleSelectConversation}
-                  onCreateNewConversation={handleCreateNewChat}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Desktop Sidebar - Always visible */}
-        <div className="hidden sm:block w-64 border-r overflow-y-auto bg-white">
-          <div className="p-4">
-            <h2 className="font-semibold mb-3 text-[#6A53E7]">My Conversations</h2>
-            <ConversationSelector 
-              conversations={conversations}
-              currentConversationId={currentConversationId}
-              onSelectConversation={handleSelectConversation}
-              onCreateNewConversation={handleCreateNewChat}
-            />
-          </div>
-        </div>
-        
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden pt-0 sm:pt-0">
-          {/* Scrollable container - adjust for mobile header */}
-          <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide pt-0 mt-0 sm:mt-0">
+        <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
+          {/* Scrollable container */}
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image (always show at top with responsive height) */}
             <div className="w-full h-48 sm:h-56 md:h-64 bg-gray-200 flex items-center justify-center">
               <img 
