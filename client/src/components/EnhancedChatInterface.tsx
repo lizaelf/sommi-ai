@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
@@ -21,7 +21,7 @@ const EnhancedChatInterface: React.FC = () => {
   } = useConversation();
 
   // Basic states 
-  const [isTyping, setIsTyping] = React.useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling

@@ -248,35 +248,18 @@ class IndexedDBService {
   }
 
   // Create a new conversation
-  public async createConversation(conversation: string | IDBConversation): Promise<number> {
+  public async createConversation(conversation: IDBConversation): Promise<number | null> {
     try {
       // Ensure we have a user ID
       const userId = await this.ensureUser();
+      conversation.userId = userId;
       
-      let newConversation: IDBConversation;
+      if (!conversation.createdAt) {
+        conversation.createdAt = new Date();
+      }
       
-      if (typeof conversation === 'string') {
-        // If just a title string was passed
-        newConversation = {
-          userId: userId,
-          title: conversation,
-          createdAt: new Date(),
-          messages: []
-        };
-      } else {
-        // If a conversation object was passed
-        newConversation = {
-          ...conversation,
-          userId: userId
-        };
-        
-        if (!newConversation.createdAt) {
-          newConversation.createdAt = new Date();
-        }
-        
-        if (!newConversation.messages) {
-          newConversation.messages = [];
-        }
+      if (!conversation.messages) {
+        conversation.messages = [];
       }
       
       const db = await this.initDB();
@@ -284,7 +267,7 @@ class IndexedDBService {
       const store = transaction.objectStore(CONVERSATION_STORE);
       
       return new Promise((resolve, reject) => {
-        const request = store.add(newConversation);
+        const request = store.add(conversation);
         
         request.onsuccess = () => {
           resolve(request.result as number);
@@ -297,34 +280,15 @@ class IndexedDBService {
       });
     } catch (error) {
       console.error('Error creating conversation:', error);
-      throw error;
+      return null;
     }
   }
 
   // Update an existing conversation
-  public async updateConversation(conversation: IDBConversation | number, data?: Partial<IDBConversation>): Promise<void> {
+  public async updateConversation(conversation: IDBConversation): Promise<void> {
     try {
-      let conversationToUpdate: IDBConversation;
-      
-      if (typeof conversation === 'number') {
-        // If ID was passed, we need to fetch the conversation first
-        const existingConversation = await this.getConversation(conversation);
-        
-        if (!existingConversation) {
-          throw new Error(`Conversation with ID ${conversation} not found`);
-        }
-        
-        conversationToUpdate = {
-          ...existingConversation,
-          ...(data || {})
-        };
-      } else {
-        // Conversation object was passed directly
-        conversationToUpdate = conversation;
-        
-        if (!conversationToUpdate.id) {
-          throw new Error('Conversation ID is required for update');
-        }
+      if (!conversation.id) {
+        throw new Error('Conversation ID is required for update');
       }
       
       const db = await this.initDB();
@@ -332,14 +296,14 @@ class IndexedDBService {
       const store = transaction.objectStore(CONVERSATION_STORE);
       
       return new Promise((resolve, reject) => {
-        const request = store.put(conversationToUpdate);
+        const request = store.put(conversation);
         
         request.onsuccess = () => {
           resolve();
         };
         
         request.onerror = () => {
-          reject(new Error(`Could not update conversation with ID ${conversationToUpdate.id}`));
+          reject(new Error(`Could not update conversation with ID ${conversation.id}`));
         };
       });
     } catch (error) {
@@ -376,17 +340,6 @@ class IndexedDBService {
     } catch (error) {
       console.error(`Error adding message to conversation ${conversationId}:`, error);
       throw error;
-    }
-  }
-
-  // Get messages for a specific conversation
-  public async getConversationMessages(conversationId: number): Promise<IDBMessage[]> {
-    try {
-      const conversation = await this.getConversation(conversationId);
-      return conversation?.messages || [];
-    } catch (error) {
-      console.error(`Error getting messages for conversation ${conversationId}:`, error);
-      return [];
     }
   }
 
