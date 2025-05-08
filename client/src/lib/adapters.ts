@@ -4,7 +4,8 @@ import { IDBConversation, IDBMessage } from './indexedDB';
 
 /**
  * Adapters for converting between database types and application types
- * to handle the Date/string incompatibility
+ * to handle the Date/string incompatibility and ensure proper data format
+ * between IndexedDB, API responses, and component state.
  */
 
 // Convert IDBMessage to ClientMessage
@@ -14,8 +15,10 @@ export function adaptIDBMessageToMessage(message: IDBMessage): ClientMessage {
     content: message.content,
     role: message.role,
     conversationId: message.conversationId,
-    // Keep createdAt as-is, could be string or Date
-    createdAt: message.createdAt
+    // Ensure consistent date format
+    createdAt: typeof message.createdAt === 'string' 
+      ? message.createdAt 
+      : message.createdAt.toISOString()
   };
 }
 
@@ -26,8 +29,12 @@ export function adaptMessageToIDBMessage(message: Message | ClientMessage): IDBM
     content: message.content,
     role: message.role,
     conversationId: message.conversationId,
-    // Keep the date as is (could be Date or string)
-    createdAt: message.createdAt
+    // Ensure consistent date storage
+    createdAt: typeof message.createdAt === 'string' 
+      ? message.createdAt 
+      : (message.createdAt instanceof Date 
+        ? message.createdAt.toISOString() 
+        : new Date().toISOString())
   };
 }
 
@@ -36,8 +43,10 @@ export function adaptIDBConversationToConversation(conversation: IDBConversation
   return {
     id: conversation.id || 0,
     title: conversation.title,
-    // Keep createdAt as-is, could be string or Date
-    createdAt: conversation.createdAt
+    // Ensure consistent date format
+    createdAt: typeof conversation.createdAt === 'string' 
+      ? conversation.createdAt 
+      : conversation.createdAt.toISOString()
   };
 }
 

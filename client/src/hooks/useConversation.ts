@@ -306,17 +306,11 @@ export function useConversation(): UseConversationReturn {
   // Create a new conversation
   const createNewConversation = useCallback(async () => {
     try {
-      // Create new conversation object
-      const newConversation: IDBConversation = {
-        userId: 1, // Default user ID
-        title: 'New Conversation',
-        createdAt: new Date(),
-        lastActivity: new Date(),
-        messages: []
-      };
+      // Create new conversation with a title
+      const title = 'New Conversation';
       
       // Create in IndexedDB
-      const newId = await indexedDBService.createConversation(newConversation);
+      const newId = await indexedDBService.createConversation(title);
       
       if (!newId) {
         throw new Error("Failed to create conversation");
