@@ -17,6 +17,7 @@ export interface IDBConversation extends Omit<Conversation, 'id' | 'createdAt'> 
   id?: number;
   userId: number;
   createdAt: string | Date;
+  lastActivity?: Date | string;
   messages: IDBMessage[];
 }
 
@@ -200,16 +201,31 @@ class IndexedDBService {
     return conversation?.messages || [];
   }
 
-  public async createConversation(title: string = 'New Conversation'): Promise<number> {
+  public async createConversation(titleOrConversation: string | IDBConversation = 'New Conversation'): Promise<number> {
     const userId = await this.getCurrentUserId();
     const db = await this.initDB();
     
-    const newConversation: Omit<IDBConversation, 'id'> = {
-      userId,
-      title,
-      createdAt: new Date().toISOString(),
-      messages: []
-    };
+    let newConversation: Omit<IDBConversation, 'id'>;
+    
+    if (typeof titleOrConversation === 'string') {
+      // If a title string was provided
+      newConversation = {
+        userId,
+        title: titleOrConversation,
+        createdAt: new Date().toISOString(),
+        lastActivity: new Date().toISOString(),
+        messages: []
+      };
+    } else {
+      // If a conversation object was provided
+      newConversation = {
+        ...titleOrConversation,
+        userId: titleOrConversation.userId || userId,
+        createdAt: titleOrConversation.createdAt || new Date().toISOString(),
+        lastActivity: titleOrConversation.lastActivity || new Date().toISOString(),
+        messages: titleOrConversation.messages || []
+      };
+    }
 
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([CONVERSATION_STORE], 'readwrite');
@@ -285,23 +301,46 @@ class IndexedDBService {
 
     // Add the message to the conversation
     const updatedMessages = [...conversation.messages, newMessage];
-    await this.updateConversation(conversationId, { messages: updatedMessages });
+    // Update lastActivity timestamp
+    const lastActivity = new Date().toISOString();
+    await this.updateConversation(conversationId, { 
+      messages: updatedMessages,
+      lastActivity 
+    });
+  }
+  
+  // Clear all messages from a conversation
+  public async clearConversationMessages(conversationId: number): Promise<void> {
+    const conversation = await this.getConversation(conversationId);
+    
+    if (!conversation) {
+      throw new Error(`Conversation with ID ${conversationId} not found`);
+    }
+    
+    // Update the conversation with an empty messages array
+    await this.updateConversation(conversationId, { 
+      messages: [],
+      lastActivity: new Date().toISOString()
+    });
   }
 
   // Get the most recent conversation or create a new one if none exists
-  public async getMostRecentConversation(): Promise<IDBConversation> {
+  public async getMostRecentConversation(): Promise<IDBConversation | undefined> {
     const conversations = await this.getAllConversations();
     
     if (conversations.length === 0) {
       // Create a new conversation if none exist
-      const id = await this.createConversation();
-      return this.getConversation(id) as Promise<IDBConversation>;
+      const id = await this.createConversation('New Conversation');
+      const newConversation = await this.getConversation(id);
+      return newConversation;
     }
 
-    // Sort conversations by creation date (newest first)
-    const sortedConversations = [...conversations].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    // Sort conversations by lastActivity or creation date (newest first)
+    const sortedConversations = [...conversations].sort((a, b) => {
+      const dateA = a.lastActivity ? new Date(a.lastActivity) : new Date(a.createdAt);
+      const dateB = b.lastActivity ? new Date(b.lastActivity) : new Date(b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
 
     return sortedConversations[0];
   }

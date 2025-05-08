@@ -1,0 +1,264 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Message, Conversation } from '@shared/schema';
+import { ClientMessage, ClientConversation } from '@/lib/types';
+import { apiRequest } from '@/lib/queryClient';
+import indexedDBService, { IDBMessage } from '@/lib/indexedDB';
+import { 
+  adaptIDBMessagesToMessages, 
+  adaptIDBConversationsToConversations,
+  adaptMessageToIDBMessage
+} from '@/lib/adapters';
+
+// Key for storing the current conversation ID in localStorage
+const LS_CURRENT_CONVERSATION_KEY = 'chatgpt_wine_current_conversation_id';
+
+/**
+ * Return type for the useConversation hook with client-side compatible types
+ */
+interface UseConversationReturn {
+  currentConversationId: number | null;
+  setCurrentConversationId: (id: number | null) => Promise<void>;
+  messages: ClientMessage[];
+  addMessage: (message: Message | ClientMessage) => Promise<void>;
+  conversations: ClientConversation[];
+  createNewConversation: () => Promise<number | null>;
+  clearConversation: () => Promise<void>;
+  refetchMessages: () => Promise<any>;
+}
+
+/**
+ * Hook to manage conversation state with IndexedDB persistence
+ */
+export function useConversation(): UseConversationReturn {
+  // State for the current conversation and messages
+  const [currentConversationId, setCurrentConversationIdState] = useState<number | null>(null);
+  const [messages, setMessages] = useState<ClientMessage[]>([]);
+  const [localConversations, setLocalConversations] = useState<ClientConversation[]>([]);
+  
+  // Query client for server-side data operations
+  const queryClient = useQueryClient();
+
+  // Load the most recent conversation from IndexedDB
+  const loadMostRecentConversation = async (): Promise<void> => {
+    try {
+      const recentConversation = await indexedDBService.getMostRecentConversation();
+      
+      if (recentConversation) {
+        console.log(`Loading most recent conversation: ${recentConversation.id}`);
+        if (recentConversation.id) {
+          setCurrentConversationIdState(recentConversation.id);
+          localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, recentConversation.id.toString());
+          
+          // Load messages for this conversation
+          if (recentConversation.messages && recentConversation.messages.length > 0) {
+            console.log(`Loaded ${recentConversation.messages.length} messages from recent conversation`);
+            setMessages(adaptIDBMessagesToMessages(recentConversation.messages));
+          } else {
+            setMessages([]);
+          }
+        }
+      } else {
+        // No conversations exist, create a new one
+        await createNewConversation();
+      }
+    } catch (error) {
+      console.error("Error loading most recent conversation", error);
+      // Fall back to API if IndexedDB fails
+      await createNewConversation();
+    }
+  };
+
+  // Initialization code that loads saved conversation from localStorage or IndexedDB
+  useEffect(() => {
+    async function initializeConversation() {
+      console.log("Initializing conversation...");
+      
+      try {
+        // First, check if there's a specific conversation ID in localStorage
+        const savedConversationId = localStorage.getItem(LS_CURRENT_CONVERSATION_KEY);
+        
+        if (savedConversationId) {
+          const conversationId = parseInt(savedConversationId, 10);
+          const conversation = await indexedDBService.getConversation(conversationId);
+          
+          if (conversation) {
+            console.log(`Using saved conversation ID from localStorage: ${conversationId}`);
+            setCurrentConversationIdState(conversationId);
+            
+            // Load messages for this conversation
+            const savedMessages = conversation.messages || [];
+            if (savedMessages && savedMessages.length > 0) {
+              console.log(`Loaded ${savedMessages.length} messages from saved conversation ID`);
+              setMessages(adaptIDBMessagesToMessages(savedMessages));
+            } else {
+              setMessages([]);
+              console.log('No messages found for this conversation');
+            }
+          } else {
+            console.log(`Saved conversation ${savedConversationId} not found, loading most recent`);
+            // If the conversation doesn't exist, fall back to most recent
+            await loadMostRecentConversation();
+          }
+        } else {
+          console.log('No saved conversation ID, loading most recent');
+          // No saved ID in localStorage, use most recent conversation
+          await loadMostRecentConversation();
+        }
+        
+        // Load all conversations
+        const allConversations = await indexedDBService.getAllConversations();
+        if (allConversations && allConversations.length > 0) {
+          console.log(`Loaded ${allConversations.length} conversations from IndexedDB`);
+          setLocalConversations(adaptIDBConversationsToConversations(allConversations));
+        } else {
+          console.log('No conversations found in IndexedDB');
+          setLocalConversations([]);
+        }
+      } catch (error) {
+        console.error("Error initializing conversation", error);
+        // Fall back to API if IndexedDB fails
+        try {
+          await createNewConversation();
+        } catch (fallbackError) {
+          console.error("Failed to create new conversation after error", fallbackError);
+        }
+      }
+    }
+    
+    initializeConversation();
+  }, []);
+  
+  // Function to add a message to the current conversation
+  const addMessage = useCallback(async (message: Message | ClientMessage) => {
+    if (!currentConversationId) {
+      console.error("Cannot add message: No active conversation");
+      return;
+    }
+    
+    // Add to state immediately for UI responsiveness
+    setMessages(prev => [...prev, message as ClientMessage]);
+    
+    try {
+      // Add to IndexedDB using the adapter
+      await indexedDBService.addMessageToConversation(
+        currentConversationId, 
+        adaptMessageToIDBMessage(message)
+      );
+      
+      // Update the conversation's last activity timestamp
+      const conversation = await indexedDBService.getConversation(currentConversationId);
+      if (conversation) {
+        conversation.lastActivity = new Date();
+        await indexedDBService.updateConversation(conversation);
+        
+        // Refresh the conversations list
+        const allConversations = await indexedDBService.getAllConversations();
+        setLocalConversations(adaptIDBConversationsToConversations(allConversations));
+      }
+    } catch (error) {
+      console.error("Error adding message to IndexedDB", error);
+    }
+  }, [currentConversationId]);
+  
+  // Set the current conversation ID and update localStorage
+  const setCurrentConversationId = useCallback(async (id: number | null) => {
+    setCurrentConversationIdState(id);
+    
+    if (id) {
+      localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, id.toString());
+      
+      // Load messages for this conversation
+      try {
+        const conversation = await indexedDBService.getConversation(id);
+        if (conversation && conversation.messages) {
+          setMessages(adaptIDBMessagesToMessages(conversation.messages));
+        } else {
+          setMessages([]);
+        }
+      } catch (error) {
+        console.error(`Error loading messages for conversation ${id}`, error);
+        setMessages([]);
+      }
+    } else {
+      localStorage.removeItem(LS_CURRENT_CONVERSATION_KEY);
+      setMessages([]);
+    }
+  }, []);
+  
+  // Create a new conversation
+  const createNewConversation = useCallback(async (): Promise<number | null> => {
+    try {
+      const newConversation: IDBConversation = {
+        userId: 1, // Default user ID
+        title: 'New Conversation',
+        createdAt: new Date(),
+        lastActivity: new Date(),
+        messages: []
+      };
+      
+      const conversationId = await indexedDBService.createConversation(newConversation);
+      
+      if (conversationId) {
+        // Update localStorage and state
+        localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, conversationId.toString());
+        setCurrentConversationIdState(conversationId);
+        setMessages([]);
+        
+        // Refresh conversations list
+        const allConversations = await indexedDBService.getAllConversations();
+        setLocalConversations(adaptIDBConversationsToConversations(allConversations));
+        
+        return conversationId;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error creating new conversation", error);
+      return null;
+    }
+  }, []);
+  
+  // Clear the current conversation
+  const clearConversation = useCallback(async () => {
+    if (!currentConversationId) return;
+    
+    try {
+      await indexedDBService.clearConversationMessages(currentConversationId);
+      setMessages([]);
+      
+      // Refresh conversations list
+      const allConversations = await indexedDBService.getAllConversations();
+      setLocalConversations(adaptIDBConversationsToConversations(allConversations));
+    } catch (error) {
+      console.error(`Error clearing conversation ${currentConversationId}`, error);
+    }
+  }, [currentConversationId]);
+  
+  // Refetch messages from storage
+  const refetchMessages = useCallback(async () => {
+    if (!currentConversationId) return null;
+    
+    try {
+      const conversation = await indexedDBService.getConversation(currentConversationId);
+      if (conversation && conversation.messages) {
+        setMessages(adaptIDBMessagesToMessages(conversation.messages));
+      }
+      return conversation;
+    } catch (error) {
+      console.error(`Error refetching messages for conversation ${currentConversationId}`, error);
+      return null;
+    }
+  }, [currentConversationId]);
+  
+  return {
+    currentConversationId,
+    setCurrentConversationId,
+    messages,
+    addMessage,
+    conversations: localConversations,
+    createNewConversation,
+    clearConversation,
+    refetchMessages
+  };
+}
