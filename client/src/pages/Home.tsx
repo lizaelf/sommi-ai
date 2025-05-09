@@ -14,7 +14,7 @@ export default function Home() {
               My Cellar
             </button>
             <button className="px-4 py-2 bg-[#F5F3FF] text-[#6A53E7] rounded-full hover:bg-[#EDE9FF] transition-colors text-sm">
-              Profile
+              Quiz
             </button>
           </div>
         </div>
