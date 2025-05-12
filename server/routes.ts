@@ -176,6 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const error = err as any;
       console.error("Error in chat completion:", error);
       
+      // Handle validation errors
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
           message: "Invalid request data", 
@@ -183,6 +184,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Check if it's a quota exceeded error
+      const isQuotaError = error.message && (
+        error.message.includes("quota") || 
+        error.message.includes("rate limit") ||
+        error.message.includes("insufficient_quota")
+      );
+      
+      // Handle quota exceeded error with a friendly message
+      if (isQuotaError) {
+        const friendlyMessage = 
+          "I apologize, but I'm currently experiencing issues with my service. " +
+          "The OpenAI API quota has been exceeded. Please try again later or contact support to update your API key quota.";
+        
+        // Save the user message and error message to the conversation
+        if (validatedData?.conversationId) {
+          try {
+            // Save the user's original message
+            await storage.createMessage({
+              content: validatedData.messages[validatedData.messages.length - 1].content,
+              role: 'user',
+              conversationId: validatedData.conversationId
+            });
+            
+            // Save our error response
+            await storage.createMessage({
+              content: friendlyMessage,
+              role: 'assistant',
+              conversationId: validatedData.conversationId
+            });
+          } catch (storageError) {
+            console.error("Error saving quota error message:", storageError);
+          }
+        }
+        
+        // Return the friendly error message as an assistant response
+        return res.json({
+          message: {
+            role: 'assistant',
+            content: friendlyMessage
+          },
+          error: "API_QUOTA_EXCEEDED",
+          conversationId: validatedData?.conversationId
+        });
+      }
+      
+      // Handle other errors
       res.status(500).json({ 
         message: "Failed to generate chat completion",
         error: error?.message || "Unknown error" 

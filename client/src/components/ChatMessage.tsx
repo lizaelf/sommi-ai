@@ -204,37 +204,44 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   
   // Function to toggle play/pause
   const toggleAudio = () => {
+    // Simply call the playLastAudio function which handles play/pause toggling internally
     if (!isUser && window.voiceAssistant?.playLastAudio) {
-      if (isPlaying) {
-        // The audio is playing, pause it
-        const audioEl = document.getElementById('audio-player') as HTMLAudioElement;
-        if (audioEl) {
-          audioEl.pause();
-          setIsPlaying(false);
-        }
-      } else {
-        // The audio is paused, play it
-        window.voiceAssistant.playLastAudio();
-        setIsPlaying(true);
-        setAudioAvailable(true);
-      }
+      // Our improved playLastAudio function handles the toggling logic
+      window.voiceAssistant.playLastAudio();
+      // UI state is updated via event listeners, not here
+      setAudioAvailable(true);
     }
   };
   
-  // Listen for audio ended event
+  // Listen for audio events from the voice assistant
   React.useEffect(() => {
+    // Event handler functions
     const handleAudioEnded = () => {
+      console.log("Audio ended event received");
       setIsPlaying(false);
     };
     
-    // Add event listener to the audio element
-    const audioEl = document.getElementById('audio-player') as HTMLAudioElement;
-    if (audioEl) {
-      audioEl.addEventListener('ended', handleAudioEnded);
-      return () => {
-        audioEl.removeEventListener('ended', handleAudioEnded);
-      };
-    }
+    const handleAudioPlaying = () => {
+      console.log("Audio playing event received");
+      setIsPlaying(true);
+    };
+    
+    const handleAudioPaused = () => {
+      console.log("Audio paused event received");
+      setIsPlaying(false);
+    };
+    
+    // Add document-level event listeners for custom events from voiceScript.js
+    document.addEventListener('audioEnded', handleAudioEnded);
+    document.addEventListener('audioPlaying', handleAudioPlaying);
+    document.addEventListener('audioPaused', handleAudioPaused);
+    
+    // Cleanup event listeners on component unmount
+    return () => {
+      document.removeEventListener('audioEnded', handleAudioEnded);
+      document.removeEventListener('audioPlaying', handleAudioPlaying);
+      document.removeEventListener('audioPaused', handleAudioPaused);
+    };
   }, []);
   
   // When a new response is added, update audio availability

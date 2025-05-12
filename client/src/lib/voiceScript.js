@@ -157,13 +157,40 @@ async function speakResponse(text) {
     
     // We'll use the audio element for state management, but no need to show status
     
+    // Store the text in case we need to fall back to browser speech synthesis
+    lastPlayedText = text;
+    
+    // Try to get audio from OpenAI TTS API
     const response = await fetch('/api/text-to-speech', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text })
     });
     
-    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+    // If the API request failed (including quota exceeded)
+    if (!response.ok) {
+      console.log(`TTS API error: ${response.status}. Using browser fallback if available.`);
+      
+      // Try browser's built-in speech synthesis as fallback
+      if ('speechSynthesis' in window) {
+        console.log("Using browser speech synthesis as fallback");
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+        
+        // Create a fake "blob" to indicate we have audio (even though it's browser-based)
+        lastAudioBlob = new Blob(['fallback'], { type: 'audio/mpeg' });
+        
+        // Dispatch event to update UI
+        document.dispatchEvent(new CustomEvent('audioPlaying'));
+        
+        // No need to continue with the rest of the function
+        return;
+      }
+      
+      // If browser speech synthesis isn't available either
+      throw new Error(`HTTP error: ${response.status}`);
+    }
     
     // Save the audio blob for later use
     lastAudioBlob = await response.blob();
