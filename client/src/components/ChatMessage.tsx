@@ -39,6 +39,31 @@ function processMarkdownBold(text: string) {
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
+  
+  // Auto-play the response audio when assistant message is rendered
+  React.useEffect(() => {
+    // Only attempt to speak for assistant messages
+    if (isUser) return;
+    
+    // Play response audio with a slight delay
+    const timer = setTimeout(() => {
+      try {
+        console.log("Auto-playing assistant message");
+        
+        // Call the speak function safely
+        const speakResponse = window.voiceAssistant?.speakResponse;
+        if (typeof speakResponse === 'function') {
+          speakResponse(message.content);
+        } else {
+          console.warn('Voice assistant speak function not available');
+        }
+      } catch (error) {
+        console.error('Error auto-playing message:', error);
+      }
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [message.content, isUser]);
 
   // Function to format text with bold and code blocks
   const formatContent = (content: string) => {
@@ -187,20 +212,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <div data-role="assistant">
           {formatWineInfo(message.content)}
           
-          {/* Play Response Audio Button */}
-          <div className="mt-2 text-center">
-            <button
-              className="text-xs bg-[#8B0000] text-white px-3 py-1 rounded-full shadow hover:bg-[#6d0000] transition-colors"
-              onClick={() => {
-                // Call the global voice assistant function to speak this message
-                if (window.voiceAssistant && typeof window.voiceAssistant.speakResponse === 'function') {
-                  window.voiceAssistant.speakResponse(message.content);
-                }
-              }}
-            >
-              🔊 Play/Pause Audio: Hear this response
-            </button>
-          </div>
+          {/* No Play Response Audio Button - We'll auto-play instead */}
         </div>
       )}
     </div>
