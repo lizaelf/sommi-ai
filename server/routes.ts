@@ -193,6 +193,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Setup multer for file uploads (speech-to-text)
+  const storage = multer.memoryStorage();
+  const upload = multer({ 
+    storage: storage,
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+    },
+    fileFilter: (_req, file, cb) => {
+      // Accept audio files only
+      const acceptedTypes = ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/webm'];
+      if (acceptedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(null, false);
+      }
+    }
+  });
+
+  // Text-to-speech endpoint
+  app.post("/api/tts", handleTTSRequest);
+  
+  // Speech-to-text endpoint
+  app.post("/api/stt", upload.single('audio'), handleSTTRequest);
+
   const httpServer = createServer(app);
   return httpServer;
 }

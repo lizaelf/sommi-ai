@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import multer from 'multer';
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
@@ -8,8 +9,13 @@ import { promisify } from 'util';
 const writeFileAsync = promisify(fs.writeFile);
 const unlinkAsync = promisify(fs.unlink);
 
+// Extend Request interface to include multer specific properties
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
+
 // Speech-to-text endpoint
-export async function handleSTTRequest(req: Request, res: Response) {
+export async function handleSTTRequest(req: MulterRequest, res: Response) {
   // Check if file exists in request
   if (!req.file) {
     return res.status(400).json({ error: 'No audio file provided' });
@@ -51,16 +57,16 @@ export async function handleSTTRequest(req: Request, res: Response) {
       text: transcription.text
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in STT request:', error);
     
-    if (error.status === 429) {
+    if (error?.status === 429) {
       return res.status(429).json({ error: 'OpenAI rate limit exceeded' });
     }
     
     res.status(500).json({
       error: 'Failed to transcribe speech',
-      details: error.message
+      details: error?.message || 'Unknown error'
     });
   } finally {
     // Clean up temp file

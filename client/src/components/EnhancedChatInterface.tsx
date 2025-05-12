@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
+import { VoiceButton } from './VoiceButton';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
+import { speakText, getOpenAIVoiceAudio } from '@/lib/voiceUtils';
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
@@ -22,6 +24,9 @@ const EnhancedChatInterface: React.FC = () => {
 
   // Basic states 
   const [isTyping, setIsTyping] = useState(false);
+  const [useVoiceResponse, setUseVoiceResponse] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling

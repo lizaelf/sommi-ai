@@ -47,16 +47,16 @@ export async function handleTTSRequest(req: Request, res: Response) {
     res.set('Content-Type', 'audio/mpeg');
     res.send(buffer);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in TTS request:', error);
     
-    if (error.status === 429) {
+    if (error?.status === 429) {
       return res.status(429).json({ error: 'OpenAI rate limit exceeded' });
     }
     
     res.status(500).json({
       error: 'Failed to generate speech',
-      details: error.message
+      details: error?.message || 'Unknown error'
     });
   }
 }
