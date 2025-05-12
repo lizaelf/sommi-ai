@@ -187,29 +187,31 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <div data-role="assistant">
           {formatWineInfo(message.content)}
           
-          {/* Play Response Audio Button */}
-          <div className="mt-2 text-center">
-            <button
-              className="text-xs bg-[#8B0000] text-white px-3 py-1 rounded-full shadow hover:bg-[#6d0000] transition-colors"
-              onClick={(e) => {
-                // Call the global voice assistant function to speak this message
-                if (window.voiceAssistant && typeof window.voiceAssistant.speakResponse === 'function') {
-                  window.voiceAssistant.speakResponse(message.content);
-                  
-                  // Check if this is a pause action by looking at current button state
-                  const button = e.currentTarget as HTMLButtonElement;
-                  const isPausing = button.textContent?.includes('Pause');
-                  
-                  // Update button text based on action (toggle between play/pause)
-                  button.textContent = isPausing 
-                    ? '🔊 Play Response Audio' 
-                    : '⏸️ Pause Response Audio';
-                }
-              }}
-            >
-              🔊 Play Response Audio
-            </button>
-          </div>
+          {/* Only show replay button for older messages, as new ones are auto-played */}
+          {message.role === 'assistant' && new Date(message.createdAt).getTime() < Date.now() - 10000 && (
+            <div className="mt-1 text-center">
+              <button
+                className="text-[10px] bg-transparent text-[#8B0000] px-2 py-0.5 rounded-full hover:underline transition-colors"
+                onClick={(e) => {
+                  // Call the global voice assistant function to speak this message
+                  if (window.voiceAssistant && typeof window.voiceAssistant.speakResponse === 'function') {
+                    window.voiceAssistant.speakResponse(message.content);
+                    
+                    // Check if this is a pause action by looking at current button state
+                    const button = e.currentTarget as HTMLButtonElement;
+                    const isPausing = button.textContent?.includes('Pause');
+                    
+                    // Update button text based on action (toggle between play/pause)
+                    button.textContent = isPausing 
+                      ? '🔊 Replay audio' 
+                      : '⏸️ Pause audio';
+                  }
+                }}
+              >
+                🔊 Replay audio
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
