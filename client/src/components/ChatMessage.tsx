@@ -173,7 +173,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         </div>
       ) : (
         // AI Message - Wine info style with special formatting (direct rendering)
-        formatWineInfo(message.content)
+        <div data-role="assistant">
+          {formatWineInfo(message.content)}
+        </div>
       )}
     </div>
   );
