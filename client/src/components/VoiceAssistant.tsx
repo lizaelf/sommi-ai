@@ -13,6 +13,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
+  // Initialize audio context on first user interaction
+  useEffect(() => {
+    const initAudioContext = () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioContext.resume().then(() => {
+          console.log('Audio context started on user interaction');
+        });
+      } catch (e) {
+        console.warn('Unable to initialize AudioContext:', e);
+      }
+    };
+
+    // Add click listener to document to enable audio on first interaction
+    document.addEventListener('click', initAudioContext, { once: true });
+    
+    return () => {
+      document.removeEventListener('click', initAudioContext);
+    };
+  }, []);
+
   useEffect(() => {
     // Initialize speech recognition
     if (typeof window !== 'undefined') {
@@ -90,54 +111,87 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  // Function to handle text-to-speech
+  // Function to handle text-to-speech using server API
   const speakResponse = async (text: string) => {
     try {
-      // Check if browser supports speech synthesis
-      if ('speechSynthesis' in window) {
-        // Clean up the text for better speech synthesis
-        // Remove markdown-like formatting if any
-        const cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1')
-                             .replace(/\*(.*?)\*/g, '$1')
-                             .replace(/#+\s/g, '')
-                             .replace(/\n\n/g, '. ');
-        
-        // Create utterance
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = 'en-US';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-        
-        // Optional: Choose a different voice if available
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(voice => 
-          voice.name.includes('Google') || voice.name.includes('Female') || voice.name.includes('Natural')
-        );
-        
-        if (preferredVoice) {
-          utterance.voice = preferredVoice;
-        }
-        
-        window.speechSynthesis.speak(utterance);
-        
-        // Show status while speaking
+      console.log("Starting text-to-speech conversion...");
+      setStatus('Getting voice response...');
+      
+      // Create an AudioContext to enable audio (requires user interaction)
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        await audioContext.resume();
+        console.log('Audio context started');
+      } catch (e) {
+        console.warn('Unable to initialize AudioContext:', e);
+      }
+      
+      // Call the server API for text-to-speech conversion
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Get the audio blob from the response
+      const audioBlob = await response.blob();
+      console.log("Audio blob received, size:", audioBlob.size);
+      
+      // Create an audio element to play the speech
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      
+      // Set up event handlers
+      audio.oncanplay = () => {
+        console.log("Audio ready to play");
+      };
+      
+      audio.onplay = () => {
+        console.log("Audio started playing");
         setStatus('Speaking...');
-        
-        utterance.onend = () => {
-          setStatus('');
-        };
-      } else {
-        console.warn('Speech synthesis not supported in this browser');
+      };
+      
+      audio.onended = () => {
+        console.log("Audio finished playing");
+        setStatus('');
+        URL.revokeObjectURL(audioUrl); // Clean up the URL object
+      };
+      
+      audio.onerror = (e) => {
+        console.error("Audio playback error:", e);
+        setStatus('');
         toast({
-          title: "Speech Synthesis Not Supported",
-          description: "Your browser doesn't support text-to-speech functionality.",
+          title: "Audio Playback Error",
+          description: "There was an error playing the audio response.",
           variant: "destructive"
         });
-      }
+      };
+      
+      // Play the audio
+      await audio.play().catch(e => {
+        console.error("Error playing audio:", e);
+        setStatus('');
+        toast({
+          title: "Audio Playback Error",
+          description: "Unable to play audio. Please interact with the page first.",
+          variant: "destructive"
+        });
+      });
+      
     } catch (error) {
-      console.error('Error converting text to speech:', error);
+      console.error('Error in text-to-speech process:', error);
       setStatus('');
+      toast({
+        title: "Text-to-Speech Error",
+        description: (error as any)?.message || "Failed to generate speech",
+        variant: "destructive"
+      });
     }
   };
 
