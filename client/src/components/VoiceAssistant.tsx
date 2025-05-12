@@ -227,8 +227,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   return (
     <div className="flex items-center ml-1 gap-1">
-      {status ? (
-        // Status Indicator
+      {status === 'Listening for your question...' ? (
+        // Only show status when listening for voice input
         <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
           <span className="animate-pulse mr-1">●</span>
           {status}

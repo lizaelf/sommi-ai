@@ -4,6 +4,8 @@ let statusDiv = null;
 let lastInputWasVoice = false;
 let currentAudioElement = null;
 let isAudioPlaying = false;
+let lastPlayedText = '';
+let loadingAnimation = null;
 
 // DOM load event to initialize everything
 document.addEventListener('DOMContentLoaded', function() {
@@ -148,33 +150,12 @@ document.addEventListener('DOMContentLoaded', function() {
 // Modified version of the speakResponse function
 async function speakResponse(text) {
   try {
-    // Find or create a status div
-    if (!statusDiv) {
-      statusDiv = document.getElementById('status');
-      
-      // If status div still doesn't exist, create a temporary one
-      if (!statusDiv) {
-        console.log("Status div not found, creating a temporary one");
-        const tempStatusDiv = document.createElement('div');
-        tempStatusDiv.id = 'temp-status';
-        tempStatusDiv.style.position = 'fixed';
-        tempStatusDiv.style.bottom = '20px';
-        tempStatusDiv.style.right = '20px';
-        tempStatusDiv.style.padding = '8px 12px';
-        tempStatusDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
-        tempStatusDiv.style.color = 'white';
-        tempStatusDiv.style.borderRadius = '4px';
-        tempStatusDiv.style.zIndex = '1000';
-        tempStatusDiv.style.fontSize = '14px';
-        document.body.appendChild(tempStatusDiv);
-        statusDiv = tempStatusDiv;
-      }
-    }
+    // We don't need visible status messages anymore - handle this internally
     
-    // Use a safe way to update text content
-    if (statusDiv) {
-      statusDiv.textContent = 'Getting voice response...';
-    }
+    // Add loading animation if needed (only visible in developer console)
+    console.log("Processing voice response...");
+    
+    // We'll use the audio element for state management, but no need to show status
     
     const response = await fetch('/api/text-to-speech', {
       method: 'POST',
@@ -188,139 +169,143 @@ async function speakResponse(text) {
     lastAudioBlob = await response.blob();
     console.log("Audio received:", lastAudioBlob.size, "bytes", "type:", lastAudioBlob.type);
     
-    // If there's already a playing audio element, stop and clean it up
+    // Properly handle existing audio element before creating a new one
     if (currentAudioElement) {
-      // If this is a new audio request (different text), stop the current one
-      console.log("Stopping previous audio playback");
-      currentAudioElement.pause();
-      if (currentAudioElement.parentNode) {
-        currentAudioElement.parentNode.removeChild(currentAudioElement);
+      try {
+        // If this is a new audio request (different text), stop the current one
+        console.log("Stopping previous audio playback");
+        currentAudioElement.pause();
+        // Reset playback position
+        currentAudioElement.currentTime = 0;
+        
+        // Clean up if we're creating a new audio element
+        if (text !== lastPlayedText) {
+          if (currentAudioElement.parentNode) {
+            currentAudioElement.parentNode.removeChild(currentAudioElement);
+          }
+          currentAudioElement = null;
+          isAudioPlaying = false;
+        }
+      } catch (err) {
+        console.warn("Error cleaning up previous audio:", err);
       }
-      currentAudioElement = null;
-      isAudioPlaying = false;
     }
     
-    // Create audio element and append to document - this helps with some browser issues
-    const audioElement = document.createElement('audio');
-    audioElement.id = 'audio-player';
-    audioElement.style.display = 'none';
-    document.body.appendChild(audioElement);
+    // Create new audio element if needed
+    if (!currentAudioElement) {
+      // Create audio element and append to document - this helps with some browser issues
+      const audioElement = document.createElement('audio');
+      audioElement.id = 'audio-player';
+      audioElement.style.display = 'none';
+      document.body.appendChild(audioElement);
+      
+      // Create object URL
+      const url = URL.createObjectURL(lastAudioBlob);
+      audioElement.src = url;
+      
+      // Store reference to current audio element
+      currentAudioElement = audioElement;
+      
+      // Remember text that's being played for comparison
+      lastPlayedText = text;
+    }
     
-    // Create object URL
-    const url = URL.createObjectURL(lastAudioBlob);
-    audioElement.src = url;
-    
-    // Store reference to current audio element
-    currentAudioElement = audioElement;
-    
-    // Auto-play if the input was from voice
-    if (lastInputWasVoice) {
-      console.log("Attempting to auto-play audio response");
-      try {
-        await audioElement.play();
-        if (statusDiv) statusDiv.textContent = 'Speaking...';
-      } catch (playError) {
-        console.error("Auto-play failed:", playError);
-        
-        // Show the audio controls as a fallback
-        const audioControls = document.getElementById('audio-controls');
-        if (audioControls) {
-          audioControls.style.display = 'block';
-          audioControls.setAttribute('style', 'display: block !important; margin-top: 15px; text-align: center;');
-        }
-        
-        if (statusDiv) statusDiv.textContent = 'Click play to hear response';
-      }
-    } else {
-      // Show the audio controls
+    // Always auto-play, regardless of input method
+    console.log("Auto-playing audio response");
+    try {
+      // Auto-play immediately
+      await audioElement.play();
+      isAudioPlaying = true;
+    } catch (playError) {
+      console.error("Auto-play failed:", playError);
+      isAudioPlaying = false;
+      
+      // Keep the hidden audio controls for accessibility and fallback
       const audioControls = document.getElementById('audio-controls');
       if (audioControls) {
-        audioControls.style.display = 'block';
-        audioControls.setAttribute('style', 'display: block !important; margin-top: 15px; text-align: center;');
+        audioControls.style.display = 'none';
       }
-      
-      if (statusDiv) statusDiv.textContent = 'Audio ready to play';
     }
     
-    // Set up the play button with a direct onclick handler
+    // Set up keyboard shortcut for play/pause
+    document.addEventListener('keydown', function(e) {
+      // Space key to toggle play/pause but only if no input element has focus
+      if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && 
+          document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault(); // Prevent page scroll
+        
+        if (currentAudioElement) {
+          // Toggle playback
+          if (isAudioPlaying && !currentAudioElement.paused) {
+            currentAudioElement.pause();
+            isAudioPlaying = false;
+          } else {
+            currentAudioElement.play()
+              .then(() => {
+                isAudioPlaying = true;
+              })
+              .catch(err => console.error("Audio playback error:", err));
+          }
+        }
+      }
+    });
+    
+    // Setup hidden play button if available (for accessibility)
     const playBtn = document.getElementById('play-audio-btn');
     if (playBtn) {
-      // Remove any existing event listeners
-      playBtn.replaceWith(playBtn.cloneNode(true));
+      // Set a unique ID based on the current text
+      const buttonId = 'audio-btn-' + text.substring(0, 20).replace(/\W+/g, '-');
+      playBtn.id = buttonId;
       
-      // Get the fresh button and add a new click handler
-      const newPlayBtn = document.getElementById('play-audio-btn');
-      newPlayBtn.addEventListener('click', function() {
-        // Toggle play/pause functionality
-        if (isAudioPlaying && !audioElement.paused) {
-          console.log("Pausing audio playback");
-          audioElement.pause();
-          isAudioPlaying = false;
-          newPlayBtn.textContent = 'Continue Playing Audio';
-          if (statusDiv) statusDiv.textContent = 'Paused';
-        } else {
-          console.log("Play/resume button clicked");
-          audioElement.play()
-            .then(() => {
-              console.log("Audio playback started successfully");
-              isAudioPlaying = true;
-              newPlayBtn.textContent = 'Pause Audio';
-              if (statusDiv) statusDiv.textContent = 'Playing...';
-            })
-            .catch(err => {
-              console.error("Audio playback error:", err);
-              isAudioPlaying = false;
-              if (statusDiv) statusDiv.textContent = 'Error playing audio';
-              
-              // Fallback to browser's built-in speech synthesis
-              if ('speechSynthesis' in window) {
-                console.log("Trying browser speech synthesis");
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
-                window.speechSynthesis.speak(utterance);
-                if (statusDiv) statusDiv.textContent = 'Using browser speech...';
-              }
-            });
+      // Add event listener for play/pause toggle
+      playBtn.addEventListener('click', function() {
+        // Handle play/pause toggle
+        if (currentAudioElement) {
+          if (isAudioPlaying && !currentAudioElement.paused) {
+            console.log("Pausing audio playback");
+            currentAudioElement.pause();
+            isAudioPlaying = false;
+          } else {
+            console.log("Play/resume button clicked");
+            currentAudioElement.play()
+              .then(() => {
+                console.log("Audio playback started successfully");
+                isAudioPlaying = true;
+              })
+              .catch(err => {
+                console.error("Audio playback error:", err);
+                isAudioPlaying = false;
+                
+                // Fallback to browser's built-in speech synthesis
+                if ('speechSynthesis' in window) {
+                  console.log("Trying browser speech synthesis");
+                  const utterance = new SpeechSynthesisUtterance(text);
+                  utterance.lang = 'en-US';
+                  window.speechSynthesis.speak(utterance);
+                }
+              });
+          }
         }
       });
-      
-      // Make the button very noticeable
-      newPlayBtn.style.backgroundColor = '#8B0000';
-      newPlayBtn.style.color = 'white';
-      newPlayBtn.style.padding = '10px 20px';
-      newPlayBtn.style.border = 'none';
-      newPlayBtn.style.borderRadius = '5px';
-      newPlayBtn.style.cursor = 'pointer';
-      newPlayBtn.textContent = 'Play Response Audio: Listen to text out loud';
     }
     
-    // Clean up URL object when audio ends
+    // Clean up when audio ends
     audioElement.onended = () => {
-      URL.revokeObjectURL(url);
-      if (statusDiv) statusDiv.textContent = '';
+      // Revoke the object URL to free memory
+      const url = audioElement.src;
+      if (url.startsWith('blob:')) {
+        URL.revokeObjectURL(url);
+      }
       
       // Reset play state
       isAudioPlaying = false;
       
-      // Reset play button text if it exists
-      const playBtn = document.getElementById('play-audio-btn');
-      if (playBtn) {
-        playBtn.textContent = 'Play Response Audio: Listen to text out loud';
-      }
-      
-      // Don't remove the audio element right away to allow for replay
-      // We'll keep the reference in currentAudioElement
-      
-      // Remove temporary status div if we created one
-      const tempStatusDiv = document.getElementById('temp-status');
-      if (tempStatusDiv && tempStatusDiv.parentNode) {
-        tempStatusDiv.parentNode.removeChild(tempStatusDiv);
-      }
+      // Don't remove the audio element - keep it for replay
     };
     
   } catch (error) {
     console.error("Error:", error);
-    if (statusDiv) statusDiv.textContent = 'Failed to get audio';
+    // Don't show error message in UI, just log to console
   }
 }
 
