@@ -113,11 +113,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  // Function to handle text-to-speech using server API
+  // Function to handle text-to-speech using server API with robust audio handling
   const speakResponse = async (text: string) => {
     try {
-      console.log("Starting text-to-speech request...");
       setStatus('Getting voice response...');
+      console.log("Requesting TTS for:", text.substring(0, 30) + "...");
       
       // Create an AudioContext to enable audio (requires user interaction)
       try {
@@ -128,7 +128,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.warn('Unable to initialize AudioContext:', e);
       }
       
-      // This is the critical part - make sure this request is happening
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: {
@@ -137,62 +136,78 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         body: JSON.stringify({ text })
       });
       
-      console.log("TTS response status:", response.status);
-      
       if (!response.ok) {
-        throw new Error(`Text-to-speech HTTP error: ${response.status}`);
+        throw new Error(`HTTP error: ${response.status}`);
       }
       
+      console.log("Audio response received, size:", response.headers.get('content-length'));
+      
+      // Get the audio data
       const audioBlob = await response.blob();
-      console.log("Audio blob size:", audioBlob.size);
+      console.log("Audio blob created, size:", audioBlob.size, "type:", audioBlob.type);
+      
+      // Create URL and audio element
       const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
+      const audio = new Audio();
       
-      // Set up event handlers
-      audio.oncanplay = () => {
+      // Set up events before setting source
+      audio.addEventListener('canplaythrough', () => {
         console.log("Audio ready to play");
-      };
-      
-      audio.onplay = () => {
-        console.log("Audio started playing");
         setStatus('Speaking...');
-      };
+        
+        // Use user interaction to trigger play
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            console.log("Audio playback started");
+          }).catch(error => {
+            console.error("Audio playback failed:", error);
+            // Fall back to browser TTS as a backup
+            if ('speechSynthesis' in window) {
+              const utterance = new SpeechSynthesisUtterance(text);
+              window.speechSynthesis.speak(utterance);
+              console.log("Fallback to browser TTS");
+            }
+          });
+        }
+      });
       
-      audio.onended = () => {
-        console.log("Audio finished playing");
+      audio.addEventListener('ended', () => {
+        console.log("Audio playback complete");
         setStatus('');
-        URL.revokeObjectURL(audioUrl); // Clean up the URL object
-      };
+        URL.revokeObjectURL(audioUrl); // Clean up
+      });
       
-      audio.onerror = (e) => {
-        console.error("Audio playback error:", e);
-        setStatus('');
+      audio.addEventListener('error', (e) => {
+        console.error("Audio error:", e);
+        setStatus('Error playing audio');
         toast({
           title: "Audio Playback Error",
           description: "There was an error playing the audio response.",
           variant: "destructive"
         });
-      };
-      
-      // Play the audio - using catch directly on the play method
-      audio.play().catch(err => {
-        console.error("Audio playback error:", err);
-        setStatus('');
-        toast({
-          title: "Audio Playback Failed",
-          description: "Unable to play audio. Please interact with the page first.",
-          variant: "destructive"
-        });
       });
       
+      // Set the source last (after events are set up)
+      audio.src = audioUrl;
+      console.log("Audio source set to:", audioUrl);
+      
     } catch (error) {
-      console.error('Text-to-speech error:', error);
+      console.error('Error in text-to-speech:', error);
       setStatus('');
       toast({
         title: "Text-to-Speech Error",
         description: (error as any)?.message || "Failed to generate speech",
         variant: "destructive"
       });
+      
+      // Fallback to browser TTS
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        console.log("Fallback to browser TTS after error");
+      }
     }
   };
 

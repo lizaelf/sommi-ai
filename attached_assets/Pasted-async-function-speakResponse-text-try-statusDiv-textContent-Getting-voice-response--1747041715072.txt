@@ -1,0 +1,76 @@
+async function speakResponse(text) {
+  try {
+    statusDiv.textContent = 'Getting voice response...';
+    console.log("Requesting TTS for:", text.substring(0, 30) + "...");
+    
+    const response = await fetch('/api/text-to-speech', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+    
+    console.log("Audio response received, size:", response.headers.get('content-length'));
+    
+    // Get the audio data
+    const audioBlob = await response.blob();
+    console.log("Audio blob created, size:", audioBlob.size, "type:", audioBlob.type);
+    
+    // Create URL and audio element
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio();
+    
+    // Set up events before setting source
+    audio.addEventListener('canplaythrough', () => {
+      console.log("Audio ready to play");
+      statusDiv.textContent = 'Playing audio...';
+      
+      // Use user interaction to trigger play
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log("Audio playback started");
+        }).catch(error => {
+          console.error("Audio playback failed:", error);
+          // Fall back to browser TTS as a backup
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
+            console.log("Fallback to browser TTS");
+          }
+        });
+      }
+    });
+    
+    audio.addEventListener('ended', () => {
+      console.log("Audio playback complete");
+      statusDiv.textContent = '';
+      URL.revokeObjectURL(audioUrl); // Clean up
+    });
+    
+    audio.addEventListener('error', (e) => {
+      console.error("Audio error:", e);
+      statusDiv.textContent = 'Error playing audio';
+    });
+    
+    // Set the source last (after events are set up)
+    audio.src = audioUrl;
+    console.log("Audio source set to:", audioUrl);
+    
+  } catch (error) {
+    console.error('Error in text-to-speech:', error);
+    statusDiv.textContent = 'Failed to generate speech';
+    
+    // Fallback to browser TTS
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+}
