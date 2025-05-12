@@ -191,19 +191,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           <div className="mt-2 text-center">
             <button
               className="text-xs bg-[#8B0000] text-white px-3 py-1 rounded-full shadow hover:bg-[#6d0000] transition-colors"
-              onClick={(e) => {
+              onClick={() => {
                 // Call the global voice assistant function to speak this message
                 if (window.voiceAssistant && typeof window.voiceAssistant.speakResponse === 'function') {
                   window.voiceAssistant.speakResponse(message.content);
-                  
-                  // Check if this is a pause action by looking at current button state
-                  const button = e.currentTarget as HTMLButtonElement;
-                  const isPausing = button.textContent?.includes('Pause');
-                  
-                  // Update button text based on action (toggle between play/pause)
-                  button.textContent = isPausing 
-                    ? '🔊 Play Response Audio' 
-                    : '⏸️ Pause Response Audio';
                 }
               }}
             >

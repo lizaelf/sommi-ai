@@ -2,7 +2,6 @@
 let lastAudioBlob = null;
 let statusDiv = null;
 let lastInputWasVoice = false;
-let currentAudioElement = null; // Track the currently playing audio element
 
 // DOM load event to initialize everything
 document.addEventListener('DOMContentLoaded', function() {
@@ -187,36 +186,11 @@ async function speakResponse(text) {
     lastAudioBlob = await response.blob();
     console.log("Audio received:", lastAudioBlob.size, "bytes", "type:", lastAudioBlob.type);
     
-    // Check if we already have an audio element playing
-    if (currentAudioElement) {
-      // If audio is playing, pause it and return
-      if (!currentAudioElement.paused) {
-        console.log("Pausing current audio");
-        currentAudioElement.pause();
-        if (statusDiv) statusDiv.textContent = 'Audio paused';
-        return;
-      } else {
-        // If the same audio is paused, resume it
-        console.log("Resuming current audio");
-        currentAudioElement.play()
-          .then(() => {
-            if (statusDiv) statusDiv.textContent = 'Resuming playback...';
-          })
-          .catch(err => {
-            console.error("Resume playback error:", err);
-          });
-        return;
-      }
-    }
-    
     // Create audio element and append to document - this helps with some browser issues
     const audioElement = document.createElement('audio');
     audioElement.id = 'audio-player';
     audioElement.style.display = 'none';
     document.body.appendChild(audioElement);
-    
-    // Store reference to current audio element
-    currentAudioElement = audioElement;
     
     // Create object URL
     const url = URL.createObjectURL(lastAudioBlob);
@@ -295,10 +269,6 @@ async function speakResponse(text) {
     audioElement.onended = () => {
       URL.revokeObjectURL(url);
       if (statusDiv) statusDiv.textContent = '';
-      
-      // Reset the current audio element reference
-      currentAudioElement = null;
-      
       // Remove the audio element
       if (audioElement.parentNode) {
         audioElement.parentNode.removeChild(audioElement);
