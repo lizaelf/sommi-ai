@@ -382,61 +382,6 @@ function showPlayButton() {
   });
 }
 
-// Helper function to send a message and handle the response
-function sendMessage(text) {
-  console.log("Sending message:", text);
-  
-  // Create user message element
-  const conversation = document.getElementById('conversation');
-  if (conversation) {
-    // Add user message
-    const userMessage = document.createElement('div');
-    userMessage.className = 'message user';
-    userMessage.setAttribute('data-role', 'user');
-    userMessage.textContent = text;
-    conversation.appendChild(userMessage);
-    
-    // Show loading indicator
-    const loadingMessage = document.createElement('div');
-    loadingMessage.className = 'message assistant loading';
-    loadingMessage.textContent = 'Thinking...';
-    conversation.appendChild(loadingMessage);
-    
-    // Call your AI API
-    fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message: text })
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Remove loading indicator
-      loadingMessage.remove();
-      
-      // Add AI response
-      const assistantMessage = document.createElement('div');
-      assistantMessage.className = 'message assistant';
-      assistantMessage.setAttribute('data-role', 'assistant');
-      assistantMessage.textContent = data.response || data.message.content;
-      conversation.appendChild(assistantMessage);
-      
-      // The MutationObserver will handle speaking the response
-      // if lastInputWasVoice is true
-    })
-    .catch(error => {
-      console.error('Error calling chat API:', error);
-      loadingMessage.textContent = 'Error: Failed to get response';
-      loadingMessage.className = 'message error';
-    });
-  }
-  
-  // Dispatch event for frameworks like React
-  const event = new CustomEvent('voiceMessage', { detail: { text } });
-  document.dispatchEvent(event);
-}
-
 // Export functions for use in React components if needed
 if (typeof window !== 'undefined') {
   window.voiceAssistant = {
