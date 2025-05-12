@@ -1,12 +1,9 @@
-import type { Express, Request, Response } from "express";
+import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { chatCompletion, checkApiStatus } from "./openai";
 import { chatCompletionRequestSchema } from "@shared/schema";
 import { z } from "zod";
-import multer from "multer";
-import { handleTTSRequest } from "./routes/tts";
-import { handleSTTRequest } from "./routes/stt";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API status endpoint
@@ -192,30 +189,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-
-  // Setup multer for file uploads (speech-to-text)
-  const storage = multer.memoryStorage();
-  const upload = multer({ 
-    storage: storage,
-    limits: {
-      fileSize: 10 * 1024 * 1024, // 10MB max file size
-    },
-    fileFilter: (_req, file, cb) => {
-      // Accept audio files only
-      const acceptedTypes = ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/webm'];
-      if (acceptedTypes.includes(file.mimetype)) {
-        cb(null, true);
-      } else {
-        cb(null, false);
-      }
-    }
-  });
-
-  // Text-to-speech endpoint
-  app.post("/api/tts", handleTTSRequest);
-  
-  // Speech-to-text endpoint
-  app.post("/api/stt", upload.single('audio'), handleSTTRequest);
 
   const httpServer = createServer(app);
   return httpServer;
