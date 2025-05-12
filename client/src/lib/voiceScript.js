@@ -1,8 +1,222 @@
-// Add this code to the top of your script.js file (keep your existing code below it)
+// Global variables
+window.lastInputWasVoice = false;
+let audioContext = null;
+let statusDiv = null;
+let audioDebugDiv = null;
+let currentAudio = null;
+let volume = 1.0;
 
-// Immediate fix: Set up a global function to directly speak any text response
+// Initialize everything when the DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("Voice Sommelier Initializing...");
+  statusDiv = document.getElementById('status');
+  
+  // Add audio context status at the top of the screen
+  addAudioContextStatus();
+  
+  // Set up the mic button and speech recognition
+  setupSpeechRecognition();
+  
+  // Initialize audio context
+  initAudioContext(false);
+  
+  // Add the speak last response button to the controls section
+  addSpeakLastResponseButton();
+  
+  // Set up volume control if it exists
+  const volumeControl = document.getElementById('volume-control');
+  if (volumeControl) {
+    volumeControl.addEventListener('input', function() {
+      volume = parseFloat(this.value);
+      updateDebugStatus(`Volume set to ${volume}`);
+      if (currentAudio) currentAudio.volume = volume;
+    });
+  }
+  
+  // Add test buttons functionality
+  setupTestButtons();
+  
+  // Add debug interface if it doesn't exist
+  addDebugInterface();
+  
+  updateDebugStatus('Voice assistant initialized');
+});
+
+// Add audio context status indicator at the top of the screen
+function addAudioContextStatus() {
+  const statusBar = document.createElement('div');
+  statusBar.id = 'audio-context-status';
+  statusBar.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #333; color: white; padding: 5px 10px; text-align: center; font-size: 12px; z-index: 9999;';
+  statusBar.innerHTML = 'Audio Context: <span id="audio-status-value">Initializing...</span>';
+  document.body.appendChild(statusBar);
+  
+  // Function to update the status
+  window.updateAudioContextStatus = function(state) {
+    const statusValue = document.getElementById('audio-status-value');
+    if (statusValue) {
+      statusValue.textContent = state;
+      statusValue.style.color = (state === 'running') ? '#4CAF50' : '#FF5722';
+    }
+  };
+}
+
+// Add speak last response button to the controls area
+function addSpeakLastResponseButton() {
+  // Find the controls container
+  const controlsContainer = document.querySelector('.controls');
+  
+  if (controlsContainer) {
+    // Create the button
+    const speakLastBtn = document.createElement('button');
+    speakLastBtn.id = 'speak-last-btn';
+    speakLastBtn.innerHTML = '🔊 Speak Last Response';
+    speakLastBtn.style.marginLeft = '10px';
+    
+    // Add click handler
+    speakLastBtn.addEventListener('click', function() {
+      const conversation = document.getElementById('conversation');
+      if (conversation) {
+        const messages = conversation.querySelectorAll('.message.assistant');
+        if (messages.length > 0) {
+          const lastMessage = messages[messages.length - 1];
+          window.speakDirectly(lastMessage.textContent);
+        }
+      }
+    });
+    
+    // Add to the controls
+    controlsContainer.appendChild(speakLastBtn);
+  } else {
+    // If no controls container exists, add it near the top
+    const speakLastBtn = document.createElement('button');
+    speakLastBtn.id = 'speak-last-btn';
+    speakLastBtn.innerHTML = '🔊 Speak Last Response';
+    speakLastBtn.style.cssText = 'position: fixed; top: 40px; right: 20px; background: #8B0000; color: white; padding: 10px; border: none; border-radius: 5px; z-index: 9998; cursor: pointer;';
+    
+    speakLastBtn.onclick = function() {
+      const conversation = document.getElementById('conversation');
+      if (conversation) {
+        const messages = conversation.querySelectorAll('.message.assistant');
+        if (messages.length > 0) {
+          const lastMessage = messages[messages.length - 1];
+          window.speakDirectly(lastMessage.textContent);
+        }
+      }
+    };
+    
+    document.body.appendChild(speakLastBtn);
+  }
+}
+
+// Add debug interface if it doesn't exist
+function addDebugInterface() {
+  if (!document.getElementById('audio-debug')) {
+    const debugDiv = document.createElement('div');
+    debugDiv.innerHTML = `
+      <div style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; color: white; font-size: 12px; z-index: 1000;">
+        <div id="audio-debug">Audio Status: Not initialized</div>
+        <button id="test-browser-speech">Test Browser Speech</button>
+        <button id="test-audio-context">Initialize Audio</button>
+        <button id="simulate-voice">Simulate Voice Question</button>
+        <div>
+          <label for="volume-control">Volume:</label>
+          <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1">
+        </div>
+      </div>
+    `;
+    document.body.appendChild(debugDiv);
+    
+    // Initialize the references again
+    audioDebugDiv = document.getElementById('audio-debug');
+    
+    // Add event listeners to the newly created buttons
+    setupTestButtons();
+  }
+}
+
+// Set up the test buttons
+function setupTestButtons() {
+  // Test browser speech
+  const testBrowserSpeech = document.getElementById('test-browser-speech');
+  if (testBrowserSpeech) {
+    testBrowserSpeech.addEventListener('click', function() {
+      updateDebugStatus('Testing browser speech...');
+      const utterance = new SpeechSynthesisUtterance('Hello, I am the sommelier voice assistant. Can you hear me?');
+      utterance.volume = volume;
+      utterance.onend = () => updateDebugStatus('Browser speech test complete');
+      window.speechSynthesis.speak(utterance);
+    });
+  }
+  
+  // Initialize audio context
+  const testAudioContext = document.getElementById('test-audio-context');
+  if (testAudioContext) {
+    testAudioContext.addEventListener('click', function() {
+      initAudioContext(true);
+    });
+  }
+  
+  // Simulate voice question
+  const simulateVoiceBtn = document.getElementById('simulate-voice');
+  if (simulateVoiceBtn) {
+    simulateVoiceBtn.addEventListener('click', function() {
+      updateDebugStatus("Simulating voice query");
+      window.lastInputWasVoice = true; // Explicitly set this
+      sendMessage("What wine pairs well with grilled salmon?");
+    });
+  }
+}
+
+// Initialize audio context
+function initAudioContext(force) {
+  if (!audioContext || force) {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioContext();
+      
+      // Resume the context (needed for newer browsers)
+      audioContext.resume().then(() => {
+        updateDebugStatus(`Audio context initialized. State: ${audioContext.state}`);
+        
+        // Update the status bar at the top
+        if (window.updateAudioContextStatus) {
+          window.updateAudioContextStatus(audioContext.state);
+        }
+        
+        // Create and play a silent sound to fully activate audio
+        const silentOscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 0.001; // Virtually silent
+        silentOscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        silentOscillator.start();
+        silentOscillator.stop(audioContext.currentTime + 0.001);
+      }).catch(e => {
+        updateDebugStatus(`Failed to resume audio context: ${e.message}`);
+        if (window.updateAudioContextStatus) {
+          window.updateAudioContextStatus('failed');
+        }
+      });
+    } catch (e) {
+      updateDebugStatus(`Audio context creation failed: ${e.message}`);
+      if (window.updateAudioContextStatus) {
+        window.updateAudioContextStatus('error');
+      }
+    }
+  } else if (audioContext.state === 'suspended') {
+    audioContext.resume().then(() => {
+      updateDebugStatus(`Audio context resumed. State: ${audioContext.state}`);
+      if (window.updateAudioContextStatus) {
+        window.updateAudioContextStatus(audioContext.state);
+      }
+    });
+  }
+}
+
+// Direct speak function to bypass all the complexity
 window.speakDirectly = function(text) {
   console.log("DIRECT SPEAK REQUEST:", text.substring(0, 30) + "...");
+  updateDebugStatus("Direct speak request received");
   
   // Attempt OpenAI TTS first
   fetch('/api/text-to-speech', {
@@ -16,6 +230,7 @@ window.speakDirectly = function(text) {
   })
   .then(blob => {
     console.log("Audio received: Size =", blob.size, "bytes");
+    updateDebugStatus(`Audio received: ${blob.size} bytes`);
     
     // Create and directly play the audio
     const audio = new Audio();
@@ -24,8 +239,11 @@ window.speakDirectly = function(text) {
     // Force audio to play with user interaction (needed for first play)
     const playPromise = audio.play();
     if (playPromise) {
-      playPromise.catch(error => {
+      playPromise.then(() => {
+        updateDebugStatus("Audio playing successfully");
+      }).catch(error => {
         console.error("Auto-play failed:", error);
+        updateDebugStatus("Auto-play failed - manual play required");
         
         // Show a very visible play button if autoplay fails
         const playButton = document.createElement('button');
@@ -43,9 +261,11 @@ window.speakDirectly = function(text) {
   })
   .catch(error => {
     console.error("Error playing audio:", error);
+    updateDebugStatus(`Error playing audio: ${error.message}`);
     
     // Fallback to browser's speech synthesis
     if ('speechSynthesis' in window) {
+      updateDebugStatus("Falling back to browser speech synthesis");
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';
       window.speechSynthesis.speak(utterance);
@@ -53,83 +273,289 @@ window.speakDirectly = function(text) {
   });
 };
 
-// Add this direct override to your sendMessage function
-const originalSendMessage = window.sendMessage || null;
-window.sendMessage = function(text) {
-  console.log("Voice-enabled send message:", text);
-  
-  // Use your existing sendMessage implementation
-  if (originalSendMessage) {
-    originalSendMessage(text);
-  } else {
-    // Fallback implementation if sendMessage doesn't exist
-    const conversation = document.getElementById('conversation');
-    if (conversation) {
-      const userMessage = document.createElement('div');
-      userMessage.className = 'message user';
-      userMessage.textContent = text;
-      conversation.appendChild(userMessage);
-      
-      // Fetch response from API
-      fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      })
-      .then(response => response.json())
-      .then(data => {
-        const assistantMessage = document.createElement('div');
-        assistantMessage.className = 'message assistant';
-        assistantMessage.setAttribute('data-role', 'assistant');
-        assistantMessage.textContent = data.response;
-        conversation.appendChild(assistantMessage);
-        
-        // DIRECTLY speak the response
-        window.speakDirectly(data.response);
-      });
-    }
+// Set up speech recognition
+function setupSpeechRecognition() {
+  const micButton = document.getElementById('mic-button');
+  if (!micButton) {
+    updateDebugStatus('Microphone button not found');
+    return;
   }
-};
-
-// Add this code to speak any existing assistant messages
-document.addEventListener('DOMContentLoaded', function() {
-  // Add a direct "Speak Last Response" button
-  const speakLastBtn = document.createElement('button');
-  speakLastBtn.textContent = '🔊 Speak Last Response';
-  speakLastBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #8B0000; color: white; padding: 10px; border: none; border-radius: 5px; z-index: 9999; cursor: pointer;';
   
-  speakLastBtn.onclick = function() {
-    const conversation = document.getElementById('conversation');
-    if (conversation) {
-      const messages = conversation.querySelectorAll('.message.assistant');
-      if (messages.length > 0) {
-        const lastMessage = messages[messages.length - 1];
-        window.speakDirectly(lastMessage.textContent);
+  let recognition = null;
+  if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    // Define what happens when speech is recognized
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      updateDebugStatus(`Voice input recognized: "${transcript}"`);
+      
+      // CRITICAL: Set flag to true for voice response
+      window.lastInputWasVoice = true;
+      console.log("VOICE INPUT DETECTED - Will speak response");
+      
+      if (statusDiv) statusDiv.textContent = 'Processing your question...';
+      
+      // Send the message
+      sendMessage(transcript);
+    };
+    
+    // Handle recognition end
+    recognition.onend = function() {
+      micButton.classList.remove('listening');
+      if (statusDiv) statusDiv.textContent = '';
+    };
+    
+    // Handle recognition start
+    recognition.onstart = function() {
+      micButton.classList.add('listening');
+      if (statusDiv) statusDiv.textContent = 'Listening for your question...';
+      updateDebugStatus('Listening for voice input...');
+    };
+    
+    // Handle recognition errors
+    recognition.onerror = function(event) {
+      console.error('Speech recognition error:', event.error);
+      if (statusDiv) statusDiv.textContent = `Error: ${event.error}`;
+      micButton.classList.remove('listening');
+      updateDebugStatus(`Recognition error: ${event.error}`);
+      window.lastInputWasVoice = false;
+    };
+    
+    // Set up microphone button click handler
+    micButton.addEventListener('click', function() {
+      // Force audio context initialization on click
+      initAudioContext(true);
+      
+      if (micButton.classList.contains('listening')) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch (error) {
+          console.error('Failed to start speech recognition:', error);
+          alert("Failed to start speech recognition. Please try again.");
+        }
       }
+    });
+  } else {
+    micButton.disabled = true;
+    updateDebugStatus('Speech recognition not supported in this browser');
+  }
+}
+
+// Send message to the AI
+function sendMessage(text) {
+  const formattedQuestion = text.trim();
+  
+  if (!formattedQuestion) {
+    return;
+  }
+  
+  // Find the submit function from the React app
+  if (typeof window.voiceAssistant?.sendMessage === 'function') {
+    window.voiceAssistant.sendMessage(formattedQuestion);
+  } else {
+    // Fallback for testing
+    console.log("Using fallback message handling (no React integration available)");
+    updateDebugStatus("Using fallback API request");
+    
+    // Use a fallback API call for testing
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: formattedQuestion }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Update status
+      updateDebugStatus("Response received from server");
+      
+      // If lastInputWasVoice is true, automatically speak the response
+      if (window.lastInputWasVoice) {
+        window.speakDirectly(data.response || "I'm sorry, I couldn't process your request.");
+      } else {
+        updateDebugStatus("Not auto-speaking response (not a voice query)");
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      updateDebugStatus(`API error: ${error.message}`);
+    });
+  }
+}
+
+// Handle the AI's response
+async function playResponse(text) {
+  if (!text) return;
+  
+  try {
+    // First check if the user used voice input
+    if (window.lastInputWasVoice) {
+      updateDebugStatus('Voice input detected, speaking response...');
+      
+      try {
+        // Try to use our direct speak method first
+        if (typeof window.speakDirectly === 'function') {
+          window.speakDirectly(text);
+          return;
+        }
+        
+        // Otherwise use our OpenAI TTS method
+        await playWithOpenAITTS(text);
+      } catch (e) {
+        console.error("OpenAI TTS failed:", e);
+        updateDebugStatus("OpenAI TTS failed, using browser speech");
+        // Fallback to browser speech
+        await playWithBrowserSpeech(text);
+      }
+    } else {
+      updateDebugStatus('Not speaking response (not a voice query)');
     }
+  } catch (e) {
+    console.error("Voice response error:", e);
+    updateDebugStatus(`Voice response error: ${e.message}`);
+  }
+}
+
+// Play audio using OpenAI TTS
+async function playWithOpenAITTS(text) {
+  if (statusDiv) statusDiv.textContent = 'Getting voice response...';
+  updateDebugStatus('Requesting TTS from server...');
+  
+  try {
+    const response = await fetch('/api/text-to-speech', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    
+    const audioBlob = await response.blob();
+    if (!audioBlob || audioBlob.size === 0) {
+      throw new Error('Empty audio received from server');
+    }
+    
+    updateDebugStatus(`Audio received: ${audioBlob.size} bytes`);
+    
+    // Create audio element and play
+    const audio = new Audio();
+    audio.src = URL.createObjectURL(audioBlob);
+    
+    // Set volume
+    audio.volume = volume;
+    
+    // Keep reference to current audio
+    currentAudio = audio;
+    
+    // Handle playback
+    audio.onended = () => {
+      if (statusDiv) statusDiv.textContent = '';
+      updateDebugStatus('TTS playback complete');
+    };
+    
+    // Play and handle errors
+    try {
+      await audio.play();
+      updateDebugStatus('TTS playing...');
+    } catch (playError) {
+      console.error('Autoplay prevented:', playError);
+      updateDebugStatus('Autoplay prevented - showing play button');
+      showPlayButton(audio);
+    }
+  } catch (error) {
+    console.error('TTS Error:', error);
+    updateDebugStatus(`TTS Error: ${error.message}`);
+    throw error; // Rethrow for fallback handling
+  } finally {
+    if (statusDiv) statusDiv.textContent = '';
+  }
+}
+
+// Fallback to browser's speech synthesis
+async function playWithBrowserSpeech(text) {
+  updateDebugStatus('Using browser speech synthesis');
+  return new Promise((resolve, reject) => {
+    try {
+      if (!('speechSynthesis' in window)) {
+        reject(new Error('Browser speech synthesis not supported'));
+        return;
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.volume = volume;
+      
+      utterance.onend = () => {
+        updateDebugStatus('Browser speech complete');
+        resolve();
+      };
+      
+      utterance.onerror = (event) => {
+        updateDebugStatus(`Browser speech error: ${event.error}`);
+        reject(new Error(`Speech synthesis error: ${event.error}`));
+      };
+      
+      window.speechSynthesis.speak(utterance);
+      updateDebugStatus('Browser speech playing...');
+    } catch (error) {
+      updateDebugStatus(`Browser speech initialization error: ${error.message}`);
+      reject(error);
+    }
+  });
+}
+
+// Show manual play button when autoplay fails
+function showPlayButton(audio) {
+  const playButton = document.createElement('button');
+  playButton.textContent = '▶️ Play Voice Response';
+  playButton.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ff0000; color: white; padding: 10px 20px; border: none; border-radius: 8px; z-index: 9999; cursor: pointer; font-size: 16px;';
+  
+  playButton.onclick = () => {
+    audio.play()
+      .then(() => {
+        updateDebugStatus('Manual play successful');
+      })
+      .catch(error => {
+        updateDebugStatus(`Manual play failed: ${error.message}`);
+      });
+    document.body.removeChild(playButton);
   };
   
-  document.body.appendChild(speakLastBtn);
+  document.body.appendChild(playButton);
+}
+
+// Update debug status display
+function updateDebugStatus(message) {
+  if (audioDebugDiv) {
+    audioDebugDiv.textContent = `Audio Status: ${message}`;
+  }
   
-  // Override your microphone button to ensure it triggers voice mode
-  const micButton = document.getElementById('mic-button');
-  if (micButton) {
-    const originalOnclick = micButton.onclick;
-    micButton.onclick = function(event) {
-      console.log("Microphone button clicked - setting voice mode");
-      window.lastInputWasVoice = true;
-      if (originalOnclick) originalOnclick.call(this, event);
-    };
+  console.log("Voice Assistant:", message);
+}
+
+// Check if audio context is initialized when window loads
+window.addEventListener('DOMContentLoaded', () => {
+  if (audioContext) {
+    console.log("Audio context started successfully");
+    updateDebugStatus('Audio context initialized on page load');
   }
 });
 
-// Global variables
-window.lastInputWasVoice = false;
-let audioContext = null;
-let statusDiv = null;
-let audioDebugDiv = null;
-let currentAudio = null;
-let volume = 1.0;
+// Initialize audio context when user interacts with the page
+window.addEventListener('click', () => {
+  initAudioContext(false);
+  console.log("Audio context initialized on user interaction");
+});
 
 // Initialize everything when the DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
