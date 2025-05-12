@@ -70,6 +70,33 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch (e) {
     console.warn('Unable to initialize AudioContext:', e);
   }
+  
+  // Add a test button handler if it exists
+  const testButton = document.getElementById('test-button');
+  if (testButton) {
+    testButton.addEventListener('click', function() {
+      console.log("Test button clicked");
+      const testText = "Hello, I'm your AI sommelier. This is a test of the voice system.";
+      speakResponse(testText);
+    });
+  }
+
+  // Add a test message button handler if it exists
+  const addMessageButton = document.getElementById('add-message');
+  if (addMessageButton) {
+    addMessageButton.addEventListener('click', function() {
+      console.log("Adding test message");
+      const conversation = document.getElementById('conversation');
+      if (conversation) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message assistant';
+        messageDiv.setAttribute('data-role', 'assistant');
+        messageDiv.textContent = "This is a test response about wine. Cabernet Sauvignon pairs well with red meat dishes.";
+        conversation.appendChild(messageDiv);
+        speakLastAssistantMessage();
+      }
+    });
+  }
 });
 
 // Modified version of the speakResponse function
@@ -91,45 +118,119 @@ async function speakResponse(text) {
     
     // Save the audio blob for later use
     lastAudioBlob = await response.blob();
-    console.log("Audio received:", lastAudioBlob.size, "bytes");
+    console.log("Audio received:", lastAudioBlob.size, "bytes", "type:", lastAudioBlob.type);
+    
+    // Create audio element and append to document - this helps with some browser issues
+    const audioElement = document.createElement('audio');
+    audioElement.id = 'audio-player';
+    audioElement.style.display = 'none';
+    document.body.appendChild(audioElement);
+    
+    // Create object URL
+    const url = URL.createObjectURL(lastAudioBlob);
+    audioElement.src = url;
+    
+    // Set up event listeners for the audio element
+    audioElement.oncanplaythrough = () => {
+      console.log("Audio can play through");
+    };
+    
+    audioElement.onerror = (e) => {
+      console.error("Audio error:", e);
+    };
     
     // Show the audio controls
     const audioControls = document.getElementById('audio-controls');
     if (audioControls) {
       audioControls.style.display = 'block';
+      // Force the controls to be visible
+      audioControls.setAttribute('style', 'display: block !important; margin-top: 15px; text-align: center;');
     }
     
-    // Set up the play button
+    // Set up the play button with a direct onclick handler
     const playBtn = document.getElementById('play-audio-btn');
     if (playBtn) {
-      playBtn.onclick = playLastAudio;
+      // Remove any existing event listeners
+      playBtn.replaceWith(playBtn.cloneNode(true));
+      
+      // Get the fresh button and add a new click handler
+      const newPlayBtn = document.getElementById('play-audio-btn');
+      newPlayBtn.addEventListener('click', function() {
+        console.log("Play button clicked");
+        audioElement.play()
+          .then(() => {
+            console.log("Audio playback started successfully");
+            statusDiv.textContent = 'Playing...';
+          })
+          .catch(err => {
+            console.error("Audio playback error:", err);
+            statusDiv.textContent = 'Error playing audio';
+            
+            // Fallback to browser's built-in speech synthesis
+            if ('speechSynthesis' in window) {
+              console.log("Trying browser speech synthesis");
+              const utterance = new SpeechSynthesisUtterance(text);
+              utterance.lang = 'en-US';
+              window.speechSynthesis.speak(utterance);
+              statusDiv.textContent = 'Using browser speech...';
+            }
+          });
+      });
+      
+      // Make the button very noticeable
+      newPlayBtn.style.backgroundColor = '#8B0000';
+      newPlayBtn.style.color = 'white';
+      newPlayBtn.style.padding = '10px 20px';
+      newPlayBtn.style.border = 'none';
+      newPlayBtn.style.borderRadius = '5px';
+      newPlayBtn.style.cursor = 'pointer';
+      newPlayBtn.textContent = 'Play Response Audio';
     }
     
-    statusDiv.textContent = 'Audio ready to play';
+    statusDiv.textContent = 'Audio ready - Click play button to listen';
+    
+    // Clean up URL object when audio ends
+    audioElement.onended = () => {
+      URL.revokeObjectURL(url);
+      statusDiv.textContent = '';
+      // Remove the audio element
+      if (audioElement.parentNode) {
+        audioElement.parentNode.removeChild(audioElement);
+      }
+    };
+    
   } catch (error) {
     console.error("Error:", error);
     statusDiv.textContent = 'Failed to get audio';
   }
 }
 
+// This function is now handled within speakResponse
 function playLastAudio() {
-  if (!lastAudioBlob) {
-    console.error("No audio available");
-    return;
+  console.log("Play audio called, but this function is deprecated");
+  
+  // For backward compatibility, try to find and play the audio element
+  const audioElement = document.getElementById('audio-player');
+  if (audioElement) {
+    console.log("Found audio element, playing");
+    audioElement.play()
+      .then(() => console.log("Playback started"))
+      .catch(err => console.error("Playback error:", err));
+  } else if (lastAudioBlob) {
+    console.log("No audio element, but blob exists");
+    const url = URL.createObjectURL(lastAudioBlob);
+    const audio = new Audio(url);
+    
+    audio.onended = () => {
+      URL.revokeObjectURL(url);
+    };
+    
+    audio.play().catch(err => {
+      console.error("Playback error:", err);
+    });
+  } else {
+    console.error("No audio available to play");
   }
-  
-  const url = URL.createObjectURL(lastAudioBlob);
-  const audio = new Audio(url);
-  
-  audio.onended = () => {
-    URL.revokeObjectURL(url);
-  };
-  
-  audio.play().catch(err => {
-    console.error("Playback error:", err);
-  });
-  
-  statusDiv.textContent = 'Playing...';
 }
 
 // Helper function to send a message (you'll need to adapt this)
