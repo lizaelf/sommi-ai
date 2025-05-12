@@ -116,19 +116,48 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   
   // Function to play audio
   const playAudio = () => {
-    if (!audioRef.current || !audioUrl) return;
+    if (!audioRef.current || !audioUrl) {
+      console.log("Cannot play audio - missing audioRef or audioUrl");
+      return;
+    }
     
     try {
-      // Play the audio
-      audioRef.current.play()
-        .then(() => {
-          console.log("Audio playback started");
-          setIsPlaying(true);
-        })
-        .catch(error => {
-          console.error("Error playing audio:", error);
-          setIsPlaying(false);
-        });
+      console.log("Attempting to play audio with URL:", audioUrl);
+      
+      // Make sure audio is ready to play
+      if (audioRef.current.readyState >= 2) {
+        // Ready to play
+        audioRef.current.play()
+          .then(() => {
+            console.log("Audio playback started successfully");
+            setIsPlaying(true);
+          })
+          .catch(error => {
+            console.error("Error playing audio:", error);
+            setIsPlaying(false);
+          });
+      } else {
+        // Wait for it to be ready
+        console.log("Audio not ready yet (readyState:", audioRef.current.readyState, ") - setting up event listener");
+        const canPlayHandler = () => {
+          console.log("canplay event fired - now playing");
+          audioRef.current?.play()
+            .then(() => {
+              console.log("Audio playback started after canplay event");
+              setIsPlaying(true);
+            })
+            .catch(e => console.error("Error playing after canplay:", e));
+          
+          // Remove the event listener
+          audioRef.current?.removeEventListener('canplay', canPlayHandler);
+        };
+        
+        // Add event listener
+        audioRef.current.addEventListener('canplay', canPlayHandler);
+        
+        // Also try to load it
+        audioRef.current.load();
+      }
     } catch (error) {
       console.error("Error in playAudio:", error);
     }
@@ -149,7 +178,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   
   // Toggle play/pause
   const toggleAudio = async () => {
-    console.log("Toggle audio clicked - isUser:", isUser, "isPlaying:", isPlaying);
+    console.log("Toggle audio button clicked - isUser:", isUser, "isPlaying:", isPlaying, "audioUrl:", !!audioUrl);
     
     // Only allow for assistant messages
     if (isUser) return;
@@ -361,17 +390,20 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
   return (
     <div className="w-full my-2 sm:my-3">
-      {/* Hidden audio element */}
-      {!isUser && audioUrl && (
+      {/* Hidden audio element - using key to force reload when URL changes */}
+      {!isUser && (
         <audio 
+          key={audioUrl || 'no-audio'}
           ref={audioRef}
-          src={audioUrl}
+          src={audioUrl || ''}
           onEnded={handleAudioEnded}
-          onError={() => {
-            console.error("Audio playback error");
+          onCanPlay={() => console.log("Audio can now play")}
+          onError={(e) => {
+            console.error("Audio playback error", e);
             setIsPlaying(false);
           }}
           style={{ display: 'none' }}
+          preload="auto"
         />
       )}
       
@@ -389,12 +421,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           
           {/* Play/Pause Button - Always show for assistant messages */}
           {!isUser && (
-            <div className="absolute top-0 right-0 mt-1 mr-1">
+            <div className="absolute top-0 right-0 mt-1 mr-1 z-10 pointer-events-auto">
               <button 
-                onClick={toggleAudio}
-                className="p-1.5 rounded-full bg-[#6A53E7] text-white hover:bg-[#5842d6] transition-all"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log("Play button DOM click event");
+                  toggleAudio();
+                }}
+                className="p-2 rounded-full bg-[#6A53E7] text-white hover:bg-[#5842d6] transition-all cursor-pointer shadow-md hover:shadow-lg active:scale-95"
                 disabled={isLoading}
                 title={isPlaying ? "Pause audio" : "Play audio"}
+                style={{ pointerEvents: 'auto' }}
               >
                 {isPlaying ? (
                   // Pause icon
