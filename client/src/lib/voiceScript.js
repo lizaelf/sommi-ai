@@ -115,8 +115,6 @@ function addDebugInterface() {
     debugDiv.innerHTML = `
       <div style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; color: white; font-size: 12px; z-index: 1000;">
         <div id="audio-debug">Audio Status: Not initialized</div>
-        <button id="test-browser-speech">Test Browser Speech</button>
-        <button id="test-audio-context">Initialize Audio</button>
         <button id="simulate-voice">Simulate Voice Question</button>
         <div>
           <label for="volume-control">Volume:</label>
