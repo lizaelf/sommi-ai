@@ -48,14 +48,44 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
         recognitionRef.current.onerror = (event: any) => {
           console.error('Speech recognition error:', event.error);
-          setStatus(`Error: ${event.error}`);
           setIsListening(false);
           
-          toast({
-            title: "Voice Recognition Error",
-            description: `Error: ${event.error}. Please try again.`,
-            variant: "destructive"
-          });
+          // Handle different error types with specific messages
+          let errorMsg = '';
+          switch(event.error) {
+            case 'no-speech':
+              errorMsg = 'No speech was detected. Please try again speaking more clearly.';
+              setStatus('No speech detected');
+              break;
+            case 'audio-capture':
+              errorMsg = 'Could not access your microphone. Please check your permissions.';
+              setStatus('Microphone error');
+              break;
+            case 'not-allowed':
+              errorMsg = 'Microphone access was denied. Please allow microphone access in your browser settings.';
+              setStatus('Access denied');
+              break;
+            case 'network':
+              errorMsg = 'Network error. Please check your connection and try again.';
+              setStatus('Network error');
+              break;
+            case 'aborted':
+              // Don't show toast for manually aborted recognition
+              setStatus('');
+              return;
+            default:
+              errorMsg = `Error: ${event.error}. Please try again.`;
+              setStatus(`Recognition error`);
+          }
+          
+          // Only show toast for actual errors
+          if (event.error !== 'aborted') {
+            toast({
+              title: "Voice Recognition Issue",
+              description: errorMsg,
+              variant: "destructive"
+            });
+          }
         };
       }
     }
@@ -69,6 +99,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   }, [onSendMessage, toast]);
 
   const toggleListening = () => {
+    // Step 1: Check if speech recognition is supported
     if (!recognitionRef.current) {
       toast({
         title: "Speech Recognition Not Supported",
@@ -78,20 +109,118 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
 
+    // Step 2: Handle stopping if already listening
     if (isListening) {
-      recognitionRef.current.stop();
-    } else {
       try {
+        recognitionRef.current.stop();
+        setStatus('');
+      } catch (error) {
+        console.error('Failed to stop speech recognition:', error);
+      }
+      return;
+    }
+    
+    // Step 3: Initialize audio context for better browser compatibility
+    try {
+      // Ensure audio context is running (needed for some browsers)
+      if (typeof window !== 'undefined' && window.AudioContext) {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+      }
+    } catch (error) {
+      console.error('Audio context initialization error:', error);
+    }
+    
+    // Step 4: Start listening with better error handling
+    try {
+      // Start recognition only if not currently processing
+      if (!isProcessing) {
+        // Reset any previous instance (helps with repeated errors)
+        if (recognitionRef.current) {
+          try {
+            recognitionRef.current.abort();
+          } catch (e) {}
+          
+          // Recreate recognition instance to avoid browser bugs
+          const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+          if (SpeechRecognition) {
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.lang = 'en-US';
+            recognitionRef.current.continuous = false;
+            recognitionRef.current.interimResults = false;
+            
+            // Re-attach all event handlers with enhanced result processing
+            recognitionRef.current.onresult = (event: any) => {
+              try {
+                // Get the transcript and confidence score
+                const transcript = event.results[0][0].transcript;
+                const confidence = event.results[0][0].confidence;
+                
+                // Log for debugging
+                console.log(`Speech recognized: "${transcript}" (confidence: ${confidence.toFixed(2)})`);
+                
+                // Only process if we have a meaningful transcript
+                if (transcript && transcript.trim().length > 0) {
+                  setStatus('Processing your question...');
+                  setUsedVoiceInput(true);
+                  
+                  // Notify the user if confidence is low but still process the request
+                  if (confidence < 0.5) {
+                    toast({
+                      title: "Low confidence recognition",
+                      description: "I'm not entirely sure I heard you correctly. I'll try my best to answer.",
+                      variant: "default"
+                    });
+                  }
+                  
+                  // Send the message
+                  onSendMessage(transcript);
+                } else {
+                  // Handle empty transcript case
+                  setStatus('No speech detected');
+                  toast({
+                    title: "Voice Recognition Issue",
+                    description: "I couldn't detect what you said. Please try again speaking more clearly.",
+                    variant: "destructive"
+                  });
+                }
+              } catch (error) {
+                console.error("Error processing speech recognition result:", error);
+                setStatus('Recognition error');
+                setIsListening(false);
+              }
+            };
+            
+            recognitionRef.current.onend = () => {
+              setIsListening(false);
+              setStatus('');
+            };
+            
+            recognitionRef.current.onstart = () => {
+              setIsListening(true);
+              setStatus('Listening for your question...');
+            };
+            
+            // Error handler is already defined in useEffect
+          }
+        }
+        
+        // Start the recognition
         recognitionRef.current.start();
         setStatus('Listening for your question...');
-      } catch (error) {
-        console.error('Failed to start speech recognition:', error);
-        toast({
-          title: "Error",
-          description: "Failed to start speech recognition. Please try again.",
-          variant: "destructive"
-        });
       }
+    } catch (error) {
+      console.error('Failed to start speech recognition:', error);
+      setIsListening(false);
+      setStatus('');
+      
+      toast({
+        title: "Voice Recognition Error",
+        description: "Failed to start speech recognition. Please try again in a moment.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -228,14 +357,38 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   return (
     <div className="flex items-center ml-1 gap-1">
       {status ? (
-        // Status Indicator
-        <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
-          <span className="animate-pulse mr-1">●</span>
+        // Status Indicator with more visual feedback
+        <div id="status" 
+          className={`flex items-center text-xs font-medium px-2 py-1 rounded-full border transition-all ${
+            status.includes('error') || status.includes('Error')
+              ? 'text-red-600 bg-red-50 border-red-200'
+              : status.includes('Listening')
+                ? 'text-[#6A53E7] bg-purple-50 border-[#6A53E7]/20 shadow-sm'
+                : 'text-[#6A53E7] bg-purple-50 border-[#6A53E7]/20'
+          }`}
+        >
+          {status.includes('Listening') && (
+            <span className="relative flex h-2 w-2 mr-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6A53E7] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6A53E7]"></span>
+            </span>
+          )}
+          {status.includes('error') || status.includes('Error') ? (
+            <span className="mr-1 text-red-500">⚠️</span>
+          ) : status.includes('Processing') ? (
+            <span className="animate-spin mr-1">⟳</span>
+          ) : status.includes('No speech') ? (
+            <span className="mr-1">🔇</span>
+          ) : status.includes('Listening') ? (
+            <></>
+          ) : (
+            <span className="animate-pulse mr-1">●</span>
+          )}
           {status}
         </div>
       ) : (
         <>
-          {/* Voice Button */}
+          {/* Enhanced Voice Button */}
           <button
             id="mic-button"
             onClick={toggleListening}
@@ -244,27 +397,53 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               isProcessing 
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
                 : 'bg-[#F5F3FF] text-[#6A53E7] hover:bg-[#6A53E7]/10'
-            } ${isListening ? 'bg-[#6A53E7] text-white animate-pulse' : ''}`}
+            } ${isListening ? 'bg-[#6A53E7] text-white shadow-md' : ''}`}
             aria-label="Start voice input"
             title="Use voice to ask questions"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="20" 
-              height="20" 
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-              <line x1="12" x2="12" y1="19" y2="22"></line>
-            </svg>
+            {isListening ? (
+              // Animated microphone when listening
+              <div className="relative">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="animate-pulse"
+                >
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" x2="12" y1="19" y2="22"></line>
+                </svg>
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+              </div>
+            ) : (
+              // Regular microphone when not listening
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" x2="12" y1="19" y2="22"></line>
+              </svg>
+            )}
           </button>
-
         </>
       )}
     </div>
