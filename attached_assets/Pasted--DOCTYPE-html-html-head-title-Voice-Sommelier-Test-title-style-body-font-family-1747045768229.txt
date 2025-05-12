@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Voice Sommelier Test</title>
+  <style>
+    body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .message { margin: 10px 0; padding: 10px; border-radius: 5px; }
+    .user { background-color: #e6f7ff; text-align: right; }
+    .assistant { background-color: #f9f9f9; }
+    #mic-button { background: #8B0000; color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer; }
+    #mic-button.listening { background: #ff0000; }
+    #status { font-style: italic; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h1>Voice Sommelier Test</h1>
+  
+  <div id="conversation">
+    <div class="message assistant" data-role="assistant">
+      Hi! I'm your personal wine sommelier. How can I help you today?
+    </div>
+  </div>
+  
+  <div id="status"></div>
+  <div id="audio-controls" style="display: none; margin-top: 15px; text-align: center;">
+    <button id="play-audio-btn" style="padding: 10px 20px; background-color: #8B0000; color: white; border: none; border-radius: 5px;">
+      Play Response Audio
+    </button>
+  </div>
+  
+  <div style="margin-top: 20px;">
+    <button id="mic-button">🎤</button>
+    <button id="test-button" style="margin-left: 10px;">Test Audio</button>
+    <button id="speak-last" style="margin-left: 10px;">Speak Last Response</button>
+  </div>
+  
+  <script>
+    // Paste the code from above here
+    
+    // Simulated sendMessage for testing
+    document.getElementById('test-button').addEventListener('click', function() {
+      const testResponse = "For grilled salmon, I would recommend a Pinot Noir, which has light tannins and bright acidity that complement the rich flavor of the fish without overpowering it. Alternatively, a crisp Chardonnay with subtle oak notes can also pair beautifully, especially if your salmon has buttery or creamy sauce.";
+      
+      const assistantMessage = document.createElement('div');
+      assistantMessage.className = 'message assistant';
+      assistantMessage.setAttribute('data-role', 'assistant');
+      assistantMessage.textContent = testResponse;
+      document.getElementById('conversation').appendChild(assistantMessage);
+      
+      // Speak the response directly
+      window.speakDirectly(testResponse);
+    });
+    
+    document.getElementById('speak-last').addEventListener('click', function() {
+      const conversation = document.getElementById('conversation');
+      if (conversation) {
+        const messages = conversation.querySelectorAll('.message.assistant');
+        if (messages.length > 0) {
+          const lastMessage = messages[messages.length - 1];
+          window.speakDirectly(lastMessage.textContent);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

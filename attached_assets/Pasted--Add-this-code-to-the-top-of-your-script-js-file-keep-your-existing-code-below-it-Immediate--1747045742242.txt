@@ -1,0 +1,124 @@
+// Add this code to the top of your script.js file (keep your existing code below it)
+
+// Immediate fix: Set up a global function to directly speak any text response
+window.speakDirectly = function(text) {
+  console.log("DIRECT SPEAK REQUEST:", text.substring(0, 30) + "...");
+  
+  // Attempt OpenAI TTS first
+  fetch('/api/text-to-speech', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text })
+  })
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+    return response.blob();
+  })
+  .then(blob => {
+    console.log("Audio received: Size =", blob.size, "bytes");
+    
+    // Create and directly play the audio
+    const audio = new Audio();
+    audio.src = URL.createObjectURL(blob);
+    
+    // Force audio to play with user interaction (needed for first play)
+    const playPromise = audio.play();
+    if (playPromise) {
+      playPromise.catch(error => {
+        console.error("Auto-play failed:", error);
+        
+        // Show a very visible play button if autoplay fails
+        const playButton = document.createElement('button');
+        playButton.textContent = '▶️ Play Voice Response';
+        playButton.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ff0000; color: white; font-size: 20px; padding: 20px; border: none; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 9999; cursor: pointer;';
+        
+        playButton.onclick = function() {
+          audio.play();
+          document.body.removeChild(playButton);
+        };
+        
+        document.body.appendChild(playButton);
+      });
+    }
+  })
+  .catch(error => {
+    console.error("Error playing audio:", error);
+    
+    // Fallback to browser's speech synthesis
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    }
+  });
+};
+
+// Add this direct override to your sendMessage function
+const originalSendMessage = window.sendMessage || function(){};
+window.sendMessage = function(text) {
+  console.log("Voice-enabled send message:", text);
+  
+  // Use your existing sendMessage implementation
+  if (originalSendMessage !== function(){}) {
+    originalSendMessage(text);
+  } else {
+    // Fallback implementation if sendMessage doesn't exist
+    const conversation = document.getElementById('conversation');
+    if (conversation) {
+      const userMessage = document.createElement('div');
+      userMessage.className = 'message user';
+      userMessage.textContent = text;
+      conversation.appendChild(userMessage);
+      
+      // Fetch response from API
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const assistantMessage = document.createElement('div');
+        assistantMessage.className = 'message assistant';
+        assistantMessage.setAttribute('data-role', 'assistant');
+        assistantMessage.textContent = data.response;
+        conversation.appendChild(assistantMessage);
+        
+        // DIRECTLY speak the response
+        window.speakDirectly(data.response);
+      });
+    }
+  }
+};
+
+// Add this code to speak any existing assistant messages
+document.addEventListener('DOMContentLoaded', function() {
+  // Add a direct "Speak Last Response" button
+  const speakLastBtn = document.createElement('button');
+  speakLastBtn.textContent = '🔊 Speak Last Response';
+  speakLastBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #8B0000; color: white; padding: 10px; border: none; border-radius: 5px; z-index: 9999; cursor: pointer;';
+  
+  speakLastBtn.onclick = function() {
+    const conversation = document.getElementById('conversation');
+    if (conversation) {
+      const messages = conversation.querySelectorAll('.message.assistant');
+      if (messages.length > 0) {
+        const lastMessage = messages[messages.length - 1];
+        window.speakDirectly(lastMessage.textContent);
+      }
+    }
+  };
+  
+  document.body.appendChild(speakLastBtn);
+  
+  // Override your microphone button to ensure it triggers voice mode
+  const micButton = document.getElementById('mic-button');
+  if (micButton) {
+    const originalOnclick = micButton.onclick;
+    micButton.onclick = function(event) {
+      console.log("Microphone button clicked - setting voice mode");
+      window.lastInputWasVoice = true;
+      if (originalOnclick) originalOnclick.call(this, event);
+    };
+  }
+});
