@@ -18,58 +18,41 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   // Audio context is now initialized globally in main.tsx
 
   useEffect(() => {
-    // Initialize speech recognition
-    if (typeof window !== 'undefined') {
-      // TypeScript definition for SpeechRecognition API
-      const SpeechRecognition: any = (window as any).SpeechRecognition || 
-                                     (window as any).webkitSpeechRecognition;
-      
-      if (SpeechRecognition) {
-        recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.lang = 'en-US';
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
-
-        recognitionRef.current.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          setStatus('Processing your question...');
-          setUsedVoiceInput(true); // Set flag to indicate voice input was used
-          onSendMessage(transcript);
-        };
-
-        recognitionRef.current.onend = () => {
-          setIsListening(false);
-          setStatus('');
-        };
-
-        recognitionRef.current.onstart = () => {
-          setIsListening(true);
-        };
-
-        recognitionRef.current.onerror = (event: any) => {
-          console.error('Speech recognition error:', event.error);
-          setStatus(`Error: ${event.error}`);
-          setIsListening(false);
-          
-          toast({
-            title: "Voice Recognition Error",
-            description: `Error: ${event.error}. Please try again.`,
-            variant: "destructive"
-          });
-        };
-      }
-    }
-
-    // Cleanup
+    // Don't initialize speech recognition automatically
+    // It will be created on-demand when the microphone is clicked
+    
+    // Just setup cleanup
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {
+          console.error("Error cleaning up speech recognition:", e);
+        }
       }
     };
-  }, [onSendMessage, toast]);
+  }, []);
 
-  const toggleListening = () => {
-    if (!recognitionRef.current) {
+  const toggleListening = async () => {
+    // Ensure audio context is initialized
+    if (!isAudioContextInitialized()) {
+      try {
+        await initAudioContext();
+        console.log("Audio context initialized on microphone click");
+      } catch (error) {
+        console.error('Failed to initialize audio context:', error);
+        toast({
+          title: "Audio Error",
+          description: "Could not initialize audio. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
+    // Check if speech recognition is available
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
       toast({
         title: "Speech Recognition Not Supported",
         description: "Your browser doesn't support speech recognition. Try using Chrome.",
@@ -78,20 +61,87 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
 
-    if (isListening) {
-      recognitionRef.current.stop();
-    } else {
-      try {
-        recognitionRef.current.start();
-        setStatus('Listening for your question...');
-      } catch (error) {
-        console.error('Failed to start speech recognition:', error);
-        toast({
-          title: "Error",
-          description: "Failed to start speech recognition. Please try again.",
-          variant: "destructive"
-        });
+    // Request microphone permissions explicitly before starting
+    try {
+      if (typeof navigator.mediaDevices?.getUserMedia !== 'function') {
+        throw new Error('getUserMedia not supported');
       }
+      
+      // Request permission first before toggling
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Stop the stream immediately, we just needed the permission
+      stream.getTracks().forEach(track => track.stop());
+      
+      console.log("Microphone permission granted");
+
+      // Now toggle the recognition
+      if (isListening) {
+        recognitionRef.current.stop();
+      } else {
+        try {
+          // Create a fresh instance to avoid issues with reusing
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (SpeechRecognition) {
+            // Create a new instance to avoid stale state
+            if (recognitionRef.current) {
+              recognitionRef.current.abort(); // Force cleanup
+            }
+            
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.lang = 'en-US';
+            recognitionRef.current.continuous = false;
+            recognitionRef.current.interimResults = false;
+            
+            // Re-attach event handlers to the fresh instance
+            recognitionRef.current.onresult = (event: any) => {
+              const transcript = event.results[0][0].transcript;
+              setStatus('Processing your question...');
+              setUsedVoiceInput(true);
+              onSendMessage(transcript);
+            };
+            
+            recognitionRef.current.onend = () => {
+              setIsListening(false);
+              setStatus('');
+            };
+            
+            recognitionRef.current.onstart = () => {
+              setIsListening(true);
+            };
+            
+            recognitionRef.current.onerror = (event: any) => {
+              console.error('Speech recognition error:', event.error);
+              setStatus(`Error: ${event.error}`);
+              setIsListening(false);
+              
+              toast({
+                title: "Voice Recognition Error",
+                description: `Error: ${event.error}. Please try again.`,
+                variant: "destructive"
+              });
+            };
+          }
+          
+          // Start the recognition
+          recognitionRef.current.start();
+          setStatus('Listening for your question...');
+        } catch (error) {
+          console.error('Failed to start speech recognition:', error);
+          toast({
+            title: "Error",
+            description: "Failed to start speech recognition. Please try again.",
+            variant: "destructive"
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Microphone permission error:', error);
+      toast({
+        title: "Microphone Error",
+        description: "Cannot access your microphone. Please check your permissions.",
+        variant: "destructive"
+      });
     }
   };
 
