@@ -188,7 +188,7 @@ const EnhancedChatInterface: React.FC = () => {
                     borderRadius: '5px'
                   }}
                 >
-                  Play Response Audio
+                  Play Response Audio: Listen to text out loud
                 </button>
               </div>
               

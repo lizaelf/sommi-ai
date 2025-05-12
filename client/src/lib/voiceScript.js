@@ -240,7 +240,7 @@ async function speakResponse(text) {
       newPlayBtn.style.border = 'none';
       newPlayBtn.style.borderRadius = '5px';
       newPlayBtn.style.cursor = 'pointer';
-      newPlayBtn.textContent = 'Play Response Audio';
+      newPlayBtn.textContent = 'Play Response Audio: Listen to text out loud';
     }
     
     // Clean up URL object when audio ends
