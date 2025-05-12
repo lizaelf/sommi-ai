@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;

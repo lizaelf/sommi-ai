@@ -190,3 +190,34 @@ export async function generateConversationTitle(firstMessage: string) {
     return "Cabernet Conversation";
   }
 }
+
+// Function to convert text to speech using OpenAI's Text-to-Speech API
+export async function textToSpeech(text: string): Promise<Buffer> {
+  try {
+    console.log("Converting text to speech...");
+    
+    // Clean up the text for better speech synthesis
+    // Remove markdown-like formatting if any
+    const cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1')
+                         .replace(/\*(.*?)\*/g, '$1')
+                         .replace(/#+\s/g, '')
+                         .replace(/\n\n/g, '. ')
+                         .trim();
+    
+    // Use OpenAI's Text-to-Speech API
+    const response = await openai.audio.speech.create({
+      model: "tts-1",
+      voice: "alloy", // Options: alloy, echo, fable, onyx, nova, shimmer
+      input: cleanText,
+    });
+    
+    // Convert the response to a buffer
+    const buffer = Buffer.from(await response.arrayBuffer());
+    console.log("Text-to-speech conversion successful, buffer size:", buffer.length);
+    
+    return buffer;
+  } catch (error) {
+    console.error("Error in text-to-speech conversion:", error);
+    throw new Error(`Failed to convert text to speech: ${(error as any)?.message || "Unknown error"}`);
+  }
+}

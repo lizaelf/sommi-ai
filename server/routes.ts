@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { chatCompletion, checkApiStatus } from "./openai";
+import { chatCompletion, checkApiStatus, textToSpeech } from "./openai";
 import { chatCompletionRequestSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -186,6 +186,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         message: "Failed to generate chat completion",
         error: error?.message || "Unknown error" 
+      });
+    }
+  });
+
+  // Text-to-speech endpoint
+  app.post("/api/text-to-speech", async (req, res) => {
+    try {
+      // Create a schema for text-to-speech request
+      const textToSpeechSchema = z.object({
+        text: z.string().min(1).max(4000)
+      });
+      
+      // Validate the request
+      const validationResult = textToSpeechSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({
+          message: "Invalid request",
+          errors: validationResult.error.format()
+        });
+      }
+      
+      const { text } = validationResult.data;
+      
+      // Convert text to speech
+      const audioBuffer = await textToSpeech(text);
+      
+      // Set appropriate headers
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Length', audioBuffer.length);
+      
+      // Send the audio file
+      res.send(audioBuffer);
+    } catch (error) {
+      console.error("Error in text-to-speech endpoint:", error);
+      res.status(500).json({
+        message: "Failed to convert text to speech",
+        error: (error as any)?.message || "Unknown error"
       });
     }
   });
