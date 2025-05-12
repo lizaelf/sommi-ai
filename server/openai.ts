@@ -204,12 +204,16 @@ export async function textToSpeech(text: string): Promise<Buffer> {
                          .replace(/\n\n/g, '. ')
                          .trim();
     
+    console.log("Processing TTS request for text:", cleanText.substring(0, 50) + "...");
+    
     // Use OpenAI's Text-to-Speech API
     const response = await openai.audio.speech.create({
       model: "tts-1",
-      voice: "alloy", // Options: alloy, echo, fable, onyx, nova, shimmer
+      voice: "nova", // Options: alloy, echo, fable, onyx, nova, shimmer (using nova as it sounds more natural)
       input: cleanText,
     });
+    
+    console.log("OpenAI TTS response received");
     
     // Convert the response to a buffer
     const buffer = Buffer.from(await response.arrayBuffer());

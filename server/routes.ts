@@ -201,7 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Log request body
-      console.log("Text-to-speech request body:", req.body);
+      console.log("Text-to-speech request body received");
       
       // Validate the request
       const validationResult = textToSpeechSchema.safeParse(req.body);
@@ -215,17 +215,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const { text } = validationResult.data;
-      console.log("Processing text-to-speech for text length:", text.length);
+      console.log("Received TTS request for text:", text.substring(0, 50) + "...");
       
       // Convert text to speech
       const audioBuffer = await textToSpeech(text);
       
       // Set appropriate headers
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.setHeader('Content-Length', audioBuffer.length);
+      res.set('Content-Type', 'audio/mpeg');
+      // Setting Content-Length is important for proper streaming
+      res.set('Content-Length', audioBuffer.length.toString());
       
       // Send the audio file
       res.send(audioBuffer);
+      console.log("Sent audio response, size:", audioBuffer.length);
     } catch (error) {
       console.error("Error in text-to-speech endpoint:", error);
       res.status(500).json({

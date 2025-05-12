@@ -116,7 +116,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   // Function to handle text-to-speech using server API
   const speakResponse = async (text: string) => {
     try {
-      console.log("Starting text-to-speech conversion...");
+      console.log("Starting text-to-speech request...");
       setStatus('Getting voice response...');
       
       // Create an AudioContext to enable audio (requires user interaction)
@@ -128,7 +128,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.warn('Unable to initialize AudioContext:', e);
       }
       
-      // Call the server API for text-to-speech conversion
+      // This is the critical part - make sure this request is happening
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: {
@@ -137,15 +137,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         body: JSON.stringify({ text })
       });
       
+      console.log("TTS response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Text-to-speech HTTP error: ${response.status}`);
       }
       
-      // Get the audio blob from the response
       const audioBlob = await response.blob();
-      console.log("Audio blob received, size:", audioBlob.size);
-      
-      // Create an audio element to play the speech
+      console.log("Audio blob size:", audioBlob.size);
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
       
@@ -175,19 +174,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         });
       };
       
-      // Play the audio
-      await audio.play().catch(e => {
-        console.error("Error playing audio:", e);
+      // Play the audio - using catch directly on the play method
+      audio.play().catch(err => {
+        console.error("Audio playback error:", err);
         setStatus('');
         toast({
-          title: "Audio Playback Error",
+          title: "Audio Playback Failed",
           description: "Unable to play audio. Please interact with the page first.",
           variant: "destructive"
         });
       });
       
     } catch (error) {
-      console.error('Error in text-to-speech process:', error);
+      console.error('Text-to-speech error:', error);
       setStatus('');
       toast({
         title: "Text-to-Speech Error",
