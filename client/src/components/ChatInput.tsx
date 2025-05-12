@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import VoiceControl from './VoiceControl';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -42,17 +43,30 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing }) =>
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full h-10 sm:h-12 bg-white rounded-xl px-3 sm:px-6 outline-none text-gray-700 shadow-input text-sm sm:text-base"
+              className="w-full h-10 sm:h-12 bg-white rounded-xl pl-3 pr-10 sm:pl-6 sm:pr-12 outline-none text-gray-700 shadow-input text-sm sm:text-base"
               placeholder="Ask about Cabernet Sauvignon..."
               disabled={isProcessing}
             />
+          </div>
 
+          {/* Voice control */}
+          <div className="mx-1.5 sm:mx-2">
+            <VoiceControl 
+              onTranscript={(text) => {
+                setMessage(text);
+                // Auto-submit after voice recognition if there's text
+                if (text.trim()) {
+                  setTimeout(() => onSendMessage(text), 300);
+                }
+              }}
+              disabled={isProcessing} 
+            />
           </div>
           
           {/* Send button styled as a purple circle */}
           <button
             type="submit"
-            className={`ml-1.5 sm:ml-2 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${
               isProcessing || !message.trim() 
                 ? 'border border-gray-300 text-gray-300 cursor-not-allowed' 
                 : 'border border-[#6A53E7] text-[#6A53E7] hover:bg-purple-50'

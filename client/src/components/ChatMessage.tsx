@@ -1,6 +1,7 @@
 import React from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
+import TextToSpeech from './TextToSpeech';
 
 interface ChatMessageProps {
   message: Message | ClientMessage;
@@ -114,7 +115,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       const paragraphs = content.split('\n\n').filter(p => p.trim().length > 0);
       
       return (
-        <div className="text-sm sm:text-base space-y-4">
+        <div className="text-sm sm:text-base space-y-4 relative group">
+          <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            <TextToSpeech text={content} />
+          </div>
+          
           {/* Format paragraphs with wine-specific styling */}
           {paragraphs.map((paragraph, idx) => {
             // Check if paragraph might be a header or section title

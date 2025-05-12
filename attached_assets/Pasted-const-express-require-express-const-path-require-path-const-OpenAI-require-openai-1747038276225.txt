@@ -1,0 +1,77 @@
+const express = require('express');
+const path = require('path');
+const { OpenAI } = require('openai');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.static('.'));
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
+
+// Serve the main page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// API endpoint for chat
+app.post('/api/chat', async (req, res) => {
+    try {
+        const userMessage = req.body.message;
+        
+        // Create a system prompt that specializes the AI as a sommelier
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo", // You can use "gpt-4" for better results if available
+            messages: [
+                {
+                    role: "system",
+                    content: "You are an expert sommelier and wine consultant. Provide knowledgeable, friendly advice about wine selection, food pairings, wine regions, grape varieties, and tasting notes. Keep responses concise and conversational, as they will be spoken aloud."
+                },
+                {
+                    role: "user",
+                    content: userMessage
+                }
+            ],
+            max_tokens: 200  // Keeping responses relatively brief for voice
+        });
+        
+        const aiResponse = completion.choices[0].message.content;
+        
+        res.json({ message: aiResponse });
+    } catch (error) {
+        console.error('Error generating chat response:', error);
+        res.status(500).json({ error: 'Failed to generate response' });
+    }
+});
+
+// API endpoint for text-to-speech
+app.post('/api/speak', async (req, res) => {
+    try {
+        const { text } = req.body;
+        
+        const mp3 = await openai.audio.speech.create({
+            model: "tts-1",
+            voice: "alloy", // Options: alloy, echo, fable, onyx, nova, shimmer
+            input: text,
+        });
+        
+        const buffer = Buffer.from(await mp3.arrayBuffer());
+        
+        res.set('Content-Type', 'audio/mpeg');
+        res.send(buffer);
+    } catch (error) {
+        console.error('Error generating speech:', error);
+        res.status(500).json({ error: 'Failed to generate speech' });
+    }
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
