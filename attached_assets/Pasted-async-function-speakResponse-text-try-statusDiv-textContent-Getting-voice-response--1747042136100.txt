@@ -1,0 +1,71 @@
+async function speakResponse(text) {
+  try {
+    statusDiv.textContent = 'Getting voice response...';
+    
+    // Create an audio element now and add it to the DOM
+    const audioElement = document.createElement('audio');
+    audioElement.style.display = 'none';
+    document.body.appendChild(audioElement);
+    
+    // Set up event listeners
+    audioElement.oncanplay = () => {
+      statusDiv.textContent = 'Playing...';
+      console.log("Audio ready, attempting to play");
+      
+      // Try to play with a user gesture context
+      const playPromise = audioElement.play();
+      if (playPromise) {
+        playPromise.catch(error => {
+          console.error("Play failed:", error);
+          // If autoplay fails, add a play button
+          statusDiv.textContent = 'Click to hear response';
+          statusDiv.style.cursor = 'pointer';
+          statusDiv.onclick = () => audioElement.play();
+        });
+      }
+    };
+    
+    audioElement.onended = () => {
+      statusDiv.textContent = '';
+      statusDiv.onclick = null;
+      statusDiv.style.cursor = 'default';
+      document.body.removeChild(audioElement);
+    };
+    
+    // Make the fetch request
+    const response = await fetch('/api/text-to-speech', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+    
+    // Convert response to blob and set as audio source
+    const blob = await response.blob();
+    console.log("Audio blob received, size:", blob.size);
+    
+    // Create object URL and assign to audio element
+    const url = URL.createObjectURL(blob);
+    audioElement.src = url;
+    
+    // When audio finishes, clean up
+    audioElement.onended = () => {
+      URL.revokeObjectURL(url);
+      document.body.removeChild(audioElement);
+      statusDiv.textContent = '';
+    };
+    
+  } catch (error) {
+    console.error("Error playing audio:", error);
+    statusDiv.textContent = 'Audio playback failed';
+    
+    // Fallback to browser's built-in speech synthesis
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+      statusDiv.textContent = 'Using browser speech...';
+    }
+  }
+}

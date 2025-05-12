@@ -176,6 +176,22 @@ const EnhancedChatInterface: React.FC = () => {
                 ))
               }
 
+              {/* Audio Controls */}
+              <div id="audio-controls" style={{display: 'none', marginTop: '15px', textAlign: 'center'}}>
+                <button 
+                  id="play-audio-btn" 
+                  style={{
+                    padding: '10px 20px', 
+                    backgroundColor: '#8B0000', 
+                    color: 'white', 
+                    border: 'none', 
+                    borderRadius: '5px'
+                  }}
+                >
+                  Play Response Audio
+                </button>
+              </div>
+              
               {/* Typing Indicator */}
               {isTyping && (
                 <div className="mx-auto max-w-2xl">
