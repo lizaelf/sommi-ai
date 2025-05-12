@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
+import VoiceAssistant from './VoiceAssistant';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 
@@ -220,6 +221,10 @@ const EnhancedChatInterface: React.FC = () => {
               <div className="relative flex items-center gap-1.5 sm:gap-2">
                 <ChatInput 
                   onSendMessage={handleSendMessage} 
+                  isProcessing={isTyping}
+                />
+                <VoiceAssistant
+                  onSendMessage={handleSendMessage}
                   isProcessing={isTyping}
                 />
               </div>

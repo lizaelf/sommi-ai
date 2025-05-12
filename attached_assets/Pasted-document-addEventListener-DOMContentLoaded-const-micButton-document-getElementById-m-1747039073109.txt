@@ -1,0 +1,119 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const micButton = document.getElementById('mic-button');
+  const micText = document.getElementById('mic-text');
+  const statusDiv = document.getElementById('status');
+  const conversation = document.getElementById('conversation');
+  
+  // Check if browser supports Speech Recognition
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (!SpeechRecognition) {
+    statusDiv.textContent = 'Speech recognition not supported in this browser';
+    micButton.disabled = true;
+    return;
+  }
+  
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  
+  let isListening = false;
+  
+  micButton.addEventListener('click', () => {
+    if (isListening) {
+      recognition.stop();
+    } else {
+      recognition.start();
+      micButton.classList.add('listening');
+      micText.textContent = 'Listening...';
+      statusDiv.textContent = 'Listening for your question...';
+    }
+  });
+  
+  recognition.onresult = async (event) => {
+    const transcript = event.results[0][0].transcript;
+    addMessageToConversation('user', transcript);
+    statusDiv.textContent = 'Processing your question...';
+    
+    try {
+      // Send transcript to the backend
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: transcript })
+      });
+      
+      const data = await response.json();
+      addMessageToConversation('ai', data.response);
+      
+      // Speak the response
+      await speakResponse(data.response);
+    } catch (error) {
+      console.error('Error:', error);
+      statusDiv.textContent = 'Error processing your request';
+    }
+  };
+  
+  recognition.onend = () => {
+    isListening = false;
+    micButton.classList.remove('listening');
+    micText.textContent = 'Start Listening';
+    statusDiv.textContent = '';
+  };
+  
+  recognition.onstart = () => {
+    isListening = true;
+  };
+  
+  recognition.onerror = (event) => {
+    console.error('Speech recognition error:', event.error);
+    statusDiv.textContent = `Error: ${event.error}`;
+    micButton.classList.remove('listening');
+    micText.textContent = 'Start Listening';
+    isListening = false;
+  };
+  
+  async function speakResponse(text) {
+    try {
+      statusDiv.textContent = 'Getting voice response...';
+      
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      
+      statusDiv.textContent = 'Speaking...';
+      
+      audio.onended = () => {
+        statusDiv.textContent = '';
+      };
+      
+      audio.play();
+    } catch (error) {
+      console.error('Error converting text to speech:', error);
+      statusDiv.textContent = 'Failed to generate speech';
+    }
+  }
+  
+  function addMessageToConversation(sender, text) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', sender);
+    messageDiv.textContent = text;
+    conversation.appendChild(messageDiv);
+    conversation.scrollTop = conversation.scrollHeight;
+  }
+});
