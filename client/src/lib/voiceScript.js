@@ -1,7 +1,9 @@
-// Variable to store the last audio blob for playback
+// Variables to store state for playback
 let lastAudioBlob = null;
 let statusDiv = null;
 let lastInputWasVoice = false;
+let currentAudioElement = null;
+let isAudioPlaying = false;
 
 // DOM load event to initialize everything
 document.addEventListener('DOMContentLoaded', function() {
@@ -186,6 +188,18 @@ async function speakResponse(text) {
     lastAudioBlob = await response.blob();
     console.log("Audio received:", lastAudioBlob.size, "bytes", "type:", lastAudioBlob.type);
     
+    // If there's already a playing audio element, stop and clean it up
+    if (currentAudioElement) {
+      // If this is a new audio request (different text), stop the current one
+      console.log("Stopping previous audio playback");
+      currentAudioElement.pause();
+      if (currentAudioElement.parentNode) {
+        currentAudioElement.parentNode.removeChild(currentAudioElement);
+      }
+      currentAudioElement = null;
+      isAudioPlaying = false;
+    }
+    
     // Create audio element and append to document - this helps with some browser issues
     const audioElement = document.createElement('audio');
     audioElement.id = 'audio-player';
@@ -195,6 +209,9 @@ async function speakResponse(text) {
     // Create object URL
     const url = URL.createObjectURL(lastAudioBlob);
     audioElement.src = url;
+    
+    // Store reference to current audio element
+    currentAudioElement = audioElement;
     
     // Auto-play if the input was from voice
     if (lastInputWasVoice) {
@@ -234,25 +251,37 @@ async function speakResponse(text) {
       // Get the fresh button and add a new click handler
       const newPlayBtn = document.getElementById('play-audio-btn');
       newPlayBtn.addEventListener('click', function() {
-        console.log("Play button clicked");
-        audioElement.play()
-          .then(() => {
-            console.log("Audio playback started successfully");
-            if (statusDiv) statusDiv.textContent = 'Playing...';
-          })
-          .catch(err => {
-            console.error("Audio playback error:", err);
-            if (statusDiv) statusDiv.textContent = 'Error playing audio';
-            
-            // Fallback to browser's built-in speech synthesis
-            if ('speechSynthesis' in window) {
-              console.log("Trying browser speech synthesis");
-              const utterance = new SpeechSynthesisUtterance(text);
-              utterance.lang = 'en-US';
-              window.speechSynthesis.speak(utterance);
-              if (statusDiv) statusDiv.textContent = 'Using browser speech...';
-            }
-          });
+        // Toggle play/pause functionality
+        if (isAudioPlaying && !audioElement.paused) {
+          console.log("Pausing audio playback");
+          audioElement.pause();
+          isAudioPlaying = false;
+          newPlayBtn.textContent = 'Continue Playing Audio';
+          if (statusDiv) statusDiv.textContent = 'Paused';
+        } else {
+          console.log("Play/resume button clicked");
+          audioElement.play()
+            .then(() => {
+              console.log("Audio playback started successfully");
+              isAudioPlaying = true;
+              newPlayBtn.textContent = 'Pause Audio';
+              if (statusDiv) statusDiv.textContent = 'Playing...';
+            })
+            .catch(err => {
+              console.error("Audio playback error:", err);
+              isAudioPlaying = false;
+              if (statusDiv) statusDiv.textContent = 'Error playing audio';
+              
+              // Fallback to browser's built-in speech synthesis
+              if ('speechSynthesis' in window) {
+                console.log("Trying browser speech synthesis");
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                window.speechSynthesis.speak(utterance);
+                if (statusDiv) statusDiv.textContent = 'Using browser speech...';
+              }
+            });
+        }
       });
       
       // Make the button very noticeable
@@ -269,10 +298,18 @@ async function speakResponse(text) {
     audioElement.onended = () => {
       URL.revokeObjectURL(url);
       if (statusDiv) statusDiv.textContent = '';
-      // Remove the audio element
-      if (audioElement.parentNode) {
-        audioElement.parentNode.removeChild(audioElement);
+      
+      // Reset play state
+      isAudioPlaying = false;
+      
+      // Reset play button text if it exists
+      const playBtn = document.getElementById('play-audio-btn');
+      if (playBtn) {
+        playBtn.textContent = 'Play Response Audio: Listen to text out loud';
       }
+      
+      // Don't remove the audio element right away to allow for replay
+      // We'll keep the reference in currentAudioElement
       
       // Remove temporary status div if we created one
       const tempStatusDiv = document.getElementById('temp-status');

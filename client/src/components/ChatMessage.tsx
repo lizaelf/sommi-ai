@@ -198,7 +198,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 }
               }}
             >
-              🔊 Play Response Audio
+              🔊 Play/Pause Audio: Hear this response
             </button>
           </div>
         </div>
