@@ -355,7 +355,6 @@ function speakLastAssistantMessage() {
 if (typeof window !== 'undefined') {
   window.voiceAssistant = {
     speakResponse,
-    playLastAudio: function() { console.log("This function is deprecated"); },
     speakLastAssistantMessage
   };
 }
