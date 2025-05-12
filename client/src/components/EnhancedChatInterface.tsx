@@ -180,6 +180,19 @@ const EnhancedChatInterface: React.FC = () => {
               <div id="audio-controls" style={{display: 'none', marginTop: '15px', textAlign: 'center'}}>
                 <button 
                   id="play-audio-btn" 
+                  onClick={(e) => {
+                    if (window.voiceAssistant && typeof window.voiceAssistant.speakLastAssistantMessage === 'function') {
+                      window.voiceAssistant.speakLastAssistantMessage();
+                      
+                      // Toggle button text between play/pause
+                      const button = e.currentTarget as HTMLButtonElement;
+                      const isPausing = button.textContent?.includes('Pause');
+                      
+                      button.textContent = isPausing 
+                        ? '🔊 Play Response Audio: Listen to text out loud' 
+                        : '⏸️ Pause Response Audio: Click to pause/resume';
+                    }
+                  }}
                   style={{
                     padding: '10px 20px', 
                     backgroundColor: '#8B0000', 
