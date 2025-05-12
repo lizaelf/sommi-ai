@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     recognition.onresult = function(event) {
       const transcript = event.results[0][0].transcript;
-      statusDiv.textContent = 'Processing your question...';
+      if (statusDiv) statusDiv.textContent = 'Processing your question...';
       
       // Set the flag to indicate voice input
       lastInputWasVoice = true;
@@ -30,17 +30,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     recognition.onend = function() {
       micButton.classList.remove('listening');
-      statusDiv.textContent = '';
+      if (statusDiv) statusDiv.textContent = '';
     };
     
     recognition.onstart = function() {
       micButton.classList.add('listening');
-      statusDiv.textContent = 'Listening for your question...';
+      if (statusDiv) statusDiv.textContent = 'Listening for your question...';
     };
     
     recognition.onerror = function(event) {
       console.error('Speech recognition error:', event.error);
-      statusDiv.textContent = `Error: ${event.error}`;
+      if (statusDiv) statusDiv.textContent = `Error: ${event.error}`;
       micButton.classList.remove('listening');
       lastInputWasVoice = false;
     };
@@ -146,11 +146,33 @@ document.addEventListener('DOMContentLoaded', function() {
 // Modified version of the speakResponse function
 async function speakResponse(text) {
   try {
+    // Find or create a status div
     if (!statusDiv) {
       statusDiv = document.getElementById('status');
+      
+      // If status div still doesn't exist, create a temporary one
+      if (!statusDiv) {
+        console.log("Status div not found, creating a temporary one");
+        const tempStatusDiv = document.createElement('div');
+        tempStatusDiv.id = 'temp-status';
+        tempStatusDiv.style.position = 'fixed';
+        tempStatusDiv.style.bottom = '20px';
+        tempStatusDiv.style.right = '20px';
+        tempStatusDiv.style.padding = '8px 12px';
+        tempStatusDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        tempStatusDiv.style.color = 'white';
+        tempStatusDiv.style.borderRadius = '4px';
+        tempStatusDiv.style.zIndex = '1000';
+        tempStatusDiv.style.fontSize = '14px';
+        document.body.appendChild(tempStatusDiv);
+        statusDiv = tempStatusDiv;
+      }
     }
     
-    statusDiv.textContent = 'Getting voice response...';
+    // Use a safe way to update text content
+    if (statusDiv) {
+      statusDiv.textContent = 'Getting voice response...';
+    }
     
     const response = await fetch('/api/text-to-speech', {
       method: 'POST',
@@ -179,7 +201,7 @@ async function speakResponse(text) {
       console.log("Attempting to auto-play audio response");
       try {
         await audioElement.play();
-        statusDiv.textContent = 'Speaking...';
+        if (statusDiv) statusDiv.textContent = 'Speaking...';
       } catch (playError) {
         console.error("Auto-play failed:", playError);
         
@@ -190,7 +212,7 @@ async function speakResponse(text) {
           audioControls.setAttribute('style', 'display: block !important; margin-top: 15px; text-align: center;');
         }
         
-        statusDiv.textContent = 'Click play to hear response';
+        if (statusDiv) statusDiv.textContent = 'Click play to hear response';
       }
     } else {
       // Show the audio controls
@@ -200,7 +222,7 @@ async function speakResponse(text) {
         audioControls.setAttribute('style', 'display: block !important; margin-top: 15px; text-align: center;');
       }
       
-      statusDiv.textContent = 'Audio ready to play';
+      if (statusDiv) statusDiv.textContent = 'Audio ready to play';
     }
     
     // Set up the play button with a direct onclick handler
@@ -216,11 +238,11 @@ async function speakResponse(text) {
         audioElement.play()
           .then(() => {
             console.log("Audio playback started successfully");
-            statusDiv.textContent = 'Playing...';
+            if (statusDiv) statusDiv.textContent = 'Playing...';
           })
           .catch(err => {
             console.error("Audio playback error:", err);
-            statusDiv.textContent = 'Error playing audio';
+            if (statusDiv) statusDiv.textContent = 'Error playing audio';
             
             // Fallback to browser's built-in speech synthesis
             if ('speechSynthesis' in window) {
@@ -228,7 +250,7 @@ async function speakResponse(text) {
               const utterance = new SpeechSynthesisUtterance(text);
               utterance.lang = 'en-US';
               window.speechSynthesis.speak(utterance);
-              statusDiv.textContent = 'Using browser speech...';
+              if (statusDiv) statusDiv.textContent = 'Using browser speech...';
             }
           });
       });
@@ -246,16 +268,22 @@ async function speakResponse(text) {
     // Clean up URL object when audio ends
     audioElement.onended = () => {
       URL.revokeObjectURL(url);
-      statusDiv.textContent = '';
+      if (statusDiv) statusDiv.textContent = '';
       // Remove the audio element
       if (audioElement.parentNode) {
         audioElement.parentNode.removeChild(audioElement);
+      }
+      
+      // Remove temporary status div if we created one
+      const tempStatusDiv = document.getElementById('temp-status');
+      if (tempStatusDiv && tempStatusDiv.parentNode) {
+        tempStatusDiv.parentNode.removeChild(tempStatusDiv);
       }
     };
     
   } catch (error) {
     console.error("Error:", error);
-    statusDiv.textContent = 'Failed to get audio';
+    if (statusDiv) statusDiv.textContent = 'Failed to get audio';
   }
 }
 
