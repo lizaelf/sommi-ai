@@ -40,6 +40,26 @@ function processMarkdownBold(text: string) {
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
   
+  // Process message content to be suitable for speech synthesis
+  const processTextForSpeech = (content: string): string => {
+    if (!content) return '';
+    
+    // Simplistic approach to remove emoji symbols - without unicode flag
+    let cleanText = content;
+    
+    // Remove common emoji 
+    cleanText = cleanText.replace(/[^\x00-\x7F]/g, ''); // Remove non-ASCII characters
+    
+    // Replace markdown formatting for bold with standard text
+    cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '$1');
+    
+    // Replace bullet points with pauses and cleaner structure
+    cleanText = cleanText.replace(/- /g, '. ');
+    
+    // Clean up double spaces and unnecessary whitespace
+    return cleanText.replace(/\s+/g, ' ').trim();
+  };
+
   // Auto-play the response audio when assistant message is rendered
   React.useEffect(() => {
     // Only attempt to speak for assistant messages
@@ -53,7 +73,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         // Call the speak function safely
         const speakResponse = window.voiceAssistant?.speakResponse;
         if (typeof speakResponse === 'function') {
-          speakResponse(message.content);
+          // Process the message content to make it more suitable for speech
+          const speechText = processTextForSpeech(message.content);
+          speakResponse(speechText);
         } else {
           console.warn('Voice assistant speak function not available');
         }

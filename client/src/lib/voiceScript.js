@@ -391,6 +391,26 @@ function sendMessage(text) {
   document.dispatchEvent(event);
 }
 
+// Helper function to process text for speech
+function processTextForSpeech(content) {
+  if (!content) return '';
+  
+  // Simplistic approach to remove emoji symbols - without unicode flag
+  let cleanText = content;
+  
+  // Remove common emoji & non-ASCII characters
+  cleanText = cleanText.replace(/[^\x00-\x7F]/g, '');
+  
+  // Replace markdown formatting for bold with standard text
+  cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '$1');
+  
+  // Replace bullet points with pauses and cleaner structure
+  cleanText = cleanText.replace(/- /g, '. ');
+  
+  // Clean up double spaces and unnecessary whitespace
+  return cleanText.replace(/\s+/g, ' ').trim();
+}
+
 // This function is primarily handled by the MutationObserver now
 // but kept for backward compatibility
 function speakLastAssistantMessage() {
@@ -411,12 +431,16 @@ function speakLastAssistantMessage() {
         const lastMessage = messageElements[messageElements.length - 1];
         
         if (lastMessage && lastMessage.textContent) {
+          // Get the raw text content
           const messageText = lastMessage.textContent || '';
           console.log("Found message to speak:", messageText.substring(0, 50) + "...");
           
+          // Process the text to make it more suitable for speech
+          const speechText = processTextForSpeech(messageText);
+          
           // Speak the response with a small delay to ensure message is fully rendered
           setTimeout(() => {
-            speakResponse(messageText);
+            speakResponse(speechText);
           }, 300);
         } else {
           console.log("Last message has no text content");
