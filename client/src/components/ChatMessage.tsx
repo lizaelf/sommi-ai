@@ -219,35 +219,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     }
   };
   
-  // Setup audio when assistant message is rendered
+  // We'll use a simpler approach - load audio only when the user clicks play
+  // This significantly reduces unnecessary network requests
   useEffect(() => {
-    // Only for assistant messages with content
-    if (isUser || !message.content) return;
-    
-    // Preload audio for assistant message
-    const preloadAudio = async () => {
-      const speechText = processTextForSpeech(message.content);
-      if (speechText) {
-        console.log("Preloading audio for assistant message");
-        const url = await getAudioForText(speechText);
-        if (url) {
-          console.log("Audio URL received:", url);
-          setAudioUrl(url);
-        }
-      }
-    };
-    
-    // Call the preload function
-    preloadAudio();
-    
-    // Cleanup
+    // Clean up on unmount
     return () => {
       // Revoke object URL if it exists
       if (audioUrl) {
         URL.revokeObjectURL(audioUrl);
       }
     };
-  }, [message.content, isUser]);
+  }, [audioUrl]);
   
   // Function to format text with bold and code blocks
   const formatContent = (content: string) => {

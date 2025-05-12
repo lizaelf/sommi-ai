@@ -13,9 +13,6 @@ export default function Home() {
             <button className="px-4 py-2 bg-[#F5F3FF] text-[#6A53E7] rounded-full hover:bg-[#EDE9FF] transition-colors text-sm">
               My Cellar
             </button>
-            <button className="px-4 py-2 bg-[#F5F3FF] text-[#6A53E7] rounded-full hover:bg-[#EDE9FF] transition-colors text-sm">
-              Quiz
-            </button>
           </div>
         </div>
       </div>
