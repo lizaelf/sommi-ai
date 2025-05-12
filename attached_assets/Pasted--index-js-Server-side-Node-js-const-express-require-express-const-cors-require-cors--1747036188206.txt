@@ -1,0 +1,76 @@
+// index.js - Server side (Node.js)
+const express = require('express');
+const cors = require('cors');
+const { OpenAI } = require('openai');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
+
+// Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY // Store this in .env file in Repl.it
+});
+
+// API endpoint for text chat
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, history } = req.body;
+    
+    const chatCompletion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { 
+          role: "system", 
+          content: "You are an expert sommelier AI assistant. Provide knowledgeable, detailed responses about wines, pairings, regions, and tasting notes. Keep responses concise enough to be spoken aloud naturally." 
+        },
+        ...history,
+        { role: "user", content: message }
+      ],
+    });
+    
+    res.json({ response: chatCompletion.choices[0].message.content });
+  } catch (error) {
+    console.error('Error with OpenAI API:', error);
+    res.status(500).json({ error: 'Failed to get response from AI' });
+  }
+});
+
+// API endpoint for text-to-speech (if using OpenAI's TTS)
+app.post('/api/tts', async (req, res) => {
+  try {
+    const { text } = req.body;
+    
+    const mp3 = await openai.audio.speech.create({
+      model: "tts-1",
+      voice: "alloy", // You can choose: alloy, echo, fable, onyx, nova, shimmer
+      input: text,
+    });
+    
+    // Convert to buffer
+    const buffer = Buffer.from(await mp3.arrayBuffer());
+    
+    // Send as audio file
+    res.set('Content-Type', 'audio/mpeg');
+    res.send(buffer);
+  } catch (error) {
+    console.error('Error with TTS API:', error);
+    res.status(500).json({ error: 'Failed to convert text to speech' });
+  }
+});
+
+// Serve the main HTML file
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

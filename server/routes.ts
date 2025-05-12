@@ -1,9 +1,12 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { chatCompletion, checkApiStatus } from "./openai";
 import { chatCompletionRequestSchema } from "@shared/schema";
 import { z } from "zod";
+import multer from "multer";
+import { handleTTSRequest } from "./routes/tts";
+import { handleSTTRequest } from "./routes/stt";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API status endpoint

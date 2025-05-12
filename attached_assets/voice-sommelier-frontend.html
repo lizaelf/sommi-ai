@@ -1,0 +1,57 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Sommelier</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>AI Sommelier</h1>
+      <p>Your personal wine expert with voice assistance</p>
+    </header>
+    
+    <div class="wine-display">
+      <div id="wineCollection" class="wine-grid">
+        <!-- Wine cards are loaded from IndexedDB storage -->
+      </div>
+    </div>
+    
+    <div class="chat-container">
+      <div id="chat-messages" class="chat-messages">
+        <div class="message ai-message">
+          <div class="message-content">
+            Hello! I'm your AI Sommelier. Ask me anything about wines, or scan a QR code to add a wine to your collection.
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-container">
+        <input type="text" id="text-input" placeholder="Type your question here...">
+        <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+        <button id="voice-button" class="voice-button">
+          <i class="fas fa-microphone"></i>
+        </button>
+      </div>
+      
+      <div id="status-indicator" class="status-indicator">
+        <!-- Status messages appear here -->
+      </div>
+    </div>
+    
+    <div class="action-buttons">
+      <button id="scan-button" class="action-button">
+        <i class="fas fa-qrcode"></i> Scan Wine
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="wine-storage.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
