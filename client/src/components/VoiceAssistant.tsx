@@ -10,6 +10,7 @@ interface VoiceAssistantProps {
 const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProcessing }) => {
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
+  const [usedVoiceInput, setUsedVoiceInput] = useState(false); // Track if last question was via voice
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -50,6 +51,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         recognitionRef.current.onresult = (event: any) => {
           const transcript = event.results[0][0].transcript;
           setStatus('Processing your question...');
+          setUsedVoiceInput(true); // Set flag to indicate voice input was used
           onSendMessage(transcript);
         };
 
@@ -214,42 +216,56 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   // If user receives a response and we're no longer processing, speak it
   useEffect(() => {
     if (!isProcessing && status === 'Processing your question...') {
-      try {
-        console.log("Attempting to find and speak the last message...");
-        
-        // Find the last assistant message
-        const messagesContainer = document.getElementById('conversation');
-        console.log("Messages container found:", !!messagesContainer);
-        
-        if (messagesContainer) {
-          // Get all the chat messages
-          const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
-          console.log("Assistant message elements found:", messageElements.length);
-          
-          if (messageElements && messageElements.length > 0) {
-            // Get the last message
-            const lastMessage = messageElements[messageElements.length - 1];
-            
-            if (lastMessage && lastMessage.textContent) {
-              const messageText = lastMessage.textContent || '';
-              console.log("Found message to speak:", messageText.substring(0, 50) + "...");
-              
-              // Speak the response with a small delay to ensure message is fully rendered
-              setTimeout(() => {
-                speakResponse(messageText);
-              }, 300);
-            } else {
-              console.log("Last message has no text content");
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error finding assistant message to speak:', error);
-      }
-      
+      // Reset the status
       setStatus('');
+      
+      // Only speak the response automatically if voice input was used
+      if (usedVoiceInput) {
+        try {
+          console.log("Voice input was used - finding message to speak automatically...");
+          
+          // Find the last assistant message
+          const messagesContainer = document.getElementById('conversation');
+          console.log("Messages container found:", !!messagesContainer);
+          
+          if (messagesContainer) {
+            // Get all the chat messages
+            const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
+            console.log("Assistant message elements found:", messageElements.length);
+            
+            if (messageElements && messageElements.length > 0) {
+              // Get the last message
+              const lastMessage = messageElements[messageElements.length - 1];
+              
+              if (lastMessage && lastMessage.textContent) {
+                const messageText = lastMessage.textContent || '';
+                console.log("Found message to speak:", messageText.substring(0, 50) + "...");
+                
+                // Speak the response with a small delay to ensure message is fully rendered
+                setTimeout(() => {
+                  speakResponse(messageText);
+                  // Reset the voice input flag after speaking
+                  setUsedVoiceInput(false);
+                }, 300);
+              } else {
+                console.log("Last message has no text content");
+                setUsedVoiceInput(false);
+              }
+            } else {
+              setUsedVoiceInput(false);
+            }
+          } else {
+            setUsedVoiceInput(false);
+          }
+        } catch (error) {
+          console.error('Error finding assistant message to speak:', error);
+          setUsedVoiceInput(false);
+        }
+      } else {
+        console.log("Not auto-speaking response because voice input wasn't used");
+      }
     }
-  }, [isProcessing, status]);
+  }, [isProcessing, status, usedVoiceInput]);
 
   return (
     <div className="flex items-center ml-1 gap-1">
