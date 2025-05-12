@@ -62,22 +62,29 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
   // Auto-play the response audio when assistant message is rendered
   React.useEffect(() => {
-    // Only attempt to speak for assistant messages
-    if (isUser) return;
+    // Only attempt to speak for assistant messages with content
+    if (isUser || !message.content || message.content.trim().length === 0) return;
     
     // Play response audio with a slight delay
     const timer = setTimeout(() => {
       try {
         console.log("Auto-playing assistant message");
         
-        // Call the speak function safely
-        const speakResponse = window.voiceAssistant?.speakResponse;
-        if (typeof speakResponse === 'function') {
-          // Process the message content to make it more suitable for speech
-          const speechText = processTextForSpeech(message.content);
-          speakResponse(speechText);
+        // Process the message content to make it more suitable for speech
+        const messageContent = message.content || '';
+        const speechText = processTextForSpeech(messageContent);
+        
+        // Only attempt to speak if we have valid text
+        if (speechText && speechText.trim().length > 0) {
+          // Call the speak function safely
+          const speakResponse = window.voiceAssistant?.speakResponse;
+          if (typeof speakResponse === 'function') {
+            speakResponse(speechText);
+          } else {
+            console.warn('Voice assistant speak function not available');
+          }
         } else {
-          console.warn('Voice assistant speak function not available');
+          console.warn('No valid text to speak after processing');
         }
       } catch (error) {
         console.error('Error auto-playing message:', error);

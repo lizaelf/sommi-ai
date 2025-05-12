@@ -91,7 +91,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Small delay to ensure the DOM is fully updated
                 setTimeout(() => {
                   console.log("Auto-speaking response after voice input");
-                  speakResponse(latestMessage.textContent);
+                  
+                  // Process the message content to make it suitable for speech
+                  const originalText = latestMessage.textContent || '';
+                  const speechText = processTextForSpeech(originalText);
+                  
+                  // Only speak if we have content after processing
+                  if (speechText && speechText.trim().length > 0) {
+                    console.log("Processing message for speech, length:", speechText.length);
+                    speakResponse(speechText);
+                  } else {
+                    console.warn("No valid text to speak after processing");
+                  }
                   
                   // Reset the flag after handling
                   lastInputWasVoice = false;
@@ -150,12 +161,23 @@ document.addEventListener('DOMContentLoaded', function() {
 // Modified version of the speakResponse function
 async function speakResponse(text) {
   try {
-    // We don't need visible status messages anymore - handle this internally
+    // Validate text input - must be non-empty after trimming
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      console.warn("Empty or invalid text provided to speech function");
+      return; // Exit early - nothing to speak
+    }
+    
+    // Process text to ensure it's suitable for speech synthesis
+    text = processTextForSpeech(text);
+    
+    // Check again after processing in case it removed all content
+    if (!text || text.trim().length === 0) {
+      console.warn("Text became empty after processing for speech");
+      return; // Exit early - nothing to speak
+    }
     
     // Add loading animation if needed (only visible in developer console)
     console.log("Processing voice response...");
-    
-    // We'll use the audio element for state management, but no need to show status
     
     // Store the text in case we need to fall back to browser speech synthesis
     lastPlayedText = text;
@@ -240,9 +262,12 @@ async function speakResponse(text) {
     // Always auto-play, regardless of input method
     console.log("Auto-playing audio response");
     try {
-      // Auto-play immediately
-      await audioElement.play();
+      // Auto-play immediately - make sure we're using the current audio element
+      await currentAudioElement.play();
       isAudioPlaying = true;
+      
+      // Dispatch playing event
+      document.dispatchEvent(new CustomEvent('audioPlaying'));
     } catch (playError) {
       console.error("Auto-play failed:", playError);
       isAudioPlaying = false;
