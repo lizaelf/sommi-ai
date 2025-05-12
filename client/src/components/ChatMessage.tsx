@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
 
@@ -40,33 +40,13 @@ function processMarkdownBold(text: string) {
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
   
+  // Create ref for the audio element
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
   // State
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audioAvailable, setAudioAvailable] = useState(false);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  
-  // Load voices when component mounts
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      // Set initial voices
-      const initialVoices = window.speechSynthesis.getVoices();
-      if (initialVoices.length > 0) {
-        setVoices(initialVoices);
-      }
-      
-      // Set up listener for when voices change (important for Chrome)
-      const voicesChangedHandler = () => {
-        const updatedVoices = window.speechSynthesis.getVoices();
-        setVoices(updatedVoices);
-      };
-      
-      window.speechSynthesis.addEventListener('voiceschanged', voicesChangedHandler);
-      
-      return () => {
-        window.speechSynthesis.removeEventListener('voiceschanged', voicesChangedHandler);
-      };
-    }
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   
   // Process message content for speech synthesis
   const processTextForSpeech = (content: string): string => {
@@ -99,120 +79,109 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     return processedText;
   };
   
-  // Basic speech function that just uses the browser's built-in speech synthesis
-  const speakText = (text: string): boolean => {
+  // Function to get text-to-speech audio from the server
+  const getAudioForText = async (text: string): Promise<string | null> => {
     try {
-      if (!window.speechSynthesis) return false;
+      setIsLoading(true);
+      console.log("Fetching TTS audio from server...");
       
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
+      // Make a request to the server's text-to-speech endpoint
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text })
+      });
       
-      // Create a new utterance
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
-      
-      // Try to set a voice if available
-      if (voices.length > 0) {
-        // Prefer a Google US English voice if available
-        const googleVoice = voices.find(v => 
-          v.name.includes('Google') && v.lang.includes('en')
-        );
-        
-        // Otherwise use any English voice
-        const englishVoice = voices.find(v => 
-          v.lang.includes('en')
-        );
-        
-        if (googleVoice) {
-          console.log("Using Google voice:", googleVoice.name);
-          utterance.voice = googleVoice;
-        } else if (englishVoice) {
-          console.log("Using English voice:", englishVoice.name);
-          utterance.voice = englishVoice;
-        }
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
       }
       
-      // Event handlers
-      utterance.onstart = () => {
-        setIsPlaying(true);
-        document.dispatchEvent(new CustomEvent('audioPlaying'));
-      };
+      // Get the blob from the response
+      const audioBlob = await response.blob();
       
-      utterance.onend = () => {
-        setIsPlaying(false);
-        document.dispatchEvent(new CustomEvent('audioPaused'));
-      };
+      // Create an object URL for the blob
+      const url = URL.createObjectURL(audioBlob);
+      console.log("Created audio URL:", url);
       
-      utterance.onerror = () => {
-        setIsPlaying(false);
-        document.dispatchEvent(new CustomEvent('audioPaused'));
-      };
-      
-      // Speak!
-      window.speechSynthesis.speak(utterance);
-      return true;
-    } catch (e) {
-      console.error('Speech synthesis error:', e);
+      return url;
+    } catch (error) {
+      console.error("Error getting audio:", error);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Function to play audio
+  const playAudio = () => {
+    if (!audioRef.current || !audioUrl) return;
+    
+    try {
+      // Play the audio
+      audioRef.current.play()
+        .then(() => {
+          console.log("Audio playback started");
+          setIsPlaying(true);
+        })
+        .catch(error => {
+          console.error("Error playing audio:", error);
+          setIsPlaying(false);
+        });
+    } catch (error) {
+      console.error("Error in playAudio:", error);
+    }
+  };
+  
+  // Function to pause audio
+  const pauseAudio = () => {
+    if (!audioRef.current) return;
+    
+    try {
+      // Pause the audio
+      audioRef.current.pause();
       setIsPlaying(false);
-      return false;
+    } catch (error) {
+      console.error("Error in pauseAudio:", error);
     }
   };
   
   // Toggle play/pause
-  const toggleAudio = () => {
-    console.log("Play button clicked: isUser=", isUser, "isPlaying=", isPlaying);
+  const toggleAudio = async () => {
+    console.log("Toggle audio clicked - isUser:", isUser, "isPlaying:", isPlaying);
     
     // Only allow for assistant messages
     if (isUser) return;
     
     try {
       if (isPlaying) {
-        // If playing, stop
-        console.log("Stopping speech synthesis");
-        window.speechSynthesis?.cancel();
-        setIsPlaying(false);
+        // If playing, pause
+        pauseAudio();
       } else {
-        // If not playing, start
-        if (message.content) {
-          console.log("Starting speech with message content:", message.content.substring(0, 50) + "...");
-          
-          // Very simple approach - just speak directly
-          if (window.speechSynthesis) {
-            // Clear any existing speech
-            window.speechSynthesis.cancel();
-            
+        // If not playing and we have an audio URL, play it
+        if (audioUrl) {
+          playAudio();
+        } 
+        // Otherwise, fetch the audio first
+        else {
+          if (message.content) {
+            console.log("Fetching audio for text");
             // Process the text
             const speechText = processTextForSpeech(message.content);
-            console.log("Processed text:", speechText.substring(0, 50) + "...");
             
-            // Create utterance with minimal configuration
-            const utterance = new SpeechSynthesisUtterance(speechText);
-            utterance.lang = 'en-US';
-            
-            // Set handlers
-            utterance.onstart = () => {
-              console.log("Speech started");
-              setIsPlaying(true);
-            };
-            
-            utterance.onend = () => {
-              console.log("Speech ended");
-              setIsPlaying(false);
-            };
-            
-            utterance.onerror = (e) => {
-              console.error("Speech error:", e);
-              setIsPlaying(false);
-            };
-            
-            // Speak!
-            console.log("Speaking now...");
-            window.speechSynthesis.speak(utterance);
-          } else {
-            console.warn("Speech synthesis not available");
+            // Get the audio URL
+            const url = await getAudioForText(speechText);
+            if (url) {
+              setAudioUrl(url);
+              
+              // Wait a bit for the audio element to update
+              setTimeout(() => {
+                if (audioRef.current) {
+                  playAudio();
+                }
+              }, 100);
+            }
           }
         }
       }
@@ -221,32 +190,35 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     }
   };
   
-  // Auto-play assistant messages
+  // Setup audio when assistant message is rendered
   useEffect(() => {
-    // Only auto-play for assistant messages
+    // Only for assistant messages with content
     if (isUser || !message.content) return;
     
-    // Always set audio available for assistant messages
-    setAudioAvailable(true);
-    
-    // Small delay to make sure UI is ready
-    const timer = setTimeout(() => {
+    // Preload audio for assistant message
+    const preloadAudio = async () => {
       const speechText = processTextForSpeech(message.content);
       if (speechText) {
-        speakText(speechText);
+        console.log("Preloading audio for assistant message");
+        const url = await getAudioForText(speechText);
+        if (url) {
+          console.log("Audio URL received:", url);
+          setAudioUrl(url);
+        }
       }
-    }, 800);
+    };
     
-    return () => clearTimeout(timer);
+    // Call the preload function
+    preloadAudio();
+    
+    // Cleanup
+    return () => {
+      // Revoke object URL if it exists
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
   }, [message.content, isUser]);
-  
-  // Ensure play button is visible for all assistant messages
-  useEffect(() => {
-    if (!isUser && message.content) {
-      console.log("Setting audio available for assistant message");
-      setAudioAvailable(true);
-    }
-  }, []);
   
   // Function to format text with bold and code blocks
   const formatContent = (content: string) => {
@@ -381,8 +353,28 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     }
   };
 
+  // Audio element finished playing
+  const handleAudioEnded = () => {
+    console.log("Audio playback ended");
+    setIsPlaying(false);
+  };
+
   return (
     <div className="w-full my-2 sm:my-3">
+      {/* Hidden audio element */}
+      {!isUser && audioUrl && (
+        <audio 
+          ref={audioRef}
+          src={audioUrl}
+          onEnded={handleAudioEnded}
+          onError={() => {
+            console.error("Audio playback error");
+            setIsPlaying(false);
+          }}
+          style={{ display: 'none' }}
+        />
+      )}
+      
       {isUser ? (
         // User Message - Smaller and right-aligned
         <div className="flex justify-end mb-2">
@@ -401,6 +393,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               <button 
                 onClick={toggleAudio}
                 className="p-1.5 rounded-full bg-[#6A53E7] text-white hover:bg-[#5842d6] transition-all"
+                disabled={isLoading}
                 title={isPlaying ? "Pause audio" : "Play audio"}
               >
                 {isPlaying ? (
