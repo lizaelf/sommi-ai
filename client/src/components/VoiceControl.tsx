@@ -125,14 +125,19 @@ const VoiceControl: React.FC<VoiceControlProps> = ({ onTranscript, disabled = fa
       <Button
         type="button"
         onClick={toggleListening}
-        disabled={disabled || !window.SpeechRecognition && !window.webkitSpeechRecognition}
-        variant="outline"
-        className={`rounded-full p-3 aspect-square ${isListening ? 'bg-red-100 hover:bg-red-200 text-red-700' : 'bg-purple-50 hover:bg-purple-100 text-[#6A53E7]'}`}
-        title={statusText}
+        disabled={disabled}
+        variant="ghost"
+        size="icon"
+        className={`rounded-full w-10 h-10 sm:w-12 sm:h-12 ${
+          isListening 
+            ? 'bg-[#6A53E7] text-white hover:bg-[#6A53E7]/90' 
+            : 'text-gray-500 hover:text-[#6A53E7] hover:bg-purple-50'
+        }`}
+        title={isListening ? 'Stop listening' : 'Speak to ask'}
       >
         {isListening ? <Square size={18} /> : <Mic size={18} />}
       </Button>
-      <span className="text-xs mt-1 text-gray-500">{statusText}</span>
+      <span className="sr-only">{statusText}</span>
     </div>
   );
 };

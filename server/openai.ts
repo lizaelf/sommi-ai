@@ -1,9 +1,12 @@
 import OpenAI from "openai";
+import { Readable } from "stream";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const MODEL = "gpt-4o";
 // Fallback model if primary model is not available
 const FALLBACK_MODEL = "gpt-3.5-turbo";
+// Default voice for text-to-speech
+const TTS_VOICE = "alloy"; // alloy, echo, fable, onyx, nova, or shimmer
 
 // Initialize the OpenAI client with API key from environment variables
 const openai = new OpenAI({ 
@@ -188,5 +191,46 @@ export async function generateConversationTitle(firstMessage: string) {
   } catch (error) {
     console.error("Error generating conversation title:", error);
     return "Cabernet Conversation";
+  }
+}
+
+/**
+ * Convert text to speech using OpenAI's TTS API
+ * @param text The text to convert to speech
+ * @param voice The voice to use (default: alloy)
+ * @returns A readable stream of the audio data
+ */
+export async function textToSpeech(text: string, voice: string = TTS_VOICE): Promise<Readable> {
+  try {
+    // Check for valid API key
+    if (!isApiKeyValid) {
+      await checkApiStatus();
+      if (!isApiKeyValid) {
+        throw new Error("Invalid API key for text-to-speech");
+      }
+    }
+
+    // Clean up the text - remove any markdown or special characters that might affect speech
+    const cleanText = text
+      .replace(/\*\*(.*?)\*\*/g, "$1") // Remove markdown bold
+      .replace(/\n\n/g, ". ") // Replace double newlines with periods for better speech flow
+      .replace(/\n/g, " ") // Replace single newlines with spaces
+      .replace(/\s+/g, " ") // Replace multiple spaces with a single space
+      .trim();
+
+    // Create the audio response
+    const response = await openai.audio.speech.create({
+      model: "tts-1", // OpenAI's text-to-speech model
+      voice: voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
+      input: cleanText,
+      speed: 1.0, // Speech speed (0.25 to 4.0)
+    });
+
+    // Convert response to a stream
+    const audioStream = Readable.from(Buffer.from(await response.arrayBuffer()));
+    return audioStream;
+  } catch (error) {
+    console.error("Error in text-to-speech:", error);
+    throw new Error(`Failed to generate audio: ${(error as Error).message}`);
   }
 }
