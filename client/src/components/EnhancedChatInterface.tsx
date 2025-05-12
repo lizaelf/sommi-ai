@@ -209,10 +209,10 @@ const EnhancedChatInterface: React.FC = () => {
             </div>
           </div>
 
-          {/* Input Area - Fixed to Bottom with adjusted padding for safe area */}
-          <div className="bg-white p-2 sm:p-3 shadow-lg border-t border-gray-100 z-50 fixed bottom-0 left-0 right-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}>
+          {/* Input Area - Fixed to Bottom */}
+          <div className="bg-white p-2 sm:p-3 shadow-lg border-t border-gray-100 z-50 fixed bottom-0 left-0 right-0">
             <div className="max-w-3xl mx-auto">
-              {/* Suggestion chips with improved horizontal scrolling */}
+              {/* Suggestion chips */}
               <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                 <button 
                   onClick={() => handleSendMessage("Tasting notes")}
@@ -232,32 +232,17 @@ const EnhancedChatInterface: React.FC = () => {
                 >
                   Where it's from
                 </button>
-                <button 
-                  onClick={() => {
-                    if (window.speakDirectly) {
-                      window.speakDirectly("Hello, I'm your AI sommelier assistant for Cabernet Sauvignon. I can tell you about tasting notes, food pairings, and the regions where this popular wine is produced.");
-                    }
-                  }}
-                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-purple-600 text-white rounded-full border border-purple-600 text-xs sm:text-sm font-medium hover:bg-purple-700 transition-colors"
-                >
-                  🔊 Test Voice
-                </button>
               </div>
               
-              {/* Input and voice controls with improved spacing */}
-              <div className="relative flex items-center justify-between gap-1.5 sm:gap-2">
-                <div className="flex-grow">
-                  <ChatInput 
-                    onSendMessage={handleSendMessage} 
-                    isProcessing={isTyping}
-                  />
-                </div>
-                <div className="flex-shrink-0">
-                  <VoiceAssistant
-                    onSendMessage={handleSendMessage}
-                    isProcessing={isTyping}
-                  />
-                </div>
+              <div className="relative flex items-center gap-1.5 sm:gap-2">
+                <ChatInput 
+                  onSendMessage={handleSendMessage} 
+                  isProcessing={isTyping}
+                />
+                <VoiceAssistant
+                  onSendMessage={handleSendMessage}
+                  isProcessing={isTyping}
+                />
               </div>
             </div>
           </div>
