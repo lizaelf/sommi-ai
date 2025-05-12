@@ -379,8 +379,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           utterance.pitch = 1.0;  // Normal pitch
           utterance.volume = 1.0; // Maximum volume
           
-          // Try to select a voice
-          const voices = window.speechSynthesis.getVoices();
+          // Try to select a voice from our preloaded voices state
           if (voices && voices.length > 0) {
             // Try to find a good English voice
             const englishVoice = voices.find(v => 
@@ -389,8 +388,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             );
             
             if (englishVoice) {
+              console.log(`Toggle audio using voice: ${englishVoice.name}`);
               utterance.voice = englishVoice;
+            } else {
+              console.log('No preferred English voice found, using default');
             }
+          } else {
+            console.log('No voices available, using default browser voice');
           }
           
           // Set up event handlers
