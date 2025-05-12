@@ -202,14 +202,21 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             // Get the audio URL
             const url = await getAudioForText(speechText);
             if (url) {
+              console.log("Setting audio URL and preparing to play:", url);
               setAudioUrl(url);
               
-              // Wait a bit for the audio element to update
+              // Important: We need to wait for React to update the state and render the audio element
+              // before trying to play it
               setTimeout(() => {
                 if (audioRef.current) {
-                  playAudio();
+                  console.log("Attempting to play audio after URL update");
+                  audioRef.current.load(); // Ensure the audio is loaded
+                  audioRef.current.play().catch(e => console.error("Error playing after timeout:", e));
+                  setIsPlaying(true);
+                } else {
+                  console.error("Audio ref not available after timeout");
                 }
-              }, 100);
+              }, 300); // Longer timeout to ensure render completes
             }
           }
         }
@@ -373,21 +380,21 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   return (
     <div className="w-full my-2 sm:my-3">
       {/* Hidden audio element - using key to force reload when URL changes */}
-      {!isUser && (
-        <audio 
-          key={audioUrl || 'no-audio'}
-          ref={audioRef}
-          src={audioUrl || ''}
-          onEnded={handleAudioEnded}
-          onCanPlay={() => console.log("Audio can now play")}
-          onError={(e) => {
-            console.error("Audio playback error", e);
-            setIsPlaying(false);
-          }}
-          style={{ display: 'none' }}
-          preload="auto"
-        />
-      )}
+      <audio 
+        key={audioUrl || 'no-audio'}
+        ref={audioRef}
+        src={audioUrl || ''}
+        onEnded={handleAudioEnded}
+        onCanPlay={() => console.log("Audio can now play")}
+        onLoadedData={() => console.log("Audio data loaded")}
+        onError={(e) => {
+          console.error("Audio playback error", e);
+          setIsPlaying(false);
+        }}
+        style={{ display: 'none' }}
+        preload="auto"
+        controls={false}
+      />
       
       {isUser ? (
         // User Message - Smaller and right-aligned
