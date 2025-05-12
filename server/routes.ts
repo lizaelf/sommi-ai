@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { chatCompletion, checkApiStatus, textToSpeech } from "./openai";
-import { chatCompletionRequestSchema } from "@shared/schema";
+import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -107,9 +107,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Chat completion endpoint
   app.post("/api/chat", async (req, res) => {
+    // Define here so it's accessible in the catch block
+    let validatedData: ChatCompletionRequest | undefined;
+    
     try {
       // Validate request
-      const validatedData = chatCompletionRequestSchema.parse(req.body);
+      validatedData = chatCompletionRequestSchema.parse(req.body);
       
       // Get messages from request
       const { messages, conversationId } = validatedData;
@@ -197,22 +200,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           "I apologize, but I'm currently experiencing issues with my service. " +
           "The OpenAI API quota has been exceeded. Please try again later or contact support to update your API key quota.";
         
-        // Save the user message and error message to the conversation
-        if (validatedData?.conversationId) {
+        // Only try to save messages if we have valid data and a conversation ID
+        const conversationId = validatedData?.conversationId;
+        if (conversationId && validatedData?.messages && validatedData.messages.length > 0) {
           try {
             // Save the user's original message
-            await storage.createMessage({
-              content: validatedData.messages[validatedData.messages.length - 1].content,
-              role: 'user',
-              conversationId: validatedData.conversationId
-            });
-            
-            // Save our error response
-            await storage.createMessage({
-              content: friendlyMessage,
-              role: 'assistant',
-              conversationId: validatedData.conversationId
-            });
+            const userMessage = validatedData.messages[validatedData.messages.length - 1];
+            if (userMessage) {
+              await storage.createMessage({
+                content: userMessage.content,
+                role: 'user',
+                conversationId
+              });
+              
+              // Save our error response
+              await storage.createMessage({
+                content: friendlyMessage,
+                role: 'assistant',
+                conversationId
+              });
+            }
           } catch (storageError) {
             console.error("Error saving quota error message:", storageError);
           }
@@ -225,7 +232,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             content: friendlyMessage
           },
           error: "API_QUOTA_EXCEEDED",
-          conversationId: validatedData?.conversationId
+          conversationId
         });
       }
       
@@ -277,11 +284,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send the audio file
       res.send(audioBuffer);
       console.log("Sent audio response, size:", audioBuffer.length);
-    } catch (error) {
+    } catch (err) {
+      const error = err as any;
       console.error("Error in text-to-speech endpoint:", error);
+      
+      // Check if this is a quota exceeded error
+      const isQuotaError = error.message && (
+        error.message.includes("quota") || 
+        error.message.includes("rate limit") ||
+        error.message.includes("insufficient_quota")
+      );
+      
+      if (isQuotaError) {
+        // For TTS errors, we return a special status code that our client can recognize
+        // The client will then fall back to browser-based speech synthesis
+        return res.status(429).json({
+          message: "API quota exceeded for text-to-speech",
+          error: "QUOTA_EXCEEDED",
+          fallback: true
+        });
+      }
+      
+      // For other errors
       res.status(500).json({
         message: "Failed to convert text to speech",
-        error: (error as any)?.message || "Unknown error"
+        error: error?.message || "Unknown error"
       });
     }
   });
