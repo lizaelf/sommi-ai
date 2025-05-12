@@ -2,6 +2,17 @@ import React from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
 
+// Need to ensure the window.voiceAssistant type is available
+declare global {
+  interface Window {
+    voiceAssistant?: {
+      speakResponse: (text: string) => Promise<void>;
+      playLastAudio: () => void;
+      speakLastAssistantMessage: () => void;
+    };
+  }
+}
+
 interface ChatMessageProps {
   message: Message | ClientMessage;
 }
@@ -175,6 +186,21 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         // AI Message - Wine info style with special formatting (direct rendering)
         <div data-role="assistant">
           {formatWineInfo(message.content)}
+          
+          {/* Play Response Audio Button */}
+          <div className="mt-2 text-center">
+            <button
+              className="text-xs bg-[#8B0000] text-white px-3 py-1 rounded-full shadow hover:bg-[#6d0000] transition-colors"
+              onClick={() => {
+                // Call the global voice assistant function to speak this message
+                if (window.voiceAssistant && typeof window.voiceAssistant.speakResponse === 'function') {
+                  window.voiceAssistant.speakResponse(message.content);
+                }
+              }}
+            >
+              🔊 Play Response Audio
+            </button>
+          </div>
         </div>
       )}
     </div>
