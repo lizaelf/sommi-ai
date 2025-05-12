@@ -1,7 +1,7 @@
-import type { Express, Request, Response } from "express";
+import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { chatCompletion, checkApiStatus, textToSpeech } from "./openai";
+import { chatCompletion, checkApiStatus } from "./openai";
 import { chatCompletionRequestSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -186,38 +186,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         message: "Failed to generate chat completion",
         error: error?.message || "Unknown error" 
-      });
-    }
-  });
-
-  // Text-to-speech endpoint
-  app.post("/api/tts", async (req: Request, res: Response) => {
-    try {
-      const { text, voice } = req.body;
-      
-      if (!text || typeof text !== 'string') {
-        return res.status(400).json({ message: "Text is required and must be a string" });
-      }
-      
-      // Limit text length to prevent abuse
-      if (text.length > 5000) {
-        return res.status(400).json({ message: "Text too long. Maximum 5000 characters." });
-      }
-      
-      // Generate speech from text
-      const audioStream = await textToSpeech(text, voice);
-      
-      // Set the appropriate headers
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.setHeader('Transfer-Encoding', 'chunked');
-      
-      // Pipe the audio stream to the response
-      audioStream.pipe(res);
-    } catch (error) {
-      console.error("Error generating speech:", error);
-      res.status(500).json({
-        message: "Failed to generate speech",
-        error: (error as Error).message
       });
     }
   });
