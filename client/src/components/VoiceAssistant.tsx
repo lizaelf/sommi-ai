@@ -101,7 +101,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   // Function to handle text-to-speech using server API with simplified implementation
   const speakResponse = async (text: string) => {
     try {
-      setStatus('Getting voice response...');
+      // Don't show status for audio processing - operate silently
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
@@ -115,22 +115,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       lastAudioBlob = await response.blob();
       console.log("Audio received:", lastAudioBlob.size, "bytes");
       
-      // Show the audio controls
-      const audioControls = document.getElementById('audio-controls');
-      if (audioControls) {
-        audioControls.style.display = 'block';
-      }
+      // Auto-play the audio immediately
+      playLastAudio();
       
-      // Set up the play button
-      const playBtn = document.getElementById('play-audio-btn');
-      if (playBtn) {
-        playBtn.onclick = playLastAudio;
-      }
-      
-      setStatus('Audio ready to play');
+      // No status messages or visible controls needed
     } catch (error) {
       console.error("Error:", error);
-      setStatus('Failed to get audio');
+      // Don't show error in UI, just log to console
     }
   };
 
@@ -150,9 +141,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     
     audio.play().catch(err => {
       console.error("Playback error:", err);
+      // Just log errors, don't display them
     });
     
-    setStatus('Playing...');
+    // Don't update status for audio playing
   };
 
   // Test the text-to-speech directly when the microphone button is clicked
