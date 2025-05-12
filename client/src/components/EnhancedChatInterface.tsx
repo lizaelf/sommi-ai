@@ -7,17 +7,6 @@ import VoiceAssistant from './VoiceAssistant';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 
-// Declare the window.voiceAssistant interface to fix TypeScript errors
-declare global {
-  interface Window {
-    voiceAssistant?: {
-      speakResponse: (text: string) => Promise<void>;
-      playLastAudio: () => void;
-      speakLastAssistantMessage: () => void;
-    };
-  }
-}
-
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
   // Use our enhanced conversation hook
@@ -112,20 +101,6 @@ const EnhancedChatInterface: React.FC = () => {
         
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
-        
-        // Automatically speak the response
-        try {
-          const voiceAssistant = window.voiceAssistant;
-          if (voiceAssistant && typeof voiceAssistant.speakResponse === 'function') {
-            // Small delay to ensure message is fully rendered
-            setTimeout(() => {
-              console.log("Auto-speaking new assistant response");
-              voiceAssistant.speakResponse(assistantMessage.content);
-            }, 300);
-          }
-        } catch (error) {
-          console.error("Error auto-speaking response:", error);
-        }
       }
       
       // Refresh all messages
@@ -201,7 +176,34 @@ const EnhancedChatInterface: React.FC = () => {
                 ))
               }
 
-              {/* Removed global audio controls as audio now plays automatically */}
+              {/* Audio Controls */}
+              <div id="audio-controls" style={{display: 'none', marginTop: '15px', textAlign: 'center'}}>
+                <button 
+                  id="play-audio-btn" 
+                  onClick={(e) => {
+                    if (window.voiceAssistant && typeof window.voiceAssistant.speakLastAssistantMessage === 'function') {
+                      window.voiceAssistant.speakLastAssistantMessage();
+                      
+                      // Toggle button text between play/pause
+                      const button = e.currentTarget as HTMLButtonElement;
+                      const isPausing = button.textContent?.includes('Pause');
+                      
+                      button.textContent = isPausing 
+                        ? '🔊 Play Response Audio: Listen to text out loud' 
+                        : '⏸️ Pause Response Audio: Click to pause/resume';
+                    }
+                  }}
+                  style={{
+                    padding: '10px 20px', 
+                    backgroundColor: '#8B0000', 
+                    color: 'white', 
+                    border: 'none', 
+                    borderRadius: '5px'
+                  }}
+                >
+                  Play Response Audio: Listen to text out loud
+                </button>
+              </div>
               
               {/* Typing Indicator */}
               {isTyping && (

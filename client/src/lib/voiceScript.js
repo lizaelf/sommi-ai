@@ -222,45 +222,74 @@ async function speakResponse(text) {
     const url = URL.createObjectURL(lastAudioBlob);
     audioElement.src = url;
     
-    // Always attempt to auto-play audio
-    console.log("Attempting to auto-play audio response");
-    try {
-      await audioElement.play();
-      if (statusDiv) statusDiv.textContent = 'Speaking...';
-    } catch (playError) {
-      console.error("Auto-play failed:", playError);
+    // Auto-play if the input was from voice
+    if (lastInputWasVoice) {
+      console.log("Attempting to auto-play audio response");
+      try {
+        await audioElement.play();
+        if (statusDiv) statusDiv.textContent = 'Speaking...';
+      } catch (playError) {
+        console.error("Auto-play failed:", playError);
+        
+        // Show the audio controls as a fallback
+        const audioControls = document.getElementById('audio-controls');
+        if (audioControls) {
+          audioControls.style.display = 'block';
+          audioControls.setAttribute('style', 'display: block !important; margin-top: 15px; text-align: center;');
+        }
+        
+        if (statusDiv) statusDiv.textContent = 'Click play to hear response';
+      }
+    } else {
+      // Show the audio controls
+      const audioControls = document.getElementById('audio-controls');
+      if (audioControls) {
+        audioControls.style.display = 'block';
+        audioControls.setAttribute('style', 'display: block !important; margin-top: 15px; text-align: center;');
+      }
       
-      // Create a temporary play button if auto-play fails
-      const tempButton = document.createElement('button');
-      tempButton.textContent = '🔊 Play Audio (auto-play failed)';
-      tempButton.style.position = 'fixed';
-      tempButton.style.bottom = '80px';
-      tempButton.style.right = '20px';
-      tempButton.style.backgroundColor = '#8B0000';
-      tempButton.style.color = 'white';
-      tempButton.style.padding = '10px 15px';
-      tempButton.style.border = 'none';
-      tempButton.style.borderRadius = '5px';
-      tempButton.style.zIndex = '1000';
-      tempButton.style.cursor = 'pointer';
+      if (statusDiv) statusDiv.textContent = 'Audio ready to play';
+    }
+    
+    // Set up the play button with a direct onclick handler
+    const playBtn = document.getElementById('play-audio-btn');
+    if (playBtn) {
+      // Remove any existing event listeners
+      playBtn.replaceWith(playBtn.cloneNode(true));
       
-      tempButton.onclick = () => {
+      // Get the fresh button and add a new click handler
+      const newPlayBtn = document.getElementById('play-audio-btn');
+      newPlayBtn.addEventListener('click', function() {
+        console.log("Play button clicked");
         audioElement.play()
           .then(() => {
+            console.log("Audio playback started successfully");
             if (statusDiv) statusDiv.textContent = 'Playing...';
           })
           .catch(err => {
-            console.error("Manual playback error:", err);
+            console.error("Audio playback error:", err);
+            if (statusDiv) statusDiv.textContent = 'Error playing audio';
+            
+            // Fallback to browser's built-in speech synthesis
+            if ('speechSynthesis' in window) {
+              console.log("Trying browser speech synthesis");
+              const utterance = new SpeechSynthesisUtterance(text);
+              utterance.lang = 'en-US';
+              window.speechSynthesis.speak(utterance);
+              if (statusDiv) statusDiv.textContent = 'Using browser speech...';
+            }
           });
-        document.body.removeChild(tempButton);
-      };
+      });
       
-      document.body.appendChild(tempButton);
-      
-      if (statusDiv) statusDiv.textContent = 'Auto-play failed. Click the button to play.';
+      // Make the button very noticeable
+      newPlayBtn.style.backgroundColor = '#8B0000';
+      newPlayBtn.style.color = 'white';
+      newPlayBtn.style.padding = '10px 20px';
+      newPlayBtn.style.border = 'none';
+      newPlayBtn.style.borderRadius = '5px';
+      newPlayBtn.style.cursor = 'pointer';
+      newPlayBtn.textContent = 'Play Response Audio: Listen to text out loud';
     }
-    
-    // Global play button is now removed since we auto-play audio
     
     // Clean up URL object when audio ends
     audioElement.onended = () => {
