@@ -229,7 +229,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     <div className="flex items-center ml-1 gap-1">
       {status ? (
         // Status Indicator
-        <div className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
+        <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
           <span className="animate-pulse mr-1">●</span>
           {status}
         </div>
@@ -237,6 +237,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         <>
           {/* Voice Button */}
           <button
+            id="mic-button"
             onClick={toggleListening}
             disabled={isProcessing}
             className={`p-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#6A53E7]/30 ${
