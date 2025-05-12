@@ -401,11 +401,81 @@ function speakLastAssistantMessage() {
   }
 }
 
+// Function to play or pause the last audio
+function playLastAudio() {
+  // If no audio is available, return
+  if (!lastAudioBlob) {
+    console.error("No audio available");
+    return;
+  }
+  
+  // If we already have an audio element
+  if (currentAudioElement) {
+    if (!currentAudioElement.paused) {
+      // It's already playing, pause it
+      console.log("Pausing current audio");
+      currentAudioElement.pause();
+      isAudioPlaying = false;
+      
+      // Dispatch an event so React components can update
+      document.dispatchEvent(new CustomEvent('audioPaused'));
+      
+      return;
+    } else {
+      // It's paused, resume it
+      console.log("Resuming paused audio");
+      currentAudioElement.play()
+        .then(() => {
+          console.log("Audio playback resumed");
+          isAudioPlaying = true;
+          
+          // Dispatch an event so React components can update
+          document.dispatchEvent(new CustomEvent('audioPlaying'));
+        })
+        .catch(err => {
+          console.error("Playback resume error:", err);
+          isAudioPlaying = false;
+        });
+      return;
+    }
+  }
+  
+  // If we get here, we need to create a new audio element
+  console.log("Creating new audio player from stored blob");
+  const url = URL.createObjectURL(lastAudioBlob);
+  currentAudioElement = new Audio(url);
+  currentAudioElement.id = 'audio-player';
+  
+  // Set up event listeners
+  currentAudioElement.onended = () => {
+    console.log("Audio playback finished");
+    URL.revokeObjectURL(url);
+    isAudioPlaying = false;
+    
+    // Dispatch an event that React can listen to
+    document.dispatchEvent(new CustomEvent('audioEnded'));
+  };
+  
+  // Start playback
+  currentAudioElement.play()
+    .then(() => {
+      console.log("Audio playback started");
+      isAudioPlaying = true;
+      
+      // Dispatch an event that React can listen to
+      document.dispatchEvent(new CustomEvent('audioPlaying'));
+    })
+    .catch(err => {
+      console.error("Playback error:", err);
+      isAudioPlaying = false;
+    });
+}
+
 // Export functions for use in React components if needed
 if (typeof window !== 'undefined') {
   window.voiceAssistant = {
     speakResponse,
-    playLastAudio: function() { console.log("This function is deprecated"); },
+    playLastAudio, // Use the actual function now
     speakLastAssistantMessage
   };
 }

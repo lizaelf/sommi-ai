@@ -198,6 +198,53 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     }
   };
 
+  // State for controlling audio playback
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [audioAvailable, setAudioAvailable] = React.useState(false);
+  
+  // Function to toggle play/pause
+  const toggleAudio = () => {
+    if (!isUser && window.voiceAssistant?.playLastAudio) {
+      if (isPlaying) {
+        // The audio is playing, pause it
+        const audioEl = document.getElementById('audio-player') as HTMLAudioElement;
+        if (audioEl) {
+          audioEl.pause();
+          setIsPlaying(false);
+        }
+      } else {
+        // The audio is paused, play it
+        window.voiceAssistant.playLastAudio();
+        setIsPlaying(true);
+        setAudioAvailable(true);
+      }
+    }
+  };
+  
+  // Listen for audio ended event
+  React.useEffect(() => {
+    const handleAudioEnded = () => {
+      setIsPlaying(false);
+    };
+    
+    // Add event listener to the audio element
+    const audioEl = document.getElementById('audio-player') as HTMLAudioElement;
+    if (audioEl) {
+      audioEl.addEventListener('ended', handleAudioEnded);
+      return () => {
+        audioEl.removeEventListener('ended', handleAudioEnded);
+      };
+    }
+  }, []);
+  
+  // When a new response is added, update audio availability
+  React.useEffect(() => {
+    if (!isUser) {
+      // When assistant message is added, assume audio will be available
+      setAudioAvailable(true);
+    }
+  }, [message.content, isUser]);
+
   return (
     <div className="w-full my-2 sm:my-3">
       {isUser ? (
@@ -209,10 +256,32 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         </div>
       ) : (
         // AI Message - Wine info style with special formatting (direct rendering)
-        <div data-role="assistant">
+        <div data-role="assistant" className="relative">
           {formatWineInfo(message.content)}
           
-          {/* No Play Response Audio Button - We'll auto-play instead */}
+          {/* Play/Pause Button */}
+          {audioAvailable && (
+            <div className="absolute top-0 right-0 mt-1 mr-1">
+              <button 
+                onClick={toggleAudio}
+                className="p-1.5 rounded-full bg-[#6A53E7] text-white hover:bg-[#5842d6] transition-all"
+                title={isPlaying ? "Pause audio" : "Play audio"}
+              >
+                {isPlaying ? (
+                  // Pause icon
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                  </svg>
+                ) : (
+                  // Play icon
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
