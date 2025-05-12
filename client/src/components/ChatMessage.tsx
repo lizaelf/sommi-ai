@@ -41,23 +41,25 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
   
   // Process message content to be suitable for speech synthesis
+  // but retain the exact message content without significant alterations
   const processTextForSpeech = (content: string): string => {
     if (!content) return '';
     
-    // Simplistic approach to remove emoji symbols - without unicode flag
-    let cleanText = content;
+    let processedText = content;
     
-    // Remove common emoji 
-    cleanText = cleanText.replace(/[^\x00-\x7F]/g, ''); // Remove non-ASCII characters
+    // Only remove markdown formatting - keep the actual content intact
+    // Replace bold markdown formatting with plain text
+    processedText = processedText.replace(/\*\*(.*?)\*\*/g, '$1');
     
-    // Replace markdown formatting for bold with standard text
-    cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '$1');
+    // Replace other markdown formatting that might cause issues in speech
+    processedText = processedText.replace(/\*(.*?)\*/g, '$1');  // Italic
+    processedText = processedText.replace(/`(.*?)`/g, '$1');     // Code
     
-    // Replace bullet points with pauses and cleaner structure
-    cleanText = cleanText.replace(/- /g, '. ');
+    // Clean up unnecessary whitespace without changing structure
+    // Just convert multiple spaces to single spaces
+    processedText = processedText.replace(/[ \t]+/g, ' ');
     
-    // Clean up double spaces and unnecessary whitespace
-    return cleanText.replace(/\s+/g, ' ').trim();
+    return processedText;
   };
 
   // Auto-play the response audio when assistant message is rendered

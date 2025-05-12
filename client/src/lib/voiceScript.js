@@ -92,13 +92,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                   console.log("Auto-speaking response after voice input");
                   
-                  // Process the message content to make it suitable for speech
+                  // Get the exact text content of the message
                   const originalText = latestMessage.textContent || '';
+                  
+                  // Only apply minimal processing to remove markdown formatting
+                  // without changing the actual content of the text
                   const speechText = processTextForSpeech(originalText);
                   
                   // Only speak if we have content after processing
                   if (speechText && speechText.trim().length > 0) {
-                    console.log("Processing message for speech, length:", speechText.length);
+                    console.log("Speaking message with minimal processing, length:", speechText.length);
                     speakResponse(speechText);
                   } else {
                     console.warn("No valid text to speak after processing");
@@ -417,23 +420,25 @@ function sendMessage(text) {
 }
 
 // Helper function to process text for speech
+// Minimal processing to maintain exact content while just removing markdown
 function processTextForSpeech(content) {
   if (!content) return '';
   
-  // Simplistic approach to remove emoji symbols - without unicode flag
-  let cleanText = content;
+  let processedText = content;
   
-  // Remove common emoji & non-ASCII characters
-  cleanText = cleanText.replace(/[^\x00-\x7F]/g, '');
+  // Only remove markdown formatting - keep the actual content intact
+  // Replace bold markdown formatting with plain text
+  processedText = processedText.replace(/\*\*(.*?)\*\*/g, '$1');
   
-  // Replace markdown formatting for bold with standard text
-  cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '$1');
+  // Replace other markdown formatting that might cause issues in speech
+  processedText = processedText.replace(/\*(.*?)\*/g, '$1');  // Italic
+  processedText = processedText.replace(/`(.*?)`/g, '$1');    // Code
   
-  // Replace bullet points with pauses and cleaner structure
-  cleanText = cleanText.replace(/- /g, '. ');
+  // Clean up unnecessary whitespace without changing structure
+  // Just convert multiple spaces to single spaces
+  processedText = processedText.replace(/[ \t]+/g, ' ');
   
-  // Clean up double spaces and unnecessary whitespace
-  return cleanText.replace(/\s+/g, ' ').trim();
+  return processedText;
 }
 
 // This function is primarily handled by the MutationObserver now
