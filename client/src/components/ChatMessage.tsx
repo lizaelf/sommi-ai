@@ -77,16 +77,34 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         const speechText = processTextForSpeech(messageContent);
         
         // Only attempt to speak if we have valid text
-        if (speechText && speechText.trim().length > 0) {
-          // Call the speak function safely
-          const speakResponse = window.voiceAssistant?.speakResponse;
-          if (typeof speakResponse === 'function') {
-            speakResponse(speechText);
-          } else {
-            console.warn('Voice assistant speak function not available');
-          }
+        if (speechText && speechText.trim().length > 0 && window.speechSynthesis) {
+          // Use browser's speech synthesis directly
+          window.speechSynthesis.cancel(); // Cancel any previous speech
+          
+          const utterance = new SpeechSynthesisUtterance(speechText);
+          utterance.lang = 'en-US';
+          
+          // Set event handlers
+          utterance.onstart = () => {
+            setIsPlaying(true);
+            document.dispatchEvent(new CustomEvent('audioPlaying'));
+          };
+          
+          utterance.onend = () => {
+            setIsPlaying(false);
+            document.dispatchEvent(new CustomEvent('audioPaused'));
+          };
+          
+          utterance.onerror = (event) => {
+            console.error("Speech synthesis error:", event);
+            setIsPlaying(false);
+          };
+          
+          // Speak the text
+          window.speechSynthesis.speak(utterance);
+          setAudioAvailable(true);
         } else {
-          console.warn('No valid text to speak after processing');
+          console.warn('No valid text to speak or speech synthesis unavailable');
         }
       } catch (error) {
         console.error('Error auto-playing message:', error);
@@ -235,12 +253,56 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   
   // Function to toggle play/pause
   const toggleAudio = () => {
-    // Simply call the playLastAudio function which handles play/pause toggling internally
-    if (!isUser && window.voiceAssistant?.playLastAudio) {
-      // Our improved playLastAudio function handles the toggling logic
-      window.voiceAssistant.playLastAudio();
-      // UI state is updated via event listeners, not here
-      setAudioAvailable(true);
+    if (isUser) return; // Only for AI messages
+    
+    try {
+      if (isPlaying) {
+        // If audio is playing, pause it
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+          setIsPlaying(false);
+          document.dispatchEvent(new CustomEvent('audioPaused'));
+        }
+      } else {
+        // If audio is paused, play the message content directly
+        if (message.content && window.speechSynthesis) {
+          // Process the text to remove markdown formatting only
+          const speechText = processTextForSpeech(message.content);
+          
+          // Cancel any ongoing speech
+          window.speechSynthesis.cancel();
+          
+          // Create a new utterance with the text
+          const utterance = new SpeechSynthesisUtterance(speechText);
+          utterance.lang = 'en-US';
+          
+          // Set up event handlers
+          utterance.onstart = () => {
+            setIsPlaying(true);
+            document.dispatchEvent(new CustomEvent('audioPlaying'));
+          };
+          
+          utterance.onend = () => {
+            setIsPlaying(false);
+            document.dispatchEvent(new CustomEvent('audioPaused'));
+          };
+          
+          utterance.onerror = (event) => {
+            console.error("Speech synthesis error:", event);
+            setIsPlaying(false);
+            document.dispatchEvent(new CustomEvent('audioPaused'));
+          };
+          
+          // Speak the text
+          window.speechSynthesis.speak(utterance);
+          setAudioAvailable(true);
+        } else {
+          console.warn("No text content to speak or speech synthesis unavailable");
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling audio:", error);
+      setIsPlaying(false);
     }
   };
   
