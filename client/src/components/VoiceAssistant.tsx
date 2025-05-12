@@ -195,26 +195,51 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
+  // Test the text-to-speech directly when the microphone button is clicked
+  const testTTS = async () => {
+    try {
+      const testText = "This is a test of the Cabernet Sauvignon wine assistant voice. I hope you can hear me clearly now.";
+      console.log("Testing TTS directly with text:", testText);
+      await speakResponse(testText);
+    } catch (error) {
+      console.error("TTS Test failed:", error);
+      toast({
+        title: "Voice Test Failed",
+        description: "Could not test the text-to-speech functionality.",
+        variant: "destructive"
+      });
+    }
+  };
+
   // If user receives a response and we're no longer processing, speak it
   useEffect(() => {
     if (!isProcessing && status === 'Processing your question...') {
       try {
+        console.log("Attempting to find and speak the last message...");
+        
         // Find the last assistant message
         const messagesContainer = document.getElementById('conversation');
+        console.log("Messages container found:", !!messagesContainer);
         
         if (messagesContainer) {
           // Get all the chat messages
           const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
+          console.log("Assistant message elements found:", messageElements.length);
           
           if (messageElements && messageElements.length > 0) {
             // Get the last message
             const lastMessage = messageElements[messageElements.length - 1];
             
             if (lastMessage && lastMessage.textContent) {
+              const messageText = lastMessage.textContent || '';
+              console.log("Found message to speak:", messageText.substring(0, 50) + "...");
+              
               // Speak the response with a small delay to ensure message is fully rendered
               setTimeout(() => {
-                speakResponse(lastMessage.textContent || '');
+                speakResponse(messageText);
               }, 300);
+            } else {
+              console.log("Last message has no text content");
             }
           }
         }
@@ -227,7 +252,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   }, [isProcessing, status]);
 
   return (
-    <div className="flex items-center ml-1">
+    <div className="flex items-center ml-1 gap-1">
       {status ? (
         // Status Indicator
         <div className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
@@ -235,34 +260,61 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           {status}
         </div>
       ) : (
-        // Voice Button
-        <button
-          onClick={toggleListening}
-          disabled={isProcessing}
-          className={`p-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#6A53E7]/30 ${
-            isProcessing 
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-              : 'bg-[#F5F3FF] text-[#6A53E7] hover:bg-[#6A53E7]/10'
-          } ${isListening ? 'bg-[#6A53E7] text-white animate-pulse' : ''}`}
-          aria-label="Start voice input"
-          title="Use voice to ask questions"
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="20" 
-            height="20" 
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <>
+          {/* Voice Button */}
+          <button
+            onClick={toggleListening}
+            disabled={isProcessing}
+            className={`p-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#6A53E7]/30 ${
+              isProcessing 
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                : 'bg-[#F5F3FF] text-[#6A53E7] hover:bg-[#6A53E7]/10'
+            } ${isListening ? 'bg-[#6A53E7] text-white animate-pulse' : ''}`}
+            aria-label="Start voice input"
+            title="Use voice to ask questions"
           >
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" x2="12" y1="19" y2="22"></line>
-          </svg>
-        </button>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" x2="12" y1="19" y2="22"></line>
+            </svg>
+          </button>
+          
+          {/* Sound Test Button */}
+          <button
+            onClick={testTTS}
+            disabled={isProcessing}
+            className="p-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#6A53E7]/30 bg-[#F5F3FF] text-[#6A53E7] hover:bg-[#6A53E7]/10"
+            aria-label="Test voice"
+            title="Test voice output"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </button>
+        </>
       )}
     </div>
   );

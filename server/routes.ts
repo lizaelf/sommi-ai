@@ -193,15 +193,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Text-to-speech endpoint
   app.post("/api/text-to-speech", async (req, res) => {
     try {
+      console.log("Received text-to-speech request");
+      
       // Create a schema for text-to-speech request
       const textToSpeechSchema = z.object({
         text: z.string().min(1).max(4000)
       });
       
+      // Log request body
+      console.log("Text-to-speech request body:", req.body);
+      
       // Validate the request
       const validationResult = textToSpeechSchema.safeParse(req.body);
       
       if (!validationResult.success) {
+        console.log("Invalid text-to-speech request:", validationResult.error.format());
         return res.status(400).json({
           message: "Invalid request",
           errors: validationResult.error.format()
@@ -209,6 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const { text } = validationResult.data;
+      console.log("Processing text-to-speech for text length:", text.length);
       
       // Convert text to speech
       const audioBuffer = await textToSpeech(text);
