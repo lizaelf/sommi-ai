@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -14,26 +15,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
-  // Initialize audio context on first user interaction
-  useEffect(() => {
-    const initAudioContext = () => {
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        audioContext.resume().then(() => {
-          console.log('Audio context started on user interaction');
-        });
-      } catch (e) {
-        console.warn('Unable to initialize AudioContext:', e);
-      }
-    };
-
-    // Add click listener to document to enable audio on first interaction
-    document.addEventListener('click', initAudioContext, { once: true });
-    
-    return () => {
-      document.removeEventListener('click', initAudioContext);
-    };
-  }, []);
+  // Audio context is now initialized globally in main.tsx
 
   useEffect(() => {
     // Initialize speech recognition
@@ -119,13 +101,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       setStatus('Getting voice response...');
       console.log("Requesting TTS for:", text.substring(0, 30) + "...");
       
-      // Create an AudioContext to enable audio (requires user interaction)
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        await audioContext.resume();
-        console.log('Audio context started');
-      } catch (e) {
-        console.warn('Unable to initialize AudioContext:', e);
+      // Use the centralized audio context initialization
+      if (!isAudioContextInitialized()) {
+        try {
+          const success = await initAudioContext();
+          if (!success) {
+            console.warn('Failed to initialize audio context, attempting to continue anyway');
+          }
+        } catch (e) {
+          console.warn('Error initializing AudioContext:', e);
+        }
       }
       
       const response = await fetch('/api/text-to-speech', {

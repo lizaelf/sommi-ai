@@ -220,10 +220,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Convert text to speech
       const audioBuffer = await textToSpeech(text);
       
-      // Set appropriate headers
-      res.set('Content-Type', 'audio/mpeg');
-      // Setting Content-Length is important for proper streaming
-      res.set('Content-Length', audioBuffer.length.toString());
+      // Set proper headers
+      res.set({
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': audioBuffer.length.toString(),
+        'Cache-Control': 'no-cache'
+      });
       
       // Send the audio file
       res.send(audioBuffer);
