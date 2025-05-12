@@ -2,6 +2,24 @@ import React from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
 
+// Helper function to safely get voices and ensure they're loaded
+function getVoices(): SpeechSynthesisVoice[] {
+  if (typeof window === 'undefined' || !window.speechSynthesis) {
+    return [];
+  }
+  
+  const voices = window.speechSynthesis.getVoices();
+  
+  // If voices array is empty, it might be because they haven't loaded yet
+  if (!voices || voices.length === 0) {
+    // In some browsers, we need to wait for the voiceschanged event
+    // For this component, just return empty array and let the effect handle it later
+    return [];
+  }
+  
+  return voices;
+}
+
 // Need to ensure the window.voiceAssistant type is available
 declare global {
   interface Window {
@@ -47,17 +65,36 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     
     let processedText = content;
     
+    // Handle wine-specific emoji carefully by adding spaces around them
+    // This helps the speech synthesis engine pause appropriately
+    processedText = processedText.replace(/🍷/g, ' wine ');
+    processedText = processedText.replace(/✨/g, ' sparkle ');
+    processedText = processedText.replace(/🍽️/g, ' food ');
+    processedText = processedText.replace(/🌍/g, ' region ');
+    
     // Only remove markdown formatting - keep the actual content intact
     // Replace bold markdown formatting with plain text
     processedText = processedText.replace(/\*\*(.*?)\*\*/g, '$1');
     
     // Replace other markdown formatting that might cause issues in speech
     processedText = processedText.replace(/\*(.*?)\*/g, '$1');  // Italic
-    processedText = processedText.replace(/`(.*?)`/g, '$1');     // Code
+    processedText = processedText.replace(/`(.*?)`/g, '$1');    // Code
+    processedText = processedText.replace(/```[^`]*```/g, ''); // Remove code blocks
+    
+    // Replace bullet points with natural pauses
+    processedText = processedText.replace(/- /g, ', ');
+    processedText = processedText.replace(/• /g, ', ');
+    processedText = processedText.replace(/✧ /g, ', ');
     
     // Clean up unnecessary whitespace without changing structure
     // Just convert multiple spaces to single spaces
     processedText = processedText.replace(/[ \t]+/g, ' ');
+    
+    // Add periods at the end of lines to create natural pauses
+    processedText = processedText.replace(/\n/g, '. ');
+    
+    // Clean up any double periods that might have been created
+    processedText = processedText.replace(/\.\./g, '.');
     
     return processedText;
   };
@@ -67,49 +104,86 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     // Only attempt to speak for assistant messages with content
     if (isUser || !message.content || message.content.trim().length === 0) return;
     
-    // Play response audio with a slight delay
+    // Play response audio with a slight delay to ensure UI is ready
     const timer = setTimeout(() => {
       try {
         console.log("Auto-playing assistant message");
         
-        // Process the message content to make it more suitable for speech
+        // Process the message content - only removing markdown formatting
         const messageContent = message.content || '';
         const speechText = processTextForSpeech(messageContent);
         
-        // Only attempt to speak if we have valid text
-        if (speechText && speechText.trim().length > 0 && window.speechSynthesis) {
-          // Use browser's speech synthesis directly
-          window.speechSynthesis.cancel(); // Cancel any previous speech
-          
-          const utterance = new SpeechSynthesisUtterance(speechText);
-          utterance.lang = 'en-US';
-          
-          // Set event handlers
-          utterance.onstart = () => {
-            setIsPlaying(true);
-            document.dispatchEvent(new CustomEvent('audioPlaying'));
-          };
-          
-          utterance.onend = () => {
-            setIsPlaying(false);
-            document.dispatchEvent(new CustomEvent('audioPaused'));
-          };
-          
-          utterance.onerror = (event) => {
-            console.error("Speech synthesis error:", event);
-            setIsPlaying(false);
-          };
-          
-          // Speak the text
-          window.speechSynthesis.speak(utterance);
-          setAudioAvailable(true);
-        } else {
-          console.warn('No valid text to speak or speech synthesis unavailable');
+        // Validate the text before attempting to speak
+        if (!speechText || speechText.trim().length === 0) {
+          console.warn("No valid text to speak after processing");
+          return;
         }
+        
+        // Ensure speech synthesis is available
+        if (!window.speechSynthesis) {
+          console.warn('Speech synthesis not available in this browser');
+          return;
+        }
+        
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        
+        // Create and configure the utterance
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.lang = 'en-US';
+        utterance.rate = 1.0;   // Normal speed
+        utterance.pitch = 1.0;  // Normal pitch
+        utterance.volume = 1.0; // Maximum volume
+        
+        // Try to select a suitable voice from our preloaded voices
+        try {
+          // Use the voices from our state, which were properly loaded
+          if (voices && voices.length > 0) {
+            // Try to find a good English voice
+            const englishVoice = voices.find(v => 
+              v.lang.includes('en') && 
+              (v.name.includes('Google') || v.name.includes('Female') || v.name.includes('Premium'))
+            );
+            
+            if (englishVoice) {
+              console.log(`Using voice: ${englishVoice.name}`);
+              utterance.voice = englishVoice;
+            } else {
+              console.log('No preferred English voice found, using default');
+            }
+          } else {
+            console.log('No voices available yet, using default browser voice');
+          }
+        } catch (voiceError) {
+          console.warn('Error selecting voice:', voiceError);
+          // Continue with default voice
+        }
+        
+        // Set up event handlers
+        utterance.onstart = () => {
+          setIsPlaying(true);
+          document.dispatchEvent(new CustomEvent('audioPlaying'));
+        };
+        
+        utterance.onend = () => {
+          setIsPlaying(false);
+          document.dispatchEvent(new CustomEvent('audioPaused'));
+        };
+        
+        utterance.onerror = (event) => {
+          console.error("Speech synthesis error:", event);
+          setIsPlaying(false);
+          document.dispatchEvent(new CustomEvent('audioPaused'));
+        };
+        
+        // Speak the text
+        window.speechSynthesis.speak(utterance);
+        setAudioAvailable(true);
       } catch (error) {
         console.error('Error auto-playing message:', error);
+        setIsPlaying(false);
       }
-    }, 500);
+    }, 800); // Slightly longer delay to ensure everything is ready
     
     return () => clearTimeout(timer);
   }, [message.content, isUser]);
@@ -250,6 +324,27 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   // State for controlling audio playback
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [audioAvailable, setAudioAvailable] = React.useState(false);
+  const [voices, setVoices] = React.useState<SpeechSynthesisVoice[]>([]);
+  
+  // Load voices when the component mounts
+  React.useEffect(() => {
+    // Get initial voices
+    setVoices(getVoices());
+    
+    // Set up event listener for when voices change/load
+    if (window.speechSynthesis) {
+      const handleVoicesChanged = () => {
+        setVoices(getVoices());
+      };
+      
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+      
+      // Cleanup
+      return () => {
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+      };
+    }
+  }, []);
   
   // Function to toggle play/pause
   const toggleAudio = () => {
@@ -266,8 +361,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       } else {
         // If audio is paused, play the message content directly
         if (message.content && window.speechSynthesis) {
-          // Process the text to remove markdown formatting only
+          // Process the text to remove only markdown formatting
           const speechText = processTextForSpeech(message.content);
+          
+          if (!speechText || speechText.trim().length === 0) {
+            console.warn("No valid text to speak after processing");
+            return;
+          }
           
           // Cancel any ongoing speech
           window.speechSynthesis.cancel();
@@ -275,6 +375,23 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           // Create a new utterance with the text
           const utterance = new SpeechSynthesisUtterance(speechText);
           utterance.lang = 'en-US';
+          utterance.rate = 1.0;   // Normal speed
+          utterance.pitch = 1.0;  // Normal pitch
+          utterance.volume = 1.0; // Maximum volume
+          
+          // Try to select a voice
+          const voices = window.speechSynthesis.getVoices();
+          if (voices && voices.length > 0) {
+            // Try to find a good English voice
+            const englishVoice = voices.find(v => 
+              v.lang.includes('en') && 
+              (v.name.includes('Google') || v.name.includes('Female') || v.name.includes('Premium'))
+            );
+            
+            if (englishVoice) {
+              utterance.voice = englishVoice;
+            }
+          }
           
           // Set up event handlers
           utterance.onstart = () => {
