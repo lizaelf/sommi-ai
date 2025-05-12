@@ -2,10 +2,8 @@
 let lastAudioBlob = null;
 let statusDiv = null;
 let lastInputWasVoice = false;
-let currentAudioElement = null;
 let isAudioPlaying = false;
 let lastPlayedText = '';
-let loadingAnimation = null;
 
 // DOM load event to initialize everything
 document.addEventListener('DOMContentLoaded', function() {
@@ -143,25 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
       speakResponse(testText);
     });
   }
-  
-  const addMessageButton = document.getElementById('add-message');
-  if (addMessageButton) {
-    addMessageButton.addEventListener('click', function() {
-      console.log("Adding test message");
-      lastInputWasVoice = true; // Simulate voice input
-      const conversation = document.getElementById('conversation');
-      if (conversation) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message assistant';
-        messageDiv.setAttribute('data-role', 'assistant');
-        messageDiv.textContent = "This is a test response about wine. Cabernet Sauvignon pairs well with red meat dishes.";
-        conversation.appendChild(messageDiv);
-      }
-    });
-  }
 });
 
-// Modified version of the speakResponse function
+// Modified version of the speakResponse function to use browser speech synthesis only
 async function speakResponse(text) {
   try {
     // Validate text input - must be non-empty after trimming
@@ -179,188 +161,111 @@ async function speakResponse(text) {
       return; // Exit early - nothing to speak
     }
     
-    // Add loading animation if needed (only visible in developer console)
-    console.log("Processing voice response...");
-    
-    // Store the text in case we need to fall back to browser speech synthesis
+    // Store the text for reference
     lastPlayedText = text;
     
-    // Try to get audio from OpenAI TTS API
-    const response = await fetch('/api/text-to-speech', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
-    });
+    // Log for debugging
+    console.log("Speaking text response using browser synthesis...");
     
-    // If the API request failed (including quota exceeded)
-    if (!response.ok) {
-      console.log(`TTS API error: ${response.status}. Using browser fallback if available.`);
+    // Use browser's built-in speech synthesis
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
       
-      // Try browser's built-in speech synthesis as fallback
-      if ('speechSynthesis' in window) {
-        console.log("Using browser speech synthesis as fallback");
+      // Create a new utterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      
+      // Optional voice selection - try to get a good quality voice
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        // Try to find a good quality voice
+        const preferredVoice = voices.find(voice => 
+          voice.name.includes('Google') || voice.name.includes('Premium') || 
+          (voice.name.includes('US') && voice.name.includes('Female')));
+          
+        if (preferredVoice) {
+          utterance.voice = preferredVoice;
+        }
+      }
+      
+      // Add speech rate and pitch for better quality
+      utterance.rate = 1.0;  // normal speed
+      utterance.pitch = 1.0; // normal pitch
+      
+      // Add event listeners to track speech state
+      utterance.onstart = () => {
+        isAudioPlaying = true;
+        document.dispatchEvent(new CustomEvent('audioPlaying'));
+      };
+      
+      utterance.onend = () => {
+        isAudioPlaying = false;
+        document.dispatchEvent(new CustomEvent('audioPaused'));
+      };
+      
+      utterance.onerror = (event) => {
+        console.error("Speech synthesis error:", event);
+        isAudioPlaying = false;
+      };
+      
+      // Speak the text
+      window.speechSynthesis.speak(utterance);
+    } else {
+      // If browser speech synthesis isn't available, show a message
+      console.warn("Browser speech synthesis not available");
+    }
+  } catch (error) {
+    // Error handling
+    console.error("TTS error:", error.message || error);
+    
+    // Try one more time with fallback settings
+    if ('speechSynthesis' in window) {
+      try {
+        console.log("Using simple speech synthesis as error fallback");
+        window.speechSynthesis.cancel(); // Cancel any ongoing speech
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         window.speechSynthesis.speak(utterance);
-        
-        // Create a fake "blob" to indicate we have audio (even though it's browser-based)
-        lastAudioBlob = new Blob(['fallback'], { type: 'audio/mpeg' });
-        
-        // Dispatch event to update UI
-        document.dispatchEvent(new CustomEvent('audioPlaying'));
-        
-        // No need to continue with the rest of the function
-        return;
-      }
-      
-      // If browser speech synthesis isn't available either
-      throw new Error(`HTTP error: ${response.status}`);
-    }
-    
-    // Save the audio blob for later use
-    lastAudioBlob = await response.blob();
-    console.log("Audio received:", lastAudioBlob.size, "bytes", "type:", lastAudioBlob.type);
-    
-    // Properly handle existing audio element before creating a new one
-    if (currentAudioElement) {
-      try {
-        // If this is a new audio request (different text), stop the current one
-        console.log("Stopping previous audio playback");
-        currentAudioElement.pause();
-        // Reset playback position
-        currentAudioElement.currentTime = 0;
-        
-        // Clean up if we're creating a new audio element
-        if (text !== lastPlayedText) {
-          if (currentAudioElement.parentNode) {
-            currentAudioElement.parentNode.removeChild(currentAudioElement);
-          }
-          currentAudioElement = null;
-          isAudioPlaying = false;
-        }
-      } catch (err) {
-        console.warn("Error cleaning up previous audio:", err);
+      } catch (speechError) {
+        console.error("Speech synthesis error:", speechError);
       }
     }
-    
-    // Create new audio element if needed
-    if (!currentAudioElement) {
-      // Create audio element and append to document - this helps with some browser issues
-      const audioElement = document.createElement('audio');
-      audioElement.id = 'audio-player';
-      audioElement.style.display = 'none';
-      document.body.appendChild(audioElement);
-      
-      // Create object URL
-      const url = URL.createObjectURL(lastAudioBlob);
-      audioElement.src = url;
-      
-      // Store reference to current audio element
-      currentAudioElement = audioElement;
-      
-      // Remember text that's being played for comparison
-      lastPlayedText = text;
-    }
-    
-    // Always auto-play, regardless of input method
-    console.log("Auto-playing audio response");
-    try {
-      // Auto-play immediately - make sure we're using the current audio element
-      await currentAudioElement.play();
-      isAudioPlaying = true;
-      
-      // Dispatch playing event
-      document.dispatchEvent(new CustomEvent('audioPlaying'));
-    } catch (playError) {
-      console.error("Auto-play failed:", playError);
-      isAudioPlaying = false;
-      
-      // Keep the hidden audio controls for accessibility and fallback
-      const audioControls = document.getElementById('audio-controls');
-      if (audioControls) {
-        audioControls.style.display = 'none';
-      }
-    }
-    
-    // Set up keyboard shortcut for play/pause
-    document.addEventListener('keydown', function(e) {
-      // Space key to toggle play/pause but only if no input element has focus
-      if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && 
-          document.activeElement.tagName !== 'TEXTAREA') {
-        e.preventDefault(); // Prevent page scroll
-        
-        if (currentAudioElement) {
-          // Toggle playback
-          if (isAudioPlaying && !currentAudioElement.paused) {
-            currentAudioElement.pause();
-            isAudioPlaying = false;
-          } else {
-            currentAudioElement.play()
-              .then(() => {
-                isAudioPlaying = true;
-              })
-              .catch(err => console.error("Audio playback error:", err));
-          }
+  }
+}
+
+// Play the last spoken audio again
+function playLastAudio() {
+  if (lastPlayedText) {
+    speakResponse(lastPlayedText);
+  } else {
+    console.warn("No previous audio to play");
+  }
+}
+
+// Explicitly find and speak the last assistant message
+function speakLastAssistantMessage() {
+  try {
+    const conversationElement = document.getElementById('conversation');
+    if (conversationElement) {
+      const assistantMessages = conversationElement.querySelectorAll('[data-role="assistant"]');
+      if (assistantMessages && assistantMessages.length > 0) {
+        const lastMessage = assistantMessages[assistantMessages.length - 1];
+        if (lastMessage && lastMessage.textContent) {
+          const messageText = lastMessage.textContent || '';
+          
+          // Process the text to make it suitable for speech
+          const speechText = processTextForSpeech(messageText);
+          
+          // Speak with slight delay to ensure UI is ready
+          setTimeout(() => {
+            speakResponse(speechText);
+          }, 100);
         }
       }
-    });
-    
-    // Setup hidden play button if available (for accessibility)
-    const playBtn = document.getElementById('play-audio-btn');
-    if (playBtn) {
-      // Set a unique ID based on the current text
-      const buttonId = 'audio-btn-' + text.substring(0, 20).replace(/\W+/g, '-');
-      playBtn.id = buttonId;
-      
-      // Add event listener for play/pause toggle
-      playBtn.addEventListener('click', function() {
-        // Handle play/pause toggle
-        if (currentAudioElement) {
-          if (isAudioPlaying && !currentAudioElement.paused) {
-            console.log("Pausing audio playback");
-            currentAudioElement.pause();
-            isAudioPlaying = false;
-          } else {
-            console.log("Play/resume button clicked");
-            currentAudioElement.play()
-              .then(() => {
-                console.log("Audio playback started successfully");
-                isAudioPlaying = true;
-              })
-              .catch(err => {
-                console.error("Audio playback error:", err);
-                isAudioPlaying = false;
-                
-                // Fallback to browser's built-in speech synthesis
-                if ('speechSynthesis' in window) {
-                  console.log("Trying browser speech synthesis");
-                  const utterance = new SpeechSynthesisUtterance(text);
-                  utterance.lang = 'en-US';
-                  window.speechSynthesis.speak(utterance);
-                }
-              });
-          }
-        }
-      });
     }
-    
-    // Clean up when audio ends
-    audioElement.onended = () => {
-      // Revoke the object URL to free memory
-      const url = audioElement.src;
-      if (url.startsWith('blob:')) {
-        URL.revokeObjectURL(url);
-      }
-      
-      // Reset play state
-      isAudioPlaying = false;
-      
-      // Don't remove the audio element - keep it for replay
-    };
-    
   } catch (error) {
-    console.error("Error:", error);
-    // Don't show error message in UI, just log to console
+    console.error('Error finding assistant message to speak:', error);
   }
 }
 
@@ -401,7 +306,7 @@ function sendMessage(text) {
       const assistantMessage = document.createElement('div');
       assistantMessage.className = 'message assistant';
       assistantMessage.setAttribute('data-role', 'assistant');
-      assistantMessage.textContent = data.response;
+      assistantMessage.textContent = data.message.content;
       conversation.appendChild(assistantMessage);
       
       // The MutationObserver will handle speaking the response
@@ -441,122 +346,9 @@ function processTextForSpeech(content) {
   return processedText;
 }
 
-// This function is primarily handled by the MutationObserver now
-// but kept for backward compatibility
-function speakLastAssistantMessage() {
-  try {
-    console.log("Finding message to speak manually...");
-    
-    // Find the last assistant message
-    const messagesContainer = document.getElementById('conversation');
-    console.log("Messages container found:", !!messagesContainer);
-    
-    if (messagesContainer) {
-      // Get all the chat messages
-      const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
-      console.log("Assistant message elements found:", messageElements.length);
-      
-      if (messageElements && messageElements.length > 0) {
-        // Get the last message
-        const lastMessage = messageElements[messageElements.length - 1];
-        
-        if (lastMessage && lastMessage.textContent) {
-          // Get the raw text content
-          const messageText = lastMessage.textContent || '';
-          console.log("Found message to speak:", messageText.substring(0, 50) + "...");
-          
-          // Process the text to make it more suitable for speech
-          const speechText = processTextForSpeech(messageText);
-          
-          // Speak the response with a small delay to ensure message is fully rendered
-          setTimeout(() => {
-            speakResponse(speechText);
-          }, 300);
-        } else {
-          console.log("Last message has no text content");
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error finding assistant message to speak:', error);
-  }
-}
-
-// Function to play or pause the last audio
-function playLastAudio() {
-  // If no audio is available, return
-  if (!lastAudioBlob) {
-    console.error("No audio available");
-    return;
-  }
-  
-  // If we already have an audio element
-  if (currentAudioElement) {
-    if (!currentAudioElement.paused) {
-      // It's already playing, pause it
-      console.log("Pausing current audio");
-      currentAudioElement.pause();
-      isAudioPlaying = false;
-      
-      // Dispatch an event so React components can update
-      document.dispatchEvent(new CustomEvent('audioPaused'));
-      
-      return;
-    } else {
-      // It's paused, resume it
-      console.log("Resuming paused audio");
-      currentAudioElement.play()
-        .then(() => {
-          console.log("Audio playback resumed");
-          isAudioPlaying = true;
-          
-          // Dispatch an event so React components can update
-          document.dispatchEvent(new CustomEvent('audioPlaying'));
-        })
-        .catch(err => {
-          console.error("Playback resume error:", err);
-          isAudioPlaying = false;
-        });
-      return;
-    }
-  }
-  
-  // If we get here, we need to create a new audio element
-  console.log("Creating new audio player from stored blob");
-  const url = URL.createObjectURL(lastAudioBlob);
-  currentAudioElement = new Audio(url);
-  currentAudioElement.id = 'audio-player';
-  
-  // Set up event listeners
-  currentAudioElement.onended = () => {
-    console.log("Audio playback finished");
-    URL.revokeObjectURL(url);
-    isAudioPlaying = false;
-    
-    // Dispatch an event that React can listen to
-    document.dispatchEvent(new CustomEvent('audioEnded'));
-  };
-  
-  // Start playback
-  currentAudioElement.play()
-    .then(() => {
-      console.log("Audio playback started");
-      isAudioPlaying = true;
-      
-      // Dispatch an event that React can listen to
-      document.dispatchEvent(new CustomEvent('audioPlaying'));
-    })
-    .catch(err => {
-      console.error("Playback error:", err);
-      isAudioPlaying = false;
-    });
-}
-
-// Export functions for use in React components if needed
-if (typeof window !== 'undefined') {
-  window.voiceAssistant = {
-    speakResponse,
-    playLastAudio, // Use the actual function now
-    speakLastAssistantMessage
-  };
-}
+// Expose functions to the global scope for integration with other components
+window.voiceAssistant = {
+  speakResponse: speakResponse,
+  playLastAudio: playLastAudio,
+  speakLastAssistantMessage: speakLastAssistantMessage
+};
