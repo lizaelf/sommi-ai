@@ -63,14 +63,15 @@ declare global {
 // Initialize speech recognition
 export function initSpeechRecognition() {
   // Check for browser support
-  if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
+  if (typeof window === 'undefined' || 
+      (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window))) {
     console.error('Speech recognition not supported in this browser');
     return null;
   }
   
   // Create speech recognition instance
-  const SpeechRecognitionConstructor = window.SpeechRecognition 
-    ? window.SpeechRecognition 
+  const SpeechRecognitionConstructor = 'SpeechRecognition' in window
+    ? (window as any).SpeechRecognition
     : (window as any).webkitSpeechRecognition;
   const recognition = new SpeechRecognitionConstructor();
   
@@ -84,7 +85,7 @@ export function initSpeechRecognition() {
 
 // Initialize speech synthesis
 export function initSpeechSynthesis() {
-  if (!('speechSynthesis' in window)) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     console.error('Speech synthesis not supported in this browser');
     return null;
   }
