@@ -1,26 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
 
-// Helper function to safely get voices and ensure they're loaded
-function getVoices(): SpeechSynthesisVoice[] {
-  if (typeof window === 'undefined' || !window.speechSynthesis) {
-    return [];
-  }
-  
-  const voices = window.speechSynthesis.getVoices();
-  
-  // If voices array is empty, it might be because they haven't loaded yet
-  if (!voices || voices.length === 0) {
-    // In some browsers, we need to wait for the voiceschanged event
-    // For this component, just return empty array and let the effect handle it later
-    return [];
-  }
-  
-  return voices;
-}
-
-// Need to ensure the window.voiceAssistant type is available
+// Ensure window.voiceAssistant type is available
 declare global {
   interface Window {
     voiceAssistant?: {
@@ -58,136 +40,161 @@ function processMarkdownBold(text: string) {
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
   
-  // Process message content to be suitable for speech synthesis
-  // but retain the exact message content without significant alterations
+  // State
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioAvailable, setAudioAvailable] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  
+  // Load voices when component mounts
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      // Set initial voices
+      const initialVoices = window.speechSynthesis.getVoices();
+      if (initialVoices.length > 0) {
+        setVoices(initialVoices);
+      }
+      
+      // Set up listener for when voices change (important for Chrome)
+      const voicesChangedHandler = () => {
+        const updatedVoices = window.speechSynthesis.getVoices();
+        setVoices(updatedVoices);
+      };
+      
+      window.speechSynthesis.addEventListener('voiceschanged', voicesChangedHandler);
+      
+      return () => {
+        window.speechSynthesis.removeEventListener('voiceschanged', voicesChangedHandler);
+      };
+    }
+  }, []);
+  
+  // Process message content for speech synthesis
   const processTextForSpeech = (content: string): string => {
     if (!content) return '';
     
     let processedText = content;
     
-    // Handle wine-specific emoji carefully by adding spaces around them
-    // This helps the speech synthesis engine pause appropriately
+    // Handle wine-specific emoji by adding spaces or replacing with text
     processedText = processedText.replace(/🍷/g, ' wine ');
     processedText = processedText.replace(/✨/g, ' sparkle ');
     processedText = processedText.replace(/🍽️/g, ' food ');
     processedText = processedText.replace(/🌍/g, ' region ');
     
-    // Only remove markdown formatting - keep the actual content intact
-    // Replace bold markdown formatting with plain text
-    processedText = processedText.replace(/\*\*(.*?)\*\*/g, '$1');
-    
-    // Replace other markdown formatting that might cause issues in speech
-    processedText = processedText.replace(/\*(.*?)\*/g, '$1');  // Italic
-    processedText = processedText.replace(/`(.*?)`/g, '$1');    // Code
-    processedText = processedText.replace(/```[^`]*```/g, ''); // Remove code blocks
+    // Remove markdown formatting
+    processedText = processedText.replace(/\*\*(.*?)\*\*/g, '$1'); // Bold
+    processedText = processedText.replace(/\*(.*?)\*/g, '$1');     // Italic
+    processedText = processedText.replace(/`(.*?)`/g, '$1');       // Code
     
     // Replace bullet points with natural pauses
     processedText = processedText.replace(/- /g, ', ');
     processedText = processedText.replace(/• /g, ', ');
     processedText = processedText.replace(/✧ /g, ', ');
     
-    // Clean up unnecessary whitespace without changing structure
-    // Just convert multiple spaces to single spaces
-    processedText = processedText.replace(/[ \t]+/g, ' ');
-    
-    // Add periods at the end of lines to create natural pauses
+    // Add periods for natural pauses
     processedText = processedText.replace(/\n/g, '. ');
     
-    // Clean up any double periods that might have been created
+    // Clean up double periods
     processedText = processedText.replace(/\.\./g, '.');
     
     return processedText;
   };
-
-  // Auto-play the response audio when assistant message is rendered
-  React.useEffect(() => {
-    // Only attempt to speak for assistant messages with content
-    if (isUser || !message.content || message.content.trim().length === 0) return;
-    
-    // Play response audio with a slight delay to ensure UI is ready
-    const timer = setTimeout(() => {
-      try {
-        console.log("Auto-playing assistant message");
+  
+  // Basic speech function that just uses the browser's built-in speech synthesis
+  const speakText = (text: string): boolean => {
+    try {
+      if (!window.speechSynthesis) return false;
+      
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      // Create a new utterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // Try to set a voice if available
+      if (voices.length > 0) {
+        // Prefer a Google US English voice if available
+        const googleVoice = voices.find(v => 
+          v.name.includes('Google') && v.lang.includes('en')
+        );
         
-        // Process the message content - only removing markdown formatting
-        const messageContent = message.content || '';
-        const speechText = processTextForSpeech(messageContent);
+        // Otherwise use any English voice
+        const englishVoice = voices.find(v => 
+          v.lang.includes('en')
+        );
         
-        // Validate the text before attempting to speak
-        if (!speechText || speechText.trim().length === 0) {
-          console.warn("No valid text to speak after processing");
-          return;
+        if (googleVoice) {
+          console.log("Using Google voice:", googleVoice.name);
+          utterance.voice = googleVoice;
+        } else if (englishVoice) {
+          console.log("Using English voice:", englishVoice.name);
+          utterance.voice = englishVoice;
         }
-        
-        // Ensure speech synthesis is available
-        if (!window.speechSynthesis) {
-          console.warn('Speech synthesis not available in this browser');
-          return;
-        }
-        
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
-        
-        // Create and configure the utterance
-        const utterance = new SpeechSynthesisUtterance(speechText);
-        utterance.lang = 'en-US';
-        utterance.rate = 1.0;   // Normal speed
-        utterance.pitch = 1.0;  // Normal pitch
-        utterance.volume = 1.0; // Maximum volume
-        
-        // Try to select a suitable voice from our preloaded voices
-        try {
-          // Use the voices from our state, which were properly loaded
-          if (voices && voices.length > 0) {
-            // Try to find a good English voice
-            const englishVoice = voices.find(v => 
-              v.lang.includes('en') && 
-              (v.name.includes('Google') || v.name.includes('Female') || v.name.includes('Premium'))
-            );
-            
-            if (englishVoice) {
-              console.log(`Using voice: ${englishVoice.name}`);
-              utterance.voice = englishVoice;
-            } else {
-              console.log('No preferred English voice found, using default');
-            }
-          } else {
-            console.log('No voices available yet, using default browser voice');
-          }
-        } catch (voiceError) {
-          console.warn('Error selecting voice:', voiceError);
-          // Continue with default voice
-        }
-        
-        // Set up event handlers
-        utterance.onstart = () => {
-          setIsPlaying(true);
-          document.dispatchEvent(new CustomEvent('audioPlaying'));
-        };
-        
-        utterance.onend = () => {
-          setIsPlaying(false);
-          document.dispatchEvent(new CustomEvent('audioPaused'));
-        };
-        
-        utterance.onerror = (event) => {
-          console.error("Speech synthesis error:", event);
-          setIsPlaying(false);
-          document.dispatchEvent(new CustomEvent('audioPaused'));
-        };
-        
-        // Speak the text
-        window.speechSynthesis.speak(utterance);
-        setAudioAvailable(true);
-      } catch (error) {
-        console.error('Error auto-playing message:', error);
-        setIsPlaying(false);
       }
-    }, 800); // Slightly longer delay to ensure everything is ready
+      
+      // Event handlers
+      utterance.onstart = () => {
+        setIsPlaying(true);
+        document.dispatchEvent(new CustomEvent('audioPlaying'));
+      };
+      
+      utterance.onend = () => {
+        setIsPlaying(false);
+        document.dispatchEvent(new CustomEvent('audioPaused'));
+      };
+      
+      utterance.onerror = () => {
+        setIsPlaying(false);
+        document.dispatchEvent(new CustomEvent('audioPaused'));
+      };
+      
+      // Speak!
+      window.speechSynthesis.speak(utterance);
+      return true;
+    } catch (e) {
+      console.error('Speech synthesis error:', e);
+      setIsPlaying(false);
+      return false;
+    }
+  };
+  
+  // Toggle play/pause
+  const toggleAudio = () => {
+    if (isUser) return;
+    
+    if (isPlaying) {
+      // If playing, stop
+      window.speechSynthesis?.cancel();
+      setIsPlaying(false);
+    } else {
+      // If not playing, start
+      if (message.content) {
+        const speechText = processTextForSpeech(message.content);
+        speakText(speechText);
+      }
+    }
+  };
+  
+  // Auto-play assistant messages
+  useEffect(() => {
+    // Only auto-play for assistant messages
+    if (isUser || !message.content) return;
+    
+    // Small delay to make sure UI is ready
+    const timer = setTimeout(() => {
+      const speechText = processTextForSpeech(message.content);
+      if (speechText) {
+        speakText(speechText);
+        setAudioAvailable(true);
+      }
+    }, 800);
     
     return () => clearTimeout(timer);
   }, [message.content, isUser]);
-
+  
   // Function to format text with bold and code blocks
   const formatContent = (content: string) => {
     // Handle undefined or empty content
@@ -320,151 +327,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       return formatContent(content);
     }
   };
-
-  // State for controlling audio playback
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const [audioAvailable, setAudioAvailable] = React.useState(false);
-  const [voices, setVoices] = React.useState<SpeechSynthesisVoice[]>([]);
-  
-  // Load voices when the component mounts
-  React.useEffect(() => {
-    // Get initial voices
-    setVoices(getVoices());
-    
-    // Set up event listener for when voices change/load
-    if (window.speechSynthesis) {
-      const handleVoicesChanged = () => {
-        setVoices(getVoices());
-      };
-      
-      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
-      
-      // Cleanup
-      return () => {
-        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
-      };
-    }
-  }, []);
-  
-  // Function to toggle play/pause
-  const toggleAudio = () => {
-    if (isUser) return; // Only for AI messages
-    
-    try {
-      if (isPlaying) {
-        // If audio is playing, pause it
-        if (window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-          setIsPlaying(false);
-          document.dispatchEvent(new CustomEvent('audioPaused'));
-        }
-      } else {
-        // If audio is paused, play the message content directly
-        if (message.content && window.speechSynthesis) {
-          // Process the text to remove only markdown formatting
-          const speechText = processTextForSpeech(message.content);
-          
-          if (!speechText || speechText.trim().length === 0) {
-            console.warn("No valid text to speak after processing");
-            return;
-          }
-          
-          // Cancel any ongoing speech
-          window.speechSynthesis.cancel();
-          
-          // Create a new utterance with the text
-          const utterance = new SpeechSynthesisUtterance(speechText);
-          utterance.lang = 'en-US';
-          utterance.rate = 1.0;   // Normal speed
-          utterance.pitch = 1.0;  // Normal pitch
-          utterance.volume = 1.0; // Maximum volume
-          
-          // Try to select a voice from our preloaded voices state
-          if (voices && voices.length > 0) {
-            // Try to find a good English voice
-            const englishVoice = voices.find(v => 
-              v.lang.includes('en') && 
-              (v.name.includes('Google') || v.name.includes('Female') || v.name.includes('Premium'))
-            );
-            
-            if (englishVoice) {
-              console.log(`Toggle audio using voice: ${englishVoice.name}`);
-              utterance.voice = englishVoice;
-            } else {
-              console.log('No preferred English voice found, using default');
-            }
-          } else {
-            console.log('No voices available, using default browser voice');
-          }
-          
-          // Set up event handlers
-          utterance.onstart = () => {
-            setIsPlaying(true);
-            document.dispatchEvent(new CustomEvent('audioPlaying'));
-          };
-          
-          utterance.onend = () => {
-            setIsPlaying(false);
-            document.dispatchEvent(new CustomEvent('audioPaused'));
-          };
-          
-          utterance.onerror = (event) => {
-            console.error("Speech synthesis error:", event);
-            setIsPlaying(false);
-            document.dispatchEvent(new CustomEvent('audioPaused'));
-          };
-          
-          // Speak the text
-          window.speechSynthesis.speak(utterance);
-          setAudioAvailable(true);
-        } else {
-          console.warn("No text content to speak or speech synthesis unavailable");
-        }
-      }
-    } catch (error) {
-      console.error("Error toggling audio:", error);
-      setIsPlaying(false);
-    }
-  };
-  
-  // Listen for audio events from the voice assistant
-  React.useEffect(() => {
-    // Event handler functions
-    const handleAudioEnded = () => {
-      console.log("Audio ended event received");
-      setIsPlaying(false);
-    };
-    
-    const handleAudioPlaying = () => {
-      console.log("Audio playing event received");
-      setIsPlaying(true);
-    };
-    
-    const handleAudioPaused = () => {
-      console.log("Audio paused event received");
-      setIsPlaying(false);
-    };
-    
-    // Add document-level event listeners for custom events from voiceScript.js
-    document.addEventListener('audioEnded', handleAudioEnded);
-    document.addEventListener('audioPlaying', handleAudioPlaying);
-    document.addEventListener('audioPaused', handleAudioPaused);
-    
-    // Cleanup event listeners on component unmount
-    return () => {
-      document.removeEventListener('audioEnded', handleAudioEnded);
-      document.removeEventListener('audioPlaying', handleAudioPlaying);
-      document.removeEventListener('audioPaused', handleAudioPaused);
-    };
-  }, []);
-  
-  // When a new response is added, update audio availability
-  React.useEffect(() => {
-    if (!isUser) {
-      // When assistant message is added, assume audio will be available
-      setAudioAvailable(true);
-    }
-  }, [message.content, isUser]);
 
   return (
     <div className="w-full my-2 sm:my-3">
