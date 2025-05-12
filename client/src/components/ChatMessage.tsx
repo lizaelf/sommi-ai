@@ -163,18 +163,61 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   
   // Toggle play/pause
   const toggleAudio = () => {
+    console.log("Play button clicked: isUser=", isUser, "isPlaying=", isPlaying);
+    
+    // Only allow for assistant messages
     if (isUser) return;
     
-    if (isPlaying) {
-      // If playing, stop
-      window.speechSynthesis?.cancel();
-      setIsPlaying(false);
-    } else {
-      // If not playing, start
-      if (message.content) {
-        const speechText = processTextForSpeech(message.content);
-        speakText(speechText);
+    try {
+      if (isPlaying) {
+        // If playing, stop
+        console.log("Stopping speech synthesis");
+        window.speechSynthesis?.cancel();
+        setIsPlaying(false);
+      } else {
+        // If not playing, start
+        if (message.content) {
+          console.log("Starting speech with message content:", message.content.substring(0, 50) + "...");
+          
+          // Very simple approach - just speak directly
+          if (window.speechSynthesis) {
+            // Clear any existing speech
+            window.speechSynthesis.cancel();
+            
+            // Process the text
+            const speechText = processTextForSpeech(message.content);
+            console.log("Processed text:", speechText.substring(0, 50) + "...");
+            
+            // Create utterance with minimal configuration
+            const utterance = new SpeechSynthesisUtterance(speechText);
+            utterance.lang = 'en-US';
+            
+            // Set handlers
+            utterance.onstart = () => {
+              console.log("Speech started");
+              setIsPlaying(true);
+            };
+            
+            utterance.onend = () => {
+              console.log("Speech ended");
+              setIsPlaying(false);
+            };
+            
+            utterance.onerror = (e) => {
+              console.error("Speech error:", e);
+              setIsPlaying(false);
+            };
+            
+            // Speak!
+            console.log("Speaking now...");
+            window.speechSynthesis.speak(utterance);
+          } else {
+            console.warn("Speech synthesis not available");
+          }
+        }
       }
+    } catch (error) {
+      console.error("Error in toggleAudio:", error);
     }
   };
   
@@ -183,17 +226,27 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     // Only auto-play for assistant messages
     if (isUser || !message.content) return;
     
+    // Always set audio available for assistant messages
+    setAudioAvailable(true);
+    
     // Small delay to make sure UI is ready
     const timer = setTimeout(() => {
       const speechText = processTextForSpeech(message.content);
       if (speechText) {
         speakText(speechText);
-        setAudioAvailable(true);
       }
     }, 800);
     
     return () => clearTimeout(timer);
   }, [message.content, isUser]);
+  
+  // Ensure play button is visible for all assistant messages
+  useEffect(() => {
+    if (!isUser && message.content) {
+      console.log("Setting audio available for assistant message");
+      setAudioAvailable(true);
+    }
+  }, []);
   
   // Function to format text with bold and code blocks
   const formatContent = (content: string) => {
@@ -342,8 +395,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <div data-role="assistant" className="relative">
           {formatWineInfo(message.content)}
           
-          {/* Play/Pause Button */}
-          {audioAvailable && (
+          {/* Play/Pause Button - Always show for assistant messages */}
+          {!isUser && (
             <div className="absolute top-0 right-0 mt-1 mr-1">
               <button 
                 onClick={toggleAudio}
