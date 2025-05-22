@@ -586,36 +586,87 @@ const EnhancedChatInterface: React.FC = () => {
                   <div style={{ width: '80px', fontSize: '16px', textAlign: 'right' }}>Acidic</div>
                 </div>
               </div>
+              
+              {/* Conversation Section */}
+              <div style={{
+                width: '100%',
+                padding: '0 20px',
+                marginBottom: '20px'
+              }}>
+                <h2 style={{
+                  color: 'white',
+                  fontSize: '32px',
+                  fontFamily: 'Lora, serif',
+                  fontWeight: '400',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}>
+                  Ask about this wine
+                </h2>
+                
+                {/* Conversation container */}
+                <div id="conversation" className="space-y-4 mb-20">
+                  {messages.length > 0 && 
+                    messages.map((message, index) => (
+                      <div key={`${message.id}-${index}`} style={{
+                        backgroundColor: message.role === 'user' ? 'rgba(106, 83, 231, 0.2)' : 'rgba(30, 30, 30, 0.9)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        marginBottom: '12px'
+                      }}>
+                        <div style={{
+                          fontWeight: message.role === 'user' ? '600' : '400',
+                          color: message.role === 'user' ? '#b9a5ff' : 'white',
+                          marginBottom: '8px',
+                          fontSize: '14px'
+                        }}>
+                          {message.role === 'user' ? 'You' : 'Sommelier AI'}
+                        </div>
+                        <div style={{
+                          color: 'white',
+                          fontSize: '16px',
+                          lineHeight: '1.6',
+                          whiteSpace: 'pre-wrap'
+                        }}>
+                          {message.content}
+                        </div>
+                      </div>
+                    ))
+                  }
+                  
+                  {/* Typing Indicator */}
+                  {isTyping && (
+                    <div style={{
+                      backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                      borderRadius: '16px',
+                      padding: '16px',
+                      marginBottom: '12px'
+                    }}>
+                      <div style={{
+                        color: 'white',
+                        marginBottom: '8px',
+                        fontSize: '14px'
+                      }}>
+                        Sommelier AI
+                      </div>
+                      <div className="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Hidden Audio Controls - kept for compatibility */}
+                <div id="audio-controls" style={{display: 'none', visibility: 'hidden'}}>
+                  <button id="play-audio-btn">Play Response Audio</button>
+                </div>
+              </div>
             </div>
             
             {/* Extra space at the bottom */}
             <div style={{ height: '80px' }}></div>
-          </div>
-
-          {/* Hidden container for messages to display */}
-          <div id="conversation" style={{ display: 'none' }}>
-            {messages.length > 0 && 
-              messages.map((message, index) => (
-                <ChatMessage 
-                  key={`${message.id}-${index}`} 
-                  message={message} 
-                />
-              ))
-            }
-            
-            {/* Hidden Audio Controls - kept for compatibility */}
-            <div id="audio-controls" style={{display: 'none', visibility: 'hidden'}}>
-              <button id="play-audio-btn">Play Response Audio</button>
-            </div>
-            
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="typing-indicator" style={{ display: 'none' }}>
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            )}
           </div>
           
           {/* Input Area - Fixed to Bottom */}
