@@ -142,12 +142,12 @@ const EnhancedChatInterface: React.FC = () => {
         <main className="flex-1 flex flex-col bg-background overflow-hidden">
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
-            {/* Wine bottle image (always show at top with responsive height) */}
-            <div className="w-full h-48 sm:h-56 md:h-64 bg-muted flex items-center justify-center">
+            {/* Wine bottle image with fixed size */}
+            <div className="w-full bg-black flex items-center justify-center py-8">
               <img 
-                src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
-                alt="Wine bottle collection" 
-                className="w-full h-full object-cover"
+                src="/wine-bottle.png" 
+                alt="Ridge Lytton Springs 2021" 
+                style={{ width: '72px', height: '240px', objectFit: 'contain' }}
               />
             </div>
             
