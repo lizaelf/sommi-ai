@@ -18,8 +18,8 @@ const WineBottleImage: React.FC = () => {
         width: '180px',
         height: '180px',
         borderRadius: '50%',
-        backgroundColor: 'rgba(106, 83, 231, 0.5)', // Purple color matching the theme
-        filter: 'blur(25px)', // Soft blur effect
+        backgroundColor: '#8E8E8E', // Gray color as requested
+        filter: 'blur(200px)', // Stronger blur effect
         zIndex: 1,
         top: '50%',
         transform: 'translateY(-50%)'
