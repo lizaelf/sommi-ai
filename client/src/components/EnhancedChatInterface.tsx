@@ -247,78 +247,7 @@ const EnhancedChatInterface: React.FC = () => {
                 padding: '0 20px',
                 marginBottom: '20px'
               }}>
-                <div style={{
-                  padding: 8, 
-                  background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8, 
-                  justifyContent: 'flex-start', 
-                  alignItems: 'baseline', 
-                  gap: 4, 
-                  display: 'flex'
-                }}>
-                  <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    color: 'white', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter', 
-                    fontWeight: '600', 
-                    lineHeight: 32, 
-                    wordWrap: 'break-word'
-                  }}>95</div>
-                  <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    color: 'rgba(255, 255, 255, 0.60)', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter', 
-                    fontWeight: '400', 
-                    lineHeight: 32, 
-                    wordWrap: 'break-word'
-                  }}>VN</div>
-                </div>
-                <div style={{
-                  padding: 8, 
-                  background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8, 
-                  justifyContent: 'flex-start', 
-                  alignItems: 'baseline', 
-                  gap: 4, 
-                  display: 'flex'
-                }}>
-                  <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    color: 'white', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter', 
-                    fontWeight: '600', 
-                    lineHeight: 32, 
-                    wordWrap: 'break-word'
-                  }}>93</div>
-                  <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    color: 'rgba(255, 255, 255, 0.60)', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter', 
-                    fontWeight: '400', 
-                    lineHeight: 32, 
-                    wordWrap: 'break-word'
-                  }}>JD</div>
-                </div>
+
                 <div style={{
                   padding: 8, 
                   background: 'rgba(255, 255, 255, 0.10)', 
