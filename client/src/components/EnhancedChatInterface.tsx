@@ -167,7 +167,7 @@ const EnhancedChatInterface: React.FC = () => {
               
               {/* Wine bottle image */}
               <img 
-                src="/wine-bottle-new.png" 
+                src="/product-image.png" 
                 alt="Ridge Lytton Springs 2021" 
                 style={{ 
                   width: 'auto', 
