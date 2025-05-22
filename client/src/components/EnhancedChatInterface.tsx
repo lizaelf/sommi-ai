@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import VoiceAssistant from './VoiceAssistant';
+import WineBottleImage from './WineBottleImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 
@@ -166,19 +167,7 @@ const EnhancedChatInterface: React.FC = () => {
               }} />
               
               {/* Wine bottle image */}
-              <img 
-                src="/product-image.png" 
-                alt="Ridge Lytton Springs 2021" 
-                style={{ 
-                  width: 'auto', 
-                  height: '280px', 
-                  objectFit: 'contain',
-                  position: 'relative',
-                  zIndex: 2,
-                  marginBottom: '16px',
-                  filter: 'drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.2))'
-                }}
-              />
+              <WineBottleImage />
               
               {/* Wine name with requested styling */}
               <div style={{
