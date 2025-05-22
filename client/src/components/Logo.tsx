@@ -1,10 +1,9 @@
 import React from 'react';
-import LogoSVG from './LogoSVG';
 
 const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <div className={`flex items-center ${className}`}>
-      <LogoSVG />
+      <img src="/logo.png" alt="Logo" className="h-9" />
     </div>
   );
 };
