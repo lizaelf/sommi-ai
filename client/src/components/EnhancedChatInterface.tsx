@@ -34,10 +34,11 @@ const EnhancedChatInterface: React.FC = () => {
     refetchInterval: 30000,
   });
   
-  // Improved scroll behavior for better user experience
+  // Scroll behavior
   useEffect(() => {
-    // Always scroll to bottom when messages change or typing status changes
-    if (chatContainerRef.current) {
+    // Only scroll to bottom on new messages when the user is typing
+    // This ensures new messages are visible when the user is actively chatting
+    if (isTyping && chatContainerRef.current && messages.length > 0) {
       // Add a small delay to ensure DOM is fully updated
       setTimeout(() => {
         // Calculate the position to scroll to the bottom
@@ -49,6 +50,13 @@ const EnhancedChatInterface: React.FC = () => {
           behavior: 'smooth'
         });
       }, 100);
+    }
+    // On initial load, scroll to top to show beginning of page
+    else if (chatContainerRef.current && messages.length === 0) {
+      chatContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'auto'
+      });
     }
   }, [messages, isTyping]);
 

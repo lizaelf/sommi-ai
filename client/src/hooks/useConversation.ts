@@ -89,6 +89,9 @@ export function useConversation(): UseConversationReturn {
     async function initializeConversation() {
       console.log("Initializing conversation...");
       
+      // Force scroll to top on initialization
+      window.scrollTo(0, 0);
+      
       try {
         // First, check if there's a specific conversation ID in localStorage
         const savedConversationId = localStorage.getItem(LS_CURRENT_CONVERSATION_KEY);
