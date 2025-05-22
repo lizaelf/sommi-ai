@@ -301,7 +301,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           {segments.map((segment, index) => (
             segment.type === 'text' ? 
               <p key={index}>{processMarkdownBold(segment.content)}</p> : 
-              <pre key={index} className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
+              <pre key={index} className="bg-muted p-2 rounded mt-1 text-sm overflow-x-auto">
                 {segment.content}
               </pre>
           ))}
@@ -340,7 +340,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               
               return (
                 <div key={idx} className="mt-3">
-                  <p className="font-medium text-gray-800">{emoji}{processMarkdownBold(paragraph)}</p>
+                  <p className="font-medium text-foreground">{emoji}{processMarkdownBold(paragraph)}</p>
                 </div>
               );
             }
@@ -361,7 +361,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             }
             
             // Regular paragraph with bold text formatting
-            return <p key={idx} className="text-gray-700">{processMarkdownBold(paragraph)}</p>;
+            return <p key={idx} className="text-foreground">{processMarkdownBold(paragraph)}</p>;
           })}
         </div>
       );
@@ -399,7 +399,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       {isUser ? (
         // User Message - Smaller and right-aligned
         <div className="flex justify-end mb-2">
-          <div className="bg-[#F5F3FF] text-gray-800 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4 max-w-[85%] border border-[#6A53E7]/10 text-sm sm:text-base">
+          <div className="bg-primary/10 text-foreground rounded-lg py-1.5 sm:py-2 px-3 sm:px-4 max-w-[85%] border border-primary/20 text-sm sm:text-base">
             {formatContent(message.content)}
           </div>
         </div>
@@ -418,7 +418,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                   console.log("Play button DOM click event");
                   toggleAudio();
                 }}
-                className="p-2 rounded-full bg-[#6A53E7] text-white hover:bg-[#5842d6] transition-all cursor-pointer shadow-md hover:shadow-lg active:scale-95"
+                className="p-2 rounded-full bg-primary text-white hover:bg-primary/80 transition-all cursor-pointer shadow-md hover:shadow-lg active:scale-95"
                 disabled={isLoading}
                 title={isPlaying ? "Pause audio" : "Play audio"}
                 style={{ pointerEvents: 'auto' }}

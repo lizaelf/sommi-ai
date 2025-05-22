@@ -139,11 +139,11 @@ const EnhancedChatInterface: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
+        <main className="flex-1 flex flex-col bg-background overflow-hidden">
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image (always show at top with responsive height) */}
-            <div className="w-full h-48 sm:h-56 md:h-64 bg-gray-200 flex items-center justify-center">
+            <div className="w-full h-48 sm:h-56 md:h-64 bg-muted flex items-center justify-center">
               <img 
                 src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
                 alt="Wine bottle collection" 
@@ -156,10 +156,10 @@ const EnhancedChatInterface: React.FC = () => {
               {/* Always show the welcome message */}
               <div className="mx-auto p-3 sm:p-5 max-w-lg" style={{ marginBottom: '0' }}>
                 
-                <p className="text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-purple-800">
+                <p className="text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-primary">
                   Hi! I'm your personal sommelier.
                 </p>
-                <p className="text-sm sm:text-base text-gray-700 mb-0">
+                <p className="text-sm sm:text-base text-foreground mb-0">
                   I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
                 </p>
                 
@@ -185,7 +185,7 @@ const EnhancedChatInterface: React.FC = () => {
               {isTyping && (
                 <div className="mx-auto max-w-2xl">
                   <div className="p-2 sm:p-4">
-                    <div className="text-gray-700">
+                    <div className="text-foreground">
                       <div className="typing-indicator">
                         <span></span>
                         <span></span>
@@ -199,25 +199,25 @@ const EnhancedChatInterface: React.FC = () => {
           </div>
 
           {/* Input Area - Fixed to Bottom */}
-          <div className="bg-white p-2 sm:p-3 shadow-lg border-t border-gray-100 z-50 fixed bottom-0 left-0 right-0">
+          <div className="bg-background p-2 sm:p-3 shadow-lg border-t border-border z-50 fixed bottom-0 left-0 right-0">
             <div className="max-w-3xl mx-auto">
               {/* Suggestion chips */}
               <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                 <button 
                   onClick={() => handleSendMessage("Tasting notes")}
-                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
+                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-primary rounded-full border border-primary text-xs sm:text-sm font-medium hover:bg-primary/10 transition-colors"
                 >
                   Tasting notes
                 </button>
                 <button 
                   onClick={() => handleSendMessage("Simple recipes for this wine")}
-                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
+                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-primary rounded-full border border-primary text-xs sm:text-sm font-medium hover:bg-primary/10 transition-colors"
                 >
                   Simple recipes
                 </button>
                 <button 
                   onClick={() => handleSendMessage("Where is this wine from?")}
-                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors"
+                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-primary rounded-full border border-primary text-xs sm:text-sm font-medium hover:bg-primary/10 transition-colors"
                 >
                   Where it's from
                 </button>
