@@ -216,7 +216,8 @@ const EnhancedChatInterface: React.FC = () => {
                 position: 'relative',
                 zIndex: 2,
                 padding: '0 20px',
-                gap: '6px'
+                gap: '6px',
+                marginBottom: '16px'
               }}>
                 <div style={{ width: '16px', height: '12px', flexShrink: 0 }}>
                   <img 
@@ -231,6 +232,147 @@ const EnhancedChatInterface: React.FC = () => {
                   />
                 </div>
                 <span>San Luis Obispo Country, United States</span>
+              </div>
+              
+              {/* Wine ratings section */}
+              <div style={{
+                width: '100%', 
+                height: '100%', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                gap: 4, 
+                display: 'flex',
+                position: 'relative',
+                zIndex: 2,
+                padding: '0 20px',
+                marginBottom: '20px'
+              }}>
+                <div style={{
+                  padding: 8, 
+                  background: 'rgba(255, 255, 255, 0.10)', 
+                  borderRadius: 8, 
+                  justifyContent: 'flex-start', 
+                  alignItems: 'baseline', 
+                  gap: 4, 
+                  display: 'flex'
+                }}>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'white', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '600', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>95</div>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'rgba(255, 255, 255, 0.60)', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '400', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>VN</div>
+                </div>
+                <div style={{
+                  padding: 8, 
+                  background: 'rgba(255, 255, 255, 0.10)', 
+                  borderRadius: 8, 
+                  justifyContent: 'flex-start', 
+                  alignItems: 'baseline', 
+                  gap: 4, 
+                  display: 'flex'
+                }}>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'white', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '600', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>93</div>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'rgba(255, 255, 255, 0.60)', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '400', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>JD</div>
+                </div>
+                <div style={{
+                  padding: 8, 
+                  background: 'rgba(255, 255, 255, 0.10)', 
+                  borderRadius: 8, 
+                  justifyContent: 'flex-start', 
+                  alignItems: 'baseline', 
+                  gap: 4, 
+                  display: 'flex'
+                }}>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'white', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '600', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>93</div>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'rgba(255, 255, 255, 0.60)', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '400', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>WS</div>
+                </div>
+                <div style={{
+                  padding: 8,
+                  justifyContent: 'flex-start', 
+                  alignItems: 'baseline', 
+                  gap: 4, 
+                  display: 'flex'
+                }}>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'white', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '600', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>14.3%</div>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'rgba(255, 255, 255, 0.60)', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '400', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>ABV</div>
+                </div>
               </div>
             </div>
             
