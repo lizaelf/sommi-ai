@@ -354,6 +354,104 @@ const EnhancedChatInterface: React.FC = () => {
                   }}>ABV</div>
                 </div>
               </div>
+
+              {/* Food Pairing Section */}
+              <div style={{
+                width: '100%',
+                padding: '0 20px',
+                marginBottom: '20px'
+              }}>
+                <h2 style={{
+                  color: 'white',
+                  fontSize: '32px',
+                  fontFamily: 'Lora, serif',
+                  fontWeight: '400',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}>
+                  Food pairing
+                </h2>
+
+                {/* Red Meat Pairing */}
+                <div style={{
+                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  borderRadius: '16px',
+                  padding: '16px 24px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>🥩</span>
+                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Red Meat</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ 
+                      color: 'black', 
+                      fontSize: '16px', 
+                      fontFamily: 'Inter, sans-serif',
+                      backgroundColor: '#e0e0e0',
+                      padding: '6px 14px',
+                      borderRadius: '999px'
+                    }}>
+                      Perfect match
+                    </span>
+                    <span style={{ fontSize: '20px' }}>⌄</span>
+                  </div>
+                </div>
+
+                {/* Cheese Pairings */}
+                <div style={{
+                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  borderRadius: '16px',
+                  padding: '16px 24px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>🧀</span>
+                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Cheese Pairings</span>
+                  </div>
+                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                </div>
+
+                {/* Vegetarian Options */}
+                <div style={{
+                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  borderRadius: '16px',
+                  padding: '16px 24px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>🥗</span>
+                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Vegetarian Options</span>
+                  </div>
+                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                </div>
+
+                {/* Avoid pairing with */}
+                <div style={{
+                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  borderRadius: '16px',
+                  padding: '16px 24px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
+                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Avoid pairing with</span>
+                  </div>
+                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                </div>
+              </div>
             </div>
             
             {/* Chat Messages */}
