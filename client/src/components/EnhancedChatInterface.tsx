@@ -143,7 +143,7 @@ const EnhancedChatInterface: React.FC = () => {
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image with fixed size and glow effect */}
-            <div className="w-full bg-black flex items-center justify-center py-8 relative">
+            <div className="w-full bg-black flex flex-col items-center justify-center py-8 relative">
               {/* Glow effect */}
               <div style={{
                 position: 'absolute',
@@ -166,9 +166,30 @@ const EnhancedChatInterface: React.FC = () => {
                   height: '240px', 
                   objectFit: 'contain',
                   position: 'relative',
-                  zIndex: 2
+                  zIndex: 2,
+                  marginBottom: '16px'
                 }}
               />
+              
+              {/* Wine name with requested styling */}
+              <div style={{
+                width: '100%', 
+                textAlign: 'center', 
+                justifyContent: 'center', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                color: 'white', 
+                fontSize: 24, 
+                fontFamily: 'Lora, serif', 
+                fontWeight: '400', 
+                lineHeight: '32px', 
+                wordWrap: 'break-word',
+                position: 'relative',
+                zIndex: 2,
+                padding: '0 20px'
+              }}>
+                2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel
+              </div>
             </div>
             
             {/* Chat Messages */}
