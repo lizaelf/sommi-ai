@@ -4,7 +4,7 @@ const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <div className={`flex items-center ${className}`}>
       <img 
-        src="/logo.png" 
+        src="/new-logo.png" 
         alt="SOMM" 
         className="h-7"
       />
