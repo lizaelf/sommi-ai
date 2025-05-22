@@ -1,10 +1,12 @@
 import React from 'react';
+// Import the image directly from assets
+import usFlagImage from '@assets/US-flag.png';
 
 const USFlagImage: React.FC = () => {
   return (
     <div style={{ width: '16px', height: '16px', flexShrink: 0 }}>
       <img 
-        src="/us-flag.png" 
+        src={usFlagImage} 
         alt="USA" 
         style={{
           width: '100%', 
