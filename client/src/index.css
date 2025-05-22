@@ -26,7 +26,7 @@
 }
 
 .dark {
-    --background: 0 0% 4%; /* #0A0A0A as requested */
+    --background: 0 0% 4%; /* Solid #0A0A0A as requested */
     --foreground: 0 0% 98%;
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;

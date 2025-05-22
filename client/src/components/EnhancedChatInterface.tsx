@@ -153,19 +153,7 @@ const EnhancedChatInterface: React.FC = () => {
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image with fixed size and glow effect */}
-            <div className="w-full bg-black flex flex-col items-center justify-center py-8 relative">
-              {/* Glow effect */}
-              <div style={{
-                position: 'absolute',
-                width: '100%', 
-                height: '100%', 
-                background: '#8E8E8E', 
-                boxShadow: '200px 200px 200px ', 
-                borderRadius: 9999, 
-                filter: 'blur(100px)',
-                opacity: 0.4,
-                zIndex: 1
-              }} />
+            <div className="w-full flex flex-col items-center justify-center py-8 relative" style={{ backgroundColor: '#0A0A0A' }}>
               
               {/* Wine bottle image */}
               <WineBottleImage />
