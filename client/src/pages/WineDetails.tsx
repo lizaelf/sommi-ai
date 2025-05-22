@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'wouter';
 import { ChevronLeft, Circle } from 'lucide-react';
+import Button from '@/components/ui/Button';
+import Logo from '@/components/Logo';
 
 const WineDetails = () => {
   // State for collapsible sections
@@ -97,14 +99,14 @@ const WineDetails = () => {
       {/* Top navigation */}
       <div className="bg-background p-4 flex items-center justify-between">
         <Link to="/">
-          <button className="flex items-center text-primary bg-transparent border-none">
+          <div className="flex items-center text-white cursor-pointer">
             <ChevronLeft size={20} />
-            <span className="ml-2">SOMM.AI</span>
-          </button>
+            <Logo className="ml-2" />
+          </div>
         </Link>
-        <button className="px-4 py-1 bg-primary/10 text-primary rounded-full text-xs">
+        <Button>
           My Cellar
-        </button>
+        </Button>
       </div>
 
       {/* Wine hero image */}
@@ -143,15 +145,46 @@ const WineDetails = () => {
           
           <div className="space-y-2">
             {wine.foodPairings.map(pairing => (
-              <button 
+              <div
                 key={pairing.id}
-                className={`w-full flex items-center justify-between p-3 rounded-lg text-left ${
-                  pairing.active ? 'bg-primary text-white' : 'bg-muted text-foreground'
-                }`}
+                style={{
+                  width: '100%',
+                  paddingLeft: 24,
+                  paddingRight: 24,
+                  paddingTop: 16,
+                  paddingBottom: 16,
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  borderRadius: 24,
+                  outline: '1px white solid',
+                  outlineOffset: '-1px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 8,
+                  cursor: 'pointer'
+                }}
               >
-                <span>{pairing.name}</span>
-                {pairing.active && <span className="text-xs bg-white/20 px-2 py-1 rounded">Perfect match</span>}
-              </button>
+                <div style={{
+                  color: 'white',
+                  fontSize: 14,
+                  fontFamily: 'Inter',
+                  fontWeight: '400',
+                  wordWrap: 'break-word'
+                }}>
+                  {pairing.name}
+                </div>
+                {pairing.active && 
+                  <div style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    padding: '4px 8px',
+                    borderRadius: 12,
+                    color: 'white',
+                    fontSize: 12
+                  }}>
+                    Perfect match
+                  </div>
+                }
+              </div>
             ))}
           </div>
         </section>
@@ -203,9 +236,9 @@ const WineDetails = () => {
 
         {/* Buy again */}
         <div className="mb-8">
-          <button className="w-full py-3 bg-primary text-white rounded-lg font-medium">
+          <Button fullWidth>
             Buy again
-          </button>
+          </Button>
         </div>
       </div>
     </div>

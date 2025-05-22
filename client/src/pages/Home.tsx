@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import Logo from '@/components/Logo';
+import Button from '@/components/ui/Button';
 
 export default function Home() {
   return (
@@ -15,9 +16,9 @@ export default function Home() {
           <div className="flex items-center space-x-3">
             <ThemeToggle />
             <Link to="/wine/1">
-              <button className="px-4 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors text-sm">
+              <Button>
                 My Cellar
-              </button>
+              </Button>
             </Link>
           </div>
         </div>
