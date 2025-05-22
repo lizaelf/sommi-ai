@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 
@@ -12,9 +13,11 @@ export default function Home() {
           <h1 className="text-2xl font-semibold text-primary">Somm.ai</h1>
           <div className="flex items-center space-x-3">
             <ThemeToggle />
-            <button className="px-4 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors text-sm">
-              My Cellar
-            </button>
+            <Link to="/wine/1">
+              <button className="px-4 py-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors text-sm">
+                My Cellar
+              </button>
+            </Link>
           </div>
         </div>
       </div>
