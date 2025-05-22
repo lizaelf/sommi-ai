@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'wouter';
 import { ChevronLeft, Circle } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 const WineDetails = () => {
   // State for collapsible sections
@@ -99,7 +100,7 @@ const WineDetails = () => {
         <Link to="/">
           <button className="flex items-center text-primary bg-transparent border-none">
             <ChevronLeft size={20} />
-            <span className="ml-2">SOMM.AI</span>
+            <span className="ml-2"><Logo className="text-lg" /></span>
           </button>
         </Link>
         <button className="px-4 py-1 bg-primary/10 text-primary rounded-full text-xs">
@@ -110,7 +111,7 @@ const WineDetails = () => {
       {/* Wine hero image */}
       <div className="w-full h-80 flex items-center justify-center bg-black">
         <img 
-          src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
+          src="https://www.ridgewine.com/wp-content/uploads/2023/07/2021-Lytton-Springs.png" 
           alt={wine.name} 
           className="h-full object-contain mx-auto"
         />
