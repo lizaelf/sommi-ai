@@ -194,9 +194,31 @@ const EnhancedChatInterface: React.FC = () => {
                 wordWrap: 'break-word',
                 position: 'relative',
                 zIndex: 2,
-                padding: '0 20px'
+                padding: '0 20px',
+                marginBottom: '4px'
               }}>
                 2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel
+              </div>
+              
+              {/* Wine region with requested styling */}
+              <div style={{
+                textBoxTrim: 'trim-both', 
+                textBoxEdge: 'cap alphabetic', 
+                textAlign: 'center',
+                justifyContent: 'center', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                color: 'rgba(255, 255, 255, 0.60)', 
+                fontSize: 12, 
+                fontFamily: 'Inter, sans-serif', 
+                fontWeight: '400', 
+                lineHeight: '32px', 
+                wordWrap: 'break-word',
+                position: 'relative',
+                zIndex: 2,
+                padding: '0 20px'
+              }}>
+                San Luis Obispo Country, United States
               </div>
             </div>
             
