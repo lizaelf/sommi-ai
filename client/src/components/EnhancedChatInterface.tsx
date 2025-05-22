@@ -200,14 +200,13 @@ const EnhancedChatInterface: React.FC = () => {
                 2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel
               </div>
               
-              {/* Wine region with requested styling */}
+              {/* Wine region with requested styling and flag */}
               <div style={{
-                textBoxTrim: 'trim-both', 
-                textBoxEdge: 'cap alphabetic', 
                 textAlign: 'center',
                 justifyContent: 'center', 
                 display: 'flex', 
-                flexDirection: 'column', 
+                flexDirection: 'row', 
+                alignItems: 'center',
                 color: 'rgba(255, 255, 255, 0.60)', 
                 fontSize: 12, 
                 fontFamily: 'Inter, sans-serif', 
@@ -216,9 +215,22 @@ const EnhancedChatInterface: React.FC = () => {
                 wordWrap: 'break-word',
                 position: 'relative',
                 zIndex: 2,
-                padding: '0 20px'
+                padding: '0 20px',
+                gap: '6px'
               }}>
-                San Luis Obispo Country, United States
+                <div style={{ width: '16px', height: '12px', flexShrink: 0 }}>
+                  <img 
+                    src="/assets/usa-flag.svg" 
+                    alt="USA" 
+                    style={{
+                      width: '100%', 
+                      height: '100%', 
+                      borderRadius: '2px',
+                      objectFit: 'cover'
+                    }} 
+                  />
+                </div>
+                <span>San Luis Obispo Country, United States</span>
               </div>
             </div>
             
