@@ -454,51 +454,8 @@ const EnhancedChatInterface: React.FC = () => {
               </div>
             </div>
             
-            {/* Chat Messages */}
-            <div id="conversation" className="px-3 sm:px-4 py-3 sm:py-4 pb-36 space-y-0 max-w-3xl mx-auto w-full">
-              {/* Always show the welcome message */}
-              <div className="mx-auto p-3 sm:p-5 max-w-lg" style={{ marginBottom: '0' }}>
-                
-                <p className="text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-primary">
-                  Hi! I'm your personal sommelier.
-                </p>
-                <p className="text-sm sm:text-base text-foreground mb-0">
-                  I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
-                </p>
-                
-                {messages.length === 0 && <div className="h-10 sm:h-16"></div>}
-              </div>
-              
-              {/* Show any conversation messages directly below the welcome message */}
-              {messages.length > 0 && 
-                messages.map((message, index) => (
-                  <ChatMessage 
-                    key={`${message.id}-${index}`} 
-                    message={message} 
-                  />
-                ))
-              }
-
-              {/* Hidden Audio Controls - kept for compatibility */}
-              <div id="audio-controls" style={{display: 'none', visibility: 'hidden'}}>
-                <button id="play-audio-btn">Play Response Audio</button>
-              </div>
-              
-              {/* Typing Indicator */}
-              {isTyping && (
-                <div className="mx-auto max-w-2xl">
-                  <div className="p-2 sm:p-4">
-                    <div className="text-foreground">
-                      <div className="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Extra space at the bottom */}
+            <div style={{ height: '40px' }}></div>
           </div>
 
           {/* Input Area - Fixed to Bottom */}
