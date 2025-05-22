@@ -14,7 +14,6 @@ export default function Home() {
         <div className="bg-background px-4 py-3 flex justify-between items-center border-b border-border">
           <Logo />
           <div className="flex items-center space-x-3">
-            <ThemeToggle />
             <Link to="/wine/1">
               <Button>
                 My Cellar
