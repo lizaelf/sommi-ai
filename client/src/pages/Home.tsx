@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import Logo from '@/components/Logo';
 
 export default function Home() {
   return (
@@ -11,7 +10,7 @@ export default function Home() {
         
         {/* App Header */}
         <div className="bg-background px-4 py-3 flex justify-between items-center border-b border-border">
-          <Logo className="text-2xl" />
+          <h1 className="text-2xl font-semibold text-primary">Somm.ai</h1>
           <div className="flex items-center space-x-3">
             <ThemeToggle />
             <Link to="/wine/1">
