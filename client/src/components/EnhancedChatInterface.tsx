@@ -589,9 +589,35 @@ const EnhancedChatInterface: React.FC = () => {
             </div>
             
             {/* Extra space at the bottom */}
-            <div style={{ height: '40px' }}></div>
+            <div style={{ height: '80px' }}></div>
           </div>
 
+          {/* Hidden container for messages to display */}
+          <div id="conversation" style={{ display: 'none' }}>
+            {messages.length > 0 && 
+              messages.map((message, index) => (
+                <ChatMessage 
+                  key={`${message.id}-${index}`} 
+                  message={message} 
+                />
+              ))
+            }
+            
+            {/* Hidden Audio Controls - kept for compatibility */}
+            <div id="audio-controls" style={{display: 'none', visibility: 'hidden'}}>
+              <button id="play-audio-btn">Play Response Audio</button>
+            </div>
+            
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="typing-indicator" style={{ display: 'none' }}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            )}
+          </div>
+          
           {/* Input Area - Fixed to Bottom */}
           <div className="bg-background p-2 sm:p-3 shadow-lg border-t border-border z-50 fixed bottom-0 left-0 right-0">
             <div className="max-w-3xl mx-auto">
