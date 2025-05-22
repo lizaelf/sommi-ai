@@ -210,18 +210,7 @@ const EnhancedChatInterface: React.FC = () => {
                 gap: '6px',
                 marginBottom: '16px'
               }}>
-                <div style={{ width: '16px', height: '16px', flexShrink: 0 }}>
-                  <img 
-                    src="/us-flag.png" 
-                    alt="USA" 
-                    style={{
-                      width: '100%', 
-                      height: '100%', 
-                      borderRadius: '50%',
-                      objectFit: 'cover'
-                    }} 
-                  />
-                </div>
+                <USFlagImage />
                 <span>San Luis Obispo Country, United States</span>
               </div>
               
