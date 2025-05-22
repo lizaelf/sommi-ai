@@ -247,7 +247,6 @@ const EnhancedChatInterface: React.FC = () => {
                 padding: '0 20px',
                 marginBottom: '20px'
               }}>
-
                 <div style={{
                   padding: 8, 
                   background: 'rgba(255, 255, 255, 0.10)', 
@@ -258,29 +257,89 @@ const EnhancedChatInterface: React.FC = () => {
                   display: 'flex'
                 }}>
                   <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
                     justifyContent: 'center', 
                     display: 'flex', 
                     flexDirection: 'column', 
                     color: 'white', 
                     fontSize: 12, 
-                    fontFamily: 'Inter', 
+                    fontFamily: 'Inter, sans-serif', 
                     fontWeight: '600', 
-                    lineHeight: 32, 
+                    lineHeight: '32px', 
                     wordWrap: 'break-word'
-                  }}>93</div>
+                  }}>95</div>
                   <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
                     justifyContent: 'center', 
                     display: 'flex', 
                     flexDirection: 'column', 
                     color: 'rgba(255, 255, 255, 0.60)', 
                     fontSize: 12, 
-                    fontFamily: 'Inter', 
+                    fontFamily: 'Inter, sans-serif', 
                     fontWeight: '400', 
-                    lineHeight: 32, 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>VN</div>
+                </div>
+                <div style={{
+                  padding: 8, 
+                  background: 'rgba(255, 255, 255, 0.10)', 
+                  borderRadius: 8, 
+                  justifyContent: 'flex-start', 
+                  alignItems: 'baseline', 
+                  gap: 4, 
+                  display: 'flex'
+                }}>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'white', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '600', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>93</div>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'rgba(255, 255, 255, 0.60)', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '400', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>JD</div>
+                </div>
+                <div style={{
+                  padding: 8, 
+                  background: 'rgba(255, 255, 255, 0.10)', 
+                  borderRadius: 8, 
+                  justifyContent: 'flex-start', 
+                  alignItems: 'baseline', 
+                  gap: 4, 
+                  display: 'flex'
+                }}>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'white', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '600', 
+                    lineHeight: '32px', 
+                    wordWrap: 'break-word'
+                  }}>93</div>
+                  <div style={{
+                    justifyContent: 'center', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    color: 'rgba(255, 255, 255, 0.60)', 
+                    fontSize: 12, 
+                    fontFamily: 'Inter, sans-serif', 
+                    fontWeight: '400', 
+                    lineHeight: '32px', 
                     wordWrap: 'break-word'
                   }}>WS</div>
                 </div>
@@ -292,29 +351,25 @@ const EnhancedChatInterface: React.FC = () => {
                   display: 'flex'
                 }}>
                   <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
                     justifyContent: 'center', 
                     display: 'flex', 
                     flexDirection: 'column', 
                     color: 'white', 
                     fontSize: 12, 
-                    fontFamily: 'Inter', 
+                    fontFamily: 'Inter, sans-serif', 
                     fontWeight: '600', 
-                    lineHeight: 32, 
+                    lineHeight: '32px', 
                     wordWrap: 'break-word'
                   }}>14.3%</div>
                   <div style={{
-                    textBoxTrim: 'trim-both', 
-                    textBoxEdge: 'cap alphabetic', 
                     justifyContent: 'center', 
                     display: 'flex', 
                     flexDirection: 'column', 
                     color: 'rgba(255, 255, 255, 0.60)', 
                     fontSize: 12, 
-                    fontFamily: 'Inter', 
+                    fontFamily: 'Inter, sans-serif', 
                     fontWeight: '400', 
-                    lineHeight: 32, 
+                    lineHeight: '32px', 
                     wordWrap: 'break-word'
                   }}>ABV</div>
                 </div>
