@@ -15,11 +15,12 @@ const WineBottleImage: React.FC = () => {
       {/* Blurred circle background */}
       <div style={{
         position: 'absolute',
-        width: '180px',
-        height: '180px',
+        width: '250px',
+        height: '250px',
         borderRadius: '50%',
         backgroundColor: '#8E8E8E', // Gray color as requested
-        filter: 'blur(200px)', // Stronger blur effect
+        filter: 'blur(60px)', // Reduced blur to make it more visible
+        opacity: 0.7, // Increased opacity
         zIndex: 1,
         top: '50%',
         transform: 'translateY(-50%)'
