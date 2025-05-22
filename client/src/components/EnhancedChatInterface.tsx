@@ -5,6 +5,7 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import VoiceAssistant from './VoiceAssistant';
 import WineBottleImage from './WineBottleImage';
+import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 
@@ -209,14 +210,14 @@ const EnhancedChatInterface: React.FC = () => {
                 gap: '6px',
                 marginBottom: '16px'
               }}>
-                <div style={{ width: '16px', height: '12px', flexShrink: 0 }}>
+                <div style={{ width: '16px', height: '16px', flexShrink: 0 }}>
                   <img 
-                    src="/assets/usa-flag.svg" 
+                    src="/us-flag.png" 
                     alt="USA" 
                     style={{
                       width: '100%', 
                       height: '100%', 
-                      borderRadius: '2px',
+                      borderRadius: '50%',
                       objectFit: 'cover'
                     }} 
                   />
