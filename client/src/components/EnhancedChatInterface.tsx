@@ -259,24 +259,24 @@ const EnhancedChatInterface: React.FC = () => {
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'white', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '600', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>95</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'rgba(255, 255, 255, 0.60)', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '400', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>VN</div>
                 </div>
                 <div style={{
@@ -291,24 +291,24 @@ const EnhancedChatInterface: React.FC = () => {
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'white', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '600', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>93</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'rgba(255, 255, 255, 0.60)', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '400', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>JD</div>
                 </div>
                 <div style={{
@@ -323,24 +323,24 @@ const EnhancedChatInterface: React.FC = () => {
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'white', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '600', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>93</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'rgba(255, 255, 255, 0.60)', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '400', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>WS</div>
                 </div>
                 <div style={{
@@ -353,24 +353,24 @@ const EnhancedChatInterface: React.FC = () => {
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'white', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '600', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>14.3%</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
-                    flexDirection: 'column', 
                     color: 'rgba(255, 255, 255, 0.60)', 
                     fontSize: 12, 
                     fontFamily: 'Inter, sans-serif', 
                     fontWeight: '400', 
-                    lineHeight: '32px', 
-                    wordWrap: 'break-word'
+                    lineHeight: '16px', 
+                    wordWrap: 'break-word',
+                    height: '16px'
                   }}>ABV</div>
                 </div>
               </div>
