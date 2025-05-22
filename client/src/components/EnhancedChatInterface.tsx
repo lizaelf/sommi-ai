@@ -142,12 +142,32 @@ const EnhancedChatInterface: React.FC = () => {
         <main className="flex-1 flex flex-col bg-background overflow-hidden">
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
-            {/* Wine bottle image with fixed size */}
-            <div className="w-full bg-black flex items-center justify-center py-8">
+            {/* Wine bottle image with fixed size and glow effect */}
+            <div className="w-full bg-black flex items-center justify-center py-8 relative">
+              {/* Glow effect */}
+              <div style={{
+                position: 'absolute',
+                width: '100%', 
+                height: '100%', 
+                background: '#8E8E8E', 
+                boxShadow: '200px 200px 200px ', 
+                borderRadius: 9999, 
+                filter: 'blur(100px)',
+                opacity: 0.4,
+                zIndex: 1
+              }} />
+              
+              {/* Wine bottle image */}
               <img 
                 src="/wine-bottle.png" 
                 alt="Ridge Lytton Springs 2021" 
-                style={{ width: '72px', height: '240px', objectFit: 'contain' }}
+                style={{ 
+                  width: '72px', 
+                  height: '240px', 
+                  objectFit: 'contain',
+                  position: 'relative',
+                  zIndex: 2
+                }}
               />
             </div>
             
