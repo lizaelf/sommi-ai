@@ -587,6 +587,34 @@ const EnhancedChatInterface: React.FC = () => {
                 </div>
               </div>
               
+              {/* History Section */}
+              <div style={{
+                width: '100%',
+                padding: '0 20px',
+                marginBottom: '20px'
+              }}>
+                <h2 style={{
+                  color: 'white',
+                  fontSize: '32px',
+                  fontFamily: 'Lora, serif',
+                  fontWeight: '400',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}>
+                  History
+                </h2>
+                
+                <p style={{
+                  color: 'white',
+                  fontSize: '16px',
+                  lineHeight: '1.6',
+                  fontFamily: 'Inter, sans-serif',
+                  marginBottom: '16px'
+                }}>
+                  Lytton Springs is a renowned single-vineyard red wine produced by Ridge Vineyards, located in the Dry Creek Valley of Sonoma County, California. Celebrated for its rich heritage and distinctive field-blend style, Lytton Springs has become a benchmark for Zinfandel-based wines in the United States.
+                </p>
+              </div>
+              
               {/* Conversation Section */}
               <div style={{
                 width: '100%',
