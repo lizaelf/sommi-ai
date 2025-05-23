@@ -2,21 +2,22 @@ import React, { useRef, useState, useEffect } from 'react';
 
 interface WineImageProps {
   isAnimating?: boolean;
+  size?: number;
 }
 
 /**
  * Wine glass visualization with sound-reactive animation
  * Only animates when actively listening or playing audio
  */
-const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
-  const [size, setSize] = useState(200);
+const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initialSize = 200 }) => {
+  const [size, setSize] = useState(initialSize);
   const [opacity, setOpacity] = useState(0.2);
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const animationRef = useRef<number>(0);
   const frameCount = useRef(0);
-  const baseSize = 200; // Base size in pixels
+  const baseSize = initialSize; // Base size in pixels from props
   
   // Function to handle animation
   const animate = () => {
