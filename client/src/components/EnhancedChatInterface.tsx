@@ -153,11 +153,15 @@ const EnhancedChatInterface: React.FC = () => {
         <main className="flex-1 flex flex-col bg-background overflow-hidden">
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
-            {/* Wine bottle image with fixed size and glow effect - fullscreen height */}
+            {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
             <div className="w-full flex flex-col items-center justify-center py-8 relative" style={{ 
               backgroundColor: '#0A0A0A',
-              paddingTop: '90px', // Add padding to show the blurred circle below the header
-              minHeight: '100vh' // Make the div full screen height
+              paddingTop: '75px', // Match the header height exactly
+              minHeight: '100vh', // Make the div full screen height
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0
             }}>
               
               {/* Wine bottle image */}
