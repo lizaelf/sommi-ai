@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -14,34 +15,67 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   onAsk
 }) => {
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // When component mounts, create portal element if needed
+    let element = document.getElementById('ios-bottom-sheet-portal');
+    if (!element) {
+      element = document.createElement('div');
+      element.id = 'ios-bottom-sheet-portal';
+      document.body.appendChild(element);
+    }
+    setPortalElement(element);
+
+    // Cleanup on unmount
+    return () => {
+      if (element && element.parentElement && !isOpen) {
+        element.parentElement.removeChild(element);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    // Lock body scroll when sheet is open
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      console.log("Opening bottom sheet...");
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && animationState === 'closed') {
       setAnimationState('opening');
-      setTimeout(() => setAnimationState('open'), 500); // Animation duration
+      setTimeout(() => setAnimationState('open'), 350); // Animation duration - faster for iOS feel
     } else if (!isOpen && (animationState === 'open' || animationState === 'opening')) {
       setAnimationState('closing');
       setTimeout(() => setAnimationState('closed'), 300); // Animation duration
     }
   }, [isOpen, animationState]);
 
-  if (animationState === 'closed') return null;
+  if (animationState === 'closed' || !portalElement) return null;
 
   const overlayStyle = {
     opacity: animationState === 'open' ? 1 : animationState === 'opening' ? 0.8 : 0,
-    transition: 'opacity 0.3s ease-in-out'
+    transition: 'opacity 0.3s ease-out'
   };
 
   const sheetStyle = {
     transform: animationState === 'open' 
       ? 'translateY(0)' 
       : animationState === 'opening' 
-        ? 'translateY(20%)' 
+        ? 'translateY(10%)' 
         : 'translateY(100%)',
-    transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)' // iOS-like animation curve
+    transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)' // iOS-like spring animation curve
   };
 
-  return (
+  const bottomSheetContent = (
     <div 
       style={{
         position: 'fixed',
@@ -49,8 +83,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        zIndex: 1000,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 9999, // Higher z-index to ensure it's on top of everything
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-end',
@@ -70,6 +104,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)', // iOS-like shadow
           ...sheetStyle
         }}
         onClick={(e) => e.stopPropagation()}
@@ -251,6 +286,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
       </div>
     </div>
   );
+  
+  // Use React Portal to render at the root of the document
+  return portalElement ? createPortal(bottomSheetContent, portalElement) : null;
 };
 
 export default VoiceBottomSheet;
