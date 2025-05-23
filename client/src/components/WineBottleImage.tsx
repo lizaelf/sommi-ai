@@ -33,7 +33,7 @@ const WineBottleImage: React.FC = () => {
         src={wineBottleImage} 
         alt="Ridge Lytton Springs 2021" 
         style={{ 
-          height: '280px', 
+          height: '240px', 
           width: 'auto',
           objectFit: 'contain',
           position: 'relative',
