@@ -640,35 +640,56 @@ const EnhancedChatInterface: React.FC = () => {
             <div style={{ height: '80px' }}></div>
           </div>
           
-          {/* Microphone Button - Fixed to Bottom */}
+          {/* Input Area - Fixed to Bottom */}
           <div style={{
+            backgroundColor: '#1C1C1C',
+            padding: '16px',
             zIndex: 50,
             position: 'fixed',
-            bottom: '40px',
+            bottom: 0,
             left: 0,
             right: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
+            borderTop: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
-            <div
-              style={{
-                width: '72px',
-                height: '72px',
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                borderRadius: '50%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                cursor: isTyping ? 'not-allowed' : 'pointer',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
-              }}
-            >
-              <VoiceAssistant
-                onSendMessage={handleSendMessage}
-                isProcessing={isTyping}
-              />
+            <div className="max-w-3xl mx-auto">
+              {/* Suggestion chips - only shown when keyboard is active */}
+              {isKeyboardFocused && (
+                <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                  <button 
+                    onClick={() => handleSendMessage("Tasting notes")}
+                    className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                  >
+                    Tasting notes
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("Simple recipes for this wine")}
+                    className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                  >
+                    Simple recipes
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("Where is this wine from?")}
+                    className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                  >
+                    Where it's from
+                  </button>
+                </div>
+              )}
+              
+              <div className="relative flex items-center">
+                <ChatInput 
+                  onSendMessage={handleSendMessage} 
+                  isProcessing={isTyping}
+                  onFocus={() => setIsKeyboardFocused(true)}
+                  onBlur={() => setIsKeyboardFocused(false)}
+                  voiceButtonComponent={
+                    <VoiceAssistant
+                      onSendMessage={handleSendMessage}
+                      isProcessing={isTyping}
+                    />
+                  }
+                />
+              </div>
             </div>
           </div>
         </main>
