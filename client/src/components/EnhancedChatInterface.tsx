@@ -585,14 +585,7 @@ const EnhancedChatInterface: React.FC = () => {
                           padding: '16px',
                           width: message.role === 'user' ? '80%' : '100%'
                         }}>
-                          <div style={{
-                            ...typography.button,
-                            color: message.role === 'user' ? '#000000' : 'white',
-                            marginBottom: '8px',
-                            fontWeight: message.role === 'user' ? '600' : '400'
-                          }}>
-                            {message.role === 'user' ? '' : 'Sommelier AI'}
-                          </div>
+                          {/* Title removed as requested */}
                           <div style={{
                             color: message.role === 'user' ? '#000000' : 'white',
                             whiteSpace: 'pre-wrap',
@@ -613,13 +606,7 @@ const EnhancedChatInterface: React.FC = () => {
                       padding: '16px',
                       marginBottom: '12px'
                     }}>
-                      <div style={{
-                        color: 'white',
-                        marginBottom: '8px',
-                        fontSize: '14px'
-                      }}>
-                        Sommelier AI
-                      </div>
+                      {/* Title removed from typing indicator as well */}
                       <div className="typing-indicator">
                         <span></span>
                         <span></span>
