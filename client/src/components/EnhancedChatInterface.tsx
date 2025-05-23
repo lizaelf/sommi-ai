@@ -372,7 +372,15 @@ const EnhancedChatInterface: React.FC = () => {
                     }}>
                       Perfect match
                     </span>
-                    <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                    <img 
+                      src="/icons/chevron-down.svg" 
+                      alt="Chevron down" 
+                      style={{ 
+                        width: '24px', 
+                        height: '24px', 
+                        filter: 'invert(100%)',
+                      }} 
+                    />
                   </div>
                 </div>
 
@@ -396,7 +404,15 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px' }}>🧀</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Cheese Pairings</span>
                   </div>
-                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  <img 
+                    src="/icons/chevron-down.svg" 
+                    alt="Chevron down" 
+                    style={{ 
+                      width: '24px', 
+                      height: '24px', 
+                      filter: 'invert(100%)',
+                    }} 
+                  />
                 </div>
 
                 {/* Vegetarian Options */}
@@ -419,7 +435,15 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px' }}>🥗</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Vegetarian Options</span>
                   </div>
-                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  <img 
+                    src="/icons/chevron-down.svg" 
+                    alt="Chevron down" 
+                    style={{ 
+                      width: '24px', 
+                      height: '24px', 
+                      filter: 'invert(100%)',
+                    }} 
+                  />
                 </div>
 
                 {/* Avoid pairing with */}
@@ -442,7 +466,15 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Avoid pairing with</span>
                   </div>
-                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  <img 
+                    src="/icons/chevron-down.svg" 
+                    alt="Chevron down" 
+                    style={{ 
+                      width: '24px', 
+                      height: '24px', 
+                      filter: 'invert(100%)',
+                    }} 
+                  />
                 </div>
               </div>
               
