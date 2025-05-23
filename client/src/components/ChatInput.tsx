@@ -48,7 +48,21 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                 onKeyDown={handleKeyDown}
                 onFocus={() => onFocus && onFocus()}
                 onBlur={() => onBlur && onBlur()}
-                className="w-full h-12 bg-[#1e1e1e] rounded-full px-4 pr-12 outline-none text-white shadow-none text-sm placeholder-gray-400"
+                style={{
+                  display: 'flex',
+                  padding: '8px 8px 8px 24px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  alignSelf: 'stretch',
+                  borderRadius: '24px',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  background: '#292929',
+                  width: '100%',
+                  outline: 'none',
+                  color: 'white'
+                }}
+                className="text-sm placeholder-gray-400 pr-12"
                 placeholder="Ask me about..."
                 disabled={isProcessing}
               />
