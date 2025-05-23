@@ -484,7 +484,7 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '16px',
                   ...typography.body
                 }}>
-                  Lytton Springs is a renowned single-vineyard red wine produced by Ridge Vineyards, located in the Dry Creek Valley of Sonoma County, California. Celebrated for its rich heritage and distinctive field-blend style, Lytton Springs has become a benchmark for Zinfandel-based wines in the United States.
+                  This wine comes from 115-year-old vines, with some hillside vineyard blocks planted in 1901 Ridge VineyardsRidge Vineyards – making it one of California's most historic vineyards. The vineyard is home to 100-plus-year-old zinfandel vines interplanted with petite sirah, carignane, and other heritage varietals.
                 </p>
               </div>
               
