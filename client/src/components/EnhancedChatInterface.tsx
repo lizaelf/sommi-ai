@@ -331,7 +331,7 @@ const EnhancedChatInterface: React.FC = () => {
                 <h1 style={{
                   ...typography.h1,
                   color: 'white',
-                  marginBottom: '32px',
+                  marginBottom: '24px',
                   textAlign: 'left'
                 }}>
                   Food pairing
@@ -473,7 +473,7 @@ const EnhancedChatInterface: React.FC = () => {
                 <h1 style={{
                   ...typography.h1,
                   color: 'white',
-                  marginBottom: '32px',
+                  marginBottom: '24px',
                   textAlign: 'left'
                 }}>
                   History
@@ -497,7 +497,7 @@ const EnhancedChatInterface: React.FC = () => {
                 <h1 style={{
                   ...typography.h1,
                   color: 'white',
-                  marginBottom: '32px',
+                  marginBottom: '24px',
                   textAlign: 'left'
                 }}>
                   Ask about this wine
