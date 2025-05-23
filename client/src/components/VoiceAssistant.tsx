@@ -299,7 +299,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             aria-label="Start voice input"
             title="Use voice to ask questions"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20" style={{ margin: '0px', width: '24px', height: '24px' }}>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              style={{ 
+                margin: '0px', 
+                width: '24px', 
+                height: '24px',
+                minWidth: '24px',
+                minHeight: '24px',
+                display: 'block'
+              }}
+              viewBox="0 0 20 20">
               <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
             </svg>
           </button>
