@@ -9,10 +9,7 @@ import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
-// Import react-icons instead (better compatibility)
-import { MdRestaurant, MdOutlineRestaurant, MdOutlineFoodBank, MdCancel } from 'react-icons/md';
-import { BsChevronDown } from 'react-icons/bs';
-import { GiCow, GiCheeseWedge, GiBroccoli } from 'react-icons/gi';
+// Import typography styles
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
@@ -395,7 +392,7 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px' }}>🧀</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Cheese Pairings</span>
                   </div>
-                  <BsChevronDown size={20} color="white" />
+                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
                 </div>
 
                 {/* Vegetarian Options */}
@@ -416,7 +413,7 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px' }}>🥗</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Vegetarian Options</span>
                   </div>
-                  <BsChevronDown size={20} color="white" />
+                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
                 </div>
 
                 {/* Avoid pairing with */}
@@ -437,7 +434,7 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Avoid pairing with</span>
                   </div>
-                  <BsChevronDown size={20} color="white" />
+                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
                 </div>
               </div>
               
