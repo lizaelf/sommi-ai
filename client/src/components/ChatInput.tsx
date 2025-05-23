@@ -53,7 +53,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                 disabled={isProcessing}
               />
               {/* Voice button placed inside input on the right */}
-              <div className="absolute right-2 z-10">
+              <div className="absolute right-1 z-10">
                 {voiceButtonComponent}
               </div>
             </div>
