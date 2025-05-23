@@ -59,7 +59,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           onBlur={() => onBlur && onBlur()}
           style={{
             display: 'flex',
-            padding: '8px 16px',
+            padding: '8px 50px 8px 24px',
             justifyContent: 'center',
             alignItems: 'center',
             gap: '10px',
