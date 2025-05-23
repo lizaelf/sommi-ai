@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
+import VoiceBottomSheet from './VoiceBottomSheet';
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -12,6 +13,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false); // Track if last question was via voice
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -267,6 +269,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, status, usedVoiceInput]);
 
+  // Handle opening the bottom sheet
+  const openBottomSheet = () => {
+    console.log("Opening bottom sheet...");
+    setIsBottomSheetOpen(true);
+  };
+
   return (
     <div className="flex items-center">
       {status === 'Listening for your question...' ? (
@@ -290,7 +298,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               cursor: isProcessing ? 'not-allowed' : 'pointer',
               opacity: isProcessing ? 0.5 : 1
             }}
-            onClick={isProcessing ? undefined : toggleListening}
+            onClick={isProcessing ? undefined : openBottomSheet}
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
@@ -308,6 +316,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           {/* Sound Test Button - hidden as requested */}
         </>
       )}
+      
+      {/* Voice Bottom Sheet */}
+      <VoiceBottomSheet 
+        isOpen={isBottomSheetOpen}
+        onClose={() => setIsBottomSheetOpen(false)}
+        onSendVoiceMessage={onSendMessage}
+        status={status}
+        isListening={isListening}
+        toggleListening={toggleListening}
+      />
     </div>
   );
 };
