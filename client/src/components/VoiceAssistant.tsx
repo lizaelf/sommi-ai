@@ -284,9 +284,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
   
   // Handle the Ask button in the bottom sheet
-  const handleAsk = () => {
+  const handleAsk = async () => {
     setShowBottomSheet(false);
-    startListening();
+    // Short delay to ensure bottom sheet closes first
+    setTimeout(() => {
+      startListening();
+    }, 300);
   };
   
   // Handle the Mute button in the bottom sheet
