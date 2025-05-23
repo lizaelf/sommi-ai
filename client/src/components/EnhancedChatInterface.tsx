@@ -343,34 +343,35 @@ const EnhancedChatInterface: React.FC = () => {
                 <div style={{
                   backgroundColor: 'rgba(30, 30, 30, 0.9)',
                   borderRadius: '16px',
-                  padding: '16px 20px',
+                  padding: '16px 24px',
                   marginBottom: '12px',
                   display: 'flex',
-                  justifyContent: 'center',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
                   border: '1px solid transparent',
                   backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
-                  <span style={{ fontSize: '24px' }}>🥩</span>
-                  <span style={{ 
-                    color: 'white', 
-                    ...typography.bodyPlus1,
-                    flex: '1'
-                  }}>Red Meat</span>
-                  <span style={{ 
-                    color: 'black',
-                    backgroundColor: '#e0e0e0',
-                    padding: '6px 14px',
-                    borderRadius: '999px',
-                    ...typography.buttonPlus1
-                  }}>
-                    Perfect match
-                  </span>
-                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>🥩</span>
+                    <span style={{ 
+                      color: 'white', 
+                      ...typography.bodyPlus1
+                    }}>Red Meat</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ 
+                      color: 'black',
+                      backgroundColor: '#e0e0e0',
+                      padding: '6px 14px',
+                      borderRadius: '999px',
+                      ...typography.buttonPlus1
+                    }}>
+                      Perfect match
+                    </span>
+                    <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  </div>
                 </div>
 
                 {/* Cheese Pairings */}
