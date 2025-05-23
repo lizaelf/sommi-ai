@@ -329,14 +329,14 @@ const EnhancedChatInterface: React.FC = () => {
                 marginTop: '48px',
                 marginBottom: '20px'
               }}>
-                <h2 style={{
-                  ...typography.sectionHeader,
+                <h1 style={{
+                  ...typography.h1,
                   color: 'white',
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
                   Food pairing
-                </h2>
+                </h1>
 
                 {/* Red Meat Pairing */}
                 <div style={{
@@ -428,14 +428,14 @@ const EnhancedChatInterface: React.FC = () => {
                 padding: '0 20px',
                 marginBottom: '20px'
               }}>
-                <h2 style={{
-                  ...typography.sectionHeader,
+                <h1 style={{
+                  ...typography.h1,
                   color: 'white',
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
                   History
-                </h2>
+                </h1>
                 
                 <p style={{
                   color: 'white',
@@ -452,14 +452,14 @@ const EnhancedChatInterface: React.FC = () => {
                 padding: '0 20px',
                 marginBottom: '20px'
               }}>
-                <h2 style={{
-                  ...typography.sectionHeader,
+                <h1 style={{
+                  ...typography.h1,
                   color: 'white',
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
                   Ask about this wine
-                </h2>
+                </h1>
                 
                 {/* Conversation container */}
                 <div id="conversation" className="space-y-4 mb-20">
