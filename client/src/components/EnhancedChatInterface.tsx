@@ -574,35 +574,25 @@ const EnhancedChatInterface: React.FC = () => {
                   {messages.length > 0 && 
                     messages.map((message, index) => (
                       <div key={`${message.id}-${index}`} style={{
-                        display: 'flex',
-                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                        width: '100%',
+                        backgroundColor: message.role === 'user' ? 'rgba(106, 83, 231, 0.2)' : '#191919',
+                        borderRadius: '16px',
+                        padding: '16px',
                         marginBottom: '12px'
                       }}>
                         <div style={{
-                          backgroundColor: message.role === 'user' ? 'rgba(106, 83, 231, 0.2)' : '#DBDBDB',
-                          borderRadius: '16px',
-                          padding: '16px',
-                          width: message.role === 'assistant' ? '80%' : 'auto',
-                          maxWidth: '80%'
+                          ...typography.button,
+                          color: message.role === 'user' ? '#b9a5ff' : 'white',
+                          marginBottom: '8px',
+                          fontWeight: message.role === 'user' ? '600' : '400'
                         }}>
-                          {message.role !== 'user' && (
-                            <div style={{
-                              ...typography.button,
-                              color: message.role === 'user' ? '#b9a5ff' : 'black',
-                              marginBottom: '8px',
-                              fontWeight: message.role === 'user' ? '600' : '400'
-                            }}>
-                              Sommelier AI
-                            </div>
-                          )}
-                          <div style={{
-                            color: message.role === 'user' ? 'white' : '#000000',
-                            whiteSpace: 'pre-wrap',
-                            ...typography.body
-                          }}>
-                            {message.content}
-                          </div>
+                          {message.role === 'user' ? 'You' : 'Sommelier AI'}
+                        </div>
+                        <div style={{
+                          color: 'white',
+                          whiteSpace: 'pre-wrap',
+                          ...typography.body
+                        }}>
+                          {message.content}
                         </div>
                       </div>
                     ))
@@ -611,31 +601,22 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Typing Indicator */}
                   {isTyping && (
                     <div style={{
-                      display: 'flex',
-                      justifyContent: 'flex-start',
-                      width: '100%',
+                      backgroundColor: '#191919',
+                      borderRadius: '16px',
+                      padding: '16px',
                       marginBottom: '12px'
                     }}>
                       <div style={{
-                        backgroundColor: '#DBDBDB',
-                        borderRadius: '16px',
-                        padding: '16px',
-                        width: '80%',
-                        maxWidth: '80%'
+                        color: 'white',
+                        marginBottom: '8px',
+                        fontSize: '14px'
                       }}>
-                        <div style={{
-                          color: 'black',
-                          marginBottom: '8px',
-                          fontSize: '14px',
-                          fontWeight: '400'
-                        }}>
-                          Sommelier AI
-                        </div>
-                        <div className="typing-indicator">
-                          <span></span>
-                          <span></span>
-                          <span></span>
-                        </div>
+                        Sommelier AI
+                      </div>
+                      <div className="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                       </div>
                     </div>
                   )}
