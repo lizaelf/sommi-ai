@@ -34,9 +34,12 @@ export default function Home() {
         <div 
           style={{
             backgroundColor: scrolled ? '#0A0A0A' : 'rgba(10, 10, 10, 0)',
-            borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+            borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+            height: '75px',
+            paddingLeft: '24px',
+            paddingRight: '24px'
           }}
-          className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 flex justify-between items-center transition-all duration-300`}
+          className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
         >
           <Logo />
           <div className="flex items-center space-x-3">
