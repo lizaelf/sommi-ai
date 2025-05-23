@@ -2,14 +2,14 @@
  * Typography system
  * This file defines typography styles based on the provided design system:
  * 
- * H1: font-size 24px, line-height 32px, font-family: 'Lora'
- * Button+1: font-size 16px, line-height: auto, font-family: 'Inter'
- * Body+1: font-size 16px, line-height: 32px, font-family: 'Inter'
- * Body: font-size 16px, line-height: 24px, font-family: 'Inter'
- * Button: font-size 14px, line-height: auto, font-family: 'Inter'
- * Body-1M: font-size 12px, line-height: 32px, font-family: 'Inter'
- * Body-1R: font-size 12px, line-height: 32px, font-family: 'Inter'
- * Num: font-size 12px, line-height: 32px, font-family: 'Inter'
+ * H1: font-size 24px, line-height 32px, font-family: 'Lora', font-weight: 500
+ * Button+1: font-size 16px, line-height: auto, font-family: 'Inter', font-weight: 500
+ * Body+1: font-size 16px, line-height: 32px, font-family: 'Inter', font-weight: 400
+ * Body: font-size 16px, line-height: 24px, font-family: 'Inter', font-weight: 400
+ * Button: font-size 14px, line-height: auto, font-family: 'Inter', font-weight: 400
+ * Body-1M: font-size 12px, line-height: 32px, font-family: 'Inter', font-weight: 500
+ * Body-1R: font-size 12px, line-height: 32px, font-family: 'Inter', font-weight: 400
+ * Num: font-size 12px, line-height: 32px, font-family: 'Inter', font-weight: 600
  */
 
 const typography = {
@@ -18,7 +18,7 @@ const typography = {
     fontSize: '24px',
     lineHeight: '32px',
     fontFamily: 'Lora, serif',
-    fontWeight: '400'
+    fontWeight: '500'
   },
   
   // Button styles using Inter font
@@ -71,7 +71,7 @@ const typography = {
     fontSize: '12px',
     lineHeight: '32px',
     fontFamily: 'Inter, sans-serif',
-    fontWeight: '400'
+    fontWeight: '600'
   },
   
   // Section header (for larger headers that need to be bigger than h1)
