@@ -9,8 +9,10 @@ import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
-// Import icon libraries
-import { Food, Cheese, Salad, CircleOffFilled, ChevronDown } from 'iconoir-react';
+// Import react-icons instead (better compatibility)
+import { MdRestaurant, MdOutlineRestaurant, MdOutlineFoodBank, MdCancel } from 'react-icons/md';
+import { BsChevronDown } from 'react-icons/bs';
+import { GiCow, GiCheeseWedge, GiBroccoli } from 'react-icons/gi';
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
@@ -355,7 +357,7 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>🥩</span>
+                    <GiCow size={28} color="white" />
                     <span style={{ 
                       color: 'white', 
                       ...typography.bodyPlus1,
@@ -372,7 +374,7 @@ const EnhancedChatInterface: React.FC = () => {
                     }}>
                       Perfect match
                     </span>
-                    <span style={{ fontSize: '20px' }}>⌄</span>
+                    <BsChevronDown size={20} color="white" />
                   </div>
                 </div>
 
@@ -391,10 +393,10 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>🧀</span>
+                    <GiCheeseWedge size={28} color="white" />
                     <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Cheese Pairings</span>
                   </div>
-                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  <BsChevronDown size={20} color="white" />
                 </div>
 
                 {/* Vegetarian Options */}
@@ -412,10 +414,10 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>🥗</span>
+                    <GiBroccoli size={28} color="white" />
                     <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Vegetarian Options</span>
                   </div>
-                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  <BsChevronDown size={20} color="white" />
                 </div>
 
                 {/* Avoid pairing with */}
