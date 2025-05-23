@@ -195,6 +195,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             Mute
           </button>
           <button
+            className="voice-bottom-sheet-button"
             onClick={onAsk}
             style={{
               flex: 1,
@@ -213,12 +214,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               fontWeight: 500,
               outline: 'none',
               transition: 'none'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
