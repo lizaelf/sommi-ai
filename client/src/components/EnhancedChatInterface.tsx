@@ -349,10 +349,10 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderTop: '2px solid transparent',
-                  borderRight: '0px solid transparent',
-                  borderBottom: '0px solid transparent',
-                  borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  borderRight: '1px solid transparent',
+                  borderBottom: '1px solid transparent',
+                  borderLeft: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -391,10 +391,10 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderTop: '2px solid transparent',
-                  borderRight: '0px solid transparent',
-                  borderBottom: '0px solid transparent',
-                  borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  borderRight: '1px solid transparent',
+                  borderBottom: '1px solid transparent',
+                  borderLeft: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -419,10 +419,10 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderTop: '2px solid transparent',
-                  borderRight: '0px solid transparent',
-                  borderBottom: '0px solid transparent',
-                  borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  borderRight: '1px solid transparent',
+                  borderBottom: '1px solid transparent',
+                  borderLeft: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -447,10 +447,10 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderTop: '2px solid transparent',
-                  borderRight: '0px solid transparent',
-                  borderBottom: '0px solid transparent',
-                  borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  borderRight: '1px solid transparent',
+                  borderBottom: '1px solid transparent',
+                  borderLeft: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
