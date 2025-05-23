@@ -134,7 +134,7 @@
 /* Custom suggestion button styles */
 .suggestion-button {
   background-color: rgba(0, 0, 0, 0.12) !important;
-  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   background-image: none !important;
   transition: all 0.2s ease !important;
   padding: 8px 16px !important;
