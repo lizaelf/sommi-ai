@@ -129,34 +129,28 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         <div style={{ marginBottom: '32px' }}>
           <div 
             style={{ 
-              width: '180px', 
-              height: '180px',
+              width: '200px', 
+              height: '200px',
               borderRadius: '50%',
               background: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              boxShadow: '0 0 15px rgba(120, 0, 0, 0.3)'
             }}
           >
-            <div style={{
-              position: 'absolute',
-              top: '5%',
-              left: '5%',
-              right: '5%',
-              bottom: '5%',
-              background: 'radial-gradient(circle at 65% 35%, #ff3030 0%, #940000 40%, #630000 100%)',
-              borderRadius: '50%',
-              boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.5)'
-            }} />
-            <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '-10%',
-              width: '40%',
-              height: '100%',
-              background: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
-              transform: 'skewX(-15deg)'
-            }} />
+            <img 
+              src="/attached_assets/image.png" 
+              alt="Wine visualization" 
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '50%'
+              }}
+            />
           </div>
         </div>
 
