@@ -13,17 +13,17 @@ const WineBottleImage: React.FC = () => {
       justifyContent: 'center',
       alignItems: 'center'
     }}>
-      {/* Blurred circle background - positioned 100px from top */}
+      {/* Blurred circle background - positioned at the top */}
       <div style={{
         position: 'absolute',
-        width: '300px',
-        height: '300px',
+        width: '180px',
+        height: '180px',
         borderRadius: '50%',
         backgroundColor: '#8E8E8E', // Gray color
         filter: 'blur(60px)',
         opacity: 0.7,
         zIndex: 1,
-        top: '100px', // Exactly 100px from the top
+        top: '0px', // At the very top
         left: '50%',
         transform: 'translateX(-50%)'
       }} />
