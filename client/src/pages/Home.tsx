@@ -30,13 +30,13 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <div className="relative">
         
-        {/* App Header - Transparent by default, filled when scrolled */}
+        {/* App Header - Fully transparent by default, filled when scrolled */}
         <div 
-          className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 flex justify-between items-center transition-all duration-300 ${
-            scrolled 
-              ? 'bg-background border-b border-border' 
-              : 'bg-transparent'
-          }`}
+          style={{
+            backgroundColor: scrolled ? '#0A0A0A' : 'rgba(10, 10, 10, 0)',
+            borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+          }}
+          className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 flex justify-between items-center transition-all duration-300`}
         >
           <Logo />
           <div className="flex items-center space-x-3">
