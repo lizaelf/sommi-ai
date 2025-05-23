@@ -59,10 +59,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           onBlur={() => onBlur && onBlur()}
           style={{
             display: 'flex',
-            padding: '8px 50px 8px 24px',
-            justifyContent: 'center',
+            padding: '0 50px 0 24px',
+            justifyContent: 'flex-start',
             alignItems: 'center',
-            gap: '10px',
             alignSelf: 'stretch',
             borderRadius: '24px',
             backgroundColor: '#1C1C1C',
@@ -78,12 +77,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             fontSize: '16px',
             lineHeight: '24px',
             fontWeight: 400,
-            paddingRight: '50px',
             position: 'absolute',
             left: 0,
             top: 0
           }}
-          className="text-sm pr-12 bg-[#1C1C1C] !bg-[#1C1C1C] placeholder-[#999999]"
+          className="text-sm pr-12 bg-[#1C1C1C] !bg-[#1C1C1C] placeholder-[#999999] flex items-center"
           placeholder="Ask me about..."
           disabled={isProcessing}
           onKeyPress={(e) => {
