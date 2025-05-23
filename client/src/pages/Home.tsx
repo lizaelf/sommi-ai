@@ -46,9 +46,9 @@ export default function Home() {
           <div className="flex items-center space-x-3">
             <Link to="/wine/1">
               <div style={{
-                width: '92px',
+                width: 'auto',
                 height: '40px',
-                display: 'flex',
+                display: 'inline-flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 background: 'rgba(255, 255, 255, 0.04)',
@@ -57,15 +57,19 @@ export default function Home() {
                 backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
                 backgroundOrigin: 'border-box',
                 backgroundClip: 'padding-box, border-box',
-                padding: '0 24px',
-                cursor: 'pointer'
+                padding: '0 16px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
               }}>
                 <span style={{
                   color: 'white',
                   fontSize: '14px',
                   lineHeight: 'normal',
                   fontFamily: 'Inter, sans-serif',
-                  fontWeight: '400'
+                  fontWeight: '400',
+                  display: 'inline-block',
+                  padding: '0',
+                  margin: '0'
                 }}>
                   My cellar
                 </span>
