@@ -31,10 +31,12 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <div className="relative">
         
-        {/* App Header - Fully transparent by default, filled when scrolled */}
+        {/* App Header - Fully transparent by default, filled with blur when scrolled */}
         <div 
           style={{
-            backgroundColor: scrolled ? '#0A0A0A' : 'rgba(10, 10, 10, 0)',
+            backgroundColor: scrolled ? 'rgba(23, 23, 23, 0.5)' : 'rgba(10, 10, 10, 0)',
+            backdropFilter: scrolled ? 'blur(20px)' : 'none',
+            WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
             borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
             height: '75px',
             paddingLeft: '24px',
