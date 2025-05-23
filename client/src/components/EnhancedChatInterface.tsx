@@ -435,10 +435,10 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
+                    <MdCancel size={28} color="#ff5555" />
                     <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Avoid pairing with</span>
                   </div>
-                  <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
+                  <BsChevronDown size={20} color="white" />
                 </div>
               </div>
               
