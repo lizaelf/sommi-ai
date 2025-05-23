@@ -290,13 +290,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               width: '40px',
               height: '40px',
               boxSizing: 'border-box',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              border: 'none'
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              boxShadow: 'none',
+              outline: 'none',
+              borderRadius: '50%'
             }}
-            className={`rounded-full transition-all focus:outline-none ${
+            className={`${
               isProcessing 
                 ? 'text-gray-400 cursor-not-allowed' 
-                : 'text-white opacity-70 hover:opacity-100'
+                : 'text-white'
             } ${isListening ? 'animate-pulse' : ''}`}
             aria-label="Start voice input"
             title="Use voice to ask questions"
