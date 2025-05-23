@@ -37,7 +37,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         {/* Removed duplicate suggestion chips - now handled in the parent component */}
 
         {/* Input styled like Somm.ai */}
-        <form onSubmit={handleSubmit} className="flex items-center w-full px-1 sm:px-2 bg-transparent">
+        <div className="flex items-center w-full px-1 sm:px-2 bg-transparent">
           <div className="flex-1 relative bg-transparent">
             <div className="relative flex items-center bg-transparent">
               <input
@@ -74,6 +74,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                 className="text-sm pr-12 bg-[#292929] !bg-[#292929] placeholder-[#999999]"
                 placeholder="Ask me about..."
                 disabled={isProcessing}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmit(e as unknown as React.FormEvent);
+                  }
+                }}
               />
               {/* Voice button placed inside input on the right */}
               <div className="absolute right-2 z-10">
@@ -81,7 +87,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
