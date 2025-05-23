@@ -228,8 +228,8 @@ const EnhancedChatInterface: React.FC = () => {
                     color: 'white', 
                     wordWrap: 'break-word',
                     height: '16px',
-                    fontWeight: '600',
-                    ...typography.num
+                    ...typography.num,
+                    fontWeight: '600'  // Override the fontWeight after spreading typography
                   }}>95</div>
                   <div style={{
                     justifyContent: 'center', 
@@ -343,11 +343,10 @@ const EnhancedChatInterface: React.FC = () => {
                 marginBottom: '20px'
               }}>
                 <h2 style={{
+                  ...typography.sectionHeader,
                   color: 'white',
                   marginBottom: '24px',
-                  textAlign: 'left',
-                  fontSize: '32px', // Keeping this larger than h1 for visual hierarchy
-                  ...typography.h1
+                  textAlign: 'left'
                 }}>
                   Food pairing
                 </h2>
@@ -364,16 +363,19 @@ const EnhancedChatInterface: React.FC = () => {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '24px' }}>🥩</span>
-                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Red Meat</span>
+                    <span style={{ 
+                      color: 'white', 
+                      ...typography.bodyPlus1,
+                      fontSize: '20px'  // Keep the larger size for visual hierarchy
+                    }}>Red Meat</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ 
-                      color: 'black', 
-                      fontSize: '16px', 
-                      fontFamily: 'Inter, sans-serif',
+                      color: 'black',
                       backgroundColor: '#e0e0e0',
                       padding: '6px 14px',
-                      borderRadius: '999px'
+                      borderRadius: '999px',
+                      ...typography.buttonPlus1
                     }}>
                       Perfect match
                     </span>
@@ -440,10 +442,8 @@ const EnhancedChatInterface: React.FC = () => {
                 marginBottom: '20px'
               }}>
                 <h2 style={{
+                  ...typography.sectionHeader,
                   color: 'white',
-                  fontSize: '32px',
-                  fontFamily: 'Lora, serif',
-                  fontWeight: '400',
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
@@ -452,10 +452,8 @@ const EnhancedChatInterface: React.FC = () => {
                 
                 <p style={{
                   color: 'white',
-                  fontSize: '16px',
-                  lineHeight: '1.6',
-                  fontFamily: 'Inter, sans-serif',
-                  marginBottom: '16px'
+                  marginBottom: '16px',
+                  ...typography.body
                 }}>
                   Lytton Springs is a renowned single-vineyard red wine produced by Ridge Vineyards, located in the Dry Creek Valley of Sonoma County, California. Celebrated for its rich heritage and distinctive field-blend style, Lytton Springs has become a benchmark for Zinfandel-based wines in the United States.
                 </p>
@@ -468,10 +466,8 @@ const EnhancedChatInterface: React.FC = () => {
                 marginBottom: '20px'
               }}>
                 <h2 style={{
+                  ...typography.sectionHeader,
                   color: 'white',
-                  fontSize: '32px',
-                  fontFamily: 'Lora, serif',
-                  fontWeight: '400',
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
@@ -492,15 +488,14 @@ const EnhancedChatInterface: React.FC = () => {
                           fontWeight: message.role === 'user' ? '600' : '400',
                           color: message.role === 'user' ? '#b9a5ff' : 'white',
                           marginBottom: '8px',
-                          fontSize: '14px'
+                          ...typography.button
                         }}>
                           {message.role === 'user' ? 'You' : 'Sommelier AI'}
                         </div>
                         <div style={{
                           color: 'white',
-                          fontSize: '16px',
-                          lineHeight: '1.6',
-                          whiteSpace: 'pre-wrap'
+                          whiteSpace: 'pre-wrap',
+                          ...typography.body
                         }}>
                           {message.content}
                         </div>
