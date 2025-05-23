@@ -33,7 +33,7 @@ const typography = {
     fontSize: '14px',
     lineHeight: 'normal',
     fontFamily: 'Inter, sans-serif',
-    fontWeight: '500'
+    fontWeight: '400'
   },
   
   // Body text styles using Inter font
