@@ -179,7 +179,7 @@ const EnhancedChatInterface: React.FC = () => {
                 position: 'relative',
                 zIndex: 2,
                 padding: '0 20px',
-                marginBottom: '4px',
+                marginBottom: '24px',
                 ...typography.h1
               }}>
                 2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel

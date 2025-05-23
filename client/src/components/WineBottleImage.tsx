@@ -39,7 +39,7 @@ const WineBottleImage: React.FC = () => {
           position: 'relative',
           zIndex: 3,
           marginTop: '12px',
-          marginBottom: '12px'
+          marginBottom: '16px'
         }}
       />
     </div>
