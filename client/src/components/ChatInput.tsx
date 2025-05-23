@@ -94,9 +94,42 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           }}
         />
         
-        {/* Voice button placed inside input on the right */}
+        {/* Voice button or Send button based on input state */}
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
-          {voiceButtonComponent}
+          {message.trim() ? (
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: isProcessing ? 'not-allowed' : 'pointer',
+                opacity: isProcessing ? 0.5 : 1
+              }}
+              onClick={isProcessing ? undefined : (e) => {
+                e.preventDefault();
+                handleSubmit(e as unknown as React.FormEvent);
+              }}
+            >
+              <svg 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path 
+                  d="M3.5 19.0004L20.5 12.0004L3.5 5.00037V10.0004L15.5 12.0004L3.5 14.0004V19.0004Z" 
+                  fill="currentColor" 
+                />
+              </svg>
+            </div>
+          ) : (
+            voiceButtonComponent
+          )}
         </div>
       </div>
     </div>
