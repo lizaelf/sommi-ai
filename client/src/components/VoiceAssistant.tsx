@@ -113,11 +113,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             setUsedVoiceInput(true);
             onSendMessage(transcript);
             
-            // Dispatch event when microphone stops listening after getting results
-            const micStoppedEvent = new CustomEvent('mic-status', {
-              detail: { status: 'stopped' }
+            // Dispatch event when microphone transitions to processing state
+            // We'll use a different event to transition the visualization
+            const micProcessingEvent = new CustomEvent('mic-status', {
+              detail: { status: 'processing' }
             });
-            window.dispatchEvent(micStoppedEvent);
+            window.dispatchEvent(micProcessingEvent);
           };
           
           recognitionRef.current.onend = () => {
@@ -299,23 +300,34 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   speakResponse(messageText);
                   // Reset the voice input flag after speaking
                   setUsedVoiceInput(false);
+                  
+                  // Close the bottom sheet after the AI finishes responding
+                  // Adding a delay to ensure the response is read out first
+                  setTimeout(() => {
+                    setShowBottomSheet(false);
+                  }, 2000); // Wait 2 seconds after starting to speak
                 }, 300);
               } else {
                 console.log("Last message has no text content");
                 setUsedVoiceInput(false);
+                setShowBottomSheet(false);
               }
             } else {
               setUsedVoiceInput(false);
+              setShowBottomSheet(false);
             }
           } else {
             setUsedVoiceInput(false);
+            setShowBottomSheet(false);
           }
         } catch (error) {
           console.error('Error finding assistant message to speak:', error);
           setUsedVoiceInput(false);
+          setShowBottomSheet(false);
         }
       } else {
         console.log("Not auto-speaking response because voice input wasn't used");
+        setShowBottomSheet(false);
       }
     }
   }, [isProcessing, status, usedVoiceInput]);
@@ -327,11 +339,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   
   // Handle the Ask button in the bottom sheet
   const handleAsk = async () => {
-    setShowBottomSheet(false);
-    // Short delay to ensure bottom sheet closes first
-    setTimeout(() => {
-      startListening();
-    }, 300);
+    // Keep bottom sheet open to show visualization
+    // Start listening immediately
+    startListening();
   };
   
   // Handle the Mute button in the bottom sheet

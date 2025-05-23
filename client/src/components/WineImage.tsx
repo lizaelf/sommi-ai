@@ -12,6 +12,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
   const [size, setSize] = useState(200);
   const [opacity, setOpacity] = useState(0.2);
   const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const animationRef = useRef<number>(0);
   const frameCount = useRef(0);
@@ -21,7 +22,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
   const animate = () => {
     frameCount.current += 1;
     
-    // Different animation behavior based on source (mic vs playback)
+    // Different animation behavior based on source (mic vs playback vs processing)
     if (isListening) {
       // More dramatic random fluctuations for microphone input
       // Uses noise + sine wave for natural feel
@@ -37,12 +38,25 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
       
       setSize(newSize);
       setOpacity(newOpacity);
+    } else if (isProcessing) {
+      // Slow, subtle pulsing for processing state
+      // Consistent sine-wave pattern for a "thinking" effect
+      const pulse = Math.sin(frameCount.current * 0.05) * 0.5;
+      
+      // Size fluctuates gently between 195px and 205px (smallest range)
+      const newSize = baseSize + (pulse * 10);
+      
+      // Opacity pulses very subtly between 0.19 and 0.21
+      const newOpacity = 0.2 + (pulse * 0.01);
+      
+      setSize(newSize);
+      setOpacity(newOpacity);
     } else if (isPlaying) {
       // Smoother, gentler pulsing for audio playback
       // Primarily sine-wave based for a clean pulsing effect
       const pulse = Math.sin(frameCount.current * 0.08) * 0.7;
       
-      // Size fluctuates between 190px and 210px (smaller range)
+      // Size fluctuates between 190px and 210px (medium range)
       const newSize = baseSize + (pulse * 20);
       
       // Opacity pulses between 0.17 and 0.23
@@ -52,8 +66,8 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
       setOpacity(newOpacity);
     }
     
-    // Continue animation if still listening or playing
-    if (isListening || isPlaying) {
+    // Continue animation if in any active state
+    if (isListening || isProcessing || isPlaying) {
       animationRef.current = requestAnimationFrame(animate);
     }
   };
@@ -75,10 +89,17 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
     const handleMicStatusChange = (event: CustomEvent) => {
       if (event.detail?.status === 'listening') {
         setIsListening(true);
+        setIsProcessing(false);
+        // Reset frame counter for smooth animation start
+        frameCount.current = 0;
+      } else if (event.detail?.status === 'processing') {
+        setIsListening(false);
+        setIsProcessing(true);
         // Reset frame counter for smooth animation start
         frameCount.current = 0;
       } else if (event.detail?.status === 'stopped') {
         setIsListening(false);
+        setIsProcessing(false);
       }
     };
 
