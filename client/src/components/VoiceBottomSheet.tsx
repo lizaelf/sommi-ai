@@ -53,10 +53,10 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   useEffect(() => {
     if (isOpen && animationState === 'closed') {
       setAnimationState('opening');
-      setTimeout(() => setAnimationState('open'), 350); // Animation duration - faster for iOS feel
+      setTimeout(() => setAnimationState('open'), 50); // Small delay to trigger animation
     } else if (!isOpen && (animationState === 'open' || animationState === 'opening')) {
       setAnimationState('closing');
-      setTimeout(() => setAnimationState('closed'), 300); // Animation duration
+      setTimeout(() => setAnimationState('closed'), 500); // Match animation duration
     }
   }, [isOpen, animationState]);
 
@@ -70,10 +70,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   const sheetStyle = {
     transform: animationState === 'open' 
       ? 'translateY(0)' 
-      : animationState === 'opening' 
-        ? 'translateY(10%)' 
-        : 'translateY(100%)',
-    transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)' // iOS-like spring animation curve
+      : 'translateY(100%)',
+    transition: 'transform 0.5s ease-out'
   };
 
   const bottomSheetContent = (
