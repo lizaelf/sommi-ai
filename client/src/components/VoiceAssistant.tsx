@@ -278,46 +278,32 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       ) : (
         <>
           {/* Voice Button */}
-          <button
-            id="mic-button"
-            onClick={toggleListening}
-            disabled={isProcessing}
+          <div
             style={{
-              padding: '8px',
+              width: '40px',
+              height: '40px',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              width: '40px',
-              height: '40px',
-              boxSizing: 'border-box',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              boxShadow: 'none',
-              outline: 'none',
-              borderRadius: '50%'
+              cursor: isProcessing ? 'not-allowed' : 'pointer',
+              opacity: isProcessing ? 0.5 : 1
             }}
-            className={`${
-              isProcessing 
-                ? 'text-gray-400 cursor-not-allowed' 
-                : 'text-white'
-            } ${isListening ? 'animate-pulse' : ''}`}
-            aria-label="Start voice input"
-            title="Use voice to ask questions"
+            onClick={isProcessing ? undefined : toggleListening}
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              style={{ 
-                margin: '0px', 
-                width: '24px', 
-                height: '24px',
-                minWidth: '24px',
-                minHeight: '24px',
-                display: 'block'
+              width="24" 
+              height="24" 
+              viewBox="0 0 20 20"
+              style={{
+                color: isProcessing ? '#999999' : 'white'
               }}
-              viewBox="0 0 20 20">
+            >
               <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
             </svg>
-          </button>
+          </div>
           
           {/* Sound Test Button - hidden as requested */}
         </>
