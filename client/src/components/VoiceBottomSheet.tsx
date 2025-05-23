@@ -96,17 +96,21 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           }
           .voice-bottom-sheet-button-white {
             background: white !important;
+            color: black !important;
             transition: none !important;
           }
           .voice-bottom-sheet-button-white:hover {
             background: white !important;
+            color: black !important;
             transform: none !important;
           }
           .voice-bottom-sheet-button-white:active {
             background: white !important;
+            color: black !important;
           }
           .voice-bottom-sheet-button-white:focus {
             background: white !important;
+            color: black !important;
           }
         `}
       </style>
