@@ -36,10 +36,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   }, []);
 
   const toggleListening = async () => {
-    // Show the bottom sheet first
-    setShowBottomSheet(true);
-    console.log("Opening bottom sheet...");
-    
     // Ensure audio context is initialized
     if (!isAudioContextInitialized()) {
       try {
@@ -55,9 +51,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         return;
       }
     }
-    // Stop here - the actual listening will be triggered by the Ask button
-    return;
     
+    // If we're already listening, stop the recognition
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      return;
+    }
+    
+    // Show the bottom sheet explicitly
+    console.log("Opening bottom sheet...");
+    setShowBottomSheet(true);
+  };
+  
+  // Function to start listening (used by the bottom sheet "Ask" button)
+  const startListening = async () => {
     // Check if speech recognition is available
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -83,65 +92,60 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       console.log("Microphone permission granted");
 
-      // Now toggle the recognition
-      if (isListening) {
-        recognitionRef.current.stop();
-      } else {
-        try {
-          // Create a fresh instance to avoid issues with reusing
-          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (SpeechRecognition) {
-            // Create a new instance to avoid stale state
-            if (recognitionRef.current) {
-              recognitionRef.current.abort(); // Force cleanup
-            }
-            
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.lang = 'en-US';
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-            
-            // Re-attach event handlers to the fresh instance
-            recognitionRef.current.onresult = (event: any) => {
-              const transcript = event.results[0][0].transcript;
-              setStatus('Processing your question...');
-              setUsedVoiceInput(true);
-              onSendMessage(transcript);
-            };
-            
-            recognitionRef.current.onend = () => {
-              setIsListening(false);
-              setStatus('');
-            };
-            
-            recognitionRef.current.onstart = () => {
-              setIsListening(true);
-            };
-            
-            recognitionRef.current.onerror = (event: any) => {
-              console.error('Speech recognition error:', event.error);
-              setStatus(`Error: ${event.error}`);
-              setIsListening(false);
-              
-              toast({
-                title: "Voice Recognition Error",
-                description: `Error: ${event.error}. Please try again.`,
-                variant: "destructive"
-              });
-            };
+      try {
+        // Create a fresh instance to avoid issues with reusing
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          // Create a new instance to avoid stale state
+          if (recognitionRef.current) {
+            recognitionRef.current.abort(); // Force cleanup
           }
           
-          // Start the recognition
-          recognitionRef.current.start();
-          setStatus('Listening for your question...');
-        } catch (error) {
-          console.error('Failed to start speech recognition:', error);
-          toast({
-            title: "Error",
-            description: "Failed to start speech recognition. Please try again.",
-            variant: "destructive"
-          });
+          recognitionRef.current = new SpeechRecognition();
+          recognitionRef.current.lang = 'en-US';
+          recognitionRef.current.continuous = false;
+          recognitionRef.current.interimResults = false;
+          
+          // Re-attach event handlers to the fresh instance
+          recognitionRef.current.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            setStatus('Processing your question...');
+            setUsedVoiceInput(true);
+            onSendMessage(transcript);
+          };
+          
+          recognitionRef.current.onend = () => {
+            setIsListening(false);
+            setStatus('');
+          };
+          
+          recognitionRef.current.onstart = () => {
+            setIsListening(true);
+          };
+          
+          recognitionRef.current.onerror = (event: any) => {
+            console.error('Speech recognition error:', event.error);
+            setStatus(`Error: ${event.error}`);
+            setIsListening(false);
+            
+            toast({
+              title: "Voice Recognition Error",
+              description: `Error: ${event.error}. Please try again.`,
+              variant: "destructive"
+            });
+          };
         }
+        
+        // Start the recognition
+        recognitionRef.current.start();
+        setStatus('Listening for your question...');
+      } catch (error) {
+        console.error('Failed to start speech recognition:', error);
+        toast({
+          title: "Error",
+          description: "Failed to start speech recognition. Please try again.",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Microphone permission error:', error);
@@ -275,97 +279,32 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, status, usedVoiceInput]);
 
-  // Handle bottom sheet actions
+  // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
     setShowBottomSheet(false);
   };
-
-  const handleStartListening = async () => {
-    // Hide the bottom sheet
+  
+  // Handle the Ask button in the bottom sheet
+  const handleAsk = async () => {
     setShowBottomSheet(false);
-    
-    // Check if speech recognition is available
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      toast({
-        title: "Speech Recognition Not Supported",
-        description: "Your browser doesn't support speech recognition. Try using Chrome.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      if (typeof navigator.mediaDevices?.getUserMedia !== 'function') {
-        throw new Error('getUserMedia not supported');
-      }
-      
-      // Request permission
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
-      
-      // Create a fresh instance 
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-      
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.lang = 'en-US';
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      
-      // Re-attach event handlers
-      recognitionRef.current.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setStatus('Processing your question...');
-        setUsedVoiceInput(true);
-        onSendMessage(transcript);
-      };
-      
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-        setStatus('');
-      };
-      
-      recognitionRef.current.onstart = () => {
-        setIsListening(true);
-      };
-      
-      recognitionRef.current.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        setStatus(`Error: ${event.error}`);
-        setIsListening(false);
-        
-        toast({
-          title: "Voice Recognition Error",
-          description: `Error: ${event.error}. Please try again.`,
-          variant: "destructive"
-        });
-      };
-      
-      // Start the recognition
-      recognitionRef.current.start();
-      setStatus('Listening for your question...');
-    } catch (error) {
-      console.error('Microphone permission error:', error);
-      toast({
-        title: "Microphone Error",
-        description: "Cannot access your microphone. Please check your permissions.",
-        variant: "destructive"
-      });
-    }
+    // Short delay to ensure bottom sheet closes first
+    setTimeout(() => {
+      startListening();
+    }, 300);
+  };
+  
+  // Handle the Mute button in the bottom sheet
+  const handleMute = () => {
+    setShowBottomSheet(false);
+    // No action needed beyond closing the sheet
+    toast({
+      title: "Audio Muted",
+      description: "Voice responses are now muted.",
+    });
   };
 
   return (
     <div className="flex items-center">
-      {/* Wine glass bottom sheet */}
-      <VoiceBottomSheet 
-        isOpen={showBottomSheet}
-        onClose={handleCloseBottomSheet}
-        onMute={handleCloseBottomSheet}
-        onAsk={handleStartListening}
-      />
-      
       {status === 'Listening for your question...' ? (
         // Only show status when listening for voice input
         <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
@@ -375,7 +314,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       ) : (
         <>
           {/* Voice Button */}
-          <button
+          <div
             style={{
               width: '40px',
               height: '40px',
@@ -385,36 +324,34 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               justifyContent: 'center',
               alignItems: 'center',
               cursor: isProcessing ? 'not-allowed' : 'pointer',
-              opacity: isProcessing ? 0.5 : 1,
-              border: 'none',
-              outline: 'none',
-              padding: 0
+              opacity: isProcessing ? 0.5 : 1
             }}
-            disabled={isProcessing}
-            onClick={toggleListening}
-            aria-label="Voice input"
+            onClick={isProcessing ? undefined : toggleListening}
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               width="24" 
               height="24" 
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              viewBox="0 0 20 20"
               style={{
                 color: isProcessing ? '#999999' : 'white'
               }}
             >
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-              <line x1="12" x2="12" y1="19" y2="22" />
+              <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
             </svg>
-          </button>
+          </div>
+          
+          {/* Sound Test Button - hidden as requested */}
         </>
       )}
+      
+      {/* Voice Bottom Sheet */}
+      <VoiceBottomSheet 
+        isOpen={showBottomSheet} 
+        onClose={handleCloseBottomSheet}
+        onMute={handleMute}
+        onAsk={handleAsk}
+      />
     </div>
   );
 };
