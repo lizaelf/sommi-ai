@@ -657,7 +657,7 @@ const EnhancedChatInterface: React.FC = () => {
                 <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                   <button 
                     onClick={() => handleSendMessage("Tasting notes")}
-                    className="whitespace-nowrap text-white rounded text-sm px-3 py-2"
+                    className="whitespace-nowrap text-white rounded text-sm px-3 py-2 transition-colors duration-200 hover:bg-[rgba(255,255,255,0.08)]"
                     style={{ 
                       backgroundColor: 'rgba(0, 0, 0, 0.12)',
                       border: '1px solid rgba(255, 255, 255, 0.04)'
@@ -667,7 +667,7 @@ const EnhancedChatInterface: React.FC = () => {
                   </button>
                   <button 
                     onClick={() => handleSendMessage("Simple recipes for this wine")}
-                    className="whitespace-nowrap text-white rounded text-sm px-3 py-2"
+                    className="whitespace-nowrap text-white rounded text-sm px-3 py-2 transition-colors duration-200 hover:bg-[rgba(255,255,255,0.08)]"
                     style={{ 
                       backgroundColor: 'rgba(0, 0, 0, 0.12)',
                       border: '1px solid rgba(255, 255, 255, 0.04)'
@@ -677,7 +677,7 @@ const EnhancedChatInterface: React.FC = () => {
                   </button>
                   <button 
                     onClick={() => handleSendMessage("Where is this wine from?")}
-                    className="whitespace-nowrap text-white rounded text-sm px-3 py-2"
+                    className="whitespace-nowrap text-white rounded text-sm px-3 py-2 transition-colors duration-200 hover:bg-[rgba(255,255,255,0.08)]"
                     style={{ 
                       backgroundColor: 'rgba(0, 0, 0, 0.12)',
                       border: '1px solid rgba(255, 255, 255, 0.04)'
