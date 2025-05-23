@@ -200,7 +200,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'Inter, sans-serif',
-              fontSize: '15px',
+              fontSize: '16px',
               fontWeight: 500,
               outline: 'none',
               transition: 'none'
@@ -227,7 +227,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'Inter, sans-serif',
-              fontSize: '15px',
+              fontSize: '16px',
               fontWeight: 500,
               outline: 'none',
               transition: 'none'
