@@ -37,7 +37,7 @@ export default function Home() {
             backgroundColor: scrolled ? 'rgba(23, 23, 23, 0.5)' : 'rgba(10, 10, 10, 0)',
             backdropFilter: scrolled ? 'blur(20px)' : 'none',
             WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-            borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+            borderBottom: 'none',
             height: '75px',
             paddingLeft: '24px',
             paddingRight: '24px'
