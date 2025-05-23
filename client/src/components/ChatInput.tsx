@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -6,14 +6,12 @@ interface ChatInputProps {
   onFocus?: () => void;
   onBlur?: () => void;
   voiceButtonComponent?: React.ReactNode;
-  isFocused?: boolean;
 }
 
 // Suggestions are now handled in the parent component
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, voiceButtonComponent, isFocused }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, voiceButtonComponent }) => {
   const [message, setMessage] = useState('');
-  const [isActive, setIsActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,12 +39,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           width: '100%',
           height: '64px',
           borderRadius: '24px',
-          background: isActive 
-            ? 'linear-gradient(to bottom, #9D0000, #BB0000)' 
-            : 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
+          borderTop: '2px solid transparent',
+          borderRight: '1px solid transparent',
+          borderBottom: '1px solid transparent',
+          borderLeft: '1px solid transparent',
+          backgroundImage: 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
           backgroundOrigin: 'border-box',
-          backgroundClip: isActive ? 'border-box' : 'padding-box, border-box',
-          border: isActive ? 'none' : '2px solid transparent',
+          backgroundClip: 'padding-box, border-box',
           overflow: 'hidden'
         }}
       >
@@ -56,14 +55,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => {
-            setIsActive(true);
-            onFocus && onFocus();
-          }}
-          onBlur={() => {
-            setIsActive(false);
-            onBlur && onBlur();
-          }}
+          onFocus={() => onFocus && onFocus()}
+          onBlur={() => onBlur && onBlur()}
           style={{
             display: 'flex',
             padding: '0 50px 4px 24px',
