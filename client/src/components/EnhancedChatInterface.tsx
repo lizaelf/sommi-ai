@@ -476,7 +476,7 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
-                  History
+                  Historic heritage
                 </h1>
                 
                 <p style={{
