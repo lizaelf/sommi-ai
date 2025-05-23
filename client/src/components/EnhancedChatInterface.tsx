@@ -502,7 +502,7 @@ const EnhancedChatInterface: React.FC = () => {
                 <h1 style={{
                   ...typography.h1,
                   color: 'white',
-                  marginBottom: '16px',
+                  marginBottom: '24px',
                   textAlign: 'left'
                 }}>
                   Ask about this wine
