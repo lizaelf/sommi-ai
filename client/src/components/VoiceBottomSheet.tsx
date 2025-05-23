@@ -94,6 +94,20 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           .voice-bottom-sheet-button:focus {
             background: rgba(255, 255, 255, 0.08) !important;
           }
+          .voice-bottom-sheet-button-white {
+            background: white !important;
+            transition: none !important;
+          }
+          .voice-bottom-sheet-button-white:hover {
+            background: white !important;
+            transform: none !important;
+          }
+          .voice-bottom-sheet-button-white:active {
+            background: white !important;
+          }
+          .voice-bottom-sheet-button-white:focus {
+            background: white !important;
+          }
         `}
       </style>
       <div 
@@ -195,18 +209,18 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             Mute
           </button>
           <button
-            className="voice-bottom-sheet-button"
+            className="voice-bottom-sheet-button-white"
             onClick={onAsk}
             style={{
               flex: 1,
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              backgroundColor: 'white',
               borderRadius: '32px',
               height: '48px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               gap: '8px',
-              color: 'white',
+              color: 'black',
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'Inter, sans-serif',
@@ -217,8 +231,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 1C10.34 1 9 2.34 9 4v8c0 1.66 1.34 3 3 3s3-1.34 3-3V4c0-1.66-1.34-3-3-3z" fill="white"/>
-              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-0.49 6-3.39 6-6.92h-2z" fill="white"/>
+              <path d="M12 1C10.34 1 9 2.34 9 4v8c0 1.66 1.34 3 3 3s3-1.34 3-3V4c0-1.66-1.34-3-3-3z" fill="black"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-0.49 6-3.39 6-6.92h-2z" fill="black"/>
             </svg>
             Ask
           </button>
