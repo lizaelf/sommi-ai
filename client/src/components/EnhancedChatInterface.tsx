@@ -28,12 +28,11 @@ const EnhancedChatInterface: React.FC = () => {
   // Basic states 
   const [isTyping, setIsTyping] = useState(false);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
-  const [showSuggestionPills, setShowSuggestionPills] = useState(true);
+  const [hideSuggestions, setHideSuggestions] = useState(false);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const mainContainerRef = useRef<HTMLDivElement>(null);
 
   // API status check
   const { data: apiStatus } = useQuery({
@@ -67,34 +66,19 @@ const EnhancedChatInterface: React.FC = () => {
     }
   }, [messages, isTyping]);
   
-  // Add scroll event listener to hide suggestion pills when scrolling
+  // Reset suggestions visibility when conversation changes
   useEffect(() => {
-    const mainContainer = mainContainerRef.current;
-    if (!mainContainer) return;
-    
-    const handleScroll = () => {
-      // If the user has scrolled down, hide the suggestion pills
-      if (mainContainer.scrollTop > 200) {
-        setShowSuggestionPills(false);
-      } else {
-        setShowSuggestionPills(true);
-      }
-    };
-    
-    mainContainer.addEventListener('scroll', handleScroll);
-    
-    // Clean up
-    return () => {
-      mainContainer.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    if (messages.length === 0) {
+      setHideSuggestions(false);
+    }
+  }, [messages.length]);
 
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
     if (content.trim() === '' || !currentConversationId) return;
     
     // Hide suggestions after sending a message
-    setShowSuggestionPills(false);
+    setHideSuggestions(true);
     setIsTyping(true);
     
     try {
@@ -534,9 +518,9 @@ const EnhancedChatInterface: React.FC = () => {
                   Ask about this wine
                 </h1>
                 
-                {/* Suggestion pills - hidden when scrolled */}
+                {/* Suggestion pills - hidden after sending a message */}
                 <div style={{ 
-                  display: showSuggestionPills ? 'flex' : 'none', 
+                  display: hideSuggestions ? 'none' : 'flex', 
                   flexWrap: 'wrap', 
                   gap: '8px', 
                   marginBottom: '20px' 
