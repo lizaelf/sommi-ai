@@ -282,7 +282,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             id="mic-button"
             onClick={toggleListening}
             disabled={isProcessing}
-            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all focus:outline-none ${
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '999px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              transition: 'all 0.2s'
+            }}
+            className={`focus:outline-none ${
               isProcessing 
                 ? 'text-gray-400 cursor-not-allowed' 
                 : 'text-white opacity-70 hover:opacity-100'
