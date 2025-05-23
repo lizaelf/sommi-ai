@@ -36,9 +36,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     transform: animationState === 'open' 
       ? 'translateY(0)' 
       : animationState === 'opening' 
-        ? 'translateY(0)' 
+        ? 'translateY(20%)' 
         : 'translateY(100%)',
-    transition: 'transform 0.5s cubic-bezier(0.32, 0.72, 0, 1)' // iOS-like animation curve
+    transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)' // iOS-like animation curve
   };
 
   return (

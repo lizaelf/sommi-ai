@@ -60,7 +60,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
     
-    // Otherwise, show the bottom sheet
+    // Show the bottom sheet explicitly
+    console.log("Opening bottom sheet...");
     setShowBottomSheet(true);
   };
   
