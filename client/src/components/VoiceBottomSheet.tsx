@@ -18,24 +18,21 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   return (
     <div 
       style={{
-        position: 'fixed',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
+        position: 'absolute',
+        bottom: '70px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '300px',
         zIndex: 9999,
-        backgroundColor: 'black',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end'
+        backgroundColor: '#1C1C1C',
+        borderRadius: '24px',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
+        overflow: 'hidden'
       }}
     >
       <div
         style={{
-          backgroundColor: '#191919',
-          borderTopLeftRadius: '24px',
-          borderTopRightRadius: '24px',
-          padding: '20px',
+          padding: '16px',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
@@ -59,21 +56,21 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
 
         {/* Wine glass */}
         <div style={{ 
-          marginTop: '40px', 
-          marginBottom: '40px',
+          marginTop: '10px', 
+          marginBottom: '16px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           position: 'relative',
-          width: '200px',
-          height: '200px'
+          width: '120px',
+          height: '120px'
         }}>
           <div style={{
-            width: '160px',
-            height: '160px',
+            width: '100px',
+            height: '100px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #5D0E0E 0%, #A31B1B 50%, #6B0A0A 100%)',
-            boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(163, 27, 27, 0.4)',
+            boxShadow: 'inset 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(163, 27, 27, 0.4)',
             position: 'relative',
             overflow: 'hidden'
           }}>
@@ -92,8 +89,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           {/* Glass outline */}
           <div style={{
             position: 'absolute',
-            width: '170px',
-            height: '170px',
+            width: '110px',
+            height: '110px',
             borderRadius: '50%',
             border: '2px solid rgba(255, 255, 255, 0.6)',
             pointerEvents: 'none'
@@ -105,8 +102,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           width: '100%',
-          maxWidth: '400px',
-          marginBottom: '20px'
+          marginBottom: '12px'
         }}>
           <button
             onClick={onMute}
@@ -114,18 +110,19 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               backgroundColor: 'rgba(0, 0, 0, 0.3)',
               color: 'white',
               borderRadius: '24px',
-              padding: '12px',
+              padding: '8px 12px',
               width: '45%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
+              gap: '6px',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              fontSize: '14px'
             }}
           >
             <span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.8337 10.0001C15.8337 12.3013 14.3183 14.2576 12.2503 15.109M10.0003 17.5001C13.6822 17.5001 16.667 14.5152 16.667 10.8334C16.667 7.15152 13.6822 4.16675 10.0003 4.16675C6.31842 4.16675 3.33366 7.15152 3.33366 10.8334C3.33366 14.5152 6.31842 17.5001 10.0003 17.5001ZM10.0003 17.5001V20.8334M15.0003 20.8334H5.00033M12.5003 6.25008C12.5003 7.63394 11.3842 8.75008 10.0003 8.75008C8.61652 8.75008 7.50037 7.63394 7.50037 6.25008C7.50037 4.86623 8.61652 3.75008 10.0003 3.75008C11.3842 3.75008 12.5003 4.86623 12.5003 6.25008Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </span>
@@ -137,19 +134,20 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               backgroundColor: 'white',
               color: 'black',
               borderRadius: '24px',
-              padding: '12px',
+              padding: '8px 12px',
               width: '45%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
+              gap: '6px',
               border: 'none',
               cursor: 'pointer',
-              fontWeight: 500
+              fontWeight: 500,
+              fontSize: '14px'
             }}
           >
             <span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 16.6667C13.6819 16.6667 16.6667 13.6819 16.6667 10C16.6667 6.31811 13.6819 3.33334 10 3.33334C6.31814 3.33334 3.33337 6.31811 3.33337 10C3.33337 13.6819 6.31814 16.6667 10 16.6667Z" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M10 7.5V12.5" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M7.5 10H12.5" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -163,11 +161,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '6px',
           color: 'rgba(255, 255, 255, 0.6)',
-          marginTop: '8px',
+          marginTop: '5px',
           width: '100%',
-          maxWidth: '400px'
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          paddingTop: '8px',
+          fontSize: '12px'
         }}>
           <span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
