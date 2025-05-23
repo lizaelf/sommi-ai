@@ -339,7 +339,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Red Meat Pairing */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -352,7 +352,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '0px solid transparent',
                   borderBottom: '0px solid transparent',
                   borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -381,7 +381,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Cheese Pairings */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -394,7 +394,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '0px solid transparent',
                   borderBottom: '0px solid transparent',
                   borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -409,7 +409,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Vegetarian Options */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -422,7 +422,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '0px solid transparent',
                   borderBottom: '0px solid transparent',
                   borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -437,7 +437,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Avoid pairing with */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -450,7 +450,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '0px solid transparent',
                   borderBottom: '0px solid transparent',
                   borderLeft: '0px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
