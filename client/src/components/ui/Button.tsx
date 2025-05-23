@@ -31,7 +31,7 @@ const Button: React.FC<ButtonProps> = ({
         background: 'rgba(255, 255, 255, 0.04)',
         borderRadius: 24,
         border: '1px solid transparent',
-        backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.06))',
+        backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
         backgroundOrigin: 'border-box',
         backgroundClip: 'padding-box, border-box',
         justifyContent: 'center',
