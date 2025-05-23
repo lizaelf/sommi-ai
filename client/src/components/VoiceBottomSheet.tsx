@@ -56,7 +56,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
       setTimeout(() => setAnimationState('open'), 50); // Small delay to trigger animation
     } else if (!isOpen && (animationState === 'open' || animationState === 'opening')) {
       setAnimationState('closing');
-      setTimeout(() => setAnimationState('closed'), 500); // Match animation duration
+      setTimeout(() => setAnimationState('closed'), 300); // Match animation duration
     }
   }, [isOpen, animationState]);
 
@@ -71,7 +71,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     transform: animationState === 'open' 
       ? 'translateY(0)' 
       : 'translateY(100%)',
-    transition: 'transform 0.5s ease-out'
+    transition: 'transform 0.3s ease-out'
   };
 
   const bottomSheetContent = (
