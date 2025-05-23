@@ -43,7 +43,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           borderRight: '1px solid transparent',
           borderBottom: '1px solid transparent',
           borderLeft: '1px solid transparent',
-          backgroundImage: 'linear-gradient(#292929, #292929), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
+          backgroundImage: 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
           backgroundOrigin: 'border-box',
           backgroundClip: 'padding-box, border-box',
           overflow: 'hidden'
@@ -65,7 +65,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             gap: '10px',
             alignSelf: 'stretch',
             borderRadius: '24px',
-            backgroundColor: '#292929',
+            backgroundColor: '#1C1C1C',
             border: 'none',
             width: '100%',
             height: '64px',
@@ -73,7 +73,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             color: 'white',
             WebkitAppearance: 'none',
             appearance: 'none',
-            background: '#292929',
+            background: '#1C1C1C',
             fontFamily: 'Inter, sans-serif',
             fontSize: '16px',
             lineHeight: '24px',
@@ -83,7 +83,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             left: 0,
             top: 0
           }}
-          className="text-sm pr-12 bg-[#292929] !bg-[#292929] placeholder-[#999999]"
+          className="text-sm pr-12 bg-[#1C1C1C] !bg-[#1C1C1C] placeholder-[#999999]"
           placeholder="Ask me about..."
           disabled={isProcessing}
           onKeyPress={(e) => {

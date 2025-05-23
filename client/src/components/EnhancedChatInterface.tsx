@@ -619,7 +619,16 @@ const EnhancedChatInterface: React.FC = () => {
           </div>
           
           {/* Input Area - Fixed to Bottom */}
-          <div className="bg-[#191919] p-3 z-50 fixed bottom-0 left-0 right-0">
+          <div style={{
+            backgroundColor: '#1C1C1C',
+            padding: '16px',
+            zIndex: 50,
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
             <div className="max-w-3xl mx-auto">
               {/* Suggestion chips - only shown when keyboard is active */}
               {isKeyboardFocused && (
