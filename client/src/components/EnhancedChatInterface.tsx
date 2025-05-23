@@ -233,8 +233,7 @@ const EnhancedChatInterface: React.FC = () => {
                     color: 'white', 
                     wordWrap: 'break-word',
                     height: '16px',
-                    ...typography.num,
-                    fontWeight: '600'  // Override the fontWeight after spreading typography
+                    ...typography.num
                   }}>95</div>
                   <div style={{
                     justifyContent: 'center', 
@@ -258,23 +257,17 @@ const EnhancedChatInterface: React.FC = () => {
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'white', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '600', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    ...typography.num
                   }}>93</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'rgba(255, 255, 255, 0.60)', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '400', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    ...typography.body1R
                   }}>JD</div>
                 </div>
                 <div style={{
@@ -290,23 +283,17 @@ const EnhancedChatInterface: React.FC = () => {
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'white', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '600', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    ...typography.num
                   }}>93</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'rgba(255, 255, 255, 0.60)', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '400', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    ...typography.body1R
                   }}>WS</div>
                 </div>
                 <div style={{
@@ -320,23 +307,17 @@ const EnhancedChatInterface: React.FC = () => {
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'white', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '600', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    ...typography.num
                   }}>14.3%</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'rgba(255, 255, 255, 0.60)', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '400', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    ...typography.body1R
                   }}>ABV</div>
                 </div>
               </div>
