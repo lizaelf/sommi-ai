@@ -497,12 +497,57 @@ const EnhancedChatInterface: React.FC = () => {
                 <h1 style={{
                   ...typography.h1,
                   color: 'white',
-                  marginBottom: '24px',
+                  marginBottom: '16px',
                   textAlign: 'left'
                 }}>
                   Ask about this wine
                 </h1>
                 
+                {/* Suggestion pills */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
+                  <button
+                    onClick={() => handleSendMessage("What does it taste like?")}
+                    style={{
+                      backgroundColor: '#191919',
+                      color: 'white',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '20px',
+                      padding: '6px 14px',
+                      fontSize: '14px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Taste profile
+                  </button>
+                  <button
+                    onClick={() => handleSendMessage("What food pairs well with this wine?")}
+                    style={{
+                      backgroundColor: '#191919',
+                      color: 'white',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '20px',
+                      padding: '6px 14px',
+                      fontSize: '14px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Food pairing
+                  </button>
+                  <button
+                    onClick={() => handleSendMessage("What's special about this vintage?")}
+                    style={{
+                      backgroundColor: '#191919',
+                      color: 'white',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '20px',
+                      padding: '6px 14px',
+                      fontSize: '14px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    About this vintage
+                  </button>
+                </div>
 
                 {/* Conversation container */}
                 <div id="conversation" className="space-y-4 mb-20">
