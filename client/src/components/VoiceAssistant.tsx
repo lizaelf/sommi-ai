@@ -112,15 +112,33 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             setStatus('Processing your question...');
             setUsedVoiceInput(true);
             onSendMessage(transcript);
+            
+            // Dispatch event when microphone stops listening after getting results
+            const micStoppedEvent = new CustomEvent('mic-status', {
+              detail: { status: 'stopped' }
+            });
+            window.dispatchEvent(micStoppedEvent);
           };
           
           recognitionRef.current.onend = () => {
             setIsListening(false);
             setStatus('');
+            
+            // Dispatch event when microphone stops listening
+            const micStoppedEvent = new CustomEvent('mic-status', {
+              detail: { status: 'stopped' }
+            });
+            window.dispatchEvent(micStoppedEvent);
           };
           
           recognitionRef.current.onstart = () => {
             setIsListening(true);
+            
+            // Dispatch event when microphone starts listening
+            const micListeningEvent = new CustomEvent('mic-status', {
+              detail: { status: 'listening' }
+            });
+            window.dispatchEvent(micListeningEvent);
           };
           
           recognitionRef.current.onerror = (event: any) => {
@@ -197,16 +215,33 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     const url = URL.createObjectURL(lastAudioBlob);
     const audio = new Audio(url);
     
-    audio.onended = () => {
+    // Dispatch event when audio starts playing
+    const dispatchPlayingEvent = () => {
+      const audioPlayingEvent = new CustomEvent('audio-status', {
+        detail: { status: 'playing' }
+      });
+      window.dispatchEvent(audioPlayingEvent);
+    };
+    
+    // Dispatch event when audio stops playing
+    const dispatchStoppedEvent = () => {
+      const audioStoppedEvent = new CustomEvent('audio-status', {
+        detail: { status: 'stopped' }
+      });
+      window.dispatchEvent(audioStoppedEvent);
       URL.revokeObjectURL(url);
     };
     
+    audio.onplay = dispatchPlayingEvent;
+    audio.onended = dispatchStoppedEvent;
+    audio.onpause = dispatchStoppedEvent;
+    audio.onerror = dispatchStoppedEvent;
+    
     audio.play().catch(err => {
       console.error("Playback error:", err);
+      dispatchStoppedEvent();
       // Just log errors, don't display them
     });
-    
-    // Don't update status for audio playing
   };
 
   // Test the text-to-speech directly when the microphone button is clicked

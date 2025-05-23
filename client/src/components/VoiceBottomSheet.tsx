@@ -166,8 +166,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         <div style={{ marginBottom: '32px' }}>
           <div 
             style={{ 
-              width: '200px', 
-              height: '200px',
+              width: '220px', // Slightly larger to accommodate the animation
+              height: '220px',
               borderRadius: '50%',
               background: 'transparent',
               position: 'relative',
@@ -178,7 +178,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               overflow: 'hidden'
             }}
           >
-            <WineImage />
+            <WineImage isAnimating={true} />
           </div>
         </div>
 
