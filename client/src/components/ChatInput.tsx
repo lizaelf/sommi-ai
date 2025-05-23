@@ -40,10 +40,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         <form onSubmit={handleSubmit} className="flex items-center w-full px-1 sm:px-2">
           <div className="flex-1 relative">
             <div className="relative flex items-center">
-              {/* Voice button placed inside input on the left */}
-              <div className="absolute left-3 z-10">
-                {voiceButtonComponent}
-              </div>
               <input
                 ref={inputRef}
                 type="text"
@@ -52,10 +48,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                 onKeyDown={handleKeyDown}
                 onFocus={() => onFocus && onFocus()}
                 onBlur={() => onBlur && onBlur()}
-                className="w-full h-12 bg-[#1e1e1e] rounded-full pl-12 pr-4 outline-none text-white shadow-none text-sm placeholder-gray-400"
+                className="w-full h-12 bg-[#1e1e1e] rounded-full px-4 pr-12 outline-none text-white shadow-none text-sm placeholder-gray-400"
                 placeholder="Ask me about..."
                 disabled={isProcessing}
               />
+              {/* Voice button placed inside input on the right */}
+              <div className="absolute right-2 z-10">
+                {voiceButtonComponent}
+              </div>
             </div>
           </div>
         </form>
