@@ -357,11 +357,10 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <GiCow size={28} color="white" />
+                    <span style={{ fontSize: '24px' }}>🥩</span>
                     <span style={{ 
                       color: 'white', 
-                      ...typography.bodyPlus1,
-                      fontSize: '20px'  // Keep the larger size for visual hierarchy
+                      ...typography.bodyPlus1
                     }}>Red Meat</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -374,7 +373,7 @@ const EnhancedChatInterface: React.FC = () => {
                     }}>
                       Perfect match
                     </span>
-                    <BsChevronDown size={20} color="white" />
+                    <span style={{ fontSize: '20px', color: 'white' }}>⌄</span>
                   </div>
                 </div>
 
@@ -393,8 +392,8 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <GiCheeseWedge size={28} color="white" />
-                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Cheese Pairings</span>
+                    <span style={{ fontSize: '24px' }}>🧀</span>
+                    <span style={{ color: 'white', ...typography.bodyPlus1 }}>Cheese Pairings</span>
                   </div>
                   <BsChevronDown size={20} color="white" />
                 </div>
@@ -414,8 +413,8 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <GiBroccoli size={28} color="white" />
-                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Vegetarian Options</span>
+                    <span style={{ fontSize: '24px' }}>🥗</span>
+                    <span style={{ color: 'white', ...typography.bodyPlus1 }}>Vegetarian Options</span>
                   </div>
                   <BsChevronDown size={20} color="white" />
                 </div>
@@ -435,8 +434,8 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <MdCancel size={28} color="#ff5555" />
-                    <span style={{ color: 'white', fontSize: '20px', fontFamily: 'Inter, sans-serif' }}>Avoid pairing with</span>
+                    <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
+                    <span style={{ color: 'white', ...typography.bodyPlus1 }}>Avoid pairing with</span>
                   </div>
                   <BsChevronDown size={20} color="white" />
                 </div>
