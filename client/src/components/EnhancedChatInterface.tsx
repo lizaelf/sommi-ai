@@ -558,19 +558,19 @@ const EnhancedChatInterface: React.FC = () => {
               <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                 <button 
                   onClick={() => handleSendMessage("Tasting notes")}
-                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-primary rounded-full border border-primary text-xs sm:text-sm font-medium hover:bg-primary/10 transition-colors"
+                  className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
                 >
                   Tasting notes
                 </button>
                 <button 
                   onClick={() => handleSendMessage("Simple recipes for this wine")}
-                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-primary rounded-full border border-primary text-xs sm:text-sm font-medium hover:bg-primary/10 transition-colors"
+                  className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
                 >
                   Simple recipes
                 </button>
                 <button 
                   onClick={() => handleSendMessage("Where is this wine from?")}
-                  className="whitespace-nowrap py-1.5 sm:py-2 px-3 sm:px-4 bg-transparent text-primary rounded-full border border-primary text-xs sm:text-sm font-medium hover:bg-primary/10 transition-colors"
+                  className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
                 >
                   Where it's from
                 </button>
