@@ -339,7 +339,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Red Meat Pairing */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: '#191919',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -352,7 +352,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '1px solid transparent',
                   borderBottom: '1px solid transparent',
                   borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
+                  backgroundImage: 'linear-gradient(#191919, #191919), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -381,7 +381,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Cheese Pairings */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: '#191919',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -394,7 +394,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '1px solid transparent',
                   borderBottom: '1px solid transparent',
                   borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
+                  backgroundImage: 'linear-gradient(#191919, #191919), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -409,7 +409,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Vegetarian Options */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: '#191919',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -422,7 +422,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '1px solid transparent',
                   borderBottom: '1px solid transparent',
                   borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
+                  backgroundImage: 'linear-gradient(#191919, #191919), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -437,7 +437,7 @@ const EnhancedChatInterface: React.FC = () => {
 
                 {/* Avoid pairing with */}
                 <div style={{
-                  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                  backgroundColor: '#191919',
                   borderRadius: '16px',
                   padding: '16px 20px',
                   marginBottom: '12px',
@@ -450,7 +450,7 @@ const EnhancedChatInterface: React.FC = () => {
                   borderRight: '1px solid transparent',
                   borderBottom: '1px solid transparent',
                   borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
+                  backgroundImage: 'linear-gradient(#191919, #191919), linear-gradient(to bottom, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 20%), linear-gradient(to right, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to left, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)), linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06))',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -508,7 +508,7 @@ const EnhancedChatInterface: React.FC = () => {
                   {messages.length > 0 && 
                     messages.map((message, index) => (
                       <div key={`${message.id}-${index}`} style={{
-                        backgroundColor: message.role === 'user' ? 'rgba(106, 83, 231, 0.2)' : 'rgba(30, 30, 30, 0.9)',
+                        backgroundColor: message.role === 'user' ? 'rgba(106, 83, 231, 0.2)' : '#191919',
                         borderRadius: '16px',
                         padding: '16px',
                         marginBottom: '12px'
@@ -535,7 +535,7 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Typing Indicator */}
                   {isTyping && (
                     <div style={{
-                      backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                      backgroundColor: '#191919',
                       borderRadius: '16px',
                       padding: '16px',
                       marginBottom: '12px'
