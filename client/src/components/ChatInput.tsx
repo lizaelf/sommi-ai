@@ -61,9 +61,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                   width: '100%',
                   height: '56px',
                   outline: 'none',
-                  color: 'white'
+                  color: 'white',
+                  WebkitAppearance: 'none',
+                  appearance: 'none'
                 }}
-                className="text-sm placeholder-gray-400 pr-12"
+                className="text-sm placeholder-gray-400 pr-12 bg-[#292929]"
                 placeholder="Ask me about..."
                 disabled={isProcessing}
               />
