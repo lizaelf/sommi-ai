@@ -7,13 +7,15 @@ interface VoiceBottomSheetProps {
   onClose: () => void;
   onMute: () => void;
   onAsk: () => void;
+  isListening?: boolean;
 }
 
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   isOpen,
   onClose,
   onMute,
-  onAsk
+  onAsk,
+  isListening = false
 }) => {
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
@@ -181,64 +183,104 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           <WineImage isAnimating={true} />
         </div>
 
-        {/* Buttons */}
-        <div style={{ display: 'flex', gap: '16px', width: '100%', maxWidth: '320px' }}>
-          <button
-            className="voice-bottom-sheet-button"
-            onClick={onMute}
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '32px',
-              height: '48px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '8px',
-              color: 'white',
-              border: 'none',
-              cursor: 'pointer',
+        {/* Buttons or Listening indicator based on state */}
+        {isListening ? (
+          <div style={{ 
+            width: '100%', 
+            maxWidth: '320px', 
+            height: '48px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center' 
+          }}>
+            <div style={{
+              color: '#CECECE',
               fontFamily: 'Inter, sans-serif',
               fontSize: '16px',
-              fontWeight: 500,
-              outline: 'none',
-              transition: 'none'
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M12.92 3.316c.774-.69 1.983-.187 2.074.812L15 4.25v15.496c0 1.037-1.178 1.606-1.986 1.01l-.095-.076l-4.491-3.994a.75.75 0 0 0-.39-.182l-.108-.008H4.25a2.25 2.25 0 0 1-2.245-2.095L2 14.246V9.75a2.25 2.25 0 0 1 2.096-2.245l.154-.005h3.68a.75.75 0 0 0 .411-.123l.087-.067l4.491-3.993zm4.36 5.904L19 10.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L20.06 12l1.72 1.72a.75.75 0 1 1-1.06 1.06L19 13.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L17.94 12l-1.72-1.72a.75.75 0 1 1 1.06-1.06z"/>
-            </svg>
-            Mute
-          </button>
-          <button
-            className="voice-bottom-sheet-button-white"
-            onClick={onAsk}
-            style={{
-              flex: 1,
-              backgroundColor: 'white',
-              borderRadius: '32px',
-              height: '48px',
+              fontWeight: 'normal',
               display: 'flex',
-              justifyContent: 'center',
               alignItems: 'center',
-              gap: '8px',
-              color: 'black',
-              border: 'none',
-              cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '16px',
-              fontWeight: 500,
-              outline: 'none',
-              transition: 'none'
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 1C10.34 1 9 2.34 9 4v8c0 1.66 1.34 3 3 3s3-1.34 3-3V4c0-1.66-1.34-3-3-3z" fill="black"/>
-              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-0.49 6-3.39 6-6.92h-2z" fill="black"/>
-            </svg>
-            Ask
-          </button>
-        </div>
+              gap: '8px'
+            }}>
+              <style>
+                {`
+                  @keyframes pulseDot {
+                    0% { opacity: 0.4; }
+                    50% { opacity: 1; }
+                    100% { opacity: 0.4; }
+                  }
+                `}
+              </style>
+              <span style={{ 
+                display: 'inline-block', 
+                width: '8px', 
+                height: '8px', 
+                borderRadius: '50%', 
+                backgroundColor: '#CECECE',
+                animation: 'pulseDot 1.5s infinite ease-in-out'
+              }}></span>
+              Listening...
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '16px', width: '100%', maxWidth: '320px' }}>
+            <button
+              className="voice-bottom-sheet-button"
+              onClick={onMute}
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                borderRadius: '32px',
+                height: '48px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '8px',
+                color: 'white',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '16px',
+                fontWeight: 500,
+                outline: 'none',
+                transition: 'none'
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M12.92 3.316c.774-.69 1.983-.187 2.074.812L15 4.25v15.496c0 1.037-1.178 1.606-1.986 1.01l-.095-.076l-4.491-3.994a.75.75 0 0 0-.39-.182l-.108-.008H4.25a2.25 2.25 0 0 1-2.245-2.095L2 14.246V9.75a2.25 2.25 0 0 1 2.096-2.245l.154-.005h3.68a.75.75 0 0 0 .411-.123l.087-.067l4.491-3.993zm4.36 5.904L19 10.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L20.06 12l1.72 1.72a.75.75 0 1 1-1.06 1.06L19 13.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L17.94 12l-1.72-1.72a.75.75 0 1 1 1.06-1.06z"/>
+              </svg>
+              Mute
+            </button>
+            <button
+              className="voice-bottom-sheet-button-white"
+              onClick={onAsk}
+              style={{
+                flex: 1,
+                backgroundColor: 'white',
+                borderRadius: '32px',
+                height: '48px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '8px',
+                color: 'black',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '16px',
+                fontWeight: 500,
+                outline: 'none',
+                transition: 'none'
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 1C10.34 1 9 2.34 9 4v8c0 1.66 1.34 3 3 3s3-1.34 3-3V4c0-1.66-1.34-3-3-3z" fill="black"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-0.49 6-3.39 6-6.92h-2z" fill="black"/>
+              </svg>
+              Ask
+            </button>
+          </div>
+        )}
         
         {/* iOS Home Indicator */}
         <div style={{ 

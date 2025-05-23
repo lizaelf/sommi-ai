@@ -402,6 +402,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onClose={handleCloseBottomSheet}
         onMute={handleMute}
         onAsk={handleAsk}
+        isListening={isListening}
       />
     </div>
   );
