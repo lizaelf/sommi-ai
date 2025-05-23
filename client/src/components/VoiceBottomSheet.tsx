@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import wineGlassImage from '@assets/Preset.png';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -91,17 +90,31 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           </svg>
         </div>
 
-        {/* Wine glass image */}
+        {/* Wine glass visualization */}
         <div style={{ marginBottom: '32px' }}>
-          <img 
-            src={wineGlassImage} 
-            alt="Wine Glass" 
+          <div 
             style={{ 
               width: '150px', 
               height: '150px',
-              objectFit: 'contain' 
-            }} 
-          />
+              borderRadius: '50%',
+              background: '#741919',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{
+              position: 'absolute',
+              top: '10%',
+              left: '10%',
+              right: '10%',
+              bottom: '10%',
+              background: 'radial-gradient(circle at 70% 30%, #ff8080 0%, #9e0b0b 60%, #4a0000 100%)',
+              borderRadius: '50%',
+              boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.5)'
+            }} />
+          </div>
         </div>
 
         {/* Buttons */}
@@ -151,7 +164,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" fill="black"/>
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             Ask
           </button>
