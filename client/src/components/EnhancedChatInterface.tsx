@@ -179,7 +179,7 @@ const EnhancedChatInterface: React.FC = () => {
                 position: 'relative',
                 zIndex: 2,
                 padding: '0 20px',
-                marginBottom: '24px',
+                marginBottom: '0',
                 ...typography.h1
               }}>
                 2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel
@@ -198,7 +198,7 @@ const EnhancedChatInterface: React.FC = () => {
                 zIndex: 2,
                 padding: '20px 20px',
                 gap: '6px',
-                marginBottom: '16px',
+                marginBottom: '0',
                 ...typography.body1R
               }}>
                 <USFlagImage />
@@ -216,7 +216,7 @@ const EnhancedChatInterface: React.FC = () => {
                 position: 'relative',
                 zIndex: 2,
                 padding: '0 20px',
-                marginBottom: '20px'
+                marginBottom: '0'
               }}>
                 <div style={{
                   padding: 8, 
