@@ -443,7 +443,8 @@ const EnhancedChatInterface: React.FC = () => {
                 <div style={{
                   backgroundColor: '#191919',
                   borderRadius: '16px',
-                  padding: '16px 20px',
+                  padding: '0 20px',
+                  height: '64px',
                   marginBottom: '12px',
                   display: 'flex',
                   justifyContent: 'space-between',
