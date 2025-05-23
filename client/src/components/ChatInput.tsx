@@ -59,7 +59,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                   backgroundColor: '#292929',
                   border: '1px solid rgba(255, 255, 255, 0.06)',
                   width: '100%',
-                  height: '56px',
+                  height: '64px',
                   outline: 'none',
                   color: 'white',
                   WebkitAppearance: 'none',
