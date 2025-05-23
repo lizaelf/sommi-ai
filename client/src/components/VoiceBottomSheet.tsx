@@ -77,23 +77,42 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   };
 
   const bottomSheetContent = (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 9999, // Higher z-index to ensure it's on top of everything
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-end',
-        ...overlayStyle
-      }}
-      onClick={onClose}
-    >
+    <>
+      <style>
+        {`
+          .voice-bottom-sheet-button {
+            background: rgba(255, 255, 255, 0.08) !important;
+            transition: none !important;
+          }
+          .voice-bottom-sheet-button:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            transform: none !important;
+          }
+          .voice-bottom-sheet-button:active {
+            background: rgba(255, 255, 255, 0.08) !important;
+          }
+          .voice-bottom-sheet-button:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+          }
+        `}
+      </style>
       <div 
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 9999, // Higher z-index to ensure it's on top of everything
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+          ...overlayStyle
+        }}
+        onClick={onClose}
+      >
+        <div 
         style={{
           backgroundColor: '#111111',
           width: '100%',
@@ -149,6 +168,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         {/* Buttons */}
         <div style={{ display: 'flex', gap: '16px', width: '100%', maxWidth: '320px' }}>
           <button
+            className="voice-bottom-sheet-button"
             onClick={onMute}
             style={{
               flex: 1,
@@ -167,12 +187,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               fontWeight: 500,
               outline: 'none',
               transition: 'none'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
@@ -228,10 +242,12 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         }}></div>
       </div>
     </div>
+    </>
   );
   
   // Use React Portal to render at the root of the document
   return portalElement ? createPortal(bottomSheetContent, portalElement) : null;
 };
 
+export { VoiceBottomSheet };
 export default VoiceBottomSheet;
