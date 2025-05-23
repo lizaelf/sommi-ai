@@ -3,7 +3,6 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
 import VoiceBottomSheet from './VoiceBottomSheet';
-import WineImage from './WineImage';
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -342,43 +341,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   return (
     <div className="flex items-center">
       {status === 'Listening for your question...' ? (
-        // Show animated circle visualization when listening
-        <div 
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          {/* Animated WineImage component for listening state */}
-          <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-            <WineImage />
-          </div>
-          
-          {/* Small microphone icon in center */}
-          <div style={{ 
-            position: 'absolute', 
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 2 
-          }}>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 20 20"
-              style={{ color: 'white' }}
-            >
-              <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
-            </svg>
-          </div>
+        // Only show status when listening for voice input
+        <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
+          <span className="animate-pulse mr-1">●</span>
+          {status}
         </div>
       ) : (
         <>
@@ -409,6 +375,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
             </svg>
           </div>
+          
+          {/* Sound Test Button - hidden as requested */}
         </>
       )}
       
