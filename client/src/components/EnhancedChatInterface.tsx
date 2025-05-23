@@ -27,6 +27,7 @@ const EnhancedChatInterface: React.FC = () => {
 
   // Basic states 
   const [isTyping, setIsTyping] = useState(false);
+  const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -616,32 +617,36 @@ const EnhancedChatInterface: React.FC = () => {
           {/* Input Area - Fixed to Bottom */}
           <div className="bg-background p-2 sm:p-3 shadow-lg border-t border-border z-50 fixed bottom-0 left-0 right-0">
             <div className="max-w-3xl mx-auto">
-              {/* Suggestion chips */}
-              <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                <button 
-                  onClick={() => handleSendMessage("Tasting notes")}
-                  className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
-                >
-                  Tasting notes
-                </button>
-                <button 
-                  onClick={() => handleSendMessage("Simple recipes for this wine")}
-                  className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
-                >
-                  Simple recipes
-                </button>
-                <button 
-                  onClick={() => handleSendMessage("Where is this wine from?")}
-                  className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
-                >
-                  Where it's from
-                </button>
-              </div>
+              {/* Suggestion chips - only shown when keyboard is active */}
+              {isKeyboardFocused && (
+                <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                  <button 
+                    onClick={() => handleSendMessage("Tasting notes")}
+                    className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+                  >
+                    Tasting notes
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("Simple recipes for this wine")}
+                    className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+                  >
+                    Simple recipes
+                  </button>
+                  <button 
+                    onClick={() => handleSendMessage("Where is this wine from?")}
+                    className="whitespace-nowrap bg-transparent text-white rounded border border-[rgba(255,255,255,0.04)] text-sm hover:border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+                  >
+                    Where it's from
+                  </button>
+                </div>
+              )}
               
               <div className="relative flex items-center gap-1.5 sm:gap-2">
                 <ChatInput 
                   onSendMessage={handleSendMessage} 
                   isProcessing={isTyping}
+                  onFocus={() => setIsKeyboardFocused(true)}
+                  onBlur={() => setIsKeyboardFocused(false)}
                 />
                 <VoiceAssistant
                   onSendMessage={handleSendMessage}

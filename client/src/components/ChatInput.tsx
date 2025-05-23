@@ -3,11 +3,13 @@ import React, { useState, useRef } from 'react';
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isProcessing: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 // Suggestions are now handled in the parent component
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur }) => {
   const [message, setMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -42,6 +44,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing }) =>
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
+              onFocus={() => onFocus && onFocus()}
+              onBlur={() => onBlur && onBlur()}
               className="w-full h-10 sm:h-12 bg-white rounded-xl px-3 sm:px-6 outline-none text-gray-700 shadow-input text-sm sm:text-base"
               placeholder="Ask about Cabernet Sauvignon..."
               disabled={isProcessing}
