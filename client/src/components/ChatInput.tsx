@@ -32,14 +32,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
   // Suggestion click handler removed - now handled in parent component
 
   return (
-    <div className="w-full">
-      <div className="w-full">
+    <div className="w-full bg-transparent">
+      <div className="w-full bg-transparent">
         {/* Removed duplicate suggestion chips - now handled in the parent component */}
 
         {/* Input styled like Somm.ai */}
-        <form onSubmit={handleSubmit} className="flex items-center w-full px-1 sm:px-2">
-          <div className="flex-1 relative">
-            <div className="relative flex items-center">
+        <form onSubmit={handleSubmit} className="flex items-center w-full px-1 sm:px-2 bg-transparent">
+          <div className="flex-1 relative bg-transparent">
+            <div className="relative flex items-center bg-transparent">
               <input
                 ref={inputRef}
                 type="text"
@@ -63,9 +63,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                   outline: 'none',
                   color: 'white',
                   WebkitAppearance: 'none',
-                  appearance: 'none'
+                  appearance: 'none',
+                  background: '#292929'
                 }}
-                className="text-sm placeholder-gray-400 pr-12 bg-[#292929]"
+                className="text-sm placeholder-gray-400 pr-12 bg-[#292929] !bg-[#292929]"
                 placeholder="Ask me about..."
                 disabled={isProcessing}
               />
