@@ -131,6 +131,22 @@
   height: calc(100dvh - 80px);
 }
 
+/* Custom suggestion button styles */
+.suggestion-button {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  background-image: none !important;
+  transition: all 0.2s ease !important;
+  padding: 8px 16px !important;
+  border-radius: 24px !important;
+  cursor: pointer !important;
+}
+
+.suggestion-button:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-image: none !important;
+}
+
 /* Support for dynamic viewport height */
 @supports (height: 100dvh) {
   .h-screen, .h-\[100vh\] {
