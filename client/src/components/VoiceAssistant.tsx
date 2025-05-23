@@ -146,6 +146,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             setStatus(`Error: ${event.error}`);
             setIsListening(false);
             
+            // Dispatch event to stop visualization on error
+            const micStoppedEvent = new CustomEvent('mic-status', {
+              detail: { status: 'stopped' }
+            });
+            window.dispatchEvent(micStoppedEvent);
+            
             toast({
               title: "Voice Recognition Error",
               description: `Error: ${event.error}. Please try again.`,
@@ -340,8 +346,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   return (
     <div className="flex items-center">
-      {status === 'Listening for your question...' ? (
-        // Only show status when listening for voice input
+      {false ? (
+        // Disabled the text status indicator in favor of the visualization in the bottom sheet
         <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
           <span className="animate-pulse mr-1">●</span>
           {status}
