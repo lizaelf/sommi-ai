@@ -346,7 +346,11 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '12px',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  border: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.06))',
+                  backgroundOrigin: 'border-box',
+                  backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '24px' }}>🥩</span>
@@ -378,7 +382,11 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '12px',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  border: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.06))',
+                  backgroundOrigin: 'border-box',
+                  backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '24px' }}>🧀</span>
@@ -395,7 +403,11 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '12px',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  border: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.06))',
+                  backgroundOrigin: 'border-box',
+                  backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '24px' }}>🥗</span>
@@ -412,7 +424,11 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '12px',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  border: '1px solid transparent',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.06))',
+                  backgroundOrigin: 'border-box',
+                  backgroundClip: 'padding-box, border-box'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
