@@ -503,31 +503,7 @@ const EnhancedChatInterface: React.FC = () => {
                   Ask about this wine
                 </h1>
                 
-                {/* Clear conversation button */}
-                <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button 
-                    onClick={clearConversation}
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '8px 16px',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-14 0h4M5 8h2m12 0h-6m6 0h-2M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2M9 12v6m6-6v6" 
-                        stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Clear conversation
-                  </button>
-                </div>
-                
+
                 {/* Conversation container */}
                 <div id="conversation" className="space-y-4 mb-20">
                   {messages.length > 0 && 
