@@ -349,7 +349,7 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   border: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(45deg, #2E7CF6 25%, #31EA34 50%, #BC31EA 75%, #FF0000 0%)',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -388,7 +388,7 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   border: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(45deg, #2E7CF6 25%, #31EA34 50%, #BC31EA 75%, #FF0000 0%)',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -413,7 +413,7 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   border: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(45deg, #2E7CF6 25%, #31EA34 50%, #BC31EA 75%, #FF0000 0%)',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
@@ -438,7 +438,7 @@ const EnhancedChatInterface: React.FC = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   border: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), linear-gradient(45deg, #2E7CF6 25%, #31EA34 50%, #BC31EA 75%, #FF0000 0%)',
+                  backgroundImage: 'linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.06) 100%)',
                   backgroundOrigin: 'border-box',
                   backgroundClip: 'padding-box, border-box'
                 }}>
