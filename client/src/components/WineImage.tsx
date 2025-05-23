@@ -11,7 +11,6 @@ const WineImage = () => {
         height: '100%',
         borderRadius: '50%',
         background: 'rgba(255, 255, 255, 0.2)', // White circle with 20% opacity
-        boxShadow: 'inset 0 0 10px rgba(255, 255, 255, 0.1)', // Subtle inner shadow
       }}
     />
   );
