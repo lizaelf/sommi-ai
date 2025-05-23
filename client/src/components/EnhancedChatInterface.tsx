@@ -574,25 +574,32 @@ const EnhancedChatInterface: React.FC = () => {
                   {messages.length > 0 && 
                     messages.map((message, index) => (
                       <div key={`${message.id}-${index}`} style={{
-                        backgroundColor: message.role === 'user' ? 'rgba(106, 83, 231, 0.2)' : '#191919',
-                        borderRadius: '16px',
-                        padding: '16px',
+                        display: 'flex',
+                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                        width: '100%',
                         marginBottom: '12px'
                       }}>
                         <div style={{
-                          ...typography.button,
-                          color: message.role === 'user' ? '#b9a5ff' : 'white',
-                          marginBottom: '8px',
-                          fontWeight: message.role === 'user' ? '600' : '400'
+                          backgroundColor: message.role === 'user' ? '#DBDBDB' : '#191919',
+                          borderRadius: '16px',
+                          padding: '16px',
+                          width: message.role === 'user' ? '80%' : '100%'
                         }}>
-                          {message.role === 'user' ? 'You' : 'Sommelier AI'}
-                        </div>
-                        <div style={{
-                          color: 'white',
-                          whiteSpace: 'pre-wrap',
-                          ...typography.body
-                        }}>
-                          {message.content}
+                          <div style={{
+                            ...typography.button,
+                            color: message.role === 'user' ? '#000000' : 'white',
+                            marginBottom: '8px',
+                            fontWeight: message.role === 'user' ? '600' : '400'
+                          }}>
+                            {message.role === 'user' ? '' : 'Sommelier AI'}
+                          </div>
+                          <div style={{
+                            color: message.role === 'user' ? '#000000' : 'white',
+                            whiteSpace: 'pre-wrap',
+                            ...typography.body
+                          }}>
+                            {message.content}
+                          </div>
                         </div>
                       </div>
                     ))
