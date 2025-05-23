@@ -153,7 +153,10 @@ const EnhancedChatInterface: React.FC = () => {
           {/* Scrollable container */}
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
             {/* Wine bottle image with fixed size and glow effect */}
-            <div className="w-full flex flex-col items-center justify-center py-8 relative" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="w-full flex flex-col items-center justify-center py-8 relative" style={{ 
+              backgroundColor: '#0A0A0A',
+              paddingTop: '90px' // Add padding to show the blurred circle below the header
+            }}>
               
               {/* Wine bottle image */}
               <WineBottleImage />

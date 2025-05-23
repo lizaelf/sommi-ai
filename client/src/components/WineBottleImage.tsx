@@ -8,21 +8,22 @@ const WineBottleImage: React.FC = () => {
       position: 'relative',
       zIndex: 2,
       marginBottom: '16px',
+      marginTop: '20px', // Added top margin to push content down
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center'
     }}>
-      {/* Blurred circle background */}
+      {/* Blurred circle background - enlarged and positioned higher */}
       <div style={{
         position: 'absolute',
-        width: '250px',
-        height: '250px',
+        width: '300px', // Increased size
+        height: '300px', // Increased size
         borderRadius: '50%',
         backgroundColor: '#8E8E8E', // Gray color as requested
-        filter: 'blur(60px)', // Reduced blur to make it more visible
-        opacity: 0.7, // Increased opacity
+        filter: 'blur(60px)',
+        opacity: 0.7,
         zIndex: 1,
-        top: '50%',
+        top: '30%', // Positioned higher to be visible under header
         transform: 'translateY(-50%)'
       }} />
       
