@@ -6,6 +6,7 @@ interface WineImageProps {
 
 /**
  * Wine glass visualization with sound-reactive animation
+ * Only animates when actively listening or playing audio
  */
 const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
   const [size, setSize] = useState(200);
@@ -85,19 +86,13 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
     window.addEventListener('mic-status', handleMicStatusChange as EventListener);
 
-    // Start animation if isAnimating prop is true
-    if (isAnimating) {
-      setIsListening(true);
-      animationRef.current = requestAnimationFrame(animate);
-    }
-
     // Cleanup
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
       cancelAnimationFrame(animationRef.current);
     };
-  }, [isAnimating]);
+  }, []);
 
   // Start/stop animation when listening or playing changes
   useEffect(() => {
@@ -135,7 +130,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false }) => {
         }}
       />
       
-      {/* Optional inner circle for visual depth */}
+      {/* Optional inner circle for visual depth - only shown during audio activity */}
       {(isListening || isPlaying) && (
         <div 
           style={{
