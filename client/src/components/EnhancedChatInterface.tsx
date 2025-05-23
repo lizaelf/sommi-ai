@@ -8,6 +8,7 @@ import WineBottleImage from './WineBottleImage';
 import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
+import typography from '@/styles/typography';
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
@@ -161,7 +162,7 @@ const EnhancedChatInterface: React.FC = () => {
               {/* Wine bottle image */}
               <WineBottleImage />
               
-              {/* Wine name with requested styling */}
+              {/* Wine name with typography styling */}
               <div style={{
                 width: '100%', 
                 textAlign: 'center', 
@@ -169,20 +170,17 @@ const EnhancedChatInterface: React.FC = () => {
                 display: 'flex', 
                 flexDirection: 'column', 
                 color: 'white', 
-                fontSize: 24, 
-                fontFamily: 'Lora, serif', 
-                fontWeight: '400', 
-                lineHeight: '32px', 
                 wordWrap: 'break-word',
                 position: 'relative',
                 zIndex: 2,
                 padding: '0 20px',
-                marginBottom: '4px'
+                marginBottom: '4px',
+                ...typography.h1
               }}>
                 2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel
               </div>
               
-              {/* Wine region with requested styling and flag */}
+              {/* Wine region with typography styling and flag */}
               <div style={{
                 textAlign: 'center',
                 justifyContent: 'center', 
@@ -190,16 +188,13 @@ const EnhancedChatInterface: React.FC = () => {
                 flexDirection: 'row', 
                 alignItems: 'center',
                 color: 'rgba(255, 255, 255, 0.60)', 
-                fontSize: 12, 
-                fontFamily: 'Inter, sans-serif', 
-                fontWeight: '400', 
-                lineHeight: '32px', 
                 wordWrap: 'break-word',
                 position: 'relative',
                 zIndex: 2,
                 padding: '0 20px',
                 gap: '6px',
-                marginBottom: '16px'
+                marginBottom: '16px',
+                ...typography.body1R
               }}>
                 <USFlagImage />
                 <span>San Luis Obispo Country, United States</span>
@@ -231,23 +226,18 @@ const EnhancedChatInterface: React.FC = () => {
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'white', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '600', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    fontWeight: '600',
+                    ...typography.num
                   }}>95</div>
                   <div style={{
                     justifyContent: 'center', 
                     display: 'flex', 
                     color: 'rgba(255, 255, 255, 0.60)', 
-                    fontSize: 12, 
-                    fontFamily: 'Inter, sans-serif', 
-                    fontWeight: '400', 
-                    lineHeight: '16px', 
                     wordWrap: 'break-word',
-                    height: '16px'
+                    height: '16px',
+                    ...typography.body1R
                   }}>VN</div>
                 </div>
                 <div style={{
@@ -354,11 +344,10 @@ const EnhancedChatInterface: React.FC = () => {
               }}>
                 <h2 style={{
                   color: 'white',
-                  fontSize: '32px',
-                  fontFamily: 'Lora, serif',
-                  fontWeight: '400',
                   marginBottom: '24px',
-                  textAlign: 'left'
+                  textAlign: 'left',
+                  fontSize: '32px', // Keeping this larger than h1 for visual hierarchy
+                  ...typography.h1
                 }}>
                   Food pairing
                 </h2>
