@@ -268,7 +268,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   }, [isProcessing, status, usedVoiceInput]);
 
   return (
-    <div className="flex items-center ml-1 gap-1">
+    <div className="flex items-center">
       {status === 'Listening for your question...' ? (
         // Only show status when listening for voice input
         <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
@@ -282,18 +282,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             id="mic-button"
             onClick={toggleListening}
             disabled={isProcessing}
-            className={`p-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#6A53E7]/30 ${
+            className={`w-8 h-8 flex items-center justify-center rounded-full transition-all focus:outline-none ${
               isProcessing 
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                : 'bg-[#F5F3FF] text-[#6A53E7] hover:bg-[#6A53E7]/10'
-            } ${isListening ? 'bg-[#6A53E7] text-white animate-pulse' : ''}`}
+                ? 'text-gray-400 cursor-not-allowed' 
+                : 'text-white opacity-70 hover:opacity-100'
+            } ${isListening ? 'animate-pulse' : ''}`}
             aria-label="Start voice input"
             title="Use voice to ask questions"
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              width="20" 
-              height="20" 
+              width="18" 
+              height="18" 
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"

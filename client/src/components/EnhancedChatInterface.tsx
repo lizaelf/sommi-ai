@@ -615,7 +615,7 @@ const EnhancedChatInterface: React.FC = () => {
           </div>
           
           {/* Input Area - Fixed to Bottom */}
-          <div className="bg-background p-2 sm:p-3 shadow-lg border-t border-border z-50 fixed bottom-0 left-0 right-0">
+          <div className="bg-[#111111] p-3 z-50 fixed bottom-0 left-0 right-0">
             <div className="max-w-3xl mx-auto">
               {/* Suggestion chips - only shown when keyboard is active */}
               {isKeyboardFocused && (
