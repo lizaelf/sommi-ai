@@ -55,6 +55,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         return;
       }
     }
+    // Stop here - the actual listening will be triggered by the Ask button
+    return;
     
     // Check if speech recognition is available
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
