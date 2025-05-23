@@ -642,15 +642,15 @@ const EnhancedChatInterface: React.FC = () => {
               )}
               
               <div className="relative flex items-center gap-1.5 sm:gap-2">
+                <VoiceAssistant
+                  onSendMessage={handleSendMessage}
+                  isProcessing={isTyping}
+                />
                 <ChatInput 
                   onSendMessage={handleSendMessage} 
                   isProcessing={isTyping}
                   onFocus={() => setIsKeyboardFocused(true)}
                   onBlur={() => setIsKeyboardFocused(false)}
-                />
-                <VoiceAssistant
-                  onSendMessage={handleSendMessage}
-                  isProcessing={isTyping}
                 />
               </div>
             </div>
