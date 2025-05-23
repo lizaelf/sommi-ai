@@ -372,15 +372,9 @@ const EnhancedChatInterface: React.FC = () => {
                     }}>
                       Perfect match
                     </span>
-                    <img 
-                      src="/icons/chevron-down.svg" 
-                      alt="Chevron down" 
-                      style={{ 
-                        width: '24px', 
-                        height: '24px', 
-                        filter: 'invert(100%)',
-                      }} 
-                    />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -404,15 +398,9 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px' }}>🧀</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Cheese Pairings</span>
                   </div>
-                  <img 
-                    src="/icons/chevron-down.svg" 
-                    alt="Chevron down" 
-                    style={{ 
-                      width: '24px', 
-                      height: '24px', 
-                      filter: 'invert(100%)',
-                    }} 
-                  />
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                  </svg>
                 </div>
 
                 {/* Vegetarian Options */}
@@ -435,15 +423,9 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px' }}>🥗</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Vegetarian Options</span>
                   </div>
-                  <img 
-                    src="/icons/chevron-down.svg" 
-                    alt="Chevron down" 
-                    style={{ 
-                      width: '24px', 
-                      height: '24px', 
-                      filter: 'invert(100%)',
-                    }} 
-                  />
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                  </svg>
                 </div>
 
                 {/* Avoid pairing with */}
@@ -466,15 +448,9 @@ const EnhancedChatInterface: React.FC = () => {
                     <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
                     <span style={{ color: 'white', ...typography.bodyPlus1 }}>Avoid pairing with</span>
                   </div>
-                  <img 
-                    src="/icons/chevron-down.svg" 
-                    alt="Chevron down" 
-                    style={{ 
-                      width: '24px', 
-                      height: '24px', 
-                      filter: 'invert(100%)',
-                    }} 
-                  />
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                  </svg>
                 </div>
               </div>
               
