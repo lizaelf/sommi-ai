@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import WineImage from './WineImage';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -134,23 +135,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               borderRadius: '50%',
               background: 'transparent',
               position: 'relative',
-              overflow: 'hidden',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               boxShadow: '0 0 15px rgba(120, 0, 0, 0.3)'
             }}
           >
-            <img 
-              src="/attached_assets/image.png" 
-              alt="Wine visualization" 
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                borderRadius: '50%'
-              }}
-            />
+            <WineImage />
           </div>
         </div>
 
