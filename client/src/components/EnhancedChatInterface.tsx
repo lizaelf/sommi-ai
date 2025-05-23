@@ -220,13 +220,12 @@ const EnhancedChatInterface: React.FC = () => {
                 marginBottom: '0'
               }}>
                 <div style={{
-                  padding: 8, 
+                  display: 'flex',
+                  padding: 8,
+                  alignItems: 'baseline',
+                  gap: 4,
                   background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8, 
-                  justifyContent: 'flex-start', 
-                  alignItems: 'baseline', 
-                  gap: 4, 
-                  display: 'flex'
+                  borderRadius: 8
                 }}>
                   <div style={{
                     justifyContent: 'center', 
@@ -246,13 +245,12 @@ const EnhancedChatInterface: React.FC = () => {
                   }}>VN</div>
                 </div>
                 <div style={{
-                  padding: 8, 
+                  display: 'flex',
+                  padding: 8,
+                  alignItems: 'baseline',
+                  gap: 4,
                   background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8, 
-                  justifyContent: 'flex-start', 
-                  alignItems: 'baseline', 
-                  gap: 4, 
-                  display: 'flex'
+                  borderRadius: 8
                 }}>
                   <div style={{
                     justifyContent: 'center', 
@@ -272,13 +270,12 @@ const EnhancedChatInterface: React.FC = () => {
                   }}>JD</div>
                 </div>
                 <div style={{
-                  padding: 8, 
+                  display: 'flex',
+                  padding: 8,
+                  alignItems: 'baseline',
+                  gap: 4,
                   background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8, 
-                  justifyContent: 'flex-start', 
-                  alignItems: 'baseline', 
-                  gap: 4, 
-                  display: 'flex'
+                  borderRadius: 8
                 }}>
                   <div style={{
                     justifyContent: 'center', 
@@ -298,11 +295,12 @@ const EnhancedChatInterface: React.FC = () => {
                   }}>WS</div>
                 </div>
                 <div style={{
+                  display: 'flex',
                   padding: 8,
-                  justifyContent: 'flex-start', 
-                  alignItems: 'baseline', 
-                  gap: 4, 
-                  display: 'flex'
+                  alignItems: 'baseline',
+                  gap: 4,
+                  background: 'rgba(255, 255, 255, 0.10)', 
+                  borderRadius: 8
                 }}>
                   <div style={{
                     justifyContent: 'center', 
