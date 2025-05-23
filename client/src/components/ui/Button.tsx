@@ -1,4 +1,5 @@
 import React from 'react';
+import typography from '@/styles/typography';
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -48,10 +49,8 @@ const Button: React.FC<ButtonProps> = ({
         display: 'flex',
         flexDirection: 'column',
         color: 'white',
-        fontSize: 14,
-        fontFamily: 'Inter',
-        fontWeight: '400',
-        wordWrap: 'break-word'
+        wordWrap: 'break-word',
+        ...typography.button
       }}>
         {children}
       </div>

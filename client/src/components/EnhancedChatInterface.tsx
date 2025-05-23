@@ -490,10 +490,10 @@ const EnhancedChatInterface: React.FC = () => {
                         marginBottom: '12px'
                       }}>
                         <div style={{
-                          fontWeight: message.role === 'user' ? '600' : '400',
+                          ...typography.button,
                           color: message.role === 'user' ? '#b9a5ff' : 'white',
                           marginBottom: '8px',
-                          ...typography.button
+                          fontWeight: message.role === 'user' ? '600' : '400'
                         }}>
                           {message.role === 'user' ? 'You' : 'Sommelier AI'}
                         </div>
