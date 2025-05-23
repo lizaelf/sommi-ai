@@ -45,8 +45,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           borderLeft: '1px solid transparent',
           backgroundImage: 'linear-gradient(#292929, #292929), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
           backgroundOrigin: 'border-box',
-          backgroundClip: 'padding-box, border-box',
-          boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.06)'
+          backgroundClip: 'padding-box, border-box'
         }}
       >
         <input
