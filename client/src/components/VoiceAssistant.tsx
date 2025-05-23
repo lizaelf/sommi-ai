@@ -286,9 +286,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               padding: '8px',
               display: 'flex',
               justifyContent: 'center',
-              alignItems: 'center'
+              alignItems: 'center',
+              width: '40px',
+              height: '40px',
+              boxSizing: 'border-box'
             }}
-            className={`w-10 h-10 rounded-full transition-all focus:outline-none ${
+            className={`rounded-full transition-all focus:outline-none ${
               isProcessing 
                 ? 'text-gray-400 cursor-not-allowed' 
                 : 'text-white opacity-70 hover:opacity-100'
