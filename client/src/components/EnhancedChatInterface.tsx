@@ -196,7 +196,7 @@ const EnhancedChatInterface: React.FC = () => {
                 wordWrap: 'break-word',
                 position: 'relative',
                 zIndex: 2,
-                padding: '0 20px',
+                padding: '20px 20px',
                 gap: '6px',
                 marginBottom: '16px',
                 ...typography.body1R
