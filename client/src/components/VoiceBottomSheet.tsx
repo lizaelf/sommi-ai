@@ -152,7 +152,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             onClick={onMute}
             style={{
               flex: 1,
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '32px',
               height: '48px',
               display: 'flex',
@@ -176,7 +176,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             onClick={onAsk}
             style={{
               flex: 1,
-              backgroundColor: 'white',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '32px',
               height: '48px',
               display: 'flex',
