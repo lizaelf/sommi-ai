@@ -7,9 +7,9 @@
  * Body+1: font-size 16px, line-height: 24px, font-family: 'Inter', font-weight: 400
  * Body: font-size 16px, line-height: 24px, font-family: 'Inter', font-weight: 400
  * Button: font-size 14px, line-height: 16px, font-family: 'Inter', font-weight: 400, vertical trim
- * Body-1M: font-size 12px, line-height: 16px, font-family: 'Inter', font-weight: 500
- * Body-1R: font-size 12px, line-height: 16px, font-family: 'Inter', font-weight: 400
- * Num: font-size 12px, line-height: 16px, font-family: 'Inter', font-weight: 600
+ * Body-1M: font-size 13px, line-height: 16px, font-family: 'Inter', font-weight: 500
+ * Body-1R: font-size 13px, line-height: 16px, font-family: 'Inter', font-weight: 400
+ * Num: font-size 13px, line-height: 16px, font-family: 'Inter', font-weight: 600
  */
 
 const typography = {
@@ -55,14 +55,14 @@ const typography = {
   
   // Special body styles with modifiers for medium and regular weights
   body1M: {
-    fontSize: '12px',
+    fontSize: '13px',
     lineHeight: '16px',
     fontFamily: 'Inter, sans-serif',
     fontWeight: '500' // Medium weight
   },
   
   body1R: {
-    fontSize: '12px',
+    fontSize: '13px',
     lineHeight: '16px',
     fontFamily: 'Inter, sans-serif',
     fontWeight: '400' // Regular weight
@@ -70,7 +70,7 @@ const typography = {
   
   // Numeric text style
   num: {
-    fontSize: '12px',
+    fontSize: '13px',
     lineHeight: '16px',
     fontFamily: 'Inter, sans-serif',
     fontWeight: '600'
