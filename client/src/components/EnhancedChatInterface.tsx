@@ -9,6 +9,8 @@ import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
+// Import icon libraries
+import { Food, Cheese, Salad, CircleOffFilled, ChevronDown } from 'iconoir-react';
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
