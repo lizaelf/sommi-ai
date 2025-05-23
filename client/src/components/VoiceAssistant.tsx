@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
+import VoiceBottomSheet from './VoiceBottomSheet';
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -12,6 +13,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false); // Track if last question was via voice
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -50,6 +52,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
     }
     
+    // If we're already listening, stop the recognition
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      return;
+    }
+    
+    // Otherwise, show the bottom sheet
+    setShowBottomSheet(true);
+  };
+  
+  // Function to start listening (used by the bottom sheet "Ask" button)
+  const startListening = async () => {
     // Check if speech recognition is available
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -75,65 +91,60 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       console.log("Microphone permission granted");
 
-      // Now toggle the recognition
-      if (isListening) {
-        recognitionRef.current.stop();
-      } else {
-        try {
-          // Create a fresh instance to avoid issues with reusing
-          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (SpeechRecognition) {
-            // Create a new instance to avoid stale state
-            if (recognitionRef.current) {
-              recognitionRef.current.abort(); // Force cleanup
-            }
-            
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.lang = 'en-US';
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-            
-            // Re-attach event handlers to the fresh instance
-            recognitionRef.current.onresult = (event: any) => {
-              const transcript = event.results[0][0].transcript;
-              setStatus('Processing your question...');
-              setUsedVoiceInput(true);
-              onSendMessage(transcript);
-            };
-            
-            recognitionRef.current.onend = () => {
-              setIsListening(false);
-              setStatus('');
-            };
-            
-            recognitionRef.current.onstart = () => {
-              setIsListening(true);
-            };
-            
-            recognitionRef.current.onerror = (event: any) => {
-              console.error('Speech recognition error:', event.error);
-              setStatus(`Error: ${event.error}`);
-              setIsListening(false);
-              
-              toast({
-                title: "Voice Recognition Error",
-                description: `Error: ${event.error}. Please try again.`,
-                variant: "destructive"
-              });
-            };
+      try {
+        // Create a fresh instance to avoid issues with reusing
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          // Create a new instance to avoid stale state
+          if (recognitionRef.current) {
+            recognitionRef.current.abort(); // Force cleanup
           }
           
-          // Start the recognition
-          recognitionRef.current.start();
-          setStatus('Listening for your question...');
-        } catch (error) {
-          console.error('Failed to start speech recognition:', error);
-          toast({
-            title: "Error",
-            description: "Failed to start speech recognition. Please try again.",
-            variant: "destructive"
-          });
+          recognitionRef.current = new SpeechRecognition();
+          recognitionRef.current.lang = 'en-US';
+          recognitionRef.current.continuous = false;
+          recognitionRef.current.interimResults = false;
+          
+          // Re-attach event handlers to the fresh instance
+          recognitionRef.current.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            setStatus('Processing your question...');
+            setUsedVoiceInput(true);
+            onSendMessage(transcript);
+          };
+          
+          recognitionRef.current.onend = () => {
+            setIsListening(false);
+            setStatus('');
+          };
+          
+          recognitionRef.current.onstart = () => {
+            setIsListening(true);
+          };
+          
+          recognitionRef.current.onerror = (event: any) => {
+            console.error('Speech recognition error:', event.error);
+            setStatus(`Error: ${event.error}`);
+            setIsListening(false);
+            
+            toast({
+              title: "Voice Recognition Error",
+              description: `Error: ${event.error}. Please try again.`,
+              variant: "destructive"
+            });
+          };
         }
+        
+        // Start the recognition
+        recognitionRef.current.start();
+        setStatus('Listening for your question...');
+      } catch (error) {
+        console.error('Failed to start speech recognition:', error);
+        toast({
+          title: "Error",
+          description: "Failed to start speech recognition. Please try again.",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Microphone permission error:', error);
@@ -267,6 +278,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, status, usedVoiceInput]);
 
+  // Handle closing the bottom sheet
+  const handleCloseBottomSheet = () => {
+    setShowBottomSheet(false);
+  };
+  
+  // Handle the Ask button in the bottom sheet
+  const handleAsk = () => {
+    setShowBottomSheet(false);
+    startListening();
+  };
+  
+  // Handle the Mute button in the bottom sheet
+  const handleMute = () => {
+    setShowBottomSheet(false);
+    // No action needed beyond closing the sheet
+    toast({
+      title: "Audio Muted",
+      description: "Voice responses are now muted.",
+    });
+  };
+
   return (
     <div className="flex items-center">
       {status === 'Listening for your question...' ? (
@@ -308,6 +340,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           {/* Sound Test Button - hidden as requested */}
         </>
       )}
+      
+      {/* Voice Bottom Sheet */}
+      <VoiceBottomSheet 
+        isOpen={showBottomSheet} 
+        onClose={handleCloseBottomSheet}
+        onMute={handleMute}
+        onAsk={handleAsk}
+      />
     </div>
   );
 };
