@@ -38,7 +38,8 @@ const WineBottleImage: React.FC = () => {
           objectFit: 'contain',
           position: 'relative',
           zIndex: 3,
-          marginTop: '32px'
+          marginTop: '12px',
+          marginBottom: '12px'
         }}
       />
     </div>
