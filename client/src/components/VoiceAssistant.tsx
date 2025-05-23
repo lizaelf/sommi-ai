@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
+import VoiceBottomSheet from './VoiceBottomSheet';
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -12,6 +13,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false); // Track if last question was via voice
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -34,6 +36,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   }, []);
 
   const toggleListening = async () => {
+    // Show the bottom sheet first
+    setShowBottomSheet(true);
+    console.log("Opening bottom sheet...");
+    
     // Ensure audio context is initialized
     if (!isAudioContextInitialized()) {
       try {
@@ -267,8 +273,97 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, status, usedVoiceInput]);
 
+  // Handle bottom sheet actions
+  const handleCloseBottomSheet = () => {
+    setShowBottomSheet(false);
+  };
+
+  const handleStartListening = async () => {
+    // Hide the bottom sheet
+    setShowBottomSheet(false);
+    
+    // Check if speech recognition is available
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({
+        title: "Speech Recognition Not Supported",
+        description: "Your browser doesn't support speech recognition. Try using Chrome.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      if (typeof navigator.mediaDevices?.getUserMedia !== 'function') {
+        throw new Error('getUserMedia not supported');
+      }
+      
+      // Request permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop());
+      
+      // Create a fresh instance 
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+      
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      
+      // Re-attach event handlers
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setStatus('Processing your question...');
+        setUsedVoiceInput(true);
+        onSendMessage(transcript);
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+        setStatus('');
+      };
+      
+      recognitionRef.current.onstart = () => {
+        setIsListening(true);
+      };
+      
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setStatus(`Error: ${event.error}`);
+        setIsListening(false);
+        
+        toast({
+          title: "Voice Recognition Error",
+          description: `Error: ${event.error}. Please try again.`,
+          variant: "destructive"
+        });
+      };
+      
+      // Start the recognition
+      recognitionRef.current.start();
+      setStatus('Listening for your question...');
+    } catch (error) {
+      console.error('Microphone permission error:', error);
+      toast({
+        title: "Microphone Error",
+        description: "Cannot access your microphone. Please check your permissions.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="flex items-center">
+      {/* Wine glass bottom sheet */}
+      <VoiceBottomSheet 
+        isOpen={showBottomSheet}
+        onClose={handleCloseBottomSheet}
+        onMute={handleCloseBottomSheet}
+        onAsk={handleStartListening}
+      />
+      
       {status === 'Listening for your question...' ? (
         // Only show status when listening for voice input
         <div id="status" className="flex items-center text-xs font-medium text-[#6A53E7] bg-purple-50 px-2 py-1 rounded-full border border-[#6A53E7]/20">
@@ -304,8 +399,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
             </svg>
           </div>
-          
-          {/* Sound Test Button - hidden as requested */}
         </>
       )}
     </div>
