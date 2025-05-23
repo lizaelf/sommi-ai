@@ -8,6 +8,7 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   fullWidth?: boolean;
   disabled?: boolean;
+  style?: React.CSSProperties;
 }
 
 const Button: React.FC<ButtonProps> = ({ 
@@ -16,7 +17,8 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   type = 'button',
   fullWidth = false,
-  disabled = false
+  disabled = false,
+  style = {}
 }) => {
   return (
     <button
@@ -25,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       style={{
         width: fullWidth ? '100%' : 'auto',
-        padding: '16px 24px', // 16px top/bottom, 24px left/right
+        padding: '0px 24px', // Adjusted padding to accommodate fixed height
         background: 'rgba(255, 255, 255, 0.04)',
         borderRadius: 24,
         border: '1px solid transparent',
@@ -38,6 +40,8 @@ const Button: React.FC<ButtonProps> = ({
         display: 'inline-flex',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.7 : 1,
+        height: '40px', // Fixed height for all buttons
+        ...style
       }}
       className={className}
     >

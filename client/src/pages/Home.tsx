@@ -4,6 +4,7 @@ import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
+import typography from '@/styles/typography';
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -44,9 +45,31 @@ export default function Home() {
           <Logo />
           <div className="flex items-center space-x-3">
             <Link to="/wine/1">
-              <Button>
-                My Cellar
-              </Button>
+              <div style={{
+                width: '92px',
+                height: '40px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                background: 'rgba(255, 255, 255, 0.04)',
+                borderRadius: '24px',
+                border: '1px solid transparent',
+                backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
+                backgroundOrigin: 'border-box',
+                backgroundClip: 'padding-box, border-box',
+                padding: '0 24px',
+                cursor: 'pointer'
+              }}>
+                <span style={{
+                  color: 'white',
+                  fontSize: '14px',
+                  lineHeight: 'normal',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: '400'
+                }}>
+                  My cellar
+                </span>
+              </div>
             </Link>
           </div>
         </div>
