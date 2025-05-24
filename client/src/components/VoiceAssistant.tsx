@@ -418,11 +418,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   
   // Handle the Mute button in the bottom sheet
   const handleMute = () => {
+    // First, stop any currently playing audio by canceling speech synthesis
+    if ('speechSynthesis' in window) {
+      console.log("Canceling any ongoing speech");
+      window.speechSynthesis.cancel();
+      
+      // Dispatch an event to notify that audio has been stopped
+      const audioStoppedEvent = new CustomEvent('audio-status', {
+        detail: { status: 'stopped', reason: 'muted' }
+      });
+      window.dispatchEvent(audioStoppedEvent);
+    }
+    
+    // Close the bottom sheet
     setShowBottomSheet(false);
-    // No action needed beyond closing the sheet
+    
+    // Inform the user
     toast({
       title: "Audio Muted",
-      description: "Voice responses are now muted.",
+      description: "Voice response stopped. Text response will still be displayed.",
     });
   };
 
