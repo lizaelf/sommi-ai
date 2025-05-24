@@ -581,16 +581,16 @@ const EnhancedChatInterface: React.FC = () => {
                       }}>
                         <div 
                           style={{
-                            backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                            borderRadius: message.role === 'user' ? '16px' : '0',
-                            padding: message.role === 'user' ? '16px' : '0',
+                            backgroundColor: message.role === 'user' ? '#F5F5F5' : message.role === 'assistant' ? '#191919' : 'transparent',
+                            borderRadius: '16px',
+                            padding: '16px',
                             width: message.role === 'user' ? 'fit-content' : '100%',
                             maxWidth: message.role === 'user' ? '80%' : '100%'
                           }}
                           data-role={message.role}
                         >
                           <div style={{
-                            color: message.role === 'user' ? '#000000' : '#CECECE',
+                            color: message.role === 'user' ? '#000000' : '#DBDBDB',
                             whiteSpace: 'pre-wrap',
                             fontFamily: 'Inter, system-ui, sans-serif',
                             fontSize: '16px', // Body font size
@@ -606,8 +606,11 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Typing Indicator */}
                   {isTyping && (
                     <div style={{
-                      backgroundColor: 'transparent',
-                      marginBottom: '12px'
+                      backgroundColor: '#191919',
+                      borderRadius: '16px',
+                      padding: '16px',
+                      marginBottom: '12px',
+                      width: '100%'
                     }}>
                       {/* Title removed from typing indicator as well */}
                       <div className="typing-indicator">
