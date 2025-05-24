@@ -302,54 +302,37 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
   return (
     <>
-      {/* Wine circle image background */}
+      {/* Wine circle image that scales with animation */}
       <img 
         src={wineCircleImage} 
         alt="Wine Circle"
         style={{
-          width: `${size * 1.1}px`, // Slightly larger than the animation circle
-          height: `${size * 1.1}px`,
-          borderRadius: '50%',
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 1
-        }}
-      />
-      
-      {/* Main circle with reactive size and opacity - the animation happens on this div */}
-      <div 
-        style={{
-          width: `${size}px`,
+          width: `${size}px`, // Size changes with the animation
           height: `${size}px`,
           borderRadius: '50%',
-          background: `rgba(255, 255, 255, ${opacity})`,
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          mixBlendMode: 'screen', // Creates a nice blending effect with the wine image
-          zIndex: 2,
-          // Remove transition to allow for more fluid animation directly from frame updates
+          zIndex: 1,
+          opacity: 1 // Full opacity for the wine image
         }}
       />
       
-      {/* Inner circle provides layered effect */}
+      {/* Inner circle provides focused area - without background color */}
       {(isListening || isProcessing || isPlaying) && (
         <div 
           style={{
             width: `${size * 0.7}px`,
             height: `${size * 0.7}px`,
             borderRadius: '50%',
-            background: `rgba(255, 255, 255, ${opacity * 0.5})`,
+            border: `1px solid rgba(255, 255, 255, ${opacity * 0.3})`, // Subtle border instead of background
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            mixBlendMode: 'screen', // Creates a nice blending effect with the wine image
-            zIndex: 3,
-            // Remove transition to allow for more fluid animation directly from frame updates
+            zIndex: 2,
+            boxShadow: `0 0 ${opacity * 10}px rgba(255, 255, 255, ${opacity * 0.2})` // Subtle glow
           }}
         />
       )}
