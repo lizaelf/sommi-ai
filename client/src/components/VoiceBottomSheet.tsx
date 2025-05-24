@@ -164,11 +164,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           </svg>
         </div>
 
-        {/* Wine glass visualization - exploded/larger version */}
+        {/* Wine glass visualization */}
         <div 
           style={{ 
-            width: '280px', // Much larger for visual impact
-            height: '280px',
+            width: '180px', // Exact size as requested
+            height: '180px',
             marginBottom: '40px',
             marginTop: '10px',
             borderRadius: '50%',
@@ -177,11 +177,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            boxShadow: 'none', // Glow removed
+            boxShadow: 'none',
             overflow: 'hidden'
           }}
         >
-          <WineImage isAnimating={true} size={280} />
+          <WineImage isAnimating={true} size={180} />
         </div>
 
         {/* Buttons or Listening indicator based on state */}
