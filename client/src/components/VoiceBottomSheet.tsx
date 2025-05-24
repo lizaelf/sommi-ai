@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import WineCircle from './WineCircle';
+import WineCircleImage from './WineCircleImage';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -181,31 +181,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             overflow: 'hidden'
           }}
         >
-          {/* Wine circle image */}
-          <div style={{
-            width: '280px',
-            height: '280px',
-            borderRadius: '50%',
-            overflow: 'hidden',
-            position: 'relative',
-            boxShadow: isListening ? '0 0 20px rgba(128, 0, 0, 0.5)' : 'none',
-            transition: 'box-shadow 0.8s ease-in-out',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}>
-            <img 
-              src="/wine-circle.png"
-              alt="Wine viewed from above"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                objectPosition: 'center',
-                transform: isListening ? 'scale(1.05)' : 'scale(1)',
-                transition: 'transform 0.8s ease-in-out',
-                opacity: isListening ? '1' : '0.95',
-              }}
-            />
-          </div>
+          {/* Wine circle image component with embedded image */}
+          <WineCircleImage 
+            size={280} 
+            isAnimating={isListening} 
+          />
         </div>
 
         {/* Buttons or Listening indicator based on state */}
