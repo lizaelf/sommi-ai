@@ -101,12 +101,14 @@ For tasting notes, be specific and detailed. For food pairings, be creative but 
     // Call OpenAI API
     let response;
     try {
-      // First try with the primary model
+      // First try with the primary model - optimized for speed
       response = await openai.chat.completions.create({
         model: MODEL,
         messages: newMessages,
-        temperature: 0.7,
-        max_tokens: 2000
+        temperature: 0.5, // Lower temperature for more focused, faster responses
+        max_tokens: 300,  // Reduced token limit for faster generation
+        presence_penalty: -0.1, // Slight negative presence penalty for more concise responses
+        frequency_penalty: 0.2  // Slight frequency penalty to avoid repetition
       });
     } catch (err) {
       const primaryModelError = err as any;
@@ -117,8 +119,10 @@ For tasting notes, be specific and detailed. For food pairings, be creative but 
         response = await openai.chat.completions.create({
           model: FALLBACK_MODEL,
           messages: newMessages,
-          temperature: 0.7,
-          max_tokens: 2000
+          temperature: 0.5, // Lower temperature for faster responses
+          max_tokens: 300,  // Reduced token limit for faster generation
+          presence_penalty: -0.1, // Encourage more concise responses
+          frequency_penalty: 0.2  // Avoid repetition
         });
       } else {
         // If it's not a model availability issue, rethrow the error
@@ -222,10 +226,10 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     
     // Use OpenAI's Text-to-Speech API with optimized settings
     const response = await openai.audio.speech.create({
-      model: "tts-1-hd", // Higher quality but faster model
-      voice: "nova", // Options: alloy, echo, fable, onyx, nova, shimmer (using nova as it sounds more natural)
+      model: "tts-1", // Standard model for faster processing
+      voice: "onyx", // Male voice as requested - onyx is a male voice
       input: cleanText,
-      speed: 1.2, // Slightly faster speech for quicker delivery
+      speed: 1.3, // Faster speech for quicker delivery
     });
     
     console.log("OpenAI TTS response received");

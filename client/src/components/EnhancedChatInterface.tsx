@@ -106,18 +106,23 @@ const EnhancedChatInterface: React.FC = () => {
       await addMessage(tempUserMessage);
       
       // Create a system message containing the prompt
-      const systemPrompt = "You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses concise but informative.";
+      // Optimize the prompt for faster responses by explicitly requesting brevity
+      const systemPrompt = "You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses very concise and to the point. Aim for 2-3 sentences maximum unless specifically asked for more detail.";
       
-      // Make the API request
+      // Make the API request with optimization flags
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Priority': 'high' // Signal high priority to the server
+        },
         body: JSON.stringify({
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content }
           ],
-          conversationId: currentConversationId
+          conversationId: currentConversationId,
+          optimize_for_speed: true // Additional flag to optimize for speed
         })
       });
       
