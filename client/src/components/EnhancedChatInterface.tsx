@@ -40,6 +40,7 @@ const EnhancedChatInterface: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
   const [hideSuggestions, setHideSuggestions] = useState(false);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -374,134 +375,312 @@ const EnhancedChatInterface: React.FC = () => {
                   Food pairing
                 </h1>
 
-                {/* Red Meat Pairing */}
-                <div style={{
-                  backgroundColor: '#191919',
-                  borderRadius: '16px',
-                  padding: '0 20px',
-                  height: '64px',
-                  marginBottom: '12px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderTop: '2px solid transparent',
-                  borderRight: '1px solid transparent',
-                  borderBottom: '1px solid transparent',
-                  borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                  backgroundOrigin: 'border-box',
-                  backgroundClip: 'padding-box, border-box'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>🥩</span>
-                    <span style={{ 
-                      color: 'white', 
-                      ...typography.bodyPlus1
-                    }}>Red Meat</span>
+                {/* Red Meat Pairing - Expandable */}
+                <div 
+                  onClick={() => {
+                    // Toggle expanded state for this item
+                    setExpandedItem(expandedItem === 'redMeat' ? null : 'redMeat');
+                  }}
+                  style={{
+                    backgroundColor: '#191919',
+                    borderRadius: '16px',
+                    padding: '0 20px',
+                    minHeight: '64px', // Use minHeight instead of fixed height to allow expansion
+                    marginBottom: '12px',
+                    display: 'flex',
+                    flexDirection: 'column', // Change to column for expanded view
+                    gap: '10px',
+                    alignSelf: 'stretch',
+                    cursor: 'pointer', // Show pointer cursor to indicate clickable
+                    transition: 'all 0.3s ease', // Smooth transition for expanding
+                    borderTop: '2px solid transparent',
+                    borderRight: '1px solid transparent',
+                    borderBottom: '1px solid transparent',
+                    borderLeft: '1px solid transparent',
+                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box'
+                  }}
+                >
+                  {/* Header row - always visible */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    minHeight: '64px',
+                    width: '100%'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ fontSize: '24px' }}>🥩</span>
+                      <span style={{ 
+                        color: 'white', 
+                        ...typography.bodyPlus1
+                      }}>Red Meat</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ 
+                        color: 'black',
+                        backgroundColor: '#e0e0e0',
+                        padding: '6px 14px',
+                        borderRadius: '999px',
+                        ...typography.buttonPlus1
+                      }}>
+                        Perfect match
+                      </span>
+                      {/* Rotating chevron icon for expanded state */}
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{
+                          transform: expandedItem === 'redMeat' ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.3s ease'
+                        }}
+                      >
+                        <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                      </svg>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ 
-                      color: 'black',
-                      backgroundColor: '#e0e0e0',
-                      padding: '6px 14px',
-                      borderRadius: '999px',
-                      ...typography.buttonPlus1
+                  
+                  {/* Expanded content - only visible when expanded */}
+                  {expandedItem === 'redMeat' && (
+                    <div style={{
+                      padding: '0 0 20px 36px', // Indent to align with text above
+                      color: 'white',
+                      ...typography.body // Using Body text style as requested
                     }}>
-                      Perfect match
-                    </span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <p>Cabernet Sauvignon is the classic pairing for red meat dishes, especially:</p>
+                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
+                        <li>Grilled ribeye or NY strip steak</li>
+                        <li>Beef tenderloin with peppercorn sauce</li>
+                        <li>Lamb chops or rack of lamb</li>
+                        <li>Slow-roasted prime rib</li>
+                      </ul>
+                      <p>The high tannins in Cabernet complement the proteins and fats in red meat, creating a perfect balance.</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Cheese Pairings - Expandable */}
+                <div 
+                  onClick={() => {
+                    // Toggle expanded state for this item
+                    setExpandedItem(expandedItem === 'cheese' ? null : 'cheese');
+                  }}
+                  style={{
+                    backgroundColor: '#191919',
+                    borderRadius: '16px',
+                    padding: '0 20px',
+                    minHeight: '64px',
+                    marginBottom: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    alignSelf: 'stretch',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    borderTop: '2px solid transparent',
+                    borderRight: '1px solid transparent',
+                    borderBottom: '1px solid transparent',
+                    borderLeft: '1px solid transparent',
+                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box'
+                  }}
+                >
+                  {/* Header row - always visible */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    minHeight: '64px',
+                    width: '100%'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ fontSize: '24px' }}>🧀</span>
+                      <span style={{ color: 'white', ...typography.bodyPlus1 }}>Cheese Pairings</span>
+                    </div>
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        transform: expandedItem === 'cheese' ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.3s ease'
+                      }}
+                    >
                       <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
                     </svg>
                   </div>
+                  
+                  {/* Expanded content - only visible when expanded */}
+                  {expandedItem === 'cheese' && (
+                    <div style={{
+                      padding: '0 0 20px 36px',
+                      color: 'white',
+                      ...typography.body
+                    }}>
+                      <p>Cabernet Sauvignon pairs wonderfully with aged and firm cheeses:</p>
+                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
+                        <li>Aged cheddar (minimum 1-2 years)</li>
+                        <li>Gouda (aged 2+ years)</li>
+                        <li>Pecorino and other aged sheep's milk cheeses</li>
+                        <li>Blue cheeses like Stilton or Roquefort</li>
+                      </ul>
+                      <p>The firm texture and rich flavor of these cheeses stand up to Cabernet's bold character.</p>
+                    </div>
+                  )}
                 </div>
 
-                {/* Cheese Pairings */}
-                <div style={{
-                  backgroundColor: '#191919',
-                  borderRadius: '16px',
-                  padding: '0 20px',
-                  height: '64px',
-                  marginBottom: '12px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderTop: '2px solid transparent',
-                  borderRight: '1px solid transparent',
-                  borderBottom: '1px solid transparent',
-                  borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                  backgroundOrigin: 'border-box',
-                  backgroundClip: 'padding-box, border-box'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>🧀</span>
-                    <span style={{ color: 'white', ...typography.bodyPlus1 }}>Cheese Pairings</span>
+                {/* Vegetarian Options - Expandable */}
+                <div 
+                  onClick={() => {
+                    // Toggle expanded state for this item
+                    setExpandedItem(expandedItem === 'vegetarian' ? null : 'vegetarian');
+                  }}
+                  style={{
+                    backgroundColor: '#191919',
+                    borderRadius: '16px',
+                    padding: '0 20px',
+                    minHeight: '64px',
+                    marginBottom: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    alignSelf: 'stretch',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    borderTop: '2px solid transparent',
+                    borderRight: '1px solid transparent',
+                    borderBottom: '1px solid transparent',
+                    borderLeft: '1px solid transparent',
+                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box'
+                  }}
+                >
+                  {/* Header row - always visible */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    minHeight: '64px',
+                    width: '100%'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ fontSize: '24px' }}>🥗</span>
+                      <span style={{ color: 'white', ...typography.bodyPlus1 }}>Vegetarian Options</span>
+                    </div>
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        transform: expandedItem === 'vegetarian' ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.3s ease'
+                      }}
+                    >
+                      <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                    </svg>
                   </div>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                  </svg>
+                  
+                  {/* Expanded content - only visible when expanded */}
+                  {expandedItem === 'vegetarian' && (
+                    <div style={{
+                      padding: '0 0 20px 36px',
+                      color: 'white',
+                      ...typography.body
+                    }}>
+                      <p>While Cabernet Sauvignon is traditionally paired with meat, these vegetarian dishes also complement its bold flavors:</p>
+                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
+                        <li>Grilled portobello mushrooms</li>
+                        <li>Eggplant parmesan or roasted eggplant dishes</li>
+                        <li>Lentil or bean-based dishes with rich sauces</li>
+                        <li>Vegetarian dishes with umami flavors like soy, miso or mushroom</li>
+                      </ul>
+                      <p>Plant-based proteins with caramelized, roasted, or grilled flavors work best with Cabernet.</p>
+                    </div>
+                  )}
                 </div>
 
-                {/* Vegetarian Options */}
-                <div style={{
-                  backgroundColor: '#191919',
-                  borderRadius: '16px',
-                  padding: '0 20px',
-                  height: '64px',
-                  marginBottom: '12px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderTop: '2px solid transparent',
-                  borderRight: '1px solid transparent',
-                  borderBottom: '1px solid transparent',
-                  borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                  backgroundOrigin: 'border-box',
-                  backgroundClip: 'padding-box, border-box'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>🥗</span>
-                    <span style={{ color: 'white', ...typography.bodyPlus1 }}>Vegetarian Options</span>
+                {/* Avoid pairing with - Expandable */}
+                <div 
+                  onClick={() => {
+                    // Toggle expanded state for this item
+                    setExpandedItem(expandedItem === 'avoid' ? null : 'avoid');
+                  }}
+                  style={{
+                    backgroundColor: '#191919',
+                    borderRadius: '16px',
+                    padding: '0 20px',
+                    minHeight: '64px',
+                    marginBottom: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    alignSelf: 'stretch',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    borderTop: '2px solid transparent',
+                    borderRight: '1px solid transparent',
+                    borderBottom: '1px solid transparent',
+                    borderLeft: '1px solid transparent',
+                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box'
+                  }}
+                >
+                  {/* Header row - always visible */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    minHeight: '64px',
+                    width: '100%'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
+                      <span style={{ color: 'white', ...typography.bodyPlus1 }}>Avoid pairing with</span>
+                    </div>
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        transform: expandedItem === 'avoid' ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.3s ease'
+                      }}
+                    >
+                      <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                    </svg>
                   </div>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                  </svg>
-                </div>
-
-                {/* Avoid pairing with */}
-                <div style={{
-                  backgroundColor: '#191919',
-                  borderRadius: '16px',
-                  padding: '0 20px',
-                  height: '64px',
-                  marginBottom: '12px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderTop: '2px solid transparent',
-                  borderRight: '1px solid transparent',
-                  borderBottom: '1px solid transparent',
-                  borderLeft: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                  backgroundOrigin: 'border-box',
-                  backgroundClip: 'padding-box, border-box'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
-                    <span style={{ color: 'white', ...typography.bodyPlus1 }}>Avoid pairing with</span>
-                  </div>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                  </svg>
+                  
+                  {/* Expanded content - only visible when expanded */}
+                  {expandedItem === 'avoid' && (
+                    <div style={{
+                      padding: '0 0 20px 36px',
+                      color: 'white',
+                      ...typography.body
+                    }}>
+                      <p>Cabernet Sauvignon's bold character can clash with these foods:</p>
+                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
+                        <li>Delicate fish dishes like sole or cod</li>
+                        <li>Light vegetable dishes without substantial sauces</li>
+                        <li>Spicy foods (the tannins can amplify heat)</li>
+                        <li>Acidic foods like citrus-based dishes or salads with vinaigrette</li>
+                        <li>Chocolate desserts (despite popular belief, most dark chocolates clash)</li>
+                      </ul>
+                      <p>The wine's tannins and structure can overwhelm subtle flavors or create unpleasant combinations with certain foods.</p>
+                    </div>
+                  )}
                 </div>
               </div>
               
