@@ -116,9 +116,9 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     };
   }, []);
 
-  // Start/stop animation when listening or playing changes
+  // Start/stop animation when listening, processing, or playing changes
   useEffect(() => {
-    if (isListening || isPlaying) {
+    if (isListening || isProcessing || isPlaying) {
       // Only start a new animation if there isn't one already running
       if (!animationRef.current) {
         animationRef.current = requestAnimationFrame(animate);
@@ -134,7 +134,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     return () => {
       cancelAnimationFrame(animationRef.current);
     };
-  }, [isListening, isPlaying]);
+  }, [isListening, isProcessing, isPlaying]);
 
   return (
     <>
@@ -152,8 +152,8 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
         }}
       />
       
-      {/* Optional inner circle for visual depth - only shown during audio activity */}
-      {(isListening || isPlaying) && (
+      {/* Optional inner circle for visual depth - only shown during active states */}
+      {(isListening || isProcessing || isPlaying) && (
         <div 
           style={{
             width: `${size * 0.7}px`,
