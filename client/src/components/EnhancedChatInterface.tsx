@@ -11,6 +11,17 @@ import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
 // Import typography styles
 
+// Extend Window interface to include voiceAssistant
+declare global {
+  interface Window {
+    voiceAssistant?: {
+      speakResponse: (text: string) => Promise<void>;
+      playLastAudio: () => void;
+      speakLastAssistantMessage: () => void;
+    };
+  }
+}
+
 // Create an enhanced chat interface that uses IndexedDB for persistence
 const EnhancedChatInterface: React.FC = () => {
   // Use our enhanced conversation hook
@@ -124,6 +135,16 @@ const EnhancedChatInterface: React.FC = () => {
         
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
+        
+        // Auto-speak the assistant's response if window.voiceAssistant is available
+        if (window.voiceAssistant && window.voiceAssistant.speakResponse) {
+          try {
+            console.log("Auto-speaking the assistant's response");
+            await window.voiceAssistant.speakResponse(assistantMessage.content);
+          } catch (error) {
+            console.error("Failed to auto-speak response:", error);
+          }
+        }
       }
       
       // Refresh all messages
