@@ -446,11 +446,13 @@ const EnhancedChatInterface: React.FC = () => {
                   
                   {/* Expanded content - only visible when expanded */}
                   {expandedItem === 'redMeat' && (
-                    <div style={{
-                      padding: '0 0 20px 36px', // Indent to align with text above
-                      color: 'white',
-                      ...typography.body // Using Body text style as requested
-                    }}>
+                    <div
+                      style={{
+                        padding: '0 0 20px 0', // Remove left padding
+                        color: 'white',
+                        ...typography.body // Using Body text style as requested
+                      }}
+                      className="pl-[0px] pr-[0px]">
                       <p>Cabernet Sauvignon is the classic pairing for red meat dishes, especially:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
                         <li>Grilled ribeye or NY strip steak</li>
@@ -520,7 +522,7 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Expanded content - only visible when expanded */}
                   {expandedItem === 'cheese' && (
                     <div style={{
-                      padding: '0 0 20px 36px',
+                      padding: '0 0 20px 0',
                       color: 'white',
                       ...typography.body
                     }}>
@@ -593,7 +595,7 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Expanded content - only visible when expanded */}
                   {expandedItem === 'vegetarian' && (
                     <div style={{
-                      padding: '0 0 20px 36px',
+                      padding: '0 0 20px 0',
                       color: 'white',
                       ...typography.body
                     }}>
@@ -666,7 +668,7 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Expanded content - only visible when expanded */}
                   {expandedItem === 'avoid' && (
                     <div style={{
-                      padding: '0 0 20px 36px',
+                      padding: '0 0 20px 0',
                       color: 'white',
                       ...typography.body
                     }}>
