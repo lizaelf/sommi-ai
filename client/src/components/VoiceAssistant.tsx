@@ -172,11 +172,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           recognitionRef.current.onstart = () => {
             setIsListening(true);
             
-            // Dispatch event when microphone starts listening
-            const micListeningEvent = new CustomEvent('mic-status', {
-              detail: { status: 'listening' }
-            });
-            window.dispatchEvent(micListeningEvent);
+            // Capture the stream again specifically for audio visualization
+            navigator.mediaDevices.getUserMedia({ audio: true })
+              .then(stream => {
+                // Dispatch event when microphone starts listening - include the stream for frequency analysis
+                const micListeningEvent = new CustomEvent('mic-status', {
+                  detail: { 
+                    status: 'listening',
+                    stream: stream  // Pass the microphone stream for frequency analysis
+                  }
+                });
+                window.dispatchEvent(micListeningEvent);
+              })
+              .catch(err => {
+                console.error("Error capturing audio stream for visualization:", err);
+                // Fall back to basic event without stream
+                const micListeningEvent = new CustomEvent('mic-status', {
+                  detail: { status: 'listening' }
+                });
+                window.dispatchEvent(micListeningEvent);
+              });
           };
           
           recognitionRef.current.onerror = (event: any) => {
