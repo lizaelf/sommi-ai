@@ -579,17 +579,22 @@ const EnhancedChatInterface: React.FC = () => {
                         width: '100%',
                         marginBottom: '12px'
                       }}>
-                        <div style={{
-                          backgroundColor: message.role === 'user' ? '#F5F5F5' : '#191919',
-                          borderRadius: '16px',
-                          padding: '16px',
-                          width: message.role === 'user' ? '80%' : '100%'
-                        }}>
-                          {/* Title removed as requested */}
+                        <div 
+                          style={{
+                            backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
+                            borderRadius: message.role === 'user' ? '16px' : '0',
+                            padding: message.role === 'user' ? '16px' : '0',
+                            width: message.role === 'user' ? 'fit-content' : '100%',
+                            maxWidth: message.role === 'user' ? '80%' : '100%'
+                          }}
+                          data-role={message.role}
+                        >
                           <div style={{
-                            color: message.role === 'user' ? '#000000' : 'white',
+                            color: message.role === 'user' ? '#000000' : '#CECECE',
                             whiteSpace: 'pre-wrap',
-                            ...typography.body
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            fontSize: '16px', // Body font size
+                            lineHeight: '1.6'
                           }}>
                             {message.content}
                           </div>
@@ -601,9 +606,7 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Typing Indicator */}
                   {isTyping && (
                     <div style={{
-                      backgroundColor: '#191919',
-                      borderRadius: '16px',
-                      padding: '16px',
+                      backgroundColor: 'transparent',
                       marginBottom: '12px'
                     }}>
                       {/* Title removed from typing indicator as well */}
