@@ -209,8 +209,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           };
         }
         
-        // Start the recognition
+        // Start the recognition and make sure we update state
         recognitionRef.current.start();
+        setIsListening(true); // Explicitly set this to ensure UI updates
         setStatus('Listening for your question...');
       } catch (error) {
         console.error('Failed to start speech recognition:', error);
@@ -389,9 +390,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   
   // Handle the Ask button in the bottom sheet
   const handleAsk = async () => {
+    console.log("Ask button clicked");
     // Keep bottom sheet open to show visualization
     // Start listening immediately
-    startListening();
+    try {
+      await startListening();
+      console.log("Started listening from Ask button");
+    } catch (error) {
+      console.error("Failed to start listening from Ask button:", error);
+      toast({
+        title: "Error",
+        description: "Failed to start voice recognition. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
   
   // Handle the Mute button in the bottom sheet
