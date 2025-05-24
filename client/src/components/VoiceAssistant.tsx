@@ -209,9 +209,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           };
         }
         
-        // Start the recognition and make sure we update state
+        // Just start the recognition - state is already set by handleAsk
+        // This prevents duplicate state updates that can cause UI flicker
         recognitionRef.current.start();
-        setIsListening(true); // Explicitly set this to ensure UI updates
         setStatus('Listening for your question...');
       } catch (error) {
         console.error('Failed to start speech recognition:', error);
@@ -390,13 +390,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   
   // Handle the Ask button in the bottom sheet
   const handleAsk = async () => {
+    // If already listening, do nothing to prevent flickering
+    if (isListening) {
+      console.log("Ask button clicked but already listening - ignoring");
+      return;
+    }
+    
     console.log("Ask button clicked");
     // Keep bottom sheet open to show visualization
     // Start listening immediately
     try {
+      // Set listening state immediately to prevent multiple clicks
+      setIsListening(true);
       await startListening();
       console.log("Started listening from Ask button");
     } catch (error) {
+      // Reset listening state on error
+      setIsListening(false);
       console.error("Failed to start listening from Ask button:", error);
       toast({
         title: "Error",
