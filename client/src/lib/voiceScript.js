@@ -176,17 +176,27 @@ async function speakResponse(text) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';
       
-      // Optional voice selection - try to get a good quality voice
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        // Try to find a good quality voice
-        const preferredVoice = voices.find(voice => 
-          voice.name.includes('Google') || voice.name.includes('Premium') || 
-          (voice.name.includes('US') && voice.name.includes('Female')));
+      // Store the selected voice in a global variable to ensure consistency
+      if (!window.selectedVoice) {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          // Try to find a good quality voice and save it for reuse
+          window.selectedVoice = voices.find(voice => 
+            voice.name.includes('Google') || voice.name.includes('Premium') || 
+            (voice.name.includes('US') && voice.name.includes('Female')));
+            
+          // If no preferred voice found, use the first available
+          if (!window.selectedVoice && voices.length > 0) {
+            window.selectedVoice = voices[0];
+          }
           
-        if (preferredVoice) {
-          utterance.voice = preferredVoice;
+          console.log("Selected voice for consistent playback:", window.selectedVoice?.name || "Default");
         }
+      }
+      
+      // Always use the same voice for consistency
+      if (window.selectedVoice) {
+        utterance.voice = window.selectedVoice;
       }
       
       // Add speech rate and pitch for better quality
@@ -344,6 +354,36 @@ function processTextForSpeech(content) {
   processedText = processedText.replace(/[ \t]+/g, ' ');
   
   return processedText;
+}
+
+// Initialize voices list early to make sure it's populated
+// This is needed because browsers load voices asynchronously
+if ('speechSynthesis' in window) {
+  // Load voices list early 
+  window.speechSynthesis.getVoices();
+  
+  // Add event listener for when voices are loaded
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = function() {
+      // Cache the voices list when they become available
+      if (!window.selectedVoice) {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          // Try to find a good quality voice
+          window.selectedVoice = voices.find(voice => 
+            voice.name.includes('Google') || voice.name.includes('Premium') || 
+            (voice.name.includes('US') && voice.name.includes('Female')));
+            
+          // If no preferred voice found, use the first available
+          if (!window.selectedVoice && voices.length > 0) {
+            window.selectedVoice = voices[0];
+          }
+          
+          console.log("Voice loaded and cached for consistent playback:", window.selectedVoice?.name || "Default");
+        }
+      }
+    };
+  }
 }
 
 // Expose functions to the global scope for integration with other components
