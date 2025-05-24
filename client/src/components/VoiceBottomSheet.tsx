@@ -181,7 +181,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             overflow: 'hidden'
           }}
         >
-          {/* Wine image with animation */}
+          {/* Use the original WineImage component since we have an error with WineCircle */}
           <div style={{
             width: '280px',
             height: '280px',
@@ -189,8 +189,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             overflow: 'hidden',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative'
+            alignItems: 'center'
           }}>
             <img 
               src="/wine-circle.png" 
@@ -199,11 +198,17 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                transform: isListening ? 'scale(1.05)' : 'scale(1)',
-                transition: 'transform 0.8s ease-in-out'
+                animation: isListening ? 'pulse 2s infinite ease-in-out' : 'none'
               }}
             />
           </div>
+          <style jsx>{`
+            @keyframes pulse {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.05); }
+              100% { transform: scale(1); }
+            }
+          `}</style>
         </div>
 
         {/* Buttons or Listening indicator based on state */}
