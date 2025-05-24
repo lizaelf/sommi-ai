@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import wineCircleImage from '@assets/wine-circle.png';
 
 // Audio analysis helper
 let audioContext: AudioContext | null = null;
@@ -301,6 +302,22 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
   return (
     <>
+      {/* Wine circle image background */}
+      <img 
+        src={wineCircleImage} 
+        alt="Wine Circle"
+        style={{
+          width: `${size * 1.1}px`, // Slightly larger than the animation circle
+          height: `${size * 1.1}px`,
+          borderRadius: '50%',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1
+        }}
+      />
+      
       {/* Main circle with reactive size and opacity - the animation happens on this div */}
       <div 
         style={{
@@ -312,6 +329,8 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
+          mixBlendMode: 'screen', // Creates a nice blending effect with the wine image
+          zIndex: 2,
           // Remove transition to allow for more fluid animation directly from frame updates
         }}
       />
@@ -328,6 +347,8 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
+            mixBlendMode: 'screen', // Creates a nice blending effect with the wine image
+            zIndex: 3,
             // Remove transition to allow for more fluid animation directly from frame updates
           }}
         />
