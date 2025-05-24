@@ -189,7 +189,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           <div style={{ 
             width: '100%', 
             maxWidth: '320px', 
-            height: '48px', 
+            height: '56px', 
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center' 
@@ -232,7 +232,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 flex: 1,
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 borderRadius: '32px',
-                height: '48px',
+                height: '56px',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -259,7 +259,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 flex: 1,
                 backgroundColor: 'white',
                 borderRadius: '32px',
-                height: '48px',
+                height: '56px',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
