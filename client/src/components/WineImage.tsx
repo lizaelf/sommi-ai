@@ -314,6 +314,19 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     };
   }, [isListening, isProcessing, isPlaying]);
 
+  // Dynamic gradient color based on frequency data
+  const getGradient = () => {
+    // Different colors for different states
+    if (isListening) {
+      return `radial-gradient(circle, rgba(255, 255, 255, ${opacity * 1.5}) 0%, rgba(255, 255, 255, ${opacity * 0.8}) 70%, rgba(255, 255, 255, 0) 100%)`;
+    } else if (isProcessing) {
+      return `radial-gradient(circle, rgba(255, 255, 255, ${opacity * 1.2}) 0%, rgba(255, 255, 255, ${opacity * 0.6}) 80%, rgba(255, 255, 255, 0) 100%)`;
+    } else if (isPlaying) {
+      return `radial-gradient(circle, rgba(255, 255, 255, ${opacity * 1.3}) 0%, rgba(255, 255, 255, ${opacity * 0.7}) 75%, rgba(255, 255, 255, 0) 100%)`;
+    }
+    return `radial-gradient(circle, rgba(255, 255, 255, ${opacity}) 0%, rgba(255, 255, 255, ${opacity * 0.5}) 70%, rgba(255, 255, 255, 0) 100%)`;
+  };
+
   return (
     <>
       {/* Main circle with reactive size and opacity */}
@@ -322,15 +335,17 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
           width: `${size}px`,
           height: `${size}px`,
           borderRadius: '50%',
-          background: `rgba(255, 255, 255, ${opacity})`, // Dynamic opacity
+          background: getGradient(),
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
+          transition: 'all 0.05s cubic-bezier(0.4, 0, 0.2, 1)', // Smoother transitions between states
+          filter: `blur(${isListening ? 2 : isPlaying ? 1.5 : 0.5}px)`, // Dynamic blur based on state
         }}
       />
       
-      {/* Optional inner circle for visual depth - only shown during active states */}
+      {/* Inner circle provides layered effect without creating new DOM elements */}
       {(isListening || isProcessing || isPlaying) && (
         <div 
           style={{
@@ -342,6 +357,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
+            transition: 'all 0.05s cubic-bezier(0.4, 0, 0.2, 1)', // Smoother transitions
           }}
         />
       )}
