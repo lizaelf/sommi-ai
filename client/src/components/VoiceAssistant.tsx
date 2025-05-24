@@ -271,11 +271,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     const url = URL.createObjectURL(lastAudioBlob);
     const audio = new Audio(url);
     
-    // Dispatch event when audio starts playing
+    // Dispatch event when audio starts playing - include the audio element for frequency analysis
     const dispatchPlayingEvent = () => {
       console.log("Audio playback started");
       const audioPlayingEvent = new CustomEvent('audio-status', {
-        detail: { status: 'playing' }
+        detail: { 
+          status: 'playing',
+          audioElement: audio  // Pass the audio element for frequency analysis
+        }
       });
       window.dispatchEvent(audioPlayingEvent);
     };
