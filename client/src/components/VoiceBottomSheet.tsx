@@ -181,29 +181,51 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             overflow: 'hidden'
           }}
         >
-          {/* Wine image with animation */}
-          <div style={{
+          {/* Animated wine circle */}
+          <div className="wine-circle-container" style={{
             width: '280px',
             height: '280px',
-            borderRadius: '50%', 
+            borderRadius: '50%',
             overflow: 'hidden',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative'
+            position: 'relative',
+            backgroundColor: '#300',
+            boxShadow: isListening ? '0 0 20px rgba(128, 0, 0, 0.5)' : 'none',
+            transition: 'box-shadow 0.8s ease-in-out'
           }}>
-            <img 
-              src="/wine-circle.png" 
-              alt="Wine glass view from above" 
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                transform: isListening ? 'scale(1.05)' : 'scale(1)',
-                transition: 'transform 0.8s ease-in-out'
-              }}
-            />
+            {/* Burgundy wine background for fallback */}
+            <div className={`wine-circle-animation ${isListening ? 'is-listening' : ''}`} style={{
+              backgroundColor: '#5A0000',
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              transform: isListening ? 'scale(1.05)' : 'scale(1)',
+              transition: 'transform 0.8s ease-in-out'
+            }} />
           </div>
+          
+          <style>
+            {`
+              .wine-circle-container {
+                border: 1px solid rgba(255, 255, 255, 0.2);
+              }
+              
+              .wine-circle-animation {
+                background-image: radial-gradient(circle, #8A0303 0%, #5A0000 70%, #3A0000 100%);
+              }
+              
+              .wine-circle-animation.is-listening {
+                animation: winePulse 3s infinite ease-in-out;
+              }
+              
+              @keyframes winePulse {
+                0% { opacity: 0.8; }
+                50% { opacity: 1; }
+                100% { opacity: 0.8; }
+              }
+            `}
+          </style>
         </div>
 
         {/* Buttons or Listening indicator based on state */}
