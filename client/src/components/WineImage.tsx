@@ -301,34 +301,37 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
   return (
     <>
-      {/* Main circle with reactive size and opacity - the animation happens on this div */}
+      {/* Wine image with animation applied to its size */}
       <div 
         style={{
           width: `${size}px`,
           height: `${size}px`,
           borderRadius: '50%',
-          background: `rgba(255, 255, 255, ${opacity})`,
+          background: `url('/wine-circle.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          // Remove transition to allow for more fluid animation directly from frame updates
+          opacity: opacity * 1.2, // Slightly boost opacity for better visibility
+          filter: `brightness(${isListening ? 1.2 : isPlaying ? 1.1 : 1})`, // Dynamic brightness based on state
         }}
       />
       
-      {/* Inner circle provides layered effect */}
+      {/* Subtle glow effect for active states */}
       {(isListening || isProcessing || isPlaying) && (
         <div 
           style={{
-            width: `${size * 0.7}px`,
-            height: `${size * 0.7}px`,
+            width: `${size * 1.05}px`,
+            height: `${size * 1.05}px`,
             borderRadius: '50%',
-            background: `rgba(255, 255, 255, ${opacity * 0.5})`,
+            background: 'radial-gradient(circle, rgba(128, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 70%)',
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            // Remove transition to allow for more fluid animation directly from frame updates
+            pointerEvents: 'none', // Ensure clicks go through to the main element
           }}
         />
       )}
