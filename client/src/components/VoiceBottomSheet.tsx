@@ -177,7 +177,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            boxShadow: '0 0 25px rgba(150, 0, 0, 0.4)', // Stronger glow
+            boxShadow: 'none', // Glow removed
             overflow: 'hidden'
           }}
         >
@@ -283,17 +283,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           </div>
         )}
         
-        {/* iOS Home Indicator */}
-        <div style={{ 
-          position: 'absolute',
-          bottom: '8px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '134px',
-          height: '5px',
-          backgroundColor: 'white',
-          borderRadius: '3px'
-        }}></div>
+        {/* iOS Home Indicator removed */}
       </div>
     </div>
     </>
