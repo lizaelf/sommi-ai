@@ -14,17 +14,33 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false); // Track if last question was via voice
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [autoRestartEnabled, setAutoRestartEnabled] = useState(true); // Enable auto-restart by default
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
   // Audio context is now initialized globally in main.tsx
 
+  // Effect to handle audio status changes for auto-restart
   useEffect(() => {
-    // Don't initialize speech recognition automatically
-    // It will be created on-demand when the microphone is clicked
+    // Function to handle audio playback ending - auto-restart listening
+    const handleAudioStatusChange = (event: CustomEvent) => {
+      if (event.detail?.status === 'stopped' && autoRestartEnabled && !isListening && usedVoiceInput) {
+        console.log("Auto-restarting voice recognition after audio finished");
+        // Small delay to ensure everything is ready before restarting
+        setTimeout(() => {
+          // Auto-restart listening mode
+          toggleListening();
+        }, 500);
+      }
+    };
+
+    // Add event listener for audio status
+    window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
     
-    // Just setup cleanup
+    // Cleanup
     return () => {
+      window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
+      
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
@@ -33,7 +49,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         }
       }
     };
-  }, []);
+  }, [autoRestartEnabled, isListening, usedVoiceInput]);
 
   const toggleListening = async () => {
     // Ensure audio context is initialized
@@ -256,6 +272,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     
     // Dispatch event when audio starts playing
     const dispatchPlayingEvent = () => {
+      console.log("Audio playback started");
       const audioPlayingEvent = new CustomEvent('audio-status', {
         detail: { status: 'playing' }
       });
@@ -264,6 +281,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     
     // Dispatch event when audio stops playing
     const dispatchStoppedEvent = () => {
+      console.log("Audio playback ended - dispatching stopped event");
       const audioStoppedEvent = new CustomEvent('audio-status', {
         detail: { status: 'stopped' }
       });
