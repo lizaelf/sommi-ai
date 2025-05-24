@@ -23,7 +23,7 @@ interface WineImageProps {
  * Wine glass visualization with sound-reactive animation
  * Only animates when actively listening or playing audio
  */
-const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initialSize = 200 }) => {
+const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initialSize = 180 }) => {
   const [size, setSize] = useState(initialSize);
   const [opacity, setOpacity] = useState(0.2);
   const [isListening, setIsListening] = useState(false);
