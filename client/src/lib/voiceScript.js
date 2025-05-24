@@ -180,17 +180,25 @@ async function speakResponse(text) {
       if (!window.selectedVoice) {
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
-          // Try to find a good quality voice and save it for reuse
+          // Try to find a male voice with good quality
           window.selectedVoice = voices.find(voice => 
-            voice.name.includes('Google') || voice.name.includes('Premium') || 
-            (voice.name.includes('US') && voice.name.includes('Female')));
+            (voice.name.includes('Google') && voice.name.includes('Male')) || 
+            (voice.name.includes('David') || voice.name.includes('James') || 
+             voice.name.includes('Thomas') || voice.name.includes('Daniel')) ||
+            (voice.name.includes('US') && voice.name.includes('Male')));
             
-          // If no preferred voice found, use the first available
+          // If no male voice found, try any available male voice
+          if (!window.selectedVoice) {
+            window.selectedVoice = voices.find(voice => 
+              voice.name.includes('Male'));
+          }
+            
+          // If still no preferred voice found, use the first available
           if (!window.selectedVoice && voices.length > 0) {
             window.selectedVoice = voices[0];
           }
           
-          console.log("Selected voice for consistent playback:", window.selectedVoice?.name || "Default");
+          console.log("Selected male voice for consistent playback:", window.selectedVoice?.name || "Default");
         }
       }
       
