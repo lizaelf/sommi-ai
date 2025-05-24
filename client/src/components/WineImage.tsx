@@ -54,89 +54,61 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     return [bass, mid, treble];
   };
 
-  // Function to handle animation with improved smoothness
+  // Function to handle animation with improved smoothness - simplified for reliability
   const animate = () => {
-    frameCount.current += animationSpeed; // 3x faster animation frame count
+    // Use 3x faster frame count for smoother animation
+    frameCount.current += 3;
     
     // Different animation behavior based on source (mic vs playback vs processing)
     if (isListening) {
-      // Use a combination of audio frequency data and smoother animation
-      // Get audio data or fallback to algorithm if not available
-      const audioData = getAudioData();
-      let energyLevel = 0;
+      // Microphone input animation - more dynamic
+      // Create a simulated frequency response based on natural speech patterns
+      const cycle = frameCount.current * 0.05;
       
-      if (audioData.length > 0) {
-        // Use actual frequency data when available
-        const [bass, mid, treble] = audioData;
-        // Normalize the values (0-255) to a 0-1 scale
-        const normalizedBass = bass / 255;
-        const normalizedMid = mid / 255;
-        // Give more weight to bass frequencies which create better visual feedback
-        energyLevel = (normalizedBass * 0.7) + (normalizedMid * 0.3);
-      } else {
-        // Fallback to improved algorithm if no audio data
-        const random = Math.random() * 0.3; // Reduced randomness for smoother motion
-        const wave = Math.sin(frameCount.current * 0.033) * 0.7; // Slower wave for smoother motion
-        energyLevel = 0.5 + ((random + wave) * 0.5); // Center around 0.5 for better range
-      }
+      // Multiple overlapping sine waves at different frequencies to simulate voice patterns
+      const wave1 = Math.sin(cycle) * 0.5;                     // Base frequency
+      const wave2 = Math.sin(cycle * 1.7) * 0.3;               // Higher frequency component
+      const wave3 = Math.sin(cycle * 0.5) * 0.2;               // Lower frequency component
+      const noise = (Math.random() - 0.5) * 0.4;               // Random component (simulates unpredictability in voice)
       
-      // Apply lerp (linear interpolation) for smoother transitions between states
-      const targetSize = baseSize + (energyLevel * 60); // Larger range for more dynamic visual
-      const currentSize = parseFloat(size.toString());
-      const newSize = currentSize + ((targetSize - currentSize) * 0.3); // Smooth transition
+      // Combine waves with weights to create a natural voice-like pattern
+      // This creates a pattern that mimics the natural cadence of speech
+      const combinedWave = wave1 + wave2 + wave3 + noise;
       
-      // Smooth opacity changes too
-      const targetOpacity = 0.15 + (energyLevel * 0.1);
-      const currentOpacity = parseFloat(opacity.toString());
-      const newOpacity = currentOpacity + ((targetOpacity - currentOpacity) * 0.3);
+      // Scale the combined wave to appropriate size range (using base size ±20%)
+      const newSize = baseSize + (combinedWave * baseSize * 0.2);
+      const newOpacity = 0.4 + (combinedWave * 0.2);
       
       setSize(newSize);
       setOpacity(newOpacity);
     } else if (isProcessing) {
-      // Enhanced processing animation - smoother pulsing
-      // Uses cubic easing instead of linear sine wave
-      const t = (Math.sin(frameCount.current * 0.02) + 1) / 2; // Normalized 0-1 range
-      const smoothPulse = t * t * (3 - 2 * t); // Cubic smoothing
+      // Processing animation - gentle pulsing
+      const processingPulse = Math.sin(frameCount.current * 0.03) * 0.5;
       
-      // Apply smoothing for transitions
-      const targetSize = baseSize + (smoothPulse * 15); // Subtle size change
-      const currentSize = parseFloat(size.toString());
-      const newSize = currentSize + ((targetSize - currentSize) * 0.15);
-      
-      // Very subtle opacity changes for processing state
-      const targetOpacity = 0.19 + (smoothPulse * 0.02);
-      const currentOpacity = parseFloat(opacity.toString());
-      const newOpacity = currentOpacity + ((targetOpacity - currentOpacity) * 0.15);
+      // Very subtle size changes (±5% of base size)
+      const newSize = baseSize + (processingPulse * baseSize * 0.05);
+      // Subtle opacity changes
+      const newOpacity = 0.3 + (processingPulse * 0.05);
       
       setSize(newSize);
       setOpacity(newOpacity);
     } else if (isPlaying) {
-      // Voice playback animation with frequency response
-      const audioData = getAudioData();
-      let energyLevel = 0;
+      // Voice playback animation - medium activity
+      // Use a mix of frequencies to simulate voice playback
+      const cycle = frameCount.current * 0.04;
       
-      if (audioData.length > 0) {
-        // Use actual frequency data for playback visualization
-        const [bass, mid, treble] = audioData;
-        // Use a weighted average of frequencies, favoring bass for visual impact
-        energyLevel = ((bass / 255) * 0.6) + ((mid / 255) * 0.3) + ((treble / 255) * 0.1);
-      } else {
-        // Enhanced fallback if no audio data is available
-        // Multi-frequency sine waves for richer motion
-        const wave1 = Math.sin(frameCount.current * 0.027) * 0.5; // Base frequency
-        const wave2 = Math.sin(frameCount.current * 0.054) * 0.25; // Double frequency, half amplitude
-        const wave3 = Math.sin(frameCount.current * 0.081) * 0.125; // Triple frequency, quarter amplitude
-        energyLevel = 0.5 + (wave1 + wave2 + wave3); // Combined wave forms
-      }
+      // Create a pattern that mimics AI voice cadence (more regular than human speech)
+      const wave1 = Math.sin(cycle) * 0.6;                     // Primary wave
+      const wave2 = Math.sin(cycle * 2.2) * 0.2;               // Secondary frequency
+      const wave3 = Math.sin(cycle * 3.4) * 0.1;               // Tertiary frequency
+      const noise = (Math.random() - 0.5) * 0.1;               // Minimal noise for smoother appearance
       
-      // Apply smoother transitions
-      const targetSize = baseSize + (energyLevel * 30); // Moderate size fluctuation
-      const currentSize = parseFloat(size.toString());
-      const newSize = currentSize + ((targetSize - currentSize) * 0.2); // Smooth transition
+      // Combine waves to create AI voice-like pattern - more regular than human speech
+      const combinedWave = wave1 + wave2 + wave3 + noise;
       
-      const targetOpacity = 0.17 + (energyLevel * 0.06);
-      const currentOpacity = parseFloat(opacity.toString());
-      const newOpacity = currentOpacity + ((targetOpacity - currentOpacity) * 0.2);
+      // Scale the combined wave to medium size range (±15% of base size)
+      const newSize = baseSize + (combinedWave * baseSize * 0.15);
+      const newOpacity = 0.35 + (combinedWave * 0.15);
       
       setSize(newSize);
       setOpacity(newOpacity);
@@ -329,23 +301,22 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
   return (
     <>
-      {/* Main circle with reactive size and opacity */}
+      {/* Main circle with reactive size and opacity - the animation happens on this div */}
       <div 
         style={{
           width: `${size}px`,
           height: `${size}px`,
           borderRadius: '50%',
-          background: getGradient(),
+          background: `rgba(255, 255, 255, ${opacity})`,
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          transition: 'all 0.05s cubic-bezier(0.4, 0, 0.2, 1)', // Smoother transitions between states
-          filter: `blur(${isListening ? 2 : isPlaying ? 1.5 : 0.5}px)`, // Dynamic blur based on state
+          // Remove transition to allow for more fluid animation directly from frame updates
         }}
       />
       
-      {/* Inner circle provides layered effect without creating new DOM elements */}
+      {/* Inner circle provides layered effect */}
       {(isListening || isProcessing || isPlaying) && (
         <div 
           style={{
@@ -357,7 +328,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            transition: 'all 0.05s cubic-bezier(0.4, 0, 0.2, 1)', // Smoother transitions
+            // Remove transition to allow for more fluid animation directly from frame updates
           }}
         />
       )}
