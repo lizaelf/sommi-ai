@@ -189,7 +189,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           <div style={{ 
             width: '100%', 
             maxWidth: '320px', 
-            height: '48px', 
+            height: '56px', 
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center' 
@@ -232,7 +232,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 flex: 1,
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 borderRadius: '32px',
-                height: '48px',
+                height: '56px',
+                padding: 0,
+                margin: 0,
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -244,7 +246,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 fontSize: '16px',
                 fontWeight: 500,
                 outline: 'none',
-                transition: 'none'
+                transition: 'none',
+                boxSizing: 'border-box'
               }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
@@ -259,7 +262,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 flex: 1,
                 backgroundColor: 'white',
                 borderRadius: '32px',
-                height: '48px',
+                height: '56px',
+                padding: 0,
+                margin: 0,
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -271,7 +276,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 fontSize: '16px',
                 fontWeight: 500,
                 outline: 'none',
-                transition: 'none'
+                transition: 'none',
+                boxSizing: 'border-box'
               }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
