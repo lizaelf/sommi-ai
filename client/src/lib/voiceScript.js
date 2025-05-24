@@ -167,6 +167,25 @@ async function speakResponse(text) {
     // Log for debugging
     console.log("Speaking text response using browser synthesis...");
     
+    // Force reload voices to get fresh list
+    const voices = window.speechSynthesis.getVoices();
+    console.log("Available voices:", voices.length);
+    
+    // Look for male voices - log them for debugging
+    const maleVoices = voices.filter(voice => 
+      voice.name.includes('Male') || 
+      voice.name.includes('David') || 
+      voice.name.includes('James') || 
+      voice.name.includes('Thomas'));
+    
+    console.log("Male voices available:", maleVoices.length);
+    if (maleVoices.length > 0) {
+      maleVoices.forEach((v, i) => console.log(`Male voice ${i}:`, v.name));
+      // Force select first male voice if found
+      window.selectedVoice = maleVoices[0];
+      console.log("Selected male voice:", window.selectedVoice.name);
+    }
+    
     // Use browser's built-in speech synthesis
     if ('speechSynthesis' in window) {
       // Cancel any ongoing speech
@@ -377,12 +396,20 @@ if ('speechSynthesis' in window) {
       if (!window.selectedVoice) {
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
-          // Try to find a good quality voice
+          // Try to find a male voice with good quality
           window.selectedVoice = voices.find(voice => 
-            voice.name.includes('Google') || voice.name.includes('Premium') || 
-            (voice.name.includes('US') && voice.name.includes('Female')));
+            (voice.name.includes('Google') && voice.name.includes('Male')) || 
+            (voice.name.includes('David') || voice.name.includes('James') || 
+             voice.name.includes('Thomas') || voice.name.includes('Daniel')) ||
+            (voice.name.includes('US') && voice.name.includes('Male')));
             
-          // If no preferred voice found, use the first available
+          // If no specific male voice found, find any male voice
+          if (!window.selectedVoice) {
+            window.selectedVoice = voices.find(voice => 
+              voice.name.includes('Male'));
+          }
+            
+          // If still no preferred voice found, use the first available
           if (!window.selectedVoice && voices.length > 0) {
             window.selectedVoice = voices[0];
           }
