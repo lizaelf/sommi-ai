@@ -103,22 +103,43 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           
           recognitionRef.current = new SpeechRecognition();
           recognitionRef.current.lang = 'en-US';
-          recognitionRef.current.continuous = false;
-          recognitionRef.current.interimResults = false;
+          recognitionRef.current.continuous = true; // Enable continuous recognition to prevent quick timeout
+          recognitionRef.current.interimResults = true; // Show interim results for better UX
+          recognitionRef.current.maxAlternatives = 1; // Only return best match
           
           // Re-attach event handlers to the fresh instance
           recognitionRef.current.onresult = (event: any) => {
-            const transcript = event.results[0][0].transcript;
-            setStatus('Processing your question...');
-            setUsedVoiceInput(true);
-            onSendMessage(transcript);
+            // Get final results only to avoid duplicates
+            const results = event.results;
+            let finalTranscript = '';
             
-            // Dispatch event when microphone transitions to processing state
-            // We'll use a different event to transition the visualization
-            const micProcessingEvent = new CustomEvent('mic-status', {
-              detail: { status: 'processing' }
-            });
-            window.dispatchEvent(micProcessingEvent);
+            for (let i = 0; i < results.length; i++) {
+              if (results[i].isFinal) {
+                finalTranscript = results[i][0].transcript;
+                
+                // We have a final result, process it
+                console.log("Final transcript:", finalTranscript);
+                setStatus('Processing your question...');
+                setUsedVoiceInput(true);
+                
+                // Stop recognition to prevent multiple submissions
+                if (recognitionRef.current) {
+                  recognitionRef.current.stop();
+                }
+                
+                // Send the message to be processed
+                onSendMessage(finalTranscript);
+                
+                // Dispatch event when microphone transitions to processing state
+                const micProcessingEvent = new CustomEvent('mic-status', {
+                  detail: { status: 'processing' }
+                });
+                window.dispatchEvent(micProcessingEvent);
+                
+                // Break out after processing the first final result
+                break;
+              }
+            }
           };
           
           recognitionRef.current.onend = () => {
@@ -144,6 +165,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           
           recognitionRef.current.onerror = (event: any) => {
             console.error('Speech recognition error:', event.error);
+            
+            // Handle specific errors
+            if (event.error === 'no-speech') {
+              console.log("No speech detected, continuing to listen...");
+              // Don't stop listening for this error - just keep going
+              return;
+            }
+            
             setStatus(`Error: ${event.error}`);
             setIsListening(false);
             
@@ -153,11 +182,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             });
             window.dispatchEvent(micStoppedEvent);
             
-            toast({
-              title: "Voice Recognition Error",
-              description: `Error: ${event.error}. Please try again.`,
-              variant: "destructive"
-            });
+            // Only show toast for errors other than no-speech
+            if (event.error !== 'no-speech') {
+              toast({
+                title: "Voice Recognition Error",
+                description: `Error: ${event.error}. Please try again.`,
+                variant: "destructive"
+              });
+            }
           };
         }
         
