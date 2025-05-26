@@ -489,8 +489,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Also dispatch the audioPaused event for the wine animation
     document.dispatchEvent(new CustomEvent('audioPaused'));
     
-    // Reset responding state
+    // Reset responding state and mark response as complete to show suggestions
     setIsResponding(false);
+    setResponseComplete(true);
   };
 
   // Handle suggestion clicks - send message and speak response
