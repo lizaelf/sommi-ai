@@ -449,14 +449,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       window.dispatchEvent(audioStoppedEvent);
     }
     
-    // Close the bottom sheet
-    setShowBottomSheet(false);
+    // Keep the bottom sheet open - don't close it
+    // setShowBottomSheet(false); // Commented out to keep sheet open
     
-    // Inform the user
-    toast({
-      title: "Audio Muted",
-      description: "Voice response stopped. Text response will still be displayed.",
-    });
+    // Don't show toast notification
+    // toast({
+    //   title: "Audio Muted",
+    //   description: "Voice response stopped. Text response will still be displayed.",
+    // });
   };
 
   return (
