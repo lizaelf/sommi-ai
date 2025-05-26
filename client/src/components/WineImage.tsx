@@ -71,10 +71,10 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       volumeLevel = Math.pow(volumeLevel, 0.7); // Apply power curve for more natural response
     }
     
-    // Scale from 60% to 120% based on audio level (60% range total)
-    const minScale = 0.6;  // 60% minimum size
-    const maxScale = 1.2;  // 120% maximum size
-    const scaleRange = maxScale - minScale; // 0.6 (60% range)
+    // Scale from 40% to 160% based on audio level (120% range total) - much more dramatic!
+    const minScale = 0.4;  // 40% minimum size
+    const maxScale = 1.6;  // 160% maximum size
+    const scaleRange = maxScale - minScale; // 1.2 (120% range)
     
     // Calculate target scale based on volume with enhanced sensitivity
     const enhancedVolume = Math.pow(volumeLevel, 0.5); // Make it more responsive to lower volumes
@@ -83,7 +83,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     
     // More responsive interpolation for visible movement
     const currentSize = size;
-    const lerpFactor = 0.25; // Increased smoothing factor for more visible changes
+    const lerpFactor = 0.35; // Even more responsive for dramatic scaling
     const smoothedSize = currentSize + (targetSize - currentSize) * lerpFactor;
     
     // Update size with smooth scaling
