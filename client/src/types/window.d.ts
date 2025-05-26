@@ -5,6 +5,8 @@ interface Window {
     speakResponse: (text: string) => Promise<void>;
     playLastAudio: () => void;
     speakLastAssistantMessage: () => void;
+    muteAndSavePosition: () => void;
+    resumeFromMute: () => void;
   };
 }
 

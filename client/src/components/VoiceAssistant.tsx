@@ -15,6 +15,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [usedVoiceInput, setUsedVoiceInput] = useState(false); // Track if last question was via voice
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [autoRestartEnabled, setAutoRestartEnabled] = useState(true); // Enable auto-restart by default
+  const [isResponding, setIsResponding] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -24,7 +25,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   useEffect(() => {
     // Function to handle audio playback ending - auto-restart listening
     const handleAudioStatusChange = (event: CustomEvent) => {
-      if (event.detail?.status === 'stopped' && autoRestartEnabled && !isListening && usedVoiceInput) {
+      const status = event.detail?.status;
+      
+      // Track when AI is responding
+      if (status === 'playing') {
+        setIsResponding(true);
+      } else if (status === 'stopped' || status === 'paused' || status === 'muted') {
+        setIsResponding(false);
+      }
+      
+      // Auto-restart logic
+      if (status === 'stopped' && autoRestartEnabled && !isListening && usedVoiceInput) {
         console.log("Auto-restarting voice recognition after audio finished");
         // Small delay to ensure everything is ready before restarting
         setTimeout(() => {
@@ -517,6 +528,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onMute={handleMute}
         onAsk={handleAsk}
         isListening={isListening}
+        isResponding={isResponding}
       />
     </div>
   );
