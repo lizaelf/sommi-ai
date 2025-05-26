@@ -469,7 +469,7 @@ const EnhancedChatInterface: React.FC = () => {
                         ...typography.body // Using Body text style as requested
                       }}
                       className="pl-[0px] pr-[0px]">
-                      <p>Sassicaia's elegant Cabernet Sauvignon structure and complex flavor profile makes it perfect for premium red meat preparations:</p>
+                      <p>Sassicaia's elegant structure and complex flavor profile makes it perfect for premium red meat preparations:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
                         <li>Grilled Tuscan bistecca with herbs</li>
                         <li>Osso buco with rich tomato sauce</li>

@@ -3,45 +3,45 @@
 
 export const WINE_CONFIG = {
   // Primary wine information
-  name: 'Tenuta San Guido Bolgheri Sassicaia DOC',
-  fullName: 'Tenuta San Guido Bolgheri Sassicaia DOC',
+  name: '2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel',
+  fullName: '2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel',
   vintage: 2021,
-  winery: 'Tenuta San Guido',
-  vineyard: 'Bolgheri',
-  region: 'Bolgheri',
-  appellation: 'Bolgheri DOC',
-  county: 'Tuscany',
-  state: 'Tuscany',
-  country: 'Italy',
-  varietal: 'Cabernet Sauvignon',
+  winery: 'Ridge Vineyards',
+  vineyard: 'Lytton Springs',
+  region: 'Dry Creek Valley',
+  appellation: 'Dry Creek Valley AVA',
+  county: 'Sonoma County',
+  state: 'California',
+  country: 'United States',
+  varietal: 'Zinfandel',
   
   // Detailed characteristics
   characteristics: {
-    body: 70,
-    sweet: 30,
-    dry: 75,
-    smooth: 60,
-    tannic: 80,
+    body: 85,
+    sweet: 20,
+    dry: 80,
+    smooth: 70,
+    tannic: 75,
   },
   
   // Professional ratings
   ratings: {
-    ws: 94,  // Wine Spectator
-    ww: 93,  // Wine & Whiskey
-    js: 92,  // James Suckling
+    ws: 92,  // Wine Spectator
+    ww: 91,  // Wine & Whiskey
+    js: 93,  // James Suckling
   },
   
   // Tasting notes and description
   tastingNotes: [
-    'Complex aromas of blackcurrant and cedar',
-    'Rich flavors of dark berries and Mediterranean herbs',
-    'Elegant structure with refined tannins',
-    'Notes of tobacco and vanilla from oak aging',
-    'Long, persistent finish with mineral complexity'
+    'Rich aromas of blackberry, boysenberry, and spice',
+    'Complex flavors of dark fruit with pepper and earth',
+    'Notes of vanilla and toasted oak from barrel aging',
+    'Hints of black tea and dried herbs',
+    'Long finish with balanced acidity and soft tannins'
   ],
   
   // Historical information
-  history: 'Sassicaia is the legendary wine from Tenuta San Guido in Bolgheri, Tuscany. Created in the 1940s by Mario Incisa della Rocchetta, it was one of the first "Super Tuscan" wines. The estate pioneered Cabernet Sauvignon cultivation in Tuscany, creating what many consider Italy\'s most prestigious wine.',
+  history: 'Ridge Vineyards\' Lytton Springs vineyard in Dry Creek Valley has been producing exceptional Zinfandel since the 1970s. Founded by Dave Bennion and partners in 1962, Ridge is renowned for their traditional winemaking methods and commitment to expressing the unique terroir of each vineyard site. The Lytton Springs vineyard, with its old vines and diverse soils, produces some of California\'s most acclaimed Zinfandels.',
   
   // Food pairing categories
   foodPairings: [
