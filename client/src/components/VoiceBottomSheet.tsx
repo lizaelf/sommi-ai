@@ -154,7 +154,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px',
           borderTop: '2px solid rgba(255, 255, 255, 0.2)',
-          padding: '24px 16px',
+          paddingTop: '24px',
+          paddingLeft: '16px',
+          paddingRight: '16px',
           paddingBottom: '32px', // Added 16px more bottom padding
           display: 'flex',
           flexDirection: 'column',
