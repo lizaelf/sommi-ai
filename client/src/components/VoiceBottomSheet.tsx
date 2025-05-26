@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WineImage from './WineImage';
+import { ShiningText } from './ShiningText';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -237,7 +238,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 backgroundColor: '#CECECE',
                 animation: 'pulseDot 1.5s infinite ease-in-out'
               }}></span>
-              Listening...
+              <ShiningText text="Listening..." />
             </div>
           </div>
         ) : isThinking ? (
@@ -266,7 +267,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 backgroundColor: '#CECECE',
                 animation: 'pulseDot 1.5s infinite ease-in-out'
               }}></span>
-              Thinking...
+              <ShiningText text="Thinking..." />
             </div>
           </div>
         ) : (
