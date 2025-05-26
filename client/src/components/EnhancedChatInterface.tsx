@@ -9,6 +9,7 @@ import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
+import { getWineDisplayName, getWineRegion } from '@shared/wineConfig';
 // Import typography styles
 
 // Extend Window interface to include voiceAssistant
@@ -221,7 +222,7 @@ const EnhancedChatInterface: React.FC = () => {
                 marginBottom: '0',
                 ...typography.h1
               }}>
-                2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel
+                {getWineDisplayName()}
               </div>
               
               {/* Wine region with typography styling and flag */}
@@ -241,7 +242,7 @@ const EnhancedChatInterface: React.FC = () => {
                 ...typography.body1R
               }}>
                 <USFlagImage />
-                <span>San Luis Obispo Country, United States</span>
+                <span>{getWineRegion()}</span>
               </div>
               
               {/* Wine ratings section */}
