@@ -621,8 +621,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const handleSuggestionClick = async (suggestion: string) => {
     console.log("Suggestion clicked:", suggestion);
     
-    // Reset response complete state when starting new interaction
+    // Immediately hide suggestions and show processing state to prevent Ask button flash
     setResponseComplete(false);
+    setIsProcessing(true);
     
     try {
       // Send the suggestion as a message
@@ -635,6 +636,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("Suggestion sent, waiting for response to speak it");
     } catch (error) {
       console.error("Error sending suggestion:", error);
+      setIsProcessing(false); // Reset processing state on error
       toast({
         title: "Error",
         description: "Failed to send suggestion. Please try again.",
