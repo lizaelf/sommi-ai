@@ -478,8 +478,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Show toast if user has asked at least one question
     if (hasAskedQuestion) {
       toast({
-        title: "This conversation is saved in My cellar",
-        duration: 3000,
+        title: (
+          <span>
+            This conversation is saved in{' '}
+            <a 
+              href="/my-cellar" 
+              style={{ 
+                textDecoration: 'underline',
+                color: 'inherit',
+                fontWeight: 'inherit'
+              }}
+            >
+              My cellar
+            </a>
+          </span>
+        ),
+        duration: 5000,
         className: "bg-white text-black border-none",
         style: {
           position: 'fixed',
