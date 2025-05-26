@@ -28,10 +28,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
 
   // Wine-related suggestions
   const suggestions = [
-    "What's your best wine for beginners?",
-    "Recommend a wine for dinner tonight",
-    "Tell me about French wine regions",
-    "What makes a wine vintage special?"
+    "Food pairing",
+    "Tasting notes", 
+    "Serving"
   ];
 
   useEffect(() => {
@@ -239,28 +238,22 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px' }}>
-            {/* Suggestions Section - Only shown when showSuggestions is true */}
-            {showSuggestions && onSuggestionClick && (
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '8px',
-                marginBottom: '8px'
-              }}>
-                <div style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  fontFamily: 'Inter, sans-serif',
-                  textAlign: 'center',
-                  marginBottom: '4px'
-                }}>
-                  Try asking about...
-                </div>
+            {/* Suggestions Section - Reserve space to prevent size changes */}
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '8px',
+              marginBottom: '8px',
+              height: '50px', // Fixed height to prevent bottom sheet size changes
+              justifyContent: 'center'
+            }}>
+              {showSuggestions && onSuggestionClick ? (
                 <div style={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px'
+                  flexDirection: 'row',
+                  gap: '8px',
+                  justifyContent: 'center',
+                  alignItems: 'center'
                 }}>
                   {suggestions.map((suggestion, index) => (
                     <button
@@ -269,18 +262,19 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                       style={{
                         backgroundColor: 'rgba(255, 255, 255, 0.08)',
                         border: '1px solid rgba(255, 255, 255, 0.15)',
-                        borderRadius: '20px',
-                        padding: '10px 16px',
+                        borderRadius: '16px',
+                        padding: '8px 12px',
                         color: 'white',
-                        fontSize: '14px',
+                        fontSize: '13px',
                         fontWeight: 400,
                         fontFamily: 'Inter, sans-serif',
                         cursor: 'pointer',
                         outline: 'none',
                         transition: 'all 0.2s ease',
-                        textAlign: 'left',
-                        width: '100%',
-                        boxSizing: 'border-box'
+                        textAlign: 'center',
+                        whiteSpace: 'nowrap',
+                        boxSizing: 'border-box',
+                        minWidth: 'fit-content'
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
@@ -295,8 +289,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                // Empty space to maintain consistent height
+                <div style={{ height: '100%' }}></div>
+              )}
+            </div>
 
             <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
               {/* Show Stop button when responding, Ask button when not responding */}

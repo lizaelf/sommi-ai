@@ -450,37 +450,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
   
-  // Handle the Mute button in the bottom sheet
+  // Handle the Stop button in the bottom sheet
   const handleMute = () => {
-    // Check if audio is currently playing
-    const isCurrentlyPlaying = window.speechSynthesis && window.speechSynthesis.speaking;
+    console.log("Stop button clicked - stopping audio playback");
     
-    if (isCurrentlyPlaying) {
-      // Use the new mute function to save position
-      if (window.voiceAssistant && window.voiceAssistant.muteAndSavePosition) {
-        console.log("Muting and saving position for resume");
-        window.voiceAssistant.muteAndSavePosition();
-      } else {
-        // Fallback to regular mute
-        console.log("Canceling any ongoing speech");
-        window.speechSynthesis.cancel();
-      }
-    } else {
-      // If not playing, this is a resume request
-      if (window.voiceAssistant && window.voiceAssistant.resumeFromMute) {
-        console.log("Resuming speech from muted position");
-        window.voiceAssistant.resumeFromMute();
-      }
+    // Stop speech synthesis completely
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      console.log("Speech synthesis cancelled");
     }
     
-    // Dispatch an event to notify about audio status change
-    const audioEvent = new CustomEvent('audio-status', {
-      detail: { status: isCurrentlyPlaying ? 'muted' : 'resumed' }
+    // Stop any audio elements that might be playing
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach(audio => {
+      if (!audio.paused) {
+        audio.pause();
+        audio.currentTime = 0;
+        console.log("Audio element stopped");
+      }
     });
-    window.dispatchEvent(audioEvent);
     
-    // Keep the bottom sheet open - don't close it
-    // setShowBottomSheet(false); // Commented out to keep sheet open
+    // Dispatch event to notify that audio has been stopped
+    const audioStoppedEvent = new CustomEvent('audio-status', {
+      detail: { status: 'stopped', reason: 'user_stopped' }
+    });
+    window.dispatchEvent(audioStoppedEvent);
+    
+    // Also dispatch the audioPaused event for the wine animation
+    document.dispatchEvent(new CustomEvent('audioPaused'));
+    
+    // Reset responding state
+    setIsResponding(false);
   };
 
   // Handle suggestion clicks - send message and speak response
