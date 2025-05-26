@@ -391,26 +391,58 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Use our consistent speakResponse function that uses OpenAI TTS
+                // Use OpenAI TTS directly instead of the browser synthesis
                 setTimeout(async () => {
                   try {
                     console.log("Auto-speaking the assistant's response using OpenAI TTS");
-                    await speakResponse(messageText);
+                    setIsResponding(true);
                     
-                    // Mark response as complete and enable suggestions
-                    setIsResponding(false);
-                    setResponseComplete(true);
-                    setHasReceivedFirstResponse(true);
+                    // Use OpenAI TTS API directly
+                    const response = await fetch('/api/text-to-speech', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ text: messageText })
+                    });
+                    
+                    if (response.ok) {
+                      const audioBlob = await response.blob();
+                      const audioUrl = URL.createObjectURL(audioBlob);
+                      const audio = new Audio(audioUrl);
+                      
+                      audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        console.log("OpenAI TTS audio playback completed");
+                        
+                        // Mark response as complete and enable suggestions
+                        setIsResponding(false);
+                        setResponseComplete(true);
+                        setHasReceivedFirstResponse(true);
+                        setUsedVoiceInput(false);
+                      };
+                      
+                      audio.onerror = (error) => {
+                        console.error("Audio playback error:", error);
+                        URL.revokeObjectURL(audioUrl);
+                        setIsResponding(false);
+                        setUsedVoiceInput(false);
+                      };
+                      
+                      await audio.play();
+                      console.log("Playing OpenAI TTS audio");
+                    } else {
+                      console.error("Failed to get audio from TTS API");
+                      setIsResponding(false);
+                      setUsedVoiceInput(false);
+                    }
                   } catch (error) {
-                    console.error('Error with TTS:', error);
+                    console.error('Error with OpenAI TTS:', error);
+                    setIsResponding(false);
+                    setUsedVoiceInput(false);
                     toast({
                       title: "Voice Error",
                       description: "Could not generate voice response. Please try again.",
                     });
                   }
-                  
-                  // Reset the voice input flag after speaking
-                  setUsedVoiceInput(false);
                   
                   // Keep the bottom sheet open to show suggestions after first response
                 }, 300);
