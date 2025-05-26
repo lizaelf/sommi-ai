@@ -437,26 +437,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   
   // Handle the Mute button in the bottom sheet
   const handleMute = () => {
-    // First, stop any currently playing audio by canceling speech synthesis
-    if ('speechSynthesis' in window) {
-      console.log("Canceling any ongoing speech");
-      window.speechSynthesis.cancel();
-      
-      // Dispatch an event to notify that audio has been stopped
-      const audioStoppedEvent = new CustomEvent('audio-status', {
-        detail: { status: 'stopped', reason: 'muted' }
-      });
-      window.dispatchEvent(audioStoppedEvent);
+    // Check if audio is currently playing
+    const isCurrentlyPlaying = window.speechSynthesis && window.speechSynthesis.speaking;
+    
+    if (isCurrentlyPlaying) {
+      // Use the new mute function to save position
+      if (window.voiceAssistant && window.voiceAssistant.muteAndSavePosition) {
+        console.log("Muting and saving position for resume");
+        window.voiceAssistant.muteAndSavePosition();
+      } else {
+        // Fallback to regular mute
+        console.log("Canceling any ongoing speech");
+        window.speechSynthesis.cancel();
+      }
+    } else {
+      // If not playing, this is a resume request
+      if (window.voiceAssistant && window.voiceAssistant.resumeFromMute) {
+        console.log("Resuming speech from muted position");
+        window.voiceAssistant.resumeFromMute();
+      }
     }
+    
+    // Dispatch an event to notify about audio status change
+    const audioEvent = new CustomEvent('audio-status', {
+      detail: { status: isCurrentlyPlaying ? 'muted' : 'resumed' }
+    });
+    window.dispatchEvent(audioEvent);
     
     // Keep the bottom sheet open - don't close it
     // setShowBottomSheet(false); // Commented out to keep sheet open
-    
-    // Don't show toast notification
-    // toast({
-    //   title: "Audio Muted",
-    //   description: "Voice response stopped. Text response will still be displayed.",
-    // });
   };
 
   return (

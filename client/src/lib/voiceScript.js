@@ -4,6 +4,10 @@ let statusDiv = null;
 let lastInputWasVoice = false;
 let isAudioPlaying = false;
 let lastPlayedText = '';
+let currentUtterance = null;
+let pausedText = '';
+let currentPosition = 0;
+let wasMuted = false;
 
 // DOM load event to initialize everything
 document.addEventListener('DOMContentLoaded', function() {
@@ -146,23 +150,37 @@ document.addEventListener('DOMContentLoaded', function() {
 // Modified version of the speakResponse function to use browser speech synthesis only
 async function speakResponse(text) {
   try {
-    // Validate text input - must be non-empty after trimming
-    if (!text || typeof text !== 'string' || text.trim().length === 0) {
-      console.warn("Empty or invalid text provided to speech function");
-      return; // Exit early - nothing to speak
-    }
-    
-    // Process text to ensure it's suitable for speech synthesis
-    text = processTextForSpeech(text);
-    
-    // Check again after processing in case it removed all content
-    if (!text || text.trim().length === 0) {
-      console.warn("Text became empty after processing for speech");
-      return; // Exit early - nothing to speak
+    // Check if this is a resume from mute
+    if (wasMuted && pausedText) {
+      text = pausedText;
+      wasMuted = false;
+      console.log("Resuming speech from muted position");
+    } else {
+      // Validate text input - must be non-empty after trimming
+      if (!text || typeof text !== 'string' || text.trim().length === 0) {
+        console.warn("Empty or invalid text provided to speech function");
+        return; // Exit early - nothing to speak
+      }
+      
+      // Process text to ensure it's suitable for speech synthesis
+      text = processTextForSpeech(text);
+      
+      // Check again after processing in case it removed all content
+      if (!text || text.trim().length === 0) {
+        console.warn("Text became empty after processing for speech");
+        return; // Exit early - nothing to speak
+      }
+      
+      // Store the full text for reference
+      lastPlayedText = text;
+      currentPosition = 0;
+      pausedText = '';
     }
     
     // Store the text for reference
-    lastPlayedText = text;
+    if (!pausedText) {
+      lastPlayedText = text;
+    }
     
     // Log for debugging
     console.log("Speaking text response using browser synthesis...");
@@ -192,8 +210,8 @@ async function speakResponse(text) {
       window.speechSynthesis.cancel();
       
       // Create a new utterance
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
+      currentUtterance = new SpeechSynthesisUtterance(text);
+      currentUtterance.lang = 'en-US';
       
       // Store the selected voice in a global variable to ensure consistency
       if (!window.selectedVoice) {
@@ -226,31 +244,43 @@ async function speakResponse(text) {
       
       // Always use the same voice for consistency
       if (window.selectedVoice) {
-        utterance.voice = window.selectedVoice;
+        currentUtterance.voice = window.selectedVoice;
       }
       
       // Add speech rate and pitch for better quality
-      utterance.rate = 1.0;  // normal speed
-      utterance.pitch = 1.0; // normal pitch
+      currentUtterance.rate = 1.0;  // normal speed
+      currentUtterance.pitch = 1.0; // normal pitch
       
-      // Add event listeners to track speech state
-      utterance.onstart = () => {
+      // Add event listeners to track speech state and position
+      currentUtterance.onstart = () => {
         isAudioPlaying = true;
+        wasMuted = false;
         document.dispatchEvent(new CustomEvent('audioPlaying'));
       };
       
-      utterance.onend = () => {
+      currentUtterance.onboundary = (event) => {
+        // Track character position for resuming
+        if (event.name === 'word') {
+          currentPosition = event.charIndex;
+        }
+      };
+      
+      currentUtterance.onend = () => {
         isAudioPlaying = false;
+        currentPosition = 0;
+        pausedText = '';
+        wasMuted = false;
         document.dispatchEvent(new CustomEvent('audioPaused'));
       };
       
-      utterance.onerror = (event) => {
+      currentUtterance.onerror = (event) => {
         console.error("Speech synthesis error:", event);
         isAudioPlaying = false;
+        wasMuted = false;
       };
       
       // Speak the text
-      window.speechSynthesis.speak(utterance);
+      window.speechSynthesis.speak(currentUtterance);
     } else {
       // If browser speech synthesis isn't available, show a message
       console.warn("Browser speech synthesis not available");
@@ -427,9 +457,37 @@ if ('speechSynthesis' in window) {
   }
 }
 
+// Function to handle muting and save current position
+function muteAndSavePosition() {
+  if (isAudioPlaying && currentUtterance) {
+    // Save the remaining text from current position
+    if (currentPosition > 0 && lastPlayedText) {
+      pausedText = lastPlayedText.substring(currentPosition);
+      wasMuted = true;
+      console.log("Speech muted at position:", currentPosition);
+      console.log("Remaining text saved for resume");
+    }
+    
+    // Cancel current speech
+    window.speechSynthesis.cancel();
+    isAudioPlaying = false;
+  }
+}
+
+// Function to resume speech from where it was muted
+function resumeFromMute() {
+  if (wasMuted && pausedText) {
+    speakResponse(pausedText);
+  } else if (lastPlayedText) {
+    speakResponse(lastPlayedText);
+  }
+}
+
 // Expose functions to the global scope for integration with other components
 window.voiceAssistant = {
   speakResponse: speakResponse,
   playLastAudio: playLastAudio,
-  speakLastAssistantMessage: speakLastAssistantMessage
+  speakLastAssistantMessage: speakLastAssistantMessage,
+  muteAndSavePosition: muteAndSavePosition,
+  resumeFromMute: resumeFromMute
 };
