@@ -172,7 +172,18 @@ export async function generateConversationTitle(firstMessage: string) {
   }
 }
 
-// Function to convert text to speech using OpenAI's Text-to-Speech API
+// Consistent voice configuration - ensures same voice across all requests
+const VOICE_CONFIG = {
+  model: "tts-1",
+  voice: "onyx" as const, // Male voice for consistency - onyx provides deep, reliable male voice
+  speed: 1.2, // Optimized speed for clarity and natural flow
+} as const;
+
+// Voice cache to store recently generated audio for consistency
+const voiceCache = new Map<string, Buffer>();
+const MAX_CACHE_SIZE = 50;
+
+// Function to convert text to speech using OpenAI's Text-to-Speech API with consistent voice
 export async function textToSpeech(text: string): Promise<Buffer> {
   try {
     console.log("Converting text to speech...");
@@ -199,14 +210,22 @@ export async function textToSpeech(text: string): Promise<Buffer> {
       }
     }
     
-    console.log("Processing TTS request for text:", cleanText.substring(0, 50) + "...");
+    // Check cache first for consistency
+    const cacheKey = `${VOICE_CONFIG.voice}_${cleanText}`;
+    if (voiceCache.has(cacheKey)) {
+      console.log("Using cached voice response for consistency");
+      return voiceCache.get(cacheKey)!;
+    }
     
-    // Use OpenAI's Text-to-Speech API with optimized settings
+    console.log("Processing TTS request for text:", cleanText.substring(0, 50) + "...");
+    console.log("Using consistent voice settings:", VOICE_CONFIG);
+    
+    // Use OpenAI's Text-to-Speech API with consistent voice settings
     const response = await openai.audio.speech.create({
-      model: "tts-1", // Standard model for faster processing
-      voice: "onyx", // Male voice as requested - onyx is a male voice
+      model: VOICE_CONFIG.model,
+      voice: VOICE_CONFIG.voice,
       input: cleanText,
-      speed: 1.3, // Faster speech for quicker delivery
+      speed: VOICE_CONFIG.speed,
     });
     
     console.log("OpenAI TTS response received");
@@ -214,6 +233,15 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     // Convert the response to a buffer
     const buffer = Buffer.from(await response.arrayBuffer());
     console.log("Text-to-speech conversion successful, buffer size:", buffer.length);
+    
+    // Cache the response for consistency and performance
+    if (voiceCache.size >= MAX_CACHE_SIZE) {
+      // Remove oldest entry to make space
+      const firstKey = voiceCache.keys().next().value;
+      voiceCache.delete(firstKey);
+    }
+    voiceCache.set(cacheKey, buffer);
+    console.log("Voice response cached for future consistency");
     
     return buffer;
   } catch (error) {
