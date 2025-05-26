@@ -227,14 +227,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             // Handle specific errors
             if (event.error === 'no-speech') {
               console.log("No speech detected, restarting listening...");
-              // Auto-restart listening for no-speech timeout
-              setIsListening(false);
-              // Restart listening after a brief delay
+              // Auto-restart listening for no-speech timeout without showing Ask button
+              // Don't set isListening to false to avoid showing Ask button
+              // Restart listening immediately
               setTimeout(() => {
                 if (!isProcessing) {
                   startListening();
                 }
-              }, 100);
+              }, 50); // Shorter delay for smoother transition
               return;
             }
             
