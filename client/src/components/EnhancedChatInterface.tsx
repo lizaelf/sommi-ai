@@ -19,6 +19,8 @@ declare global {
       speakResponse: (text: string) => Promise<void>;
       playLastAudio: () => void;
       speakLastAssistantMessage: () => void;
+      muteAndSavePosition: () => void;
+      resumeFromMute: () => void;
     };
   }
 }
@@ -469,12 +471,12 @@ const EnhancedChatInterface: React.FC = () => {
                         ...typography.body // Using Body text style as requested
                       }}
                       className="pl-[0px] pr-[0px]">
-                      <p>Sassicaia's elegant structure and complex flavor profile makes it perfect for premium red meat preparations:</p>
+                      <p>{getWineDisplayName()}'s elegant structure and complex flavor profile makes it perfect for premium red meat preparations:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Grilled Tuscan bistecca with herbs</li>
-                        <li>Osso buco with rich tomato sauce</li>
+                        <li>Grilled bistecca with herbs</li>
+                        <li>Braised short ribs with rich sauce</li>
                         <li>Roasted rack of lamb with Mediterranean herbs</li>
-                        <li>Aged beef tenderloin with black truffle</li>
+                        <li>Aged beef tenderloin with mushrooms</li>
                       </ul>
                       <p>The wine's refined tannins and mineral complexity complement sophisticated meat dishes beautifully.</p>
                     </div>
@@ -542,14 +544,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>Sassicaia's sophisticated tannin structure and complex berry flavors pair beautifully with these Italian and European cheeses:</p>
+                      <p>{getWineDisplayName()}'s sophisticated tannin structure and complex flavors pair beautifully with these artisanal cheeses:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
                         <li>Aged Parmigiano-Reggiano (24+ months)</li>
-                        <li>Pecorino Toscano stagionato</li>
-                        <li>Gorgonzola dolce DOP</li>
-                        <li>Aged Tuscan sheep's milk cheese</li>
+                        <li>Aged Gouda or Manchego</li>
+                        <li>Gorgonzola or blue cheese varieties</li>
+                        <li>Aged sheep's milk cheese</li>
                       </ul>
-                      <p>The wine's elegant mineral backbone and structured tannins create perfect harmony with aged Italian cheeses.</p>
+                      <p>The wine's elegant mineral backbone and structured tannins create perfect harmony with aged cheeses.</p>
                     </div>
                   )}
                 </div>
@@ -615,14 +617,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>Sassicaia's refined structure and elegant fruit character complement these sophisticated vegetarian dishes:</p>
+                      <p>{getWineDisplayName()}'s refined structure and elegant fruit character complement these sophisticated vegetarian dishes:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Tuscan ribollita with cannellini beans</li>
+                        <li>Hearty bean and vegetable stew</li>
                         <li>Grilled portobello with herbs and olive oil</li>
-                        <li>Pici pasta with truffle and Pecorino</li>
+                        <li>Pasta with truffle and aged cheese</li>
                         <li>Roasted eggplant parmigiana</li>
                       </ul>
-                      <p>The wine's mineral complexity and balanced tannins enhance rich, Mediterranean-inspired vegetarian cuisine.</p>
+                      <p>The wine's mineral complexity and balanced tannins enhance rich, hearty vegetarian cuisine.</p>
                     </div>
                   )}
                 </div>
@@ -688,7 +690,7 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>While Sassicaia is exceptional, these combinations don't showcase its elegant qualities:</p>
+                      <p>While {getWineDisplayName()} is exceptional, these combinations don't showcase its elegant qualities:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
                         <li>Delicate fish preparations like sole or sea bass</li>
                         <li>Fresh shellfish or raw oysters</li>
