@@ -398,10 +398,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 }
                 
                 // Use OpenAI TTS directly and ensure suggestions appear
+                // Set responding state immediately before the timeout
+                setIsResponding(true);
+                console.log("Set isResponding to true - stop button should appear");
+                
                 setTimeout(async () => {
                   try {
                     console.log("Auto-speaking the assistant's response using OpenAI TTS");
-                    setIsResponding(true);
                     
                     // Use OpenAI TTS API directly
                     const response = await fetch('/api/text-to-speech', {
@@ -562,7 +565,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   
   // Handle the Stop button in the bottom sheet
   const handleMute = () => {
-    console.log("Stop button clicked - stopping audio playback");
+    console.log("Stop button clicked - stopping OpenAI TTS audio playback");
     
     // Stop speech synthesis completely
     if (window.speechSynthesis) {
@@ -570,13 +573,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("Speech synthesis cancelled");
     }
     
-    // Stop any audio elements that might be playing
+    // Stop any audio elements that might be playing (OpenAI TTS audio)
     const audioElements = document.querySelectorAll('audio');
     audioElements.forEach(audio => {
       if (!audio.paused) {
         audio.pause();
         audio.currentTime = 0;
-        console.log("Audio element stopped");
+        console.log("OpenAI TTS audio element stopped");
       }
     });
     
@@ -592,6 +595,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Reset responding state and mark response as complete to show suggestions
     setIsResponding(false);
     setResponseComplete(true);
+    setHasReceivedFirstResponse(true);
+    console.log("Stop button clicked - enabling suggestions after manual stop");
   };
 
   // Handle suggestion clicks - send message and speak response
