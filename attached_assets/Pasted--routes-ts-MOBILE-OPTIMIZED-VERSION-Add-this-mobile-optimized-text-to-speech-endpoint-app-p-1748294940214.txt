@@ -1,0 +1,99 @@
+// routes.ts - MOBILE-OPTIMIZED VERSION
+// Add this mobile-optimized text-to-speech endpoint:
+
+app.post("/api/text-to-speech", async (req, res) => {
+  try {
+    console.log("📱 Mobile-optimized TTS request received");
+    
+    const textToSpeechSchema = z.object({
+      text: z.string().min(1).max(2000) // Reduced from 4000 for faster processing
+    });
+    
+    const validationResult = textToSpeechSchema.safeParse(req.body);
+    
+    if (!validationResult.success) {
+      console.log("Invalid TTS request:", validationResult.error.format());
+      return res.status(400).json({
+        message: "Invalid request",
+        errors: validationResult.error.format()
+      });
+    }
+    
+    const { text } = validationResult.data;
+    
+    // MOBILE-FIRST: Aggressive text truncation for speed
+    let processedText = text;
+    if (processedText.length > 300) {
+      // Find last complete sentence within 300 characters
+      const lastPeriodIndex = processedText.lastIndexOf('.', 300);
+      if (lastPeriodIndex > 100) {
+        processedText = processedText.substring(0, lastPeriodIndex + 1);
+      } else {
+        processedText = processedText.substring(0, 300) + ".";
+      }
+    }
+    
+    console.log("📱 Processing mobile TTS for text:", processedText.substring(0, 50) + "...");
+    
+    // Set aggressive timeout for mobile
+    const startTime = Date.now();
+    const MOBILE_TIMEOUT = 8000; // 8 seconds max
+    
+    // Use Promise.race to enforce timeout
+    const audioPromise = textToSpeech(processedText);
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Mobile TTS timeout')), MOBILE_TIMEOUT);
+    });
+    
+    const audioBuffer = await Promise.race([audioPromise, timeoutPromise]) as Buffer;
+    
+    const processingTime = Date.now() - startTime;
+    console.log(`📱 Mobile TTS completed in ${processingTime}ms`);
+    
+    // Set headers optimized for mobile
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Content-Length': audioBuffer.length.toString(),
+      'Cache-Control': 'public, max-age=3600', // Cache for 1 hour on mobile
+      'Connection': 'close' // Close connection quickly on mobile
+    });
+    
+    res.send(audioBuffer);
+    console.log("📱 Mobile audio response sent, size:", audioBuffer.length);
+    
+  } catch (err) {
+    const error = err as any;
+    console.error("📱 Mobile TTS error:", error.message);
+    
+    // Check if this is a timeout or quota error
+    const isTimeoutError = error.message && error.message.includes('timeout');
+    const isQuotaError = error.message && (
+      error.message.includes("quota") || 
+      error.message.includes("rate limit") ||
+      error.message.includes("insufficient_quota")
+    );
+    
+    if (isTimeoutError) {
+      return res.status(408).json({
+        message: "Mobile TTS timeout - try shorter text",
+        error: "MOBILE_TIMEOUT",
+        fallback: true
+      });
+    }
+    
+    if (isQuotaError) {
+      return res.status(429).json({
+        message: "API quota exceeded for text-to-speech",
+        error: "QUOTA_EXCEEDED",
+        fallback: true
+      });
+    }
+    
+    // For other errors, fail fast for mobile
+    res.status(500).json({
+      message: "Mobile TTS failed",
+      error: error?.message || "Unknown error",
+      fallback: true
+    });
+  }
+});
