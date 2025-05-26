@@ -172,12 +172,15 @@ export async function generateConversationTitle(firstMessage: string) {
   }
 }
 
-// Consistent voice configuration - ensures same voice across all requests
-const VOICE_CONFIG = {
-  model: "tts-1",
-  voice: "onyx" as const, // Male voice for consistency - onyx provides deep, reliable male voice
-  speed: 1.2, // Optimized speed for clarity and natural flow
-} as const;
+// Fixed voice configuration class - ensures absolutely consistent parameters
+class VoiceConfig {
+  static readonly MODEL = "tts-1-hd" as const; // High definition for better quality
+  static readonly VOICE = "onyx" as const; // Male voice - never changes
+  static readonly SPEED = 1.0 as const; // Natural speed - never changes
+  
+  // Prevent instantiation - static class only
+  private constructor() {}
+}
 
 // Voice cache to store recently generated audio for consistency
 const voiceCache = new Map<string, Buffer>();
@@ -211,21 +214,25 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     }
     
     // Check cache first for consistency
-    const cacheKey = `${VOICE_CONFIG.voice}_${cleanText}`;
+    const cacheKey = `${VoiceConfig.VOICE}_${cleanText}`;
     if (voiceCache.has(cacheKey)) {
       console.log("Using cached voice response for consistency");
       return voiceCache.get(cacheKey)!;
     }
     
     console.log("Processing TTS request for text:", cleanText.substring(0, 50) + "...");
-    console.log("Using consistent voice settings:", VOICE_CONFIG);
+    console.log("Using fixed voice settings:", {
+      model: VoiceConfig.MODEL,
+      voice: VoiceConfig.VOICE,
+      speed: VoiceConfig.SPEED
+    });
     
-    // Use OpenAI's Text-to-Speech API with consistent voice settings
+    // Use OpenAI's Text-to-Speech API with FIXED consistent voice settings
     const response = await openai.audio.speech.create({
-      model: VOICE_CONFIG.model,
-      voice: VOICE_CONFIG.voice,
+      model: VoiceConfig.MODEL,
+      voice: VoiceConfig.VOICE,
+      speed: VoiceConfig.SPEED,
       input: cleanText,
-      speed: VOICE_CONFIG.speed,
     });
     
     console.log("OpenAI TTS response received");
@@ -237,8 +244,11 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     // Cache the response for consistency and performance
     if (voiceCache.size >= MAX_CACHE_SIZE) {
       // Remove oldest entry to make space
-      const firstKey = voiceCache.keys().next().value;
-      voiceCache.delete(firstKey);
+      const entries = voiceCache.entries();
+      const firstEntry = entries.next().value;
+      if (firstEntry) {
+        voiceCache.delete(firstEntry[0]);
+      }
     }
     voiceCache.set(cacheKey, buffer);
     console.log("Voice response cached for future consistency");

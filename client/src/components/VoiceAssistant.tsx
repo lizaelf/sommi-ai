@@ -428,15 +428,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       };
                       
                       audio.play();
+                      console.log("Using consistent OpenAI TTS voice (onyx)");
                     } else {
-                      console.error('Failed to get TTS audio');
-                      // Fallback to browser synthesis only if TTS fails
-                      speakResponse(messageText);
+                      console.error('Failed to get TTS audio - OpenAI API issue');
+                      // DO NOT fallback to browser synthesis - keep voice consistent
+                      toast({
+                        title: "Voice Error",
+                        description: "Could not generate voice response. Please try again.",
+                      });
                     }
                   } catch (error) {
                     console.error('Error with TTS:', error);
-                    // Fallback to browser synthesis only if TTS fails
-                    speakResponse(messageText);
+                    // DO NOT fallback to browser synthesis - keep voice consistent
+                    toast({
+                      title: "Voice Error",
+                      description: "Could not generate voice response. Please try again.",
+                    });
                   }
                   
                   // Reset the voice input flag after speaking
