@@ -418,6 +418,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       const audioUrl = URL.createObjectURL(audioBlob);
                       const audio = new Audio(audioUrl);
                       
+                      // Store audio reference globally so stop button can access it
+                      (window as any).currentOpenAIAudio = audio;
+                      
                       audio.onended = () => {
                         URL.revokeObjectURL(audioUrl);
                         console.log("OpenAI TTS audio playback completed - enabling suggestions");
@@ -428,6 +431,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                         setHasReceivedFirstResponse(true);
                         setUsedVoiceInput(false);
                         
+                        // Clear the global reference
+                        (window as any).currentOpenAIAudio = null;
+                        
                         console.log("State updated: isResponding=false, responseComplete=true, hasReceivedFirstResponse=true");
                       };
                       
@@ -436,6 +442,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                         URL.revokeObjectURL(audioUrl);
                         setIsResponding(false);
                         setUsedVoiceInput(false);
+                        
+                        // Clear the global reference
+                        (window as any).currentOpenAIAudio = null;
                       };
                       
                       await audio.play();
@@ -567,19 +576,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const handleMute = () => {
     console.log("Stop button clicked - stopping OpenAI TTS audio playback");
     
-    // Stop speech synthesis completely
+    // Stop the current OpenAI TTS audio if it exists
+    if ((window as any).currentOpenAIAudio) {
+      const audio = (window as any).currentOpenAIAudio;
+      audio.pause();
+      audio.currentTime = 0;
+      (window as any).currentOpenAIAudio = null;
+      console.log("OpenAI TTS audio stopped successfully");
+    }
+    
+    // Stop speech synthesis completely (fallback)
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
       console.log("Speech synthesis cancelled");
     }
     
-    // Stop any audio elements that might be playing (OpenAI TTS audio)
+    // Stop any other audio elements that might be playing
     const audioElements = document.querySelectorAll('audio');
     audioElements.forEach(audio => {
       if (!audio.paused) {
         audio.pause();
         audio.currentTime = 0;
-        console.log("OpenAI TTS audio element stopped");
+        console.log("Additional audio element stopped");
       }
     });
     
