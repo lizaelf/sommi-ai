@@ -226,8 +226,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             
             // Handle specific errors
             if (event.error === 'no-speech') {
-              console.log("No speech detected, continuing to listen...");
-              // Don't stop listening for this error - just keep going
+              console.log("No speech detected, restarting listening...");
+              // Auto-restart listening for no-speech timeout
+              setIsListening(false);
+              // Restart listening after a brief delay
+              setTimeout(() => {
+                if (!isProcessing) {
+                  startListening();
+                }
+              }, 100);
               return;
             }
             
@@ -401,8 +408,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 }
                 
                 // Use OpenAI TTS directly and ensure suggestions appear
-                // Set responding state immediately before the timeout
+                // Set responding state immediately before the timeout and clear thinking
                 setIsResponding(true);
+                setIsVoiceThinking(false); // Clear thinking state when response starts
                 console.log("Set isResponding to true - stop button should appear");
                 
                 setTimeout(async () => {
