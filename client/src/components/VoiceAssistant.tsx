@@ -18,6 +18,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isResponding, setIsResponding] = useState(false);
   const [hasReceivedFirstResponse, setHasReceivedFirstResponse] = useState(false); // Track if AI has responded at least once
   const [responseComplete, setResponseComplete] = useState(false); // Track if response is completely finished
+  const [isVoiceThinking, setIsVoiceThinking] = useState(false); // Local thinking state for voice interactions
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -33,8 +34,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       if (status === 'playing') {
         setIsResponding(true);
         setResponseComplete(false);
+        setIsVoiceThinking(false); // Clear thinking state when response starts
       } else if (status === 'stopped' || status === 'paused' || status === 'muted') {
         setIsResponding(false);
+        setIsVoiceThinking(false); // Clear thinking state when stopped
         // Only mark response as complete if it was stopped naturally (not by user)
         if (status === 'stopped' && event.detail?.reason !== 'user_stopped') {
           setResponseComplete(true);
@@ -155,6 +158,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 console.log("Final transcript:", finalTranscript);
                 setStatus('Processing your question...');
                 setUsedVoiceInput(true);
+                setIsVoiceThinking(true);
                 
                 // Stop recognition to prevent multiple submissions
                 if (recognitionRef.current) {
@@ -569,7 +573,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onAsk={handleAsk}
         isListening={isListening}
         isResponding={isResponding}
-        isThinking={isProcessing || status === 'Processing your question...'}
+        isThinking={isProcessing || isVoiceThinking || status === 'Processing your question...'}
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isProcessing && responseComplete}
         onSuggestionClick={handleSuggestionClick}
       />
