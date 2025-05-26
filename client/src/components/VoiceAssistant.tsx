@@ -116,14 +116,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
 
-    // Set up a timeout to stop listening after 10 seconds if no speech detected
-    const timeoutId = setTimeout(() => {
-      if (recognitionRef.current && isListening) {
-        console.log("Voice recognition timeout - stopping listening");
-        recognitionRef.current.stop();
-      }
-    }, 10000);
-
     // Request microphone permissions explicitly before starting
     try {
       if (typeof navigator.mediaDevices?.getUserMedia !== 'function') {
@@ -149,39 +141,51 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           
           recognitionRef.current = new SpeechRecognition();
           recognitionRef.current.lang = 'en-US';
-          recognitionRef.current.continuous = false; // Disable continuous to prevent loops
-          recognitionRef.current.interimResults = false; // Only final results
+          recognitionRef.current.continuous = true; // Enable continuous recognition to prevent quick timeout
+          recognitionRef.current.interimResults = true; // Show interim results for better UX
           recognitionRef.current.maxAlternatives = 1; // Only return best match
           
           // Re-attach event handlers to the fresh instance
           recognitionRef.current.onresult = (event: any) => {
-            const transcript = event.results[0][0].transcript.trim();
-            console.log("Final transcript:", transcript);
+            // Get final results only to avoid duplicates
+            const results = event.results;
+            let finalTranscript = '';
             
-            // Clear the timeout since we got a result
-            clearTimeout(timeoutId);
-            
-            if (transcript && transcript.length > 0) {
-              setStatus('Processing your question...');
-              setUsedVoiceInput(true);
-              setIsVoiceThinking(true);
-              setHasAskedQuestion(true);
-              
-              // Send the message to be processed
-              onSendMessage(transcript);
-              
-              // Dispatch event when microphone transitions to processing state
-              const micProcessingEvent = new CustomEvent('mic-status', {
-                detail: { status: 'processing' }
-              });
-              window.dispatchEvent(micProcessingEvent);
-            } else {
-              // Empty transcript, restart listening
-              setTimeout(() => {
-                if (recognitionRef.current && isListening) {
-                  recognitionRef.current.start();
+            for (let i = 0; i < results.length; i++) {
+              if (results[i].isFinal) {
+                finalTranscript = results[i][0].transcript.trim();
+                
+                // We have a final result, process it
+                console.log("Final transcript:", finalTranscript);
+                
+                // Only process if we have actual content
+                if (finalTranscript && finalTranscript.length > 0) {
+                  setStatus('Processing your question...');
+                  setUsedVoiceInput(true);
+                  setIsVoiceThinking(true);
+                  setHasAskedQuestion(true); // Mark that user has asked a question
+                  
+                  // Stop recognition to prevent multiple submissions
+                  if (recognitionRef.current) {
+                    recognitionRef.current.stop();
+                  }
+                  
+                  // Send the message to be processed
+                  onSendMessage(finalTranscript);
+                  
+                  // Dispatch event when microphone transitions to processing state
+                  const micProcessingEvent = new CustomEvent('mic-status', {
+                    detail: { status: 'processing' }
+                  });
+                  window.dispatchEvent(micProcessingEvent);
+                } else {
+                  console.log("Empty transcript detected, continuing to listen...");
+                  // Don't stop recognition, keep listening for actual input
                 }
-              }, 100);
+                
+                // Break out after processing the first final result
+                break;
+              }
             }
           };
           
