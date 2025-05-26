@@ -1,0 +1,105 @@
+// openai.ts - MOBILE-OPTIMIZED TTS FUNCTION
+// Replace your existing textToSpeech function with this mobile-optimized version:
+
+// Mobile-optimized voice configuration for faster processing
+class MobileVoiceConfig {
+  static readonly MODEL = "tts-1" as const; // Use faster model (not HD) for mobile
+  static readonly VOICE = "onyx" as const; // Consistent voice
+  static readonly SPEED = 1.2 as const; // Slightly faster for mobile attention spans
+  
+  private constructor() {}
+}
+
+// Simplified mobile cache (smaller size)
+const mobileVoiceCache = new Map<string, Buffer>();
+const MOBILE_MAX_CACHE_SIZE = 20; // Smaller cache for mobile
+
+export async function textToSpeech(text: string): Promise<Buffer> {
+  try {
+    console.log("📱 Mobile-optimized TTS processing...");
+    
+    // MOBILE-FIRST: Aggressive text optimization
+    const MOBILE_MAX_LENGTH = 250; // Much shorter for mobile
+    
+    let cleanText = text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove markdown
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/#+\s/g, '')
+      .replace(/\n\n/g, '. ')
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .trim();
+    
+    // Aggressive truncation for mobile speed
+    if (cleanText.length > MOBILE_MAX_LENGTH) {
+      const lastSentenceEnd = Math.max(
+        cleanText.lastIndexOf('.', MOBILE_MAX_LENGTH),
+        cleanText.lastIndexOf('!', MOBILE_MAX_LENGTH),
+        cleanText.lastIndexOf('?', MOBILE_MAX_LENGTH)
+      );
+      
+      if (lastSentenceEnd > 50) {
+        cleanText = cleanText.substring(0, lastSentenceEnd + 1);
+      } else {
+        cleanText = cleanText.substring(0, MOBILE_MAX_LENGTH).trim() + ".";
+      }
+    }
+    
+    // Check mobile cache first
+    const cacheKey = `mobile_${MobileVoiceConfig.VOICE}_${cleanText}`;
+    if (mobileVoiceCache.has(cacheKey)) {
+      console.log("📱 Using mobile cached voice response");
+      return mobileVoiceCache.get(cacheKey)!;
+    }
+    
+    console.log("📱 Mobile TTS request:", cleanText.substring(0, 50) + "...");
+    console.log("📱 Using mobile settings:", {
+      model: MobileVoiceConfig.MODEL,
+      voice: MobileVoiceConfig.VOICE,
+      speed: MobileVoiceConfig.SPEED
+    });
+    
+    // Mobile-optimized OpenAI call with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second timeout
+    
+    try {
+      const response = await openai.audio.speech.create({
+        model: MobileVoiceConfig.MODEL,
+        voice: MobileVoiceConfig.VOICE,
+        speed: MobileVoiceConfig.SPEED,
+        input: cleanText,
+      }, {
+        signal: controller.signal,
+        timeout: 5000 // Additional 5 second timeout
+      });
+      
+      clearTimeout(timeoutId);
+      
+      const buffer = Buffer.from(await response.arrayBuffer());
+      console.log("📱 Mobile TTS success, buffer size:", buffer.length);
+      
+      // Cache for mobile (with size limit)
+      if (mobileVoiceCache.size >= MOBILE_MAX_CACHE_SIZE) {
+        const firstKey = mobileVoiceCache.keys().next().value;
+        if (firstKey) {
+          mobileVoiceCache.delete(firstKey);
+        }
+      }
+      mobileVoiceCache.set(cacheKey, buffer);
+      
+      return buffer;
+      
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      
+      if (error.name === 'AbortError') {
+        throw new Error('Mobile TTS timeout - request took too long');
+      }
+      throw error;
+    }
+    
+  } catch (error) {
+    console.error("📱 Mobile TTS error:", error);
+    throw new Error(`Mobile TTS failed: ${(error as any)?.message || "Unknown error"}`);
+  }
+}
