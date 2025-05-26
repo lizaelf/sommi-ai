@@ -3,17 +3,17 @@
 
 export const WINE_CONFIG = {
   // Primary wine information
-  name: '2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel',
-  fullName: '2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel',
-  vintage: 2021,
-  winery: 'Ridge Vineyards',
-  vineyard: 'Lytton Springs',
-  region: 'Dry Creek Valley',
-  appellation: 'Dry Creek Valley AVA',
-  county: 'Sonoma County',
-  state: 'California',
-  country: 'United States',
-  varietal: 'Zinfandel',
+  name: 'Tenuta San Guido Bolgheri Sassicaia DOC',
+  fullName: 'Tenuta San Guido Bolgheri Sassicaia DOC',
+  vintage: 2020,
+  winery: 'Tenuta San Guido',
+  vineyard: 'Sassicaia',
+  region: 'Bolgheri',
+  appellation: 'Bolgheri DOC',
+  county: 'Tuscany',
+  state: 'Tuscany',
+  country: 'Italy',
+  varietal: 'Cabernet Sauvignon',
   
   // Detailed characteristics
   characteristics: {
@@ -33,15 +33,15 @@ export const WINE_CONFIG = {
   
   // Tasting notes and description
   tastingNotes: [
-    'Rich aromas of blackberry, boysenberry, and spice',
-    'Complex flavors of dark fruit with pepper and earth',
-    'Notes of vanilla and toasted oak from barrel aging',
-    'Hints of black tea and dried herbs',
-    'Long finish with balanced acidity and soft tannins'
+    'Elegant aromas of blackcurrant, cedar, and Mediterranean herbs',
+    'Complex flavors of dark berries, tobacco, and graphite',
+    'Notes of vanilla and spice from French oak aging',
+    'Hints of leather, earth, and mineral undertones',
+    'Long, refined finish with structured tannins and balanced acidity'
   ],
   
   // Historical information
-  history: 'Ridge Vineyards\' Lytton Springs vineyard in Dry Creek Valley has been producing exceptional Zinfandel since the 1970s. Founded by Dave Bennion and partners in 1962, Ridge is renowned for their traditional winemaking methods and commitment to expressing the unique terroir of each vineyard site. The Lytton Springs vineyard, with its old vines and diverse soils, produces some of California\'s most acclaimed Zinfandels.',
+  history: 'Tenuta San Guido\'s Sassicaia, created in the 1940s by Marquis Mario Incisa della Rocchetta, is considered the first "Super Tuscan" wine. Located in Bolgheri on the Tuscan coast, this revolutionary wine challenged traditional Italian winemaking by using Cabernet Sauvignon in a region known for Sangiovese. The estate\'s unique terroir, with its gravelly soils and coastal climate, creates wines of exceptional elegance and complexity that rival the great wines of Bordeaux.',
   
   // Food pairing categories
   foodPairings: [
