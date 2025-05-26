@@ -390,13 +390,52 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
                 // Speak the response with a small delay to ensure message is fully rendered
-                setTimeout(() => {
-                  speakResponse(messageText);
+                setTimeout(async () => {
+                  try {
+                    // Use OpenAI TTS for consistent voice instead of browser synthesis
+                    const response = await fetch('/api/text-to-speech', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ text: messageText }),
+                    });
+
+                    if (response.ok) {
+                      const audioBlob = await response.blob();
+                      const audioUrl = URL.createObjectURL(audioBlob);
+                      const audio = new Audio(audioUrl);
+                      
+                      // Dispatch event to notify that audio is playing
+                      const audioEvent = new CustomEvent('audio-status', {
+                        detail: { status: 'playing' }
+                      });
+                      window.dispatchEvent(audioEvent);
+                      
+                      audio.onended = () => {
+                        const audioEndedEvent = new CustomEvent('audio-status', {
+                          detail: { status: 'stopped' }
+                        });
+                        window.dispatchEvent(audioEndedEvent);
+                        URL.revokeObjectURL(audioUrl);
+                      };
+                      
+                      audio.play();
+                    } else {
+                      console.error('Failed to get TTS audio');
+                      // Fallback to browser synthesis only if TTS fails
+                      speakResponse(messageText);
+                    }
+                  } catch (error) {
+                    console.error('Error with TTS:', error);
+                    // Fallback to browser synthesis only if TTS fails
+                    speakResponse(messageText);
+                  }
+                  
                   // Reset the voice input flag after speaking
                   setUsedVoiceInput(false);
                   
                   // Keep the bottom sheet open to show suggestions after first response
-                  // No longer auto-closing after 2 seconds
                 }, 300);
               } else {
                 console.log("Last message has no text content");
