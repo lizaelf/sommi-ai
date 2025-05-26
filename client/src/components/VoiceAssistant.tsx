@@ -162,6 +162,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsVoiceThinking(true);
                 setHasAskedQuestion(true); // Mark that user has asked a question
                 
+                // Mobile: Add aggressive timeout to prevent getting stuck
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
+                  console.log("Mobile: Setting aggressive timeout for thinking state");
+                  setTimeout(() => {
+                    console.log("Mobile thinking timeout - forcing exit");
+                    setIsVoiceThinking(false);
+                    setIsResponding(false);
+                    setUsedVoiceInput(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
+                  }, 3000); // 3 second timeout for mobile
+                }
+                
                 // Immediately clear listening state before stopping recognition
                 setIsListening(false);
                 
@@ -407,22 +421,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   window.speechSynthesis.cancel();
                 }
                 
-                // Use OpenAI TTS directly and ensure suggestions appear
-                // For mobile browsers, immediately exit thinking and show suggestions
+                // Mobile-optimized voice experience
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
                 if (isMobile) {
-                  console.log("Mobile browser detected - skipping TTS and showing suggestions");
+                  console.log("Mobile browser detected - using optimized mobile flow");
                   setIsVoiceThinking(false);
-                  setIsResponding(false);
-                  setUsedVoiceInput(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
+                  
+                  // Mobile: Shorter timeout and immediate suggestions
+                  setTimeout(() => {
+                    setIsResponding(false);
+                    setUsedVoiceInput(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
+                  }, 500); // Very short delay for mobile
                   return;
                 }
                 
-                // Desktop: Don't set responding state yet - wait for audio to actually start
-                setIsVoiceThinking(false); // Clear thinking state when response starts
-                console.log("Preparing OpenAI TTS response...");
+                // Desktop: Full TTS experience
+                setIsVoiceThinking(false);
+                console.log("Desktop browser - preparing full TTS experience");
                 
                 // Add timeout fallback for mobile browsers
                 const mobileTimeout = setTimeout(() => {
@@ -437,12 +455,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   try {
                     console.log("Auto-speaking the assistant's response using OpenAI TTS");
                     
-                    // Use OpenAI TTS API directly
+                    // Use OpenAI TTS API with mobile timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for mobile networks
+                    
                     const response = await fetch('/api/text-to-speech', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ text: messageText })
+                      body: JSON.stringify({ text: messageText }),
+                      signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
                     
                     if (response.ok) {
                       const audioBlob = await response.blob();
@@ -512,12 +536,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                     }
                   } catch (error) {
                     console.error('Error with OpenAI TTS:', error);
+                    clearTimeout(mobileTimeout);
+                    
+                    // Handle different types of errors
+                    if (error.name === 'AbortError') {
+                      console.log("Request timed out - showing suggestions");
+                    } else {
+                      console.error('Network or TTS error:', error);
+                    }
+                    
+                    // Always show suggestions on error
                     setIsResponding(false);
                     setUsedVoiceInput(false);
-                    toast({
-                      title: "Voice Error",
-                      description: "Could not generate voice response. Please try again.",
-                    });
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
                   }
                   
                   // Keep the bottom sheet open to show suggestions after first response
