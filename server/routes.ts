@@ -6,6 +6,33 @@ import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Pre-generated responses cache for instant suggestions
+  const preGeneratedResponses = new Map<string, string>();
+  
+  // Function to pre-generate suggestion responses
+  const preGenerateSuggestionResponses = async () => {
+    const suggestions = [
+      "Food pairing",
+      "Tasting notes", 
+      "Serving"
+    ];
+    
+    console.log("Pre-generating suggestion responses for instant delivery...");
+    
+    for (const suggestion of suggestions) {
+      try {
+        const result = await chatCompletion([{ role: "user", content: suggestion }]);
+        preGeneratedResponses.set(suggestion, result.content);
+        console.log(`Pre-generated response for "${suggestion}"`);
+      } catch (error) {
+        console.error(`Failed to pre-generate response for "${suggestion}":`, error);
+      }
+    }
+  };
+  
+  // Pre-generate responses on server start
+  preGenerateSuggestionResponses();
+
   // API status endpoint
   app.get("/api/status", async (_req, res) => {
     try {
@@ -147,8 +174,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         allMessages = [...formattedPreviousMessages, ...messages];
       }
       
-      // Call OpenAI API
-      const response = await chatCompletion(allMessages);
+      // Check if this is a suggestion request and we have a pre-generated response
+      const lastMessage = messages[messages.length - 1];
+      let response;
+      
+      if (lastMessage?.role === "user" && preGeneratedResponses.has(lastMessage.content)) {
+        console.log(`Using pre-generated response for: "${lastMessage.content}"`);
+        
+        // Use pre-generated response for instant delivery
+        response = { 
+          content: preGeneratedResponses.get(lastMessage.content)!,
+          usage: undefined
+        };
+        
+        // Refresh the pre-generated response in background for next time
+        setTimeout(async () => {
+          try {
+            const result = await chatCompletion(allMessages);
+            preGeneratedResponses.set(lastMessage.content, result.content);
+            console.log(`Refreshed pre-generated response for "${lastMessage.content}"`);
+          } catch (error) {
+            console.error(`Failed to refresh response for "${lastMessage.content}":`, error);
+          }
+        }, 100);
+      } else {
+        // Call OpenAI API for non-suggestion requests
+        response = await chatCompletion(allMessages);
+      }
       
       // Save message to storage if conversation exists
       if (conversationId) {

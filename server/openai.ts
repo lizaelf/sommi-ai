@@ -176,7 +176,7 @@ export async function generateConversationTitle(firstMessage: string) {
 class VoiceConfig {
   static readonly MODEL = "tts-1-hd" as const; // High definition for better quality
   static readonly VOICE = "onyx" as const; // Male voice - never changes
-  static readonly SPEED = 1.0 as const; // Natural speed - never changes
+  static readonly SPEED = 1.5 as const; // 1.5x speed for faster responses
   
   // Prevent instantiation - static class only
   private constructor() {}
