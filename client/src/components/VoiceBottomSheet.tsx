@@ -312,70 +312,72 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             )}
 
             {/* Show Stop button when responding, Ask button when not responding */}
-            {isResponding ? (
-              <button
-                className="voice-bottom-sheet-button"
-                onClick={onMute}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '32px',
-                  height: '56px',
-                  padding: '0 16px',
-                  margin: '0 16px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  outline: 'none',
-                  transition: 'none',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
-                </svg>
-                Stop
-              </button>
-            ) : (
-              <button
-                className="voice-bottom-sheet-button-white"
-                onClick={onAsk}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'white',
-                  borderRadius: '32px',
-                  height: '56px',
-                  padding: '0 16px',
-                  margin: '0 16px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: 'black',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  outline: 'none',
-                  transition: 'none',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 1C10.34 1 9 2.34 9 4v8c0 1.66 1.34 3 3 3s3-1.34 3-3V4c0-1.66-1.34-3-3-3z" fill="black"/>
-                  <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-0.49 6-3.39 6-6.92h-2z" fill="black"/>
-                </svg>
-                Ask
-              </button>
-            )}
+            <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
+              {isResponding ? (
+                <button
+                  className="voice-bottom-sheet-button"
+                  onClick={onMute}
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '32px',
+                    height: '56px',
+                    padding: '0 16px',
+                    margin: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: 'white',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    outline: 'none',
+                    transition: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                    <path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
+                  </svg>
+                  Stop
+                </button>
+              ) : (
+                <button
+                  className="voice-bottom-sheet-button-white"
+                  onClick={onAsk}
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'white',
+                    borderRadius: '32px',
+                    height: '56px',
+                    padding: '0 16px',
+                    margin: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: 'black',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    outline: 'none',
+                    transition: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1C10.34 1 9 2.34 9 4v8c0 1.66 1.34 3 3 3s3-1.34 3-3V4c0-1.66-1.34-3-3-3z" fill="black"/>
+                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-0.49 6-3.39 6-6.92h-2z" fill="black"/>
+                  </svg>
+                  Ask
+                </button>
+              )}
+            </div>
           </>
           
         )}
