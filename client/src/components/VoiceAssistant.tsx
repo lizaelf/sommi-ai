@@ -130,15 +130,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       console.log("Microphone permission granted");
 
-      // Mobile: Pre-create audio element during user interaction to bypass autoplay restrictions
+      // Mobile: Test and enable audio during user interaction
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       if (isMobile) {
-        console.log("Mobile: Pre-creating audio element to bypass autoplay restrictions");
-        const audioElement = new Audio();
-        audioElement.preload = 'auto';
-        audioElement.volume = 1;
-        // Store globally so TTS can use it later
-        (window as any).mobileAudioElement = audioElement;
+        console.log("Mobile: Testing audio capability during user interaction");
+        try {
+          // Create and test audio element during user interaction
+          const testAudio = new Audio();
+          testAudio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBz2U3/PJeSsFJnvI8N2RQQoQZq7s7bBOEg5Nn+DyvmI=';
+          testAudio.volume = 0.1;
+          
+          // Try to play to test if audio is enabled
+          testAudio.play().then(() => {
+            console.log("✅ Mobile audio enabled - TTS will work");
+            (window as any).mobileAudioEnabled = true;
+            (window as any).mobileTestAudio = testAudio;
+          }).catch(() => {
+            console.log("❌ Mobile audio blocked - will use text fallback");
+            (window as any).mobileAudioEnabled = false;
+          });
+        } catch {
+          console.log("❌ Audio not available on this mobile device");
+          (window as any).mobileAudioEnabled = false;
+        }
       }
 
       try {
@@ -436,9 +450,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
                 if (isMobile) {
-                  console.log("Mobile browser detected - using pre-created audio element");
+                  console.log("Mobile browser detected - checking audio capability");
                   setIsVoiceThinking(false);
-                  // Mobile will proceed to TTS with pre-created audio element
+                  
+                  // Check if audio was enabled during user interaction
+                  if (!(window as any).mobileAudioEnabled) {
+                    console.log("🔇 Mobile audio disabled - showing text response only");
+                    setTimeout(() => {
+                      setIsResponding(false);
+                      setUsedVoiceInput(false);
+                      setResponseComplete(true);
+                      setHasReceivedFirstResponse(true);
+                    }, 500);
+                    return;
+                  } else {
+                    console.log("✅ Mobile audio enabled - proceeding with TTS");
+                  }
                 }
                 
                 // Desktop: Full TTS experience
@@ -475,14 +502,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       const audioBlob = await response.blob();
                       const audioUrl = URL.createObjectURL(audioBlob);
                       
-                      // Use pre-created audio element for mobile to bypass autoplay restrictions
+                      // Use tested audio element for mobile or create new one for desktop
                       const isMobileBrowser = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                       let audio;
                       
-                      if (isMobileBrowser && (window as any).mobileAudioElement) {
-                        console.log("Mobile: Using pre-created audio element to bypass autoplay restrictions");
-                        audio = (window as any).mobileAudioElement;
+                      if (isMobileBrowser && (window as any).mobileTestAudio) {
+                        console.log("Mobile: Using tested audio element (autoplay enabled)");
+                        audio = (window as any).mobileTestAudio;
                         audio.src = audioUrl;
+                        audio.volume = 1; // Reset volume for actual playback
                       } else {
                         console.log("Desktop: Creating new audio element");
                         audio = new Audio(audioUrl);
@@ -515,7 +543,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                         console.log("State updated: isResponding=false, responseComplete=true, hasReceivedFirstResponse=true");
                       };
                       
-                      audio.onerror = (error) => {
+                      audio.onerror = (error: any) => {
                         console.error("Audio playback error:", error);
                         clearTimeout(mobileTimeout);
                         URL.revokeObjectURL(audioUrl);
