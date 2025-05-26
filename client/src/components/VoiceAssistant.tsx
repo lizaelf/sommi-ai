@@ -162,6 +162,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsVoiceThinking(true);
                 setHasAskedQuestion(true); // Mark that user has asked a question
                 
+                // Immediately clear listening state before stopping recognition
+                setIsListening(false);
+                
                 // Stop recognition to prevent multiple submissions
                 if (recognitionRef.current) {
                   recognitionRef.current.stop();
