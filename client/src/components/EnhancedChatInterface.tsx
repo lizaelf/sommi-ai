@@ -709,30 +709,14 @@ const EnhancedChatInterface: React.FC = () => {
                 padding: '0 20px',
                 marginBottom: '20px'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <h1 style={{
-                    ...typography.h1,
-                    color: 'white',
-                    textAlign: 'left',
-                    margin: 0
-                  }}>
-                    Ask about this wine
-                  </h1>
-                  <button
-                    onClick={createNewConversation}
-                    style={{
-                      backgroundColor: '#191919',
-                      color: 'white',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: '8px',
-                      padding: '8px 12px',
-                      fontSize: '12px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    New Chat
-                  </button>
-                </div>
+                <h1 style={{
+                  ...typography.h1,
+                  color: 'white',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}>
+                  Ask about this wine
+                </h1>
                 
                 {/* Suggestion pills - hidden after sending a message */}
                 <div style={{ 
