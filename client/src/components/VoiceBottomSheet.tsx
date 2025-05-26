@@ -8,6 +8,7 @@ interface VoiceBottomSheetProps {
   onMute: () => void;
   onAsk: () => void;
   isListening?: boolean;
+  isResponding?: boolean;
 }
 
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
@@ -15,7 +16,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   onClose,
   onMute,
   onAsk,
-  isListening = false
+  isListening = false,
+  isResponding = false
 }) => {
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
@@ -226,36 +228,39 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px' }}>
             <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
-              <button
-                className="voice-bottom-sheet-button"
-                onClick={onMute}
-                style={{
-                  flex: 1,
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '32px',
-                  height: '56px',
-                  padding: 0,
-                  margin: 0,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  outline: 'none',
-                  transition: 'none',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M12.92 3.316c.774-.69 1.983-.187 2.074.812L15 4.25v15.496c0 1.037-1.178 1.606-1.986 1.01l-.095-.076l-4.491-3.994a.75.75 0 0 0-.39-.182l-.108-.008H4.25a2.25 2.25 0 0 1-2.245-2.095L2 14.246V9.75a2.25 2.25 0 0 1 2.096-2.245l.154-.005h3.68a.75.75 0 0 0 .411-.123l.087-.067l4.491-3.993zm4.36 5.904L19 10.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L20.06 12l1.72 1.72a.75.75 0 1 1-1.06 1.06L19 13.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L17.94 12l-1.72-1.72a.75.75 0 1 1 1.06-1.06z"/>
-                </svg>
-                Mute
-              </button>
+              {/* Stop Button - Only shown when responding */}
+              {isResponding && (
+                <button
+                  className="voice-bottom-sheet-button"
+                  onClick={onMute}
+                  style={{
+                    flex: 1,
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '32px',
+                    height: '56px',
+                    padding: 0,
+                    margin: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: 'white',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    outline: 'none',
+                    transition: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                    <path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
+                  </svg>
+                  Stop
+                </button>
+              )}
               <button
                 className="voice-bottom-sheet-button-white"
                 onClick={onAsk}
@@ -289,73 +294,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               </button>
             </div>
             
-            {/* Test Sound Button */}
-            <button
-              onClick={() => {
-                // Create and play a test sound to check animation
-                const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                // Configure oscillator and gain
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime); // Low volume
-                
-                // Connect nodes
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Dispatch custom event to trigger animation
-                const audioPlayingEvent = new CustomEvent('audio-status', {
-                  detail: { 
-                    status: 'playing',
-                    audioElement: { frequency: 440 } // Mock audio element
-                  }
-                });
-                window.dispatchEvent(audioPlayingEvent);
-                
-                // Start oscillator
-                oscillator.start();
-                
-                // Stop after 3 seconds
-                setTimeout(() => {
-                  oscillator.stop();
-                  audioContext.close();
-                  
-                  // Dispatch event to stop animation
-                  const audioStoppedEvent = new CustomEvent('audio-status', {
-                    detail: { status: 'stopped' }
-                  });
-                  window.dispatchEvent(audioStoppedEvent);
-                }, 3000);
-              }}
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                borderRadius: '32px',
-                height: '40px',
-                padding: '0 16px',
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '14px',
-                fontWeight: 500,
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white">
-                <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 001.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06zM18.584 5.106a.75.75 0 011.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 11-1.06-1.06 8.25 8.25 0 000-11.668.75.75 0 010-1.06z"/>
-                <path d="M15.932 7.757a.75.75 0 011.061 0 6 6 0 010 8.486.75.75 0 01-1.06-1.061 4.5 4.5 0 000-6.364.75.75 0 010-1.06z"/>
-              </svg>
-              Test Animation
-            </button>
+
           </div>
         )}
         

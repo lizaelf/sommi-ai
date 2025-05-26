@@ -71,10 +71,10 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       volumeLevel = Math.pow(volumeLevel, 0.7); // Apply power curve for more natural response
     }
     
-    // Scale from 70% to 140% based on audio level (70% range total) - more dramatic
-    const minScale = 0.7;  // 70% minimum size
-    const maxScale = 1.4;  // 140% maximum size
-    const scaleRange = maxScale - minScale; // 0.7 (70% range)
+    // Scale from 60% to 120% based on audio level (60% range total)
+    const minScale = 0.6;  // 60% minimum size
+    const maxScale = 1.2;  // 120% maximum size
+    const scaleRange = maxScale - minScale; // 0.6 (60% range)
     
     // Calculate target scale based on volume with enhanced sensitivity
     const enhancedVolume = Math.pow(volumeLevel, 0.5); // Make it more responsive to lower volumes
