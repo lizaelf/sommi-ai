@@ -230,7 +230,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   }
                 `}
               </style>
-              <ShiningText text="Listening..." />
+              Listening...
             </div>
           </div>
         ) : isThinking ? (
