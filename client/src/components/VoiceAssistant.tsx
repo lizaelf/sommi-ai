@@ -116,6 +116,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
 
+    // Set up a timeout to stop listening after 10 seconds if no speech detected
+    const timeoutId = setTimeout(() => {
+      if (recognitionRef.current && isListening) {
+        console.log("Voice recognition timeout - stopping listening");
+        recognitionRef.current.stop();
+      }
+    }, 10000);
+
     // Request microphone permissions explicitly before starting
     try {
       if (typeof navigator.mediaDevices?.getUserMedia !== 'function') {
@@ -160,6 +168,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 // Only process if we have actual content
                 if (finalTranscript && finalTranscript.length > 0) {
+                  // Clear the timeout since we got valid input
+                  clearTimeout(timeoutId);
+                  
                   setStatus('Processing your question...');
                   setUsedVoiceInput(true);
                   setIsVoiceThinking(true);
@@ -178,13 +189,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                     detail: { status: 'processing' }
                   });
                   window.dispatchEvent(micProcessingEvent);
-                } else {
-                  console.log("Empty transcript detected, continuing to listen...");
-                  // Don't stop recognition, keep listening for actual input
+                  
+                  // Break out after processing
+                  break;
                 }
-                
-                // Break out after processing the first final result
-                break;
               }
             }
           };
