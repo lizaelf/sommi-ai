@@ -153,28 +153,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             
             for (let i = 0; i < results.length; i++) {
               if (results[i].isFinal) {
-                finalTranscript = results[i][0].transcript;
+                finalTranscript = results[i][0].transcript.trim();
                 
                 // We have a final result, process it
                 console.log("Final transcript:", finalTranscript);
-                setStatus('Processing your question...');
-                setUsedVoiceInput(true);
-                setIsVoiceThinking(true);
-                setHasAskedQuestion(true); // Mark that user has asked a question
                 
-                // Stop recognition to prevent multiple submissions
-                if (recognitionRef.current) {
-                  recognitionRef.current.stop();
+                // Only process if we have actual content
+                if (finalTranscript && finalTranscript.length > 0) {
+                  setStatus('Processing your question...');
+                  setUsedVoiceInput(true);
+                  setIsVoiceThinking(true);
+                  setHasAskedQuestion(true); // Mark that user has asked a question
+                  
+                  // Stop recognition to prevent multiple submissions
+                  if (recognitionRef.current) {
+                    recognitionRef.current.stop();
+                  }
+                  
+                  // Send the message to be processed
+                  onSendMessage(finalTranscript);
+                  
+                  // Dispatch event when microphone transitions to processing state
+                  const micProcessingEvent = new CustomEvent('mic-status', {
+                    detail: { status: 'processing' }
+                  });
+                  window.dispatchEvent(micProcessingEvent);
+                } else {
+                  console.log("Empty transcript detected, continuing to listen...");
+                  // Don't stop recognition, keep listening for actual input
                 }
-                
-                // Send the message to be processed
-                onSendMessage(finalTranscript);
-                
-                // Dispatch event when microphone transitions to processing state
-                const micProcessingEvent = new CustomEvent('mic-status', {
-                  detail: { status: 'processing' }
-                });
-                window.dispatchEvent(micProcessingEvent);
                 
                 // Break out after processing the first final result
                 break;
