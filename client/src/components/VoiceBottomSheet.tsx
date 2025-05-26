@@ -196,7 +196,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             overflow: 'hidden'
           }}
         >
-          <WineImage isAnimating={true} size={180} />
+          <WineImage isAnimating={true} size={showSuggestions ? 140 : 180} />
         </div>
 
         {/* Show different states: Listening, Thinking, or Buttons */}
@@ -268,16 +268,17 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px' }}>
-            {/* Suggestions Section - Only show when suggestions are available */}
-            {showSuggestions && onSuggestionClick && (
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '8px',
-                marginBottom: '8px',
-                justifyContent: 'center'
-              }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px', minHeight: '120px' }}>
+            {/* Suggestions Section - Reserve space to maintain sheet height */}
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '8px',
+              marginBottom: '8px',
+              height: '60px', // Fixed height to maintain bottom sheet size
+              justifyContent: 'center'
+            }}>
+              {showSuggestions && onSuggestionClick && (
                 <div style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -319,8 +320,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
               {/* Show Stop button when responding, Ask button when not responding */}
