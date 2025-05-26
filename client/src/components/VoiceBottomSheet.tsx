@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WineImage from './WineImage';
+import { TextShimmerWave } from './ui/text-shimmer-wave';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -235,7 +236,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 backgroundColor: '#CECECE',
                 animation: 'pulseDot 1.5s infinite ease-in-out'
               }}></span>
-              Listening...
+              <TextShimmerWave 
+                className="[--base-color:#CECECE] [--base-gradient-color:#ffffff]"
+                duration={1.5}
+                spread={2}
+              >
+                Listening...
+              </TextShimmerWave>
             </div>
           </div>
         ) : isThinking ? (
@@ -264,7 +271,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 backgroundColor: '#CECECE',
                 animation: 'pulseDot 1.5s infinite ease-in-out'
               }}></span>
-              Thinking...
+              <TextShimmerWave 
+                className="[--base-color:#CECECE] [--base-gradient-color:#ffffff]"
+                duration={1.5}
+                spread={2}
+              >
+                Thinking...
+              </TextShimmerWave>
             </div>
           </div>
         ) : (
