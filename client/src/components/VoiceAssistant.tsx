@@ -391,55 +391,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Speak the response with a small delay to ensure message is fully rendered
+                // Use our consistent speakResponse function that uses OpenAI TTS
                 setTimeout(async () => {
                   try {
-                    // Use OpenAI TTS for consistent voice instead of browser synthesis
-                    const response = await fetch('/api/text-to-speech', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ text: messageText }),
-                    });
-
-                    if (response.ok) {
-                      const audioBlob = await response.blob();
-                      const audioUrl = URL.createObjectURL(audioBlob);
-                      const audio = new Audio(audioUrl);
-                      
-                      // Dispatch event to notify that audio is playing
-                      const audioEvent = new CustomEvent('audio-status', {
-                        detail: { status: 'playing', audioElement: audio }
-                      });
-                      window.dispatchEvent(audioEvent);
-                      
-                      audio.onended = () => {
-                        const audioEndedEvent = new CustomEvent('audio-status', {
-                          detail: { status: 'stopped' }
-                        });
-                        window.dispatchEvent(audioEndedEvent);
-                        URL.revokeObjectURL(audioUrl);
-                        
-                        // Mark response as complete and enable suggestions
-                        setIsResponding(false);
-                        setResponseComplete(true);
-                        setHasReceivedFirstResponse(true);
-                      };
-                      
-                      audio.play();
-                      console.log("Using consistent OpenAI TTS voice (onyx)");
-                    } else {
-                      console.error('Failed to get TTS audio - OpenAI API issue');
-                      // DO NOT fallback to browser synthesis - keep voice consistent
-                      toast({
-                        title: "Voice Error",
-                        description: "Could not generate voice response. Please try again.",
-                      });
-                    }
+                    console.log("Auto-speaking the assistant's response using OpenAI TTS");
+                    await speakResponse(messageText);
+                    
+                    // Mark response as complete and enable suggestions
+                    setIsResponding(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
                   } catch (error) {
                     console.error('Error with TTS:', error);
-                    // DO NOT fallback to browser synthesis - keep voice consistent
                     toast({
                       title: "Voice Error",
                       description: "Could not generate voice response. Please try again.",
