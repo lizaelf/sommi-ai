@@ -149,51 +149,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           
           recognitionRef.current = new SpeechRecognition();
           recognitionRef.current.lang = 'en-US';
-          recognitionRef.current.continuous = true; // Enable continuous recognition to prevent quick timeout
-          recognitionRef.current.interimResults = true; // Show interim results for better UX
+          recognitionRef.current.continuous = false; // Disable continuous to prevent loops
+          recognitionRef.current.interimResults = false; // Only final results
           recognitionRef.current.maxAlternatives = 1; // Only return best match
           
           // Re-attach event handlers to the fresh instance
           recognitionRef.current.onresult = (event: any) => {
-            // Get final results only to avoid duplicates
-            const results = event.results;
-            let finalTranscript = '';
+            const transcript = event.results[0][0].transcript.trim();
+            console.log("Final transcript:", transcript);
             
-            for (let i = 0; i < results.length; i++) {
-              if (results[i].isFinal) {
-                finalTranscript = results[i][0].transcript.trim();
-                
-                // We have a final result, process it
-                console.log("Final transcript:", finalTranscript);
-                
-                // Only process if we have actual content
-                if (finalTranscript && finalTranscript.length > 0) {
-                  // Clear the timeout since we got valid input
-                  clearTimeout(timeoutId);
-                  
-                  setStatus('Processing your question...');
-                  setUsedVoiceInput(true);
-                  setIsVoiceThinking(true);
-                  setHasAskedQuestion(true); // Mark that user has asked a question
-                  
-                  // Stop recognition to prevent multiple submissions
-                  if (recognitionRef.current) {
-                    recognitionRef.current.stop();
-                  }
-                  
-                  // Send the message to be processed
-                  onSendMessage(finalTranscript);
-                  
-                  // Dispatch event when microphone transitions to processing state
-                  const micProcessingEvent = new CustomEvent('mic-status', {
-                    detail: { status: 'processing' }
-                  });
-                  window.dispatchEvent(micProcessingEvent);
-                  
-                  // Break out after processing
-                  break;
+            // Clear the timeout since we got a result
+            clearTimeout(timeoutId);
+            
+            if (transcript && transcript.length > 0) {
+              setStatus('Processing your question...');
+              setUsedVoiceInput(true);
+              setIsVoiceThinking(true);
+              setHasAskedQuestion(true);
+              
+              // Send the message to be processed
+              onSendMessage(transcript);
+              
+              // Dispatch event when microphone transitions to processing state
+              const micProcessingEvent = new CustomEvent('mic-status', {
+                detail: { status: 'processing' }
+              });
+              window.dispatchEvent(micProcessingEvent);
+            } else {
+              // Empty transcript, restart listening
+              setTimeout(() => {
+                if (recognitionRef.current && isListening) {
+                  recognitionRef.current.start();
                 }
-              }
+              }, 100);
             }
           };
           
