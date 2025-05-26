@@ -155,13 +155,14 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           borderTopRightRadius: '16px',
           borderTop: '2px solid rgba(255, 255, 255, 0.2)',
           paddingTop: '24px',
-          paddingLeft: '16px',
-          paddingRight: '16px',
-          paddingBottom: '32px', // Added 16px more bottom padding
+          paddingLeft: '16px !important',
+          paddingRight: '16px !important',
+          paddingBottom: '32px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)', // iOS-like shadow
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
+          boxSizing: 'border-box',
           ...sheetStyle
         }}
         onClick={(e) => e.stopPropagation()}
