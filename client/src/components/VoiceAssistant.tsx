@@ -497,6 +497,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
+    // Stop any ongoing OpenAI TTS audio playback
+    if ((window as any).currentOpenAIAudio) {
+      const audio = (window as any).currentOpenAIAudio;
+      audio.pause();
+      audio.currentTime = 0;
+      (window as any).currentOpenAIAudio = null;
+      console.log("OpenAI TTS audio stopped when closing bottom sheet");
+    }
+    
+    // Stop speech synthesis completely (fallback)
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      console.log("Speech synthesis cancelled when closing");
+    }
+    
+    // Reset audio-related states
+    setIsResponding(false);
+    setResponseComplete(true);
+    
     // Show toast if user has asked at least one question
     if (hasAskedQuestion) {
       toast({
@@ -621,9 +640,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const handleSuggestionClick = async (suggestion: string) => {
     console.log("Suggestion clicked:", suggestion);
     
-    // Immediately hide suggestions and show processing state to prevent Ask button flash
+    // Immediately hide suggestions and show thinking state to prevent Ask button flash
     setResponseComplete(false);
-    setIsProcessing(true);
+    setIsVoiceThinking(true);
     
     try {
       // Send the suggestion as a message
@@ -636,7 +655,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("Suggestion sent, waiting for response to speak it");
     } catch (error) {
       console.error("Error sending suggestion:", error);
-      setIsProcessing(false); // Reset processing state on error
+      setIsVoiceThinking(false); // Reset thinking state on error
       toast({
         title: "Error",
         description: "Failed to send suggestion. Please try again.",
