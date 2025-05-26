@@ -408,7 +408,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 }
                 
                 // Use OpenAI TTS directly and ensure suggestions appear
-                // Don't set responding state yet - wait for audio to actually start
+                // For mobile browsers, immediately exit thinking and show suggestions
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
+                  console.log("Mobile browser detected - skipping TTS and showing suggestions");
+                  setIsVoiceThinking(false);
+                  setIsResponding(false);
+                  setUsedVoiceInput(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  return;
+                }
+                
+                // Desktop: Don't set responding state yet - wait for audio to actually start
                 setIsVoiceThinking(false); // Clear thinking state when response starts
                 console.log("Preparing OpenAI TTS response...");
                 
