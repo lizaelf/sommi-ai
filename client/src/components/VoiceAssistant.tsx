@@ -410,7 +410,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       
                       // Dispatch event to notify that audio is playing
                       const audioEvent = new CustomEvent('audio-status', {
-                        detail: { status: 'playing' }
+                        detail: { status: 'playing', audioElement: audio }
                       });
                       window.dispatchEvent(audioEvent);
                       
@@ -478,8 +478,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Show toast if user has asked at least one question
     if (hasAskedQuestion) {
       toast({
-        title: (
-          <span>
+        description: (
+          <span style={{ 
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '16px',
+            fontWeight: 500,
+            whiteSpace: 'nowrap'
+          }}>
             This conversation is saved in{' '}
             <a 
               href="/my-cellar" 
