@@ -16,6 +16,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [autoRestartEnabled, setAutoRestartEnabled] = useState(true); // Enable auto-restart by default
   const [isResponding, setIsResponding] = useState(false);
+  const [hasReceivedFirstResponse, setHasReceivedFirstResponse] = useState(false); // Track if AI has responded at least once
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -479,6 +480,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // setShowBottomSheet(false); // Commented out to keep sheet open
   };
 
+  // Handle suggestion clicks - send message and speak response
+  const handleSuggestionClick = async (suggestion: string) => {
+    console.log("Suggestion clicked:", suggestion);
+    
+    try {
+      // Send the suggestion as a message
+      await onSendMessage(suggestion);
+      
+      // Mark that this was a voice interaction to trigger auto-speak
+      setUsedVoiceInput(true);
+      
+      console.log("Suggestion sent, waiting for response to speak it");
+    } catch (error) {
+      console.error("Error sending suggestion:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send suggestion. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="flex items-center">
       {false ? (
@@ -529,6 +552,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onAsk={handleAsk}
         isListening={isListening}
         isResponding={isResponding}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding}
+        onSuggestionClick={handleSuggestionClick}
       />
     </div>
   );

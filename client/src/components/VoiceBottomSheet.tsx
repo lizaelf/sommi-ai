@@ -9,6 +9,8 @@ interface VoiceBottomSheetProps {
   onAsk: () => void;
   isListening?: boolean;
   isResponding?: boolean;
+  showSuggestions?: boolean;
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
@@ -17,10 +19,20 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   onMute,
   onAsk,
   isListening = false,
-  isResponding = false
+  isResponding = false,
+  showSuggestions = false,
+  onSuggestionClick
 }) => {
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+
+  // Wine-related suggestions
+  const suggestions = [
+    "What's your best wine for beginners?",
+    "Recommend a wine for dinner tonight",
+    "Tell me about French wine regions",
+    "What makes a wine vintage special?"
+  ];
 
   useEffect(() => {
     // When component mounts, create portal element if needed
@@ -227,6 +239,65 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px' }}>
+            {/* Suggestions Section - Only shown when showSuggestions is true */}
+            {showSuggestions && onSuggestionClick && (
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '8px',
+                marginBottom: '8px'
+              }}>
+                <div style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  fontFamily: 'Inter, sans-serif',
+                  textAlign: 'center',
+                  marginBottom: '4px'
+                }}>
+                  Try asking about...
+                </div>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
+                }}>
+                  {suggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => onSuggestionClick(suggestion)}
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '20px',
+                        padding: '10px 16px',
+                        color: 'white',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        fontFamily: 'Inter, sans-serif',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'left',
+                        width: '100%',
+                        boxSizing: 'border-box'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                      }}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
               {/* Stop Button - Only shown when responding */}
               {isResponding && (
