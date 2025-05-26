@@ -17,6 +17,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [autoRestartEnabled, setAutoRestartEnabled] = useState(true); // Enable auto-restart by default
   const [isResponding, setIsResponding] = useState(false);
   const [hasReceivedFirstResponse, setHasReceivedFirstResponse] = useState(false); // Track if AI has responded at least once
+  const [responseComplete, setResponseComplete] = useState(false); // Track if response is completely finished
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -31,8 +32,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       // Track when AI is responding
       if (status === 'playing') {
         setIsResponding(true);
+        setResponseComplete(false);
       } else if (status === 'stopped' || status === 'paused' || status === 'muted') {
         setIsResponding(false);
+        // Only mark response as complete if it was stopped naturally (not by user)
+        if (status === 'stopped' && event.detail?.reason !== 'user_stopped') {
+          setResponseComplete(true);
+        }
       }
       
       // Auto-restart logic
@@ -431,6 +437,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
     
     console.log("Ask button clicked");
+    
+    // Reset response complete state when starting new interaction
+    setResponseComplete(false);
+    
     // Keep bottom sheet open to show visualization
     // Start listening immediately
     try {
@@ -486,6 +496,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   // Handle suggestion clicks - send message and speak response
   const handleSuggestionClick = async (suggestion: string) => {
     console.log("Suggestion clicked:", suggestion);
+    
+    // Reset response complete state when starting new interaction
+    setResponseComplete(false);
     
     try {
       // Send the suggestion as a message
@@ -556,7 +569,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing}
-        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isProcessing}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isProcessing && responseComplete}
         onSuggestionClick={handleSuggestionClick}
       />
     </div>
