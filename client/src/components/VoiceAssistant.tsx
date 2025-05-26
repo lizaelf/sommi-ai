@@ -19,6 +19,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [hasReceivedFirstResponse, setHasReceivedFirstResponse] = useState(false); // Track if AI has responded at least once
   const [responseComplete, setResponseComplete] = useState(false); // Track if response is completely finished
   const [isVoiceThinking, setIsVoiceThinking] = useState(false); // Local thinking state for voice interactions
+  const [hasAskedQuestion, setHasAskedQuestion] = useState(false); // Track if user has asked at least one question
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -159,6 +160,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setStatus('Processing your question...');
                 setUsedVoiceInput(true);
                 setIsVoiceThinking(true);
+                setHasAskedQuestion(true); // Mark that user has asked a question
                 
                 // Stop recognition to prevent multiple submissions
                 if (recognitionRef.current) {
@@ -473,6 +475,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
+    // Show toast if user has asked at least one question
+    if (hasAskedQuestion) {
+      toast({
+        title: "This conversation is saved in My cellar",
+        duration: 3000,
+        className: "bg-white text-black border-none"
+      });
+    }
     setShowBottomSheet(false);
   };
   
@@ -555,6 +565,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       // Mark that this was a voice interaction to trigger auto-speak
       setUsedVoiceInput(true);
+      setHasAskedQuestion(true); // Mark that user has asked a question
       
       console.log("Suggestion sent, waiting for response to speak it");
     } catch (error) {
