@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WineImage from './WineImage';
 import { ShiningText } from './ShiningText';
+import { apiRequest } from '@/lib/queryClient';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -35,6 +36,67 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     "Tasting notes", 
     "Serving"
   ];
+
+  // Function to speak suggestion using OpenAI TTS
+  const speakSuggestion = async (suggestion: string) => {
+    try {
+      console.log("Speaking suggestion using OpenAI TTS:", suggestion);
+      
+      // Create a contextual prompt for the suggestion
+      const suggestionPrompts = {
+        "Food pairing": "Tell me about food pairing with this wine",
+        "Tasting notes": "What are the tasting notes for this wine?", 
+        "Serving": "How should I serve this wine?"
+      };
+      
+      const promptText = suggestionPrompts[suggestion as keyof typeof suggestionPrompts] || suggestion;
+      
+      // Use OpenAI TTS to speak the suggestion prompt
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: promptText })
+      });
+
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          console.log("Suggestion audio playback completed");
+        };
+        
+        audio.onerror = (error) => {
+          console.error("Audio playback error:", error);
+          URL.revokeObjectURL(audioUrl);
+        };
+        
+        await audio.play();
+        console.log("Playing suggestion audio");
+      } else {
+        console.error("Failed to get audio from TTS API");
+      }
+    } catch (error) {
+      console.error("Error speaking suggestion:", error);
+    }
+  };
+
+  // Enhanced suggestion click handler
+  const handleSuggestionClick = async (suggestion: string) => {
+    console.log("Suggestion clicked:", suggestion);
+    
+    // Speak the suggestion using OpenAI TTS
+    await speakSuggestion(suggestion);
+    
+    // Then trigger the original suggestion click handler
+    if (onSuggestionClick) {
+      onSuggestionClick(suggestion);
+    }
+  };
 
   useEffect(() => {
     // When component mounts, create portal element if needed
@@ -277,7 +339,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   {suggestions.map((suggestion, index) => (
                     <button
                       key={index}
-                      onClick={() => onSuggestionClick(suggestion)}
+                      onClick={() => handleSuggestionClick(suggestion)}
                       style={{
                         backgroundColor: 'rgba(255, 255, 255, 0.08)',
                         border: '1px solid rgba(255, 255, 255, 0.15)',
