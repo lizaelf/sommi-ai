@@ -157,7 +157,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           paddingTop: '24px',
           paddingLeft: '16px',
           paddingRight: '16px',
-          paddingBottom: '24px',
+          paddingBottom: '28px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
