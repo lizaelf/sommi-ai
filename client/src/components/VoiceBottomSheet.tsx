@@ -85,14 +85,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     }
   };
 
-  // Enhanced suggestion click handler
+  // Simple suggestion click handler - no voice reading
   const handleSuggestionClick = async (suggestion: string) => {
     console.log("Suggestion clicked:", suggestion);
     
-    // Speak the suggestion using OpenAI TTS
-    await speakSuggestion(suggestion);
-    
-    // Then trigger the original suggestion click handler
+    // Directly trigger the suggestion click handler without speaking
     if (onSuggestionClick) {
       onSuggestionClick(suggestion);
     }
