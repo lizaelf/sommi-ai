@@ -9,6 +9,7 @@ interface VoiceBottomSheetProps {
   onAsk: () => void;
   isListening?: boolean;
   isResponding?: boolean;
+  isThinking?: boolean;
   showSuggestions?: boolean;
   onSuggestionClick?: (suggestion: string) => void;
 }
@@ -20,6 +21,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   onAsk,
   isListening = false,
   isResponding = false,
+  isThinking = false,
   showSuggestions = false,
   onSuggestionClick
 }) => {
@@ -197,7 +199,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           <WineImage isAnimating={true} size={180} />
         </div>
 
-        {/* Buttons or Listening indicator based on state */}
+        {/* Show different states: Listening, Thinking, or Buttons */}
         {isListening ? (
           <div style={{ 
             width: '100%', 
@@ -234,6 +236,35 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 animation: 'pulseDot 1.5s infinite ease-in-out'
               }}></span>
               Listening...
+            </div>
+          </div>
+        ) : isThinking ? (
+          <div style={{ 
+            width: '100%', 
+            maxWidth: '320px', 
+            height: '56px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center' 
+          }}>
+            <div style={{
+              color: '#CECECE',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '16px',
+              fontWeight: 'normal',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span style={{ 
+                display: 'inline-block', 
+                width: '8px', 
+                height: '8px', 
+                borderRadius: '50%', 
+                backgroundColor: '#CECECE',
+                animation: 'pulseDot 1.5s infinite ease-in-out'
+              }}></span>
+              Thinking...
             </div>
           </div>
         ) : (

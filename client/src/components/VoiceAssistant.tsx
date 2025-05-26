@@ -555,7 +555,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onAsk={handleAsk}
         isListening={isListening}
         isResponding={isResponding}
-        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding}
+        isThinking={isProcessing}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isProcessing}
         onSuggestionClick={handleSuggestionClick}
       />
     </div>
