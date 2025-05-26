@@ -181,9 +181,9 @@ async function speakResponse(text) {
     console.log("Male voices available:", maleVoices.length);
     if (maleVoices.length > 0) {
       maleVoices.forEach((v, i) => console.log(`Male voice ${i}:`, v.name));
-      // Force select first male voice if found
-      window.selectedVoice = maleVoices[0];
-      console.log("Selected male voice:", window.selectedVoice.name);
+      // Force select the LATEST (last) male voice if found
+      window.selectedVoice = maleVoices[maleVoices.length - 1];
+      console.log("Selected latest male voice:", window.selectedVoice.name);
     }
     
     // Use browser's built-in speech synthesis
@@ -206,10 +206,13 @@ async function speakResponse(text) {
              voice.name.includes('Thomas') || voice.name.includes('Daniel')) ||
             (voice.name.includes('US') && voice.name.includes('Male')));
             
-          // If no male voice found, try any available male voice
+          // If no male voice found, try any available male voice (select the latest one)
           if (!window.selectedVoice) {
-            window.selectedVoice = voices.find(voice => 
+            const allMaleVoices = voices.filter(voice => 
               voice.name.includes('Male'));
+            if (allMaleVoices.length > 0) {
+              window.selectedVoice = allMaleVoices[allMaleVoices.length - 1];
+            }
           }
             
           // If still no preferred voice found, use the first available
@@ -403,10 +406,13 @@ if ('speechSynthesis' in window) {
              voice.name.includes('Thomas') || voice.name.includes('Daniel')) ||
             (voice.name.includes('US') && voice.name.includes('Male')));
             
-          // If no specific male voice found, find any male voice
+          // If no specific male voice found, find the latest male voice
           if (!window.selectedVoice) {
-            window.selectedVoice = voices.find(voice => 
+            const allMaleVoices = voices.filter(voice => 
               voice.name.includes('Male'));
+            if (allMaleVoices.length > 0) {
+              window.selectedVoice = allMaleVoices[allMaleVoices.length - 1];
+            }
           }
             
           // If still no preferred voice found, use the first available
