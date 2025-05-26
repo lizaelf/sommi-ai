@@ -155,8 +155,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           borderTopRightRadius: '16px',
           borderTop: '2px solid rgba(255, 255, 255, 0.2)',
           paddingTop: '24px',
-          paddingLeft: '16px',
-          paddingRight: '16px',
+          paddingLeft: '0px',
+          paddingRight: '0px',
           paddingBottom: '28px',
           display: 'flex',
           flexDirection: 'column',
@@ -255,7 +255,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px', paddingLeft: '0px', paddingRight: '0px' }}>
             {/* Suggestions Section - Only show when suggestions are available */}
             {showSuggestions && onSuggestionClick && (
               <div style={{ 
@@ -309,7 +309,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               </div>
             )}
 
-            <div style={{ display: 'flex', width: '100%' }}>
+            <div style={{ display: 'flex', width: '100%', paddingLeft: '16px', paddingRight: '16px' }}>
               {/* Show Stop button when responding, Ask button when not responding */}
               {isResponding ? (
                 <button
