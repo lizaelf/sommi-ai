@@ -356,6 +356,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       // Only speak the response automatically if voice input was used AND the bottom sheet is still visible
       if (usedVoiceInput && showBottomSheet) {
+        // Mark that we've received the first response
+        setHasReceivedFirstResponse(true);
+        
         try {
           console.log("Voice input was used and in voice mode - finding message to speak automatically...");
           
@@ -382,11 +385,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   // Reset the voice input flag after speaking
                   setUsedVoiceInput(false);
                   
-                  // Close the bottom sheet after the AI finishes responding
-                  // Adding a delay to ensure the response is read out first
-                  setTimeout(() => {
-                    setShowBottomSheet(false);
-                  }, 2000); // Wait 2 seconds after starting to speak
+                  // Keep the bottom sheet open to show suggestions after first response
+                  // No longer auto-closing after 2 seconds
                 }, 300);
               } else {
                 console.log("Last message has no text content");
@@ -408,11 +408,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         }
       } else {
         console.log("Not auto-speaking response - either voice input wasn't used or not in voice mode");
-        setShowBottomSheet(false);
+        // Only close if we haven't received first response yet
+        if (!hasReceivedFirstResponse) {
+          setShowBottomSheet(false);
+        }
         setUsedVoiceInput(false);
       }
     }
-  }, [isProcessing, status, usedVoiceInput, showBottomSheet]);
+  }, [isProcessing, status, usedVoiceInput, showBottomSheet, hasReceivedFirstResponse]);
 
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
