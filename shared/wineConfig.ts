@@ -3,17 +3,17 @@
 
 export const WINE_CONFIG = {
   // Primary wine information
-  name: '2021 Ridge Vineyards "Lytton Springs"',
-  fullName: '2021 Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel',
+  name: 'Tenuta San Guido Bolgheri Sassicaia DOC',
+  fullName: 'Tenuta San Guido Bolgheri Sassicaia DOC',
   vintage: 2021,
-  winery: 'Ridge Vineyards',
-  vineyard: 'Lytton Springs',
-  region: 'Dry Creek Valley',
-  appellation: 'Dry Creek Valley',
-  county: 'Sonoma County',
-  state: 'California',
-  country: 'United States',
-  varietal: 'Zinfandel',
+  winery: 'Tenuta San Guido',
+  vineyard: 'Bolgheri',
+  region: 'Bolgheri',
+  appellation: 'Bolgheri DOC',
+  county: 'Tuscany',
+  state: 'Tuscany',
+  country: 'Italy',
+  varietal: 'Cabernet Sauvignon',
   
   // Detailed characteristics
   characteristics: {
@@ -33,15 +33,15 @@ export const WINE_CONFIG = {
   
   // Tasting notes and description
   tastingNotes: [
-    'Ripe blackberry and boysenberry flavors',
-    'Dark cherry with hints of spice and pepper',
-    'Earthy minerality from old-vine fruit',
-    'Well-integrated tannins',
-    'Long, satisfying finish'
+    'Complex aromas of blackcurrant and cedar',
+    'Rich flavors of dark berries and Mediterranean herbs',
+    'Elegant structure with refined tannins',
+    'Notes of tobacco and vanilla from oak aging',
+    'Long, persistent finish with mineral complexity'
   ],
   
   // Historical information
-  history: 'The Lytton Springs vineyard was planted in the 1890s and acquired by Ridge Vineyards in 1972, making it one of California\'s most storied Zinfandel sites. Ridge Vineyards is renowned for their traditional winemaking approach and minimal intervention philosophy.',
+  history: 'Sassicaia is the legendary wine from Tenuta San Guido in Bolgheri, Tuscany. Created in the 1940s by Mario Incisa della Rocchetta, it was one of the first "Super Tuscan" wines. The estate pioneered Cabernet Sauvignon cultivation in Tuscany, creating what many consider Italy\'s most prestigious wine.',
   
   // Food pairing categories
   foodPairings: [
