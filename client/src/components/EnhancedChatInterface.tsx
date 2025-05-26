@@ -371,7 +371,7 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '16px',
                   ...typography.body
                 }}>
-                  This wine comes from 115-year-old vines, with some hillside vineyard blocks planted in 1901 Ridge VineyardsRidge Vineyards – making it one of California's most historic vineyards. The vineyard is home to 100-plus-year-old zinfandel vines interplanted with petite sirah, carignane, and other heritage varietals.
+                  The 2021 Lytton Springs comes from one of California's most historic vineyards, with some blocks planted in 1901. This iconic Dry Creek Valley site features 115-year-old Zinfandel vines interplanted with Petite Sirah, Carignane, and other heritage varietals that create the wine's distinctive complexity and depth.
                 </p>
               </div>
 
