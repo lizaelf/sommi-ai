@@ -255,15 +255,17 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px', paddingLeft: '0px', paddingRight: '0px' }}>
+          <>
             {/* Suggestions Section - Only show when suggestions are available */}
             {showSuggestions && onSuggestionClick && (
               <div style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
                 gap: '8px',
-                marginBottom: '8px',
-                justifyContent: 'center'
+                marginBottom: '24px',
+                justifyContent: 'center',
+                width: '100%',
+                maxWidth: '320px'
               }}>
                 <div style={{
                   display: 'flex',
@@ -374,9 +376,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 Ask
               </button>
             )}
-            
-
-          </div>
+          </>
+          
         )}
         
         {/* iOS Home Indicator removed */}
