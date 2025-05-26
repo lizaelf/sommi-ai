@@ -230,14 +230,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   }
                 `}
               </style>
-              <span style={{ 
-                display: 'inline-block', 
-                width: '8px', 
-                height: '8px', 
-                borderRadius: '50%', 
-                backgroundColor: '#CECECE',
-                animation: 'pulseDot 1.5s infinite ease-in-out'
-              }}></span>
               <ShiningText text="Listening..." />
             </div>
           </div>
@@ -259,14 +251,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               alignItems: 'center',
               gap: '8px'
             }}>
-              <span style={{ 
-                display: 'inline-block', 
-                width: '8px', 
-                height: '8px', 
-                borderRadius: '50%', 
-                backgroundColor: '#CECECE',
-                animation: 'pulseDot 1.5s infinite ease-in-out'
-              }}></span>
               <ShiningText text="Thinking..." />
             </div>
           </div>

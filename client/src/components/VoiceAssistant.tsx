@@ -480,7 +480,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       toast({
         title: "This conversation is saved in My cellar",
         duration: 3000,
-        className: "bg-white text-black border-none"
+        className: "bg-white text-black border-none",
+        style: {
+          position: 'fixed',
+          top: '74px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'fit-content',
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          paddingLeft: '20px',
+          paddingRight: '20px',
+          borderRadius: '24px',
+          zIndex: 10000
+        }
       });
     }
     setShowBottomSheet(false);
