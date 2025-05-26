@@ -391,7 +391,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Use OpenAI TTS directly instead of the browser synthesis
+                // Disable browser speech synthesis to force OpenAI TTS usage
+                console.log("Disabling browser speech synthesis to use OpenAI TTS");
+                if (window.speechSynthesis) {
+                  window.speechSynthesis.cancel();
+                }
+                
+                // Use OpenAI TTS directly and ensure suggestions appear
                 setTimeout(async () => {
                   try {
                     console.log("Auto-speaking the assistant's response using OpenAI TTS");
@@ -411,13 +417,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       
                       audio.onended = () => {
                         URL.revokeObjectURL(audioUrl);
-                        console.log("OpenAI TTS audio playback completed");
+                        console.log("OpenAI TTS audio playback completed - enabling suggestions");
                         
                         // Mark response as complete and enable suggestions
                         setIsResponding(false);
                         setResponseComplete(true);
                         setHasReceivedFirstResponse(true);
                         setUsedVoiceInput(false);
+                        
+                        console.log("State updated: isResponding=false, responseComplete=true, hasReceivedFirstResponse=true");
                       };
                       
                       audio.onerror = (error) => {
