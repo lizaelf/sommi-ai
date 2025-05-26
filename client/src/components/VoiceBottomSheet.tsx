@@ -269,16 +269,15 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '320px' }}>
-            {/* Suggestions Section - Reserve space to prevent size changes */}
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '8px',
-              marginBottom: '8px',
-              height: '50px', // Fixed height to prevent bottom sheet size changes
-              justifyContent: 'center'
-            }}>
-              {showSuggestions && onSuggestionClick ? (
+            {/* Suggestions Section - Only show when suggestions are available */}
+            {showSuggestions && onSuggestionClick && (
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '8px',
+                marginBottom: '8px',
+                justifyContent: 'center'
+              }}>
                 <div style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -320,11 +319,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     </button>
                   ))}
                 </div>
-              ) : (
-                // Empty space to maintain consistent height
-                <div style={{ height: '100%' }}></div>
-              )}
-            </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
               {/* Show Stop button when responding, Ask button when not responding */}
