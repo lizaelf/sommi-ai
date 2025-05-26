@@ -9,7 +9,7 @@ import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
-import { getWineDisplayName, getWineRegion } from '@shared/wineConfig';
+import { getWineDisplayName, getWineRegion, WINE_CONFIG } from '@shared/wineConfig';
 // Import typography styles
 
 // Extend Window interface to include voiceAssistant
@@ -372,7 +372,7 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '16px',
                   ...typography.body
                 }}>
-                  The 2021 Lytton Springs comes from one of California's most historic vineyards, with some blocks planted in 1901. This iconic Dry Creek Valley site features 115-year-old Zinfandel vines interplanted with Petite Sirah, Carignane, and other heritage varietals that create the wine's distinctive complexity and depth.
+                  {WINE_CONFIG.history}
                 </p>
               </div>
 
@@ -469,14 +469,14 @@ const EnhancedChatInterface: React.FC = () => {
                         ...typography.body // Using Body text style as requested
                       }}
                       className="pl-[0px] pr-[0px]">
-                      <p>Lytton Springs' concentrated blackberry and spice profile makes it ideal for bold red meat preparations:</p>
+                      <p>Sassicaia's elegant Cabernet Sauvignon structure and complex flavor profile makes it perfect for premium red meat preparations:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Grilled ribeye with black pepper crust</li>
-                        <li>Braised short ribs with herbs de Provence</li>
-                        <li>Lamb shoulder with garlic and rosemary</li>
-                        <li>Slow-cooked beef brisket with coffee rub</li>
+                        <li>Grilled Tuscan bistecca with herbs</li>
+                        <li>Osso buco with rich tomato sauce</li>
+                        <li>Roasted rack of lamb with Mediterranean herbs</li>
+                        <li>Aged beef tenderloin with black truffle</li>
                       </ul>
-                      <p>The wine's structured tannins and bright acidity balance rich, savory meat dishes beautifully.</p>
+                      <p>The wine's refined tannins and mineral complexity complement sophisticated meat dishes beautifully.</p>
                     </div>
                   )}
                 </div>
@@ -542,14 +542,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>Lytton Springs' dark berry flavors and firm structure complement these artisanal cheeses:</p>
+                      <p>Sassicaia's sophisticated tannin structure and complex berry flavors pair beautifully with these Italian and European cheeses:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Aged dry Jack or aged Monterey Jack</li>
-                        <li>Point Reyes Blue or Maytag Blue</li>
-                        <li>Humboldt Fog goat cheese</li>
-                        <li>Aged Parmesan or Pecorino Toscano</li>
+                        <li>Aged Parmigiano-Reggiano (24+ months)</li>
+                        <li>Pecorino Toscano stagionato</li>
+                        <li>Gorgonzola dolce DOP</li>
+                        <li>Aged Tuscan sheep's milk cheese</li>
                       </ul>
-                      <p>The wine's natural acidity and fruit-forward character create harmony with both creamy and firm aged cheeses.</p>
+                      <p>The wine's elegant mineral backbone and structured tannins create perfect harmony with aged Italian cheeses.</p>
                     </div>
                   )}
                 </div>
@@ -615,14 +615,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>Lytton Springs' complex spice and berry notes pair wonderfully with these hearty vegetarian dishes:</p>
+                      <p>Sassicaia's refined structure and elegant fruit character complement these sophisticated vegetarian dishes:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Wood-fired pizza with roasted vegetables</li>
-                        <li>Grilled eggplant with Mediterranean herbs</li>
-                        <li>Wild mushroom risotto with aged Parmesan</li>
-                        <li>Ratatouille with fresh thyme and basil</li>
+                        <li>Tuscan ribollita with cannellini beans</li>
+                        <li>Grilled portobello with herbs and olive oil</li>
+                        <li>Pici pasta with truffle and Pecorino</li>
+                        <li>Roasted eggplant parmigiana</li>
                       </ul>
-                      <p>The wine's earthy undertones and balanced acidity complement rich, herb-driven vegetarian preparations.</p>
+                      <p>The wine's mineral complexity and balanced tannins enhance rich, Mediterranean-inspired vegetarian cuisine.</p>
                     </div>
                   )}
                 </div>
@@ -688,15 +688,15 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>While Lytton Springs is versatile, these combinations don't showcase its best qualities:</p>
+                      <p>While Sassicaia is exceptional, these combinations don't showcase its elegant qualities:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Delicate sole or halibut preparations</li>
-                        <li>Fresh oysters or raw shellfish</li>
-                        <li>Very spicy Thai or Indian curries</li>
-                        <li>Light goat cheese salads with vinaigrette</li>
-                        <li>Milk chocolate or overly sweet desserts</li>
+                        <li>Delicate fish preparations like sole or sea bass</li>
+                        <li>Fresh shellfish or raw oysters</li>
+                        <li>Very spicy Asian curries or hot dishes</li>
+                        <li>Light salads with acidic vinaigrettes</li>
+                        <li>Sweet desserts or milk chocolate</li>
                       </ul>
-                      <p>The wine's concentrated flavors and structured tannins can overpower subtle dishes or clash with excessive sweetness.</p>
+                      <p>The wine's structured tannins and complex flavors can overpower delicate dishes or clash with excessive sweetness.</p>
                     </div>
                   )}
                 </div>
