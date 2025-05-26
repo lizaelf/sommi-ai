@@ -453,14 +453,14 @@ const EnhancedChatInterface: React.FC = () => {
                         ...typography.body // Using Body text style as requested
                       }}
                       className="pl-[0px] pr-[0px]">
-                      <p>Cabernet Sauvignon is the classic pairing for red meat dishes, especially:</p>
+                      <p>This Zinfandel's bold fruit and spice profile makes it perfect for hearty red meat dishes:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Grilled ribeye or NY strip steak</li>
-                        <li>Beef tenderloin with peppercorn sauce</li>
-                        <li>Lamb chops or rack of lamb</li>
-                        <li>Slow-roasted prime rib</li>
+                        <li>BBQ ribs with smoky dry rub</li>
+                        <li>Grilled lamb with rosemary and garlic</li>
+                        <li>Spiced beef brisket or pot roast</li>
+                        <li>Wild game like venison or duck</li>
                       </ul>
-                      <p>The high tannins in Cabernet complement the proteins and fats in red meat, creating a perfect balance.</p>
+                      <p>The wine's natural acidity and fruit-forward character complement rich, flavorful meats perfectly.</p>
                     </div>
                   )}
                 </div>
@@ -526,14 +526,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>Cabernet Sauvignon pairs wonderfully with aged and firm cheeses:</p>
+                      <p>This Zinfandel's fruit-forward profile pairs beautifully with these cheeses:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Aged cheddar (minimum 1-2 years)</li>
-                        <li>Gouda (aged 2+ years)</li>
-                        <li>Pecorino and other aged sheep's milk cheeses</li>
-                        <li>Blue cheeses like Stilton or Roquefort</li>
+                        <li>Sharp aged cheddar (2+ years)</li>
+                        <li>Manchego or aged Pecorino Romano</li>
+                        <li>Gorgonzola or creamy blue cheeses</li>
+                        <li>Smoked gouda or aged Gruyère</li>
                       </ul>
-                      <p>The firm texture and rich flavor of these cheeses stand up to Cabernet's bold character.</p>
+                      <p>The wine's bright acidity cuts through rich cheeses while its fruit complements nutty, aged flavors.</p>
                     </div>
                   )}
                 </div>
@@ -599,14 +599,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>While Cabernet Sauvignon is traditionally paired with meat, these vegetarian dishes also complement its bold flavors:</p>
+                      <p>This Zinfandel's spice and fruit notes also work beautifully with bold vegetarian dishes:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Grilled portobello mushrooms</li>
-                        <li>Eggplant parmesan or roasted eggplant dishes</li>
-                        <li>Lentil or bean-based dishes with rich sauces</li>
-                        <li>Vegetarian dishes with umami flavors like soy, miso or mushroom</li>
+                        <li>Grilled portobello with balsamic glaze</li>
+                        <li>Smoky eggplant dishes with herbs</li>
+                        <li>Rich lentil stews with Mediterranean spices</li>
+                        <li>Mushroom risotto with truffle oil</li>
                       </ul>
-                      <p>Plant-based proteins with caramelized, roasted, or grilled flavors work best with Cabernet.</p>
+                      <p>The wine's natural spice and bright acidity enhance earthy, umami-rich vegetarian flavors.</p>
                     </div>
                   )}
                 </div>
@@ -672,15 +672,15 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>Cabernet Sauvignon's bold character can clash with these foods:</p>
+                      <p>While this Zinfandel is versatile, these pairings don't work as well:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Delicate fish dishes like sole or cod</li>
-                        <li>Light vegetable dishes without substantial sauces</li>
-                        <li>Spicy foods (the tannins can amplify heat)</li>
-                        <li>Acidic foods like citrus-based dishes or salads with vinaigrette</li>
-                        <li>Chocolate desserts (despite popular belief, most dark chocolates clash)</li>
+                        <li>Delicate white fish or shellfish</li>
+                        <li>Very spicy Asian dishes (can amplify heat)</li>
+                        <li>Light salads with citrus dressings</li>
+                        <li>Overly sweet desserts (competes with the wine's fruit)</li>
+                        <li>Raw preparations like sushi or crudo</li>
                       </ul>
-                      <p>The wine's tannins and structure can overwhelm subtle flavors or create unpleasant combinations with certain foods.</p>
+                      <p>The wine's bold fruit and spice can overwhelm delicate flavors or clash with certain preparations.</p>
                     </div>
                   )}
                 </div>
