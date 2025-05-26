@@ -468,14 +468,14 @@ const EnhancedChatInterface: React.FC = () => {
                         ...typography.body // Using Body text style as requested
                       }}
                       className="pl-[0px] pr-[0px]">
-                      <p>This Zinfandel's bold fruit and spice profile makes it perfect for hearty red meat dishes:</p>
+                      <p>Lytton Springs' concentrated blackberry and spice profile makes it ideal for bold red meat preparations:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>BBQ ribs with smoky dry rub</li>
-                        <li>Grilled lamb with rosemary and garlic</li>
-                        <li>Spiced beef brisket or pot roast</li>
-                        <li>Wild game like venison or duck</li>
+                        <li>Grilled ribeye with black pepper crust</li>
+                        <li>Braised short ribs with herbs de Provence</li>
+                        <li>Lamb shoulder with garlic and rosemary</li>
+                        <li>Slow-cooked beef brisket with coffee rub</li>
                       </ul>
-                      <p>The wine's natural acidity and fruit-forward character complement rich, flavorful meats perfectly.</p>
+                      <p>The wine's structured tannins and bright acidity balance rich, savory meat dishes beautifully.</p>
                     </div>
                   )}
                 </div>
@@ -541,14 +541,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>This Zinfandel's fruit-forward profile pairs beautifully with these cheeses:</p>
+                      <p>Lytton Springs' dark berry flavors and firm structure complement these artisanal cheeses:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Sharp aged cheddar (2+ years)</li>
-                        <li>Manchego or aged Pecorino Romano</li>
-                        <li>Gorgonzola or creamy blue cheeses</li>
-                        <li>Smoked gouda or aged Gruyère</li>
+                        <li>Aged dry Jack or aged Monterey Jack</li>
+                        <li>Point Reyes Blue or Maytag Blue</li>
+                        <li>Humboldt Fog goat cheese</li>
+                        <li>Aged Parmesan or Pecorino Toscano</li>
                       </ul>
-                      <p>The wine's bright acidity cuts through rich cheeses while its fruit complements nutty, aged flavors.</p>
+                      <p>The wine's natural acidity and fruit-forward character create harmony with both creamy and firm aged cheeses.</p>
                     </div>
                   )}
                 </div>
@@ -614,14 +614,14 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>This Zinfandel's spice and fruit notes also work beautifully with bold vegetarian dishes:</p>
+                      <p>Lytton Springs' complex spice and berry notes pair wonderfully with these hearty vegetarian dishes:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Grilled portobello with balsamic glaze</li>
-                        <li>Smoky eggplant dishes with herbs</li>
-                        <li>Rich lentil stews with Mediterranean spices</li>
-                        <li>Mushroom risotto with truffle oil</li>
+                        <li>Wood-fired pizza with roasted vegetables</li>
+                        <li>Grilled eggplant with Mediterranean herbs</li>
+                        <li>Wild mushroom risotto with aged Parmesan</li>
+                        <li>Ratatouille with fresh thyme and basil</li>
                       </ul>
-                      <p>The wine's natural spice and bright acidity enhance earthy, umami-rich vegetarian flavors.</p>
+                      <p>The wine's earthy undertones and balanced acidity complement rich, herb-driven vegetarian preparations.</p>
                     </div>
                   )}
                 </div>
@@ -687,15 +687,15 @@ const EnhancedChatInterface: React.FC = () => {
                       color: 'white',
                       ...typography.body
                     }}>
-                      <p>While this Zinfandel is versatile, these pairings don't work as well:</p>
+                      <p>While Lytton Springs is versatile, these combinations don't showcase its best qualities:</p>
                       <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Delicate white fish or shellfish</li>
-                        <li>Very spicy Asian dishes (can amplify heat)</li>
-                        <li>Light salads with citrus dressings</li>
-                        <li>Overly sweet desserts (competes with the wine's fruit)</li>
-                        <li>Raw preparations like sushi or crudo</li>
+                        <li>Delicate sole or halibut preparations</li>
+                        <li>Fresh oysters or raw shellfish</li>
+                        <li>Very spicy Thai or Indian curries</li>
+                        <li>Light goat cheese salads with vinaigrette</li>
+                        <li>Milk chocolate or overly sweet desserts</li>
                       </ul>
-                      <p>The wine's bold fruit and spice can overwhelm delicate flavors or clash with certain preparations.</p>
+                      <p>The wine's concentrated flavors and structured tannins can overpower subtle dishes or clash with excessive sweetness.</p>
                     </div>
                   )}
                 </div>
