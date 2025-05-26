@@ -311,6 +311,44 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               </div>
             )}
 
+            {/* Test button for AI assistant */}
+            <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%', marginBottom: '12px' }}>
+              <button
+                onClick={() => {
+                  // Send a test question about the wine
+                  if (window.location.pathname === '/') {
+                    const event = new CustomEvent('send-test-message', {
+                      detail: { message: 'Tell me about this wine' }
+                    });
+                    window.dispatchEvent(event);
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#4A9EFF',
+                  borderRadius: '32px',
+                  height: '56px',
+                  padding: '0 16px',
+                  margin: 0,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  outline: 'none',
+                  transition: 'none',
+                  boxSizing: 'border-box'
+                }}
+              >
+                Test AI Assistant
+              </button>
+            </div>
+
             {/* Show Stop button when responding, Ask button when not responding */}
             <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
               {isResponding ? (
