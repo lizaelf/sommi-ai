@@ -66,6 +66,7 @@ export async function chatCompletion(messages: ChatMessage[]) {
   try {
     // Generate the system prompt from centralized wine configuration
     const wineSystemPrompt = generateWineSystemPrompt();
+    console.log('Generated wine system prompt:', wineSystemPrompt.substring(0, 200) + '...');
     
     // Always enforce the system prompt - either replace an existing one or add it
     const filteredMessages = messages.filter(msg => msg.role !== 'system');
