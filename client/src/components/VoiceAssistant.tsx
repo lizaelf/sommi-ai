@@ -418,6 +418,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                         });
                         window.dispatchEvent(audioEndedEvent);
                         URL.revokeObjectURL(audioUrl);
+                        
+                        // Mark response as complete and enable suggestions
+                        setIsResponding(false);
+                        setResponseComplete(true);
+                        setHasReceivedFirstResponse(true);
                       };
                       
                       audio.play();
@@ -613,7 +618,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing || isVoiceThinking || status === 'Processing your question...'}
-        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isProcessing && responseComplete}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete}
         onSuggestionClick={handleSuggestionClick}
       />
     </div>
