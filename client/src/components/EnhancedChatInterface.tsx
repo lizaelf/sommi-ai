@@ -359,11 +359,26 @@ const EnhancedChatInterface: React.FC = () => {
                 </div>
               </div>
 
-              {/* Food Pairing Section */}
+              {/* Historic Heritage Section */}
               <div style={{
                 width: '100%',
                 padding: '0 20px',
                 marginTop: '48px',
+                marginBottom: '20px'
+              }}>
+                <p style={{
+                  color: 'white',
+                  marginBottom: '16px',
+                  ...typography.body
+                }}>
+                  This wine comes from 115-year-old vines, with some hillside vineyard blocks planted in 1901 Ridge VineyardsRidge Vineyards – making it one of California's most historic vineyards. The vineyard is home to 100-plus-year-old zinfandel vines interplanted with petite sirah, carignane, and other heritage varietals.
+                </p>
+              </div>
+
+              {/* Food Pairing Section */}
+              <div style={{
+                width: '100%',
+                padding: '0 20px',
                 marginBottom: '20px'
               }}>
                 <h1 style={{
@@ -686,30 +701,7 @@ const EnhancedChatInterface: React.FC = () => {
                 </div>
               </div>
               
-              {/* History Section */}
-              <div style={{
-                width: '100%',
-                padding: '0 20px',
-                marginBottom: '20px'
-              }}>
-                <h1 style={{
-                  ...typography.h1,
-                  color: 'white',
-                  marginBottom: '24px',
-                  textAlign: 'left'
-                }}>
-                  Historic heritage
-                </h1>
-                
-                <p style={{
-                  color: 'white',
-                  marginBottom: '16px',
-                  ...typography.body
-                }}>
-                  This wine comes from 115-year-old vines, with some hillside vineyard blocks planted in 1901 Ridge VineyardsRidge Vineyards – making it one of California's most historic vineyards. The vineyard is home to 100-plus-year-old zinfandel vines interplanted with petite sirah, carignane, and other heritage varietals.
-                </p>
-              </div>
-              
+
               {/* Conversation Section */}
               <div style={{
                 width: '100%',
