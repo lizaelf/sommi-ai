@@ -130,6 +130,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       console.log("Microphone permission granted");
 
+      // Mobile: Pre-create audio element during user interaction to bypass autoplay restrictions
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        console.log("Mobile: Pre-creating audio element to bypass autoplay restrictions");
+        const audioElement = new Audio();
+        audioElement.preload = 'auto';
+        audioElement.volume = 1;
+        // Store globally so TTS can use it later
+        (window as any).mobileAudioElement = audioElement;
+      }
+
       try {
         // Create a fresh instance to avoid issues with reusing
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -421,21 +432,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   window.speechSynthesis.cancel();
                 }
                 
-                // Mobile-optimized voice experience
+                // Mobile-optimized voice experience with autoplay bypass
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
                 if (isMobile) {
-                  console.log("Mobile browser detected - using optimized mobile flow");
+                  console.log("Mobile browser detected - using pre-created audio element");
                   setIsVoiceThinking(false);
-                  
-                  // Mobile: Shorter timeout and immediate suggestions
-                  setTimeout(() => {
-                    setIsResponding(false);
-                    setUsedVoiceInput(false);
-                    setResponseComplete(true);
-                    setHasReceivedFirstResponse(true);
-                  }, 500); // Very short delay for mobile
-                  return;
+                  // Mobile will proceed to TTS with pre-created audio element
                 }
                 
                 // Desktop: Full TTS experience
@@ -471,7 +474,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                     if (response.ok) {
                       const audioBlob = await response.blob();
                       const audioUrl = URL.createObjectURL(audioBlob);
-                      const audio = new Audio(audioUrl);
+                      
+                      // Use pre-created audio element for mobile to bypass autoplay restrictions
+                      const isMobileBrowser = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                      let audio;
+                      
+                      if (isMobileBrowser && (window as any).mobileAudioElement) {
+                        console.log("Mobile: Using pre-created audio element to bypass autoplay restrictions");
+                        audio = (window as any).mobileAudioElement;
+                        audio.src = audioUrl;
+                      } else {
+                        console.log("Desktop: Creating new audio element");
+                        audio = new Audio(audioUrl);
+                      }
                       
                       // Store audio reference globally so stop button can access it
                       (window as any).currentOpenAIAudio = audio;
@@ -539,10 +554,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                     clearTimeout(mobileTimeout);
                     
                     // Handle different types of errors
-                    if (error.name === 'AbortError') {
+                    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+                    const errorName = error instanceof Error ? error.name : '';
+                    if (errorName === 'AbortError') {
                       console.log("Request timed out - showing suggestions");
                     } else {
-                      console.error('Network or TTS error:', error);
+                      console.error('Network or TTS error:', errorMsg);
                     }
                     
                     // Always show suggestions on error
