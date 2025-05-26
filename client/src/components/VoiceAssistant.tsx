@@ -408,10 +408,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 }
                 
                 // Use OpenAI TTS directly and ensure suggestions appear
-                // Set responding state immediately before the timeout and clear thinking
-                setIsResponding(true);
+                // Don't set responding state yet - wait for audio to actually start
                 setIsVoiceThinking(false); // Clear thinking state when response starts
-                console.log("Set isResponding to true - stop button should appear");
+                console.log("Preparing OpenAI TTS response...");
                 
                 setTimeout(async () => {
                   try {
@@ -431,6 +430,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       
                       // Store audio reference globally so stop button can access it
                       (window as any).currentOpenAIAudio = audio;
+                      
+                      audio.onplay = () => {
+                        // Set responding state only when audio actually starts playing
+                        setIsResponding(true);
+                        console.log("OpenAI TTS audio started playing - showing stop button");
+                      };
                       
                       audio.onended = () => {
                         URL.revokeObjectURL(audioUrl);
