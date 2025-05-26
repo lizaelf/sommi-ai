@@ -55,64 +55,36 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     return [bass, mid, treble];
   };
 
-  // Function to handle animation with improved smoothness - simplified for reliability
+  // Function to handle animation based on actual audio volume
   const animate = () => {
-    // Use 3x faster frame count for smoother animation
-    frameCount.current += 3;
+    let volumeLevel = 0;
     
-    // Different animation behavior based on source (mic vs playback vs processing)
-    if (isListening) {
-      // Microphone input animation - more dynamic
-      // Create a simulated frequency response based on natural speech patterns
-      const cycle = frameCount.current * 0.05;
+    // Get real-time audio data for volume-based scaling
+    if (analyser && dataArray) {
+      analyser.getByteFrequencyData(dataArray);
       
-      // Multiple overlapping sine waves at different frequencies to simulate voice patterns
-      const wave1 = Math.sin(cycle) * 0.5;                     // Base frequency
-      const wave2 = Math.sin(cycle * 1.7) * 0.3;               // Higher frequency component
-      const wave3 = Math.sin(cycle * 0.5) * 0.2;               // Lower frequency component
-      const noise = (Math.random() - 0.5) * 0.4;               // Random component (simulates unpredictability in voice)
+      // Calculate average volume from frequency data
+      const sum = dataArray.reduce((a, b) => a + b, 0);
+      volumeLevel = sum / dataArray.length / 255; // Normalize to 0-1 range
+    }
+    
+    // Only animate if there's actual sound (volume > threshold)
+    const volumeThreshold = 0.01; // Minimum volume to trigger animation
+    
+    if (volumeLevel > volumeThreshold) {
+      // Scale based on volume level with locked aspect ratio
+      const scaleMultiplier = 1 + (volumeLevel * 0.3); // Scale up to 30% based on volume
+      const newSize = baseSize * scaleMultiplier;
       
-      // Combine waves with weights to create a natural voice-like pattern
-      // This creates a pattern that mimics the natural cadence of speech
-      const combinedWave = wave1 + wave2 + wave3 + noise;
-      
-      // Scale the combined wave to appropriate size range (using base size ±20%)
-      const newSize = baseSize + (combinedWave * baseSize * 0.2);
-      const newOpacity = 0.4 + (combinedWave * 0.2);
-      
-      setSize(newSize);
-      setOpacity(newOpacity);
-    } else if (isProcessing) {
-      // Processing animation - gentle pulsing
-      const processingPulse = Math.sin(frameCount.current * 0.03) * 0.5;
-      
-      // Very subtle size changes (±5% of base size)
-      const newSize = baseSize + (processingPulse * baseSize * 0.05);
-      // Subtle opacity changes
-      const newOpacity = 0.3 + (processingPulse * 0.05);
+      // Opacity also responds to volume
+      const newOpacity = 0.2 + (volumeLevel * 0.6);
       
       setSize(newSize);
       setOpacity(newOpacity);
-    } else if (isPlaying) {
-      // Voice playback animation - medium activity
-      // Use a mix of frequencies to simulate voice playback
-      const cycle = frameCount.current * 0.04;
-      
-      // Create a pattern that mimics AI voice cadence (more regular than human speech)
-      const wave1 = Math.sin(cycle) * 0.6;                     // Primary wave
-      const wave2 = Math.sin(cycle * 2.2) * 0.2;               // Secondary frequency
-      const wave3 = Math.sin(cycle * 3.4) * 0.1;               // Tertiary frequency
-      const noise = (Math.random() - 0.5) * 0.1;               // Minimal noise for smoother appearance
-      
-      // Combine waves to create AI voice-like pattern - more regular than human speech
-      const combinedWave = wave1 + wave2 + wave3 + noise;
-      
-      // Scale the combined wave to medium size range (±15% of base size)
-      const newSize = baseSize + (combinedWave * baseSize * 0.15);
-      const newOpacity = 0.35 + (combinedWave * 0.15);
-      
-      setSize(newSize);
-      setOpacity(newOpacity);
+    } else {
+      // In silence, return to base state without animation
+      setSize(baseSize);
+      setOpacity(0.2);
     }
     
     // Continue animation if in any active state

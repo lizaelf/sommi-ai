@@ -342,10 +342,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       // Reset the status
       setStatus('');
       
-      // Only speak the response automatically if voice input was used
-      if (usedVoiceInput) {
+      // Only speak the response automatically if voice input was used AND the bottom sheet is still visible
+      if (usedVoiceInput && showBottomSheet) {
         try {
-          console.log("Voice input was used - finding message to speak automatically...");
+          console.log("Voice input was used and in voice mode - finding message to speak automatically...");
           
           // Find the last assistant message
           const messagesContainer = document.getElementById('conversation');
@@ -395,11 +395,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           setShowBottomSheet(false);
         }
       } else {
-        console.log("Not auto-speaking response because voice input wasn't used");
+        console.log("Not auto-speaking response - either voice input wasn't used or not in voice mode");
         setShowBottomSheet(false);
+        setUsedVoiceInput(false);
       }
     }
-  }, [isProcessing, status, usedVoiceInput]);
+  }, [isProcessing, status, usedVoiceInput, showBottomSheet]);
 
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
