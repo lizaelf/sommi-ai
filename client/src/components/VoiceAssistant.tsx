@@ -412,6 +412,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsVoiceThinking(false); // Clear thinking state when response starts
                 console.log("Preparing OpenAI TTS response...");
                 
+                // Add timeout fallback for mobile browsers
+                const mobileTimeout = setTimeout(() => {
+                  console.log("Mobile timeout - forcing suggestions to appear");
+                  setIsResponding(false);
+                  setUsedVoiceInput(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                }, 15000); // 15 second timeout
+                
                 setTimeout(async () => {
                   try {
                     console.log("Auto-speaking the assistant's response using OpenAI TTS");
@@ -432,6 +441,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       (window as any).currentOpenAIAudio = audio;
                       
                       audio.onplay = () => {
+                        // Clear the mobile timeout since audio started successfully
+                        clearTimeout(mobileTimeout);
                         // Set responding state only when audio actually starts playing
                         setIsResponding(true);
                         console.log("OpenAI TTS audio started playing - showing stop button");
@@ -455,20 +466,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       
                       audio.onerror = (error) => {
                         console.error("Audio playback error:", error);
+                        clearTimeout(mobileTimeout);
                         URL.revokeObjectURL(audioUrl);
                         setIsResponding(false);
                         setUsedVoiceInput(false);
+                        setResponseComplete(true);
+                        setHasReceivedFirstResponse(true);
                         
                         // Clear the global reference
                         (window as any).currentOpenAIAudio = null;
                       };
                       
-                      await audio.play();
-                      console.log("Playing OpenAI TTS audio");
+                      try {
+                        await audio.play();
+                        console.log("Playing OpenAI TTS audio");
+                      } catch (playError) {
+                        console.error("Failed to play audio on mobile:", playError);
+                        clearTimeout(mobileTimeout);
+                        // Fallback for mobile - just show suggestions
+                        setIsResponding(false);
+                        setUsedVoiceInput(false);
+                        setResponseComplete(true);
+                        setHasReceivedFirstResponse(true);
+                        URL.revokeObjectURL(audioUrl);
+                        (window as any).currentOpenAIAudio = null;
+                      }
                     } else {
                       console.error("Failed to get audio from TTS API");
                       setIsResponding(false);
                       setUsedVoiceInput(false);
+                      setResponseComplete(true);
+                      setHasReceivedFirstResponse(true);
                     }
                   } catch (error) {
                     console.error('Error with OpenAI TTS:', error);
