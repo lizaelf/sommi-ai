@@ -256,6 +256,12 @@ async function speakResponse(text) {
         isAudioPlaying = true;
         wasMuted = false;
         document.dispatchEvent(new CustomEvent('audioPlaying'));
+        
+        // Dispatch event to notify VoiceAssistant that audio is playing
+        const audioEvent = new CustomEvent('audio-status', {
+          detail: { status: 'playing' }
+        });
+        window.dispatchEvent(audioEvent);
       };
       
       currentUtterance.onboundary = (event) => {
@@ -271,12 +277,24 @@ async function speakResponse(text) {
         pausedText = '';
         wasMuted = false;
         document.dispatchEvent(new CustomEvent('audioPaused'));
+        
+        // Dispatch event to notify VoiceAssistant that audio has stopped
+        const audioEvent = new CustomEvent('audio-status', {
+          detail: { status: 'stopped' }
+        });
+        window.dispatchEvent(audioEvent);
       };
       
       currentUtterance.onerror = (event) => {
         console.error("Speech synthesis error:", event);
         isAudioPlaying = false;
         wasMuted = false;
+        
+        // Dispatch event to notify VoiceAssistant that audio has stopped due to error
+        const audioEvent = new CustomEvent('audio-status', {
+          detail: { status: 'stopped', reason: 'error' }
+        });
+        window.dispatchEvent(audioEvent);
       };
       
       // Speak the text
