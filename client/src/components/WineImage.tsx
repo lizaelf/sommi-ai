@@ -55,7 +55,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     return [bass, mid, treble];
   };
 
-  // Function to handle animation based on actual audio volume
+  // Function to handle smooth animation based on actual audio volume
   const animate = () => {
     let volumeLevel = 0;
     
@@ -63,29 +63,36 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     if (analyser && dataArray) {
       analyser.getByteFrequencyData(dataArray);
       
-      // Calculate average volume from frequency data
+      // Calculate average volume from frequency data with better sensitivity
       const sum = dataArray.reduce((a, b) => a + b, 0);
-      volumeLevel = sum / dataArray.length / 255; // Normalize to 0-1 range
+      volumeLevel = Math.min(sum / dataArray.length / 128, 1.0); // Normalize to 0-1 range with better sensitivity
+      
+      // Apply smoothing to reduce jitter
+      volumeLevel = Math.pow(volumeLevel, 0.7); // Apply power curve for more natural response
     }
     
-    // Only animate if there's actual sound (volume > threshold)
-    const volumeThreshold = 0.01; // Minimum volume to trigger animation
+    // Scale from 80% to 120% based on audio level (40% range total)
+    const minScale = 0.8;  // 80% minimum size
+    const maxScale = 1.2;  // 120% maximum size
+    const scaleRange = maxScale - minScale; // 0.4 (40% range)
     
-    if (volumeLevel > volumeThreshold) {
-      // Scale based on volume level with locked aspect ratio
-      const scaleMultiplier = 1 + (volumeLevel * 0.3); // Scale up to 30% based on volume
-      const newSize = baseSize * scaleMultiplier;
-      
-      // Opacity also responds to volume
-      const newOpacity = 0.2 + (volumeLevel * 0.6);
-      
-      setSize(newSize);
-      setOpacity(newOpacity);
-    } else {
-      // In silence, return to base state without animation
-      setSize(baseSize);
-      setOpacity(0.2);
-    }
+    // Calculate target scale based on volume
+    const targetScale = minScale + (volumeLevel * scaleRange);
+    const targetSize = baseSize * targetScale;
+    
+    // Smooth interpolation for natural movement
+    const currentSize = size;
+    const lerpFactor = 0.15; // Smoothing factor - lower = smoother but slower
+    const smoothedSize = currentSize + (targetSize - currentSize) * lerpFactor;
+    
+    // Update size with smooth scaling
+    setSize(smoothedSize);
+    
+    // Subtle opacity changes that follow the volume
+    const targetOpacity = 0.3 + (volumeLevel * 0.4); // Range from 0.3 to 0.7
+    const currentOpacity = opacity;
+    const smoothedOpacity = currentOpacity + (targetOpacity - currentOpacity) * lerpFactor;
+    setOpacity(smoothedOpacity);
     
     // Continue animation if in any active state
     if (isListening || isProcessing || isPlaying) {
@@ -249,9 +256,31 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     } else {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = 0;
-      // Reset to base size and opacity when not active
-      setSize(baseSize);
-      setOpacity(0.2);
+      
+      // Smoothly return to base state when not active
+      const returnToBase = () => {
+        const currentSize = size;
+        const currentOpacity = opacity;
+        const targetSize = baseSize * 0.8; // Return to 80% base size
+        const targetOpacity = 0.3;
+        
+        const lerpFactor = 0.1;
+        const newSize = currentSize + (targetSize - currentSize) * lerpFactor;
+        const newOpacity = currentOpacity + (targetOpacity - currentOpacity) * lerpFactor;
+        
+        setSize(newSize);
+        setOpacity(newOpacity);
+        
+        // Continue until we're close to target
+        const sizeDiff = Math.abs(newSize - targetSize);
+        const opacityDiff = Math.abs(newOpacity - targetOpacity);
+        
+        if (sizeDiff > 1 || opacityDiff > 0.01) {
+          requestAnimationFrame(returnToBase);
+        }
+      };
+      
+      returnToBase();
     }
 
     return () => {
