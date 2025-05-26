@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WineImage from './WineImage';
-import { TextShimmerWave } from './ui/text-shimmer-wave';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -154,15 +153,12 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px',
           borderTop: '2px solid rgba(255, 255, 255, 0.2)',
-          paddingTop: '24px',
-          paddingLeft: '16px !important',
-          paddingRight: '16px !important',
-          paddingBottom: '32px',
+          padding: '24px',
+          paddingBottom: '16px', // Adjusted bottom padding
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
-          boxSizing: 'border-box',
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)', // iOS-like shadow
           ...sheetStyle
         }}
         onClick={(e) => e.stopPropagation()}
@@ -239,13 +235,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 backgroundColor: '#CECECE',
                 animation: 'pulseDot 1.5s infinite ease-in-out'
               }}></span>
-              <TextShimmerWave 
-                className="[--base-color:#CECECE] [--base-gradient-color:#ffffff]"
-                duration={1.5}
-                spread={2}
-              >
-                Listening...
-              </TextShimmerWave>
+              Listening...
             </div>
           </div>
         ) : isThinking ? (
@@ -274,13 +264,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 backgroundColor: '#CECECE',
                 animation: 'pulseDot 1.5s infinite ease-in-out'
               }}></span>
-              <TextShimmerWave 
-                className="[--base-color:#CECECE] [--base-gradient-color:#ffffff]"
-                duration={1.5}
-                spread={2}
-              >
-                Thinking...
-              </TextShimmerWave>
+              Thinking...
             </div>
           </div>
         ) : (
