@@ -71,25 +71,26 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       volumeLevel = Math.pow(volumeLevel, 0.7); // Apply power curve for more natural response
     }
     
-    // Scale from 80% to 120% based on audio level (40% range total)
-    const minScale = 0.8;  // 80% minimum size
-    const maxScale = 1.2;  // 120% maximum size
-    const scaleRange = maxScale - minScale; // 0.4 (40% range)
+    // Scale from 70% to 140% based on audio level (70% range total) - more dramatic
+    const minScale = 0.7;  // 70% minimum size
+    const maxScale = 1.4;  // 140% maximum size
+    const scaleRange = maxScale - minScale; // 0.7 (70% range)
     
-    // Calculate target scale based on volume
-    const targetScale = minScale + (volumeLevel * scaleRange);
+    // Calculate target scale based on volume with enhanced sensitivity
+    const enhancedVolume = Math.pow(volumeLevel, 0.5); // Make it more responsive to lower volumes
+    const targetScale = minScale + (enhancedVolume * scaleRange);
     const targetSize = baseSize * targetScale;
     
-    // Smooth interpolation for natural movement
+    // More responsive interpolation for visible movement
     const currentSize = size;
-    const lerpFactor = 0.15; // Smoothing factor - lower = smoother but slower
+    const lerpFactor = 0.25; // Increased smoothing factor for more visible changes
     const smoothedSize = currentSize + (targetSize - currentSize) * lerpFactor;
     
     // Update size with smooth scaling
     setSize(smoothedSize);
     
-    // Subtle opacity changes that follow the volume
-    const targetOpacity = 0.3 + (volumeLevel * 0.4); // Range from 0.3 to 0.7
+    // More dramatic opacity changes that follow the volume
+    const targetOpacity = 0.2 + (enhancedVolume * 0.6); // Range from 0.2 to 0.8
     const currentOpacity = opacity;
     const smoothedOpacity = currentOpacity + (targetOpacity - currentOpacity) * lerpFactor;
     setOpacity(smoothedOpacity);
@@ -261,10 +262,10 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       const returnToBase = () => {
         const currentSize = size;
         const currentOpacity = opacity;
-        const targetSize = baseSize * 0.8; // Return to 80% base size
-        const targetOpacity = 0.3;
+        const targetSize = baseSize * 0.85; // Return to 85% base size (more visible)
+        const targetOpacity = 0.4; // Higher opacity when inactive
         
-        const lerpFactor = 0.1;
+        const lerpFactor = 0.15; // Faster return to base
         const newSize = currentSize + (targetSize - currentSize) * lerpFactor;
         const newOpacity = currentOpacity + (targetOpacity - currentOpacity) * lerpFactor;
         
