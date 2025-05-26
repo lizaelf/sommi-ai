@@ -309,7 +309,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
+            <div style={{ display: 'flex', width: '100%' }}>
               {/* Show Stop button when responding, Ask button when not responding */}
               {isResponding ? (
                 <button
