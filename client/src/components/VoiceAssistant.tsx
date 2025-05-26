@@ -666,6 +666,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete}
         onSuggestionClick={handleSuggestionClick}
       />
+      
+      {/* Debug info - remove after testing */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{ position: 'fixed', top: '10px', left: '10px', background: 'rgba(0,0,0,0.8)', color: 'white', padding: '5px', fontSize: '10px', zIndex: 9999 }}>
+          hasFirst: {hasReceivedFirstResponse.toString()}, listening: {isListening.toString()}, responding: {isResponding.toString()}, thinking: {isVoiceThinking.toString()}, complete: {responseComplete.toString()}
+        </div>
+      )}
     </div>
   );
 };
