@@ -46,6 +46,7 @@ const EnhancedChatInterface: React.FC = () => {
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
   const [hideSuggestions, setHideSuggestions] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -182,6 +183,9 @@ const EnhancedChatInterface: React.FC = () => {
           conversationId: currentConversationId,
           createdAt: new Date().toISOString()
         };
+        
+        // Mark this as the latest message for animation
+        setLatestMessageId(assistantMessage.id);
         
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
@@ -833,12 +837,24 @@ const EnhancedChatInterface: React.FC = () => {
                           data-role={message.role}
                         >
                           {message.role === 'assistant' ? (
-                            <TextGenerateEffect
-                              words={message.content}
-                              className="text-[#DBDBDB] font-normal text-base leading-relaxed"
-                              filter={true}
-                              duration={0.3}
-                            />
+                            message.id === latestMessageId ? (
+                              <TextGenerateEffect
+                                words={message.content}
+                                className="text-[#DBDBDB] font-normal text-base leading-relaxed"
+                                filter={true}
+                                duration={0.3}
+                              />
+                            ) : (
+                              <div style={{
+                                color: '#DBDBDB',
+                                whiteSpace: 'pre-wrap',
+                                fontFamily: 'Inter, system-ui, sans-serif',
+                                fontSize: '16px',
+                                lineHeight: '1.6'
+                              }}>
+                                {message.content}
+                              </div>
+                            )
                           ) : (
                             <div style={{
                               color: '#000000',
