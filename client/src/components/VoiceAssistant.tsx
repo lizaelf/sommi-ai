@@ -449,7 +449,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 // Use OpenAI TTS instead of browser synthesis
                 setTimeout(async () => {
                   try {
-                    console.log("Auto-speaking the assistant's response using OpenAI TTS");
+                    console.log("USING OPENAI TTS - Auto-speaking the assistant's response using OpenAI TTS");
+                    console.log("OpenAI TTS - About to call /api/text-to-speech endpoint");
                     
                     // Use OpenAI TTS API with mobile-safe timeout
                     const controller = new AbortController();
