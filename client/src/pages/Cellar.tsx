@@ -18,6 +18,13 @@ const Cellar = () => {
     phone: ''
   });
 
+  const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: ''
+  });
+
   const [selectedCountry, setSelectedCountry] = useState({
     code: '+1',
     flag: usFlagImage,
@@ -68,8 +75,45 @@ const Cellar = () => {
   };
 
   const handleSave = () => {
-    // Handle form submission here
+    // Clear previous errors
+    setErrors({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: ''
+    });
+
+    // Validate all fields
+    const newErrors = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: ''
+    };
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    }
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone is required';
+    }
+
+    // Check if there are any errors
+    const hasErrors = Object.values(newErrors).some(error => error !== '');
+    
+    if (hasErrors) {
+      setErrors(newErrors);
+      return;
+    }
+
     console.log('Form data:', formData);
+    // Handle form submission here
     setShowModal(false);
   };
 
@@ -297,6 +341,16 @@ const Cellar = () => {
                 onFocus={(e) => e.target.style.borderColor = 'white'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
+              {errors.firstName && (
+                <div style={{ 
+                  color: '#ff4444', 
+                  fontSize: '14px', 
+                  marginTop: '4px',
+                  fontFamily: 'Inter, sans-serif'
+                }}>
+                  {errors.firstName}
+                </div>
+              )}
               
               <input
                 type="text"
@@ -326,6 +380,16 @@ const Cellar = () => {
                 onFocus={(e) => e.target.style.borderColor = 'white'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
+              {errors.lastName && (
+                <div style={{ 
+                  color: '#ff4444', 
+                  fontSize: '14px', 
+                  marginTop: '4px',
+                  fontFamily: 'Inter, sans-serif'
+                }}>
+                  {errors.lastName}
+                </div>
+              )}
               
               <input
                 type="email"
@@ -355,6 +419,16 @@ const Cellar = () => {
                 onFocus={(e) => e.target.style.borderColor = 'white'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
+              {errors.email && (
+                <div style={{ 
+                  color: '#ff4444', 
+                  fontSize: '14px', 
+                  marginTop: '4px',
+                  fontFamily: 'Inter, sans-serif'
+                }}>
+                  {errors.email}
+                </div>
+              )}
               
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ position: 'relative' }}>
@@ -447,6 +521,16 @@ const Cellar = () => {
                   onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
                 />
               </div>
+              {errors.phone && (
+                <div style={{ 
+                  color: '#ff4444', 
+                  fontSize: '14px', 
+                  marginTop: '4px',
+                  fontFamily: 'Inter, sans-serif'
+                }}>
+                  {errors.phone}
+                </div>
+              )}
             </div>
 
             {/* Save Button */}
