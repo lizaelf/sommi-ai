@@ -20,6 +20,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [responseComplete, setResponseComplete] = useState(false); // Track if response is completely finished
   const [isVoiceThinking, setIsVoiceThinking] = useState(false); // Local thinking state for voice interactions
   const [hasAskedQuestion, setHasAskedQuestion] = useState(false); // Track if user has asked at least one question
+  const [showListenButton, setShowListenButton] = useState(false); // Show Listen Response button when response is ready
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -455,12 +456,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   
                   // Check if audio was enabled during user interaction
                   if (!(window as any).mobileAudioEnabled) {
-                    console.log("🔇 Mobile audio disabled - showing text response only");
+                    console.log("🔇 Mobile audio disabled - showing Listen Response button");
                     setTimeout(() => {
                       setIsResponding(false);
                       setUsedVoiceInput(false);
                       setResponseComplete(true);
                       setHasReceivedFirstResponse(true);
+                      setShowListenButton(true); // Show Listen Response button instead
                     }, 500);
                     return;
                   } else {
@@ -776,6 +778,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Immediately hide suggestions and show thinking state to prevent Ask button flash
     setResponseComplete(false);
     setIsVoiceThinking(true);
+    setShowListenButton(false); // Hide listen button when new interaction starts
     
     try {
       // Send the suggestion as a message
@@ -794,6 +797,60 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         description: "Failed to send suggestion. Please try again.",
         variant: "destructive"
       });
+    }
+  };
+
+  // Handle Listen Response button click
+  const handleListenResponse = async () => {
+    console.log("Listen Response button clicked - playing last response");
+    setShowListenButton(false); // Hide button while playing
+    
+    try {
+      // Find the last assistant message to speak
+      const messagesContainer = document.querySelector('[data-messages-container]');
+      if (messagesContainer) {
+        const assistantMessages = messagesContainer.querySelectorAll('[data-role="assistant"]');
+        if (assistantMessages.length > 0) {
+          const lastMessage = assistantMessages[assistantMessages.length - 1];
+          const messageText = lastMessage.textContent || '';
+          
+          if (messageText) {
+            console.log("Playing response:", messageText.substring(0, 50) + "...");
+            setIsResponding(true);
+            
+            // Use OpenAI TTS API
+            const response = await fetch('/api/text-to-speech', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: messageText })
+            });
+            
+            if (response.ok) {
+              const audioBlob = await response.blob();
+              const audioUrl = URL.createObjectURL(audioBlob);
+              const audio = new Audio(audioUrl);
+              
+              audio.onended = () => {
+                URL.revokeObjectURL(audioUrl);
+                setIsResponding(false);
+                setShowListenButton(true); // Show button again after playback
+              };
+              
+              audio.onerror = () => {
+                URL.revokeObjectURL(audioUrl);
+                setIsResponding(false);
+                setShowListenButton(true); // Show button again on error
+              };
+              
+              await audio.play();
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error playing response:', error);
+      setIsResponding(false);
+      setShowListenButton(true); // Show button again on error
     }
   };
 
@@ -848,8 +905,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing || isVoiceThinking || status === 'Processing your question...'}
-        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
+        showListenButton={showListenButton && hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking}
         onSuggestionClick={handleSuggestionClick}
+        onListenResponse={handleListenResponse}
       />
     </div>
   );
