@@ -1,0 +1,143 @@
+// Replace the entire useEffect that handles !isProcessing with this:
+
+useEffect(() => {
+  if (!isProcessing && status === 'Processing your question...') {
+    // Reset the status
+    setStatus('');
+    
+    // Clear thinking state immediately when response is ready
+    setIsVoiceThinking(false);
+    
+    // Always handle voice response if voice input was used
+    if (usedVoiceInput) {
+      // Mark that we've received the first response
+      setHasReceivedFirstResponse(true);
+      
+      try {
+        console.log("Voice input was used - finding message to speak with OpenAI TTS...");
+        
+        // Find the last assistant message
+        const messagesContainer = document.getElementById('conversation');
+        console.log("Messages container found:", !!messagesContainer);
+        
+        if (messagesContainer) {
+          // Get all the chat messages
+          const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
+          console.log("Assistant message elements found:", messageElements.length);
+          
+          if (messageElements && messageElements.length > 0) {
+            // Get the last message
+            const lastMessage = messageElements[messageElements.length - 1];
+            
+            if (lastMessage && lastMessage.textContent) {
+              const messageText = lastMessage.textContent || '';
+              console.log("Found message to speak:", messageText.substring(0, 50) + "...");
+              
+              // Use OpenAI TTS instead of browser synthesis
+              setTimeout(async () => {
+                try {
+                  console.log("Auto-speaking the assistant's response using OpenAI TTS");
+                  
+                  // Use OpenAI TTS API with mobile-safe timeout
+                  const controller = new AbortController();
+                  const timeoutId = setTimeout(() => {
+                    console.log("Mobile TTS timeout - aborting request");
+                    controller.abort();
+                  }, 10000); // 10 second timeout for mobile
+                  
+                  const response = await fetch('/api/text-to-speech', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: messageText.substring(0, 300) }), // Limit text for speed
+                    signal: controller.signal
+                  });
+                  
+                  clearTimeout(timeoutId);
+                  
+                  if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    // Store reference for stop button
+                    (window as any).currentOpenAIAudio = audio;
+                    
+                    audio.onplay = () => {
+                      setIsResponding(true);
+                      console.log("OpenAI TTS audio started playing");
+                    };
+                    
+                    audio.onended = () => {
+                      URL.revokeObjectURL(audioUrl);
+                      setIsResponding(false);
+                      setResponseComplete(true);
+                      setHasReceivedFirstResponse(true);
+                      setUsedVoiceInput(false);
+                      (window as any).currentOpenAIAudio = null;
+                      console.log("OpenAI TTS audio playback completed - showing suggestions");
+                    };
+                    
+                    audio.onerror = (error: any) => {
+                      console.error("Audio playback error:", error);
+                      URL.revokeObjectURL(audioUrl);
+                      setIsResponding(false);
+                      setUsedVoiceInput(false);
+                      setResponseComplete(true);
+                      setHasReceivedFirstResponse(true);
+                      (window as any).currentOpenAIAudio = null;
+                    };
+                    
+                    await audio.play();
+                    console.log("Playing OpenAI TTS audio");
+                    
+                  } else {
+                    console.error("Failed to get audio from TTS API:", response.status);
+                    // Fallback: show suggestions without audio
+                    setIsResponding(false);
+                    setUsedVoiceInput(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
+                  }
+                } catch (error) {
+                  console.error('Error with OpenAI TTS:', error);
+                  // Always show suggestions on error
+                  setIsResponding(false);
+                  setUsedVoiceInput(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                }
+              }, 300); // Short delay to ensure DOM is updated
+              
+              // Ensure bottom sheet stays open during speech
+              setShowBottomSheet(true);
+
+            } else {
+              console.log("Last message has no text content");
+              setUsedVoiceInput(false);
+              setShowBottomSheet(false);
+            }
+          } else {
+            console.log("No assistant messages found");
+            setUsedVoiceInput(false);
+            setShowBottomSheet(false);
+          }
+        } else {
+          console.log("Messages container not found");
+          setUsedVoiceInput(false);
+          setShowBottomSheet(false);
+        }
+      } catch (error) {
+        console.error('Error finding assistant message to speak:', error);
+        setUsedVoiceInput(false);
+        setShowBottomSheet(false);
+      }
+    } else {
+      console.log("Not auto-speaking response - voice input wasn't used");
+      // Only close if we haven't received first response yet
+      if (!hasReceivedFirstResponse) {
+        setShowBottomSheet(false);
+      }
+      setUsedVoiceInput(false);
+    }
+  }
+}, [isProcessing, status, usedVoiceInput, showBottomSheet, hasReceivedFirstResponse]);
