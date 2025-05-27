@@ -361,8 +361,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 marginBottom: '16px',
                 width: '100%',
                 maxWidth: '320px',
-                paddingLeft: '16px',
-                paddingRight: '16px'
+                paddingLeft: '24px',
+                paddingRight: '24px'
               }}>
                 <button
                   onClick={onListenResponse}
