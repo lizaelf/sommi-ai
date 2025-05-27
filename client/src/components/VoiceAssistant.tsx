@@ -684,7 +684,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Immediately hide suggestions and show thinking state to prevent Ask button flash
     setResponseComplete(false);
     setIsVoiceThinking(true);
-    setShowListenButton(false); // Hide listen button when new interaction starts
+
     
     try {
       // Send the suggestion as a message
@@ -706,59 +706,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  // Handle Listen Response button click
-  const handleListenResponse = async () => {
-    console.log("Listen Response button clicked - playing last response");
-    setShowListenButton(false); // Hide button while playing
-    
-    try {
-      // Find the last assistant message to speak
-      const messagesContainer = document.querySelector('[data-messages-container]');
-      if (messagesContainer) {
-        const assistantMessages = messagesContainer.querySelectorAll('[data-role="assistant"]');
-        if (assistantMessages.length > 0) {
-          const lastMessage = assistantMessages[assistantMessages.length - 1];
-          const messageText = lastMessage.textContent || '';
-          
-          if (messageText) {
-            console.log("Playing response:", messageText.substring(0, 50) + "...");
-            setIsResponding(true);
-            
-            // Use OpenAI TTS API
-            const response = await fetch('/api/text-to-speech', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text: messageText })
-            });
-            
-            if (response.ok) {
-              const audioBlob = await response.blob();
-              const audioUrl = URL.createObjectURL(audioBlob);
-              const audio = new Audio(audioUrl);
-              
-              audio.onended = () => {
-                URL.revokeObjectURL(audioUrl);
-                setIsResponding(false);
-                setShowListenButton(true); // Show button again after playback
-              };
-              
-              audio.onerror = () => {
-                URL.revokeObjectURL(audioUrl);
-                setIsResponding(false);
-                setShowListenButton(true); // Show button again on error
-              };
-              
-              await audio.play();
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error playing response:', error);
-      setIsResponding(false);
-      setShowListenButton(true); // Show button again on error
-    }
-  };
+
 
   return (
     <div className="flex items-center">
