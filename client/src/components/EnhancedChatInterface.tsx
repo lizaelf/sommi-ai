@@ -55,51 +55,61 @@ const EnhancedChatInterface: React.FC = () => {
     refetchInterval: 30000,
   });
   
-  // Scroll behavior - scroll to show user question at top when new response arrives
+  // Scroll behavior - scroll to show user question at top immediately when user asks a question
   useEffect(() => {
     if (chatContainerRef.current && messages.length > 0) {
-      // Add delay to ensure DOM and TextGenerateEffect are updated
-      setTimeout(() => {
-        const container = chatContainerRef.current;
-        if (!container) return;
-
-        // Check if we have a recent AI response (last message is from assistant)
-        const lastMessage = messages[messages.length - 1];
-        if (lastMessage && lastMessage.role === 'assistant' && messages.length >= 2) {
-          // Find the user's question (second to last message)
-          const userQuestion = messages[messages.length - 2];
-          if (userQuestion && userQuestion.role === 'user') {
-            console.log("Auto-scrolling to show user question at top");
+      const lastMessage = messages[messages.length - 1];
+      
+      // If the last message is from the user, scroll immediately to show it at the top
+      if (lastMessage && lastMessage.role === 'user') {
+        setTimeout(() => {
+          console.log("Auto-scrolling to show user question at top immediately");
+          
+          // Find the conversation container
+          const conversationContainer = document.getElementById('conversation');
+          if (conversationContainer) {
+            // Get all message elements within the conversation
+            const messageElements = conversationContainer.children;
             
-            // Find the conversation container
+            if (messageElements.length > 0) {
+              const lastUserMessageElement = messageElements[messageElements.length - 1] as HTMLElement;
+              
+              // Scroll to show the user's question at the top of the screen
+              lastUserMessageElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+                inline: 'nearest'
+              });
+              
+              console.log("Scrolled to user question immediately");
+            }
+          }
+        }, 100); // Short delay to ensure DOM is updated
+      }
+      // Also scroll when AI response arrives but question was already at top
+      else if (lastMessage && lastMessage.role === 'assistant' && messages.length >= 2) {
+        const userQuestion = messages[messages.length - 2];
+        if (userQuestion && userQuestion.role === 'user') {
+          setTimeout(() => {
+            console.log("Maintaining user question at top after AI response");
+            
             const conversationContainer = document.getElementById('conversation');
             if (conversationContainer) {
-              // Get all message elements within the conversation
               const messageElements = conversationContainer.children;
               
               if (messageElements.length >= 2) {
                 const lastUserMessageElement = messageElements[messageElements.length - 2] as HTMLElement;
                 
-                // Scroll to show the user's question at the top of the screen
                 lastUserMessageElement.scrollIntoView({
                   behavior: 'smooth',
                   block: 'start',
                   inline: 'nearest'
                 });
-                
-                console.log("Scrolled to user question");
               }
             }
-          }
-        } else if (isTyping) {
-          // If user is typing, scroll to bottom
-          const scrollToPosition = container.scrollHeight || 0;
-          container.scrollTo({
-            top: scrollToPosition,
-            behavior: 'smooth'
-          });
+          }, 300);
         }
-      }, 500); // Delay to ensure DOM is updated
+      }
     }
     // On initial load, scroll to top to show beginning of page
     else if (chatContainerRef.current && messages.length === 0) {
