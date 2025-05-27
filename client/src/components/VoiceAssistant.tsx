@@ -316,6 +316,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   return (
     <div className="flex items-center">
+      {/* DEBUG INFO - Remove after fixing */}
+      <div style={{
+        position: 'fixed',
+        top: '10px',
+        left: '10px',
+        backgroundColor: 'black',
+        color: 'white',
+        padding: '10px',
+        fontSize: '12px',
+        zIndex: 10000,
+        fontFamily: 'monospace'
+      }}>
+        DEBUG:<br/>
+        isProcessing: {isProcessing.toString()}<br/>
+        isListening: {isListening.toString()}<br/>
+        isResponding: {isResponding.toString()}<br/>
+        responseComplete: {responseComplete.toString()}<br/>
+        hasReceivedFirstResponse: {hasReceivedFirstResponse.toString()}<br/>
+        showSuggestions: {showSuggestions.toString()}<br/>
+        isThinking: {isThinking.toString()}
+      </div>
+      
       <div
         style={{
           width: '40px',
