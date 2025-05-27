@@ -197,7 +197,7 @@ const Cellar = () => {
             </div>
 
             {/* Header */}
-            <div style={{ marginBottom: '24px', marginTop: '8px', textAlign: 'center' }}>
+            <div style={{ marginBottom: '24px', marginTop: '8px' }}>
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'center', 
@@ -216,9 +216,10 @@ const Cellar = () => {
               <p style={{
                 color: '#CECECE',
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '14px',
+                fontSize: '16px',
                 fontWeight: 400,
-                lineHeight: '1.4'
+                lineHeight: '1.5',
+                textAlign: 'left'
               }}>
                 Enter your contact info to see your wine history and chats.
               </p>
