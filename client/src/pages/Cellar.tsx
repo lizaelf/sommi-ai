@@ -1,7 +1,6 @@
 import { ArrowLeft, Search } from 'lucide-react';
 import { Link } from 'wouter';
 import backgroundImage from '@assets/Background.png';
-import wineImage from '@assets/wine-circle.png';
 
 const Cellar = () => {
   return (
@@ -28,12 +27,8 @@ const Cellar = () => {
         {/* Empty divs above the image */}
         <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
           <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors relative flex items-center justify-center">
-            <img src={wineImage} alt="Wine bottle" className="w-8 h-8 object-contain" />
-          </div>
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors relative flex items-center justify-center">
-            <img src={wineImage} alt="Wine bottle" className="w-8 h-8 object-contain" />
-          </div>
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
         </div>
       </div>
 
