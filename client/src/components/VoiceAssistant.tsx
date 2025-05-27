@@ -182,29 +182,31 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   useEffect(() => {
     if (!isProcessing) {
       console.log("🔧 Processing completed, applying mobile fix");
+      console.log("State check - showBottomSheet:", showBottomSheet, "hasAskedQuestion:", hasAskedQuestion);
       
       // Clear any thinking states
       if (forceExitTimeoutRef.current) {
         clearTimeout(forceExitTimeoutRef.current);
       }
       
-      if (showBottomSheet) {
-        console.log("Voice input was used - showing suggestions immediately");
+      if (showBottomSheet && hasAskedQuestion) {
+        console.log("✅ Voice question was asked - forcing suggestions to show");
         
-        // MOBILE FIX: Skip TTS entirely, go straight to suggestions
+        // FORCE suggestions to show immediately
         setHasReceivedFirstResponse(true);
         setIsResponding(false);
         setResponseComplete(true);
         
-        console.log("✅ Suggestions should now be visible");
+        // Short delay to ensure state updates
+        setTimeout(() => {
+          console.log("Final state - showSuggestions should be true now");
+        }, 100);
+        
       } else {
-        console.log("Not in voice mode - closing bottom sheet");
-        if (!hasReceivedFirstResponse) {
-          setShowBottomSheet(false);
-        }
+        console.log("❌ Conditions not met - showBottomSheet:", showBottomSheet, "hasAskedQuestion:", hasAskedQuestion);
       }
     }
-  }, [isProcessing, showBottomSheet, hasReceivedFirstResponse]);
+  }, [isProcessing, showBottomSheet, hasAskedQuestion]);
 
   const handleCloseBottomSheet = () => {
     // Stop any audio
