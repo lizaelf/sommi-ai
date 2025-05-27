@@ -317,7 +317,7 @@ const Cellar = () => {
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   background: 'rgba(255, 255, 255, 0.04)'
                 }}>
-                  <img src={usFlagImage} alt="US Flag" style={{ width: '24px', height: '16px' }} />
+                  <img src={usFlagImage} alt="US Flag" style={{ width: '24px', height: '24px' }} />
                   <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>+1</span>
                 </div>
                 <input
