@@ -24,7 +24,10 @@ const Cellar = () => {
         }}
       >
         {/* Transparent overlay to make slots clickable */}
-        <div className="grid grid-cols-3 gap-1 max-w-md mx-auto h-full">
+        <div 
+          className="grid grid-cols-3 gap-1 max-w-md mx-auto h-full"
+          style={{ padding: '16px' }}
+        >
           {/* Top Row */}
           <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
           <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
