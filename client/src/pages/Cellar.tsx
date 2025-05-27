@@ -1,7 +1,7 @@
 import { ArrowLeft, Search } from 'lucide-react';
 import { Link } from 'wouter';
 import backgroundImage from '@assets/Background.png';
-import wineBottleImage from '@assets/wine-circle.png';
+import wineBottleImage from '../assets/wine-bottle.png';
 
 const Cellar = () => {
   return (
