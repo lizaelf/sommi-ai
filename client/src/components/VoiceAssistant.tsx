@@ -1,7 +1,7 @@
-// COMPLETE FIXED VoiceAssistant.tsx - Replace your entire file with this
-
+// VoiceAssistant.tsx - MOBILE-OPTIMIZED VERSION
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
 import VoiceBottomSheet from './VoiceBottomSheet';
 
@@ -12,76 +12,69 @@ interface VoiceAssistantProps {
 
 const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProcessing }) => {
   const [isListening, setIsListening] = useState(false);
+  const [status, setStatus] = useState('');
+  const [usedVoiceInput, setUsedVoiceInput] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const [hasReceivedFirstResponse, setHasReceivedFirstResponse] = useState(false);
   const [responseComplete, setResponseComplete] = useState(false);
+  const [isVoiceThinking, setIsVoiceThinking] = useState(false);
   const [hasAskedQuestion, setHasAskedQuestion] = useState(false);
   
+  // Mobile detection
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
   const recognitionRef = useRef<any>(null);
-  const forceExitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const thinkingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
-  // BULLETPROOF: Clear timeouts on unmount
+  // SIMPLIFIED: Clear any timeouts when component unmounts
   useEffect(() => {
     return () => {
-      if (forceExitTimeoutRef.current) {
-        clearTimeout(forceExitTimeoutRef.current);
+      if (thinkingTimeoutRef.current) {
+        clearTimeout(thinkingTimeoutRef.current);
       }
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
         } catch (e) {
-          console.error("Error cleaning up:", e);
+          console.error("Error cleaning up speech recognition:", e);
         }
       }
     };
   }, []);
 
-  // BULLETPROOF FIX: Force suggestions when processing ends
-  useEffect(() => {
-    if (!isProcessing && showBottomSheet) {
-      console.log("🚀 BULLETPROOF: Processing ended, forcing suggestions");
-      
-      // Clear any timeouts
-      if (forceExitTimeoutRef.current) {
-        clearTimeout(forceExitTimeoutRef.current);
-      }
-      
-      // FORCE all states needed for suggestions - no conditions
-      setTimeout(() => {
-        setHasReceivedFirstResponse(true);
-        setIsResponding(false);
-        setResponseComplete(true);
-        setHasAskedQuestion(true);
-        
-        console.log("✅ BULLETPROOF: All states forced - suggestions WILL show");
-      }, 100);
+  // MOBILE-FIRST: Simple thinking state timeout
+  const setThinkingWithTimeout = (thinking: boolean) => {
+    setIsVoiceThinking(thinking);
+    
+    // Clear existing timeout
+    if (thinkingTimeoutRef.current) {
+      clearTimeout(thinkingTimeoutRef.current);
+      thinkingTimeoutRef.current = null;
     }
-  }, [isProcessing, showBottomSheet]);
-
-  // BACKUP: Force suggestions after 8 seconds regardless
-  useEffect(() => {
-    if (showBottomSheet && !isListening) {
-      console.log("🔄 BACKUP: Starting 8-second suggestion timer");
-      
-      const backupTimer = setTimeout(() => {
-        console.log("⏰ BACKUP TIMER: Forcing suggestions after 8s");
-        setHasReceivedFirstResponse(true);
+    
+    // Set aggressive timeout for mobile to prevent getting stuck
+    if (thinking && isMobile) {
+      console.log("📱 Mobile: Setting 10s thinking timeout to prevent stuck state");
+      thinkingTimeoutRef.current = setTimeout(() => {
+        console.log("⏰ Mobile thinking timeout - forcing exit");
+        setIsVoiceThinking(false);
         setIsResponding(false);
+        setUsedVoiceInput(false);
         setResponseComplete(true);
-        setHasAskedQuestion(true);
-      }, 8000);
-      
-      return () => clearTimeout(backupTimer);
+        setHasReceivedFirstResponse(true);
+      }, 10000); // Only 10 seconds for mobile to prevent stuck state
     }
-  }, [showBottomSheet, isListening]);
+  };
 
   const toggleListening = async () => {
     if (!isAudioContextInitialized()) {
       try {
         await initAudioContext();
+        console.log("Audio context initialized");
       } catch (error) {
+        console.error('Failed to initialize audio context:', error);
         toast({
           title: "Audio Error",
           description: "Could not initialize audio. Please try again.",
@@ -98,6 +91,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
     
+    console.log("Opening bottom sheet...");
     setShowBottomSheet(true);
   };
   
@@ -106,70 +100,234 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     if (!SpeechRecognition) {
       toast({
         title: "Speech Recognition Not Supported",
-        description: "Your browser doesn't support speech recognition.",
+        description: "Your browser doesn't support speech recognition. Try using Chrome.",
         variant: "destructive"
       });
       return;
     }
 
     try {
+      // Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop());
+      console.log("Microphone permission granted");
 
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-      
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.lang = 'en-US';
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      
-      recognitionRef.current.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        console.log("Voice input:", transcript);
-        
-        setIsListening(false);
-        setHasAskedQuestion(true);
-        
-        // Reset states for new question
-        setResponseComplete(false);
-        setHasReceivedFirstResponse(false);
-        
-        // Send message
-        onSendMessage(transcript);
-      };
-      
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
-      
-      recognitionRef.current.onstart = () => {
-        setIsListening(true);
-      };
-      
-      recognitionRef.current.onerror = (event: any) => {
-        console.error('Speech error:', event.error);
-        setIsListening(false);
-        
-        if (event.error !== 'no-speech') {
-          toast({
-            title: "Voice Error",
-            description: "Voice recognition failed. Please try again.",
-            variant: "destructive"
-          });
+      try {
+        if (recognitionRef.current) {
+          recognitionRef.current.abort();
         }
-      };
-      
-      recognitionRef.current.start();
+        
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.lang = 'en-US';
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
+        recognitionRef.current.maxAlternatives = 1;
+        
+        recognitionRef.current.onresult = (event: any) => {
+          const results = event.results;
+          let finalTranscript = '';
+          
+          for (let i = 0; i < results.length; i++) {
+            if (results[i].isFinal) {
+              finalTranscript = results[i][0].transcript;
+              
+              console.log("Final transcript:", finalTranscript);
+              setStatus('Processing your question...');
+              setUsedVoiceInput(true);
+              setHasAskedQuestion(true);
+              
+              // MOBILE-FIRST: Use simplified thinking state with timeout
+              setThinkingWithTimeout(true);
+              
+              setIsListening(false);
+              
+              if (recognitionRef.current) {
+                recognitionRef.current.stop();
+              }
+              
+              onSendMessage(finalTranscript);
+              break;
+            }
+          }
+        };
+        
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+          setStatus('');
+        };
+        
+        recognitionRef.current.onstart = () => {
+          setIsListening(true);
+        };
+        
+        recognitionRef.current.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          
+          if (event.error === 'no-speech') {
+            console.log("No speech detected, restarting...");
+            setTimeout(() => {
+              if (!isProcessing) {
+                startListening();
+              }
+            }, 50);
+            return;
+          }
+          
+          setStatus(`Error: ${event.error}`);
+          setIsListening(false);
+          
+          if (event.error !== 'no-speech') {
+            toast({
+              title: "Voice Recognition Error",
+              description: `Error: ${event.error}. Please try again.`,
+              variant: "destructive"
+            });
+          }
+        };
+        
+        recognitionRef.current.start();
+        setStatus('Listening for your question...');
+      } catch (error) {
+        console.error('Failed to start speech recognition:', error);
+        toast({
+          title: "Error",
+          description: "Failed to start speech recognition. Please try again.",
+          variant: "destructive"
+        });
+      }
     } catch (error) {
+      console.error('Microphone permission error:', error);
       toast({
-        title: "Microphone Error",
-        description: "Cannot access microphone. Please check permissions.",
+        title: "Microphone Error", 
+        description: "Cannot access your microphone. Please check your permissions.",
         variant: "destructive"
       });
     }
   };
+
+  // SIMPLIFIED: Mobile-optimized TTS with short timeout
+  const speakResponse = async (text: string) => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log("📱 Mobile TTS timeout - aborting request");
+        controller.abort();
+      }, isMobile ? 8000 : 15000); // Much shorter timeout for mobile
+      
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text.substring(0, 300) }), // Limit text for faster processing
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`TTS failed: ${response.status}`);
+      }
+      
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      
+      // Store reference for stop button
+      (window as any).currentOpenAIAudio = audio;
+      
+      audio.onplay = () => {
+        setIsResponding(true);
+        console.log("Audio started playing");
+      };
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        setIsResponding(false);
+        setResponseComplete(true);
+        setHasReceivedFirstResponse(true);
+        setUsedVoiceInput(false);
+        (window as any).currentOpenAIAudio = null;
+        console.log("Audio playback completed");
+      };
+      
+      audio.onerror = (error: any) => {
+        console.error("Audio playback error:", error);
+        URL.revokeObjectURL(audioUrl);
+        setIsResponding(false);
+        setUsedVoiceInput(false);
+        setResponseComplete(true);
+        setHasReceivedFirstResponse(true);
+        (window as any).currentOpenAIAudio = null;
+      };
+      
+      await audio.play();
+      console.log("Playing audio");
+      
+    } catch (error) {
+      console.error("TTS error:", error);
+      // MOBILE-FIRST: Always show suggestions on TTS error
+      setIsResponding(false);
+      setUsedVoiceInput(false);
+      setResponseComplete(true);
+      setHasReceivedFirstResponse(true);
+    }
+  };
+
+  // SIMPLIFIED: Auto-speak response when processing completes
+  useEffect(() => {
+    if (!isProcessing && status === 'Processing your question...') {
+      setStatus('');
+      
+      // Clear thinking timeout since processing is done
+      if (thinkingTimeoutRef.current) {
+        clearTimeout(thinkingTimeoutRef.current);
+        thinkingTimeoutRef.current = null;
+      }
+      
+      setIsVoiceThinking(false); // Clear thinking state immediately
+      
+      if (usedVoiceInput && showBottomSheet) {
+        setHasReceivedFirstResponse(true);
+        
+        try {
+          const messagesContainer = document.getElementById('conversation');
+          if (messagesContainer) {
+            const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
+            if (messageElements && messageElements.length > 0) {
+              const lastMessage = messageElements[messageElements.length - 1];
+              
+              if (lastMessage && lastMessage.textContent) {
+                const messageText = lastMessage.textContent || '';
+                console.log("Found message to speak:", messageText.substring(0, 50) + "...");
+                
+                // MOBILE-FIRST: Always try to speak, with quick fallback
+                setTimeout(async () => {
+                  try {
+                    await speakResponse(messageText);
+                  } catch (error) {
+                    console.error('Auto-speak failed:', error);
+                    // Immediate fallback to suggestions
+                    setIsResponding(false);
+                    setUsedVoiceInput(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
+                  }
+                }, 100); // Very short delay
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error finding message to speak:', error);
+          setUsedVoiceInput(false);
+          setShowBottomSheet(false);
+        }
+      } else {
+        if (!hasReceivedFirstResponse) {
+          setShowBottomSheet(false);
+        }
+        setUsedVoiceInput(false);
+      }
+    }
+  }, [isProcessing, status, usedVoiceInput, showBottomSheet, hasReceivedFirstResponse]);
 
   const handleCloseBottomSheet = () => {
     // Stop any audio
@@ -181,15 +339,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
     
     // Clear timeouts
-    if (forceExitTimeoutRef.current) {
-      clearTimeout(forceExitTimeoutRef.current);
+    if (thinkingTimeoutRef.current) {
+      clearTimeout(thinkingTimeoutRef.current);
+      thinkingTimeoutRef.current = null;
     }
     
-    // Reset all states
     setIsResponding(false);
-    setResponseComplete(false);
-    setHasReceivedFirstResponse(false);
-    setHasAskedQuestion(false);
+    setResponseComplete(true);
     
     if (hasAskedQuestion) {
       toast({
@@ -234,24 +390,31 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
   
   const handleAsk = async () => {
-    if (isListening) return;
+    if (isListening) {
+      return;
+    }
     
+    console.log("Ask button clicked");
     setResponseComplete(false);
     
     try {
       setIsListening(true);
       await startListening();
+      console.log("Started listening from Ask button");
     } catch (error) {
       setIsListening(false);
+      console.error("Failed to start listening:", error);
       toast({
         title: "Error",
-        description: "Failed to start voice recognition.",
+        description: "Failed to start voice recognition. Please try again.",
         variant: "destructive"
       });
     }
   };
   
   const handleMute = () => {
+    console.log("Stop button clicked");
+    
     if ((window as any).currentOpenAIAudio) {
       const audio = (window as any).currentOpenAIAudio;
       audio.pause();
@@ -268,50 +431,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     console.log("Suggestion clicked:", suggestion);
     
     setResponseComplete(false);
-    setHasAskedQuestion(true);
-    setHasReceivedFirstResponse(false);
+    setThinkingWithTimeout(true); // Use timeout version
     
     try {
       await onSendMessage(suggestion);
+      setUsedVoiceInput(true);
+      setHasAskedQuestion(true);
     } catch (error) {
       console.error("Error sending suggestion:", error);
-      setResponseComplete(true);
-      setHasReceivedFirstResponse(true);
+      setIsVoiceThinking(false);
+      toast({
+        title: "Error",
+        description: "Failed to send suggestion. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
-  // Simplified state calculations
-  const isThinking = isProcessing && !responseComplete;
-  const showSuggestions = hasReceivedFirstResponse && 
-                         !isListening && 
-                         !isResponding && 
-                         !isThinking && 
-                         responseComplete;
-
   return (
     <div className="flex items-center">
-      {/* DEBUG INFO */}
-      <div style={{
-        position: 'fixed',
-        top: '10px',
-        left: '10px',
-        backgroundColor: 'black',
-        color: 'white',
-        padding: '10px',
-        fontSize: '12px',
-        zIndex: 10000,
-        fontFamily: 'monospace'
-      }}>
-        DEBUG:<br/>
-        isProcessing: {isProcessing.toString()}<br/>
-        isListening: {isListening.toString()}<br/>
-        isResponding: {isResponding.toString()}<br/>
-        responseComplete: {responseComplete.toString()}<br/>
-        hasReceivedFirstResponse: {hasReceivedFirstResponse.toString()}<br/>
-        showSuggestions: {showSuggestions.toString()}<br/>
-        isThinking: {isThinking.toString()}
-      </div>
-      
       <div
         style={{
           width: '40px',
@@ -346,8 +484,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onAsk={handleAsk}
         isListening={isListening}
         isResponding={isResponding}
-        isThinking={isThinking}
-        showSuggestions={showSuggestions}
+        isThinking={isProcessing || isVoiceThinking}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete}
         onSuggestionClick={handleSuggestionClick}
       />
     </div>
