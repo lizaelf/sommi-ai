@@ -16,11 +16,11 @@ const Cellar = () => {
 
       {/* Wine Rack Container */}
       <div 
-        className="flex-1 bg-cover bg-top bg-no-repeat"
+        className="bg-cover bg-top bg-no-repeat"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
-          minHeight: 'calc(100vh - 75px)',
+          height: '300px',
           padding: '8px',
           margin: '0 16px 16px 16px'
         }}
@@ -48,11 +48,11 @@ const Cellar = () => {
 
       {/* Second Wine Rack Container - Below the first one */}
       <div 
-        className="flex-1 bg-cover bg-top bg-no-repeat"
+        className="bg-cover bg-top bg-no-repeat"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
-          minHeight: 'calc(100vh - 75px)',
+          height: '300px',
           padding: '8px',
           margin: '0 16px 16px 16px'
         }}
