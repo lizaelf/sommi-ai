@@ -241,16 +241,16 @@ const Cellar = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderRadius: '16px',
-                  border: '1px solid rgba(128, 128, 128, 0.12)',
-                  background: 'rgba(128, 128, 128, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   color: '#333',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.3)'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.12)'}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               
               <input
@@ -267,16 +267,16 @@ const Cellar = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderRadius: '16px',
-                  border: '1px solid rgba(128, 128, 128, 0.12)',
-                  background: 'rgba(128, 128, 128, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   color: '#333',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.3)'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.12)'}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               
               <input
@@ -293,16 +293,16 @@ const Cellar = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderRadius: '16px',
-                  border: '1px solid rgba(128, 128, 128, 0.12)',
-                  background: 'rgba(128, 128, 128, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   color: '#333',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.3)'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.12)'}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -314,11 +314,11 @@ const Cellar = () => {
                   alignItems: 'center',
                   gap: '10px',
                   borderRadius: '16px',
-                  border: '1px solid rgba(128, 128, 128, 0.12)',
-                  background: 'rgba(128, 128, 128, 0.04)'
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(255, 255, 255, 0.04)'
                 }}>
                   <img src={usFlagImage} alt="US Flag" style={{ width: '24px', height: '24px' }} />
-                  <span style={{ color: '#666', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>+1</span>
+                  <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>+1</span>
                 </div>
                 <input
                   type="tel"
@@ -334,16 +334,16 @@ const Cellar = () => {
                     gap: '10px',
                     flex: 1,
                     borderRadius: '16px',
-                    border: '1px solid rgba(128, 128, 128, 0.12)',
-                    background: 'rgba(128, 128, 128, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(255, 255, 255, 0.04)',
                     color: '#333',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.3)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(128, 128, 128, 0.12)'}
+                  onFocus={(e) => e.target.style.borderColor = 'white'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
                 />
               </div>
             </div>
