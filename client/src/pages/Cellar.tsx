@@ -16,7 +16,7 @@ const Cellar = () => {
 
       {/* Wine Rack Container */}
       <div 
-        className="bg-cover bg-center bg-no-repeat"
+        className="bg-cover bg-center bg-no-repeat relative"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
@@ -24,11 +24,17 @@ const Cellar = () => {
           margin: '0 16px 0 16px'
         }}
       >
+        {/* Empty divs above the image */}
+        <div className="absolute inset-0 grid grid-cols-3 gap-2 p-4">
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+        </div>
       </div>
 
       {/* Second Wine Rack Container - Below the first one */}
       <div 
-        className="bg-cover bg-center bg-no-repeat"
+        className="bg-cover bg-center bg-no-repeat relative"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
@@ -36,11 +42,17 @@ const Cellar = () => {
           margin: '0 16px 0 16px'
         }}
       >
+        {/* Empty divs above the image */}
+        <div className="absolute inset-0 grid grid-cols-3 gap-2 p-4">
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+        </div>
       </div>
 
       {/* Third Wine Rack Container - Below the second one */}
       <div 
-        className="bg-cover bg-center bg-no-repeat"
+        className="bg-cover bg-center bg-no-repeat relative"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
@@ -48,6 +60,12 @@ const Cellar = () => {
           margin: '0 16px 0 16px'
         }}
       >
+        {/* Empty divs above the image */}
+        <div className="absolute inset-0 grid grid-cols-3 gap-2 p-4">
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+        </div>
       </div>
 
     </div>
