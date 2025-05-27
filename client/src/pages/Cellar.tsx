@@ -74,7 +74,7 @@ const Cellar = () => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Clear previous errors
     setErrors({
       firstName: '',
@@ -112,9 +112,38 @@ const Cellar = () => {
       return;
     }
 
-    console.log('Form data:', formData);
-    // Handle form submission here
-    setShowModal(false);
+    // Submit to backend
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          countryCode: selectedCountry.code
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Contact saved successfully:', data);
+        setShowModal(false);
+      } else {
+        console.error('Failed to save contact:', data);
+        // Handle server validation errors if needed
+        if (data.errors) {
+          setErrors(data.errors);
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      // Handle network errors
+    }
   };
 
   const handleClose = () => {

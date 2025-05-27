@@ -4,6 +4,48 @@ import { storage } from "./storage";
 import { chatCompletion, checkApiStatus, textToSpeech } from "./openai";
 import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
 import { z } from "zod";
+import { google } from "googleapis";
+
+// Google Sheets integration function
+async function saveToGoogleSheets(contactData: any) {
+  const { 
+    GOOGLE_SHEETS_SPREADSHEET_ID, 
+    GOOGLE_SERVICE_ACCOUNT_EMAIL, 
+    GOOGLE_PRIVATE_KEY 
+  } = process.env;
+
+  if (!GOOGLE_SHEETS_SPREADSHEET_ID || !GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+    throw new Error("Google Sheets credentials not configured");
+  }
+
+  // Create JWT client
+  const auth = new google.auth.JWT(
+    GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    undefined,
+    GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    ['https://www.googleapis.com/auth/spreadsheets']
+  );
+
+  const sheets = google.sheets({ version: 'v4', auth });
+
+  // Prepare row data
+  const values = [[
+    contactData.submittedAt,
+    contactData.firstName,
+    contactData.lastName,
+    contactData.email,
+    contactData.countryCode,
+    contactData.phone
+  ]];
+
+  // Append to sheet
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: GOOGLE_SHEETS_SPREADSHEET_ID,
+    range: 'Contact Submissions!A:F',
+    valueInputOption: 'RAW',
+    requestBody: { values }
+  });
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API status endpoint
@@ -285,7 +327,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Contact information saved successfully" 
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving contact data:", error);
       res.status(500).json({ 
         message: "Failed to save contact information",
