@@ -244,6 +244,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Contact form submission endpoint
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { firstName, lastName, email, phone, countryCode } = req.body;
+
+      // Validate required fields
+      if (!firstName || !lastName || !email || !phone) {
+        return res.status(400).json({ 
+          message: "All fields are required",
+          errors: {
+            firstName: !firstName ? "First name is required" : "",
+            lastName: !lastName ? "Last name is required" : "",
+            email: !email ? "Email is required" : "",
+            phone: !phone ? "Phone is required" : ""
+          }
+        });
+      }
+
+      const contactData = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        countryCode: countryCode || "+1",
+        submittedAt: new Date().toISOString()
+      };
+
+      // Save to Google Sheets if credentials are available
+      try {
+        await saveToGoogleSheets(contactData);
+      } catch (sheetsError) {
+        console.error("Google Sheets error:", sheetsError);
+        // Continue even if Google Sheets fails
+      }
+
+      // Return success response
+      res.json({ 
+        success: true, 
+        message: "Contact information saved successfully" 
+      });
+
+    } catch (error) {
+      console.error("Error saving contact data:", error);
+      res.status(500).json({ 
+        message: "Failed to save contact information",
+        error: error?.message || "Unknown error" 
+      });
+    }
+  });
+
   // Text-to-speech endpoint
   app.post("/api/text-to-speech", async (req, res) => {
     try {
