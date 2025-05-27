@@ -853,12 +853,7 @@ const EnhancedChatInterface: React.FC = () => {
                       marginBottom: '12px',
                       width: '100%'
                     }}>
-                      {/* Title removed from typing indicator as well */}
-                      <div className="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
+                      <ShiningText text="Thinking..." />
                     </div>
                   )}
                 </div>
