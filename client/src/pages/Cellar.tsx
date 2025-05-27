@@ -21,7 +21,6 @@ const Cellar = () => {
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
           height: '250px',
-          padding: '8px',
           margin: '0 16px 0 16px'
         }}
       >
@@ -48,7 +47,6 @@ const Cellar = () => {
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
           height: '250px',
-          padding: '8px',
           margin: '0 16px 0 16px'
         }}
       >
