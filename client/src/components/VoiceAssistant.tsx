@@ -451,6 +451,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 // No autoplay - just show Listen Response button
                 console.log("Response ready - showing Listen Response button instead of autoplay");
+                
+                // Clear all thinking/processing states immediately
+                setIsVoiceThinking(false);
+                setIsResponding(false);
                 setResponseComplete(true);
                 setHasReceivedFirstResponse(true);
                 setUsedVoiceInput(false);
@@ -458,6 +462,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 // Store the message text for the Listen Response button
                 (window as any).lastResponseText = messageText;
+                
+                console.log("Listen Response button should now be visible");
                 
                 // Ensure bottom sheet stays open during speech
                 setShowBottomSheet(true);
