@@ -1,12 +1,15 @@
 import { ArrowLeft, Search, X } from 'lucide-react';
 import { Link } from 'wouter';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import backgroundImage from '@assets/Background.png';
 import wineBottleImage from '@assets/Product Image.png';
 import usFlagImage from '@assets/US-flag.png';
 
 const Cellar = () => {
   const [showModal, setShowModal] = useState(true); // Show modal immediately when entering cellar
+  const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -26,6 +29,51 @@ const Cellar = () => {
     console.log('Form data:', formData);
     setShowModal(false);
   };
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
+  // Portal setup effect
+  useEffect(() => {
+    let element = document.getElementById('contact-bottom-sheet-portal');
+    if (!element) {
+      element = document.createElement('div');
+      element.id = 'contact-bottom-sheet-portal';
+      document.body.appendChild(element);
+    }
+    setPortalElement(element);
+
+    return () => {
+      if (element && element.parentElement && !showModal) {
+        element.parentElement.removeChild(element);
+      }
+    };
+  }, []);
+
+  // Body scroll lock effect
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showModal]);
+
+  // Animation state effect
+  useEffect(() => {
+    if (showModal && animationState === 'closed') {
+      setAnimationState('opening');
+      setTimeout(() => setAnimationState('open'), 50);
+    } else if (!showModal && (animationState === 'open' || animationState === 'opening')) {
+      setAnimationState('closing');
+      setTimeout(() => setAnimationState('closed'), 300);
+    }
+  }, [showModal, animationState]);
 
   return (
     <div className="min-h-screen bg-black text-white relative">
@@ -94,34 +142,104 @@ const Cellar = () => {
         </div>
       </div>
 
-      {/* Contact Info Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-900 rounded-lg p-6 w-full max-w-md mx-4">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-light tracking-wider text-white">SOMM</h2>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X className="w-6 h-6" />
-              </button>
+      {/* Contact Info Bottom Sheet */}
+      {animationState !== 'closed' && portalElement && createPortal(
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9999,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            opacity: animationState === 'open' ? 1 : animationState === 'opening' ? 0.8 : 0,
+            transition: 'opacity 0.3s ease-out'
+          }}
+          onClick={handleClose}
+        >
+          <div 
+            style={{
+              backgroundColor: '#111111',
+              width: '100%',
+              maxWidth: '500px',
+              borderTopLeftRadius: '16px',
+              borderTopRightRadius: '16px',
+              borderTop: '2px solid rgba(255, 255, 255, 0.2)',
+              paddingTop: '24px',
+              paddingLeft: '24px',
+              paddingRight: '24px',
+              paddingBottom: '28px',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
+              transform: animationState === 'open' ? 'translateY(0)' : 'translateY(100%)',
+              transition: 'transform 0.3s ease-out'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                cursor: 'pointer',
+                zIndex: 10
+              }}
+              onClick={handleClose}
+            >
+              <X size={24} color="white" />
             </div>
 
-            {/* Modal Content */}
-            <p className="text-gray-300 mb-6 text-sm">
-              Enter your contact info to see your wine history and chats.
-            </p>
+            {/* Header */}
+            <div style={{ marginBottom: '24px', marginTop: '8px' }}>
+              <h2 style={{
+                color: 'white',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '24px',
+                fontWeight: 300,
+                letterSpacing: '0.1em',
+                marginBottom: '16px'
+              }}>
+                SOMM
+              </h2>
+              
+              <p style={{
+                color: '#CECECE',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '1.4'
+              }}>
+                Enter your contact info to see your wine history and chats.
+              </p>
+            </div>
 
             {/* Form Fields */}
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
               <input
                 type="text"
                 placeholder="First name"
                 value={formData.firstName}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
-                className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                style={{
+                  width: '100%',
+                  backgroundColor: 'transparent',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  color: 'white',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
               />
               
               <input
@@ -129,7 +247,20 @@ const Cellar = () => {
                 placeholder="Last name"
                 value={formData.lastName}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
-                className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                style={{
+                  width: '100%',
+                  backgroundColor: 'transparent',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  color: 'white',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
               />
               
               <input
@@ -137,20 +268,54 @@ const Cellar = () => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                style={{
+                  width: '100%',
+                  backgroundColor: 'transparent',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  color: 'white',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
               />
               
-              <div className="flex gap-2">
-                <div className="flex items-center bg-transparent border border-gray-600 rounded-lg px-3 py-3">
-                  <img src={usFlagImage} alt="US Flag" className="w-6 h-4 mr-2" />
-                  <span className="text-white text-sm">+1</span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: 'transparent',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  gap: '8px'
+                }}>
+                  <img src={usFlagImage} alt="US Flag" style={{ width: '24px', height: '16px' }} />
+                  <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>+1</span>
                 </div>
                 <input
                   type="tel"
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="flex-1 bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                  style={{
+                    flex: 1,
+                    backgroundColor: 'transparent',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    color: 'white',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'white'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
                 />
               </div>
             </div>
@@ -158,12 +323,35 @@ const Cellar = () => {
             {/* Save Button */}
             <button
               onClick={handleSave}
-              className="w-full bg-transparent border border-gray-600 rounded-lg py-3 mt-6 text-white hover:bg-gray-800 transition-colors"
+              style={{
+                width: '100%',
+                backgroundColor: 'transparent',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                color: 'white',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '16px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                outline: 'none',
+                transition: 'all 0.2s ease',
+                boxSizing: 'border-box'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.borderColor = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+              }}
             >
               Save
             </button>
           </div>
-        </div>
+        </div>,
+        portalElement
       )}
 
     </div>
