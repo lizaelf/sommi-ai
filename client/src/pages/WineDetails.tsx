@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, Link } from "wouter";
+import { useLocation, Link, useParams } from "wouter";
 import { ChevronLeft, Circle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Logo from "@/components/Logo";
@@ -7,13 +7,48 @@ import Logo from "@/components/Logo";
 const WineDetails = () => {
   // State for collapsible sections
   const [activeSection, setActiveSection] = useState<string | null>("taste");
+  
+  // Get wine ID from URL
+  const params = useParams();
+  const wineId = parseInt(params.id || "1");
+
+  // Wine name and region based on ID
+  const getWineName = (id: number) => {
+    const names: { [key: number]: string } = {
+      1: '2021 Ridge Vineyards "Lytton Springs" Dry Creek Extended',
+      2: '2020 Domaine de la Côte "Bloom\'s Field" Pinot Noir',
+      3: '2019 Caymus Vineyards Cabernet Sauvignon',
+      4: '2021 Whispering Angel Rosé',
+      5: '2020 Kosta Browne Pinot Noir "Russian River Valley"',
+      6: '2018 Opus One',
+      7: '2021 Sancerre "Les Baronnes" Henri Bourgeois',
+      8: '2019 Barolo "Brunate" Giuseppe Rinaldi',
+      9: '2020 Dom Pérignon Vintage Champagne'
+    };
+    return names[id] || names[1];
+  };
+
+  const getWineRegion = (id: number) => {
+    const regions: { [key: number]: string } = {
+      1: "Dry Creek Valley | Sonoma | United States",
+      2: "Sta. Rita Hills | Santa Barbara | United States", 
+      3: "Napa Valley | California | United States",
+      4: "Côtes de Provence | France",
+      5: "Russian River Valley | Sonoma | United States",
+      6: "Oakville | Napa Valley | United States",
+      7: "Sancerre | Loire Valley | France",
+      8: "Barolo | Piedmont | Italy",
+      9: "Champagne | France"
+    };
+    return regions[id] || regions[1];
+  };
 
   // Mock wine data - in a real app, this would come from an API or props
   const wine = {
-    id: 1,
-    name: '2021 Ridge Vineyards "Lytton Springs" Dry Creek Extended',
+    id: wineId,
+    name: getWineName(wineId),
     image: "/wine-bottle.png", // Default image path
-    region: "Dry Creek Valley | Sonoma | United States",
+    region: getWineRegion(wineId),
     vintage: 2021,
     ratings: {
       ws: 94,
@@ -48,29 +83,14 @@ const WineDetails = () => {
         type: "Cheese Pairing",
         details: [
           "Strong: The saltiness of the cheese enhances the richness in tannins",
-          "Why: Aged cheese has caramel notes that echo the wine's big plum fruit flavors",
-          "Notable: A strong cow's milk Gouda, aged cheddar, or a earthy French mountain cheese",
-          "Texture: Dense, slightly crystallized, crackle in aged textures",
-        ],
-      },
-      {
-        type: "Food Character",
-        details: [
-          "Great for a tender centered, heat-seared burgundy and juiciness balance Zinfandel's bold richness in tannins",
-          "Heats pulls out texture and dark fruit concentration",
-        ],
-      },
-      {
-        type: "Mouthfeel",
-        details: [
-          "Silky: Dense, slightly chewy mouthfeel creates velvety approach and long, silky middle and ends on elegant Spanish finish",
-          "Texture: Firm, earthy",
+          "Medium: Perfect balance between wine acidity and cheese creaminess",
+          "Mild: Complements without overwhelming the wine's complexity",
         ],
       },
     ],
   };
 
-  // Toggle section visibility
+  // Toggle section function
   const toggleSection = (section: string) => {
     if (activeSection === section) {
       setActiveSection(null);
@@ -79,37 +99,35 @@ const WineDetails = () => {
     }
   };
 
-  // Helper function to render taste characteristic bars
+  // Render characteristic bar helper
   const renderCharacteristicBar = (
     value: number,
     leftLabel: string,
     rightLabel: string,
   ) => (
     <div className="mb-4">
-      <div className="flex justify-between text-xs mb-1 text-foreground/70">
+      <div className="flex justify-between text-sm text-foreground/70 mb-1">
         <span>{leftLabel}</span>
         <span>{rightLabel}</span>
       </div>
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
+      <div className="relative bg-muted rounded-full h-2">
         <div
-          className="h-full bg-primary rounded-full"
+          className="absolute top-0 left-0 bg-primary rounded-full h-2"
           style={{ width: `${value}%` }}
-        ></div>
+        />
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Top navigation */}
-      <div className="bg-background p-4 flex items-center justify-between">
-        <Link to="/">
-          <div className="flex items-center text-white cursor-pointer">
-            <ChevronLeft size={20} />
-            <Logo className="ml-2" />
-          </div>
+    <div className="max-w-md mx-auto bg-background text-foreground min-h-screen">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-border">
+        <Link href="/cellar">
+          <ChevronLeft size={24} className="cursor-pointer" />
         </Link>
-        <Button>My Cellar</Button>
+        <Logo />
+        <div className="w-6" />
       </div>
 
       {/* Wine hero image */}
@@ -149,52 +167,18 @@ const WineDetails = () => {
         <section className="mb-6">
           <h2 className="text-lg font-medium mb-3">Food pairing</h2>
 
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
             {wine.foodPairings.map((pairing) => (
-              <div
+              <button
                 key={pairing.id}
-                style={{
-                  width: "100%",
-                  paddingLeft: 24,
-                  paddingRight: 24,
-                  paddingTop: 16,
-                  paddingBottom: 16,
-                  background: "rgba(255, 255, 255, 0.04)",
-                  borderRadius: 24,
-                  outline: "1px white solid",
-                  outlineOffset: "-1px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 8,
-                  cursor: "pointer",
-                }}
+                className={`text-left p-3 rounded-lg border transition-colors ${
+                  pairing.active
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border text-foreground/70"
+                }`}
               >
-                <div
-                  style={{
-                    color: "white",
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                    fontWeight: "400",
-                    wordWrap: "break-word",
-                  }}
-                >
-                  {pairing.name}
-                </div>
-                {pairing.active && (
-                  <div
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.2)",
-                      padding: "4px 8px",
-                      borderRadius: 12,
-                      color: "white",
-                      fontSize: 12,
-                    }}
-                  >
-                    Perfect match
-                  </div>
-                )}
-              </div>
+                <span className="text-sm">{pairing.name}</span>
+              </button>
             ))}
           </div>
         </section>
