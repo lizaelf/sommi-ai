@@ -57,35 +57,40 @@ const EnhancedChatInterface: React.FC = () => {
   
   // Scroll behavior - scroll to show user question at top when new response arrives
   useEffect(() => {
-    if (chatContainerRef.current && messages.length >= 2) {
+    if (chatContainerRef.current && messages.length > 0) {
       // Add delay to ensure DOM and TextGenerateEffect are updated
       setTimeout(() => {
-        // Find the last user message (question) in the DOM
-        const allMessages = chatContainerRef.current?.children;
-        if (allMessages && allMessages.length >= 2) {
-          // Get the second-to-last message (user's question) if there's a new AI response
-          const lastUserMessage = allMessages[allMessages.length - 2] as HTMLElement;
-          
-          // Check if the last message is an AI response
-          const lastMessage = allMessages[allMessages.length - 1] as HTMLElement;
-          const hasAssistantResponse = lastMessage?.querySelector('[data-role="assistant"]');
-          
-          if (hasAssistantResponse && lastUserMessage) {
-            // Scroll to show the user's question at the top of the screen
-            lastUserMessage.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
+        const container = chatContainerRef.current;
+        if (!container) return;
+
+        // Check if we have a recent AI response (last message is from assistant)
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage && lastMessage.role === 'assistant' && messages.length >= 2) {
+          // Find the user's question (second to last message)
+          const userQuestion = messages[messages.length - 2];
+          if (userQuestion && userQuestion.role === 'user') {
+            // Find the corresponding DOM elements
+            const allMessageElements = container.children;
+            if (allMessageElements.length >= 2) {
+              const userMessageElement = allMessageElements[allMessageElements.length - 2] as HTMLElement;
+              
+              // Scroll to show the user's question at the top
+              console.log("Auto-scrolling to show user question at top");
+              userMessageElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
           }
         } else if (isTyping) {
           // If user is typing, scroll to bottom
-          const scrollToPosition = chatContainerRef.current?.scrollHeight || 0;
-          chatContainerRef.current?.scrollTo({
+          const scrollToPosition = container.scrollHeight || 0;
+          container.scrollTo({
             top: scrollToPosition,
             behavior: 'smooth'
           });
         }
-      }, 500); // Longer delay to ensure TextGenerateEffect animation starts
+      }, 800); // Longer delay to ensure TextGenerateEffect animation is visible
     }
     // On initial load, scroll to top to show beginning of page
     else if (chatContainerRef.current && messages.length === 0) {
@@ -94,7 +99,7 @@ const EnhancedChatInterface: React.FC = () => {
         behavior: 'auto'
       });
     }
-  }, [messages, isTyping]);
+  }, [messages.length]); // Only depend on messages.length to trigger when new messages are added
   
   // Reset suggestions visibility when conversation changes
   useEffect(() => {
