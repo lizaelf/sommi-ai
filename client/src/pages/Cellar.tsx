@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import backgroundImage from '@assets/Background.png';
 import wineBottleImage from '@assets/Product Image.png';
 import usFlagImage from '@assets/US-flag.png';
+import logoImage from '@assets/Logo.png';
 
 const Cellar = () => {
   const [showModal, setShowModal] = useState(true); // Show modal immediately when entering cellar
@@ -196,17 +197,21 @@ const Cellar = () => {
             </div>
 
             {/* Header */}
-            <div style={{ marginBottom: '24px', marginTop: '8px' }}>
-              <h2 style={{
-                color: 'white',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '24px',
-                fontWeight: 300,
-                letterSpacing: '0.1em',
-                marginBottom: '16px'
+            <div style={{ marginBottom: '24px', marginTop: '8px', textAlign: 'center' }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                marginBottom: '16px' 
               }}>
-                SOMM
-              </h2>
+                <img 
+                  src={logoImage} 
+                  alt="SOMM Logo" 
+                  style={{ 
+                    height: '32px',
+                    width: 'auto'
+                  }} 
+                />
+              </div>
               
               <p style={{
                 color: '#CECECE',
