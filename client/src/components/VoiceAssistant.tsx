@@ -178,35 +178,45 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  // MOBILE FIX: Skip TTS entirely, go straight to suggestions
+  // BULLETPROOF FIX: Force suggestions when processing ends
   useEffect(() => {
-    if (!isProcessing) {
-      console.log("🔧 Processing completed, applying mobile fix");
-      console.log("State check - showBottomSheet:", showBottomSheet, "hasAskedQuestion:", hasAskedQuestion);
+    // FORCE suggestions when processing ends
+    if (!isProcessing && showBottomSheet) {
+      console.log("🚀 BULLETPROOF: Processing ended, forcing suggestions");
       
-      // Clear any thinking states
+      // Clear any timeouts
       if (forceExitTimeoutRef.current) {
         clearTimeout(forceExitTimeoutRef.current);
       }
       
-      if (showBottomSheet && hasAskedQuestion) {
-        console.log("✅ Voice question was asked - forcing suggestions to show");
-        
-        // FORCE suggestions to show immediately
+      // FORCE all states needed for suggestions - no conditions
+      setTimeout(() => {
         setHasReceivedFirstResponse(true);
         setIsResponding(false);
         setResponseComplete(true);
+        setHasAskedQuestion(true); // Also force this
         
-        // Short delay to ensure state updates
-        setTimeout(() => {
-          console.log("Final state - showSuggestions should be true now");
-        }, 100);
-        
-      } else {
-        console.log("❌ Conditions not met - showBottomSheet:", showBottomSheet, "hasAskedQuestion:", hasAskedQuestion);
-      }
+        console.log("✅ BULLETPROOF: All states forced - suggestions WILL show");
+      }, 100); // Small delay to ensure render
     }
-  }, [isProcessing, showBottomSheet, hasAskedQuestion]);
+  }, [isProcessing, showBottomSheet]);
+
+  // BACKUP: Suggestion timer that runs regardless
+  useEffect(() => {
+    if (showBottomSheet && !isListening) {
+      console.log("🔄 BACKUP: Starting 8-second suggestion timer");
+      
+      const backupTimer = setTimeout(() => {
+        console.log("⏰ BACKUP TIMER: Forcing suggestions after 8s");
+        setHasReceivedFirstResponse(true);
+        setIsResponding(false);
+        setResponseComplete(true);
+        setHasAskedQuestion(true);
+      }, 8000); // 8 seconds backup
+      
+      return () => clearTimeout(backupTimer);
+    }
+  }, [showBottomSheet, isListening]);
 
   const handleCloseBottomSheet = () => {
     // Stop any audio
