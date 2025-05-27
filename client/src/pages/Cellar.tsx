@@ -25,10 +25,10 @@ const Cellar = () => {
         }}
       >
         {/* Empty divs above the image */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-2 p-4">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
         </div>
       </div>
 
@@ -43,10 +43,10 @@ const Cellar = () => {
         }}
       >
         {/* Empty divs above the image */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-2 p-4">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
         </div>
       </div>
 
@@ -61,10 +61,10 @@ const Cellar = () => {
         }}
       >
         {/* Empty divs above the image */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-2 p-4">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
         </div>
       </div>
 
