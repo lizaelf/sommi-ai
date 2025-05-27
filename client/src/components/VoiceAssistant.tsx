@@ -464,23 +464,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 playResponseAudio(messageText).then(() => {
                   console.log("Autoplay completed successfully");
                   
-                  // After autoplay, show Listen Response button as backup
+                  // After autoplay, just clean up states (no button)
                   setIsResponding(false);
                   setResponseComplete(true);
                   setHasReceivedFirstResponse(true);
                   setUsedVoiceInput(false);
-                  setShowListenButton(true);
+                  // Don't show Listen Response button - autoplay only
+                  setShowListenButton(false);
                   
-                  console.log("Listen Response button now available as backup option");
+                  console.log("Autoplay completed - ready for next interaction");
                 }).catch((error: any) => {
-                  console.log("Autoplay failed, showing Listen Response button:", error);
+                  console.log("Autoplay failed, cleaning up states:", error);
                   
-                  // If autoplay fails, fall back to button
+                  // If autoplay fails, just clean up (no fallback button)
                   setIsResponding(false);
                   setResponseComplete(true);
                   setHasReceivedFirstResponse(true);
                   setUsedVoiceInput(false);
-                  setShowListenButton(true);
+                  setShowListenButton(false);
                 });
                 
                 // Ensure bottom sheet stays open during speech
@@ -539,28 +540,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               // Store the message for both autoplay and button
               (window as any).lastResponseText = messageText;
               
-              // Start autoplay with fallback to button
+              // Start autoplay (no fallback button)
               console.log("Fallback: Starting autoplay - audio context unlocked from mic interaction");
               playResponseAudio(messageText).then(() => {
                 console.log("Fallback: Autoplay completed successfully");
                 
-                // After autoplay, show Listen Response button as backup
+                // After autoplay, just clean up states (no button)
                 setIsResponding(false);
                 setResponseComplete(true);
                 setHasReceivedFirstResponse(true);
                 setUsedVoiceInput(false);
-                setShowListenButton(true);
+                setShowListenButton(false);
                 
-                console.log("Fallback: Listen Response button now available as backup");
+                console.log("Fallback: Autoplay completed - ready for next interaction");
               }).catch((error: any) => {
-                console.log("Fallback: Autoplay failed, showing Listen Response button:", error);
+                console.log("Fallback: Autoplay failed, cleaning up states:", error);
                 
-                // If autoplay fails, fall back to button
+                // If autoplay fails, just clean up (no fallback button)
                 setIsResponding(false);
                 setResponseComplete(true);
                 setHasReceivedFirstResponse(true);
                 setUsedVoiceInput(false);
-                setShowListenButton(true);
+                setShowListenButton(false);
               });
             }
           }
