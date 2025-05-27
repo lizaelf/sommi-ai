@@ -75,18 +75,26 @@ const EnhancedChatInterface: React.FC = () => {
               const userMessageElement = allMessageElements[allMessageElements.length - 2] as HTMLElement;
               
               // Scroll to show the user's question at the top with proper spacing
-              console.log("Auto-scrolling to show user question at top");
+              console.log("Auto-scrolling to show user question at top", {
+                containerHeight: container.clientHeight,
+                scrollTop: container.scrollTop,
+                messageIndex: allMessageElements.length - 2
+              });
               
-              // Calculate the exact position to place the question at the top
-              const containerRect = container.getBoundingClientRect();
-              const elementRect = userMessageElement.getBoundingClientRect();
-              const scrollTop = container.scrollTop;
-              const targetScrollPosition = scrollTop + (elementRect.top - containerRect.top) - 20; // 20px from top
+              // Get the position of the user message element
+              const userMessageTop = userMessageElement.offsetTop;
+              console.log("User message position:", userMessageTop);
               
+              // Scroll to position the user message at the top of the container
               container.scrollTo({
-                top: targetScrollPosition,
+                top: userMessageTop - 20, // 20px from top
                 behavior: 'smooth'
               });
+              
+              // Verify scroll worked after animation
+              setTimeout(() => {
+                console.log("After scroll - container scrollTop:", container.scrollTop);
+              }, 600);
             }
           }
         } else if (isTyping) {
