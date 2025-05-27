@@ -449,21 +449,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // No autoplay - just show Listen Response button
-                console.log("Response ready - showing Listen Response button instead of autoplay");
+                // Enable autoplay AND show Listen Response button for testing both
+                console.log("Response ready - enabling autoplay with Listen Response button backup");
                 
-                // Clear all thinking/processing states immediately
+                // Clear thinking state first
                 setIsVoiceThinking(false);
-                setIsResponding(false);
-                setResponseComplete(true);
-                setHasReceivedFirstResponse(true);
-                setUsedVoiceInput(false);
-                setShowListenButton(true);
+                setIsResponding(true); // Set responding state for autoplay
                 
-                // Store the message text for the Listen Response button
+                // Store the message text for both autoplay and button
                 (window as any).lastResponseText = messageText;
                 
-                console.log("Listen Response button should now be visible");
+                // Start autoplay immediately (audio context is unlocked from mic interaction)
+                console.log("Starting autoplay - audio context already unlocked from microphone interaction");
+                playResponseAudio(messageText).then(() => {
+                  console.log("Autoplay completed successfully");
+                  
+                  // After autoplay, show Listen Response button as backup
+                  setIsResponding(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setUsedVoiceInput(false);
+                  setShowListenButton(true);
+                  
+                  console.log("Listen Response button now available as backup option");
+                }).catch((error: any) => {
+                  console.log("Autoplay failed, showing Listen Response button:", error);
+                  
+                  // If autoplay fails, fall back to button
+                  setIsResponding(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setUsedVoiceInput(false);
+                  setShowListenButton(true);
+                });
                 
                 // Ensure bottom sheet stays open during speech
                 setShowBottomSheet(true);
@@ -511,20 +529,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             const lastMessage = messageElements[messageElements.length - 1];
             if (lastMessage && lastMessage.textContent) {
               const messageText = lastMessage.textContent || '';
-              console.log("Fallback: Found new AI response, showing Listen Response button");
+              console.log("Fallback: Found new AI response, starting autoplay with button backup");
               
-              // Clear all states and show Listen Response button
+              // Clear thinking state and start autoplay
               setIsVoiceThinking(false);
-              setIsResponding(false);
-              setResponseComplete(true);
-              setHasReceivedFirstResponse(true);
-              setUsedVoiceInput(false);
-              setShowListenButton(true);
+              setIsResponding(true);
               setShowBottomSheet(true);
               
-              // Store the message for the button
+              // Store the message for both autoplay and button
               (window as any).lastResponseText = messageText;
-              console.log("Fallback: Listen Response button should now be visible");
+              
+              // Start autoplay with fallback to button
+              console.log("Fallback: Starting autoplay - audio context unlocked from mic interaction");
+              playResponseAudio(messageText).then(() => {
+                console.log("Fallback: Autoplay completed successfully");
+                
+                // After autoplay, show Listen Response button as backup
+                setIsResponding(false);
+                setResponseComplete(true);
+                setHasReceivedFirstResponse(true);
+                setUsedVoiceInput(false);
+                setShowListenButton(true);
+                
+                console.log("Fallback: Listen Response button now available as backup");
+              }).catch((error: any) => {
+                console.log("Fallback: Autoplay failed, showing Listen Response button:", error);
+                
+                // If autoplay fails, fall back to button
+                setIsResponding(false);
+                setResponseComplete(true);
+                setHasReceivedFirstResponse(true);
+                setUsedVoiceInput(false);
+                setShowListenButton(true);
+              });
             }
           }
         }
@@ -534,7 +571,49 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [usedVoiceInput, isProcessing, isVoiceThinking]);
 
-
+  // Function to play response audio using OpenAI TTS
+  const playResponseAudio = async (text: string): Promise<void> => {
+    console.log("Playing response audio with OpenAI TTS");
+    
+    try {
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('TTS request failed');
+      }
+      
+      const audioBuffer = await response.arrayBuffer();
+      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      
+      return new Promise((resolve, reject) => {
+        audio.onended = () => {
+          console.log("Audio playback completed");
+          URL.revokeObjectURL(audioUrl);
+          resolve();
+        };
+        
+        audio.onerror = () => {
+          console.log("Audio playback failed");
+          URL.revokeObjectURL(audioUrl);
+          reject(new Error('Audio playback failed'));
+        };
+        
+        audio.play().catch(reject);
+      });
+      
+    } catch (error) {
+      console.error('Error playing TTS audio:', error);
+      throw error;
+    }
+  };
 
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
