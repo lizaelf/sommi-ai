@@ -188,17 +188,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsVoiceThinking(true);
                 setHasAskedQuestion(true); // Mark that user has asked a question
                 
-                // Add aggressive timeout to prevent getting stuck in thinking mode
-                console.log("Setting aggressive timeout for thinking state");
-                setTimeout(() => {
-                  console.log("Thinking timeout - forcing exit to Listen Response button");
-                  setIsVoiceThinking(false);
-                  setIsResponding(false);
-                  setUsedVoiceInput(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-
-                }, 15000); // 15 second timeout for any stuck state
+                // Add timeout only for thinking state, not for responding state
+                console.log("Setting timeout for thinking state");
+                const thinkingTimeout = setTimeout(() => {
+                  // Only timeout if still thinking and not responding to speech
+                  if (isVoiceThinking && !isResponding) {
+                    console.log("Thinking timeout - no response received, showing suggestions");
+                    setIsVoiceThinking(false);
+                    setUsedVoiceInput(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
+                  }
+                }, 20000); // 20 second timeout only for stuck thinking state
+                
+                // Store timeout to clear if speech starts
+                (window as any).currentThinkingTimeout = thinkingTimeout;
                 
                 // Immediately clear listening state before stopping recognition
                 setIsListening(false);
@@ -487,6 +491,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 utterance.onstart = () => {
                   setIsResponding(true);
+                  // Clear the thinking timeout since speech started successfully
+                  if ((window as any).currentThinkingTimeout) {
+                    clearTimeout((window as any).currentThinkingTimeout);
+                    (window as any).currentThinkingTimeout = null;
+                  }
                   console.log("Speech started");
                 };
                 
@@ -580,6 +589,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 utterance.onstart = () => {
                   setIsResponding(true);
+                  // Clear the thinking timeout since speech started successfully
+                  if ((window as any).currentThinkingTimeout) {
+                    clearTimeout((window as any).currentThinkingTimeout);
+                    (window as any).currentThinkingTimeout = null;
+                  }
                   console.log("Auto-speech started");
                 };
                 
