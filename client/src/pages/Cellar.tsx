@@ -27,10 +27,37 @@ const Cellar = () => {
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
 
   const countries = [
-    { code: '+1', flag: usFlagImage, name: 'US' },
-    { code: '+44', flag: usFlagImage, name: 'UK' }, // Using same flag for demo
-    { code: '+33', flag: usFlagImage, name: 'FR' }, // Using same flag for demo
-    { code: '+49', flag: usFlagImage, name: 'DE' }, // Using same flag for demo
+    { code: '+1', flag: usFlagImage, name: 'United States' },
+    { code: '+1', flag: usFlagImage, name: 'Canada' },
+    { code: '+44', flag: usFlagImage, name: 'United Kingdom' },
+    { code: '+61', flag: usFlagImage, name: 'Australia' },
+    { code: '+49', flag: usFlagImage, name: 'Germany' },
+    { code: '+33', flag: usFlagImage, name: 'France' },
+    { code: '+39', flag: usFlagImage, name: 'Italy' },
+    { code: '+34', flag: usFlagImage, name: 'Spain' },
+    { code: '+86', flag: usFlagImage, name: 'China' },
+    { code: '+81', flag: usFlagImage, name: 'Japan' },
+    { code: '+91', flag: usFlagImage, name: 'India' },
+    { code: '+55', flag: usFlagImage, name: 'Brazil' },
+    { code: '+7', flag: usFlagImage, name: 'Russia' },
+    { code: '+27', flag: usFlagImage, name: 'South Africa' },
+    { code: '+52', flag: usFlagImage, name: 'Mexico' },
+    { code: '+82', flag: usFlagImage, name: 'South Korea' },
+    { code: '+54', flag: usFlagImage, name: 'Argentina' },
+    { code: '+64', flag: usFlagImage, name: 'New Zealand' },
+    { code: '+31', flag: usFlagImage, name: 'Netherlands' },
+    { code: '+46', flag: usFlagImage, name: 'Sweden' },
+    { code: '+47', flag: usFlagImage, name: 'Norway' },
+    { code: '+41', flag: usFlagImage, name: 'Switzerland' },
+    { code: '+32', flag: usFlagImage, name: 'Belgium' },
+    { code: '+43', flag: usFlagImage, name: 'Austria' },
+    { code: '+353', flag: usFlagImage, name: 'Ireland' },
+    { code: '+65', flag: usFlagImage, name: 'Singapore' },
+    { code: '+60', flag: usFlagImage, name: 'Malaysia' },
+    { code: '+66', flag: usFlagImage, name: 'Thailand' },
+    { code: '+62', flag: usFlagImage, name: 'Indonesia' },
+    { code: '+966', flag: usFlagImage, name: 'Saudi Arabia' },
+    { code: '+971', flag: usFlagImage, name: 'United Arab Emirates' },
   ];
 
   const handleInputChange = (field: string, value: string) => {
