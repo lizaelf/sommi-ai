@@ -355,6 +355,50 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           </div>
         ) : (
           <>
+            {/* Listen Response Button - Show when response is ready */}
+            {showListenButton && onListenResponse && (
+              <div style={{ 
+                marginBottom: '16px',
+                width: '100%',
+                maxWidth: '320px',
+                paddingLeft: '16px',
+                paddingRight: '16px'
+              }}>
+                <button
+                  onClick={onListenResponse}
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    color: '#333',
+                    borderRadius: '32px',
+                    height: '56px',
+                    border: 'none',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    outline: 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <span style={{ fontSize: '18px' }}>🎧</span>
+                  Listen Response
+                </button>
+              </div>
+            )}
+            
             {/* Suggestions Section - Only show when suggestions are available */}
             {showSuggestions && onSuggestionClick && (
               <div style={{ 
