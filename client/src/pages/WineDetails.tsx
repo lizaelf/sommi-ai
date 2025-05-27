@@ -3,6 +3,7 @@ import { useLocation, Link, useParams } from "wouter";
 import { ChevronLeft, Circle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Logo from "@/components/Logo";
+import wineBottleImage from '@assets/Product Image.png';
 
 const WineDetails = () => {
   // State for collapsible sections
@@ -47,7 +48,7 @@ const WineDetails = () => {
   const wine = {
     id: wineId,
     name: getWineName(wineId),
-    image: "/wine-bottle.png", // Default image path
+    image: wineBottleImage,
     region: getWineRegion(wineId),
     vintage: 2021,
     ratings: {
@@ -133,7 +134,7 @@ const WineDetails = () => {
       {/* Wine hero image */}
       <div className="w-full h-80 flex items-center justify-center bg-black">
         <img
-          src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg"
+          src={wine.image}
           alt={wine.name}
           className="h-full object-contain mx-auto"
         />
