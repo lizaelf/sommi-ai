@@ -539,6 +539,77 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, status, usedVoiceInput, showBottomSheet, hasReceivedFirstResponse]);
 
+  // Additional effect to watch for new messages and trigger voice response
+  useEffect(() => {
+    if (usedVoiceInput && !isProcessing && !isResponding && !isVoiceThinking) {
+      console.log("Checking for new response to auto-speak...");
+      
+      // Use a small delay to ensure DOM is updated
+      const timeout = setTimeout(() => {
+        const messagesContainer = document.getElementById('conversation');
+        if (messagesContainer) {
+          const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
+          if (messageElements && messageElements.length > 0) {
+            const lastMessage = messageElements[messageElements.length - 1];
+            if (lastMessage && lastMessage.textContent) {
+              const messageText = lastMessage.textContent.trim();
+              
+              if (messageText && messageText.length > 10) { // Only speak substantial responses
+                console.log("Found response to auto-speak:", messageText.substring(0, 50) + "...");
+                
+                // Auto-speak using browser synthesis
+                const utterance = new SpeechSynthesisUtterance(messageText);
+                
+                // Voice selection
+                const voices = speechSynthesis.getVoices();
+                const maleVoices = voices.filter(voice => 
+                  voice.name.toLowerCase().includes('male') ||
+                  voice.name.toLowerCase().includes('david') ||
+                  voice.name.toLowerCase().includes('alex') ||
+                  voice.name.toLowerCase().includes('daniel')
+                );
+                
+                if (maleVoices.length > 0) {
+                  utterance.voice = maleVoices[maleVoices.length - 1];
+                  console.log("Using voice:", utterance.voice.name);
+                }
+                
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                utterance.onstart = () => {
+                  setIsResponding(true);
+                  console.log("Auto-speech started");
+                };
+                
+                utterance.onend = () => {
+                  setIsResponding(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setUsedVoiceInput(false);
+                  console.log("Auto-speech ended - showing suggestions");
+                };
+                
+                utterance.onerror = (event) => {
+                  console.error("Speech synthesis error:", event);
+                  setIsResponding(false);
+                  setUsedVoiceInput(false);
+                };
+                
+                // Speak the response
+                speechSynthesis.speak(utterance);
+                setShowBottomSheet(true);
+              }
+            }
+          }
+        }
+      }, 500);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [usedVoiceInput, isProcessing, isResponding, isVoiceThinking]);
+
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
     // Stop any ongoing OpenAI TTS audio playback
