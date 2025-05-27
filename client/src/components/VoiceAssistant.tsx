@@ -20,7 +20,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [responseComplete, setResponseComplete] = useState(false); // Track if response is completely finished
   const [isVoiceThinking, setIsVoiceThinking] = useState(false); // Local thinking state for voice interactions
   const [hasAskedQuestion, setHasAskedQuestion] = useState(false); // Track if user has asked at least one question
-  const [showListenButton, setShowListenButton] = useState(false); // Show Listen Response button when response is ready
+ // Show Listen Response button when response is ready
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -197,7 +197,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   setUsedVoiceInput(false);
                   setResponseComplete(true);
                   setHasReceivedFirstResponse(true);
-                  setShowListenButton(true);
+
                 }, 15000); // 15 second timeout for any stuck state
                 
                 // Immediately clear listening state before stopping recognition
@@ -448,17 +448,64 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   window.speechSynthesis.cancel();
                 }
                 
-                // No autoplay - always show Listen Response button
-                console.log("Response ready - showing Listen Response button");
+                // Auto-speak the response using browser synthesis
+                console.log("Auto-speaking the assistant's response");
+                console.log("Speaking text response using browser synthesis...");
+                
+                // Clear thinking state when response starts
                 setIsVoiceThinking(false);
                 
-                setTimeout(() => {
+                // Configure speech synthesis
+                const utterance = new SpeechSynthesisUtterance(messageText);
+                
+                // Voice selection for consistent male voice
+                const voices = speechSynthesis.getVoices();
+                console.log("Available voices:", voices.length);
+                
+                // Filter for male voices
+                const maleVoices = voices.filter(voice => 
+                  voice.name.toLowerCase().includes('male') ||
+                  voice.name.toLowerCase().includes('david') ||
+                  voice.name.toLowerCase().includes('alex') ||
+                  voice.name.toLowerCase().includes('daniel')
+                );
+                
+                console.log("Male voices available:", maleVoices.length);
+                
+                if (maleVoices.length > 0) {
+                  maleVoices.forEach((voice, index) => {
+                    console.log(`Male voice ${index}:`, voice.name);
+                  });
+                  // Use the last available male voice for consistency
+                  utterance.voice = maleVoices[maleVoices.length - 1];
+                  console.log("Selected latest male voice:", utterance.voice.name);
+                }
+                
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                utterance.onstart = () => {
+                  setIsResponding(true);
+                  console.log("Speech started");
+                };
+                
+                utterance.onend = () => {
                   setIsResponding(false);
-                  setUsedVoiceInput(false);
                   setResponseComplete(true);
                   setHasReceivedFirstResponse(true);
-                  setShowListenButton(true); // Always show Listen Response button
-                }, 500);
+                  setUsedVoiceInput(false);
+                  console.log("Speech ended - enabling suggestions");
+                };
+                
+                utterance.onerror = (event) => {
+                  console.error("Speech synthesis error:", event);
+                  setIsResponding(false);
+                  setUsedVoiceInput(false);
+                };
+                
+                // Speak the response
+                speechSynthesis.speak(utterance);
 
               } else {
                 console.log("Last message has no text content");
@@ -764,10 +811,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing || isVoiceThinking || status === 'Processing your question...'}
-        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
-        showListenButton={showListenButton && hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete}
         onSuggestionClick={handleSuggestionClick}
-        onListenResponse={handleListenResponse}
       />
     </div>
   );

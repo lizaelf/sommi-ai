@@ -13,9 +13,7 @@ interface VoiceBottomSheetProps {
   isResponding?: boolean;
   isThinking?: boolean;
   showSuggestions?: boolean;
-  showListenButton?: boolean;
   onSuggestionClick?: (suggestion: string) => void;
-  onListenResponse?: () => void;
 }
 
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
@@ -27,9 +25,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   isResponding = false,
   isThinking = false,
   showSuggestions = false,
-  showListenButton = false,
-  onSuggestionClick,
-  onListenResponse
+  onSuggestionClick
 }) => {
   // Debug logging for button state
   console.log("VoiceBottomSheet render - isResponding:", isResponding, "isListening:", isListening, "isThinking:", isThinking, "showSuggestions:", showSuggestions);
