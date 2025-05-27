@@ -449,40 +449,53 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Enable autoplay AND show Listen Response button for testing both
-                console.log("Response ready - enabling autoplay with Listen Response button backup");
+                // Hybrid approach: Desktop autoplay, Mobile button
+                console.log("Response ready - using hybrid desktop/mobile approach");
                 
                 // Clear thinking state first
                 setIsVoiceThinking(false);
-                setIsResponding(true); // Set responding state for autoplay
                 
-                // Store the message text for both autoplay and button
+                // Store the message text
                 (window as any).lastResponseText = messageText;
                 
-                // Start autoplay immediately (audio context is unlocked from mic interaction)
-                console.log("Starting autoplay - audio context already unlocked from microphone interaction");
-                playResponseAudio(messageText).then(() => {
-                  console.log("Autoplay completed successfully");
-                  
-                  // After autoplay, just clean up states (no button)
+                // Detect mobile device
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                  console.log("Mobile detected - showing Listen Response button immediately");
+                  // Mobile: Show button immediately (autoplay restrictions too strict)
                   setIsResponding(false);
                   setResponseComplete(true);
                   setHasReceivedFirstResponse(true);
                   setUsedVoiceInput(false);
-                  // Don't show Listen Response button - autoplay only
-                  setShowListenButton(false);
+                  setShowListenButton(true);
+                } else {
+                  console.log("Desktop detected - attempting autoplay");
+                  // Desktop: Try autoplay
+                  setIsResponding(true);
                   
-                  console.log("Autoplay completed - ready for next interaction");
-                }).catch((error: any) => {
-                  console.log("Autoplay failed, cleaning up states:", error);
-                  
-                  // If autoplay fails, just clean up (no fallback button)
-                  setIsResponding(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setUsedVoiceInput(false);
-                  setShowListenButton(false);
-                });
+                  playResponseAudio(messageText).then(() => {
+                    console.log("Desktop autoplay completed successfully");
+                    
+                    // After autoplay, clean up states
+                    setIsResponding(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
+                    setUsedVoiceInput(false);
+                    setShowListenButton(false);
+                    
+                    console.log("Desktop autoplay completed - ready for next interaction");
+                  }).catch((error: any) => {
+                    console.log("Desktop autoplay failed, showing button fallback:", error);
+                    
+                    // If desktop autoplay fails, show button
+                    setIsResponding(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
+                    setUsedVoiceInput(false);
+                    setShowListenButton(true);
+                  });
+                }
                 
                 // Ensure bottom sheet stays open during speech
                 setShowBottomSheet(true);
@@ -530,39 +543,53 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             const lastMessage = messageElements[messageElements.length - 1];
             if (lastMessage && lastMessage.textContent) {
               const messageText = lastMessage.textContent || '';
-              console.log("Fallback: Found new AI response, starting autoplay with button backup");
+              console.log("Fallback: Found new AI response, using hybrid desktop/mobile approach");
               
-              // Clear thinking state and start autoplay
+              // Clear thinking state
               setIsVoiceThinking(false);
-              setIsResponding(true);
               setShowBottomSheet(true);
               
-              // Store the message for both autoplay and button
+              // Store the message
               (window as any).lastResponseText = messageText;
               
-              // Start autoplay (no fallback button)
-              console.log("Fallback: Starting autoplay - audio context unlocked from mic interaction");
-              playResponseAudio(messageText).then(() => {
-                console.log("Fallback: Autoplay completed successfully");
-                
-                // After autoplay, just clean up states (no button)
+              // Detect mobile device for fallback too
+              const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+              
+              if (isMobile) {
+                console.log("Fallback: Mobile detected - showing Listen Response button");
+                // Mobile: Show button immediately
                 setIsResponding(false);
                 setResponseComplete(true);
                 setHasReceivedFirstResponse(true);
                 setUsedVoiceInput(false);
-                setShowListenButton(false);
+                setShowListenButton(true);
+              } else {
+                console.log("Fallback: Desktop detected - attempting autoplay");
+                // Desktop: Try autoplay
+                setIsResponding(true);
                 
-                console.log("Fallback: Autoplay completed - ready for next interaction");
-              }).catch((error: any) => {
-                console.log("Fallback: Autoplay failed, cleaning up states:", error);
-                
-                // If autoplay fails, just clean up (no fallback button)
-                setIsResponding(false);
-                setResponseComplete(true);
-                setHasReceivedFirstResponse(true);
-                setUsedVoiceInput(false);
-                setShowListenButton(false);
-              });
+                playResponseAudio(messageText).then(() => {
+                  console.log("Fallback: Desktop autoplay completed successfully");
+                  
+                  // After autoplay, clean up states
+                  setIsResponding(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setUsedVoiceInput(false);
+                  setShowListenButton(false);
+                  
+                  console.log("Fallback: Desktop autoplay completed - ready for next interaction");
+                }).catch((error: any) => {
+                  console.log("Fallback: Desktop autoplay failed, showing button:", error);
+                  
+                  // If desktop autoplay fails, show button
+                  setIsResponding(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setUsedVoiceInput(false);
+                  setShowListenButton(true);
+                });
+              }
             }
           }
         }
