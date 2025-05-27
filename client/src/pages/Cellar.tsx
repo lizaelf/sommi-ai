@@ -33,17 +33,7 @@ const Cellar = () => {
         </div>
       </div>
 
-      {/* Bottom Bar - Safari-style */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 rounded-t-2xl p-4">
-        <div className="flex items-center justify-center space-x-8 text-blue-400">
-          <ArrowLeft className="w-6 h-6" />
-          <ArrowLeft className="w-6 h-6 rotate-180" />
-          <div className="w-6 h-6 border border-blue-400 rounded-sm" />
-          <div className="w-6 h-6 border border-blue-400 rounded-sm" />
-          <div className="w-6 h-6 border border-blue-400 rounded-sm" />
-        </div>
-        <div className="w-32 h-1 bg-white rounded-full mx-auto mt-4"></div>
-      </div>
+
     </div>
   );
 };
