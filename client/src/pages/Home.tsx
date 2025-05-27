@@ -43,7 +43,9 @@ export default function Home() {
           }}
           className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
         >
-          <Logo />
+          <Link to="/">
+            <Logo />
+          </Link>
           <div className="flex items-center space-x-3">
             <Link to="/cellar">
               <div style={{
