@@ -353,26 +353,22 @@ const Cellar = () => {
               onClick={handleSave}
               style={{
                 width: '100%',
-                backgroundColor: 'transparent',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '8px',
-                padding: '12px 16px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                borderRadius: '32px',
+                height: '56px',
+                padding: '0 16px',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: 'none',
                 color: 'white',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '16px',
                 fontWeight: 500,
                 cursor: 'pointer',
                 outline: 'none',
-                transition: 'all 0.2s ease',
                 boxSizing: 'border-box'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.borderColor = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
               }}
             >
               Save
