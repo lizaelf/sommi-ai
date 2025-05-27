@@ -147,8 +147,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Modified version of the speakResponse function to use browser speech synthesis only
+// DISABLED - speakResponse function removed to prevent autoplay
 async function speakResponse(text) {
+  console.log("speakResponse disabled - use Listen Response button instead");
+  return; // Exit early - no autoplay
   try {
     // Check if this is a resume from mute
     if (wasMuted && pausedText) {
