@@ -11,6 +11,7 @@ import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
 import { getWineDisplayName, getWineRegion, WINE_CONFIG } from '@shared/wineConfig';
 import { ShiningText } from '@/components/ShiningText';
+import { TextGenerateEffect } from './ui/text-generate-effect';
 // Import typography styles
 
 // Extend Window interface to include voiceAssistant
@@ -831,15 +832,24 @@ const EnhancedChatInterface: React.FC = () => {
                           }}
                           data-role={message.role}
                         >
-                          <div style={{
-                            color: message.role === 'user' ? '#000000' : '#DBDBDB',
-                            whiteSpace: 'pre-wrap',
-                            fontFamily: 'Inter, system-ui, sans-serif',
-                            fontSize: '16px', // Body font size
-                            lineHeight: '1.6'
-                          }}>
-                            {message.content}
-                          </div>
+                          {message.role === 'assistant' ? (
+                            <TextGenerateEffect
+                              words={message.content}
+                              className="text-[#DBDBDB] font-normal"
+                              filter={true}
+                              duration={0.3}
+                            />
+                          ) : (
+                            <div style={{
+                              color: '#000000',
+                              whiteSpace: 'pre-wrap',
+                              fontFamily: 'Inter, system-ui, sans-serif',
+                              fontSize: '16px',
+                              lineHeight: '1.6'
+                            }}>
+                              {message.content}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))
