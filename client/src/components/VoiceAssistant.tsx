@@ -447,28 +447,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   window.speechSynthesis.cancel();
                 }
                 
-                // Mobile-optimized voice experience with autoplay bypass
+                // Always show Listen Response button initially, then proceed with TTS attempt
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
-                if (isMobile) {
-                  console.log("Mobile browser detected - checking audio capability");
-                  setIsVoiceThinking(false);
-                  
-                  // Check if audio was enabled during user interaction
-                  if (!(window as any).mobileAudioEnabled) {
-                    console.log("🔇 Mobile audio disabled - showing Listen Response button");
-                    setTimeout(() => {
-                      setIsResponding(false);
-                      setUsedVoiceInput(false);
-                      setResponseComplete(true);
-                      setHasReceivedFirstResponse(true);
-                      setShowListenButton(true); // Show Listen Response button instead
-                    }, 500);
-                    return;
-                  } else {
-                    console.log("✅ Mobile audio enabled - proceeding with TTS");
-                  }
-                }
+                console.log("Response ready - showing Listen Response button");
+                setIsVoiceThinking(false);
+                
+                // Always show Listen Response button first
+                setTimeout(() => {
+                  setIsResponding(false);
+                  setUsedVoiceInput(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setShowListenButton(true); // Always show Listen Response button
+                }, 500);
+                return;
                 
                 // Desktop: Full TTS experience
                 setIsVoiceThinking(false);
