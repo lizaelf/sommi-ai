@@ -572,7 +572,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [usedVoiceInput, isProcessing, isVoiceThinking]);
 
-  // Function to play response audio using OpenAI TTS
+  // Function to play response audio using OpenAI TTS with mobile compatibility
   const playResponseAudio = async (text: string): Promise<void> => {
     console.log("Playing response audio with OpenAI TTS");
     
@@ -594,20 +594,58 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
       
+      // Store audio globally for mobile compatibility
+      (window as any).currentOpenAIAudio = audio;
+      
+      // Mobile-specific setup for better compatibility
+      audio.preload = 'auto';
+      audio.volume = 1.0;
+      
+      // For mobile browsers, ensure audio context is resumed
+      const audioContext = (window as any).audioContext;
+      if (audioContext && audioContext.state === 'suspended') {
+        console.log("Resuming audio context for mobile compatibility");
+        await audioContext.resume();
+      }
+      
       return new Promise((resolve, reject) => {
         audio.onended = () => {
           console.log("Audio playback completed");
           URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
           resolve();
         };
         
-        audio.onerror = () => {
-          console.log("Audio playback failed");
+        audio.onerror = (e) => {
+          console.log("Audio playback failed:", e);
           URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
           reject(new Error('Audio playback failed'));
         };
         
-        audio.play().catch(reject);
+        // For mobile compatibility, try multiple play attempts
+        const attemptPlay = async () => {
+          try {
+            console.log("Attempting audio play (mobile compatible)");
+            await audio.play();
+            console.log("Audio play started successfully");
+          } catch (playError) {
+            console.log("First play attempt failed, trying mobile workaround:", playError);
+            
+            // Mobile workaround: short delay then retry
+            setTimeout(async () => {
+              try {
+                await audio.play();
+                console.log("Audio play started on retry");
+              } catch (retryError) {
+                console.log("Mobile audio play failed completely:", retryError);
+                reject(retryError);
+              }
+            }, 100);
+          }
+        };
+        
+        attemptPlay();
       });
       
     } catch (error) {
