@@ -130,35 +130,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       console.log("Microphone permission granted");
 
-      // Mobile-compatible audio initialization (inspired by Python pattern)
+      // Mobile: Test and enable audio during user interaction
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       if (isMobile) {
-        console.log("📱 Mobile detected - testing audio capability");
-        (window as any).mobileAudioEnabled = false; // Default to disabled
-        (window as any).userHasInteracted = true; // Mark interaction
-        
-        // Test audio capability immediately during user interaction
+        console.log("Mobile: Testing audio capability during user interaction");
         try {
+          // Create and test audio element during user interaction
           const testAudio = new Audio();
-          testAudio.volume = 0.01; // Very low volume
           testAudio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBz2U3/PJeSsFJnvI8N2RQQoQZq7s7bBOEg5Nn+DyvmI=';
+          testAudio.volume = 0.1;
           
+          // Try to play to test if audio is enabled
           testAudio.play().then(() => {
-            console.log("✅ Mobile audio enabled - TTS available");
+            console.log("✅ Mobile audio enabled - TTS will work");
             (window as any).mobileAudioEnabled = true;
-            (window as any).mobileAudioElement = testAudio;
+            (window as any).mobileTestAudio = testAudio;
           }).catch(() => {
-            console.log("🔇 Mobile audio blocked - text-only mode");
+            console.log("❌ Mobile audio blocked - will use text fallback");
             (window as any).mobileAudioEnabled = false;
           });
         } catch {
-          console.log("❌ Audio not supported on this device");
+          console.log("❌ Audio not available on this mobile device");
           (window as any).mobileAudioEnabled = false;
         }
-      } else {
-        // Desktop: assume audio works
-        (window as any).mobileAudioEnabled = true;
-        (window as any).userHasInteracted = true;
       }
 
       try {
@@ -456,15 +450,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
                 if (isMobile) {
-                  console.log("📱 Mobile browser - checking audio capability");
+                  console.log("Mobile browser detected - checking audio capability");
                   setIsVoiceThinking(false);
                   
-                  // Always show text response first (like Python version)
-                  console.log("🤖 AI response available as text");
-                  
-                  // Try audio only if supported and user has interacted
-                  if (!(window as any).mobileAudioEnabled || !(window as any).userHasInteracted) {
-                    console.log("🔇 Audio unavailable - text-only mode active");
+                  // Check if audio was enabled during user interaction
+                  if (!(window as any).mobileAudioEnabled) {
+                    console.log("🔇 Mobile audio disabled - showing text response only");
                     setTimeout(() => {
                       setIsResponding(false);
                       setUsedVoiceInput(false);
@@ -473,7 +464,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                     }, 500);
                     return;
                   } else {
-                    console.log("✅ Audio supported - generating speech");
+                    console.log("✅ Mobile audio enabled - proceeding with TTS");
                   }
                 }
                 
@@ -511,17 +502,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                       const audioBlob = await response.blob();
                       const audioUrl = URL.createObjectURL(audioBlob);
                       
-                      // Mobile-safe audio playback (based on Python pattern)
+                      // Use tested audio element for mobile or create new one for desktop
                       const isMobileBrowser = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                       let audio;
                       
-                      if (isMobileBrowser && (window as any).mobileAudioElement) {
-                        console.log("📱 Using pre-tested mobile audio element");
-                        audio = (window as any).mobileAudioElement;
+                      if (isMobileBrowser && (window as any).mobileTestAudio) {
+                        console.log("Mobile: Using tested audio element (autoplay enabled)");
+                        audio = (window as any).mobileTestAudio;
                         audio.src = audioUrl;
-                        audio.volume = 1;
+                        audio.volume = 1; // Reset volume for actual playback
                       } else {
-                        console.log("🖥️ Desktop: Creating new audio element");
+                        console.log("Desktop: Creating new audio element");
                         audio = new Audio(audioUrl);
                       }
                       
