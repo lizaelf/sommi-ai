@@ -74,11 +74,18 @@ const EnhancedChatInterface: React.FC = () => {
             if (allMessageElements.length >= 2) {
               const userMessageElement = allMessageElements[allMessageElements.length - 2] as HTMLElement;
               
-              // Scroll to show the user's question at the top
+              // Scroll to show the user's question at the top with proper spacing
               console.log("Auto-scrolling to show user question at top");
-              userMessageElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+              
+              // Calculate the exact position to place the question at the top
+              const containerRect = container.getBoundingClientRect();
+              const elementRect = userMessageElement.getBoundingClientRect();
+              const scrollTop = container.scrollTop;
+              const targetScrollPosition = scrollTop + (elementRect.top - containerRect.top) - 20; // 20px from top
+              
+              container.scrollTo({
+                top: targetScrollPosition,
+                behavior: 'smooth'
               });
             }
           }
@@ -792,7 +799,7 @@ const EnhancedChatInterface: React.FC = () => {
                 </div>
 
                 {/* Conversation container */}
-                <div id="conversation" className="space-y-4 mb-20">
+                <div id="conversation" className="space-y-4 mb-96">
                   {messages.length > 0 && 
                     messages.map((message, index) => (
                       <div key={`${message.id}-${index}`} style={{
