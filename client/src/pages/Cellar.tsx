@@ -27,11 +27,11 @@ const Cellar = () => {
       >
         {/* Empty divs above the image */}
         <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full items-end">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center h-full">
-            <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '75%', width: 'auto' }} />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center" style={{ height: '75%' }}>
+            <img src={wineBottleImage} alt="Wine bottle" className="object-contain h-full w-auto" />
           </div>
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors h-full" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors h-full" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" style={{ height: '75%' }} />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" style={{ height: '75%' }} />
         </div>
       </div>
 
