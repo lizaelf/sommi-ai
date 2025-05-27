@@ -414,7 +414,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   // If user receives a response and we're no longer processing, handle it
   useEffect(() => {
+    console.log("Status check triggered, current status:", status, "isProcessing:", isProcessing);
     if (!isProcessing && status === 'Processing your question...') {
+      console.log("✅ Status condition met - processing complete with correct status");
       // Reset the status
       setStatus('');
       
@@ -446,11 +448,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Use OpenAI TTS instead of browser synthesis
+                // Use OpenAI TTS instead of browser synthesis - wait for DOM update
                 setTimeout(async () => {
                   try {
                     console.log("USING OPENAI TTS - Auto-speaking the assistant's response using OpenAI TTS");
                     console.log("OpenAI TTS - About to call /api/text-to-speech endpoint");
+                    console.log("OpenAI TTS - Message text to convert:", messageText.substring(0, 100));
                     
                     // Use OpenAI TTS API with mobile-safe timeout
                     const controller = new AbortController();
@@ -467,6 +470,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                     });
                     
                     clearTimeout(timeoutId);
+                    console.log("OpenAI TTS - Response received, ok:", response.ok, "status:", response.status);
                     
                     if (response.ok) {
                       const audioBlob = await response.blob();
