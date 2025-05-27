@@ -58,70 +58,7 @@ const EnhancedChatInterface: React.FC = () => {
     refetchInterval: 30000,
   });
   
-  // Scroll behavior - scroll to show user question at top immediately when user asks a question
-  useEffect(() => {
-    if (chatContainerRef.current && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      
-      // If the last message is from the user, scroll immediately to show it at the top
-      if (lastMessage && lastMessage.role === 'user') {
-        setTimeout(() => {
-          console.log("Auto-scrolling to show user question at top immediately");
-          
-          // Find the conversation container
-          const conversationContainer = document.getElementById('conversation');
-          if (conversationContainer) {
-            // Get all message elements within the conversation
-            const messageElements = conversationContainer.children;
-            
-            if (messageElements.length > 0) {
-              const lastUserMessageElement = messageElements[messageElements.length - 1] as HTMLElement;
-              
-              // Scroll to show the user's question at the top of the screen
-              lastUserMessageElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-                inline: 'nearest'
-              });
-              
-              console.log("Scrolled to user question immediately");
-            }
-          }
-        }, 100); // Short delay to ensure DOM is updated
-      }
-      // Also scroll when AI response arrives but question was already at top
-      else if (lastMessage && lastMessage.role === 'assistant' && messages.length >= 2) {
-        const userQuestion = messages[messages.length - 2];
-        if (userQuestion && userQuestion.role === 'user') {
-          setTimeout(() => {
-            console.log("Maintaining user question at top after AI response");
-            
-            const conversationContainer = document.getElementById('conversation');
-            if (conversationContainer) {
-              const messageElements = conversationContainer.children;
-              
-              if (messageElements.length >= 2) {
-                const lastUserMessageElement = messageElements[messageElements.length - 2] as HTMLElement;
-                
-                lastUserMessageElement.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start',
-                  inline: 'nearest'
-                });
-              }
-            }
-          }, 300);
-        }
-      }
-    }
-    // On initial load, scroll to top to show beginning of page
-    else if (chatContainerRef.current && messages.length === 0) {
-      chatContainerRef.current.scrollTo({
-        top: 0,
-        behavior: 'auto'
-      });
-    }
-  }, [messages.length]); // Only depend on messages.length to trigger when new messages are added
+  // Removed auto-scroll behavior - page now stays where user is positioned
   
   // Reset suggestions visibility when conversation changes
   useEffect(() => {
