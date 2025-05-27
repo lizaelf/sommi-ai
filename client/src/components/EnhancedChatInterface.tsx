@@ -858,20 +858,14 @@ const EnhancedChatInterface: React.FC = () => {
                   {/* Typing Indicator */}
                   {isTyping && (
                     <div style={{
-                      backgroundColor: '#191919',
-                      borderRadius: '16px',
-                      padding: '16px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
                       marginBottom: '12px',
-                      width: '100%'
+                      padding: '16px'
                     }}>
-                      <div style={{ 
-                        color: '#DBDBDB', 
-                        fontFamily: 'Inter, system-ui, sans-serif',
-                        fontSize: '16px',
-                        fontWeight: '500'
-                      }}>
-                        Thinking...
-                      </div>
+                      <ShiningText text="Thinking..." />
                     </div>
                   )}
                 </div>
