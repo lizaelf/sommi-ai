@@ -877,18 +877,18 @@ const EnhancedChatInterface: React.FC = () => {
                   isProcessing={isTyping}
                   onFocus={() => setIsKeyboardFocused(true)}
                   onBlur={() => setIsKeyboardFocused(false)}
+                  voiceButtonComponent={
+                    <VoiceAssistant
+                      onSendMessage={handleSendMessage}
+                      isProcessing={isTyping}
+                    />
+                  }
                 />
               </div>
             </div>
           </div>
         </main>
       </div>
-      
-      {/* Voice Assistant - renders independently as a floating button */}
-      <VoiceAssistant
-        onSendMessage={handleSendMessage}
-        isProcessing={isTyping}
-      />
     </div>
   );
 };

@@ -32,7 +32,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   onListenResponse
 }) => {
   // Debug logging for button state
-  console.log("VoiceBottomSheet render - isResponding:", isResponding, "isListening:", isListening, "isThinking:", isThinking, "showSuggestions:", showSuggestions, "showListenButton:", showListenButton);
+  console.log("VoiceBottomSheet render - isResponding:", isResponding, "isListening:", isListening, "isThinking:", isThinking, "showSuggestions:", showSuggestions);
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
 
