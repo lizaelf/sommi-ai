@@ -21,7 +21,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
-          height: '171px',
+          height: '228px',
           margin: '0 16px 0 16px'
         }}
       >
@@ -41,7 +41,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
-          height: '171px',
+          height: '228px',
           margin: '0 16px 0 16px'
         }}
       >
@@ -59,7 +59,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
-          height: '171px',
+          height: '228px',
           margin: '0 16px 0 16px'
         }}
       >
