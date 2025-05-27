@@ -24,8 +24,8 @@ export const TextGenerateEffect = ({
         filter: filter ? "blur(0px)" : "none",
       },
       {
-        duration: duration ? duration : 0.3,
-        delay: stagger(0.07),
+        duration: duration ? duration : 0.1,
+        delay: stagger(0.02),
       }
     );
   }, [scope.current]);
