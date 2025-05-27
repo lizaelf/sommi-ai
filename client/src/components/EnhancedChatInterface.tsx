@@ -835,7 +835,7 @@ const EnhancedChatInterface: React.FC = () => {
                           {message.role === 'assistant' ? (
                             <TextGenerateEffect
                               words={message.content}
-                              className="text-[#DBDBDB] font-normal"
+                              className="text-[#DBDBDB] font-normal text-base leading-relaxed"
                               filter={true}
                               duration={0.3}
                             />
