@@ -823,7 +823,7 @@ const EnhancedChatInterface: React.FC = () => {
                       }}>
                         <div 
                           style={{
-                            backgroundColor: message.role === 'user' ? '#F5F5F5' : message.role === 'assistant' ? '#191919' : 'transparent',
+                            backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
                             borderRadius: '16px',
                             padding: '16px',
                             width: message.role === 'user' ? 'fit-content' : '100%',
