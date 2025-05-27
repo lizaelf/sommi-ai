@@ -69,32 +69,26 @@ const EnhancedChatInterface: React.FC = () => {
           // Find the user's question (second to last message)
           const userQuestion = messages[messages.length - 2];
           if (userQuestion && userQuestion.role === 'user') {
-            // Find the corresponding DOM elements
-            const allMessageElements = container.children;
-            if (allMessageElements.length >= 2) {
-              const userMessageElement = allMessageElements[allMessageElements.length - 2] as HTMLElement;
+            console.log("Auto-scrolling to show user question at top");
+            
+            // Find the conversation container
+            const conversationContainer = document.getElementById('conversation');
+            if (conversationContainer) {
+              // Get all message elements within the conversation
+              const messageElements = conversationContainer.children;
               
-              // Scroll to show the user's question at the top with proper spacing
-              console.log("Auto-scrolling to show user question at top", {
-                containerHeight: container.clientHeight,
-                scrollTop: container.scrollTop,
-                messageIndex: allMessageElements.length - 2
-              });
-              
-              // Get the position of the user message element
-              const userMessageTop = userMessageElement.offsetTop;
-              console.log("User message position:", userMessageTop);
-              
-              // Scroll to position the user message at the top of the container
-              container.scrollTo({
-                top: userMessageTop - 20, // 20px from top
-                behavior: 'smooth'
-              });
-              
-              // Verify scroll worked after animation
-              setTimeout(() => {
-                console.log("After scroll - container scrollTop:", container.scrollTop);
-              }, 600);
+              if (messageElements.length >= 2) {
+                const lastUserMessageElement = messageElements[messageElements.length - 2] as HTMLElement;
+                
+                // Scroll to show the user's question at the top of the screen
+                lastUserMessageElement.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                  inline: 'nearest'
+                });
+                
+                console.log("Scrolled to user question");
+              }
             }
           }
         } else if (isTyping) {
@@ -105,7 +99,7 @@ const EnhancedChatInterface: React.FC = () => {
             behavior: 'smooth'
           });
         }
-      }, 800); // Longer delay to ensure TextGenerateEffect animation is visible
+      }, 500); // Delay to ensure DOM is updated
     }
     // On initial load, scroll to top to show beginning of page
     else if (chatContainerRef.current && messages.length === 0) {
