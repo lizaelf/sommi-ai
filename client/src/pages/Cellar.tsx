@@ -375,13 +375,12 @@ const Cellar = () => {
                   >
                     <img src={selectedCountry.flag} alt={`${selectedCountry.name} Flag`} style={{ width: '24px', height: '24px' }} />
                     <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{selectedCountry.code}</span>
-                    <span style={{ color: 'white', fontSize: '12px', marginLeft: '4px' }}>▼</span>
                   </div>
                   
                   {showCountryDropdown && (
                     <div style={{
                       position: 'absolute',
-                      top: '72px',
+                      bottom: '72px',
                       left: 0,
                       right: 0,
                       backgroundColor: 'rgba(0, 0, 0, 0.9)',
@@ -389,7 +388,9 @@ const Cellar = () => {
                       border: '1px solid rgba(255, 255, 255, 0.12)',
                       backdropFilter: 'blur(20px)',
                       zIndex: 1000,
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      maxHeight: '200px',
+                      overflowY: 'auto'
                     }}>
                       {countries.map((country, index) => (
                         <div
