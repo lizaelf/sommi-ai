@@ -24,19 +24,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const forceExitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
-  // BULLETPROOF: Force exit thinking mode after 5 seconds max
+  // BULLETPROOF: Force exit thinking mode after 30 seconds max
   const forceExitThinking = () => {
     if (forceExitTimeoutRef.current) {
       clearTimeout(forceExitTimeoutRef.current);
     }
     
     forceExitTimeoutRef.current = setTimeout(() => {
-      console.log("🚨 FORCE EXIT: Clearing all thinking states");
+      console.log("🚨 FORCE EXIT: Clearing all thinking states after 30s");
       setIsResponding(false);
       setResponseComplete(true);
       setHasReceivedFirstResponse(true);
       setLastResponseText('');
-    }, 5000); // Only 5 seconds max
+    }, 30000); // 30 seconds max
   };
 
   // BULLETPROOF: Clear force exit when component unmounts
