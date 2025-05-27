@@ -198,13 +198,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 if (isMobile) {
                   console.log("Mobile: Setting aggressive timeout for thinking state");
                   setTimeout(() => {
-                    console.log("Mobile thinking timeout - forcing exit after 20s");
+                    console.log("Mobile thinking timeout - forcing exit");
                     setIsVoiceThinking(false);
                     setIsResponding(false);
                     setUsedVoiceInput(false);
                     setResponseComplete(true);
                     setHasReceivedFirstResponse(true);
-                  }, 20000); // 20 second timeout for slow mobile connections
+                  }, 3000); // 3 second timeout for mobile
                 }
                 
                 // Immediately clear listening state before stopping recognition
@@ -481,22 +481,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsVoiceThinking(false);
                 console.log("Desktop browser - preparing full TTS experience");
                 
-                // Add extended timeout fallback for mobile browsers
+                // Add timeout fallback for mobile browsers
                 const mobileTimeout = setTimeout(() => {
-                  console.log("Mobile timeout - forcing suggestions to appear after 30s");
+                  console.log("Mobile timeout - forcing suggestions to appear");
                   setIsResponding(false);
                   setUsedVoiceInput(false);
                   setResponseComplete(true);
                   setHasReceivedFirstResponse(true);
-                }, 30000); // 30 second timeout for very slow connections
+                }, 15000); // 15 second timeout
                 
                 setTimeout(async () => {
                   try {
                     console.log("Auto-speaking the assistant's response using OpenAI TTS");
                     
-                    // Use OpenAI TTS API with extended mobile timeout
+                    // Use OpenAI TTS API with mobile timeout
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout for slow mobile networks
+                    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for mobile networks
                     
                     const response = await fetch('/api/text-to-speech', {
                       method: 'POST',
