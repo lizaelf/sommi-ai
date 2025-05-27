@@ -242,7 +242,7 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'rgba(0, 0, 0, 0.04)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   color: '#333',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -268,7 +268,7 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'rgba(0, 0, 0, 0.04)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   color: '#333',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -294,7 +294,7 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'rgba(0, 0, 0, 0.04)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   color: '#333',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -315,7 +315,7 @@ const Cellar = () => {
                   gap: '10px',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'rgba(0, 0, 0, 0.04)'
+                  background: 'rgba(255, 255, 255, 0.04)'
                 }}>
                   <img src={usFlagImage} alt="US Flag" style={{ width: '24px', height: '16px' }} />
                   <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>+1</span>
@@ -335,7 +335,7 @@ const Cellar = () => {
                     flex: 1,
                     borderRadius: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    background: 'rgba(0, 0, 0, 0.04)',
+                    background: 'rgba(255, 255, 255, 0.04)',
                     color: '#333',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
