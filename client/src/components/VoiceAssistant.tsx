@@ -20,6 +20,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [responseComplete, setResponseComplete] = useState(false); // Track if response is completely finished
   const [isVoiceThinking, setIsVoiceThinking] = useState(false); // Local thinking state for voice interactions
   const [hasAskedQuestion, setHasAskedQuestion] = useState(false); // Track if user has asked at least one question
+  const [showListenButton, setShowListenButton] = useState(false); // Show Listen Response button
  // Show Listen Response button when response is ready
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
@@ -448,83 +449,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Use OpenAI TTS instead of browser synthesis - wait for DOM update
-                setTimeout(async () => {
-                  try {
-                    console.log("USING OPENAI TTS - Auto-speaking the assistant's response using OpenAI TTS");
-                    console.log("OpenAI TTS - About to call /api/text-to-speech endpoint");
-                    console.log("OpenAI TTS - Message text to convert:", messageText.substring(0, 100));
-                    
-                    // Use OpenAI TTS API with mobile-safe timeout
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => {
-                      console.log("Mobile TTS timeout - aborting request");
-                      controller.abort();
-                    }, 10000); // 10 second timeout for mobile
-                    
-                    const response = await fetch('/api/text-to-speech', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ text: messageText.substring(0, 300) }), // Limit text for speed
-                      signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    console.log("OpenAI TTS - Response received, ok:", response.ok, "status:", response.status);
-                    
-                    if (response.ok) {
-                      const audioBlob = await response.blob();
-                      const audioUrl = URL.createObjectURL(audioBlob);
-                      const audio = new Audio(audioUrl);
-                      
-                      // Store reference for stop button
-                      (window as any).currentOpenAIAudio = audio;
-                      
-                      audio.onplay = () => {
-                        setIsResponding(true);
-                        console.log("OpenAI TTS audio started playing");
-                      };
-                      
-                      audio.onended = () => {
-                        URL.revokeObjectURL(audioUrl);
-                        setIsResponding(false);
-                        setResponseComplete(true);
-                        setHasReceivedFirstResponse(true);
-                        setUsedVoiceInput(false);
-                        (window as any).currentOpenAIAudio = null;
-                        console.log("OpenAI TTS audio playback completed - showing suggestions");
-                      };
-                      
-                      audio.onerror = (error: any) => {
-                        console.error("Audio playback error:", error);
-                        URL.revokeObjectURL(audioUrl);
-                        setIsResponding(false);
-                        setUsedVoiceInput(false);
-                        setResponseComplete(true);
-                        setHasReceivedFirstResponse(true);
-                        (window as any).currentOpenAIAudio = null;
-                      };
-                      
-                      await audio.play();
-                      console.log("Playing OpenAI TTS audio");
-                      
-                    } else {
-                      console.error("Failed to get audio from TTS API:", response.status);
-                      // Fallback: show suggestions without audio
-                      setIsResponding(false);
-                      setUsedVoiceInput(false);
-                      setResponseComplete(true);
-                      setHasReceivedFirstResponse(true);
-                    }
-                  } catch (error) {
-                    console.error('Error with OpenAI TTS:', error);
-                    // Always show suggestions on error
-                    setIsResponding(false);
-                    setUsedVoiceInput(false);
-                    setResponseComplete(true);
-                    setHasReceivedFirstResponse(true);
-                  }
-                }, 300); // Short delay to ensure DOM is updated
+                // No autoplay - just show Listen Response button
+                console.log("Response ready - showing Listen Response button instead of autoplay");
+                setResponseComplete(true);
+                setHasReceivedFirstResponse(true);
+                setUsedVoiceInput(false);
+                setShowListenButton(true);
+                
+                // Store the message text for the Listen Response button
+                (window as any).lastResponseText = messageText;
                 
                 // Ensure bottom sheet stays open during speech
                 setShowBottomSheet(true);
@@ -701,6 +634,59 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     console.log("Stop button clicked - enabling suggestions after manual stop");
   };
 
+  // Handle Listen Response button click
+  const handleListenResponse = async () => {
+    console.log("Listen Response button clicked");
+    setShowListenButton(false); // Hide button while playing
+    
+    try {
+      const messageText = (window as any).lastResponseText;
+      if (!messageText) {
+        console.error("No response text stored to play");
+        return;
+      }
+      
+      console.log("Playing stored response with OpenAI TTS");
+      setIsResponding(true);
+      
+      // Use OpenAI TTS API
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: messageText.substring(0, 300) })
+      });
+      
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        // Store reference for stop button
+        (window as any).currentOpenAIAudio = audio;
+        
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          setIsResponding(false);
+          setShowListenButton(true); // Show button again after playback
+          (window as any).currentOpenAIAudio = null;
+        };
+        
+        audio.onerror = () => {
+          URL.revokeObjectURL(audioUrl);
+          setIsResponding(false);
+          setShowListenButton(true); // Show button again on error
+          (window as any).currentOpenAIAudio = null;
+        };
+        
+        await audio.play();
+      }
+    } catch (error) {
+      console.error('Error playing response:', error);
+      setIsResponding(false);
+      setShowListenButton(true); // Show button again on error
+    }
+  };
+
   // Handle suggestion clicks - send message and speak response
   const handleSuggestionClick = async (suggestion: string) => {
     console.log("Suggestion clicked:", suggestion);
@@ -708,7 +694,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Immediately hide suggestions and show thinking state to prevent Ask button flash
     setResponseComplete(false);
     setIsVoiceThinking(true);
-
+    setShowListenButton(false); // Hide listen button when new interaction starts
     
     try {
       // Send the suggestion as a message
@@ -783,8 +769,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing || isVoiceThinking || status === 'Processing your question...'}
-        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete}
+        showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
+        showListenButton={showListenButton && hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking}
         onSuggestionClick={handleSuggestionClick}
+        onListenResponse={handleListenResponse}
       />
     </div>
   );
