@@ -497,6 +497,43 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, status, usedVoiceInput, showBottomSheet, hasReceivedFirstResponse]);
 
+  // Fallback effect to ensure Listen Response button appears when AI response is ready
+  useEffect(() => {
+    if (usedVoiceInput && !isProcessing && isVoiceThinking) {
+      console.log("Fallback: AI response should be ready, checking for Listen Response button");
+      
+      // Wait a bit for DOM to update, then check for new messages
+      const timeout = setTimeout(() => {
+        const messagesContainer = document.getElementById('conversation');
+        if (messagesContainer) {
+          const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
+          if (messageElements && messageElements.length > 0) {
+            const lastMessage = messageElements[messageElements.length - 1];
+            if (lastMessage && lastMessage.textContent) {
+              const messageText = lastMessage.textContent || '';
+              console.log("Fallback: Found new AI response, showing Listen Response button");
+              
+              // Clear all states and show Listen Response button
+              setIsVoiceThinking(false);
+              setIsResponding(false);
+              setResponseComplete(true);
+              setHasReceivedFirstResponse(true);
+              setUsedVoiceInput(false);
+              setShowListenButton(true);
+              setShowBottomSheet(true);
+              
+              // Store the message for the button
+              (window as any).lastResponseText = messageText;
+              console.log("Fallback: Listen Response button should now be visible");
+            }
+          }
+        }
+      }, 1000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [usedVoiceInput, isProcessing, isVoiceThinking]);
+
 
 
   // Handle closing the bottom sheet
