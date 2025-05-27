@@ -55,22 +55,30 @@ const EnhancedChatInterface: React.FC = () => {
     refetchInterval: 30000,
   });
   
-  // Scroll behavior
+  // Scroll behavior - scroll to latest AI response
   useEffect(() => {
-    // Only scroll to bottom on new messages when the user is typing
-    // This ensures new messages are visible when the user is actively chatting
-    if (isTyping && chatContainerRef.current && messages.length > 0) {
+    if (chatContainerRef.current && messages.length > 0) {
       // Add a small delay to ensure DOM is fully updated
       setTimeout(() => {
-        // Calculate the position to scroll to the bottom
-        const scrollToPosition = chatContainerRef.current?.scrollHeight || 0;
-        
-        // Smooth scroll to the position
-        chatContainerRef.current?.scrollTo({
-          top: scrollToPosition,
-          behavior: 'smooth'
-        });
-      }, 100);
+        // Find the last assistant message in the DOM
+        const assistantMessages = chatContainerRef.current?.querySelectorAll('[data-role="assistant"]');
+        if (assistantMessages && assistantMessages.length > 0) {
+          const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+          
+          // Scroll to the beginning of the latest AI response
+          lastAssistantMessage.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        } else if (isTyping) {
+          // If no assistant messages yet but user is typing, scroll to bottom
+          const scrollToPosition = chatContainerRef.current?.scrollHeight || 0;
+          chatContainerRef.current?.scrollTo({
+            top: scrollToPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 300); // Increased delay to ensure response is fully rendered
     }
     // On initial load, scroll to top to show beginning of page
     else if (chatContainerRef.current && messages.length === 0) {
