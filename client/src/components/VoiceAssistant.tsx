@@ -417,8 +417,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       // Clear thinking state immediately when response is ready
       setIsVoiceThinking(false);
       
-      // Only handle voice response if voice input was used AND the bottom sheet is still visible
-      if (usedVoiceInput && showBottomSheet) {
+      // Always handle voice response if voice input was used, regardless of bottom sheet state
+      if (usedVoiceInput) {
         // Mark that we've received the first response
         setHasReceivedFirstResponse(true);
         
@@ -506,6 +506,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 // Speak the response
                 speechSynthesis.speak(utterance);
+                
+                // Ensure bottom sheet stays open during speech
+                setShowBottomSheet(true);
 
               } else {
                 console.log("Last message has no text content");
