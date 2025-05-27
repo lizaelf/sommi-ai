@@ -1,5 +1,5 @@
 import { ArrowLeft, Search, X } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import backgroundImage from '@assets/Background.png';
@@ -9,6 +9,7 @@ import logoImage from '@assets/Logo.png';
 
 const Cellar = () => {
   const [showModal, setShowModal] = useState(true); // Show modal immediately when entering cellar
+  const [, setLocation] = useLocation();
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [formData, setFormData] = useState({
@@ -150,6 +151,10 @@ const Cellar = () => {
     setShowModal(false);
   };
 
+  const handleWineClick = (wineId: number) => {
+    setLocation(`/wine-details/${wineId}`);
+  };
+
   // Portal setup effect
   useEffect(() => {
     let element = document.getElementById('contact-bottom-sheet-portal');
@@ -214,11 +219,20 @@ const Cellar = () => {
       >
         {/* Empty divs above the image */}
         <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center">
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
+            onClick={() => handleWineClick(1)}
+          >
             <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '186px' }} />
           </div>
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(2)}
+          />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(3)}
+          />
         </div>
       </div>
 
@@ -234,9 +248,18 @@ const Cellar = () => {
       >
         {/* Empty divs above the image */}
         <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(4)}
+          />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(5)}
+          />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(6)}
+          />
         </div>
       </div>
 
@@ -252,9 +275,18 @@ const Cellar = () => {
       >
         {/* Empty divs above the image */}
         <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(7)}
+          />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(8)}
+          />
+          <div 
+            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+            onClick={() => handleWineClick(9)}
+          />
         </div>
       </div>
 
