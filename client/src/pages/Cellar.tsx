@@ -18,6 +18,21 @@ const Cellar = () => {
     phone: ''
   });
 
+  const [selectedCountry, setSelectedCountry] = useState({
+    code: '+1',
+    flag: usFlagImage,
+    name: 'US'
+  });
+
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+
+  const countries = [
+    { code: '+1', flag: usFlagImage, name: 'US' },
+    { code: '+44', flag: usFlagImage, name: 'UK' }, // Using same flag for demo
+    { code: '+33', flag: usFlagImage, name: 'FR' }, // Using same flag for demo
+    { code: '+49', flag: usFlagImage, name: 'DE' }, // Using same flag for demo
+  ];
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -306,19 +321,65 @@ const Cellar = () => {
               />
               
               <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{
-                  display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'transparent'
-                }}>
-                  <img src={usFlagImage} alt="US Flag" style={{ width: '24px', height: '24px' }} />
-                  <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>+1</span>
+                <div style={{ position: 'relative' }}>
+                  <div
+                    onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                    style={{
+                      display: 'flex',
+                      height: '64px',
+                      padding: '16px 24px',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '10px',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      background: 'transparent',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <img src={selectedCountry.flag} alt={`${selectedCountry.name} Flag`} style={{ width: '24px', height: '24px' }} />
+                    <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{selectedCountry.code}</span>
+                    <span style={{ color: 'white', fontSize: '12px', marginLeft: '4px' }}>▼</span>
+                  </div>
+                  
+                  {showCountryDropdown && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '72px',
+                      left: 0,
+                      right: 0,
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      backdropFilter: 'blur(20px)',
+                      zIndex: 1000,
+                      overflow: 'hidden'
+                    }}>
+                      {countries.map((country) => (
+                        <div
+                          key={country.code}
+                          onClick={() => {
+                            setSelectedCountry(country);
+                            setShowCountryDropdown(false);
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '16px 24px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          <img src={country.flag} alt={`${country.name} Flag`} style={{ width: '24px', height: '24px' }} />
+                          <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{country.code}</span>
+                          <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>{country.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <input
                   type="tel"
