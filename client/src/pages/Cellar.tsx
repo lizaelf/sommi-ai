@@ -163,12 +163,12 @@ const Cellar = () => {
         >
           <div 
             style={{
-              backgroundColor: '#111111',
+              background: 'linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)',
+              backdropFilter: 'blur(20px)',
               width: '100%',
               maxWidth: '500px',
-              borderTopLeftRadius: '16px',
-              borderTopRightRadius: '16px',
-              borderTop: '2px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '24px 24px 0px 0px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.20)',
               paddingTop: '24px',
               paddingLeft: '24px',
               paddingRight: '24px',
