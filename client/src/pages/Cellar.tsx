@@ -24,20 +24,6 @@ const Cellar = () => {
           margin: '0 16px 0 16px'
         }}
       >
-        {/* Transparent overlay to make slots clickable */}
-        <div 
-          className="grid grid-cols-3 grid-rows-2 gap-1 max-w-md mx-auto h-full"
-        >
-          {/* Top Row */}
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          
-          {/* Bottom Row */}
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-        </div>
       </div>
 
       {/* Second Wine Rack Container - Below the first one */}
@@ -50,20 +36,6 @@ const Cellar = () => {
           margin: '0 16px 0 16px'
         }}
       >
-        {/* Transparent overlay to make slots clickable */}
-        <div 
-          className="grid grid-cols-3 grid-rows-2 gap-1 max-w-md mx-auto h-full"
-        >
-          {/* Top Row */}
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          
-          {/* Bottom Row */}
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-          <div className="aspect-[1/1] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
-        </div>
       </div>
 
     </div>
