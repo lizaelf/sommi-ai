@@ -453,14 +453,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 console.log("Response ready - showing Listen Response button");
                 setIsVoiceThinking(false);
                 
-                // Always show Listen Response button first
-                setTimeout(() => {
-                  setIsResponding(false);
-                  setUsedVoiceInput(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setShowListenButton(true); // Always show Listen Response button
-                }, 500);
+                // Always show Listen Response button when response is ready
+                setIsResponding(false);
+                setUsedVoiceInput(false);
+                setResponseComplete(true);
+                setHasReceivedFirstResponse(true);
+                setShowListenButton(true); // Always show Listen Response button
                 return;
                 
                 // Desktop: Full TTS experience
@@ -899,7 +897,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isResponding={isResponding}
         isThinking={isProcessing || isVoiceThinking || status === 'Processing your question...'}
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
-        showListenButton={showListenButton && hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking}
+        showListenButton={showListenButton && !isListening && !isResponding && !isVoiceThinking}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
       />
