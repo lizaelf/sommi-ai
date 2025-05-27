@@ -446,75 +446,80 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Disable browser speech synthesis to force OpenAI TTS usage
-                console.log("Disabling browser speech synthesis to use OpenAI TTS");
-                if (window.speechSynthesis) {
-                  window.speechSynthesis.cancel();
-                }
-                
-                // Auto-speak the response using browser synthesis
-                console.log("Auto-speaking the assistant's response");
-                console.log("Speaking text response using browser synthesis...");
-                
-                // Clear thinking state when response starts
-                setIsVoiceThinking(false);
-                
-                // Configure speech synthesis
-                const utterance = new SpeechSynthesisUtterance(messageText);
-                
-                // Voice selection for consistent male voice
-                const voices = speechSynthesis.getVoices();
-                console.log("Available voices:", voices.length);
-                
-                // Filter for male voices
-                const maleVoices = voices.filter(voice => 
-                  voice.name.toLowerCase().includes('male') ||
-                  voice.name.toLowerCase().includes('david') ||
-                  voice.name.toLowerCase().includes('alex') ||
-                  voice.name.toLowerCase().includes('daniel')
-                );
-                
-                console.log("Male voices available:", maleVoices.length);
-                
-                if (maleVoices.length > 0) {
-                  maleVoices.forEach((voice, index) => {
-                    console.log(`Male voice ${index}:`, voice.name);
-                  });
-                  // Use the last available male voice for consistency
-                  utterance.voice = maleVoices[maleVoices.length - 1];
-                  console.log("Selected latest male voice:", utterance.voice.name);
-                }
-                
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                utterance.volume = 1.0;
-                
-                utterance.onstart = () => {
-                  setIsResponding(true);
-                  // Clear the thinking timeout since speech started successfully
-                  if ((window as any).currentThinkingTimeout) {
-                    clearTimeout((window as any).currentThinkingTimeout);
-                    (window as any).currentThinkingTimeout = null;
+                // Use OpenAI TTS instead of browser synthesis
+                setTimeout(async () => {
+                  try {
+                    console.log("Auto-speaking the assistant's response using OpenAI TTS");
+                    
+                    // Use OpenAI TTS API with mobile-safe timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => {
+                      console.log("Mobile TTS timeout - aborting request");
+                      controller.abort();
+                    }, 10000); // 10 second timeout for mobile
+                    
+                    const response = await fetch('/api/text-to-speech', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ text: messageText.substring(0, 300) }), // Limit text for speed
+                      signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (response.ok) {
+                      const audioBlob = await response.blob();
+                      const audioUrl = URL.createObjectURL(audioBlob);
+                      const audio = new Audio(audioUrl);
+                      
+                      // Store reference for stop button
+                      (window as any).currentOpenAIAudio = audio;
+                      
+                      audio.onplay = () => {
+                        setIsResponding(true);
+                        console.log("OpenAI TTS audio started playing");
+                      };
+                      
+                      audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        setIsResponding(false);
+                        setResponseComplete(true);
+                        setHasReceivedFirstResponse(true);
+                        setUsedVoiceInput(false);
+                        (window as any).currentOpenAIAudio = null;
+                        console.log("OpenAI TTS audio playback completed - showing suggestions");
+                      };
+                      
+                      audio.onerror = (error: any) => {
+                        console.error("Audio playback error:", error);
+                        URL.revokeObjectURL(audioUrl);
+                        setIsResponding(false);
+                        setUsedVoiceInput(false);
+                        setResponseComplete(true);
+                        setHasReceivedFirstResponse(true);
+                        (window as any).currentOpenAIAudio = null;
+                      };
+                      
+                      await audio.play();
+                      console.log("Playing OpenAI TTS audio");
+                      
+                    } else {
+                      console.error("Failed to get audio from TTS API:", response.status);
+                      // Fallback: show suggestions without audio
+                      setIsResponding(false);
+                      setUsedVoiceInput(false);
+                      setResponseComplete(true);
+                      setHasReceivedFirstResponse(true);
+                    }
+                  } catch (error) {
+                    console.error('Error with OpenAI TTS:', error);
+                    // Always show suggestions on error
+                    setIsResponding(false);
+                    setUsedVoiceInput(false);
+                    setResponseComplete(true);
+                    setHasReceivedFirstResponse(true);
                   }
-                  console.log("Speech started");
-                };
-                
-                utterance.onend = () => {
-                  setIsResponding(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setUsedVoiceInput(false);
-                  console.log("Speech ended - enabling suggestions");
-                };
-                
-                utterance.onerror = (event) => {
-                  console.error("Speech synthesis error:", event);
-                  setIsResponding(false);
-                  setUsedVoiceInput(false);
-                };
-                
-                // Speak the response
-                speechSynthesis.speak(utterance);
+                }, 300); // Short delay to ensure DOM is updated
                 
                 // Ensure bottom sheet stays open during speech
                 setShowBottomSheet(true);
@@ -548,81 +553,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, status, usedVoiceInput, showBottomSheet, hasReceivedFirstResponse]);
 
-  // Additional effect to watch for new messages and trigger voice response
-  useEffect(() => {
-    if (usedVoiceInput && !isProcessing && !isResponding && !isVoiceThinking) {
-      console.log("Checking for new response to auto-speak...");
-      
-      // Use a small delay to ensure DOM is updated
-      const timeout = setTimeout(() => {
-        const messagesContainer = document.getElementById('conversation');
-        if (messagesContainer) {
-          const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
-          if (messageElements && messageElements.length > 0) {
-            const lastMessage = messageElements[messageElements.length - 1];
-            if (lastMessage && lastMessage.textContent) {
-              const messageText = lastMessage.textContent.trim();
-              
-              if (messageText && messageText.length > 10) { // Only speak substantial responses
-                console.log("Found response to auto-speak:", messageText.substring(0, 50) + "...");
-                
-                // Auto-speak using browser synthesis
-                const utterance = new SpeechSynthesisUtterance(messageText);
-                
-                // Voice selection
-                const voices = speechSynthesis.getVoices();
-                const maleVoices = voices.filter(voice => 
-                  voice.name.toLowerCase().includes('male') ||
-                  voice.name.toLowerCase().includes('david') ||
-                  voice.name.toLowerCase().includes('alex') ||
-                  voice.name.toLowerCase().includes('daniel')
-                );
-                
-                if (maleVoices.length > 0) {
-                  utterance.voice = maleVoices[maleVoices.length - 1];
-                  console.log("Using voice:", utterance.voice.name);
-                }
-                
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                utterance.volume = 1.0;
-                
-                utterance.onstart = () => {
-                  setIsResponding(true);
-                  // Clear the thinking timeout since speech started successfully
-                  if ((window as any).currentThinkingTimeout) {
-                    clearTimeout((window as any).currentThinkingTimeout);
-                    (window as any).currentThinkingTimeout = null;
-                  }
-                  console.log("Auto-speech started");
-                };
-                
-                utterance.onend = () => {
-                  setIsResponding(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setUsedVoiceInput(false);
-                  console.log("Auto-speech ended - showing suggestions");
-                };
-                
-                utterance.onerror = (event) => {
-                  console.error("Speech synthesis error:", event);
-                  setIsResponding(false);
-                  setUsedVoiceInput(false);
-                };
-                
-                // Speak the response
-                speechSynthesis.speak(utterance);
-                setShowBottomSheet(true);
-              }
-            }
-          }
-        }
-      }, 500);
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [usedVoiceInput, isProcessing, isResponding, isVoiceThinking]);
+
 
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
