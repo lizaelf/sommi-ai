@@ -233,11 +233,16 @@ const Cellar = () => {
                 value={formData.firstName}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                 style={{
-                  width: '100%',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                  padding: '12px 16px',
+                  display: 'flex',
+                  height: '64px',
+                  padding: '16px 24px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  alignSelf: 'stretch',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(0, 0, 0, 0.04)',
                   color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -245,7 +250,7 @@ const Cellar = () => {
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               
               <input
@@ -254,11 +259,16 @@ const Cellar = () => {
                 value={formData.lastName}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
                 style={{
-                  width: '100%',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                  padding: '12px 16px',
+                  display: 'flex',
+                  height: '64px',
+                  padding: '16px 24px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  alignSelf: 'stretch',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(0, 0, 0, 0.04)',
                   color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -266,7 +276,7 @@ const Cellar = () => {
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               
               <input
@@ -275,11 +285,16 @@ const Cellar = () => {
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 style={{
-                  width: '100%',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                  padding: '12px 16px',
+                  display: 'flex',
+                  height: '64px',
+                  padding: '16px 24px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  alignSelf: 'stretch',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(0, 0, 0, 0.04)',
                   color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -287,18 +302,20 @@ const Cellar = () => {
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{
                   display: 'flex',
+                  height: '64px',
+                  padding: '16px 24px',
+                  justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                  padding: '12px 16px',
-                  gap: '8px'
+                  gap: '10px',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'rgba(0, 0, 0, 0.04)'
                 }}>
                   <img src={usFlagImage} alt="US Flag" style={{ width: '24px', height: '16px' }} />
                   <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>+1</span>
@@ -309,11 +326,16 @@ const Cellar = () => {
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   style={{
+                    display: 'flex',
+                    height: '64px',
+                    padding: '16px 24px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
                     flex: 1,
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    borderRadius: '8px',
-                    padding: '12px 16px',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'rgba(0, 0, 0, 0.04)',
                     color: 'white',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
@@ -321,7 +343,7 @@ const Cellar = () => {
                     boxSizing: 'border-box'
                   }}
                   onFocus={(e) => e.target.style.borderColor = 'white'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
                 />
               </div>
             </div>
