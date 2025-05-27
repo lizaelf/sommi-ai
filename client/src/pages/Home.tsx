@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
