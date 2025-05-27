@@ -16,7 +16,7 @@ const Cellar = () => {
 
       {/* Wine Rack Container */}
       <div 
-        className="flex-1 bg-cover bg-center bg-no-repeat"
+        className="flex-1 bg-cover bg-top bg-no-repeat"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
