@@ -188,19 +188,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsVoiceThinking(true);
                 setHasAskedQuestion(true); // Mark that user has asked a question
                 
-                // Mobile: Add aggressive timeout to prevent getting stuck
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                if (isMobile) {
-                  console.log("Mobile: Setting aggressive timeout for thinking state");
-                  setTimeout(() => {
-                    console.log("Mobile thinking timeout - forcing exit");
-                    setIsVoiceThinking(false);
-                    setIsResponding(false);
-                    setUsedVoiceInput(false);
-                    setResponseComplete(true);
-                    setHasReceivedFirstResponse(true);
-                  }, 3000); // 3 second timeout for mobile
-                }
+                // Add aggressive timeout to prevent getting stuck in thinking mode
+                console.log("Setting aggressive timeout for thinking state");
+                setTimeout(() => {
+                  console.log("Thinking timeout - forcing exit to Listen Response button");
+                  setIsVoiceThinking(false);
+                  setIsResponding(false);
+                  setUsedVoiceInput(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setShowListenButton(true);
+                }, 15000); // 15 second timeout for any stuck state
                 
                 // Immediately clear listening state before stopping recognition
                 setIsListening(false);
@@ -410,13 +408,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  // If user receives a response and we're no longer processing, speak it
+  // If user receives a response and we're no longer processing, handle it
   useEffect(() => {
     if (!isProcessing && status === 'Processing your question...') {
       // Reset the status
       setStatus('');
       
-      // Only speak the response automatically if voice input was used AND the bottom sheet is still visible
+      // Clear thinking state immediately when response is ready
+      setIsVoiceThinking(false);
+      
+      // Only handle voice response if voice input was used AND the bottom sheet is still visible
       if (usedVoiceInput && showBottomSheet) {
         // Mark that we've received the first response
         setHasReceivedFirstResponse(true);
