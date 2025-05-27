@@ -1,7 +1,7 @@
 import { ArrowLeft, Search } from 'lucide-react';
 import { Link } from 'wouter';
 import backgroundImage from '@assets/Background.png';
-import wineBottleImage from '../assets/wine-bottle.png';
+import wineBottleImage from '@assets/wine-circle.png';
 
 const Cellar = () => {
   return (
@@ -26,12 +26,12 @@ const Cellar = () => {
         }}
       >
         {/* Empty divs above the image */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full items-start">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center h-full">
-            <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '75%', width: 'auto' }} />
+        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-center justify-center">
+            <img src={wineBottleImage} alt="Wine bottle" className="w-12 h-12 object-contain" />
           </div>
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors h-full" />
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors h-full" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
         </div>
       </div>
 
@@ -47,9 +47,7 @@ const Cellar = () => {
       >
         {/* Empty divs above the image */}
         <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center">
-            <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '75%', width: 'auto' }} />
-          </div>
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
           <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
           <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
         </div>
