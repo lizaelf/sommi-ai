@@ -172,105 +172,90 @@ export async function generateConversationTitle(firstMessage: string) {
   }
 }
 
-// Mobile-optimized voice configuration for faster processing
-class MobileVoiceConfig {
-  static readonly MODEL = "tts-1" as const; // Use faster model (not HD) for mobile
-  static readonly VOICE = "onyx" as const; // Consistent voice
-  static readonly SPEED = 1.2 as const; // Slightly faster for mobile attention spans
+// Fixed voice configuration class - ensures absolutely consistent parameters
+class VoiceConfig {
+  static readonly MODEL = "tts-1-hd" as const; // High definition for better quality
+  static readonly VOICE = "onyx" as const; // Male voice - never changes
+  static readonly SPEED = 1.0 as const; // Natural speed - never changes
   
+  // Prevent instantiation - static class only
   private constructor() {}
 }
 
-// Simplified mobile cache (smaller size)
-const mobileVoiceCache = new Map<string, Buffer>();
-const MOBILE_MAX_CACHE_SIZE = 20; // Smaller cache for mobile
+// Voice cache to store recently generated audio for consistency
+const voiceCache = new Map<string, Buffer>();
+const MAX_CACHE_SIZE = 50;
 
+// Function to convert text to speech using OpenAI's Text-to-Speech API with consistent voice
 export async function textToSpeech(text: string): Promise<Buffer> {
   try {
-    console.log("📱 Mobile-optimized TTS processing...");
+    console.log("Converting text to speech...");
     
-    // MOBILE-FIRST: Aggressive text optimization
-    const MOBILE_MAX_LENGTH = 250; // Much shorter for mobile
+    // Limit text length to optimize response time
+    const MAX_TEXT_LENGTH = 500;
     
-    let cleanText = text
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove markdown
-      .replace(/\*(.*?)\*/g, '$1')
-      .replace(/#+\s/g, '')
-      .replace(/\n\n/g, '. ')
-      .replace(/\s+/g, ' ') // Normalize whitespace
-      .trim();
+    // Clean up the text for better speech synthesis
+    // Remove markdown-like formatting if any
+    let cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1')
+                       .replace(/\*(.*?)\*/g, '$1')
+                       .replace(/#+\s/g, '')
+                       .replace(/\n\n/g, '. ')
+                       .trim();
     
-    // Aggressive truncation for mobile speed
-    if (cleanText.length > MOBILE_MAX_LENGTH) {
-      const lastSentenceEnd = Math.max(
-        cleanText.lastIndexOf('.', MOBILE_MAX_LENGTH),
-        cleanText.lastIndexOf('!', MOBILE_MAX_LENGTH),
-        cleanText.lastIndexOf('?', MOBILE_MAX_LENGTH)
-      );
-      
-      if (lastSentenceEnd > 50) {
-        cleanText = cleanText.substring(0, lastSentenceEnd + 1);
+    // Truncate the text if it's too long
+    if (cleanText.length > MAX_TEXT_LENGTH) {
+      // Find the last complete sentence within the limit
+      const lastPeriodIndex = cleanText.lastIndexOf('.', MAX_TEXT_LENGTH);
+      if (lastPeriodIndex > 0) {
+        cleanText = cleanText.substring(0, lastPeriodIndex + 1);
       } else {
-        cleanText = cleanText.substring(0, MOBILE_MAX_LENGTH).trim() + ".";
+        cleanText = cleanText.substring(0, MAX_TEXT_LENGTH) + "...";
       }
     }
     
-    // Check mobile cache first
-    const cacheKey = `mobile_${MobileVoiceConfig.VOICE}_${cleanText}`;
-    if (mobileVoiceCache.has(cacheKey)) {
-      console.log("📱 Using mobile cached voice response");
-      return mobileVoiceCache.get(cacheKey)!;
+    // Check cache first for consistency
+    const cacheKey = `${VoiceConfig.VOICE}_${cleanText}`;
+    if (voiceCache.has(cacheKey)) {
+      console.log("Using cached voice response for consistency");
+      return voiceCache.get(cacheKey)!;
     }
     
-    console.log("📱 Mobile TTS request:", cleanText.substring(0, 50) + "...");
-    console.log("📱 Using mobile settings:", {
-      model: MobileVoiceConfig.MODEL,
-      voice: MobileVoiceConfig.VOICE,
-      speed: MobileVoiceConfig.SPEED
+    console.log("Processing TTS request for text:", cleanText.substring(0, 50) + "...");
+    console.log("Using fixed voice settings:", {
+      model: VoiceConfig.MODEL,
+      voice: VoiceConfig.VOICE,
+      speed: VoiceConfig.SPEED
     });
     
-    // Mobile-optimized OpenAI call with timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second timeout
+    // Use OpenAI's Text-to-Speech API with FIXED consistent voice settings
+    const response = await openai.audio.speech.create({
+      model: VoiceConfig.MODEL,
+      voice: VoiceConfig.VOICE,
+      speed: VoiceConfig.SPEED,
+      input: cleanText,
+    });
     
-    try {
-      const response = await openai.audio.speech.create({
-        model: MobileVoiceConfig.MODEL,
-        voice: MobileVoiceConfig.VOICE,
-        speed: MobileVoiceConfig.SPEED,
-        input: cleanText,
-      }, {
-        signal: controller.signal,
-        timeout: 5000 // Additional 5 second timeout
-      });
-      
-      clearTimeout(timeoutId);
-      
-      const buffer = Buffer.from(await response.arrayBuffer());
-      console.log("📱 Mobile TTS success, buffer size:", buffer.length);
-      
-      // Cache for mobile (with size limit)
-      if (mobileVoiceCache.size >= MOBILE_MAX_CACHE_SIZE) {
-        const firstKey = mobileVoiceCache.keys().next().value;
-        if (firstKey) {
-          mobileVoiceCache.delete(firstKey);
-        }
+    console.log("OpenAI TTS response received");
+    
+    // Convert the response to a buffer
+    const buffer = Buffer.from(await response.arrayBuffer());
+    console.log("Text-to-speech conversion successful, buffer size:", buffer.length);
+    
+    // Cache the response for consistency and performance
+    if (voiceCache.size >= MAX_CACHE_SIZE) {
+      // Remove oldest entry to make space
+      const entries = voiceCache.entries();
+      const firstEntry = entries.next().value;
+      if (firstEntry) {
+        voiceCache.delete(firstEntry[0]);
       }
-      mobileVoiceCache.set(cacheKey, buffer);
-      
-      return buffer;
-      
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      
-      if (error.name === 'AbortError') {
-        throw new Error('Mobile TTS timeout - request took too long');
-      }
-      throw error;
     }
+    voiceCache.set(cacheKey, buffer);
+    console.log("Voice response cached for future consistency");
     
+    return buffer;
   } catch (error) {
-    console.error("📱 Mobile TTS error:", error);
-    throw new Error(`Mobile TTS failed: ${(error as any)?.message || "Unknown error"}`);
+    console.error("Error in text-to-speech conversion:", error);
+    throw new Error(`Failed to convert text to speech: ${(error as any)?.message || "Unknown error"}`);
   }
 }
