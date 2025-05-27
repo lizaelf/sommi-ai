@@ -30,12 +30,8 @@ const Cellar = () => {
           <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center">
             <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '186px' }} />
           </div>
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center">
-            <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '186px' }} />
-          </div>
-          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center">
-            <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '186px' }} />
-          </div>
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
+          <div className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors" />
         </div>
       </div>
 
