@@ -227,6 +227,26 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* DEBUG INFO - Top left corner of bottom sheet */}
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          backgroundColor: 'red',
+          color: 'white',
+          padding: '8px',
+          fontSize: '10px',
+          zIndex: 10001,
+          fontFamily: 'monospace',
+          borderRadius: '4px'
+        }}>
+          DEBUG:<br/>
+          isListening: {isListening.toString()}<br/>
+          isResponding: {isResponding.toString()}<br/>
+          isThinking: {isThinking.toString()}<br/>
+          showSuggestions: {showSuggestions.toString()}
+        </div>
+
         {/* Close button */}
         <div 
           style={{
