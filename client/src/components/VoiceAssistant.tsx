@@ -449,53 +449,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // Hybrid approach: Desktop autoplay, Mobile button
-                console.log("Response ready - using hybrid desktop/mobile approach");
+                // No autoplay - just show Listen Response button
+                console.log("Response ready - showing Listen Response button instead of autoplay");
                 
-                // Clear thinking state first
+                // Clear all thinking/processing states immediately
                 setIsVoiceThinking(false);
+                setIsResponding(false);
+                setResponseComplete(true);
+                setHasReceivedFirstResponse(true);
+                setUsedVoiceInput(false);
+                setShowListenButton(true);
                 
-                // Store the message text
+                // Store the message text for the Listen Response button
                 (window as any).lastResponseText = messageText;
                 
-                // Detect mobile device
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
-                if (isMobile) {
-                  console.log("Mobile detected - showing Listen Response button immediately");
-                  // Mobile: Show button immediately (autoplay restrictions too strict)
-                  setIsResponding(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setUsedVoiceInput(false);
-                  setShowListenButton(true);
-                } else {
-                  console.log("Desktop detected - attempting autoplay");
-                  // Desktop: Try autoplay
-                  setIsResponding(true);
-                  
-                  playResponseAudio(messageText).then(() => {
-                    console.log("Desktop autoplay completed successfully");
-                    
-                    // After autoplay, clean up states
-                    setIsResponding(false);
-                    setResponseComplete(true);
-                    setHasReceivedFirstResponse(true);
-                    setUsedVoiceInput(false);
-                    setShowListenButton(false);
-                    
-                    console.log("Desktop autoplay completed - ready for next interaction");
-                  }).catch((error: any) => {
-                    console.log("Desktop autoplay failed, showing button fallback:", error);
-                    
-                    // If desktop autoplay fails, show button
-                    setIsResponding(false);
-                    setResponseComplete(true);
-                    setHasReceivedFirstResponse(true);
-                    setUsedVoiceInput(false);
-                    setShowListenButton(true);
-                  });
-                }
+                console.log("Listen Response button should now be visible");
                 
                 // Ensure bottom sheet stays open during speech
                 setShowBottomSheet(true);
@@ -543,53 +511,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             const lastMessage = messageElements[messageElements.length - 1];
             if (lastMessage && lastMessage.textContent) {
               const messageText = lastMessage.textContent || '';
-              console.log("Fallback: Found new AI response, using hybrid desktop/mobile approach");
+              console.log("Fallback: Found new AI response, showing Listen Response button");
               
-              // Clear thinking state
+              // Clear all states and show Listen Response button
               setIsVoiceThinking(false);
+              setIsResponding(false);
+              setResponseComplete(true);
+              setHasReceivedFirstResponse(true);
+              setUsedVoiceInput(false);
+              setShowListenButton(true);
               setShowBottomSheet(true);
               
-              // Store the message
+              // Store the message for the button
               (window as any).lastResponseText = messageText;
-              
-              // Detect mobile device for fallback too
-              const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-              
-              if (isMobile) {
-                console.log("Fallback: Mobile detected - showing Listen Response button");
-                // Mobile: Show button immediately
-                setIsResponding(false);
-                setResponseComplete(true);
-                setHasReceivedFirstResponse(true);
-                setUsedVoiceInput(false);
-                setShowListenButton(true);
-              } else {
-                console.log("Fallback: Desktop detected - attempting autoplay");
-                // Desktop: Try autoplay
-                setIsResponding(true);
-                
-                playResponseAudio(messageText).then(() => {
-                  console.log("Fallback: Desktop autoplay completed successfully");
-                  
-                  // After autoplay, clean up states
-                  setIsResponding(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setUsedVoiceInput(false);
-                  setShowListenButton(false);
-                  
-                  console.log("Fallback: Desktop autoplay completed - ready for next interaction");
-                }).catch((error: any) => {
-                  console.log("Fallback: Desktop autoplay failed, showing button:", error);
-                  
-                  // If desktop autoplay fails, show button
-                  setIsResponding(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setUsedVoiceInput(false);
-                  setShowListenButton(true);
-                });
-              }
+              console.log("Fallback: Listen Response button should now be visible");
             }
           }
         }
@@ -599,87 +534,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [usedVoiceInput, isProcessing, isVoiceThinking]);
 
-  // Function to play response audio using OpenAI TTS with mobile compatibility
-  const playResponseAudio = async (text: string): Promise<void> => {
-    console.log("Playing response audio with OpenAI TTS");
-    
-    try {
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('TTS request failed');
-      }
-      
-      const audioBuffer = await response.arrayBuffer();
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      
-      // Store audio globally for mobile compatibility
-      (window as any).currentOpenAIAudio = audio;
-      
-      // Mobile-specific setup for better compatibility
-      audio.preload = 'auto';
-      audio.volume = 1.0;
-      
-      // For mobile browsers, ensure audio context is resumed
-      const audioContext = (window as any).audioContext;
-      if (audioContext && audioContext.state === 'suspended') {
-        console.log("Resuming audio context for mobile compatibility");
-        await audioContext.resume();
-      }
-      
-      return new Promise((resolve, reject) => {
-        audio.onended = () => {
-          console.log("Audio playback completed");
-          URL.revokeObjectURL(audioUrl);
-          (window as any).currentOpenAIAudio = null;
-          resolve();
-        };
-        
-        audio.onerror = (e) => {
-          console.log("Audio playback failed:", e);
-          URL.revokeObjectURL(audioUrl);
-          (window as any).currentOpenAIAudio = null;
-          reject(new Error('Audio playback failed'));
-        };
-        
-        // For mobile compatibility, try multiple play attempts
-        const attemptPlay = async () => {
-          try {
-            console.log("Attempting audio play (mobile compatible)");
-            await audio.play();
-            console.log("Audio play started successfully");
-          } catch (playError) {
-            console.log("First play attempt failed, trying mobile workaround:", playError);
-            
-            // Mobile workaround: short delay then retry
-            setTimeout(async () => {
-              try {
-                await audio.play();
-                console.log("Audio play started on retry");
-              } catch (retryError) {
-                console.log("Mobile audio play failed completely:", retryError);
-                reject(retryError);
-              }
-            }, 100);
-          }
-        };
-        
-        attemptPlay();
-      });
-      
-    } catch (error) {
-      console.error('Error playing TTS audio:', error);
-      throw error;
-    }
-  };
+
 
   // Handle closing the bottom sheet
   const handleCloseBottomSheet = () => {
