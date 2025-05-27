@@ -810,30 +810,42 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             setIsResponding(true);
             
             // Use OpenAI TTS API
+            console.log("Requesting TTS from server...");
             const response = await fetch('/api/text-to-speech', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ text: messageText })
             });
             
+            console.log("TTS response status:", response.status);
+            
             if (response.ok) {
+              console.log("TTS response successful, creating audio...");
               const audioBlob = await response.blob();
               const audioUrl = URL.createObjectURL(audioBlob);
               const audio = new Audio(audioUrl);
               
               audio.onended = () => {
+                console.log("Audio playback finished");
                 URL.revokeObjectURL(audioUrl);
                 setIsResponding(false);
                 setShowListenButton(true); // Show button again after playback
               };
               
-              audio.onerror = () => {
+              audio.onerror = (e) => {
+                console.error("Audio playback error:", e);
                 URL.revokeObjectURL(audioUrl);
                 setIsResponding(false);
                 setShowListenButton(true); // Show button again on error
               };
               
+              console.log("Starting audio playback...");
               await audio.play();
+            } else {
+              console.error("TTS API error:", response.status, response.statusText);
+              const errorText = await response.text();
+              console.error("Error details:", errorText);
+              throw new Error(`TTS API failed: ${response.status}`);
             }
           }
         }
