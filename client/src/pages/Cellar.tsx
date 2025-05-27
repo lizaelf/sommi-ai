@@ -10,6 +10,7 @@ import logoImage from '@assets/Logo.png';
 const Cellar = () => {
   const [showModal, setShowModal] = useState(true); // Show modal immediately when entering cellar
   const [, setLocation] = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [formData, setFormData] = useState({
@@ -155,6 +156,16 @@ const Cellar = () => {
     setLocation(`/wine-details/${wineId}`);
   };
 
+  // Scroll detection effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Portal setup effect
   useEffect(() => {
     let element = document.getElementById('contact-bottom-sheet-portal');
@@ -198,8 +209,12 @@ const Cellar = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-black">
+      {/* Fixed Header with scroll background */}
+      <div 
+        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
+          isScrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'
+        }`}
+      >
         <Link href="/">
           <ArrowLeft className="w-6 h-6 text-white" />
         </Link>
@@ -207,7 +222,9 @@ const Cellar = () => {
         <Search className="w-6 h-6 text-white" />
       </div>
 
-      {/* Wine Rack Container */}
+      {/* Content with top padding to account for fixed header */}
+      <div className="pt-16">
+        {/* Wine Rack Container */}
       <div 
         className="bg-cover bg-center bg-no-repeat relative"
         style={{
@@ -623,6 +640,7 @@ const Cellar = () => {
         </div>,
         portalElement
       )}
+      </div>
 
     </div>
   );
