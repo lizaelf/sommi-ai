@@ -20,7 +20,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
-          height: '250px',
+          height: '300px',
           margin: '0 16px 0 16px'
         }}
       >
@@ -32,7 +32,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
-          height: '250px',
+          height: '300px',
           margin: '0 16px 0 16px'
         }}
       >
