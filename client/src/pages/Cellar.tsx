@@ -16,10 +16,11 @@ const Cellar = () => {
 
       {/* Wine Rack Container */}
       <div 
-        className="flex-1 p-4 bg-cover bg-center bg-no-repeat"
+        className="flex-1 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(${backgroundImage})`,
-          minHeight: 'calc(100vh - 75px)'
+          minHeight: 'calc(100vh - 75px)',
+          padding: '16px'
         }}
       >
         {/* Transparent overlay to make slots clickable */}
