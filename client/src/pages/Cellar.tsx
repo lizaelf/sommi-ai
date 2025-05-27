@@ -22,7 +22,7 @@ const Cellar = () => {
           backgroundSize: '100% auto',
           height: '300px',
           padding: '8px',
-          margin: '0 16px 16px 16px'
+          margin: '0 16px 0 16px'
         }}
       >
         {/* Transparent overlay to make slots clickable */}
@@ -54,7 +54,7 @@ const Cellar = () => {
           backgroundSize: '100% auto',
           height: '300px',
           padding: '8px',
-          margin: '0 16px 16px 16px'
+          margin: '0 16px 0 16px'
         }}
       >
         {/* Transparent overlay to make slots clickable */}
