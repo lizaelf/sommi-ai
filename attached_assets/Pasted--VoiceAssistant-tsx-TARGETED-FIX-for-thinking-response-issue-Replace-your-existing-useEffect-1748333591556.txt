@@ -1,0 +1,57 @@
+// VoiceAssistant.tsx - TARGETED FIX for thinking->response issue
+// Replace your existing useEffect that handles !isProcessing with this:
+
+useEffect(() => {
+  if (!isProcessing && status === 'Processing your question...') {
+    // Reset the status
+    setStatus('');
+    
+    // MOBILE FIX: Skip the complex TTS logic entirely
+    // Just immediately show suggestions after thinking is done
+    console.log("🔧 MOBILE FIX: Processing complete, showing suggestions immediately");
+    
+    if (usedVoiceInput && showBottomSheet) {
+      // Mark that we've received the first response
+      setHasReceivedFirstResponse(true);
+      
+      // SKIP ALL TTS LOGIC - just show suggestions immediately
+      setTimeout(() => {
+        setIsResponding(false);         // Ensure not in responding mode
+        setResponseComplete(true);      // Mark response as complete
+        setHasReceivedFirstResponse(true); // Enable suggestions
+        setUsedVoiceInput(false);      // Reset voice input flag
+        console.log("✅ Mobile fix applied - suggestions should now be visible");
+      }, 500); // Short delay to ensure UI updates
+      
+    } else {
+      console.log("Not in voice mode or bottom sheet not open");
+      if (!hasReceivedFirstResponse) {
+        setShowBottomSheet(false);
+      }
+      setUsedVoiceInput(false);
+    }
+  }
+}, [isProcessing, status, usedVoiceInput, showBottomSheet, hasReceivedFirstResponse]);
+
+// ALSO ADD: Backup timeout to force suggestions if something goes wrong
+useEffect(() => {
+  let backupTimer: NodeJS.Timeout;
+  
+  if (isProcessing) {
+    // Start a backup timer when processing begins
+    backupTimer = setTimeout(() => {
+      console.log("🚨 BACKUP TIMER: Forcing suggestions after 10 seconds");
+      setIsResponding(false);
+      setResponseComplete(true);
+      setHasReceivedFirstResponse(true);
+      setUsedVoiceInput(false);
+      setIsVoiceThinking(false);
+    }, 10000); // 10 second backup
+  }
+  
+  return () => {
+    if (backupTimer) {
+      clearTimeout(backupTimer);
+    }
+  };
+}, [isProcessing]);
