@@ -49,25 +49,33 @@ export default function WineDetails() {
           <div className="flex items-center space-x-3">
             <Link to="/cellar">
               <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '32px',
-                height: '56px',
-                padding: '0 16px',
-                margin: 0,
-                display: 'flex',
-                alignItems: 'center',
+                width: 'auto',
+                height: '40px',
+                display: 'inline-flex',
                 justifyContent: 'center',
-                border: 'none',
-                color: 'white',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '16px',
-                fontWeight: 500,
+                alignItems: 'center',
+                background: 'rgba(255, 255, 255, 0.04)',
+                borderRadius: '24px',
+                border: '1px solid transparent',
+                backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
+                backgroundOrigin: 'border-box',
+                backgroundClip: 'padding-box, border-box',
+                padding: '0 16px',
                 cursor: 'pointer',
-                outline: 'none',
-                boxSizing: 'border-box',
-                textDecoration: 'none'
+                whiteSpace: 'nowrap'
               }}>
-                Cellar
+                <span style={{
+                  color: 'white',
+                  fontSize: '14px',
+                  lineHeight: 'normal',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: '400',
+                  display: 'inline-block',
+                  padding: '0',
+                  margin: '0'
+                }}>
+                  My cellar
+                </span>
               </div>
             </Link>
           </div>
