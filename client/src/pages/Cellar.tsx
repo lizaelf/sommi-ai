@@ -46,6 +46,37 @@ const Cellar = () => {
         </div>
       </div>
 
+      {/* Second Wine Rack Container - Below the first one */}
+      <div 
+        className="flex-1 bg-cover bg-top bg-no-repeat"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: '100% auto',
+          minHeight: 'calc(100vh - 75px)',
+          padding: '8px',
+          margin: '0 16px 16px 16px'
+        }}
+      >
+        {/* Transparent overlay to make slots clickable */}
+        <div 
+          className="grid grid-cols-3 gap-1 max-w-md mx-auto h-full"
+        >
+          {/* Top Row */}
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          
+          {/* Middle Row */}
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          
+          {/* Bottom Row */}
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+          <div className="aspect-[3/4] cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors rounded-lg" />
+        </div>
+      </div>
 
     </div>
   );
