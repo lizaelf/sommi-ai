@@ -20,7 +20,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
-          height: '300px',
+          height: '250px',
           padding: '8px',
           margin: '0 16px 0 16px'
         }}
@@ -52,7 +52,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: '100% auto',
-          height: '300px',
+          height: '250px',
           padding: '8px',
           margin: '0 16px 0 16px'
         }}
