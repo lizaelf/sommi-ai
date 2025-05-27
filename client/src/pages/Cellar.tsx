@@ -14,7 +14,29 @@ const Cellar = () => {
         <Search className="w-6 h-6 text-white" />
       </div>
 
+      {/* Wine Rack Container */}
+      <div 
+        className="bg-cover bg-top bg-no-repeat"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: '100% auto',
+          height: '250px',
+          margin: '0 16px 0 16px'
+        }}
+      >
+      </div>
 
+      {/* Second Wine Rack Container - Below the first one */}
+      <div 
+        className="bg-cover bg-top bg-no-repeat"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: '100% auto',
+          height: '250px',
+          margin: '0 16px 0 16px'
+        }}
+      >
+      </div>
 
     </div>
   );
