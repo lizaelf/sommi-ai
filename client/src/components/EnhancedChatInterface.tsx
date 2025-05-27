@@ -10,6 +10,7 @@ import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
 import { getWineDisplayName, getWineRegion, WINE_CONFIG } from '@shared/wineConfig';
+import { ShiningText } from '@/components/ShiningText';
 // Import typography styles
 
 // Extend Window interface to include voiceAssistant
@@ -853,7 +854,14 @@ const EnhancedChatInterface: React.FC = () => {
                       marginBottom: '12px',
                       width: '100%'
                     }}>
-                      <ShiningText text="Thinking..." />
+                      <div style={{ 
+                        color: '#DBDBDB', 
+                        fontFamily: 'Inter, system-ui, sans-serif',
+                        fontSize: '16px',
+                        fontWeight: '500'
+                      }}>
+                        Thinking...
+                      </div>
                     </div>
                   )}
                 </div>
@@ -881,29 +889,27 @@ const EnhancedChatInterface: React.FC = () => {
             borderTop: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
             <div className="max-w-3xl mx-auto">
-              {/* Suggestion chips - only shown when keyboard is active */}
-              {isKeyboardFocused && (
-                <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                  <button 
-                    onClick={() => handleSendMessage("Tasting notes")}
-                    className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                  >
-                    Tasting notes
-                  </button>
-                  <button 
-                    onClick={() => handleSendMessage("Simple recipes for this wine")}
-                    className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                  >
-                    Simple recipes
-                  </button>
-                  <button 
-                    onClick={() => handleSendMessage("Where is this wine from?")}
-                    className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                  >
-                    Where it's from
-                  </button>
-                </div>
-              )}
+              {/* Suggestion chips - always visible above input */}
+              <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                <button 
+                  onClick={() => handleSendMessage("Tasting notes")}
+                  className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                >
+                  Tasting notes
+                </button>
+                <button 
+                  onClick={() => handleSendMessage("Simple recipes for this wine")}
+                  className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                >
+                  Simple recipes
+                </button>
+                <button 
+                  onClick={() => handleSendMessage("Where is this wine from?")}
+                  className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                >
+                  Where it's from
+                </button>
+              </div>
               
               <div className="relative flex items-center">
                 <ChatInput 
