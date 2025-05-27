@@ -38,10 +38,10 @@ async function saveToGoogleSheets(contactData: any) {
     contactData.phone
   ]];
 
-  // Append to sheet
+  // Append to the first sheet (usually "Sheet1")
   await sheets.spreadsheets.values.append({
     spreadsheetId: GOOGLE_SHEETS_SPREADSHEET_ID,
-    range: 'Contact Submissions!A:F',
+    range: 'A:F',
     valueInputOption: 'RAW',
     requestBody: { values }
   });
