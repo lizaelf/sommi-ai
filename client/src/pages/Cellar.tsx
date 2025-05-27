@@ -20,7 +20,7 @@ const Cellar = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           minHeight: 'calc(100vh - 75px)',
-          padding: '16px',
+          padding: '8px',
           margin: '0 16px 16px 16px'
         }}
       >
