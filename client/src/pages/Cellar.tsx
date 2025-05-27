@@ -38,6 +38,18 @@ const Cellar = () => {
       >
       </div>
 
+      {/* Third Wine Rack Container - Below the second one */}
+      <div 
+        className="bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          height: '228px',
+          margin: '0 16px 0 16px'
+        }}
+      >
+      </div>
+
     </div>
   );
 };
