@@ -21,7 +21,7 @@ const Cellar = () => {
           backgroundImage: `url(${backgroundImage})`,
           minHeight: 'calc(100vh - 75px)',
           padding: '16px',
-          margin: '16px'
+          margin: '0 16px 16px 16px'
         }}
       >
         {/* Transparent overlay to make slots clickable */}
