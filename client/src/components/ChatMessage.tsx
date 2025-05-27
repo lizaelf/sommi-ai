@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 
 // Ensure window.voiceAssistant type is available
 declare global {
@@ -406,9 +407,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         </div>
       ) : (
-        // AI Message - Wine info style with special formatting (direct rendering)
+        // AI Message - Wine info style with TextGenerateEffect animation
         <div data-role="assistant" className="relative">
-          {formatWineInfo(message.content)}
+          <TextGenerateEffect
+            words={message.content}
+            className="text-foreground font-normal"
+            filter={true}
+            duration={0.3}
+          />
           
           {/* Play/Pause Button - Always show for assistant messages */}
           {!isUser && (

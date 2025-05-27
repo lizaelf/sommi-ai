@@ -55,30 +55,37 @@ const EnhancedChatInterface: React.FC = () => {
     refetchInterval: 30000,
   });
   
-  // Scroll behavior - scroll to latest AI response
+  // Scroll behavior - scroll to show user question at top when new response arrives
   useEffect(() => {
-    if (chatContainerRef.current && messages.length > 0) {
-      // Add a small delay to ensure DOM is fully updated
+    if (chatContainerRef.current && messages.length >= 2) {
+      // Add delay to ensure DOM and TextGenerateEffect are updated
       setTimeout(() => {
-        // Find the last assistant message in the DOM
-        const assistantMessages = chatContainerRef.current?.querySelectorAll('[data-role="assistant"]');
-        if (assistantMessages && assistantMessages.length > 0) {
-          const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+        // Find the last user message (question) in the DOM
+        const allMessages = chatContainerRef.current?.children;
+        if (allMessages && allMessages.length >= 2) {
+          // Get the second-to-last message (user's question) if there's a new AI response
+          const lastUserMessage = allMessages[allMessages.length - 2] as HTMLElement;
           
-          // Scroll to the beginning of the latest AI response
-          lastAssistantMessage.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
+          // Check if the last message is an AI response
+          const lastMessage = allMessages[allMessages.length - 1] as HTMLElement;
+          const hasAssistantResponse = lastMessage?.querySelector('[data-role="assistant"]');
+          
+          if (hasAssistantResponse && lastUserMessage) {
+            // Scroll to show the user's question at the top of the screen
+            lastUserMessage.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
         } else if (isTyping) {
-          // If no assistant messages yet but user is typing, scroll to bottom
+          // If user is typing, scroll to bottom
           const scrollToPosition = chatContainerRef.current?.scrollHeight || 0;
           chatContainerRef.current?.scrollTo({
             top: scrollToPosition,
             behavior: 'smooth'
           });
         }
-      }, 300); // Increased delay to ensure response is fully rendered
+      }, 500); // Longer delay to ensure TextGenerateEffect animation starts
     }
     // On initial load, scroll to top to show beginning of page
     else if (chatContainerRef.current && messages.length === 0) {
