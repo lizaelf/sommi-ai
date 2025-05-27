@@ -162,13 +162,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       // Send the message
       await originalOnSendMessage(transcript);
       
-      // BULLETPROOF: Set short timer to wait for response, then force show suggestions
+      // BULLETPROOF: Set timer to wait for response, then force show suggestions
       setTimeout(() => {
-        console.log("⏰ Response timeout - showing suggestions");
+        console.log("⏰ Response timeout - showing suggestions after 25s");
         setIsResponding(false);
         setResponseComplete(true);
         setHasReceivedFirstResponse(true);
-      }, 3000); // Only 3 seconds wait time
+      }, 25000); // 25 seconds wait time
       
     } catch (error) {
       console.error("Error sending voice message:", error);
