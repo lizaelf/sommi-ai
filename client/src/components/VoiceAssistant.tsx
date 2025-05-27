@@ -447,160 +447,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   window.speechSynthesis.cancel();
                 }
                 
-                // Mobile-optimized voice experience with autoplay bypass
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
-                if (isMobile) {
-                  console.log("Mobile browser detected - checking audio capability");
-                  setIsVoiceThinking(false);
-                  
-                  // Check if audio was enabled during user interaction
-                  if (!(window as any).mobileAudioEnabled) {
-                    console.log("🔇 Mobile audio disabled - showing Listen Response button");
-                    setTimeout(() => {
-                      setIsResponding(false);
-                      setUsedVoiceInput(false);
-                      setResponseComplete(true);
-                      setHasReceivedFirstResponse(true);
-                      setShowListenButton(true); // Show Listen Response button instead
-                    }, 500);
-                    return;
-                  } else {
-                    console.log("✅ Mobile audio enabled - proceeding with TTS");
-                  }
-                }
-                
-                // Desktop: Full TTS experience
+                // No autoplay - always show Listen Response button
+                console.log("Response ready - showing Listen Response button");
                 setIsVoiceThinking(false);
-                console.log("Desktop browser - preparing full TTS experience");
                 
-                // Add timeout fallback for mobile browsers
-                const mobileTimeout = setTimeout(() => {
-                  console.log("Mobile timeout - forcing suggestions to appear");
+                setTimeout(() => {
                   setIsResponding(false);
                   setUsedVoiceInput(false);
                   setResponseComplete(true);
                   setHasReceivedFirstResponse(true);
-                }, 15000); // 15 second timeout
-                
-                setTimeout(async () => {
-                  try {
-                    console.log("Auto-speaking the assistant's response using OpenAI TTS");
-                    
-                    // Use OpenAI TTS API with mobile timeout
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for mobile networks
-                    
-                    const response = await fetch('/api/text-to-speech', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ text: messageText }),
-                      signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (response.ok) {
-                      const audioBlob = await response.blob();
-                      const audioUrl = URL.createObjectURL(audioBlob);
-                      
-                      // Use tested audio element for mobile or create new one for desktop
-                      const isMobileBrowser = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                      let audio;
-                      
-                      if (isMobileBrowser && (window as any).mobileTestAudio) {
-                        console.log("Mobile: Using tested audio element (autoplay enabled)");
-                        audio = (window as any).mobileTestAudio;
-                        audio.src = audioUrl;
-                        audio.volume = 1; // Reset volume for actual playback
-                      } else {
-                        console.log("Desktop: Creating new audio element");
-                        audio = new Audio(audioUrl);
-                      }
-                      
-                      // Store audio reference globally so stop button can access it
-                      (window as any).currentOpenAIAudio = audio;
-                      
-                      audio.onplay = () => {
-                        // Clear the mobile timeout since audio started successfully
-                        clearTimeout(mobileTimeout);
-                        // Set responding state only when audio actually starts playing
-                        setIsResponding(true);
-                        console.log("OpenAI TTS audio started playing - showing stop button");
-                      };
-                      
-                      audio.onended = () => {
-                        URL.revokeObjectURL(audioUrl);
-                        console.log("OpenAI TTS audio playback completed - enabling suggestions");
-                        
-                        // Mark response as complete and enable suggestions
-                        setIsResponding(false);
-                        setResponseComplete(true);
-                        setHasReceivedFirstResponse(true);
-                        setUsedVoiceInput(false);
-                        
-                        // Clear the global reference
-                        (window as any).currentOpenAIAudio = null;
-                        
-                        console.log("State updated: isResponding=false, responseComplete=true, hasReceivedFirstResponse=true");
-                      };
-                      
-                      audio.onerror = (error: any) => {
-                        console.error("Audio playback error:", error);
-                        clearTimeout(mobileTimeout);
-                        URL.revokeObjectURL(audioUrl);
-                        setIsResponding(false);
-                        setUsedVoiceInput(false);
-                        setResponseComplete(true);
-                        setHasReceivedFirstResponse(true);
-                        
-                        // Clear the global reference
-                        (window as any).currentOpenAIAudio = null;
-                      };
-                      
-                      try {
-                        await audio.play();
-                        console.log("Playing OpenAI TTS audio");
-                      } catch (playError) {
-                        console.error("Failed to play audio on mobile:", playError);
-                        clearTimeout(mobileTimeout);
-                        // Fallback for mobile - just show suggestions
-                        setIsResponding(false);
-                        setUsedVoiceInput(false);
-                        setResponseComplete(true);
-                        setHasReceivedFirstResponse(true);
-                        URL.revokeObjectURL(audioUrl);
-                        (window as any).currentOpenAIAudio = null;
-                      }
-                    } else {
-                      console.error("Failed to get audio from TTS API");
-                      setIsResponding(false);
-                      setUsedVoiceInput(false);
-                      setResponseComplete(true);
-                      setHasReceivedFirstResponse(true);
-                    }
-                  } catch (error) {
-                    console.error('Error with OpenAI TTS:', error);
-                    clearTimeout(mobileTimeout);
-                    
-                    // Handle different types of errors
-                    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-                    const errorName = error instanceof Error ? error.name : '';
-                    if (errorName === 'AbortError') {
-                      console.log("Request timed out - showing suggestions");
-                    } else {
-                      console.error('Network or TTS error:', errorMsg);
-                    }
-                    
-                    // Always show suggestions on error
-                    setIsResponding(false);
-                    setUsedVoiceInput(false);
-                    setResponseComplete(true);
-                    setHasReceivedFirstResponse(true);
-                  }
-                  
-                  // Keep the bottom sheet open to show suggestions after first response
-                }, 300);
+                  setShowListenButton(true); // Always show Listen Response button
+                }, 500);
+
               } else {
                 console.log("Last message has no text content");
                 setUsedVoiceInput(false);
