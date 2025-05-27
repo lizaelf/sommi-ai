@@ -46,7 +46,7 @@ export default function Home() {
         >
           <Logo />
           <div className="flex items-center space-x-3">
-            <Link to="/wine/1">
+            <Link to="/cellar">
               <div style={{
                 width: 'auto',
                 height: '40px',
