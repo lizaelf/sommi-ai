@@ -244,19 +244,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Text-to-speech endpoint - MOBILE-OPTIMIZED VERSION
+  // Text-to-speech endpoint
   app.post("/api/text-to-speech", async (req, res) => {
     try {
-      console.log("📱 Mobile-optimized TTS request received");
+      console.log("Received text-to-speech request");
       
+      // Create a schema for text-to-speech request
       const textToSpeechSchema = z.object({
-        text: z.string().min(1).max(2000) // Reduced from 4000 for faster processing
+        text: z.string().min(1).max(4000)
       });
       
+      // Log request body
+      console.log("Text-to-speech request body received");
+      
+      // Validate the request
       const validationResult = textToSpeechSchema.safeParse(req.body);
       
       if (!validationResult.success) {
-        console.log("Invalid TTS request:", validationResult.error.format());
+        console.log("Invalid text-to-speech request:", validationResult.error.format());
         return res.status(400).json({
           message: "Invalid request",
           errors: validationResult.error.format()
@@ -264,68 +269,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const { text } = validationResult.data;
+      console.log("Received TTS request for text:", text.substring(0, 50) + "...");
       
-      // MOBILE-FIRST: Aggressive text truncation for speed
-      let processedText = text;
-      if (processedText.length > 300) {
-        // Find last complete sentence within 300 characters
-        const lastPeriodIndex = processedText.lastIndexOf('.', 300);
-        if (lastPeriodIndex > 100) {
-          processedText = processedText.substring(0, lastPeriodIndex + 1);
-        } else {
-          processedText = processedText.substring(0, 300) + ".";
-        }
-      }
+      // Convert text to speech
+      const audioBuffer = await textToSpeech(text);
       
-      console.log("📱 Processing mobile TTS for text:", processedText.substring(0, 50) + "...");
-      
-      // Set aggressive timeout for mobile
-      const startTime = Date.now();
-      const MOBILE_TIMEOUT = 8000; // 8 seconds max
-      
-      // Use Promise.race to enforce timeout
-      const audioPromise = textToSpeech(processedText);
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Mobile TTS timeout')), MOBILE_TIMEOUT);
-      });
-      
-      const audioBuffer = await Promise.race([audioPromise, timeoutPromise]) as Buffer;
-      
-      const processingTime = Date.now() - startTime;
-      console.log(`📱 Mobile TTS completed in ${processingTime}ms`);
-      
-      // Set headers optimized for mobile
+      // Set proper headers
       res.set({
         'Content-Type': 'audio/mpeg',
         'Content-Length': audioBuffer.length.toString(),
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour on mobile
-        'Connection': 'close' // Close connection quickly on mobile
+        'Cache-Control': 'no-cache'
       });
       
+      // Send the audio file
       res.send(audioBuffer);
-      console.log("📱 Mobile audio response sent, size:", audioBuffer.length);
-      
+      console.log("Sent audio response, size:", audioBuffer.length);
     } catch (err) {
       const error = err as any;
-      console.error("📱 Mobile TTS error:", error.message);
+      console.error("Error in text-to-speech endpoint:", error);
       
-      // Check if this is a timeout or quota error
-      const isTimeoutError = error.message && error.message.includes('timeout');
+      // Check if this is a quota exceeded error
       const isQuotaError = error.message && (
         error.message.includes("quota") || 
         error.message.includes("rate limit") ||
         error.message.includes("insufficient_quota")
       );
       
-      if (isTimeoutError) {
-        return res.status(408).json({
-          message: "Mobile TTS timeout - try shorter text",
-          error: "MOBILE_TIMEOUT",
-          fallback: true
-        });
-      }
-      
       if (isQuotaError) {
+        // For TTS errors, we return a special status code that our client can recognize
+        // The client will then fall back to browser-based speech synthesis
         return res.status(429).json({
           message: "API quota exceeded for text-to-speech",
           error: "QUOTA_EXCEEDED",
@@ -333,11 +305,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // For other errors, fail fast for mobile
+      // For other errors
       res.status(500).json({
-        message: "Mobile TTS failed",
-        error: error?.message || "Unknown error",
-        fallback: true
+        message: "Failed to convert text to speech",
+        error: error?.message || "Unknown error"
       });
     }
   });
