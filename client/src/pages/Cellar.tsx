@@ -319,27 +319,18 @@ const Cellar = () => {
                 value={formData.firstName}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                 style={{
-                  display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
-                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                  WebkitTextFillColor: '#959493',
-                  color: '#959493',
+                  width: '100%',
+                  height: '48px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: '#000000',
+                  color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.firstName && (
                 <div style={{ 
@@ -358,27 +349,18 @@ const Cellar = () => {
                 value={formData.lastName}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
                 style={{
-                  display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
-                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                  WebkitTextFillColor: '#959493',
-                  color: '#959493',
+                  width: '100%',
+                  height: '48px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: '#000000',
+                  color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.lastName && (
                 <div style={{ 
@@ -397,27 +379,18 @@ const Cellar = () => {
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 style={{
-                  display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
-                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                  WebkitTextFillColor: '#959493',
-                  color: '#959493',
+                  width: '100%',
+                  height: '48px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: '#000000',
+                  color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.email && (
                 <div style={{ 
@@ -436,14 +409,14 @@ const Cellar = () => {
                     onClick={() => setShowCountryDropdown(!showCountryDropdown)}
                     style={{
                       display: 'flex',
-                      height: '64px',
-                      padding: '16px 24px',
+                      height: '48px',
+                      padding: '12px 16px',
                       justifyContent: 'center',
                       alignItems: 'center',
                       gap: '10px',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                      background: 'transparent',
+                      borderRadius: '12px',
+                      border: 'none',
+                      background: '#000000',
                       cursor: 'pointer'
                     }}
                   >
@@ -498,27 +471,18 @@ const Cellar = () => {
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   style={{
-                    display: 'flex',
-                    height: '64px',
-                    padding: '16px 24px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '10px',
                     flex: 1,
-                    borderRadius: '16px',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    background: '#2A2A29 !important',
-                    backgroundColor: '#2A2A29 !important',
-                    WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                    WebkitTextFillColor: '#959493',
-                    color: '#959493',
+                    height: '48px',
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: '#000000',
+                    color: 'white',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'white'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
                 />
               </div>
               {errors.phone && (
