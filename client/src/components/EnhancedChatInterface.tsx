@@ -771,7 +771,7 @@ const EnhancedChatInterface: React.FC = () => {
                   {messages.length > 0 ? (
                     showFullConversation ? (
                       // Show full conversation
-                      <>
+                      (<>
                         {messages.map((message, index) => (
                           <div key={`${message.id}-${index}`} style={{
                             display: 'flex',
@@ -822,7 +822,6 @@ const EnhancedChatInterface: React.FC = () => {
                             </div>
                           </div>
                         ))}
-                        
                         {/* Back to Summary Button */}
                         <div style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '20px' }}>
                           <button 
@@ -852,10 +851,10 @@ const EnhancedChatInterface: React.FC = () => {
                             Back to Summary
                           </button>
                         </div>
-                      </>
+                      </>)
                     ) : (
                       // Show summary
-                      (() => {
+                      ((() => {
                         // Generate summary content for 3 main topics
                         const summaryTopics = [
                           {
@@ -877,13 +876,7 @@ const EnhancedChatInterface: React.FC = () => {
                             {/* Summary Topics */}
                             <div style={{ marginBottom: '24px' }}>
                               {summaryTopics.map((topic, index) => (
-                                <div key={index} style={{
-                                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                                  borderRadius: '12px',
-                                  padding: '20px',
-                                  marginBottom: '16px',
-                                  border: '1px solid rgba(255, 255, 255, 0.1)'
-                                }}>
+                                <div key={index} style={{ marginBottom: '16px' }}>
                                   <h3 style={{ 
                                     fontSize: '18px', 
                                     marginBottom: '8px', 
@@ -903,7 +896,6 @@ const EnhancedChatInterface: React.FC = () => {
                                 </div>
                               ))}
                             </div>
-
                             {/* Show Whole Dialog Button */}
                             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                               <button 
@@ -935,7 +927,7 @@ const EnhancedChatInterface: React.FC = () => {
                             </div>
                           </div>
                         );
-                      })()
+                      })())
                     )
                   ) : (
                     <div style={{
