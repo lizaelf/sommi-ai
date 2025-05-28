@@ -428,7 +428,7 @@ const Cellar = () => {
                 lineHeight: '1.5',
                 textAlign: 'left'
               }}>
-                Enter your contact info to see your wine history and chats.
+                Enter your contact info
               </p>
             </div>
 
