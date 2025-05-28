@@ -763,64 +763,32 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   padding: '0 20px',
                   marginBottom: '20px'
                 }}>
-                  <h1 style={{
-                    ...typography.h1,
-                    color: 'white',
-                    marginBottom: '24px',
-                    textAlign: 'left',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px'
-                  }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                     <span style={{ fontSize: '24px' }}>💬</span>
-                    Previous Discussion
-                  </h1>
-                  <div style={{
-                    backgroundColor: '#191919',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    borderTop: '2px solid transparent',
-                    borderRight: '1px solid transparent',
-                    borderBottom: '1px solid transparent',
-                    borderLeft: '1px solid transparent',
-                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box'
-                  }}>
-                    <ul style={{ 
-                      listStyle: 'none', 
-                      padding: 0, 
-                      margin: 0,
+                    <h1 style={{
+                      ...typography.h1,
                       color: 'white',
-                      ...typography.body
+                      margin: 0,
+                      textAlign: 'left'
                     }}>
-                      {messages.slice(-6).filter(message => message.role === 'user').map((message, index) => (
-                        <li key={`${message.id}-${index}`} style={{
-                          marginBottom: index < messages.slice(-6).filter(m => m.role === 'user').length - 1 ? '8px' : '0',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '8px'
-                        }}>
-                          <span style={{ 
-                            color: '#DBDBDB', 
-                            fontSize: '14px',
-                            marginTop: '2px',
-                            flexShrink: 0
-                          }}>•</span>
-                          <span style={{ 
-                            color: '#DBDBDB',
-                            fontSize: '14px',
-                            lineHeight: '1.5'
-                          }}>
-                            {message.content.length > 100 
-                              ? `${message.content.substring(0, 100)}...`
-                              : message.content
-                            }
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                      Previous Discussion
+                    </h1>
                   </div>
+                  <ul style={{ 
+                    paddingLeft: '20px', 
+                    margin: '0',
+                    color: 'white',
+                    ...typography.body
+                  }}>
+                    {messages.slice(-6).filter(message => message.role === 'user').map((message, index) => (
+                      <li key={`${message.id}-${index}`} style={{ marginBottom: '8px' }}>
+                        {message.content.length > 100 
+                          ? `${message.content.substring(0, 100)}...`
+                          : message.content
+                        }
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
