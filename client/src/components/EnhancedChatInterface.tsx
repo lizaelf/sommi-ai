@@ -805,72 +805,72 @@ const EnhancedChatInterface: React.FC = () => {
                         }
                       });
 
+                      // Generate summary content for 3 main topics
+                      const summaryTopics = [
+                        {
+                          title: "Tasting Profile",
+                          summary: "Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish."
+                        },
+                        {
+                          title: "Food Pairing",
+                          summary: "Learn which dishes complement this wine best and how to create perfect pairings for your dining experience."
+                        },
+                        {
+                          title: "Wine Origin",
+                          summary: "Explore the terroir, region, and winemaking traditions that shaped this bottle's distinctive character."
+                        }
+                      ];
+
                       return (
                         <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
-                          {/* Summary Stats */}
-                          <div style={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            borderRadius: '12px',
-                            padding: '16px',
-                            marginBottom: '20px'
-                          }}>
-                            <div style={{ fontSize: '14px', color: '#888', marginBottom: '8px' }}>
-                              Conversation Overview
-                            </div>
-                            <div style={{ fontSize: '16px', marginBottom: '8px' }}>
-                              {Math.floor(messages.length / 2)} questions discussed
-                            </div>
-                            <div style={{ fontSize: '14px', color: '#888' }}>
-                              Last activity: {new Date(messages[messages.length - 1]?.createdAt || new Date()).toLocaleDateString()}
-                            </div>
+                          {/* Summary Topics */}
+                          <div style={{ marginBottom: '24px' }}>
+                            {summaryTopics.map((topic, index) => (
+                              <div key={index} style={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                                borderRadius: '12px',
+                                padding: '20px',
+                                marginBottom: '16px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }}>
+                                <h3 style={{ 
+                                  fontSize: '18px', 
+                                  marginBottom: '8px', 
+                                  color: 'white',
+                                  fontWeight: '600'
+                                }}>
+                                  {topic.title}
+                                </h3>
+                                <p style={{ 
+                                  fontSize: '14px', 
+                                  color: '#DBDBDB',
+                                  lineHeight: '1.5',
+                                  margin: 0
+                                }}>
+                                  {topic.summary}
+                                </p>
+                              </div>
+                            ))}
                           </div>
 
-                          {/* Main Themes */}
-                          {themes.length > 0 && (
-                            <div style={{ marginBottom: '24px' }}>
-                              <h3 style={{ fontSize: '18px', marginBottom: '12px', color: 'white' }}>
-                                Topics Covered
-                              </h3>
-                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                {themes.map((theme, index) => (
-                                  <div key={index} style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    borderRadius: '20px',
-                                    padding: '6px 14px',
-                                    fontSize: '14px',
-                                    color: 'white'
-                                  }}>
-                                    {theme}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Recent Questions */}
-                          {recentTopics.length > 0 && (
-                            <div>
-                              <h3 style={{ fontSize: '18px', marginBottom: '12px', color: 'white' }}>
-                                Recent Questions
-                              </h3>
-                              {recentTopics.map((item, index) => (
-                                <div key={index} style={{
-                                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                                  borderRadius: '8px',
-                                  padding: '12px',
-                                  marginBottom: '8px',
-                                  borderLeft: '3px solid rgba(255, 255, 255, 0.2)'
-                                }}>
-                                  <div style={{ fontSize: '14px', marginBottom: '4px' }}>
-                                    {item.topic}
-                                  </div>
-                                  <div style={{ fontSize: '12px', color: '#888' }}>
-                                    {new Date(item.timestamp).toLocaleString()}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          {/* View More Button */}
+                          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                            <button style={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                              borderRadius: '32px',
+                              height: '48px',
+                              padding: '0 24px',
+                              border: 'none',
+                              color: 'white',
+                              fontFamily: 'Inter, sans-serif',
+                              fontSize: '16px',
+                              fontWeight: 500,
+                              cursor: 'pointer',
+                              outline: 'none'
+                            }}>
+                              View more
+                            </button>
+                          </div>
                         </div>
                       );
                     })()
