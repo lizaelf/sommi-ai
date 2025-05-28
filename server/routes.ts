@@ -177,16 +177,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: msg.content
         }));
         
+        // Limit conversation history to prevent token limit issues
+        // Keep only the last 20 messages (10 exchanges) plus system message
+        const maxHistoryMessages = 20;
+        const recentMessages = formattedPreviousMessages.slice(-maxHistoryMessages);
+        
         // Add system message at the beginning if it doesn't exist
-        if (!formattedPreviousMessages.some(msg => msg.role === 'system')) {
-          formattedPreviousMessages.unshift({
+        if (!recentMessages.some(msg => msg.role === 'system')) {
+          recentMessages.unshift({
             role: 'system',
             content: 'You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses concise but informative.'
           });
         }
         
-        // Combine previous messages with current message
-        allMessages = [...formattedPreviousMessages, ...messages];
+        // Combine limited previous messages with current message
+        allMessages = [...recentMessages, ...messages];
       }
       
       // Call OpenAI API
