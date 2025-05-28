@@ -462,6 +462,20 @@ const Cellar = () => {
           .contact-form-input::-moz-placeholder {
             color: #959493 !important;
           }
+          
+          /* Fix button backgrounds */
+          button {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+          }
+          
+          /* Override any button defaults */
+          .save-button {
+            background: rgba(255, 255, 255, 0.04) !important;
+            background-color: rgba(255, 255, 255, 0.04) !important;
+            border: none !important;
+          }
         `}
       </style>
       {/* Fixed Header with scroll background */}
@@ -1071,9 +1085,11 @@ const Cellar = () => {
             {/* Save Button */}
             <button
               onClick={handleSave}
+              className="save-button"
               style={{
                 width: '100%',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                background: 'rgba(255, 255, 255, 0.04) !important',
+                backgroundColor: 'rgba(255, 255, 255, 0.04) !important',
                 borderRadius: '32px',
                 height: '56px',
                 padding: '0 16px',
@@ -1081,14 +1097,17 @@ const Cellar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: 'none',
+                border: 'none !important',
                 color: 'white',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '16px',
                 fontWeight: 500,
                 cursor: 'pointer',
                 outline: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                WebkitAppearance: 'none',
+                MozAppearance: 'none',
+                appearance: 'none'
               }}
             >
               Save
