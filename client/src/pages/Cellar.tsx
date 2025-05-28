@@ -1032,7 +1032,7 @@ const Cellar = () => {
                         }
                         style={{
                           display: "flex",
-                          height: "64px",
+                          height: "56px",
                           padding: "16px 12px",
                           justifyContent: "center",
                           alignItems: "center",
@@ -1270,7 +1270,7 @@ const Cellar = () => {
                       className="contact-form-input"
                       style={{
                         display: "flex",
-                        height: "64px",
+                        height: "56px",
                         padding: "16px 24px",
                         alignItems: "center",
                         flex: 1,
