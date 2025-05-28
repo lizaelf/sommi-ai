@@ -481,21 +481,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 </div>
               </div>
 
-              {/* Wine History Section */}
+              {/* Historic Heritage Section */}
               <div style={{
                 width: '100%',
                 padding: '0 20px',
                 marginTop: '48px',
                 marginBottom: '20px'
               }}>
-                <h2 style={{
-                  ...typography.h2,
+                <p style={{
                   color: 'white',
                   marginBottom: '16px',
-                  textAlign: 'left'
+                  ...typography.body
                 }}>
-                  Want to see wine history?
-                </h2>
+                  {WINE_CONFIG.history}
+                </p>
               </div>
 
               {/* Food Pairing Section */}
