@@ -448,8 +448,8 @@ const Cellar = () => {
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                 style={{
                   display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
+                  height: '48px',
+                  padding: '12px 24px',
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: '10px',
@@ -487,8 +487,8 @@ const Cellar = () => {
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
                 style={{
                   display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
+                  height: '48px',
+                  padding: '12px 24px',
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: '10px',
@@ -526,8 +526,8 @@ const Cellar = () => {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 style={{
                   display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
+                  height: '48px',
+                  padding: '12px 24px',
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: '10px',
@@ -566,8 +566,8 @@ const Cellar = () => {
                     onClick={() => setShowCountryDropdown(!showCountryDropdown)}
                     style={{
                       display: 'flex',
-                      height: '64px',
-                      padding: '16px 12px',
+                      height: '48px',
+                      padding: '12px 12px',
                       justifyContent: 'center',
                       alignItems: 'center',
                       width: '100px',
@@ -699,8 +699,8 @@ const Cellar = () => {
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   style={{
                     display: 'flex',
-                    height: '64px',
-                    padding: '16px 24px',
+                    height: '48px',
+                    padding: '12px 24px',
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: '10px',
