@@ -49,6 +49,7 @@ const EnhancedChatInterface: React.FC = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -904,7 +905,7 @@ const EnhancedChatInterface: React.FC = () => {
                             {/* Show Whole Dialog Button */}
                             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                               <button 
-                                onClick={() => setShowFullConversation(true)}
+                                onClick={() => setLocation('/wine/conversation')}
                                 style={{
                                   backgroundColor: 'rgba(255, 255, 255, 0.08)',
                                   borderRadius: '32px',
