@@ -247,7 +247,15 @@ const Cellar = () => {
         }`}
       >
         <Link href="/">
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <img 
+            src={logoImage} 
+            alt="SOMM Logo" 
+            style={{ 
+              height: '24px',
+              width: 'auto',
+              cursor: 'pointer'
+            }} 
+          />
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
         <Search className="w-6 h-6 text-white" />
