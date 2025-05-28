@@ -1,4 +1,4 @@
-import { ArrowLeft, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -417,7 +417,9 @@ const Cellar = () => {
         }`}
       >
         <Link href="/">
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white">
+            <path d="M15.5 17c.28 0 .5-.22.5-.5v-9a.5.5 0 0 0-.5-.5a.5.5 0 0 0-.35.15l-6 6a.5.5 0 0 0 0 .7l6 6a.5.5 0 0 0 .35.15Z" fill="currentColor"/>
+          </svg>
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
         <div 
