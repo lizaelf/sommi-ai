@@ -632,7 +632,7 @@ const Cellar = () => {
         >
           <div 
             style={{
-              background: 'linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)',
+              background: '#1C1C1C',
               backdropFilter: 'blur(20px)',
               width: '100%',
               maxWidth: '500px',
