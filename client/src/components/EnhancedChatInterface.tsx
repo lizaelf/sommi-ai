@@ -884,10 +884,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                           return topics.slice(0, 3).map((topic, index) => (
                             <div key={index} style={{ marginBottom: '24px' }}>
                               <h2 style={{
-                                ...typography.h1,
+                                fontFamily: 'Inter, sans-serif',
+                                fontSize: '20px',
+                                fontWeight: 500,
                                 color: 'white',
-                                marginBottom: '12px',
-                                textAlign: 'left'
+                                textAlign: 'left',
+                                margin: 0,
+                                marginBottom: '12px'
                               }}>
                                 {topic.title}
                               </h2>
