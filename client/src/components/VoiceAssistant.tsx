@@ -454,6 +454,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 // Store the message text for the Listen Response button first
                 (window as any).lastResponseText = messageText;
+                console.log("💾 Stored response text for Listen Response:", messageText.substring(0, 100) + "...");
                 
                 // Force show Listen Response button immediately
                 console.log("🎧 Clearing all states and showing Listen Response button");
@@ -703,9 +704,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setShowListenButton(false); // Hide button while playing
     
     try {
-      const messageText = (window as any).lastResponseText;
+      // First try stored text, then search DOM for latest assistant message
+      let messageText = (window as any).lastResponseText;
+      
       if (!messageText) {
-        console.error("No response text stored to play");
+        console.log("🔍 No stored text, searching DOM for latest assistant message...");
+        const messagesContainer = document.getElementById('conversation');
+        if (messagesContainer) {
+          const assistantMessages = messagesContainer.querySelectorAll('[data-role="assistant"]');
+          if (assistantMessages.length > 0) {
+            const lastMessage = assistantMessages[assistantMessages.length - 1];
+            messageText = lastMessage.textContent?.trim();
+            if (messageText) {
+              console.log("✅ Found response text from DOM:", messageText.substring(0, 100) + "...");
+              (window as any).lastResponseText = messageText; // Store for future use
+            }
+          }
+        }
+      }
+      
+      if (!messageText) {
+        console.error("No response text available to play");
+        setShowListenButton(true); // Show button again
         return;
       }
       
