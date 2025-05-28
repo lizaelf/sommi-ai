@@ -756,8 +756,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 </div>
               </div>
               
-              {/* Previous Discussion Section */}
-              {messages.length > 0 && (
+              {/* Previous Discussion Section - Only show on Home page, not Wine Details */}
+              {messages.length > 0 && !showBuyButton && (
                 <div style={{
                   width: '100%',
                   padding: '0 20px',
