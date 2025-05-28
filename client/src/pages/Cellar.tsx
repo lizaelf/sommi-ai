@@ -707,15 +707,15 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
+                  background: 'transparent',
+                  backgroundColor: 'transparent',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onFocus={(e) => e.target.style.borderColor = '#959493'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.firstName && (
@@ -744,15 +744,15 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
+                  background: 'transparent',
+                  backgroundColor: 'transparent',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onFocus={(e) => e.target.style.borderColor = '#959493'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.lastName && (
@@ -781,15 +781,15 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
+                  background: 'transparent',
+                  backgroundColor: 'transparent',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onFocus={(e) => e.target.style.borderColor = '#959493'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.email && (
@@ -818,8 +818,8 @@ const Cellar = () => {
                       width: '100px',
                       borderRadius: '16px',
                       border: '1px solid rgba(255, 255, 255, 0.12)',
-                      background: '#2A2A29 !important',
-                      backgroundColor: '#2A2A29 !important',
+                      background: 'transparent',
+                      backgroundColor: 'transparent',
                       cursor: 'pointer',
                       boxSizing: 'border-box'
                     }}
@@ -954,15 +954,15 @@ const Cellar = () => {
                     flex: 1,
                     borderRadius: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    background: '#2A2A29 !important',
-                    backgroundColor: '#2A2A29 !important',
+                    background: 'transparent',
+                    backgroundColor: 'transparent',
                     color: '#959493',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'white'}
+                  onFocus={(e) => e.target.style.borderColor = '#959493'}
                   onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
                 />
               </div>
