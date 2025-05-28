@@ -160,7 +160,7 @@ const Cellar = () => {
             transform: 'translateX(-50%)',
             width: 'auto',
             maxWidth: 'none',
-            padding: '16px 24px',
+            padding: '8px 24px',
             borderRadius: '32px',
             boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.1)',
             zIndex: 9999
