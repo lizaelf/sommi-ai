@@ -1054,16 +1054,13 @@ const Cellar = () => {
 
             {/* Save Button */}
             <div style={{
-              borderRadius: '32px',
-              background: 'radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
-              padding: '2px 1px 1px 1px',
               width: '100%'
             }}>
-              <button
+              <div
                 onClick={handleSave}
                 style={{
                   width: '100%',
-                  height: '52px',
+                  height: '56px',
                   padding: '0 16px',
                   display: 'flex',
                   alignItems: 'center',
@@ -1073,21 +1070,17 @@ const Cellar = () => {
                   fontSize: '16px',
                   fontWeight: 500,
                   cursor: 'pointer',
-                  outline: 'none',
                   boxSizing: 'border-box',
+                  userSelect: 'none',
                   
-                  /* More visible white background */
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  border: 'none',
-                  borderRadius: '30px',
-                  WebkitAppearance: 'none',
-                  MozAppearance: 'none',
-                  appearance: 'none'
+                  /* Simple styling without backgroundImage */
+                  borderRadius: '32px',
+                  background: 'rgba(255, 255, 255, 0.04) !important',
+                  border: '1px solid rgba(255, 255, 255, 0.12)'
                 }}
               >
                 Save
-              </button>
+              </div>
             </div>
           </div>
         </div>,
