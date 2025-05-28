@@ -711,15 +711,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("🔍 No stored text, searching DOM for latest assistant message...");
         const messagesContainer = document.getElementById('conversation');
         if (messagesContainer) {
-          const assistantMessages = messagesContainer.querySelectorAll('[data-role="assistant"]');
+          // Try multiple selectors to find assistant messages
+          let assistantMessages = messagesContainer.querySelectorAll('[data-role="assistant"]');
+          
+          if (assistantMessages.length === 0) {
+            console.log("🔍 No data-role messages found, trying alternative selectors...");
+            // Look for any div that might contain assistant content
+            const allDivs = messagesContainer.querySelectorAll('div');
+            assistantMessages = Array.from(allDivs).filter(div => {
+              const text = div.textContent || '';
+              return text.length > 50 && !text.includes('user') && 
+                     (text.includes('wine') || text.includes('Sassicaia') || text.includes('Tenuta'));
+            });
+            console.log("🔍 Found potential assistant messages:", assistantMessages.length);
+          }
+          
           if (assistantMessages.length > 0) {
             const lastMessage = assistantMessages[assistantMessages.length - 1];
             messageText = lastMessage.textContent?.trim();
-            if (messageText) {
+            if (messageText && messageText.length > 10) {
               console.log("✅ Found response text from DOM:", messageText.substring(0, 100) + "...");
               (window as any).lastResponseText = messageText; // Store for future use
+            } else {
+              console.log("❌ Found message but text too short:", messageText?.substring(0, 50));
             }
+          } else {
+            console.log("❌ No assistant messages found in conversation container");
           }
+        } else {
+          console.log("❌ No conversation container found");
         }
       }
       
