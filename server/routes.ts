@@ -171,13 +171,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let allMessages = messages;
       if (conversationId) {
         const previousMessages = await storage.getMessagesByConversation(conversationId);
-        
-        // Limit conversation history to prevent token overflow
-        // Keep only the last 20 messages (10 user + 10 assistant pairs) to stay within token limits
-        const recentMessages = previousMessages.slice(-20);
-        
         // Format previous messages for OpenAI API format
-        const formattedPreviousMessages = recentMessages.map(msg => ({
+        const formattedPreviousMessages = previousMessages.map(msg => ({
           role: msg.role as any,
           content: msg.content
         }));
