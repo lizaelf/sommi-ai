@@ -726,6 +726,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("🔍 No stored text, searching DOM for latest assistant message...");
         const messagesContainer = document.getElementById('conversation');
         if (messagesContainer) {
+          console.log("Full conversation container HTML:", messagesContainer.innerHTML);
           // Try multiple selectors to find assistant messages
           let assistantMessages = messagesContainer.querySelectorAll('[data-role="assistant"]');
           
