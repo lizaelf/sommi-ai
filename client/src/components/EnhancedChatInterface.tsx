@@ -47,6 +47,7 @@ const EnhancedChatInterface: React.FC = () => {
   const [hideSuggestions, setHideSuggestions] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
+  const [showFullConversation, setShowFullConversation] = useState(false);
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -765,115 +766,177 @@ const EnhancedChatInterface: React.FC = () => {
                   Summary
                 </h1>
                 
-                {/* Conversation Summary */}
+                {/* Conversation Content */}
                 <div id="conversation" className="space-y-4 mb-96">
                   {messages.length > 0 ? (
-                    (() => {
-                      // Extract themes and topics from conversation
-                      const themes = [];
-                      const recentTopics = [];
-                      
-                      // Go through messages in reverse order (most recent first)
-                      const reversedMessages = [...messages].reverse();
-                      
-                      reversedMessages.forEach((message, index) => {
-                        if (message.role === 'user') {
-                          const content = message.content.toLowerCase();
-                          if (content.includes('tasting') || content.includes('taste') || content.includes('flavor')) {
-                            if (!themes.includes('Tasting Notes')) themes.push('Tasting Notes');
-                          }
-                          if (content.includes('food') || content.includes('pair') || content.includes('recipe')) {
-                            if (!themes.includes('Food Pairing')) themes.push('Food Pairing');
-                          }
-                          if (content.includes('vintage') || content.includes('year') || content.includes('special')) {
-                            if (!themes.includes('Vintage Information')) themes.push('Vintage Information');
-                          }
-                          if (content.includes('region') || content.includes('where') || content.includes('from')) {
-                            if (!themes.includes('Wine Origin')) themes.push('Wine Origin');
-                          }
-                          if (content.includes('price') || content.includes('cost') || content.includes('value')) {
-                            if (!themes.includes('Value & Pricing')) themes.push('Value & Pricing');
-                          }
-                          
-                          // Add to recent topics (max 5)
-                          if (recentTopics.length < 5) {
-                            recentTopics.push({
-                              topic: message.content,
-                              timestamp: message.createdAt || new Date().toISOString()
-                            });
-                          }
-                        }
-                      });
-
-                      // Generate summary content for 3 main topics
-                      const summaryTopics = [
-                        {
-                          title: "Tasting Profile",
-                          summary: "Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish."
-                        },
-                        {
-                          title: "Food Pairing",
-                          summary: "Learn which dishes complement this wine best and how to create perfect pairings for your dining experience."
-                        },
-                        {
-                          title: "Wine Origin",
-                          summary: "Explore the terroir, region, and winemaking traditions that shaped this bottle's distinctive character."
-                        }
-                      ];
-
-                      return (
-                        <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
-                          {/* Summary Topics */}
-                          <div style={{ marginBottom: '24px' }}>
-                            {summaryTopics.map((topic, index) => (
-                              <div key={index} style={{
-                                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                                borderRadius: '12px',
-                                padding: '20px',
-                                marginBottom: '16px',
-                                border: '1px solid rgba(255, 255, 255, 0.1)'
-                              }}>
-                                <h3 style={{ 
-                                  fontSize: '18px', 
-                                  marginBottom: '8px', 
-                                  color: 'white',
-                                  fontWeight: '600'
+                    showFullConversation ? (
+                      // Show full conversation
+                      <>
+                        {messages.map((message, index) => (
+                          <div key={`${message.id}-${index}`} style={{
+                            display: 'flex',
+                            justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                            width: '100%',
+                            marginBottom: '12px'
+                          }}>
+                            <div 
+                              style={{
+                                backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
+                                borderRadius: '16px',
+                                padding: '16px',
+                                width: message.role === 'user' ? 'fit-content' : '100%',
+                                maxWidth: message.role === 'user' ? '80%' : '100%'
+                              }}
+                              data-role={message.role}
+                            >
+                              {message.role === 'assistant' ? (
+                                message.id === latestMessageId ? (
+                                  <TextGenerateEffect
+                                    words={message.content}
+                                    className="text-[#DBDBDB] font-normal text-base leading-relaxed"
+                                    filter={true}
+                                    duration={0.3}
+                                  />
+                                ) : (
+                                  <div style={{
+                                    color: '#DBDBDB',
+                                    whiteSpace: 'pre-wrap',
+                                    fontFamily: 'Inter, system-ui, sans-serif',
+                                    fontSize: '16px',
+                                    lineHeight: '1.6'
+                                  }}>
+                                    {message.content}
+                                  </div>
+                                )
+                              ) : (
+                                <div style={{
+                                  color: '#000000',
+                                  whiteSpace: 'pre-wrap',
+                                  fontFamily: 'Inter, system-ui, sans-serif',
+                                  fontSize: '16px',
+                                  lineHeight: '1.6'
                                 }}>
-                                  {topic.title}
-                                </h3>
-                                <p style={{ 
-                                  fontSize: '14px', 
-                                  color: '#DBDBDB',
-                                  lineHeight: '1.5',
-                                  margin: 0
-                                }}>
-                                  {topic.summary}
-                                </p>
-                              </div>
-                            ))}
+                                  {message.content}
+                                </div>
+                              )}
+                            </div>
                           </div>
-
-                          {/* View More Button */}
-                          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                            <button style={{
+                        ))}
+                        
+                        {/* Back to Summary Button */}
+                        <div style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '20px' }}>
+                          <button 
+                            onClick={() => setShowFullConversation(false)}
+                            style={{
                               backgroundColor: 'rgba(255, 255, 255, 0.08)',
                               borderRadius: '32px',
-                              height: '48px',
-                              padding: '0 24px',
+                              height: '56px',
+                              padding: '0 16px',
+                              margin: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
                               border: 'none',
                               color: 'white',
                               fontFamily: 'Inter, sans-serif',
                               fontSize: '16px',
                               fontWeight: 500,
                               cursor: 'pointer',
-                              outline: 'none'
-                            }}>
-                              View more
-                            </button>
-                          </div>
+                              outline: 'none',
+                              width: '100%',
+                              maxWidth: '320px',
+                              marginLeft: 'auto',
+                              marginRight: 'auto'
+                            }}
+                          >
+                            Back to Summary
+                          </button>
                         </div>
-                      );
-                    })()
+                      </>
+                    ) : (
+                      // Show summary
+                      (() => {
+                        // Generate summary content for 3 main topics
+                        const summaryTopics = [
+                          {
+                            title: "Tasting Profile",
+                            summary: "Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish."
+                          },
+                          {
+                            title: "Food Pairing",
+                            summary: "Learn which dishes complement this wine best and how to create perfect pairings for your dining experience."
+                          },
+                          {
+                            title: "Wine Origin",
+                            summary: "Explore the terroir, region, and winemaking traditions that shaped this bottle's distinctive character."
+                          }
+                        ];
+
+                        return (
+                          <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                            {/* Summary Topics */}
+                            <div style={{ marginBottom: '24px' }}>
+                              {summaryTopics.map((topic, index) => (
+                                <div key={index} style={{
+                                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                                  borderRadius: '12px',
+                                  padding: '20px',
+                                  marginBottom: '16px',
+                                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                                }}>
+                                  <h3 style={{ 
+                                    fontSize: '18px', 
+                                    marginBottom: '8px', 
+                                    color: 'white',
+                                    fontWeight: '600'
+                                  }}>
+                                    {topic.title}
+                                  </h3>
+                                  <p style={{ 
+                                    fontSize: '14px', 
+                                    color: '#DBDBDB',
+                                    lineHeight: '1.5',
+                                    margin: 0
+                                  }}>
+                                    {topic.summary}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Show Whole Dialog Button */}
+                            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                              <button 
+                                onClick={() => setShowFullConversation(true)}
+                                style={{
+                                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                                  borderRadius: '32px',
+                                  height: '56px',
+                                  padding: '0 16px',
+                                  margin: 0,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  border: 'none',
+                                  color: 'white',
+                                  fontFamily: 'Inter, sans-serif',
+                                  fontSize: '16px',
+                                  fontWeight: 500,
+                                  cursor: 'pointer',
+                                  outline: 'none',
+                                  width: '100%',
+                                  maxWidth: '320px',
+                                  marginLeft: 'auto',
+                                  marginRight: 'auto'
+                                }}
+                              >
+                                Show whole dialog
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })()
+                    )
                   ) : (
                     <div style={{
                       textAlign: 'center',
