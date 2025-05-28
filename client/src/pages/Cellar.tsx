@@ -1061,7 +1061,7 @@ const Cellar = () => {
               onClick={handleSave}
               style={{
                 width: '100%',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                backgroundColor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '32px',
                 height: '56px',
                 padding: '0 16px',
