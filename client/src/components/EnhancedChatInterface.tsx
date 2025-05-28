@@ -942,54 +942,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                                 >
                                   Origin
                                 </button>
-                                <button 
-                                  onClick={() => handleSendMessage("How should I serve this wine?")}
-                                  style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    border: 'none',
-                                    borderRadius: '20px',
-                                    padding: '8px 16px',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'Inter, sans-serif',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  Serving tips
-                                </button>
-                                <button 
-                                  onClick={() => handleSendMessage("What makes this wine special?")}
-                                  style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    border: 'none',
-                                    borderRadius: '20px',
-                                    padding: '8px 16px',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'Inter, sans-serif',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  What's special
-                                </button>
-                                <button 
-                                  onClick={() => handleSendMessage("Tell me about the winemaker")}
-                                  style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    border: 'none',
-                                    borderRadius: '20px',
-                                    padding: '8px 16px',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'Inter, sans-serif',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  Winemaker
-                                </button>
                               </div>
                             </div>
 
