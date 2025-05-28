@@ -1,4 +1,4 @@
-import { ArrowLeft, Search, X } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -39,6 +39,8 @@ const Cellar = () => {
 
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
+  const [showWineSearch, setShowWineSearch] = useState(false);
+  const [wineSearchQuery, setWineSearchQuery] = useState('');
 
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
@@ -418,8 +420,94 @@ const Cellar = () => {
           <ArrowLeft className="w-6 h-6 text-white" />
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
-        <Search className="w-6 h-6 text-white" />
+        <div 
+          onClick={() => setShowWineSearch(!showWineSearch)}
+          className="cursor-pointer"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+            <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.744a1 1 0 0 1-1.32 1.497l-.094-.083l-4.744-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z"/>
+          </svg>
+        </div>
       </div>
+
+      {/* Wine Search Interface */}
+      {showWineSearch && (
+        <div style={{
+          position: 'fixed',
+          top: '80px',
+          left: '16px',
+          right: '16px',
+          backgroundColor: '#2A2A29',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          padding: '16px',
+          zIndex: 1000,
+          backdropFilter: 'blur(20px)'
+        }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              position: 'absolute',
+              left: '16px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.744a1 1 0 0 1-1.32 1.497l-.094-.083l-4.744-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z" fill="#959493"/>
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search wines in cellar..."
+              value={wineSearchQuery}
+              onChange={(e) => setWineSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                height: '48px',
+                padding: '0 16px 0 48px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'transparent',
+                color: 'white',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '16px',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'white'}
+              onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+              autoFocus
+            />
+          </div>
+          
+          {/* Search Results */}
+          {wineSearchQuery && (
+            <div style={{ marginTop: '12px' }}>
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
+              onClick={() => {
+                setShowWineSearch(false);
+                setWineSearchQuery('');
+                handleWineClick(1);
+              }}
+              >
+                <div style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: '500' }}>
+                  Sassicaia 2018
+                </div>
+                <div style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '12px', marginTop: '4px' }}>
+                  Tuscany, Italy • Cabernet Sauvignon
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Content with top padding to account for fixed header */}
       <div className="pt-16">
@@ -792,7 +880,9 @@ const Cellar = () => {
                               transform: 'translateY(-50%)',
                               zIndex: 1
                             }}>
-                              <Search size={18} color="#959493" />
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.744a1 1 0 0 1-1.32 1.497l-.094-.083l-4.744-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z" fill="#959493"/>
+                              </svg>
                             </div>
                             <input
                               type="text"
