@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 import { generateWineSystemPrompt } from "../shared/wineConfig.js";
 
-// Using GPT-4o-mini for better efficiency and longer conversation support
-const MODEL = "gpt-4o-mini";
+// Using GPT-4 for high-quality responses
+const MODEL = "gpt-4";
 // Fallback model if primary model is not available
 const FALLBACK_MODEL = "gpt-3.5-turbo";
 
