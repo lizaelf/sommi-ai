@@ -519,6 +519,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     if (usedVoiceInput && !isProcessing && isVoiceThinking) {
       console.log("Fallback: AI response should be ready, checking for Listen Response button");
       
+      // Emit audio-status stopped event to trigger fallback
+      const audioStoppedEvent = new CustomEvent('audio-status', {
+        detail: { status: 'stopped' }
+      });
+      window.dispatchEvent(audioStoppedEvent);
+      
+      // Force the Listen Response button if we're stuck in thinking mode
+      console.log("🚨 Forcing fallback: AI responded but thinking is stuck");
+      setIsVoiceThinking(false);
+      setResponseComplete(true);
+      setShowListenButton(true);
+      setShowBottomSheet(true);
+      
       // Wait a bit for DOM to update, then check for new messages
       const timeout = setTimeout(() => {
         const messagesContainer = document.getElementById('conversation');
@@ -528,25 +541,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             const lastMessage = messageElements[messageElements.length - 1];
             if (lastMessage && lastMessage.textContent) {
               const messageText = lastMessage.textContent || '';
-              console.log("Fallback: Found new AI response, showing Listen Response button");
+              console.log("Fallback: Found new AI response, storing text");
               
-              // Store the message for the button first
+              // Store the message for the button
               (window as any).lastResponseText = messageText;
-              
-              // Clear all states and show Listen Response button
-              setTimeout(() => {
-                setIsVoiceThinking(false);
-                setIsResponding(false);
-                setResponseComplete(true);
-                setHasReceivedFirstResponse(true);
-                setShowListenButton(true);
-                setShowBottomSheet(true);
-                console.log("Fallback: Listen Response button should now be visible");
-              }, 50);
             }
           }
         }
-      }, 1000);
+      }, 100);
       
       return () => clearTimeout(timeout);
     }
