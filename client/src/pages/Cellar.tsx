@@ -521,8 +521,8 @@ const Cellar = () => {
         }`}
       >
         <Link href="/">
-          <svg width="24" height="24" viewBox="0 0 24 24" className="text-white">
-            <path d="M15.5 17c.28 0 .5-.22.5-.5v-9a.5.5 0 0 0-.5-.5a.5.5 0 0 0-.35.15l-6 6a.5.5 0 0 0 0 .7l6 6a.5.5 0 0 0 .35.15Z" fill="currentColor"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" className="text-white">
+            <path fill="currentColor" d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"/>
           </svg>
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
