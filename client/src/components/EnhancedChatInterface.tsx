@@ -762,7 +762,7 @@ const EnhancedChatInterface: React.FC = () => {
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
-                  Ask about this wine
+                  Summary
                 </h1>
                 
                 {/* Suggestion pills - hidden after sending a message */}
