@@ -908,7 +908,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                         
                         {/* Show whole dialog button */}
                         <button 
-                          onClick={() => setShowFullConversation(true)}
+                          onClick={() => setLocation('/wine/conversation')}
                           style={{
                             backgroundColor: 'rgba(255, 255, 255, 0.08)',
                             borderRadius: '32px',
