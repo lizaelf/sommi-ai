@@ -444,6 +444,24 @@ const Cellar = () => {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
+            
+            /* Gradient border effect like "Ask me about" input */
+            border-top: 2px solid transparent;
+            border-right: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+            border-left: 1px solid transparent;
+            
+            background-image: 
+              linear-gradient(#1C1C1C, #1C1C1C),
+              radial-gradient(
+                circle at top center, 
+                rgba(255, 255, 255, 0.46) 0%,
+                rgba(255, 255, 255, 0.16) 100%
+              );
+            
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            overflow: hidden;
           }
           
           .contact-form-input:focus {
@@ -475,6 +493,24 @@ const Cellar = () => {
             background: rgba(255, 255, 255, 0.04) !important;
             background-color: rgba(255, 255, 255, 0.04) !important;
             border: none !important;
+            
+            /* Gradient border effect for save button */
+            border-top: 2px solid transparent;
+            border-right: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+            border-left: 1px solid transparent;
+            
+            background-image: 
+              linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)),
+              radial-gradient(
+                circle at top center, 
+                rgba(255, 255, 255, 0.46) 0%,
+                rgba(255, 255, 255, 0.16) 100%
+              );
+            
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            overflow: hidden;
           }
         `}
       </style>
@@ -1097,7 +1133,6 @@ const Cellar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: 'none !important',
                 color: 'white',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '16px',
