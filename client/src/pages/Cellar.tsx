@@ -761,7 +761,7 @@ const Cellar = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  border: '1px solid #1C1C1C',
                   background: 'transparent !important',
                   backgroundColor: 'transparent !important',
                   color: 'white',
@@ -771,12 +771,12 @@ const Cellar = () => {
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = 'white';
+                  e.target.style.borderColor = '#1C1C1C';
                   e.target.style.background = 'transparent';
                   e.target.style.backgroundColor = 'transparent';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.borderColor = '#1C1C1C';
                   e.target.style.background = 'transparent';
                   e.target.style.backgroundColor = 'transparent';
                 }}
@@ -807,7 +807,7 @@ const Cellar = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  border: '1px solid #1C1C1C',
                   background: 'transparent !important',
                   backgroundColor: 'transparent !important',
                   color: 'white',
@@ -817,12 +817,12 @@ const Cellar = () => {
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = 'white';
+                  e.target.style.borderColor = '#1C1C1C';
                   e.target.style.background = 'transparent';
                   e.target.style.backgroundColor = 'transparent';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.borderColor = '#1C1C1C';
                   e.target.style.background = 'transparent';
                   e.target.style.backgroundColor = 'transparent';
                 }}
@@ -853,7 +853,7 @@ const Cellar = () => {
                   gap: '10px',
                   alignSelf: 'stretch',
                   borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  border: '1px solid #1C1C1C',
                   background: 'transparent !important',
                   backgroundColor: 'transparent !important',
                   color: 'white',
@@ -863,12 +863,12 @@ const Cellar = () => {
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = 'white';
+                  e.target.style.borderColor = '#1C1C1C';
                   e.target.style.background = 'transparent';
                   e.target.style.backgroundColor = 'transparent';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.borderColor = '#1C1C1C';
                   e.target.style.background = 'transparent';
                   e.target.style.backgroundColor = 'transparent';
                 }}
@@ -1035,7 +1035,7 @@ const Cellar = () => {
                     gap: '10px',
                     flex: 1,
                     borderRadius: '16px',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    border: '1px solid #1C1C1C',
                     background: 'transparent !important',
                     backgroundColor: 'transparent !important',
                     color: 'white',
@@ -1045,12 +1045,12 @@ const Cellar = () => {
                     boxSizing: 'border-box'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = 'white';
+                    e.target.style.borderColor = '#1C1C1C';
                     e.target.style.background = 'transparent';
                     e.target.style.backgroundColor = 'transparent';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                    e.target.style.borderColor = '#1C1C1C';
                     e.target.style.background = 'transparent';
                     e.target.style.backgroundColor = 'transparent';
                   }}
