@@ -735,8 +735,8 @@ const Cellar = () => {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <img src={selectedCountry.flag} alt={`${selectedCountry.name} Flag`} style={{ width: '20px', height: '20px' }} />
-                      <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>{selectedCountry.code}</span>
+                      <span style={{ fontSize: '16px' }}>{selectedCountry.flag}</span>
+                      <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>{selectedCountry.dial_code}</span>
                     </div>
                   </div>
                   
@@ -836,8 +836,8 @@ const Cellar = () => {
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                           >
-                            <img src={country.flag} alt={`${country.name} Flag`} style={{ width: '24px', height: '24px' }} />
-                            <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px', minWidth: '50px' }}>{country.code}</span>
+                            <span style={{ fontSize: '20px' }}>{country.flag}</span>
+                            <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px', minWidth: '50px' }}>{country.dial_code}</span>
                             <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{country.name}</span>
                           </div>
                         ))}
