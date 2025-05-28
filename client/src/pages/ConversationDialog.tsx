@@ -1,11 +1,11 @@
 import { useLocation } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
-import { useConversation } from '../hooks/useConversation';
-import { getWineDisplayName } from '../../../shared/wineConfig';
-import { TextGenerateEffect } from '../components/ui/text-generate-effect';
-import ChatInput from '../components/ChatInput';
-import VoiceAssistant from '../components/VoiceAssistant';
-import { ClientMessage } from '../lib/types';
+import { useConversation } from '@/hooks/useConversation';
+import { getWineDisplayName } from '@shared/wineConfig';
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
+import ChatInput from '@/components/ChatInput';
+import VoiceAssistant from '@/components/VoiceAssistant';
+import { ClientMessage } from '@/lib/types';
 import { useState, useEffect } from 'react';
 
 export default function ConversationDialog() {
