@@ -463,7 +463,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   setHasReceivedFirstResponse(true);
                   setShowListenButton(true);
                   setShowBottomSheet(true);
-                  console.log("Listen Response button should now be visible");
+                  console.log("✅ Listen Response button should now be visible - State set:", {
+                    showListenButton: true,
+                    isVoiceThinking: false,
+                    isResponding: false,
+                    responseComplete: true
+                  });
                 }, 100); // Small delay to ensure state updates properly
 
               } else {
@@ -810,7 +815,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onAsk={handleAsk}
         isListening={isListening}
         isResponding={isResponding}
-        isThinking={isProcessing || (isVoiceThinking && !showListenButton) || status === 'Processing your question...'}
+        isThinking={isProcessing || (isVoiceThinking && !showListenButton && !responseComplete) || status === 'Processing your question...'}
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
         showListenButton={showListenButton && !isListening && !isResponding}
         onSuggestionClick={handleSuggestionClick}
