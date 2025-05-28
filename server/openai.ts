@@ -82,9 +82,9 @@ export async function chatCompletion(messages: ChatMessage[]) {
       response = await openai.chat.completions.create({
         model: MODEL,
         messages: newMessages,
-        temperature: 0.5, // Lower temperature for more focused, faster responses
-        max_tokens: 300,  // Reduced token limit for faster generation
-        presence_penalty: -0.1, // Slight negative presence penalty for more concise responses
+        temperature: 0.5, // Lower temperature for more focused responses
+        // Removed max_tokens limit to allow full-length responses
+        presence_penalty: -0.1, // Slight negative presence penalty for concise responses
         frequency_penalty: 0.2  // Slight frequency penalty to avoid repetition
       });
     } catch (err) {
@@ -96,9 +96,9 @@ export async function chatCompletion(messages: ChatMessage[]) {
         response = await openai.chat.completions.create({
           model: FALLBACK_MODEL,
           messages: newMessages,
-          temperature: 0.5, // Lower temperature for faster responses
-          max_tokens: 300,  // Reduced token limit for faster generation
-          presence_penalty: -0.1, // Encourage more concise responses
+          temperature: 0.5, // Lower temperature for focused responses
+          // Removed max_tokens limit to allow full-length responses
+          presence_penalty: -0.1, // Encourage concise responses
           frequency_penalty: 0.2  // Avoid repetition
         });
       } else {

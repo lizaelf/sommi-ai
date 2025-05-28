@@ -696,7 +696,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: messageText.substring(0, 300) })
+        body: JSON.stringify({ text: messageText })
       });
       
       if (response.ok) {
