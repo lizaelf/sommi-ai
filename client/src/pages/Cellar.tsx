@@ -41,6 +41,7 @@ const Cellar = () => {
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState('');
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
@@ -412,6 +413,16 @@ const Cellar = () => {
     <div className="min-h-screen bg-black text-white relative">
       <style>
         {`
+          /* Blinking cursor animation for search input */
+          @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+          }
+          
+          .search-input-active {
+            animation: blink 1s infinite;
+          }
+          
           /* Contact form inputs - transparent when empty */
           .contact-form-input {
             background: transparent !important;
@@ -511,7 +522,10 @@ const Cellar = () => {
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
         <div 
-          onClick={() => setShowWineSearch(!showWineSearch)}
+          onClick={() => {
+            setShowWineSearch(!showWineSearch);
+            setIsSearchActive(!showWineSearch);
+          }}
           className={`cursor-pointer transition-all duration-200 ${
             showWineSearch ? 'text-white scale-110' : 'text-white/80 hover:text-white'
           }`}
@@ -553,6 +567,7 @@ const Cellar = () => {
               placeholder="Search wines in cellar..."
               value={wineSearchQuery}
               onChange={(e) => setWineSearchQuery(e.target.value)}
+              className={isSearchActive && wineSearchQuery === '' ? 'search-input-active' : ''}
               style={{
                 width: '100%',
                 height: '48px',
@@ -569,10 +584,12 @@ const Cellar = () => {
               onFocus={(e) => {
                 e.target.style.borderColor = 'white';
                 e.target.style.boxShadow = '0 0 0 2px rgba(255, 255, 255, 0.2)';
+                setIsSearchActive(true);
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
                 e.target.style.boxShadow = 'none';
+                setIsSearchActive(false);
               }}
               autoFocus
             />
