@@ -7,6 +7,7 @@ import backgroundImage from '@assets/Background.png';
 import wineBottleImage from '@assets/Product Image.png';
 import usFlagImage from '@assets/US-flag.png';
 import logoImage from '@assets/Logo.png';
+import lineImage from '@assets/line.png';
 
 const Cellar = () => {
   const { toast } = useToast();
@@ -283,6 +284,18 @@ const Cellar = () => {
         </div>
       </div>
 
+      {/* Line separator */}
+      <div 
+        style={{
+          backgroundImage: `url(${lineImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          height: '10px',
+          margin: '0 16px 0 16px'
+        }}
+      />
+
       {/* Second Wine Rack Container - Below the first one */}
       <div 
         className="bg-cover bg-center bg-no-repeat relative"
@@ -309,6 +322,18 @@ const Cellar = () => {
           />
         </div>
       </div>
+
+      {/* Line separator */}
+      <div 
+        style={{
+          backgroundImage: `url(${lineImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          height: '10px',
+          margin: '0 16px 0 16px'
+        }}
+      />
 
       {/* Third Wine Rack Container - Below the second one */}
       <div 
