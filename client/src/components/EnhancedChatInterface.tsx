@@ -10,7 +10,7 @@ import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
-import { getWineDisplayName, getWineRegion, WINE_CONFIG } from '@shared/wineConfig';
+import { getWineDisplayName, getWineRegion, getWineVintage, WINE_CONFIG } from '@shared/wineConfig';
 import { ShiningText } from '@/components/ShiningText';
 import { TextGenerateEffect } from './ui/text-generate-effect';
 // Import typography styles
@@ -343,7 +343,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 marginBottom: '0',
                 ...typography.h1
               }}>
-                {getWineDisplayName()}
+                {getWineDisplayName()}. {getWineVintage()}
               </div>
               
               {/* Wine region with typography styling and flag */}
