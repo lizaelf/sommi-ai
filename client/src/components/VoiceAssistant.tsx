@@ -452,21 +452,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 // No autoplay - just show Listen Response button
                 console.log("Response ready - showing Listen Response button instead of autoplay");
                 
-                // Clear all thinking/processing states immediately
-                setIsVoiceThinking(false);
-                setIsResponding(false);
-                setResponseComplete(true);
-                setHasReceivedFirstResponse(true);
-                setShowListenButton(true);
-                // Keep usedVoiceInput true until button is used, then reset
-                
-                // Store the message text for the Listen Response button
+                // Store the message text for the Listen Response button first
                 (window as any).lastResponseText = messageText;
                 
-                console.log("Listen Response button should now be visible");
-                
-                // Ensure bottom sheet stays open during speech
-                setShowBottomSheet(true);
+                // Clear all thinking/processing states immediately and show button
+                setTimeout(() => {
+                  setIsVoiceThinking(false);
+                  setIsResponding(false);
+                  setResponseComplete(true);
+                  setHasReceivedFirstResponse(true);
+                  setShowListenButton(true);
+                  setShowBottomSheet(true);
+                  console.log("Listen Response button should now be visible");
+                }, 100); // Small delay to ensure state updates properly
 
               } else {
                 console.log("Last message has no text content");
@@ -513,18 +511,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               const messageText = lastMessage.textContent || '';
               console.log("Fallback: Found new AI response, showing Listen Response button");
               
-              // Clear all states and show Listen Response button
-              setIsVoiceThinking(false);
-              setIsResponding(false);
-              setResponseComplete(true);
-              setHasReceivedFirstResponse(true);
-              setShowListenButton(true);
-              setShowBottomSheet(true);
-              // Don't reset usedVoiceInput here to prevent conflicts
-              
-              // Store the message for the button
+              // Store the message for the button first
               (window as any).lastResponseText = messageText;
-              console.log("Fallback: Listen Response button should now be visible");
+              
+              // Clear all states and show Listen Response button
+              setTimeout(() => {
+                setIsVoiceThinking(false);
+                setIsResponding(false);
+                setResponseComplete(true);
+                setHasReceivedFirstResponse(true);
+                setShowListenButton(true);
+                setShowBottomSheet(true);
+                console.log("Fallback: Listen Response button should now be visible");
+              }, 50);
             }
           }
         }
