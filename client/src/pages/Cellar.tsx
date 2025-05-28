@@ -551,8 +551,8 @@ const Cellar = () => {
                 </div>
               )}
               
-              {/* Country Code Selector - Full Width */}
-              <div style={{ position: 'relative', width: '100%' }}>
+              {/* Country Code Selector - 150px Width */}
+              <div style={{ position: 'relative', width: '150px' }}>
                 <div
                   onClick={() => setShowCountryDropdown(!showCountryDropdown)}
                   style={{
@@ -561,7 +561,7 @@ const Cellar = () => {
                     padding: '16px 24px',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    width: '100%',
+                    width: '150px',
                     borderRadius: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
                     background: '#2A2A29 !important',
