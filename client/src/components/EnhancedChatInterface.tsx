@@ -945,64 +945,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                               </div>
                             </div>
 
-                            {/* Previous Discussion */}
-                            <div style={{ marginTop: '32px' }}>
-                              <h1 style={{ 
-                                fontSize: '32px', 
-                                marginBottom: '24px', 
-                                color: 'white',
-                                fontWeight: '700',
-                                textAlign: 'left',
-                                letterSpacing: '-0.025em'
-                              }}>
-                                Previous Discussion
-                              </h1>
-                              <div style={{ 
-                                maxHeight: 'none', 
-                                overflowY: 'visible',
-                                paddingRight: '8px'
-                              }}>
-                                {messages.slice(-6).map((message, index) => (
-                                  <div key={`${message.id}-${index}`} style={{
-                                    marginBottom: '16px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '8px'
-                                  }}>
-                                    {message.role === 'user' ? (
-                                      <div style={{
-                                        alignSelf: 'flex-end',
-                                        backgroundColor: '#F5F5F5',
-                                        color: '#000',
-                                        borderRadius: '16px',
-                                        padding: '12px 16px',
-                                        maxWidth: '80%',
-                                        fontSize: '14px',
-                                        fontFamily: 'Inter, sans-serif'
-                                      }}>
-                                        {message.content}
-                                      </div>
-                                    ) : (
-                                      <div style={{
-                                        alignSelf: 'flex-start',
-                                        color: '#DBDBDB',
-                                        borderRadius: '16px',
-                                        padding: '12px 0',
-                                        maxWidth: '100%',
-                                        fontSize: '14px',
-                                        fontFamily: 'Inter, sans-serif',
-                                        lineHeight: '1.5'
-                                      }}>
-                                        {message.content.length > 200 
-                                          ? `${message.content.substring(0, 200)}...`
-                                          : message.content
-                                        }
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
+
 
                           </div>
                         );
@@ -1092,6 +1035,65 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
               ) : (
                 // Show suggestions and input for Home page
                 <>
+                  {/* Previous Discussion */}
+                  {messages.length > 0 && (
+                    <div style={{ marginBottom: '20px' }}>
+                      <h1 style={{
+                        ...typography.h1,
+                        color: 'white',
+                        marginBottom: '16px',
+                        textAlign: 'left'
+                      }}>
+                        Previous Discussion
+                      </h1>
+                      <div style={{ 
+                        maxHeight: 'none', 
+                        overflowY: 'visible',
+                        paddingRight: '8px'
+                      }}>
+                        {messages.slice(-6).map((message, index) => (
+                          <div key={`${message.id}-${index}`} style={{
+                            marginBottom: '12px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '6px'
+                          }}>
+                            {message.role === 'user' ? (
+                              <div style={{
+                                alignSelf: 'flex-end',
+                                backgroundColor: '#F5F5F5',
+                                color: '#000',
+                                borderRadius: '16px',
+                                padding: '8px 12px',
+                                maxWidth: '80%',
+                                fontSize: '13px',
+                                fontFamily: 'Inter, sans-serif'
+                              }}>
+                                {message.content}
+                              </div>
+                            ) : (
+                              <div style={{
+                                alignSelf: 'flex-start',
+                                color: '#DBDBDB',
+                                borderRadius: '16px',
+                                padding: '8px 0',
+                                maxWidth: '100%',
+                                fontSize: '13px',
+                                fontFamily: 'Inter, sans-serif',
+                                lineHeight: '1.4'
+                              }}>
+                                {message.content.length > 150 
+                                  ? `${message.content.substring(0, 150)}...`
+                                  : message.content
+                                }
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Suggestion chips - always visible above input */}
                   <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                     <button 
