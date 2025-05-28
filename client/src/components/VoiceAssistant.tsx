@@ -456,22 +456,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 (window as any).lastResponseText = messageText;
                 
                 // Force show Listen Response button immediately
+                console.log("🎧 Clearing all states and showing Listen Response button");
                 setIsVoiceThinking(false);
                 setIsResponding(false);
                 setResponseComplete(true);
                 setHasReceivedFirstResponse(true);
                 setShowListenButton(true);
                 setShowBottomSheet(true);
-                console.log("🎧 Listen Response button activated immediately!");
                 
-                // Additional check after a delay to ensure button appears
+                // Force update to ensure states are properly set
                 setTimeout(() => {
-                  if (!showListenButton) {
-                    console.log("🔧 Forcing Listen Response button to appear");
-                    setShowListenButton(true);
-                    setShowBottomSheet(true);
-                  }
-                }, 200);
+                  console.log("🔧 Double-checking button state after timeout");
+                  setIsVoiceThinking(false);  // Ensure this is definitely false
+                  setShowListenButton(true);
+                  setShowBottomSheet(true);
+                  console.log("✅ Listen Response button should now be fully visible!");
+                }, 100);
 
               } else {
                 console.log("Last message has no text content");

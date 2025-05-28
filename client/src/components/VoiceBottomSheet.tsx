@@ -268,6 +268,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         </div>
 
         {/* Show different states: Listening, Responding (Stop button), Thinking, or Buttons */}
+        
         {isListening ? (
           <div style={{ 
             width: '100%', 
@@ -332,7 +333,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               Stop
             </button>
           </div>
-        ) : isThinking ? (
+        ) : isThinking && !showListenButton ? (
           <div style={{ 
             width: '100%', 
             maxWidth: '320px', 
