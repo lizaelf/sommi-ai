@@ -808,14 +808,135 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 marginBottom: '20px'
               }}>
                 {showBuyButton && (
-                  <h1 style={{
-                    ...typography.h1,
-                    color: 'white',
-                    marginBottom: '24px',
-                    textAlign: 'left'
-                  }}>
-                    Summary
-                  </h1>
+                  <>
+                    <h1 style={{
+                      ...typography.h1,
+                      color: 'white',
+                      marginBottom: '24px',
+                      textAlign: 'left'
+                    }}>
+                      Summary
+                    </h1>
+                    
+                    {/* Discussion Summary */}
+                    {messages.length > 0 && (
+                      <div style={{ marginBottom: '32px' }}>
+                        {(() => {
+                          // Extract latest 3 unique topics from conversation
+                          const topics = [];
+                          const processedTopics = new Set();
+                          
+                          // Go through messages in reverse to get latest topics
+                          for (let i = messages.length - 1; i >= 0 && topics.length < 3; i--) {
+                            const message = messages[i];
+                            if (message.role === 'user') {
+                              const content = message.content.toLowerCase();
+                              let topicTitle = '';
+                              let description = '';
+                              
+                              if (content.includes('tasting') || content.includes('flavor') || content.includes('notes')) {
+                                topicTitle = 'Tasting Profile';
+                                description = 'Explore the complex flavors, aromas, and tasting notes that define this exceptional wine\'s character and distinguish it from other varietals.';
+                              } else if (content.includes('food') || content.includes('pairing') || content.includes('recipe')) {
+                                topicTitle = 'Food Pairing';
+                                description = 'Discover perfect culinary combinations and learn which dishes complement this wine\'s unique characteristics for optimal dining experiences.';
+                              } else if (content.includes('origin') || content.includes('where') || content.includes('region') || content.includes('terroir')) {
+                                topicTitle = 'Wine Origin';
+                                description = 'Learn about the prestigious terroir, winemaking traditions, and regional influences that shape this wine\'s distinctive personality and quality.';
+                              } else if (content.includes('price') || content.includes('cost') || content.includes('value')) {
+                                topicTitle = 'Value & Investment';
+                                description = 'Understand the wine\'s market position, investment potential, and what makes it a worthy addition to any serious wine collection.';
+                              } else if (content.includes('vintage') || content.includes('year') || content.includes('age')) {
+                                topicTitle = 'Vintage Character';
+                                description = 'Discover how this specific vintage expresses the unique conditions of its growing season and how it compares to other years.';
+                              }
+                              
+                              if (topicTitle && !processedTopics.has(topicTitle)) {
+                                topics.push({ title: topicTitle, description });
+                                processedTopics.add(topicTitle);
+                              }
+                            }
+                          }
+                          
+                          // If we don't have enough topics from user questions, add defaults
+                          const defaultTopics = [
+                            {
+                              title: 'Tasting Profile',
+                              description: 'Explore the complex flavors, aromas, and tasting notes that define this exceptional wine\'s character and distinguish it from other varietals.'
+                            },
+                            {
+                              title: 'Food Pairing', 
+                              description: 'Discover perfect culinary combinations and learn which dishes complement this wine\'s unique characteristics for optimal dining experiences.'
+                            },
+                            {
+                              title: 'Wine Origin',
+                              description: 'Learn about the prestigious terroir, winemaking traditions, and regional influences that shape this wine\'s distinctive personality and quality.'
+                            }
+                          ];
+                          
+                          // Fill remaining slots with default topics
+                          for (const defaultTopic of defaultTopics) {
+                            if (topics.length < 3 && !processedTopics.has(defaultTopic.title)) {
+                              topics.push(defaultTopic);
+                            }
+                          }
+                          
+                          return topics.slice(0, 3).map((topic, index) => (
+                            <div key={index} style={{ marginBottom: '24px' }}>
+                              <h2 style={{
+                                ...typography.h1,
+                                color: 'white',
+                                marginBottom: '12px',
+                                textAlign: 'left'
+                              }}>
+                                {topic.title}
+                              </h2>
+                              <p style={{
+                                ...typography.body,
+                                color: '#DBDBDB',
+                                textAlign: 'left',
+                                margin: 0
+                              }}>
+                                {topic.description}
+                              </p>
+                            </div>
+                          ));
+                        })()}
+                        
+                        {/* Show whole dialog button */}
+                        <button 
+                          onClick={() => setShowFullConversation(true)}
+                          style={{
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                            borderRadius: '32px',
+                            height: '56px',
+                            minHeight: '56px',
+                            maxHeight: '56px',
+                            padding: '0 16px',
+                            margin: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: 'none',
+                            color: 'white',
+                            fontFamily: 'Inter, sans-serif',
+                            fontSize: '16px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            outline: 'none',
+                            width: '100%',
+                            maxWidth: '320px',
+                            marginLeft: 'auto',
+                            marginRight: 'auto',
+                            boxSizing: 'border-box',
+                            lineHeight: '1'
+                          }}
+                        >
+                          Show whole dialog
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
                 
                 {/* Conversation Content */}
