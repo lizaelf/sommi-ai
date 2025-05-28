@@ -410,6 +410,48 @@ const Cellar = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
+      <style>
+        {`
+          /* Force transparent backgrounds on all inputs */
+          input[type="text"],
+          input[type="email"], 
+          input[type="tel"] {
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+          
+          /* Override autofill styles */
+          input:-webkit-autofill,
+          input:-webkit-autofill:hover,
+          input:-webkit-autofill:focus,
+          input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+            -webkit-text-fill-color: white !important;
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+          
+          /* Firefox autofill override */
+          input:-moz-autofill {
+            background-color: transparent !important;
+            background: transparent !important;
+          }
+          
+          /* Additional input resets */
+          .contact-form-input {
+            background: transparent !important;
+            background-color: transparent !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+          }
+          
+          .contact-form-input:focus {
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+        `}
+      </style>
       {/* Fixed Header with scroll background */}
       <div 
         className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
@@ -697,6 +739,7 @@ const Cellar = () => {
                 placeholder="First name"
                 value={formData.firstName}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
+                className="contact-form-input"
                 style={{
                   display: 'flex',
                   height: '56px',
@@ -707,16 +750,24 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
-                  color: '#959493',
+                  background: 'transparent !important',
+                  backgroundColor: 'transparent !important',
+                  color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'white';
+                  e.target.style.background = 'transparent';
+                  e.target.style.backgroundColor = 'transparent';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.background = 'transparent';
+                  e.target.style.backgroundColor = 'transparent';
+                }}
               />
               {errors.firstName && (
                 <div style={{ 
@@ -734,6 +785,7 @@ const Cellar = () => {
                 placeholder="Last name"
                 value={formData.lastName}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
+                className="contact-form-input"
                 style={{
                   display: 'flex',
                   height: '56px',
@@ -744,16 +796,24 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
-                  color: '#959493',
+                  background: 'transparent !important',
+                  backgroundColor: 'transparent !important',
+                  color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'white';
+                  e.target.style.background = 'transparent';
+                  e.target.style.backgroundColor = 'transparent';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.background = 'transparent';
+                  e.target.style.backgroundColor = 'transparent';
+                }}
               />
               {errors.lastName && (
                 <div style={{ 
@@ -771,6 +831,7 @@ const Cellar = () => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
+                className="contact-form-input"
                 style={{
                   display: 'flex',
                   height: '56px',
@@ -781,16 +842,24 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
-                  color: '#959493',
+                  background: 'transparent !important',
+                  backgroundColor: 'transparent !important',
+                  color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'white';
+                  e.target.style.background = 'transparent';
+                  e.target.style.backgroundColor = 'transparent';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.target.style.background = 'transparent';
+                  e.target.style.backgroundColor = 'transparent';
+                }}
               />
               {errors.email && (
                 <div style={{ 
@@ -944,6 +1013,7 @@ const Cellar = () => {
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="contact-form-input"
                   style={{
                     display: 'flex',
                     height: '56px',
@@ -954,16 +1024,24 @@ const Cellar = () => {
                     flex: 1,
                     borderRadius: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    background: '#2A2A29 !important',
-                    backgroundColor: '#2A2A29 !important',
-                    color: '#959493',
+                    background: 'transparent !important',
+                    backgroundColor: 'transparent !important',
+                    color: 'white',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'white'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'white';
+                    e.target.style.background = 'transparent';
+                    e.target.style.backgroundColor = 'transparent';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                    e.target.style.background = 'transparent';
+                    e.target.style.backgroundColor = 'transparent';
+                  }}
                 />
               </div>
               {errors.phone && (

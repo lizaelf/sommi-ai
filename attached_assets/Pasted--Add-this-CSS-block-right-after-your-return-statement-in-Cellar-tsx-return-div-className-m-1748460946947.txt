@@ -1,0 +1,103 @@
+// Add this CSS block right after your return statement in Cellar.tsx:
+
+return (
+  <div className="min-h-screen bg-black text-white relative">
+    <style>
+      {`
+        /* Force transparent backgrounds on all inputs */
+        input[type="text"],
+        input[type="email"], 
+        input[type="tel"] {
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+        
+        /* Override autofill styles */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+          -webkit-text-fill-color: white !important;
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+      `}
+    </style>
+
+    {/* Your existing content... */}
+
+<style>
+{`
+  /* Override browser autofill styles */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-text-fill-color: white !important;
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+  
+  /* Firefox autofill override */
+  input:-moz-autofill {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+  
+  /* Additional input resets */
+  .contact-form-input {
+    background: transparent !important;
+    background-color: transparent !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  .contact-form-input:focus {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+`}
+</style>
+
+// Then update your input components to include the CSS class:
+
+<input
+  type="text"
+  placeholder="First name"
+  value={formData.firstName}
+  onChange={(e) => handleInputChange('firstName', e.target.value)}
+  className="contact-form-input"
+  style={{
+    display: 'flex',
+    height: '64px',
+    padding: '16px 24px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '10px',
+    alignSelf: 'stretch',
+    borderRadius: '16px',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    background: 'transparent !important',
+    backgroundColor: 'transparent !important',
+    color: 'white',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '16px',
+    outline: 'none',
+    boxSizing: 'border-box'
+  }}
+  onFocus={(e) => {
+    e.target.style.borderColor = 'white';
+    e.target.style.background = 'transparent';
+    e.target.style.backgroundColor = 'transparent';
+  }}
+  onBlur={(e) => {
+    e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+    e.target.style.background = 'transparent';
+    e.target.style.backgroundColor = 'transparent';
+  }}
+/>
+
+// Apply the same changes to all your other inputs (lastName, email, phone)
