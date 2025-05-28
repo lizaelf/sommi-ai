@@ -790,10 +790,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                           maxWidth: message.role === 'user' ? '80%' : '100%',
                           ...typography.body
                         }}>
-                          {message.content.length > 200 
-                            ? `${message.content.substring(0, 200)}...`
-                            : message.content
-                          }
+                          {message.content}
                         </div>
                       </div>
                     ))}
