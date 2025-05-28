@@ -558,166 +558,169 @@ const Cellar = () => {
                 </div>
               )}
               
-              {/* Country Code Selector - 150px Width */}
-              <div style={{ position: 'relative', width: '150px' }}>
-                <div
-                  onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+              {/* Phone Input Row - Country Selector + Phone Input */}
+              <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+                {/* Phone Input - Left Side */}
+                <input
+                  type="tel"
+                  placeholder="Phone"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
                   style={{
                     display: 'flex',
                     height: '64px',
                     padding: '16px 24px',
-                    justifyContent: 'space-between',
+                    justifyContent: 'center',
                     alignItems: 'center',
-                    width: '150px',
+                    gap: '10px',
+                    flex: 1,
                     borderRadius: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
                     background: '#2A2A29 !important',
                     backgroundColor: '#2A2A29 !important',
-                    cursor: 'pointer',
+                    WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
+                    WebkitTextFillColor: '#959493',
+                    color: '#959493',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img src={selectedCountry.flag} alt={`${selectedCountry.name} Flag`} style={{ width: '24px', height: '24px' }} />
-                    <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{selectedCountry.code}</span>
-                  </div>
-                </div>
+                  onFocus={(e) => e.target.style.borderColor = 'white'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                />
                 
-                {showCountryDropdown && (
-                  <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    zIndex: 1000,
-                    display: 'flex',
-                    alignItems: 'flex-end'
-                  }}>
+                {/* Country Code Selector - 100px Width */}
+                <div style={{ position: 'relative', width: '100px' }}>
+                  <div
+                    onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                    style={{
+                      display: 'flex',
+                      height: '64px',
+                      padding: '16px 12px',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100px',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      background: '#2A2A29 !important',
+                      backgroundColor: '#2A2A29 !important',
+                      cursor: 'pointer',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <img src={selectedCountry.flag} alt={`${selectedCountry.name} Flag`} style={{ width: '20px', height: '20px' }} />
+                      <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>{selectedCountry.code}</span>
+                    </div>
+                  </div>
+                  
+                  {showCountryDropdown && (
                     <div style={{
-                      width: '100%',
-                      backgroundColor: '#2A2A29',
-                      borderTopLeftRadius: '16px',
-                      borderTopRightRadius: '16px',
-                      maxHeight: '60vh',
-                      overflowY: 'auto'
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      zIndex: 1000,
+                      display: 'flex',
+                      alignItems: 'flex-end'
                     }}>
                       <div style={{
-                        padding: '16px 24px',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                        position: 'sticky',
-                        top: 0,
+                        width: '100%',
                         backgroundColor: '#2A2A29',
-                        zIndex: 1001
+                        borderTopLeftRadius: '16px',
+                        borderTopRightRadius: '16px',
+                        maxHeight: '60vh',
+                        overflowY: 'auto'
                       }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                          <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: '600' }}>Select Country</span>
-                          <div 
+                        <div style={{
+                          padding: '16px 24px',
+                          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                          position: 'sticky',
+                          top: 0,
+                          backgroundColor: '#2A2A29',
+                          zIndex: 1001
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                            <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: '600' }}>Select Country</span>
+                            <div 
+                              onClick={() => {
+                                setShowCountryDropdown(false);
+                                setCountrySearchQuery('');
+                              }}
+                              style={{ cursor: 'pointer', padding: '8px' }}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          {/* Search Input */}
+                          <div style={{ position: 'relative' }}>
+                            <div style={{
+                              position: 'absolute',
+                              left: '16px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              zIndex: 1
+                            }}>
+                              <Search size={18} color="#959493" />
+                            </div>
+                            <input
+                              type="text"
+                              placeholder="Search countries..."
+                              value={countrySearchQuery}
+                              onChange={(e) => setCountrySearchQuery(e.target.value)}
+                              style={{
+                                width: '100%',
+                                height: '48px',
+                                padding: '0 16px 0 48px',
+                                borderRadius: '12px',
+                                border: '1px solid rgba(255, 255, 255, 0.12)',
+                                background: '#1A1A1A',
+                                color: 'white',
+                                fontFamily: 'Inter, sans-serif',
+                                fontSize: '16px',
+                                outline: 'none',
+                                boxSizing: 'border-box'
+                              }}
+                              onFocus={(e) => e.target.style.borderColor = 'white'}
+                              onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                            />
+                          </div>
+                        </div>
+                        {filteredCountries.map((country, index) => (
+                          <div
+                            key={`${country.code}-${index}`}
                             onClick={() => {
+                              setSelectedCountry(country);
                               setShowCountryDropdown(false);
                               setCountrySearchQuery('');
                             }}
-                            style={{ cursor: 'pointer', padding: '8px' }}
-                          >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </div>
-                        </div>
-                        
-                        {/* Search Input */}
-                        <div style={{ position: 'relative' }}>
-                          <div style={{
-                            position: 'absolute',
-                            left: '16px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            zIndex: 1
-                          }}>
-                            <Search size={18} color="#959493" />
-                          </div>
-                          <input
-                            type="text"
-                            placeholder="Search countries..."
-                            value={countrySearchQuery}
-                            onChange={(e) => setCountrySearchQuery(e.target.value)}
                             style={{
-                              width: '100%',
-                              height: '48px',
-                              padding: '0 16px 0 48px',
-                              borderRadius: '12px',
-                              border: '1px solid rgba(255, 255, 255, 0.12)',
-                              background: '#1A1A1A',
-                              color: 'white',
-                              fontFamily: 'Inter, sans-serif',
-                              fontSize: '16px',
-                              outline: 'none',
-                              boxSizing: 'border-box'
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '12px',
+                              padding: '16px 24px',
+                              cursor: 'pointer',
+                              borderBottom: index < filteredCountries.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = 'white'}
-                            onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
-                          />
-                        </div>
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            <img src={country.flag} alt={`${country.name} Flag`} style={{ width: '24px', height: '24px' }} />
+                            <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px', minWidth: '50px' }}>{country.code}</span>
+                            <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{country.name}</span>
+                          </div>
+                        ))}
                       </div>
-                      {filteredCountries.map((country, index) => (
-                        <div
-                          key={`${country.code}-${index}`}
-                          onClick={() => {
-                            setSelectedCountry(country);
-                            setShowCountryDropdown(false);
-                            setCountrySearchQuery('');
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            padding: '16px 24px',
-                            cursor: 'pointer',
-                            borderBottom: index < filteredCountries.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none'
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          <img src={country.flag} alt={`${country.name} Flag`} style={{ width: '24px', height: '24px' }} />
-                          <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px', minWidth: '50px' }}>{country.code}</span>
-                          <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{country.name}</span>
-                        </div>
-                      ))}
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-              
-              {/* Phone Input - Separate and Full Width */}
-              <input
-                type="tel"
-                placeholder="Phone"
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                style={{
-                  display: 'flex',
-                  height: '64px',
-                  padding: '16px 24px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  width: '100%',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: '#2A2A29 !important',
-                  backgroundColor: '#2A2A29 !important',
-                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                  WebkitTextFillColor: '#959493',
-                  color: '#959493',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '16px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-                onFocus={(e) => e.target.style.borderColor = 'white'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
-              />
               {errors.phone && (
                 <div style={{ 
                   color: '#ff4444', 
