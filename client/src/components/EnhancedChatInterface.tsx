@@ -767,38 +767,59 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                     ...typography.h1,
                     color: 'white',
                     marginBottom: '24px',
-                    textAlign: 'left'
-                  }}>
-                    Previous Discussion
-                  </h1>
-                  <div style={{ 
+                    textAlign: 'left',
                     display: 'flex',
-                    flexDirection: 'column',
+                    alignItems: 'center',
                     gap: '12px'
                   }}>
-                    {messages.slice(-6).map((message, index) => (
-                      <div key={`${message.id}-${index}`} style={{
-                        display: 'flex',
-                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                        width: '100%'
-                      }}>
-                        <div style={{
-                          backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                          color: message.role === 'user' ? '#000' : '#DBDBDB',
-                          borderRadius: '16px',
-                          padding: message.role === 'user' ? '12px 16px' : '12px 0',
-                          maxWidth: message.role === 'user' ? '80%' : '100%',
-                          fontSize: '14px',
-                          fontFamily: 'Inter, sans-serif',
-                          lineHeight: '1.5'
+                    <span style={{ fontSize: '24px' }}>💬</span>
+                    Previous Discussion
+                  </h1>
+                  <div style={{
+                    backgroundColor: '#191919',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    borderTop: '2px solid transparent',
+                    borderRight: '1px solid transparent',
+                    borderBottom: '1px solid transparent',
+                    borderLeft: '1px solid transparent',
+                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box'
+                  }}>
+                    <ul style={{ 
+                      listStyle: 'none', 
+                      padding: 0, 
+                      margin: 0,
+                      color: 'white',
+                      ...typography.body
+                    }}>
+                      {messages.slice(-6).filter(message => message.role === 'user').map((message, index) => (
+                        <li key={`${message.id}-${index}`} style={{
+                          marginBottom: index < messages.slice(-6).filter(m => m.role === 'user').length - 1 ? '8px' : '0',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '8px'
                         }}>
-                          {message.content.length > 200 
-                            ? `${message.content.substring(0, 200)}...`
-                            : message.content
-                          }
-                        </div>
-                      </div>
-                    ))}
+                          <span style={{ 
+                            color: '#DBDBDB', 
+                            fontSize: '14px',
+                            marginTop: '2px',
+                            flexShrink: 0
+                          }}>•</span>
+                          <span style={{ 
+                            color: '#DBDBDB',
+                            fontSize: '14px',
+                            lineHeight: '1.5'
+                          }}>
+                            {message.content.length > 100 
+                              ? `${message.content.substring(0, 100)}...`
+                              : message.content
+                            }
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
