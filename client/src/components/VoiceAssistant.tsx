@@ -455,21 +455,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 // Store the message text for the Listen Response button first
                 (window as any).lastResponseText = messageText;
                 
-                // Clear all thinking/processing states immediately and show button
+                // Force show Listen Response button immediately
+                setIsVoiceThinking(false);
+                setIsResponding(false);
+                setResponseComplete(true);
+                setHasReceivedFirstResponse(true);
+                setShowListenButton(true);
+                setShowBottomSheet(true);
+                console.log("🎧 Listen Response button activated immediately!");
+                
+                // Additional check after a delay to ensure button appears
                 setTimeout(() => {
-                  setIsVoiceThinking(false);
-                  setIsResponding(false);
-                  setResponseComplete(true);
-                  setHasReceivedFirstResponse(true);
-                  setShowListenButton(true);
-                  setShowBottomSheet(true);
-                  console.log("✅ Listen Response button should now be visible - State set:", {
-                    showListenButton: true,
-                    isVoiceThinking: false,
-                    isResponding: false,
-                    responseComplete: true
-                  });
-                }, 100); // Small delay to ensure state updates properly
+                  if (!showListenButton) {
+                    console.log("🔧 Forcing Listen Response button to appear");
+                    setShowListenButton(true);
+                    setShowBottomSheet(true);
+                  }
+                }, 200);
 
               } else {
                 console.log("Last message has no text content");
@@ -817,7 +819,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isResponding={isResponding}
         isThinking={isProcessing || (isVoiceThinking && !showListenButton && !responseComplete) || status === 'Processing your question...'}
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
-        showListenButton={showListenButton && !isListening && !isResponding}
+        showListenButton={(showListenButton && !isListening && !isResponding) || (usedVoiceInput && !isProcessing && !isListening && !isResponding && hasReceivedFirstResponse)}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
       />
