@@ -1045,7 +1045,7 @@ const Cellar = () => {
               padding: '2px 1px 1px 1px',
               width: '100%'
             }}>
-              <div
+              <button
                 onClick={handleSave}
                 style={{
                   width: '100%',
@@ -1059,16 +1059,21 @@ const Cellar = () => {
                   fontSize: '16px',
                   fontWeight: 500,
                   cursor: 'pointer',
+                  outline: 'none',
                   boxSizing: 'border-box',
                   
-                  /* 4% white background */
-                  background: 'rgba(255, 255, 255, 0.04)',
+                  /* More visible white background */
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  border: 'none',
                   borderRadius: '30px',
-                  userSelect: 'none'
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'none',
+                  appearance: 'none'
                 }}
               >
                 Save
-              </div>
+              </button>
             </div>
           </div>
         </div>,
