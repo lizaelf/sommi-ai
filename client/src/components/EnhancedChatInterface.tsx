@@ -886,13 +886,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       }}>
                         <div style={{
                           backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                          color: message.role === 'user' ? '#000' : '#DBDBDB',
                           borderRadius: '16px',
                           padding: message.role === 'user' ? '12px 16px' : '12px 0',
                           maxWidth: message.role === 'user' ? '80%' : '100%',
                           ...typography.body
                         }}>
-                          {message.content}
+                          {message.role === 'assistant' ? (
+                            <div style={{ color: '#DBDBDB' }}>
+                              {formatListContent(message.content)}
+                            </div>
+                          ) : (
+                            <div style={{ color: '#000' }}>
+                              {formatBoldText(message.content)}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
