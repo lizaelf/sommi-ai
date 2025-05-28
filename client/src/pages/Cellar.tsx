@@ -255,100 +255,103 @@ const Cellar = () => {
 
       {/* Content with top padding to account for fixed header */}
       <div className="pt-16">
-        {/* Wine Rack Container */}
-      <div 
-        className="bg-cover bg-center bg-no-repeat relative"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          height: '228px',
+        {/* Cellar Container with rounded corners */}
+        <div style={{
+          borderRadius: '8px',
+          overflow: 'hidden',
           margin: '0 16px 0 16px'
-        }}
-      >
-        {/* Empty divs above the image */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+        }}>
+          {/* First Wine Rack Container */}
           <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
-            onClick={() => handleWineClick(1)}
+            className="bg-cover bg-center bg-no-repeat relative"
+            style={{
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'cover',
+              height: '228px'
+            }}
           >
-            <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '186px' }} />
+            {/* Empty divs above the image */}
+            <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
+                onClick={() => handleWineClick(1)}
+              >
+                <img src={wineBottleImage} alt="Wine bottle" className="object-contain" style={{ height: '186px' }} />
+              </div>
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(2)}
+              />
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(3)}
+              />
+            </div>
           </div>
+
+          {/* Second Wine Rack Container */}
           <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(2)}
-          />
+            className="bg-cover bg-center bg-no-repeat relative"
+            style={{
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'cover',
+              height: '228px'
+            }}
+          >
+            {/* Empty divs above the image */}
+            <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(4)}
+              />
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(5)}
+              />
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(6)}
+              />
+            </div>
+          </div>
+
+          {/* Third Wine Rack Container */}
           <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(3)}
+            className="bg-cover bg-center bg-no-repeat relative"
+            style={{
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'cover',
+              height: '228px'
+            }}
+          >
+            {/* Empty divs above the image */}
+            <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(7)}
+              />
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(8)}
+              />
+              <div 
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(9)}
+              />
+            </div>
+          </div>
+
+          {/* Line separator below last wine rack */}
+          <div 
+            style={{
+              backgroundImage: `url(${lineImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              height: '10px'
+            }}
           />
         </div>
-      </div>
-
-      {/* Second Wine Rack Container - Below the first one */}
-      <div 
-        className="bg-cover bg-center bg-no-repeat relative"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          height: '228px',
-          margin: '0 16px 0 16px'
-        }}
-      >
-        {/* Empty divs above the image */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-          <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(4)}
-          />
-          <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(5)}
-          />
-          <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(6)}
-          />
-        </div>
-      </div>
-
-      {/* Third Wine Rack Container - Below the second one */}
-      <div 
-        className="bg-cover bg-center bg-no-repeat relative"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          height: '228px',
-          margin: '0 16px 0 16px'
-        }}
-      >
-        {/* Empty divs above the image */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-          <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(7)}
-          />
-          <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(8)}
-          />
-          <div 
-            className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-            onClick={() => handleWineClick(9)}
-          />
-        </div>
-      </div>
-
-      {/* Line separator below last wine rack */}
-      <div 
-        style={{
-          backgroundImage: `url(${lineImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          height: '10px',
-          margin: '0 16px 0 16px'
-        }}
-      />
 
       {/* Contact Info Bottom Sheet */}
       {animationState !== 'closed' && portalElement && createPortal(
