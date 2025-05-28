@@ -966,7 +966,7 @@ const EnhancedChatInterface: React.FC = () => {
             <div style={{ height: '80px' }}></div>
           </div>
           
-          {/* Input Area - Fixed to Bottom */}
+          {/* Buy Again Button - Fixed to Bottom */}
           <div style={{
             backgroundColor: '#1C1C1C',
             padding: '16px',
@@ -978,42 +978,32 @@ const EnhancedChatInterface: React.FC = () => {
             borderTop: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
             <div className="max-w-3xl mx-auto">
-              {/* Suggestion chips - always visible above input */}
-              <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                <button 
-                  onClick={() => handleSendMessage("Tasting notes")}
-                  className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                >
-                  Tasting notes
-                </button>
-                <button 
-                  onClick={() => handleSendMessage("Simple recipes for this wine")}
-                  className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                >
-                  Simple recipes
-                </button>
-                <button 
-                  onClick={() => handleSendMessage("Where is this wine from?")}
-                  className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                >
-                  Where it's from
-                </button>
-              </div>
-              
-              <div className="relative flex items-center">
-                <ChatInput 
-                  onSendMessage={handleSendMessage} 
-                  isProcessing={isTyping}
-                  onFocus={() => setIsKeyboardFocused(true)}
-                  onBlur={() => setIsKeyboardFocused(false)}
-                  voiceButtonComponent={
-                    <VoiceAssistant
-                      onSendMessage={handleSendMessage}
-                      isProcessing={isTyping}
-                    />
-                  }
-                />
-              </div>
+              <button 
+                onClick={() => {
+                  // Handle buy again functionality
+                  console.log('Buy again clicked');
+                }}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  borderRadius: '32px',
+                  height: '56px',
+                  padding: '0 16px',
+                  margin: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: 'none',
+                  color: 'white',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  width: '100%'
+                }}
+              >
+                Buy again
+              </button>
             </div>
           </div>
         </main>
