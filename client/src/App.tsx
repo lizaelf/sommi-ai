@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import WineDetails from "@/pages/WineDetails";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
+import InternalWinePage from "@/pages/InternalWinePage";
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/wine/details" component={WineDetails} />
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={WineDetails} />
+      <Route path="/internal-wine" component={InternalWinePage} />
       <Route component={NotFound} />
     </Switch>
   );
