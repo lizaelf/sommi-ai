@@ -412,105 +412,72 @@ const Cellar = () => {
     <div className="min-h-screen bg-black text-white relative">
       <style>
         {`
-          /* Force transparent backgrounds on all inputs */
-          input[type="text"],
-          input[type="email"], 
-          input[type="tel"] {
-            background: transparent !important;
-            background-color: transparent !important;
-          }
-          
-          /* Override autofill styles */
-          input:-webkit-autofill,
-          input:-webkit-autofill:hover,
-          input:-webkit-autofill:focus,
-          input:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 30px transparent inset !important;
-            -webkit-text-fill-color: white !important;
-            background: transparent !important;
-            background-color: transparent !important;
-          }
-          
-          /* Firefox autofill override */
-          input:-moz-autofill {
-            background-color: transparent !important;
-            background: transparent !important;
-          }
-          
-          /* Additional input resets */
+          /* Contact form inputs with ChatInput gradient border */
           .contact-form-input {
             background: transparent !important;
             background-color: transparent !important;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
             
-            /* Gradient border effect like "Ask me about" input */
-            border-top: 2px solid transparent;
-            border-right: 1px solid transparent;
-            border-bottom: 1px solid transparent;
-            border-left: 1px solid transparent;
+            /* Exact ChatInput gradient border */
+            border-top: 2px solid transparent !important;
+            border-right: 1px solid transparent !important;
+            border-bottom: 1px solid transparent !important;
+            border-left: 1px solid transparent !important;
+            border-radius: 16px !important;
             
             background-image: 
-              linear-gradient(#1C1C1C, #1C1C1C),
-              radial-gradient(
-                circle at top center, 
-                rgba(255, 255, 255, 0.46) 0%,
-                rgba(255, 255, 255, 0.16) 100%
-              );
-            
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
-            overflow: hidden;
+              linear-gradient(#1C1C1C, #1C1C1C), 
+              radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+            background-origin: border-box !important;
+            background-clip: padding-box, border-box !important;
+            overflow: hidden !important;
           }
           
           .contact-form-input:focus {
-            background: transparent !important;
-            background-color: transparent !important;
+            background-image: 
+              linear-gradient(#1C1C1C, #1C1C1C), 
+              radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+            background-origin: border-box !important;
+            background-clip: padding-box, border-box !important;
+            outline: none !important;
           }
           
           .contact-form-input::placeholder {
             color: #959493 !important;
           }
           
-          .contact-form-input::-webkit-input-placeholder {
-            color: #959493 !important;
-          }
-          
-          .contact-form-input::-moz-placeholder {
-            color: #959493 !important;
-          }
-          
-          /* Fix button backgrounds */
-          button {
-            -webkit-appearance: none !important;
-            -moz-appearance: none !important;
-            appearance: none !important;
-          }
-          
-          /* Override any button defaults */
+          /* Save button with matching style */
           .save-button {
             background: rgba(255, 255, 255, 0.04) !important;
             background-color: rgba(255, 255, 255, 0.04) !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
             border: none !important;
             
-            /* Gradient border effect for save button */
-            border-top: 2px solid transparent;
-            border-right: 1px solid transparent;
-            border-bottom: 1px solid transparent;
-            border-left: 1px solid transparent;
+            border-top: 2px solid transparent !important;
+            border-right: 1px solid transparent !important;
+            border-bottom: 1px solid transparent !important;
+            border-left: 1px solid transparent !important;
+            border-radius: 32px !important;
             
             background-image: 
-              linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)),
-              radial-gradient(
-                circle at top center, 
-                rgba(255, 255, 255, 0.46) 0%,
-                rgba(255, 255, 255, 0.16) 100%
-              );
-            
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
-            overflow: hidden;
+              linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), 
+              radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+            background-origin: border-box !important;
+            background-clip: padding-box, border-box !important;
+            overflow: hidden !important;
+          }
+          
+          /* Override autofill */
+          input:-webkit-autofill,
+          input:-webkit-autofill:hover,
+          input:-webkit-autofill:focus,
+          input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #1C1C1C inset !important;
+            -webkit-text-fill-color: white !important;
           }
         `}
       </style>
@@ -806,28 +773,13 @@ const Cellar = () => {
                   display: 'flex',
                   height: '56px',
                   padding: '16px 24px',
-                  justifyContent: 'center',
                   alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderRadius: '16px',
-                  background: 'transparent !important',
-                  backgroundColor: 'transparent !important',
+                  width: '100%',
                   color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#1C1C1C';
-                  e.target.style.background = 'transparent';
-                  e.target.style.backgroundColor = 'transparent';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#1C1C1C';
-                  e.target.style.background = 'transparent';
-                  e.target.style.backgroundColor = 'transparent';
                 }}
               />
               {errors.firstName && (
@@ -851,28 +803,13 @@ const Cellar = () => {
                   display: 'flex',
                   height: '56px',
                   padding: '16px 24px',
-                  justifyContent: 'center',
                   alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderRadius: '16px',
-                  background: 'transparent !important',
-                  backgroundColor: 'transparent !important',
+                  width: '100%',
                   color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#1C1C1C';
-                  e.target.style.background = 'transparent';
-                  e.target.style.backgroundColor = 'transparent';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#1C1C1C';
-                  e.target.style.background = 'transparent';
-                  e.target.style.backgroundColor = 'transparent';
                 }}
               />
               {errors.lastName && (
@@ -896,28 +833,13 @@ const Cellar = () => {
                   display: 'flex',
                   height: '56px',
                   padding: '16px 24px',
-                  justifyContent: 'center',
                   alignItems: 'center',
-                  gap: '10px',
-                  alignSelf: 'stretch',
-                  borderRadius: '16px',
-                  background: 'transparent !important',
-                  backgroundColor: 'transparent !important',
+                  width: '100%',
                   color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#1C1C1C';
-                  e.target.style.background = 'transparent';
-                  e.target.style.backgroundColor = 'transparent';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#1C1C1C';
-                  e.target.style.background = 'transparent';
-                  e.target.style.backgroundColor = 'transparent';
                 }}
               />
               {errors.email && (
@@ -1077,28 +999,13 @@ const Cellar = () => {
                     display: 'flex',
                     height: '56px',
                     padding: '16px 24px',
-                    justifyContent: 'center',
                     alignItems: 'center',
-                    gap: '10px',
                     flex: 1,
-                    borderRadius: '16px',
-                    background: 'transparent !important',
-                    backgroundColor: 'transparent !important',
                     color: 'white',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
                     outline: 'none',
                     boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#1C1C1C';
-                    e.target.style.background = 'transparent';
-                    e.target.style.backgroundColor = 'transparent';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#1C1C1C';
-                    e.target.style.background = 'transparent';
-                    e.target.style.backgroundColor = 'transparent';
                   }}
                 />
               </div>
@@ -1120,12 +1027,8 @@ const Cellar = () => {
               className="save-button"
               style={{
                 width: '100%',
-                background: 'rgba(255, 255, 255, 0.04) !important',
-                backgroundColor: 'rgba(255, 255, 255, 0.04) !important',
-                borderRadius: '32px',
                 height: '56px',
                 padding: '0 16px',
-                margin: 0,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -1135,10 +1038,7 @@ const Cellar = () => {
                 fontWeight: 500,
                 cursor: 'pointer',
                 outline: 'none',
-                boxSizing: 'border-box',
-                WebkitAppearance: 'none',
-                MozAppearance: 'none',
-                appearance: 'none'
+                boxSizing: 'border-box'
               }}
             >
               Save
