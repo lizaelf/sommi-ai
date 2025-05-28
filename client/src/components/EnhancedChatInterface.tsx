@@ -859,7 +859,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                             ...typography.body
                           }}>
                           <div style={{ color: message.role === 'user' ? '#000' : '#DBDBDB' }}>
-                            {formatContent(message.content)}
+                            {(() => {
+                              // Store assistant message text for voice playback
+                              if (message.role === 'assistant' && message.content) {
+                                setTimeout(() => {
+                                  (window as any).lastResponseText = message.content;
+                                  console.log("💾 Stored assistant message at render:", message.content.substring(0, 50) + "...");
+                                }, 0);
+                              }
+                              return formatContent(message.content);
+                            })()}
                           </div>
                         </div>
                       </div>
