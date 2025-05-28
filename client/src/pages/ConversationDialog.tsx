@@ -20,17 +20,58 @@ export default function ConversationDialog() {
     currentConversationId
   } = useConversation();
 
-  // Handle sending messages - simplified version
+  // Handle sending messages with full AI integration
   const handleSendMessage = async (message: string) => {
     if (!message.trim() || isTyping) return;
     setIsTyping(true);
     
     try {
-      // Simple message sending without complex type handling
-      console.log('Sending message:', message);
+      // Add user message to conversation
+      const userMessage = {
+        id: Date.now(),
+        role: 'user' as const,
+        content: message.trim(),
+        timestamp: new Date(),
+        conversationId: currentConversationId || 0
+      };
       
-      // For now, just log the message - the actual implementation
-      // can be enhanced based on the existing chat interface logic
+      await addMessage(userMessage);
+      setLatestMessageId(null);
+
+      // Get AI response
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: message.trim(),
+          conversationId: currentConversationId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      
+      // Add AI response to conversation
+      const assistantMessage = {
+        id: Date.now() + 1,
+        role: 'assistant' as const,
+        content: data.response,
+        timestamp: new Date(),
+        conversationId: currentConversationId || 0
+      };
+      
+      setLatestMessageId(assistantMessage.id);
+      await addMessage(assistantMessage);
+      
+      // Scroll to bottom after adding message
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+      }, 100);
       
     } catch (error) {
       console.error('Error sending message:', error);
