@@ -560,36 +560,6 @@ const Cellar = () => {
               
               {/* Phone Input Row - Country Selector + Phone Input */}
               <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-                {/* Phone Input - Left Side */}
-                <input
-                  type="tel"
-                  placeholder="Phone"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  style={{
-                    display: 'flex',
-                    height: '64px',
-                    padding: '16px 24px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '10px',
-                    flex: 1,
-                    borderRadius: '16px',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    background: '#2A2A29 !important',
-                    backgroundColor: '#2A2A29 !important',
-                    WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                    WebkitTextFillColor: '#959493',
-                    color: '#959493',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '16px',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'white'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
-                />
-                
                 {/* Country Code Selector - 100px Width */}
                 <div style={{ position: 'relative', width: '100px' }}>
                   <div
@@ -720,6 +690,36 @@ const Cellar = () => {
                     </div>
                   )}
                 </div>
+                
+                {/* Phone Input - Right Side */}
+                <input
+                  type="tel"
+                  placeholder="Phone"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  style={{
+                    display: 'flex',
+                    height: '64px',
+                    padding: '16px 24px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    flex: 1,
+                    borderRadius: '16px',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: '#2A2A29 !important',
+                    backgroundColor: '#2A2A29 !important',
+                    WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
+                    WebkitTextFillColor: '#959493',
+                    color: '#959493',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'white'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                />
               </div>
               {errors.phone && (
                 <div style={{ 
