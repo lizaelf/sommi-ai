@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 
 export default function Home() {
