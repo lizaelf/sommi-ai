@@ -178,8 +178,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }));
         
         // Limit conversation history to prevent token limit issues
-        // Keep only the last 20 messages (10 exchanges) plus system message
-        const maxHistoryMessages = 20;
+        // Keep only the last 8 messages (4 exchanges) plus system message
+        const maxHistoryMessages = 8;
         const recentMessages = formattedPreviousMessages.slice(-maxHistoryMessages);
         
         // Add system message at the beginning if it doesn't exist

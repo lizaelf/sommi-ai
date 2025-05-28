@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 import { generateWineSystemPrompt } from "../shared/wineConfig.js";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const MODEL = "gpt-4o";
+// Using GPT-4o-mini for better efficiency and longer conversation support
+const MODEL = "gpt-4o-mini";
 // Fallback model if primary model is not available
 const FALLBACK_MODEL = "gpt-3.5-turbo";
 
