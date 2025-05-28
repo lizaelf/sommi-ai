@@ -497,8 +497,8 @@ const Cellar = () => {
           onClick={() => setShowWineSearch(!showWineSearch)}
           className="cursor-pointer"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-white">
-            <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.744a1 1 0 0 1-1.32 1.497l-.094-.083l-4.744-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" className="text-white">
+            <path fill="currentColor" d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"></path>
           </svg>
         </div>
       </div>
