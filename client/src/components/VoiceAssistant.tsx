@@ -457,8 +457,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsResponding(false);
                 setResponseComplete(true);
                 setHasReceivedFirstResponse(true);
-                setUsedVoiceInput(false);
                 setShowListenButton(true);
+                // Keep usedVoiceInput true until button is used, then reset
                 
                 // Store the message text for the Listen Response button
                 (window as any).lastResponseText = messageText;
@@ -813,7 +813,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isResponding={isResponding}
         isThinking={isProcessing || isVoiceThinking || status === 'Processing your question...'}
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
-        showListenButton={showListenButton && hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking}
+        showListenButton={showListenButton && !isListening && !isResponding}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
       />
