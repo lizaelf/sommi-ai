@@ -365,32 +365,28 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 paddingRight: '16px'
               }}>
                 <button
+                  className="voice-bottom-sheet-button"
                   onClick={onListenResponse}
                   style={{
                     width: '100%',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    color: '#333',
-                    borderRadius: '0px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '32px',
                     height: '56px',
-                    border: 'none',
+                    padding: '0 16px',
+                    margin: 0,
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: '8px',
+                    color: 'white',
+                    border: 'none',
                     cursor: 'pointer',
                     fontFamily: 'Inter, sans-serif',
-                    fontSize: '18px',
-                    fontWeight: 600,
+                    fontSize: '16px',
+                    fontWeight: 500,
                     outline: 'none',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    transition: 'none',
+                    boxSizing: 'border-box'
                   }}
                 >
                   <span style={{ fontSize: '18px' }}>🎧</span>
