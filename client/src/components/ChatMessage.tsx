@@ -407,14 +407,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         </div>
       ) : (
-        // AI Message - Wine info style with TextGenerateEffect animation
+        // AI Message - Wine info style with full text display
         <div data-role="assistant" className="relative">
-          <TextGenerateEffect
-            words={message.content}
-            className="text-foreground font-normal"
-            filter={true}
-            duration={0.3}
-          />
+          <div className="text-foreground font-normal whitespace-pre-wrap">
+            {formatContent(message.content)}
+          </div>
           
           {/* Play/Pause Button - Always show for assistant messages */}
           {!isUser && (
