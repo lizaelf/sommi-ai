@@ -731,14 +731,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           
           if (assistantMessages.length === 0) {
             console.log("🔍 No data-role messages found, trying alternative selectors...");
-            // Look for any div that might contain assistant content
-            const allDivs = messagesContainer.querySelectorAll('div');
-            assistantMessages = Array.from(allDivs).filter(div => {
-              const text = div.textContent || '';
-              return text.length > 50 && !text.includes('user') && 
-                     (text.includes('wine') || text.includes('Sassicaia') || text.includes('Tenuta') ||
-                      text.includes('The ') || text.includes('This ') || text.includes('It '));
-            }) as any;
+            // More robust search for assistant messages
+            const assistantCandidates = Array.from(messagesContainer.querySelectorAll('*')).filter(el => {
+              const text = el.textContent?.trim() || '';
+              return (
+                text.length > 50 &&
+                !el.closest('[data-role="user"]') &&
+                (text.startsWith("The ") || text.startsWith("This ") || text.includes("wine") || text.includes("flavor") || text.includes("Sassicaia"))
+              );
+            });
+            assistantMessages = assistantCandidates as any;
             console.log("🔍 Found potential assistant messages:", assistantMessages.length);
           }
           
