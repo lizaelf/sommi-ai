@@ -947,18 +947,19 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
 
                             {/* Previous Discussion */}
                             <div style={{ marginTop: '32px' }}>
-                              <h3 style={{ 
-                                fontSize: '18px', 
-                                marginBottom: '16px', 
+                              <h1 style={{ 
+                                fontSize: '32px', 
+                                marginBottom: '24px', 
                                 color: 'white',
-                                fontWeight: '600',
-                                textAlign: 'left'
+                                fontWeight: '700',
+                                textAlign: 'left',
+                                letterSpacing: '-0.025em'
                               }}>
                                 Previous Discussion
-                              </h3>
+                              </h1>
                               <div style={{ 
-                                maxHeight: '400px', 
-                                overflowY: 'auto',
+                                maxHeight: 'none', 
+                                overflowY: 'visible',
                                 paddingRight: '8px'
                               }}>
                                 {messages.slice(-6).map((message, index) => (
