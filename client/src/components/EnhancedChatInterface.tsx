@@ -771,32 +771,88 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   }}>
                     Previous Discussion
                   </h1>
+                  
+                  {/* Discussion Summary */}
                   <div style={{ 
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '12px'
+                    gap: '16px',
+                    marginBottom: '20px'
                   }}>
-                    {messages.slice(-6).map((message, index) => (
-                      <div key={`${message.id}-${index}`} style={{
-                        display: 'flex',
-                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                        width: '100%'
-                      }}>
-                        <div style={{
-                          backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                          color: message.role === 'user' ? '#000' : '#DBDBDB',
-                          borderRadius: '16px',
-                          padding: message.role === 'user' ? '12px 16px' : '12px 0',
-                          maxWidth: message.role === 'user' ? '80%' : '100%',
-                          ...typography.body
+                    {(() => {
+                      // Extract latest 3 topics from conversation
+                      const userMessages = messages.filter(msg => msg.role === 'user').slice(-3);
+                      const topics = userMessages.map((msg, index) => {
+                        const assistantResponse = messages.find(m => 
+                          m.role === 'assistant' && 
+                          messages.indexOf(m) > messages.indexOf(msg)
+                        );
+                        
+                        return {
+                          title: msg.content.length > 50 ? `${msg.content.substring(0, 50)}...` : msg.content,
+                          description: assistantResponse 
+                            ? (assistantResponse.content.length > 300 
+                                ? `${assistantResponse.content.substring(0, 300)}...`
+                                : assistantResponse.content)
+                            : 'Discussion in progress...'
+                        };
+                      });
+
+                      return topics.map((topic, index) => (
+                        <div key={index} style={{
+                          backgroundColor: '#191919',
+                          borderRadius: '12px',
+                          padding: '16px',
+                          border: '1px solid rgba(255, 255, 255, 0.1)'
                         }}>
-                          {message.content.length > 200 
-                            ? `${message.content.substring(0, 200)}...`
-                            : message.content
-                          }
+                          <h3 style={{
+                            ...typography.body,
+                            fontWeight: '600',
+                            color: 'white',
+                            marginBottom: '8px'
+                          }}>
+                            {topic.title}
+                          </h3>
+                          <div style={{
+                            ...typography.body,
+                            color: '#DBDBDB',
+                            lineHeight: '1.5',
+                            maxHeight: '120px', // Approximately 5 rows
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 5,
+                            WebkitBoxOrient: 'vertical'
+                          }}>
+                            {topic.description}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ));
+                    })()}
+                  </div>
+
+                  {/* Show whole dialog button */}
+                  <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                    <button 
+                      onClick={() => setShowFullConversation(true)}
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        padding: '12px 24px',
+                        color: 'white',
+                        ...typography.body,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseOver={(e) => {
+                        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                      }}
+                    >
+                      Show whole dialog
+                    </button>
                   </div>
                 </div>
               )}
