@@ -901,30 +901,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onListenResponse={handleListenResponse}
       />
       
-      {/* DEBUG: Manual test button to force show Listen Response button */}
-      <button 
+      {/* SIMPLE TEST BUTTON */}
+      <div
         onClick={() => {
-          console.log("🧪 Manual test - forcing showListenButton to true");
+          alert("Test button works!");
+          console.log("🧪 Forcing Listen button");
           setShowListenButton(true);
           setShowBottomSheet(true);
           setIsVoiceThinking(false);
           setIsResponding(false);
           setResponseComplete(true);
-          // Add some test text for the button to use
+          // Add test text
           (window as any).lastResponseText = "This is a test response to verify the Listen Response button functionality.";
         }}
         style={{
           position: 'fixed',
-          top: '100px',
+          top: '50px',
           right: '10px',
-          background: 'red',
+          width: '50px',
+          height: '50px',
+          backgroundColor: 'red',
           color: 'white',
-          padding: '10px',
-          zIndex: 9999
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 99999,
+          fontSize: '12px'
         }}
       >
-        TEST LISTEN BUTTON
-      </button>
+        TEST
+      </div>
     </div>
   );
 };
