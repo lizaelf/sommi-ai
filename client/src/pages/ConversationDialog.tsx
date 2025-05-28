@@ -24,7 +24,7 @@ export default function ConversationDialog() {
   }, [messages]);
 
   const handleBackClick = () => {
-    setLocation('/wine-details');
+    setLocation('/wine/details');
   };
 
   const handleSendMessage = async (messageText: string) => {
