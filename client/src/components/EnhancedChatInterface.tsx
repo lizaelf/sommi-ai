@@ -34,6 +34,96 @@ interface EnhancedChatInterfaceProps {
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyButton = false }) => {
+  // Function to format content with proper list handling
+  const formatListContent = (content: string) => {
+    if (!content) return null;
+
+    const lines = content.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentListItems: string[] = [];
+    let inList = false;
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // Check if line is a list item (starts with -, •, *, or number.)
+      const isBulletPoint = /^[-•*]\s/.test(trimmedLine);
+      const isNumberedItem = /^\d+\.\s/.test(trimmedLine);
+      
+      if (isBulletPoint || isNumberedItem) {
+        // Add to current list
+        const itemText = trimmedLine.replace(/^[-•*]\s|^\d+\.\s/, '');
+        currentListItems.push(itemText);
+        inList = true;
+      } else {
+        // If we were in a list and now we're not, render the list
+        if (inList && currentListItems.length > 0) {
+          elements.push(
+            <div key={`list-${index}`} style={{ margin: '8px 0' }}>
+              {currentListItems.map((item, itemIndex) => (
+                <div key={itemIndex} style={{ 
+                  display: 'flex', 
+                  alignItems: 'flex-start', 
+                  marginBottom: '4px',
+                  paddingLeft: '8px'
+                }}>
+                  <span style={{ 
+                    color: '#6A53E7', 
+                    marginRight: '8px',
+                    fontSize: '14px',
+                    marginTop: '2px'
+                  }}>•</span>
+                  <span style={{ color: '#DBDBDB' }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          );
+          currentListItems = [];
+          inList = false;
+        }
+        
+        // Add regular paragraph if it's not empty
+        if (trimmedLine) {
+          elements.push(
+            <div key={`para-${index}`} style={{ 
+              marginBottom: '8px',
+              color: '#DBDBDB',
+              whiteSpace: 'pre-wrap'
+            }}>
+              {line}
+            </div>
+          );
+        }
+      }
+    });
+
+    // Handle any remaining list items
+    if (inList && currentListItems.length > 0) {
+      elements.push(
+        <div key="final-list" style={{ margin: '8px 0' }}>
+          {currentListItems.map((item, itemIndex) => (
+            <div key={itemIndex} style={{ 
+              display: 'flex', 
+              alignItems: 'flex-start', 
+              marginBottom: '4px',
+              paddingLeft: '8px'
+            }}>
+              <span style={{ 
+                color: '#6A53E7', 
+                marginRight: '8px',
+                fontSize: '14px',
+                marginTop: '2px'
+              }}>•</span>
+              <span style={{ color: '#DBDBDB' }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return <>{elements}</>;
+  };
+
   // Use our enhanced conversation hook
   const {
     currentConversationId,
@@ -965,12 +1055,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                               {message.role === 'assistant' ? (
                                 <div style={{
                                   color: '#DBDBDB',
-                                  whiteSpace: 'pre-wrap',
                                   fontFamily: 'Inter, system-ui, sans-serif',
                                   fontSize: '16px',
                                   lineHeight: '1.6'
                                 }}>
-                                  {message.content}
+                                  {formatListContent(message.content)}
                                 </div>
                               ) : (
                                 <div style={{
