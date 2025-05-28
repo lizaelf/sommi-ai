@@ -2,12 +2,14 @@ import { ArrowLeft, Search, X } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useToast } from '@/hooks/use-toast';
 import backgroundImage from '@assets/Background.png';
 import wineBottleImage from '@assets/Product Image.png';
 import usFlagImage from '@assets/US-flag.png';
 import logoImage from '@assets/Logo.png';
 
 const Cellar = () => {
+  const { toast } = useToast();
   const [showModal, setShowModal] = useState(true); // Show modal immediately when entering cellar
   const [, setLocation] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -135,6 +137,11 @@ const Cellar = () => {
       if (response.ok) {
         console.log('Contact saved successfully:', data);
         setShowModal(false);
+        
+        // Show toast notification
+        toast({
+          title: "Select wine to see past info and chats",
+        });
       } else {
         console.error('Failed to save contact:', data);
         // Handle server validation errors if needed
