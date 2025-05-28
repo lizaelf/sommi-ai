@@ -763,16 +763,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 padding: '0 20px',
                 marginBottom: '20px'
               }}>
-                {showBuyButton && (
-                  <h1 style={{
-                    ...typography.h1,
-                    color: 'white',
-                    marginBottom: '24px',
-                    textAlign: 'left'
-                  }}>
-                    Summary
-                  </h1>
-                )}
+                <h1 style={{
+                  ...typography.h1,
+                  color: 'white',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}>
+                  Summary
+                </h1>
                 
                 {/* Conversation Content */}
                 <div id="conversation" className="space-y-4 mb-96">
