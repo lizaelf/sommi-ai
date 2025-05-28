@@ -23,6 +23,13 @@ const Cellar = () => {
     phone: ''
   });
 
+  const [filledInputs, setFilledInputs] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    phone: false
+  });
+
   const [errors, setErrors] = useState({
     firstName: '',
     lastName: '',
@@ -247,6 +254,12 @@ const Cellar = () => {
       ...prev,
       [field]: value
     }));
+    
+    // Track which inputs are filled
+    setFilledInputs(prev => ({
+      ...prev,
+      [field]: value.trim() !== ''
+    }));
   };
 
   const handleSave = async () => {
@@ -412,22 +425,19 @@ const Cellar = () => {
     <div className="min-h-screen bg-black text-white relative">
       <style>
         {`
-          /* Contact form inputs - transparent when empty */
           .contact-form-input {
-            background: transparent !important;
-            background-color: transparent !important;
+            background: #1C1C1C !important;
+            background-color: #1C1C1C !important;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
             
-            /* Gradient border */
             border-top: 2px solid transparent !important;
             border-right: 1px solid transparent !important;
             border-bottom: 1px solid transparent !important;
             border-left: 1px solid transparent !important;
             border-radius: 16px !important;
             
-            /* Empty state - dark background */
             background-image: 
               linear-gradient(#1C1C1C, #1C1C1C), 
               radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
@@ -436,23 +446,9 @@ const Cellar = () => {
             overflow: hidden !important;
           }
           
-          /* Filled inputs - 8% white background */
-          .contact-form-input:not(:placeholder-shown) {
-            background-image: 
-              linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), 
-              radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
-          }
-          
-          /* Focus state - keep current background */
-          .contact-form-input:focus {
-            background-image: 
-              linear-gradient(#1C1C1C, #1C1C1C), 
-              radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
-            outline: none !important;
-          }
-          
-          /* Focus state when filled - 8% white background */
-          .contact-form-input:focus:not(:placeholder-shown) {
+          .contact-form-input.filled {
+            background: rgba(255, 255, 255, 0.08) !important;
+            background-color: rgba(255, 255, 255, 0.08) !important;
             background-image: 
               linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), 
               radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
@@ -462,23 +458,25 @@ const Cellar = () => {
             color: #959493 !important;
           }
           
-          /* Save button - same style as Buy again button */
           .save-button {
-            background-color: rgba(255, 255, 255, 0.08) !important;
-            border-radius: 32px !important;
-            border: none !important;
+            background: rgba(255, 255, 255, 0.04) !important;
+            background-color: rgba(255, 255, 255, 0.04) !important;
             -webkit-appearance: none !important;
-            -moz-appearance: none !important;
             appearance: none !important;
-          }
-          
-          /* Override autofill - 8% white background */
-          input:-webkit-autofill,
-          input:-webkit-autofill:hover,
-          input:-webkit-autofill:focus,
-          input:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.08) inset !important;
-            -webkit-text-fill-color: white !important;
+            border: none !important;
+            
+            border-top: 2px solid transparent !important;
+            border-right: 1px solid transparent !important;
+            border-bottom: 1px solid transparent !important;
+            border-left: 1px solid transparent !important;
+            border-radius: 32px !important;
+            
+            background-image: 
+              linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), 
+              radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+            background-origin: border-box !important;
+            background-clip: padding-box, border-box !important;
+            overflow: hidden !important;
           }
         `}
       </style>
@@ -769,7 +767,7 @@ const Cellar = () => {
                 placeholder="First name"
                 value={formData.firstName}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
-                className="contact-form-input"
+                className={`contact-form-input ${filledInputs.firstName ? 'filled' : ''}`}
                 style={{
                   display: 'flex',
                   height: '56px',
@@ -799,7 +797,7 @@ const Cellar = () => {
                 placeholder="Last name"
                 value={formData.lastName}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
-                className="contact-form-input"
+                className={`contact-form-input ${filledInputs.lastName ? 'filled' : ''}`}
                 style={{
                   display: 'flex',
                   height: '56px',
@@ -829,7 +827,7 @@ const Cellar = () => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className="contact-form-input"
+                className={`contact-form-input ${filledInputs.email ? 'filled' : ''}`}
                 style={{
                   display: 'flex',
                   height: '56px',
@@ -995,7 +993,7 @@ const Cellar = () => {
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="contact-form-input"
+                  className={`contact-form-input ${filledInputs.phone ? 'filled' : ''}`}
                   style={{
                     display: 'flex',
                     height: '56px',
