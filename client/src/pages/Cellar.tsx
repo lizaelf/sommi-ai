@@ -246,7 +246,7 @@ const Cellar = () => {
           isScrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'
         }`}
       >
-        <Link href="/">
+        <Link to="/">
           <img 
             src={logoImage} 
             alt="SOMM Logo" 
