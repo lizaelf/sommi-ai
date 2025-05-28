@@ -462,25 +462,14 @@ const Cellar = () => {
             color: #959493 !important;
           }
           
-          /* Save button - 4% white background */
+          /* Save button - same style as Buy again button */
           .save-button {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-radius: 32px !important;
+            border: none !important;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
-            border: none !important;
-            
-            border-top: 2px solid transparent !important;
-            border-right: 1px solid transparent !important;
-            border-bottom: 1px solid transparent !important;
-            border-left: 1px solid transparent !important;
-            border-radius: 32px !important;
-            
-            background-image: 
-              linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), 
-              radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
-            background-origin: border-box !important;
-            background-clip: padding-box, border-box !important;
-            overflow: hidden !important;
           }
           
           /* Override autofill - 8% white background */
