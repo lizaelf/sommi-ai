@@ -100,24 +100,15 @@ export default function ConversationDialog() {
                   data-role={message.role}
                 >
                   {message.role === 'assistant' ? (
-                    message.id === latestMessageId ? (
-                      <TextGenerateEffect
-                        words={message.content}
-                        className="text-[#DBDBDB] font-normal text-base leading-relaxed"
-                        filter={true}
-                        duration={0.3}
-                      />
-                    ) : (
-                      <div style={{
-                        color: '#DBDBDB',
-                        whiteSpace: 'pre-wrap',
-                        fontFamily: 'Inter, system-ui, sans-serif',
-                        fontSize: '16px',
-                        lineHeight: '1.6'
-                      }}>
-                        {message.content}
-                      </div>
-                    )
+                    <div style={{
+                      color: '#DBDBDB',
+                      whiteSpace: 'pre-wrap',
+                      fontFamily: 'Inter, system-ui, sans-serif',
+                      fontSize: '16px',
+                      lineHeight: '1.6'
+                    }}>
+                      {message.content}
+                    </div>
                   ) : (
                     <div style={{
                       color: '#000000',
