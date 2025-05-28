@@ -849,13 +849,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                         justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
                         width: '100%'
                       }}>
-                        <div style={{
-                          backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                          borderRadius: '16px',
-                          padding: message.role === 'user' ? '12px 16px 4px 16px' : '12px 0',
-                          maxWidth: message.role === 'user' ? '80%' : '100%',
-                          ...typography.body
-                        }}>
+                        <div 
+                          data-role={message.role}
+                          style={{
+                            backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
+                            borderRadius: '16px',
+                            padding: message.role === 'user' ? '12px 16px 4px 16px' : '12px 0',
+                            maxWidth: message.role === 'user' ? '80%' : '100%',
+                            ...typography.body
+                          }}>
                           <div style={{ color: message.role === 'user' ? '#000' : '#DBDBDB' }}>
                             {formatContent(message.content)}
                           </div>
