@@ -541,14 +541,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             const lastMessage = messageElements[messageElements.length - 1];
             if (lastMessage && lastMessage.textContent) {
               const messageText = lastMessage.textContent || '';
-              console.log("Fallback: Found new AI response, storing text");
+              console.log("Fallback: Found new AI response, storing text:", messageText.substring(0, 100) + "...");
               
               // Store the message for the button
               (window as any).lastResponseText = messageText;
             }
           }
         }
-      }, 100);
+      }, 500);
       
       return () => clearTimeout(timeout);
     }
