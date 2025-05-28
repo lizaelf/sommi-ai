@@ -411,8 +411,8 @@ const Cellar = () => {
               <h2 style={{
                 color: 'white',
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '24px',
-                fontWeight: 600,
+                fontSize: '20px',
+                fontWeight: 500,
                 textAlign: 'center',
                 marginBottom: '16px',
                 margin: '0 0 16px 0'
