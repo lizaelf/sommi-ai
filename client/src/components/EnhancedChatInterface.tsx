@@ -830,6 +830,8 @@ const EnhancedChatInterface: React.FC = () => {
                               backgroundColor: 'rgba(255, 255, 255, 0.08)',
                               borderRadius: '32px',
                               height: '56px',
+                              minHeight: '56px',
+                              maxHeight: '56px',
                               padding: '0 16px',
                               margin: 0,
                               display: 'flex',
@@ -845,7 +847,9 @@ const EnhancedChatInterface: React.FC = () => {
                               width: '100%',
                               maxWidth: '320px',
                               marginLeft: 'auto',
-                              marginRight: 'auto'
+                              marginRight: 'auto',
+                              boxSizing: 'border-box',
+                              lineHeight: '1'
                             }}
                           >
                             Back to Summary
@@ -904,6 +908,8 @@ const EnhancedChatInterface: React.FC = () => {
                                   backgroundColor: 'rgba(255, 255, 255, 0.08)',
                                   borderRadius: '32px',
                                   height: '56px',
+                                  minHeight: '56px',
+                                  maxHeight: '56px',
                                   padding: '0 16px',
                                   margin: 0,
                                   display: 'flex',
@@ -919,7 +925,9 @@ const EnhancedChatInterface: React.FC = () => {
                                   width: '100%',
                                   maxWidth: '320px',
                                   marginLeft: 'auto',
-                                  marginRight: 'auto'
+                                  marginRight: 'auto',
+                                  boxSizing: 'border-box',
+                                  lineHeight: '1'
                                 }}
                               >
                                 Show whole dialog
@@ -987,6 +995,8 @@ const EnhancedChatInterface: React.FC = () => {
                   backgroundColor: 'rgba(255, 255, 255, 0.08)',
                   borderRadius: '32px',
                   height: '56px',
+                  minHeight: '56px',
+                  maxHeight: '56px',
                   padding: '0 16px',
                   margin: 0,
                   display: 'flex',
@@ -999,7 +1009,9 @@ const EnhancedChatInterface: React.FC = () => {
                   fontWeight: 500,
                   cursor: 'pointer',
                   outline: 'none',
-                  width: '100%'
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  lineHeight: '1'
                 }}
               >
                 Buy again
