@@ -644,7 +644,7 @@ const Cellar = () => {
                                 padding: '0 16px 0 48px',
                                 borderRadius: '12px',
                                 border: '1px solid rgba(255, 255, 255, 0.12)',
-                                background: '#1A1A1A',
+                                background: 'transparent',
                                 color: 'white',
                                 fontFamily: 'Inter, sans-serif',
                                 fontSize: '16px',
