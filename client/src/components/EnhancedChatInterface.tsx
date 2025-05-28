@@ -993,6 +993,64 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                               </div>
                             </div>
 
+                            {/* Previous Discussion */}
+                            <div style={{ marginTop: '32px' }}>
+                              <h3 style={{ 
+                                fontSize: '18px', 
+                                marginBottom: '16px', 
+                                color: 'white',
+                                fontWeight: '600',
+                                textAlign: 'left'
+                              }}>
+                                Previous Discussion
+                              </h3>
+                              <div style={{ 
+                                maxHeight: '400px', 
+                                overflowY: 'auto',
+                                paddingRight: '8px'
+                              }}>
+                                {messages.slice(-6).map((message, index) => (
+                                  <div key={`${message.id}-${index}`} style={{
+                                    marginBottom: '16px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '8px'
+                                  }}>
+                                    {message.role === 'user' ? (
+                                      <div style={{
+                                        alignSelf: 'flex-end',
+                                        backgroundColor: '#F5F5F5',
+                                        color: '#000',
+                                        borderRadius: '16px',
+                                        padding: '12px 16px',
+                                        maxWidth: '80%',
+                                        fontSize: '14px',
+                                        fontFamily: 'Inter, sans-serif'
+                                      }}>
+                                        {message.content}
+                                      </div>
+                                    ) : (
+                                      <div style={{
+                                        alignSelf: 'flex-start',
+                                        color: '#DBDBDB',
+                                        borderRadius: '16px',
+                                        padding: '12px 0',
+                                        maxWidth: '100%',
+                                        fontSize: '14px',
+                                        fontFamily: 'Inter, sans-serif',
+                                        lineHeight: '1.5'
+                                      }}>
+                                        {message.content.length > 200 
+                                          ? `${message.content.substring(0, 200)}...`
+                                          : message.content
+                                        }
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
                           </div>
                         );
                       })())
