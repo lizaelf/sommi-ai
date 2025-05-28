@@ -564,6 +564,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
 
   // Handle closing the bottom sheet
+  // DEBUG LOGGING - Monitor all button-related states
+  useEffect(() => {
+    console.log("🔍 LISTEN BUTTON DEBUG:", {
+      showListenButton,
+      isListening,
+      isResponding,
+      isVoiceThinking,
+      responseComplete,
+      hasReceivedFirstResponse,
+      usedVoiceInput,
+      isProcessing,
+      status,
+      finalCondition: showListenButton && !isListening && !isResponding
+    });
+  }, [showListenButton, isListening, isResponding, isVoiceThinking, responseComplete, hasReceivedFirstResponse, usedVoiceInput, isProcessing, status]);
+
   const handleCloseBottomSheet = () => {
     // Stop any ongoing OpenAI TTS audio playback
     if ((window as any).currentOpenAIAudio) {
