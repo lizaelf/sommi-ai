@@ -450,6 +450,18 @@ const Cellar = () => {
             background: transparent !important;
             background-color: transparent !important;
           }
+          
+          .contact-form-input::placeholder {
+            color: #959493 !important;
+          }
+          
+          .contact-form-input::-webkit-input-placeholder {
+            color: #959493 !important;
+          }
+          
+          .contact-form-input::-moz-placeholder {
+            color: #959493 !important;
+          }
         `}
       </style>
       {/* Fixed Header with scroll background */}
