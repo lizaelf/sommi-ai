@@ -456,6 +456,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 (window as any).lastResponseText = messageText;
                 console.log("💾 Stored response text for Listen Response:", messageText.substring(0, 100) + "...");
                 
+                // Also store it with a slight delay to ensure it persists
+                setTimeout(() => {
+                  (window as any).lastResponseText = messageText;
+                  console.log("💾 Re-stored response text as backup:", messageText.substring(0, 50) + "...");
+                }, 100);
+                
                 // Force show Listen Response button immediately
                 console.log("🎧 Clearing all states and showing Listen Response button");
                 
@@ -721,8 +727,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             assistantMessages = Array.from(allDivs).filter(div => {
               const text = div.textContent || '';
               return text.length > 50 && !text.includes('user') && 
-                     (text.includes('wine') || text.includes('Sassicaia') || text.includes('Tenuta'));
-            });
+                     (text.includes('wine') || text.includes('Sassicaia') || text.includes('Tenuta') ||
+                      text.includes('The ') || text.includes('This ') || text.includes('It '));
+            }) as any;
             console.log("🔍 Found potential assistant messages:", assistantMessages.length);
           }
           
@@ -873,10 +880,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isResponding={isResponding}
         isThinking={isProcessing || (isVoiceThinking && !showListenButton && !responseComplete) || status === 'Processing your question...'}
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
-        showListenButton={true}
+        showListenButton={showListenButton && !isListening && !isResponding}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
       />
+      
+      {/* DEBUG: Manual test button to force show Listen Response button */}
+      <button 
+        onClick={() => {
+          console.log("🧪 Manual test - forcing showListenButton to true");
+          setShowListenButton(true);
+          setShowBottomSheet(true);
+          setIsVoiceThinking(false);
+          setIsResponding(false);
+          setResponseComplete(true);
+          // Add some test text for the button to use
+          (window as any).lastResponseText = "This is a test response to verify the Listen Response button functionality.";
+        }}
+        style={{
+          position: 'fixed',
+          top: '100px',
+          right: '10px',
+          background: 'red',
+          color: 'white',
+          padding: '10px',
+          zIndex: 9999
+        }}
+      >
+        TEST LISTEN BUTTON
+      </button>
     </div>
   );
 };
