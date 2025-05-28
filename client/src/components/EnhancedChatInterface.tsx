@@ -34,7 +34,19 @@ interface EnhancedChatInterfaceProps {
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyButton = false }) => {
-  // Function to format content with proper list handling
+  // Function to format bold text with **text**
+  const formatBoldText = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        const boldText = part.slice(2, -2);
+        return <strong key={index} style={{ fontWeight: 'bold', color: '#DBDBDB' }}>{boldText}</strong>;
+      }
+      return part;
+    });
+  };
+
+  // Function to format content with proper list handling and bold text
   const formatListContent = (content: string) => {
     if (!content) return null;
 
@@ -73,7 +85,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                     fontSize: '14px',
                     marginTop: '2px'
                   }}>•</span>
-                  <span style={{ color: '#DBDBDB' }}>{item}</span>
+                  <span style={{ color: '#DBDBDB' }}>{formatBoldText(item)}</span>
                 </div>
               ))}
             </div>
@@ -90,7 +102,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
               color: '#DBDBDB',
               whiteSpace: 'pre-wrap'
             }}>
-              {line}
+              {formatBoldText(line)}
             </div>
           );
         }
@@ -114,7 +126,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 fontSize: '14px',
                 marginTop: '2px'
               }}>•</span>
-              <span style={{ color: '#DBDBDB' }}>{item}</span>
+              <span style={{ color: '#DBDBDB' }}>{formatBoldText(item)}</span>
             </div>
           ))}
         </div>

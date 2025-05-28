@@ -10,7 +10,19 @@ export default function ConversationDialog() {
   const { messages } = useConversation();
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
 
-  // Function to format content with proper list handling
+  // Function to format bold text with **text**
+  const formatBoldText = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        const boldText = part.slice(2, -2);
+        return <strong key={index} style={{ fontWeight: 'bold', color: '#DBDBDB' }}>{boldText}</strong>;
+      }
+      return part;
+    });
+  };
+
+  // Function to format content with proper list handling and bold text
   const formatListContent = (content: string) => {
     if (!content) return null;
 
@@ -49,7 +61,7 @@ export default function ConversationDialog() {
                     fontSize: '14px',
                     marginTop: '2px'
                   }}>•</span>
-                  <span style={{ color: '#DBDBDB' }}>{item}</span>
+                  <span style={{ color: '#DBDBDB' }}>{formatBoldText(item)}</span>
                 </div>
               ))}
             </div>
@@ -66,7 +78,7 @@ export default function ConversationDialog() {
               color: '#DBDBDB',
               whiteSpace: 'pre-wrap'
             }}>
-              {line}
+              {formatBoldText(line)}
             </div>
           );
         }
@@ -90,7 +102,7 @@ export default function ConversationDialog() {
                 fontSize: '14px',
                 marginTop: '2px'
               }}>•</span>
-              <span style={{ color: '#DBDBDB' }}>{item}</span>
+              <span style={{ color: '#DBDBDB' }}>{formatBoldText(item)}</span>
             </div>
           ))}
         </div>
