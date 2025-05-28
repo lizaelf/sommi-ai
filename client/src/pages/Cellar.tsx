@@ -418,7 +418,7 @@ const Cellar = () => {
       >
         <Link href="/">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white">
-            <path d="M15.5 16.94c.28 0 .5-.22.5-.5v-8.88a.5.5 0 0 0-.5-.5a.5.5 0 0 0-.35.15l-5.44 5.44a.5.5 0 0 0 0 .7l5.44 5.44a.5.5 0 0 0 .35.15Z" fill="currentColor"/>
+            <path d="M15.5 17c.28 0 .5-.22.5-.5v-9a.5.5 0 0 0-.5-.5a.5.5 0 0 0-.35.15l-6 6a.5.5 0 0 0 0 .7l6 6a.5.5 0 0 0 .35.15Z" fill="currentColor"/>
           </svg>
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
@@ -632,7 +632,7 @@ const Cellar = () => {
         >
           <div 
             style={{
-              background: '#1C1C1C',
+              background: 'linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)',
               backdropFilter: 'blur(20px)',
               width: '100%',
               maxWidth: '500px',
@@ -707,15 +707,15 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'black',
-                  backgroundColor: 'black',
+                  background: '#2A2A29 !important',
+                  backgroundColor: '#2A2A29 !important',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#959493'}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.firstName && (
@@ -744,15 +744,15 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'black',
-                  backgroundColor: 'black',
+                  background: '#2A2A29 !important',
+                  backgroundColor: '#2A2A29 !important',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#959493'}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.lastName && (
@@ -781,15 +781,15 @@ const Cellar = () => {
                   alignSelf: 'stretch',
                   borderRadius: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'black',
-                  backgroundColor: 'black',
+                  background: '#2A2A29 !important',
+                  backgroundColor: '#2A2A29 !important',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#959493'}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
               />
               {errors.email && (
@@ -818,8 +818,8 @@ const Cellar = () => {
                       width: '100px',
                       borderRadius: '16px',
                       border: '1px solid rgba(255, 255, 255, 0.12)',
-                      background: 'black',
-                      backgroundColor: 'black',
+                      background: '#2A2A29 !important',
+                      backgroundColor: '#2A2A29 !important',
                       cursor: 'pointer',
                       boxSizing: 'border-box'
                     }}
@@ -954,15 +954,15 @@ const Cellar = () => {
                     flex: 1,
                     borderRadius: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    background: 'black',
-                    backgroundColor: 'black',
+                    background: '#2A2A29 !important',
+                    backgroundColor: '#2A2A29 !important',
                     color: '#959493',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#959493'}
+                  onFocus={(e) => e.target.style.borderColor = 'white'}
                   onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
                 />
               </div>
