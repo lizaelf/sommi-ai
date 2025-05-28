@@ -449,29 +449,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 const messageText = lastMessage.textContent || '';
                 console.log("Found message to speak:", messageText.substring(0, 50) + "...");
                 
-                // No autoplay - just show Listen Response button
-                console.log("Response ready - showing Listen Response button instead of autoplay");
-                
-                // Store the message text for the Listen Response button first
+                // Store the message text for the Listen Response button
                 (window as any).lastResponseText = messageText;
                 console.log("💾 Stored response text for Listen Response:", messageText.substring(0, 100) + "...");
                 
-                // Also store it with a slight delay to ensure it persists
-                setTimeout(() => {
-                  (window as any).lastResponseText = messageText;
-                  console.log("💾 Re-stored response text as backup:", messageText.substring(0, 50) + "...");
-                }, 100);
-                
-                // Force show Listen Response button immediately
-                console.log("🎧 Clearing all states and showing Listen Response button");
-                
-                // Clear thinking state immediately and multiple times to ensure it sticks
+                // FORCE Listen Response button to appear - AI response is ready
+                console.log("🎯 AI RESPONSE READY - Forcing Listen Response button to appear");
                 setIsVoiceThinking(false);
                 setIsResponding(false);
                 setResponseComplete(true);
                 setHasReceivedFirstResponse(true);
                 setShowListenButton(true);
                 setShowBottomSheet(true);
+                
+                console.log("✅ Listen Response button state set to TRUE");
                 
                 // Aggressive clearing of thinking state with multiple attempts
                 setTimeout(() => {
