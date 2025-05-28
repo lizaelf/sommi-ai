@@ -37,6 +37,7 @@ const Cellar = () => {
   });
 
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [countrySearchQuery, setCountrySearchQuery] = useState('');
 
   const countries = [
     { code: '+1', flag: usFlagImage, name: 'United States' },
@@ -71,6 +72,12 @@ const Cellar = () => {
     { code: '+966', flag: usFlagImage, name: 'Saudi Arabia' },
     { code: '+971', flag: usFlagImage, name: 'United Arab Emirates' },
   ];
+
+  // Filter countries based on search query
+  const filteredCountries = countries.filter(country =>
+    country.name.toLowerCase().includes(countrySearchQuery.toLowerCase()) ||
+    country.code.includes(countrySearchQuery)
+  );
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -618,10 +625,13 @@ const Cellar = () => {
                         backgroundColor: '#2A2A29',
                         zIndex: 1001
                       }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                           <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: '600' }}>Select Country</span>
                           <div 
-                            onClick={() => setShowCountryDropdown(false)}
+                            onClick={() => {
+                              setShowCountryDropdown(false);
+                              setCountrySearchQuery('');
+                            }}
                             style={{ cursor: 'pointer', padding: '8px' }}
                           >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -629,13 +639,48 @@ const Cellar = () => {
                             </svg>
                           </div>
                         </div>
+                        
+                        {/* Search Input */}
+                        <div style={{ position: 'relative' }}>
+                          <div style={{
+                            position: 'absolute',
+                            left: '16px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            zIndex: 1
+                          }}>
+                            <Search size={18} color="#959493" />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Search countries..."
+                            value={countrySearchQuery}
+                            onChange={(e) => setCountrySearchQuery(e.target.value)}
+                            style={{
+                              width: '100%',
+                              height: '48px',
+                              padding: '0 16px 0 48px',
+                              borderRadius: '12px',
+                              border: '1px solid rgba(255, 255, 255, 0.12)',
+                              background: '#1A1A1A',
+                              color: 'white',
+                              fontFamily: 'Inter, sans-serif',
+                              fontSize: '16px',
+                              outline: 'none',
+                              boxSizing: 'border-box'
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = 'white'}
+                            onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                          />
+                        </div>
                       </div>
-                      {countries.map((country, index) => (
+                      {filteredCountries.map((country, index) => (
                         <div
                           key={`${country.code}-${index}`}
                           onClick={() => {
                             setSelectedCountry(country);
                             setShowCountryDropdown(false);
+                            setCountrySearchQuery('');
                           }}
                           style={{
                             display: 'flex',
@@ -643,7 +688,7 @@ const Cellar = () => {
                             gap: '12px',
                             padding: '16px 24px',
                             cursor: 'pointer',
-                            borderBottom: index < countries.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none'
+                            borderBottom: index < filteredCountries.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none'
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
