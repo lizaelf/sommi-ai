@@ -564,8 +564,14 @@ const Cellar = () => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = 'white'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'white';
+                e.target.style.boxShadow = '0 0 0 2px rgba(255, 255, 255, 0.2)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                e.target.style.boxShadow = 'none';
+              }}
               autoFocus
             />
           </div>
@@ -971,8 +977,14 @@ const Cellar = () => {
                                 outline: 'none',
                                 boxSizing: 'border-box'
                               }}
-                              onFocus={(e) => e.target.style.borderColor = 'white'}
-                              onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = 'white';
+                                e.target.style.boxShadow = '0 0 0 2px rgba(255, 255, 255, 0.2)';
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                                e.target.style.boxShadow = 'none';
+                              }}
                             />
                           </div>
                         </div>
