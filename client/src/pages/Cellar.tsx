@@ -412,10 +412,10 @@ const Cellar = () => {
     <div className="min-h-screen bg-black text-white relative">
       <style>
         {`
-          /* Contact form inputs - force transparent background */
+          /* Contact form inputs - transparent when empty */
           .contact-form-input {
-            background: #1C1C1C !important;
-            background-color: #1C1C1C !important;
+            background: transparent !important;
+            background-color: transparent !important;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
@@ -427,7 +427,7 @@ const Cellar = () => {
             border-left: 1px solid transparent !important;
             border-radius: 16px !important;
             
-            /* Force the gradient border */
+            /* Empty state - dark background */
             background-image: 
               linear-gradient(#1C1C1C, #1C1C1C), 
               radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
@@ -436,33 +436,23 @@ const Cellar = () => {
             overflow: hidden !important;
           }
           
-          /* Filled inputs - 8% white background - multiple selectors for better coverage */
-          .contact-form-input:not(:placeholder-shown),
-          .contact-form-input[value]:not([value=""]),
-          .contact-form-input:valid {
-            background: rgba(255, 255, 255, 0.08) !important;
-            background-color: rgba(255, 255, 255, 0.08) !important;
+          /* Filled inputs - 8% white background */
+          .contact-form-input:not(:placeholder-shown) {
             background-image: 
               linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), 
               radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
-            background-origin: border-box !important;
-            background-clip: padding-box, border-box !important;
           }
           
-          /* Focus states */
+          /* Focus state - keep current background */
           .contact-form-input:focus {
-            background: #1C1C1C !important;
-            background-color: #1C1C1C !important;
             background-image: 
               linear-gradient(#1C1C1C, #1C1C1C), 
               radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
             outline: none !important;
           }
           
-          .contact-form-input:focus:not(:placeholder-shown),
-          .contact-form-input:focus[value]:not([value=""]) {
-            background: rgba(255, 255, 255, 0.08) !important;
-            background-color: rgba(255, 255, 255, 0.08) !important;
+          /* Focus state when filled - 8% white background */
+          .contact-form-input:focus:not(:placeholder-shown) {
             background-image: 
               linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), 
               radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
@@ -472,10 +462,8 @@ const Cellar = () => {
             color: #959493 !important;
           }
           
-          /* Save button */
+          /* Save button - 4% white background */
           .save-button {
-            background: rgba(255, 255, 255, 0.04) !important;
-            background-color: rgba(255, 255, 255, 0.04) !important;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
@@ -495,28 +483,13 @@ const Cellar = () => {
             overflow: hidden !important;
           }
           
-          /* Aggressive autofill override */
+          /* Override autofill - 8% white background */
           input:-webkit-autofill,
           input:-webkit-autofill:hover,
           input:-webkit-autofill:focus,
           input:-webkit-autofill:active {
             -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.08) inset !important;
             -webkit-text-fill-color: white !important;
-            background-color: rgba(255, 255, 255, 0.08) !important;
-            background: rgba(255, 255, 255, 0.08) !important;
-          }
-          
-          /* Additional browser overrides */
-          input[type="text"],
-          input[type="email"],
-          input[type="tel"] {
-            background-color: transparent !important;
-          }
-          
-          input[type="text"]:not(:placeholder-shown),
-          input[type="email"]:not(:placeholder-shown),
-          input[type="tel"]:not(:placeholder-shown) {
-            background-color: rgba(255, 255, 255, 0.08) !important;
           }
         `}
       </style>
