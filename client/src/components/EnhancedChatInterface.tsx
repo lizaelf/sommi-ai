@@ -931,65 +931,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
 
                         return (
                           <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
-                            {/* Suggestion Chips */}
-                            <div style={{ marginBottom: '24px' }}>
-                              <div style={{ 
-                                display: 'flex', 
-                                flexWrap: 'wrap', 
-                                gap: '8px',
-                                justifyContent: 'center',
-                                marginBottom: '16px'
-                              }}>
-                                <button 
-                                  onClick={() => handleSendMessage("What are the tasting notes for this wine?")}
-                                  style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    border: 'none',
-                                    borderRadius: '20px',
-                                    padding: '8px 16px',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'Inter, sans-serif',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  Tasting notes
-                                </button>
-                                <button 
-                                  onClick={() => handleSendMessage("What food pairs well with this wine?")}
-                                  style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    border: 'none',
-                                    borderRadius: '20px',
-                                    padding: '8px 16px',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'Inter, sans-serif',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  Food pairings
-                                </button>
-                                <button 
-                                  onClick={() => handleSendMessage("Where is this wine from?")}
-                                  style={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    border: 'none',
-                                    borderRadius: '20px',
-                                    padding: '8px 16px',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'Inter, sans-serif',
-                                    whiteSpace: 'nowrap'
-                                  }}
-                                >
-                                  Origin
-                                </button>
-                              </div>
-                            </div>
+
 
 
 
