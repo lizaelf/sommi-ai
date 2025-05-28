@@ -457,6 +457,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 // Force show Listen Response button immediately
                 console.log("🎧 Clearing all states and showing Listen Response button");
+                
+                // Clear thinking state immediately and multiple times to ensure it sticks
                 setIsVoiceThinking(false);
                 setIsResponding(false);
                 setResponseComplete(true);
@@ -464,14 +466,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setShowListenButton(true);
                 setShowBottomSheet(true);
                 
-                // Force update to ensure states are properly set
+                // Aggressive clearing of thinking state with multiple attempts
                 setTimeout(() => {
-                  console.log("🔧 Double-checking button state after timeout");
-                  setIsVoiceThinking(false);  // Ensure this is definitely false
+                  console.log("🔧 First cleanup - ensuring thinking state is false");
+                  setIsVoiceThinking(false);
+                  setShowListenButton(true);
+                }, 50);
+                
+                setTimeout(() => {
+                  console.log("🔧 Second cleanup - double ensuring thinking state is false");
+                  setIsVoiceThinking(false);
+                  setShowListenButton(true);
+                }, 200);
+                
+                setTimeout(() => {
+                  console.log("🔧 Final cleanup - triple ensuring Listen Response button appears");
+                  setIsVoiceThinking(false);
                   setShowListenButton(true);
                   setShowBottomSheet(true);
                   console.log("✅ Listen Response button should now be fully visible!");
-                }, 100);
+                }, 500);
 
               } else {
                 console.log("Last message has no text content");
