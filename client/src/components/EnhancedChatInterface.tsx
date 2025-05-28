@@ -885,28 +885,112 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
 
                         return (
                           <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
-                            {/* Summary Topics */}
+                            {/* Suggestion Chips */}
                             <div style={{ marginBottom: '24px' }}>
-                              {summaryTopics.map((topic, index) => (
-                                <div key={index} style={{ marginBottom: '16px' }}>
-                                  <h3 style={{ 
-                                    fontSize: '18px', 
-                                    marginBottom: '8px', 
+                              <div style={{ 
+                                display: 'flex', 
+                                flexWrap: 'wrap', 
+                                gap: '8px',
+                                justifyContent: 'center',
+                                marginBottom: '16px'
+                              }}>
+                                <button 
+                                  onClick={() => handleSendMessage("What are the tasting notes for this wine?")}
+                                  style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 16px',
                                     color: 'white',
-                                    fontWeight: '600'
-                                  }}>
-                                    {topic.title}
-                                  </h3>
-                                  <p style={{ 
-                                    fontSize: '14px', 
-                                    color: '#DBDBDB',
-                                    lineHeight: '1.5',
-                                    margin: 0
-                                  }}>
-                                    {topic.summary}
-                                  </p>
-                                </div>
-                              ))}
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontFamily: 'Inter, sans-serif',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  Tasting notes
+                                </button>
+                                <button 
+                                  onClick={() => handleSendMessage("What food pairs well with this wine?")}
+                                  style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 16px',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontFamily: 'Inter, sans-serif',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  Food pairings
+                                </button>
+                                <button 
+                                  onClick={() => handleSendMessage("Where is this wine from?")}
+                                  style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 16px',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontFamily: 'Inter, sans-serif',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  Origin
+                                </button>
+                                <button 
+                                  onClick={() => handleSendMessage("How should I serve this wine?")}
+                                  style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 16px',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontFamily: 'Inter, sans-serif',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  Serving tips
+                                </button>
+                                <button 
+                                  onClick={() => handleSendMessage("What makes this wine special?")}
+                                  style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 16px',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontFamily: 'Inter, sans-serif',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  What's special
+                                </button>
+                                <button 
+                                  onClick={() => handleSendMessage("Tell me about the winemaker")}
+                                  style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    padding: '8px 16px',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontFamily: 'Inter, sans-serif',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  Winemaker
+                                </button>
+                              </div>
                             </div>
 
                           </div>
