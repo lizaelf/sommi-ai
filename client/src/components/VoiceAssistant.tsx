@@ -464,6 +464,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 
                 console.log("✅ Listen Response button state set to TRUE");
                 
+                // Also store with multiple fallback methods
+                setTimeout(() => {
+                  (window as any).lastResponseText = messageText;
+                  (window as any).backupResponseText = messageText;
+                  console.log("💾 Re-stored response text with backup");
+                }, 200);
+                
                 // Aggressive clearing of thinking state with multiple attempts
                 setTimeout(() => {
                   console.log("🔧 First cleanup - ensuring thinking state is false");
@@ -720,7 +727,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     
     try {
       // First try stored text, then search DOM for latest assistant message
-      let messageText = (window as any).lastResponseText;
+      let messageText = (window as any).lastResponseText || (window as any).backupResponseText;
       
       if (!messageText) {
         console.log("🔍 No stored text, searching DOM for latest assistant message...");
