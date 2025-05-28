@@ -76,8 +76,9 @@ export default function ConversationDialog() {
                 ←
               </button>
               <h1 style={{
+                fontFamily: 'Inter, sans-serif',
                 fontSize: '20px',
-                fontWeight: '600',
+                fontWeight: '500',
                 margin: 0,
                 color: 'white'
               }}>
