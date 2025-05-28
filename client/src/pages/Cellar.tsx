@@ -450,6 +450,8 @@ const Cellar = () => {
           
           /* Save button with matching style */
           .save-button {
+            background: rgba(255, 255, 255, 0.04) !important;
+            background-color: rgba(255, 255, 255, 0.04) !important;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
@@ -462,7 +464,7 @@ const Cellar = () => {
             border-left: 1px solid transparent !important;
             border-radius: 32px !important;
             
-            /* Same gradient border, but with 4% white inner background */
+            /* Same gradient border effect as inputs */
             background-image: 
               linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), 
               radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
