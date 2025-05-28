@@ -433,7 +433,7 @@ const Cellar = () => {
                 fontSize: '16px',
                 fontWeight: 400,
                 lineHeight: '1.5',
-                textAlign: 'left'
+                textAlign: 'center'
               }}>
                 Enter your contact info
               </p>
