@@ -75,15 +75,14 @@ export default function ConversationDialog() {
               >
                 ←
               </button>
-              <h2 style={{
-                fontFamily: 'Inter, sans-serif',
+              <h1 style={{
                 fontSize: '20px',
-                fontWeight: '500',
+                fontWeight: '600',
                 margin: 0,
                 color: 'white'
               }}>
                 {getWineDisplayName()}
-              </h2>
+              </h1>
             </div>
 
             {/* Conversation messages */}
