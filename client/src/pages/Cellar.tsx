@@ -580,21 +580,7 @@ const Cellar = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <img src={selectedCountry.flag} alt={`${selectedCountry.name} Flag`} style={{ width: '24px', height: '24px' }} />
                     <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{selectedCountry.code}</span>
-                    <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{selectedCountry.name}</span>
                   </div>
-                  <svg 
-                    width="20" 
-                    height="20" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      transform: showCountryDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s ease'
-                    }}
-                  >
-                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                  </svg>
                 </div>
                 
                 {showCountryDropdown && (
