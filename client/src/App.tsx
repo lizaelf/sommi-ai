@@ -7,12 +7,15 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import WineDetails from "@/pages/WineDetails";
 import Cellar from "@/pages/Cellar";
+import ConversationDialog from "@/pages/ConversationDialog";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/cellar" component={Cellar} />
+      <Route path="/wine/details" component={WineDetails} />
+      <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={WineDetails} />
       <Route component={NotFound} />
     </Switch>
