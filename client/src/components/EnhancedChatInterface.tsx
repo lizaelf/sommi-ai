@@ -765,111 +765,125 @@ const EnhancedChatInterface: React.FC = () => {
                   Summary
                 </h1>
                 
-                {/* Suggestion pills - hidden after sending a message */}
-                <div style={{ 
-                  display: hideSuggestions ? 'none' : 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: '8px', 
-                  marginBottom: '20px' 
-                }}>
-                  <button
-                    onClick={() => handleSendMessage("What does it taste like?")}
-                    style={{
-                      backgroundColor: '#191919',
-                      color: 'white',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '20px',
-                      padding: '6px 14px',
-                      fontSize: '14px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Taste profile
-                  </button>
-                  <button
-                    onClick={() => handleSendMessage("What food pairs well with this wine?")}
-                    style={{
-                      backgroundColor: '#191919',
-                      color: 'white',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '20px',
-                      padding: '6px 14px',
-                      fontSize: '14px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Food pairing
-                  </button>
-                  <button
-                    onClick={() => handleSendMessage("What's special about this vintage?")}
-                    style={{
-                      backgroundColor: '#191919',
-                      color: 'white',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '20px',
-                      padding: '6px 14px',
-                      fontSize: '14px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    About this vintage
-                  </button>
-                </div>
-
-                {/* Conversation container */}
+                {/* Conversation Summary */}
                 <div id="conversation" className="space-y-4 mb-96">
-                  {messages.length > 0 && 
-                    messages.map((message, index) => (
-                      <div key={`${message.id}-${index}`} style={{
-                        display: 'flex',
-                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                        width: '100%',
-                        marginBottom: '12px'
-                      }}>
-                        <div 
-                          style={{
-                            backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                            borderRadius: '16px',
+                  {messages.length > 0 ? (
+                    (() => {
+                      // Extract themes and topics from conversation
+                      const themes = [];
+                      const recentTopics = [];
+                      
+                      // Go through messages in reverse order (most recent first)
+                      const reversedMessages = [...messages].reverse();
+                      
+                      reversedMessages.forEach((message, index) => {
+                        if (message.role === 'user') {
+                          const content = message.content.toLowerCase();
+                          if (content.includes('tasting') || content.includes('taste') || content.includes('flavor')) {
+                            if (!themes.includes('Tasting Notes')) themes.push('Tasting Notes');
+                          }
+                          if (content.includes('food') || content.includes('pair') || content.includes('recipe')) {
+                            if (!themes.includes('Food Pairing')) themes.push('Food Pairing');
+                          }
+                          if (content.includes('vintage') || content.includes('year') || content.includes('special')) {
+                            if (!themes.includes('Vintage Information')) themes.push('Vintage Information');
+                          }
+                          if (content.includes('region') || content.includes('where') || content.includes('from')) {
+                            if (!themes.includes('Wine Origin')) themes.push('Wine Origin');
+                          }
+                          if (content.includes('price') || content.includes('cost') || content.includes('value')) {
+                            if (!themes.includes('Value & Pricing')) themes.push('Value & Pricing');
+                          }
+                          
+                          // Add to recent topics (max 5)
+                          if (recentTopics.length < 5) {
+                            recentTopics.push({
+                              topic: message.content,
+                              timestamp: message.createdAt || new Date().toISOString()
+                            });
+                          }
+                        }
+                      });
+
+                      return (
+                        <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                          {/* Summary Stats */}
+                          <div style={{
+                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: '12px',
                             padding: '16px',
-                            width: message.role === 'user' ? 'fit-content' : '100%',
-                            maxWidth: message.role === 'user' ? '80%' : '100%'
-                          }}
-                          data-role={message.role}
-                        >
-                          {message.role === 'assistant' ? (
-                            message.id === latestMessageId ? (
-                              <TextGenerateEffect
-                                words={message.content}
-                                className="text-[#DBDBDB] font-normal text-base leading-relaxed"
-                                filter={true}
-                                duration={0.3}
-                              />
-                            ) : (
-                              <div style={{
-                                color: '#DBDBDB',
-                                whiteSpace: 'pre-wrap',
-                                fontFamily: 'Inter, system-ui, sans-serif',
-                                fontSize: '16px',
-                                lineHeight: '1.6'
-                              }}>
-                                {message.content}
+                            marginBottom: '20px'
+                          }}>
+                            <div style={{ fontSize: '14px', color: '#888', marginBottom: '8px' }}>
+                              Conversation Overview
+                            </div>
+                            <div style={{ fontSize: '16px', marginBottom: '8px' }}>
+                              {Math.floor(messages.length / 2)} questions discussed
+                            </div>
+                            <div style={{ fontSize: '14px', color: '#888' }}>
+                              Last activity: {new Date(messages[messages.length - 1]?.createdAt || new Date()).toLocaleDateString()}
+                            </div>
+                          </div>
+
+                          {/* Main Themes */}
+                          {themes.length > 0 && (
+                            <div style={{ marginBottom: '24px' }}>
+                              <h3 style={{ fontSize: '18px', marginBottom: '12px', color: 'white' }}>
+                                Topics Covered
+                              </h3>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                {themes.map((theme, index) => (
+                                  <div key={index} style={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                    borderRadius: '20px',
+                                    padding: '6px 14px',
+                                    fontSize: '14px',
+                                    color: 'white'
+                                  }}>
+                                    {theme}
+                                  </div>
+                                ))}
                               </div>
-                            )
-                          ) : (
-                            <div style={{
-                              color: '#000000',
-                              whiteSpace: 'pre-wrap',
-                              fontFamily: 'Inter, system-ui, sans-serif',
-                              fontSize: '16px',
-                              lineHeight: '1.6'
-                            }}>
-                              {message.content}
+                            </div>
+                          )}
+
+                          {/* Recent Questions */}
+                          {recentTopics.length > 0 && (
+                            <div>
+                              <h3 style={{ fontSize: '18px', marginBottom: '12px', color: 'white' }}>
+                                Recent Questions
+                              </h3>
+                              {recentTopics.map((item, index) => (
+                                <div key={index} style={{
+                                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                                  borderRadius: '8px',
+                                  padding: '12px',
+                                  marginBottom: '8px',
+                                  borderLeft: '3px solid rgba(255, 255, 255, 0.2)'
+                                }}>
+                                  <div style={{ fontSize: '14px', marginBottom: '4px' }}>
+                                    {item.topic}
+                                  </div>
+                                  <div style={{ fontSize: '12px', color: '#888' }}>
+                                    {new Date(item.timestamp).toLocaleString()}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
-                      </div>
-                    ))
-                  }
+                      );
+                    })()
+                  ) : (
+                    <div style={{
+                      textAlign: 'center',
+                      color: '#888',
+                      padding: '40px 20px',
+                      fontSize: '16px'
+                    }}>
+                      No conversation history yet. Start asking questions about wine to see your summary here.
+                    </div>
+                  )}
                   
                   {/* Typing Indicator */}
                   {isTyping && (
