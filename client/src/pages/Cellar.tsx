@@ -1039,27 +1039,37 @@ const Cellar = () => {
             </div>
 
             {/* Save Button */}
-            <button
-              onClick={handleSave}
-              className="save-button"
-              style={{
-                width: '100%',
-                height: '56px',
-                padding: '0 16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '16px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-            >
-              Save
-            </button>
+            <div style={{
+              borderRadius: '32px',
+              background: 'radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
+              padding: '2px 1px 1px 1px'
+            }}>
+              <button
+                onClick={handleSave}
+                style={{
+                  width: '100%',
+                  height: '52px',
+                  padding: '0 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: 'none',
+                  borderRadius: '30px',
+                  WebkitAppearance: 'none',
+                  appearance: 'none'
+                }}
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>,
         portalElement
