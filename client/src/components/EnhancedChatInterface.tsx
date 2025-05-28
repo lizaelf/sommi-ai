@@ -788,9 +788,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                           borderRadius: '16px',
                           padding: message.role === 'user' ? '12px 16px' : '12px 0',
                           maxWidth: message.role === 'user' ? '80%' : '100%',
-                          fontSize: '14px',
-                          fontFamily: 'Inter, sans-serif',
-                          lineHeight: '1.5'
+                          ...typography.body
                         }}>
                           {message.content.length > 200 
                             ? `${message.content.substring(0, 200)}...`
