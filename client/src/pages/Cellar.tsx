@@ -284,18 +284,6 @@ const Cellar = () => {
         </div>
       </div>
 
-      {/* Line separator */}
-      <div 
-        style={{
-          backgroundImage: `url(${lineImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          height: '10px',
-          margin: '0 16px 0 16px'
-        }}
-      />
-
       {/* Second Wine Rack Container - Below the first one */}
       <div 
         className="bg-cover bg-center bg-no-repeat relative"
@@ -323,18 +311,6 @@ const Cellar = () => {
         </div>
       </div>
 
-      {/* Line separator */}
-      <div 
-        style={{
-          backgroundImage: `url(${lineImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          height: '10px',
-          margin: '0 16px 0 16px'
-        }}
-      />
-
       {/* Third Wine Rack Container - Below the second one */}
       <div 
         className="bg-cover bg-center bg-no-repeat relative"
@@ -361,6 +337,18 @@ const Cellar = () => {
           />
         </div>
       </div>
+
+      {/* Line separator below last wine rack */}
+      <div 
+        style={{
+          backgroundImage: `url(${lineImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          height: '10px',
+          margin: '0 16px 0 16px'
+        }}
+      />
 
       {/* Contact Info Bottom Sheet */}
       {animationState !== 'closed' && portalElement && createPortal(
