@@ -448,8 +448,8 @@ const Cellar = () => {
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                 style={{
                   display: 'flex',
-                  height: '48px',
-                  padding: '12px 24px',
+                  height: '56px',
+                  padding: '16px 24px',
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: '10px',
@@ -458,8 +458,6 @@ const Cellar = () => {
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   background: '#2A2A29 !important',
                   backgroundColor: '#2A2A29 !important',
-                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                  WebkitTextFillColor: '#959493',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -487,8 +485,8 @@ const Cellar = () => {
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
                 style={{
                   display: 'flex',
-                  height: '48px',
-                  padding: '12px 24px',
+                  height: '56px',
+                  padding: '16px 24px',
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: '10px',
@@ -497,8 +495,6 @@ const Cellar = () => {
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   background: '#2A2A29 !important',
                   backgroundColor: '#2A2A29 !important',
-                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                  WebkitTextFillColor: '#959493',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -526,8 +522,8 @@ const Cellar = () => {
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 style={{
                   display: 'flex',
-                  height: '48px',
-                  padding: '12px 24px',
+                  height: '56px',
+                  padding: '16px 24px',
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: '10px',
@@ -536,8 +532,6 @@ const Cellar = () => {
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   background: '#2A2A29 !important',
                   backgroundColor: '#2A2A29 !important',
-                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                  WebkitTextFillColor: '#959493',
                   color: '#959493',
                   fontFamily: 'Inter, sans-serif',
                   fontSize: '16px',
@@ -566,8 +560,8 @@ const Cellar = () => {
                     onClick={() => setShowCountryDropdown(!showCountryDropdown)}
                     style={{
                       display: 'flex',
-                      height: '48px',
-                      padding: '12px 12px',
+                      height: '56px',
+                      padding: '16px 12px',
                       justifyContent: 'center',
                       alignItems: 'center',
                       width: '100px',
@@ -699,8 +693,8 @@ const Cellar = () => {
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   style={{
                     display: 'flex',
-                    height: '48px',
-                    padding: '12px 24px',
+                    height: '56px',
+                    padding: '16px 24px',
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: '10px',
@@ -709,8 +703,6 @@ const Cellar = () => {
                     border: '1px solid rgba(255, 255, 255, 0.12)',
                     background: '#2A2A29 !important',
                     backgroundColor: '#2A2A29 !important',
-                    WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                    WebkitTextFillColor: '#959493',
                     color: '#959493',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
