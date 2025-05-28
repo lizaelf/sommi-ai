@@ -3,12 +3,16 @@ import { ArrowLeft } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { TextGenerateEffect } from '../components/ui/text-generate-effect';
+import ChatInput from '../components/ChatInput';
+import VoiceAssistant from '../components/VoiceAssistant';
+import { ClientMessage } from '../lib/types';
 import { useState, useEffect } from 'react';
 
 export default function ConversationDialog() {
   const [, setLocation] = useLocation();
-  const { messages } = useConversation();
+  const { messages, addMessage } = useConversation();
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -21,6 +25,52 @@ export default function ConversationDialog() {
 
   const handleBackClick = () => {
     setLocation('/wine-details');
+  };
+
+  const handleSendMessage = async (messageText: string) => {
+    if (!messageText.trim()) return;
+
+    setIsTyping(true);
+
+    try {
+      // Add user message
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        role: 'user',
+        content: messageText,
+        createdAt: new Date(),
+        conversationId: 1
+      };
+
+      await addMessage(tempUserMessage);
+
+      // Get AI response
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: messageText })
+      });
+
+      if (!response.ok) throw new Error('Failed to get response');
+
+      const data = await response.json();
+
+      // Add assistant message
+      const assistantMessage: ClientMessage = {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: data.response,
+        createdAt: new Date(),
+        conversationId: 1
+      };
+
+      await addMessage(assistantMessage);
+      setLatestMessageId(assistantMessage.id);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
@@ -75,7 +125,7 @@ export default function ConversationDialog() {
       <div style={{
         padding: '20px',
         paddingTop: '90px',
-        paddingBottom: '40px'
+        paddingBottom: '160px'
       }}>
         <div style={{
           maxWidth: '800px',
@@ -142,6 +192,55 @@ export default function ConversationDialog() {
               No conversation history available.
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Input Area - Fixed to Bottom */}
+      <div style={{
+        backgroundColor: '#1C1C1C',
+        padding: '16px',
+        zIndex: 50,
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+      }}>
+        <div className="max-w-3xl mx-auto">
+          {/* Suggestion chips - always visible above input */}
+          <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+            <button 
+              onClick={() => handleSendMessage("Tasting notes")}
+              className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+            >
+              Tasting notes
+            </button>
+            <button 
+              onClick={() => handleSendMessage("Simple recipes for this wine")}
+              className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+            >
+              Simple recipes
+            </button>
+            <button 
+              onClick={() => handleSendMessage("Where is this wine from?")}
+              className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+            >
+              Where it's from
+            </button>
+          </div>
+          
+          <div className="relative flex items-center">
+            <ChatInput 
+              onSendMessage={handleSendMessage} 
+              isProcessing={isTyping}
+              voiceButtonComponent={
+                <VoiceAssistant
+                  onSendMessage={handleSendMessage}
+                  isProcessing={isTyping}
+                />
+              }
+            />
+          </div>
         </div>
       </div>
     </div>
