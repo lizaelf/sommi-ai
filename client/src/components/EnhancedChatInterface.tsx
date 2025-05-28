@@ -775,9 +775,69 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 {/* Conversation Content */}
                 <div id="conversation" className="space-y-4 mb-96">
                   {messages.length > 0 ? (
-                    showFullConversation ? (
-                      // Show full conversation
-                      (<>
+                    showBuyButton ? (
+                      <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                        <div style={{ marginBottom: '24px' }}>
+                          <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'white', fontWeight: '600' }}>
+                              Tasting Profile
+                            </h3>
+                            <p style={{ fontSize: '14px', color: '#DBDBDB', lineHeight: '1.5', margin: 0 }}>
+                              Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish.
+                            </p>
+                          </div>
+                          <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'white', fontWeight: '600' }}>
+                              Food Pairing
+                            </h3>
+                            <p style={{ fontSize: '14px', color: '#DBDBDB', lineHeight: '1.5', margin: 0 }}>
+                              Learn which dishes complement this wine best and how to create perfect pairings for your dining experience.
+                            </p>
+                          </div>
+                          <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'white', fontWeight: '600' }}>
+                              Wine Origin
+                            </h3>
+                            <p style={{ fontSize: '14px', color: '#DBDBDB', lineHeight: '1.5', margin: 0 }}>
+                              Explore the terroir, region, and winemaking traditions that shaped this bottle's distinctive character.
+                            </p>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                          <button 
+                            onClick={() => setLocation('/wine/conversation')}
+                            style={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                              borderRadius: '32px',
+                              height: '56px',
+                              minHeight: '56px',
+                              maxHeight: '56px',
+                              padding: '0 16px',
+                              margin: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: 'none',
+                              color: 'white',
+                              fontFamily: 'Inter, sans-serif',
+                              fontSize: '16px',
+                              fontWeight: 500,
+                              cursor: 'pointer',
+                              outline: 'none',
+                              width: '100%',
+                              maxWidth: '320px',
+                              marginLeft: 'auto',
+                              marginRight: 'auto',
+                              boxSizing: 'border-box',
+                              lineHeight: '1'
+                            }}
+                          >
+                            Show whole dialog
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
                         {messages.map((message, index) => (
                           <div key={`${message.id}-${index}`} style={{
                             display: 'flex',
@@ -828,48 +888,139 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                             </div>
                           </div>
                         ))}
-                        {/* Back to Summary Button */}
-                        <div style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '20px' }}>
-                          <button 
-                            onClick={() => setShowFullConversation(false)}
-                            style={{
-                              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                              borderRadius: '32px',
-                              height: '56px',
-                              minHeight: '56px',
-                              maxHeight: '56px',
-                              padding: '0 16px',
-                              margin: 0,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              border: 'none',
-                              color: 'white',
-                              fontFamily: 'Inter, sans-serif',
-                              fontSize: '16px',
-                              fontWeight: 500,
-                              cursor: 'pointer',
-                              outline: 'none',
-                              width: '100%',
-                              maxWidth: '320px',
-                              marginLeft: 'auto',
-                              marginRight: 'auto',
-                              boxSizing: 'border-box',
-                              lineHeight: '1'
-                            }}
-                          >
-                            Back to Summary
-                          </button>
-                        </div>
-                      </>)
-                    ) : (
-                      // Show summary
-                      ((() => {
-                        // Generate summary content for 3 main topics
-                        const summaryTopics = [
-                          {
-                            title: "Tasting Profile",
-                            summary: "Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish."
+                      </>
+                    )
+                  ) : (
+                    <div style={{
+                      textAlign: 'center',
+                      color: '#888',
+                      padding: '40px 20px',
+                      fontSize: '16px'
+                    }}>
+                      No conversation history yet. Start asking questions about wine to see your conversation here.
+                    </div>
+                  )}
+                  
+                  {/* Typing Indicator */}
+                  {isTyping && (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                      marginBottom: '12px',
+                      padding: '16px'
+                    }}>
+                      <ShiningText text="Thinking..." />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Hidden Audio Controls - kept for compatibility */}
+                <div id="audio-controls" style={{display: 'none', visibility: 'hidden'}}>
+                  <button id="play-audio-btn">Play Response Audio</button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Extra space at the bottom */}
+            <div style={{ height: '80px' }}></div>
+          </div>
+          
+          {/* Input Area or Buy Button - Fixed to Bottom */}
+          <div style={{
+            backgroundColor: '#1C1C1C',
+            padding: '16px',
+            zIndex: 50,
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            <div className="max-w-3xl mx-auto">
+              {showBuyButton ? (
+                // Show Buy Again Button for WineDetails page
+                <button 
+                  onClick={() => {
+                    // Handle buy again functionality
+                    console.log('Buy again clicked');
+                  }}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '32px',
+                    height: '56px',
+                    minHeight: '56px',
+                    maxHeight: '56px',
+                    padding: '0 16px',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: 'none',
+                    color: 'white',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    outline: 'none',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    lineHeight: '1'
+                  }}
+                >
+                  Buy again
+                </button>
+              ) : (
+                // Show suggestions and input for Home page
+                <>
+                  {/* Suggestion chips - always visible above input */}
+                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                    <button 
+                      onClick={() => handleSendMessage("Tasting notes")}
+                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                    >
+                      Tasting notes
+                    </button>
+                    <button 
+                      onClick={() => handleSendMessage("Simple recipes for this wine")}
+                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                    >
+                      Simple recipes
+                    </button>
+                    <button 
+                      onClick={() => handleSendMessage("Where is this wine from?")}
+                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                    >
+                      Where it's from
+                    </button>
+                  </div>
+                  
+                  <div className="relative flex items-center">
+                    <ChatInput 
+                      onSendMessage={handleSendMessage} 
+                      isProcessing={isTyping}
+                      onFocus={() => setIsKeyboardFocused(true)}
+                      onBlur={() => setIsKeyboardFocused(false)}
+                      voiceButtonComponent={
+                        <VoiceAssistant
+                          onSendMessage={handleSendMessage}
+                          isProcessing={isTyping}
+                        />
+                      }
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default EnhancedChatInterface;
                           },
                           {
                             title: "Food Pairing",
