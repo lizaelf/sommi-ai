@@ -763,41 +763,32 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   padding: '0 20px',
                   marginBottom: '20px'
                 }}>
-                  <h1 style={{
-                    ...typography.h1,
-                    color: 'white',
-                    marginBottom: '24px',
-                    textAlign: 'left'
-                  }}>
-                    Previous Discussion
-                  </h1>
-                  <div style={{ 
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px'
-                  }}>
-                    {messages.slice(-6).map((message, index) => (
-                      <div key={`${message.id}-${index}`} style={{
-                        display: 'flex',
-                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                        width: '100%'
-                      }}>
-                        <div style={{
-                          backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                          color: message.role === 'user' ? '#000' : '#DBDBDB',
-                          borderRadius: '16px',
-                          padding: message.role === 'user' ? '12px 16px' : '12px 0',
-                          maxWidth: message.role === 'user' ? '80%' : '100%',
-                          ...typography.body
-                        }}>
-                          {message.content.length > 200 
-                            ? `${message.content.substring(0, 200)}...`
-                            : message.content
-                          }
-                        </div>
-                      </div>
-                    ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                    <span style={{ fontSize: '24px' }}>💬</span>
+                    <h1 style={{
+                      ...typography.h1,
+                      color: 'white',
+                      margin: 0,
+                      textAlign: 'left'
+                    }}>
+                      Previous Discussion
+                    </h1>
                   </div>
+                  <ul style={{ 
+                    paddingLeft: '20px', 
+                    margin: '0',
+                    color: 'white',
+                    ...typography.body
+                  }}>
+                    {messages.slice(-6).filter(message => message.role === 'user').map((message, index) => (
+                      <li key={`${message.id}-${index}`} style={{ marginBottom: '8px' }}>
+                        {message.content.length > 100 
+                          ? `${message.content.substring(0, 100)}...`
+                          : message.content
+                        }
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 

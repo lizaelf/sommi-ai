@@ -333,34 +333,25 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             </button>
           </div>
         ) : isThinking ? (
-          <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
-            <button
-              className="voice-bottom-sheet-button"
-              onClick={onClose}
-              style={{
-                width: '100%',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '32px',
-                height: '56px',
-                padding: '0 16px',
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '16px',
-                fontWeight: 500,
-                outline: 'none',
-                transition: 'none',
-                boxSizing: 'border-box'
-              }}
-            >
-              <ShiningText text="Reset" />
-            </button>
+          <div style={{ 
+            width: '100%', 
+            maxWidth: '320px', 
+            height: '56px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center' 
+          }}>
+            <div style={{
+              color: '#CECECE',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '16px',
+              fontWeight: 'normal',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <ShiningText text="Thinking..." />
+            </div>
           </div>
         ) : (
           <>
