@@ -83,7 +83,7 @@ export default function WineDetails() {
 
         {/* Main Content Area */}
         <div className="pt-[75px]">
-          <EnhancedChatInterface />
+          <EnhancedChatInterface showBuyButton={true} />
         </div>
       </div>
     </div>
