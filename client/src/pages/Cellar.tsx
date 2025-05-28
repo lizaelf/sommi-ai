@@ -554,42 +554,85 @@ const Cellar = () => {
                 </div>
               )}
               
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ position: 'relative' }}>
-                  <div
-                    onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                    style={{
-                      display: 'flex',
-                      height: '64px',
-                      padding: '16px 24px',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      gap: '10px',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                      background: 'transparent',
-                      cursor: 'pointer'
-                    }}
-                  >
+              {/* Country Code Selector - Full Width */}
+              <div style={{ position: 'relative', width: '100%' }}>
+                <div
+                  onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                  style={{
+                    display: 'flex',
+                    height: '64px',
+                    padding: '16px 24px',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: '#2A2A29 !important',
+                    backgroundColor: '#2A2A29 !important',
+                    cursor: 'pointer',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <img src={selectedCountry.flag} alt={`${selectedCountry.name} Flag`} style={{ width: '24px', height: '24px' }} />
                     <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{selectedCountry.code}</span>
+                    <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{selectedCountry.name}</span>
                   </div>
-                  
-                  {showCountryDropdown && (
+                  <svg 
+                    width="20" 
+                    height="20" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{
+                      transform: showCountryDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.3s ease'
+                    }}
+                  >
+                    <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
+                  </svg>
+                </div>
+                
+                {showCountryDropdown && (
+                  <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    zIndex: 1000,
+                    display: 'flex',
+                    alignItems: 'flex-end'
+                  }}>
                     <div style={{
-                      position: 'absolute',
-                      bottom: '72px',
-                      left: 0,
-                      right: 0,
-                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                      backdropFilter: 'blur(20px)',
-                      zIndex: 1000,
-                      overflow: 'hidden',
-                      maxHeight: '200px',
+                      width: '100%',
+                      backgroundColor: '#2A2A29',
+                      borderTopLeftRadius: '16px',
+                      borderTopRightRadius: '16px',
+                      maxHeight: '60vh',
                       overflowY: 'auto'
                     }}>
+                      <div style={{
+                        padding: '16px 24px',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                        position: 'sticky',
+                        top: 0,
+                        backgroundColor: '#2A2A29',
+                        zIndex: 1001
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: '600' }}>Select Country</span>
+                          <div 
+                            onClick={() => setShowCountryDropdown(false)}
+                            style={{ cursor: 'pointer', padding: '8px' }}
+                          >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
                       {countries.map((country, index) => (
                         <div
                           key={`${country.code}-${index}`}
@@ -600,51 +643,53 @@ const Cellar = () => {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '10px',
+                            gap: '12px',
                             padding: '16px 24px',
                             cursor: 'pointer',
-                            borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+                            borderBottom: index < countries.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none'
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <img src={country.flag} alt={`${country.name} Flag`} style={{ width: '24px', height: '24px' }} />
-                          <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{country.code}</span>
-                          <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>{country.name}</span>
+                          <span style={{ color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '16px', minWidth: '50px' }}>{country.code}</span>
+                          <span style={{ color: '#CECECE', fontFamily: 'Inter, sans-serif', fontSize: '16px' }}>{country.name}</span>
                         </div>
                       ))}
                     </div>
-                  )}
-                </div>
-                <input
-                  type="tel"
-                  placeholder="Phone"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  style={{
-                    display: 'flex',
-                    height: '64px',
-                    padding: '16px 24px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '10px',
-                    flex: 1,
-                    borderRadius: '16px',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    background: '#2A2A29 !important',
-                    backgroundColor: '#2A2A29 !important',
-                    WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
-                    WebkitTextFillColor: '#959493',
-                    color: '#959493',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '16px',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'white'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
-                />
+                  </div>
+                )}
               </div>
+              
+              {/* Phone Input - Separate and Full Width */}
+              <input
+                type="tel"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                style={{
+                  display: 'flex',
+                  height: '64px',
+                  padding: '16px 24px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  width: '100%',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: '#2A2A29 !important',
+                  backgroundColor: '#2A2A29 !important',
+                  WebkitBoxShadow: '0 0 0 30px #2A2A29 inset',
+                  WebkitTextFillColor: '#959493',
+                  color: '#959493',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'white'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+              />
               {errors.phone && (
                 <div style={{ 
                   color: '#ff4444', 
