@@ -184,7 +184,7 @@ const Cellar = () => {
   };
 
   const handleWineClick = (wineId: number) => {
-    setLocation(`/wine-details/${wineId}`);
+    setLocation('/internal-wine');
   };
 
   // Scroll detection effect
