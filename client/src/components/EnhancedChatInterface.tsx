@@ -34,99 +34,64 @@ interface EnhancedChatInterfaceProps {
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyButton = false }) => {
-  // Function to format bold text with **text**
-  const formatBoldText = (text: string) => {
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        const boldText = part.slice(2, -2);
-        return <strong key={index} style={{ fontWeight: 'bold', color: '#DBDBDB' }}>{boldText}</strong>;
-      }
-      return part;
-    });
-  };
-
-  // Function to format content with proper list handling and bold text
-  const formatListContent = (content: string) => {
+  // Simplified content formatter for lists and bold text
+  const formatContent = (content: string) => {
     if (!content) return null;
+    
+    // Handle bold text first
+    const formatText = (text: string) => {
+      const parts = text.split(/(\*\*.*?\*\*)/g);
+      return parts.map((part, i) => 
+        part.startsWith('**') && part.endsWith('**') 
+          ? <strong key={i}>{part.slice(2, -2)}</strong>
+          : part
+      );
+    };
 
     const lines = content.split('\n');
     const elements: React.ReactNode[] = [];
-    let currentListItems: string[] = [];
-    let inList = false;
+    let listItems: string[] = [];
 
-    lines.forEach((line, index) => {
-      const trimmedLine = line.trim();
+    lines.forEach((line, i) => {
+      const isListItem = /^[-•*]\s|^\d+\.\s/.test(line.trim());
       
-      // Check if line is a list item (starts with -, •, *, or number.)
-      const isBulletPoint = /^[-•*]\s/.test(trimmedLine);
-      const isNumberedItem = /^\d+\.\s/.test(trimmedLine);
-      
-      if (isBulletPoint || isNumberedItem) {
-        // Add to current list
-        const itemText = trimmedLine.replace(/^[-•*]\s|^\d+\.\s/, '');
-        currentListItems.push(itemText);
-        inList = true;
+      if (isListItem) {
+        listItems.push(line.trim().replace(/^[-•*]\s|^\d+\.\s/, ''));
       } else {
-        // If we were in a list and now we're not, render the list
-        if (inList && currentListItems.length > 0) {
+        // Render accumulated list items
+        if (listItems.length > 0) {
           elements.push(
-            <div key={`list-${index}`} style={{ margin: '8px 0' }}>
-              {currentListItems.map((item, itemIndex) => (
-                <div key={itemIndex} style={{ 
-                  display: 'flex', 
-                  alignItems: 'flex-start', 
-                  marginBottom: '4px',
-                  paddingLeft: '8px'
-                }}>
-                  <span style={{ 
-                    color: '#6A53E7', 
-                    marginRight: '8px',
-                    fontSize: '14px',
-                    marginTop: '2px'
-                  }}>•</span>
-                  <span style={{ color: '#DBDBDB' }}>{formatBoldText(item)}</span>
+            <div key={`list-${i}`} style={{ margin: '8px 0' }}>
+              {listItems.map((item, j) => (
+                <div key={j} style={{ display: 'flex', marginBottom: '4px', paddingLeft: '8px' }}>
+                  <span style={{ color: '#6A53E7', marginRight: '8px' }}>•</span>
+                  <span>{formatText(item)}</span>
                 </div>
               ))}
             </div>
           );
-          currentListItems = [];
-          inList = false;
+          listItems = [];
         }
         
-        // Add regular paragraph if it's not empty
-        if (trimmedLine) {
+        // Regular text
+        if (line.trim()) {
           elements.push(
-            <div key={`para-${index}`} style={{ 
-              marginBottom: '8px',
-              color: '#DBDBDB',
-              whiteSpace: 'pre-wrap'
-            }}>
-              {formatBoldText(line)}
+            <div key={i} style={{ marginBottom: '8px', whiteSpace: 'pre-wrap' }}>
+              {formatText(line)}
             </div>
           );
         }
       }
     });
 
-    // Handle any remaining list items
-    if (inList && currentListItems.length > 0) {
+    // Handle remaining list items
+    if (listItems.length > 0) {
       elements.push(
         <div key="final-list" style={{ margin: '8px 0' }}>
-          {currentListItems.map((item, itemIndex) => (
-            <div key={itemIndex} style={{ 
-              display: 'flex', 
-              alignItems: 'flex-start', 
-              marginBottom: '4px',
-              paddingLeft: '8px'
-            }}>
-              <span style={{ 
-                color: '#6A53E7', 
-                marginRight: '8px',
-                fontSize: '14px',
-                marginTop: '2px'
-              }}>•</span>
-              <span style={{ color: '#DBDBDB' }}>{formatBoldText(item)}</span>
+          {listItems.map((item, j) => (
+            <div key={j} style={{ display: 'flex', marginBottom: '4px', paddingLeft: '8px' }}>
+              <span style={{ color: '#6A53E7', marginRight: '8px' }}>•</span>
+              <span>{formatText(item)}</span>
             </div>
           ))}
         </div>
@@ -891,15 +856,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                           maxWidth: message.role === 'user' ? '80%' : '100%',
                           ...typography.body
                         }}>
-                          {message.role === 'assistant' ? (
-                            <div style={{ color: '#DBDBDB' }}>
-                              {formatListContent(message.content)}
-                            </div>
-                          ) : (
-                            <div style={{ color: '#000' }}>
-                              {formatBoldText(message.content)}
-                            </div>
-                          )}
+                          <div style={{ color: message.role === 'user' ? '#000' : '#DBDBDB' }}>
+                            {formatContent(message.content)}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -1078,17 +1037,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                                   fontSize: '16px',
                                   lineHeight: '1.6'
                                 }}>
-                                  {formatListContent(message.content)}
+                                  {formatContent(message.content)}
                                 </div>
                               ) : (
                                 <div style={{
                                   color: '#000000',
-                                  whiteSpace: 'pre-wrap',
                                   fontFamily: 'Inter, system-ui, sans-serif',
                                   fontSize: '16px',
                                   lineHeight: '1.6'
                                 }}>
-                                  {message.content}
+                                  {formatContent(message.content)}
                                 </div>
                               )}
                             </div>
