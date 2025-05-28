@@ -408,20 +408,17 @@ const Cellar = () => {
 
             {/* Header */}
             <div style={{ marginBottom: '24px', marginTop: '8px' }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                marginBottom: '16px' 
+              <h2 style={{
+                color: 'white',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '24px',
+                fontWeight: 600,
+                textAlign: 'center',
+                marginBottom: '16px',
+                margin: '0 0 16px 0'
               }}>
-                <img 
-                  src={logoImage} 
-                  alt="SOMM Logo" 
-                  style={{ 
-                    height: '32px',
-                    width: 'auto'
-                  }} 
-                />
-              </div>
+                Want to see wine history?
+              </h2>
               
               <p style={{
                 color: '#CECECE',
