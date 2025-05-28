@@ -31,11 +31,17 @@ export default function ConversationDialog() {
     }}>
       {/* Header with back button and wine name */}
       <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#1C1C1C',
         padding: '16px 20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         display: 'flex',
         alignItems: 'center',
-        gap: '16px'
+        gap: '16px',
+        zIndex: 1000
       }}>
         <button
           onClick={handleBackClick}
@@ -68,6 +74,7 @@ export default function ConversationDialog() {
       {/* Conversation Content */}
       <div style={{
         padding: '20px',
+        paddingTop: '90px',
         paddingBottom: '40px'
       }}>
         <div style={{
