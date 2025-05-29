@@ -1175,8 +1175,18 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                         )}
                       </>
                     ) : (
-                      // Show "View chat history" button when user hasn't shared contact info
+                      // Show "Chat history" section when user hasn't shared contact info
                       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                        <h1 style={{
+                          color: 'white',
+                          fontFamily: 'Inter, sans-serif',
+                          fontSize: '24px',
+                          fontWeight: '600',
+                          margin: '0 0 24px 0',
+                          textAlign: 'center'
+                        }}>
+                          Chat history
+                        </h1>
                         <button 
                           onClick={() => {
                             setShowContactSheet(true);
@@ -1202,9 +1212,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                             cursor: 'pointer',
                             outline: 'none',
                             width: '100%',
-                            maxWidth: '320px',
-                            marginLeft: 'auto',
-                            marginRight: 'auto',
                             boxSizing: 'border-box',
                             lineHeight: '1'
                           }}
