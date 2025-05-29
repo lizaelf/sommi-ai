@@ -3,17 +3,17 @@
 
 export const WINE_CONFIG = {
   // Primary wine information
-  name: 'Tenuta San Guido Bolgheri Sassicaia DOC',
-  fullName: 'Tenuta San Guido Bolgheri Sassicaia DOC',
-  vintage: 2020,
-  winery: 'Tenuta San Guido',
-  vineyard: 'Sassicaia',
-  region: 'Bolgheri',
-  appellation: 'Bolgheri DOC',
-  county: 'Tuscany',
-  state: 'Tuscany',
-  country: 'Italy',
-  varietal: 'Cabernet Sauvignon',
+  name: 'Ridge "Lytton Springs" Dry Creek Zinfandel',
+  fullName: 'Ridge "Lytton Springs" Dry Creek Zinfandel',
+  vintage: 2021,
+  winery: 'Ridge Vineyards',
+  vineyard: 'Lytton Springs',
+  region: 'Dry Creek Valley',
+  appellation: 'Dry Creek Valley AVA',
+  county: 'Sonoma County',
+  state: 'California',
+  country: 'United States',
+  varietal: 'Zinfandel',
   
   // Detailed characteristics
   characteristics: {
@@ -33,15 +33,15 @@ export const WINE_CONFIG = {
   
   // Tasting notes and description
   tastingNotes: [
-    'Elegant aromas of blackcurrant, cedar, and Mediterranean herbs',
-    'Complex flavors of dark berries, tobacco, and graphite',
-    'Notes of vanilla and spice from French oak aging',
-    'Hints of leather, earth, and mineral undertones',
-    'Long, refined finish with structured tannins and balanced acidity'
+    'Rich aromas of blackberry, raspberry, and warm spices',
+    'Complex flavors of dark cherry, plum, and black pepper',
+    'Notes of vanilla and cedar from American oak aging',
+    'Hints of tobacco, earth, and dried herbs',
+    'Long, satisfying finish with balanced tannins and bright acidity'
   ],
   
   // Historical information
-  history: 'Tenuta San Guido\'s Sassicaia, created in the 1940s by Marquis Mario Incisa della Rocchetta, is considered the first "Super Tuscan" wine. Located in Bolgheri on the Tuscan coast, this revolutionary wine challenged traditional Italian winemaking by using Cabernet Sauvignon in a region known for Sangiovese. The estate\'s unique terroir, with its gravelly soils and coastal climate, creates wines of exceptional elegance and complexity that rival the great wines of Bordeaux.',
+  history: 'Ridge Vineyards\' Lytton Springs, first produced in 1972, represents the pinnacle of California Zinfandel craftsmanship. Located in Dry Creek Valley, Sonoma County, this historic vineyard was planted in the 1900s and acquired by Ridge in 1991. The vineyard\'s unique terroir, with its well-drained gravelly soils and warm climate, produces Zinfandel of exceptional concentration and complexity. Ridge\'s traditional winemaking approach, emphasizing minimal intervention and natural fermentation, allows the true character of this legendary vineyard to shine through.',
   
   // Food pairing categories
   foodPairings: [

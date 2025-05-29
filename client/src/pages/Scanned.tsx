@@ -6,9 +6,22 @@ import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 
+interface SelectedWine {
+  id: number;
+  name: string;
+  image: string;
+  bottles: number;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+}
+
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
-  const [selectedWine, setSelectedWine] = useState(null);
+  const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
   
   // Check for selected wine data and scroll listener
   useEffect(() => {
