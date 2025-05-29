@@ -375,6 +375,7 @@ export default function ImprovedContactForm({ animationState, portalElement, onC
                 onClick={() =>
                   setShowCountryDropdown(!showCountryDropdown)
                 }
+                className="contact-form-input"
                 style={{
                   display: "flex",
                   height: "64px",
@@ -382,10 +383,6 @@ export default function ImprovedContactForm({ animationState, portalElement, onC
                   justifyContent: "center",
                   alignItems: "center",
                   width: "100px",
-                  borderRadius: "16px",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  background: "#2A2A29 !important",
-                  backgroundColor: "#2A2A29 !important",
                   cursor: "pointer",
                   boxSizing: "border-box",
                 }}

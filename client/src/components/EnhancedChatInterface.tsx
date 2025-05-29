@@ -1587,14 +1587,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                     style={{
                       color: "#ff4444",
                       fontSize: "14px",
-                      marginTop: "-12px",
+                      marginTop: "4px",
                       fontFamily: "Inter, sans-serif",
                     }}
                   >
                     {errors.firstName}
                   </div>
                 )}
-
+                
                 <input
                   type="text"
                   placeholder="Last name"
