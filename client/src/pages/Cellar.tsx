@@ -890,8 +890,7 @@ const Cellar = () => {
         {/* Show "Want to see wine history?" button for non-submitted users */}
         {!hasSharedContact && (
           <div style={{
-            margin: "24px 16px",
-            paddingBottom: "24px",
+            margin: "24px 16px 48px 16px",
             textAlign: "center"
           }}>
             <button
