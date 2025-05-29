@@ -106,9 +106,9 @@ const HomeGlobal = () => {
       </div>
 
       {/* Content */}
-      <div className="pt-20 px-4">
+      <div className="px-4" style={{ paddingTop: "96px" }}>
         {/* Ridge Vineyards Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center" style={{ marginBottom: "32px" }}>
           <img
             src={wineryLogoPath}
             alt="Ridge Vineyards"
@@ -121,7 +121,7 @@ const HomeGlobal = () => {
         </div>
 
         {/* Welcome Text */}
-        <div className="mb-8">
+        <div style={{ marginBottom: "40px" }}>
           <p
             className="leading-relaxed"
             style={{
@@ -140,19 +140,20 @@ const HomeGlobal = () => {
         {/* Your wines section */}
         <div className="mb-6">
           <h3
-            className="text-xl font-medium mb-6"
+            className="text-xl font-medium"
             style={{
               fontFamily: "Lora, serif",
               fontSize: "24px",
               lineHeight: "32px",
               fontWeight: 500,
+              marginBottom: "24px"
             }}
           >
             Your wines
           </h3>
 
           {/* Wine Cards */}
-          <div className="space-y-4">
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {wines.map((wine) => (
               <div
                 key={wine.id}
