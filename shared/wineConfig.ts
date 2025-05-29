@@ -3,17 +3,17 @@
 
 export const WINE_CONFIG = {
   // Primary wine information
-  name: 'Tenuta San Guido Bolgheri Sassicaia DOC',
-  fullName: 'Tenuta San Guido Bolgheri Sassicaia DOC',
-  vintage: 2020,
-  winery: 'Tenuta San Guido',
-  vineyard: 'Sassicaia',
-  region: 'Bolgheri',
-  appellation: 'Bolgheri DOC',
-  county: 'Tuscany',
-  state: 'Tuscany',
-  country: 'Italy',
-  varietal: 'Cabernet Sauvignon',
+  name: 'Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel',
+  fullName: 'Ridge Vineyards "Lytton Springs" Dry Creek Zinfandel',
+  vintage: 2021,
+  winery: 'Ridge Vineyards',
+  vineyard: 'Lytton Springs',
+  region: 'Dry Creek Valley',
+  appellation: 'Dry Creek Valley AVA',
+  county: 'Sonoma County',
+  state: 'California',
+  country: 'United States',
+  varietal: 'Zinfandel',
   
   // Detailed characteristics
   characteristics: {
@@ -41,7 +41,7 @@ export const WINE_CONFIG = {
   ],
   
   // Historical information
-  history: 'Tenuta San Guido\'s Sassicaia, created in the 1940s by Marquis Mario Incisa della Rocchetta, is considered the first "Super Tuscan" wine. Located in Bolgheri on the Tuscan coast, this revolutionary wine challenged traditional Italian winemaking by using Cabernet Sauvignon in a region known for Sangiovese. The estate\'s unique terroir, with its gravelly soils and coastal climate, creates wines of exceptional elegance and complexity that rival the great wines of Bordeaux.',
+  history: 'Ridge Vineyards\' Lytton Springs vineyard, established in the 1850s, represents one of California\'s most historic and revered Zinfandel sites. Located in Dry Creek Valley, Sonoma County, this vineyard has been producing exceptional Zinfandel for over 150 years. Ridge\'s meticulous approach to winemaking, using native yeasts and minimal intervention, allows the unique terroir of ancient volcanic soils and Mediterranean climate to shine through, creating wines of remarkable depth and character.',
   
   // Food pairing categories
   foodPairings: [
