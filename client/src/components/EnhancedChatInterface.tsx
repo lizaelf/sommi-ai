@@ -1178,13 +1178,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       // Show "Chat history" section when user hasn't shared contact info
                       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                         <h1 style={{
+                          ...typography.h1,
                           color: 'white',
-                          fontFamily: 'Inter, sans-serif',
-                          fontSize: '32px',
-                          fontWeight: '700',
                           margin: '0 0 24px 0',
-                          textAlign: 'center',
-                          lineHeight: '1.2'
+                          textAlign: 'center'
                         }}>
                           Chat history
                         </h1>
