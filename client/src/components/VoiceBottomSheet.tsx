@@ -35,6 +35,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   console.log("VoiceBottomSheet render - isResponding:", isResponding, "isListening:", isListening, "isThinking:", isThinking, "showSuggestions:", showSuggestions, "showListenButton:", showListenButton);
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  const [showQuestion, setShowQuestion] = useState<boolean>(false);
+  const [userQuestion, setUserQuestion] = useState<string>('');
 
   // Wine-related suggestions
   const suggestions = [

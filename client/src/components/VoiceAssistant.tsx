@@ -197,6 +197,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 setIsVoiceThinking(true);
                 setHasAskedQuestion(true); // Mark that user has asked a question
                 
+                // Store the user's question for later display
+                (window as any).lastUserQuestion = finalTranscript;
+                
                 // Add timeout only for thinking state, not for responding state
                 console.log("Setting timeout for thinking state");
                 const thinkingTimeout = setTimeout(() => {
@@ -457,6 +460,31 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             
             console.log("✅ Listen Response button state set to TRUE");
             
+            // PRELOAD TTS AUDIO when response is ready
+            console.log("🔊 Preloading TTS audio for instant playback...");
+            fetch('/api/text-to-speech', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ text: messageText })
+            }).then(response => {
+              if (response.ok) {
+                return response.blob();
+              }
+              throw new Error('Failed to preload TTS audio');
+            }).then(audioBlob => {
+              const audioUrl = URL.createObjectURL(audioBlob);
+              
+              // Cache the audio for instant playback
+              (window as any).preloadedAudioUrl = audioUrl;
+              (window as any).preloadedAudioBlob = audioBlob;
+              
+              console.log("✅ TTS audio preloaded and cached successfully");
+            }).catch(error => {
+              console.error("Error preloading TTS audio:", error);
+            });
+            
             // Also store with multiple fallback methods
             setTimeout(() => {
               (window as any).lastResponseText = messageText;
@@ -710,25 +738,40 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     console.log("Listen Response button clicked");
     setShowListenButton(false); // Hide button while playing
     
+    // Store the user's last question to show during playback
+    const lastUserQuestion = (window as any).lastUserQuestion || "Your question";
+    
     try {
-      // Check if we have cached audio for instant playback
-      const cachedAudioUrl = (window as any).cachedAudioUrl;
-      if (cachedAudioUrl) {
-        console.log("🚀 Using cached audio for instant playback");
+      // Check if we have preloaded audio for instant playback
+      const preloadedAudioUrl = (window as any).preloadedAudioUrl;
+      if (preloadedAudioUrl) {
+        console.log("🚀 Using preloaded audio for instant playback");
+        
+        // Show the user's question immediately when button is clicked
+        setUserQuestion(lastUserQuestion);
+        setShowQuestion(true);
         setIsResponding(true);
         
-        const audio = new Audio(cachedAudioUrl);
+        const audio = new Audio(preloadedAudioUrl);
         (window as any).currentOpenAIAudio = audio;
+        
+        audio.onplay = () => {
+          // Hide question and show stop button when speech starts
+          setShowQuestion(false);
+          console.log("Speech started, showing stop button");
+        };
         
         audio.onended = () => {
           setIsResponding(false);
           setShowListenButton(true);
+          setShowQuestion(false);
           (window as any).currentOpenAIAudio = null;
-          console.log("🎵 Cached audio playback completed");
+          console.log("🎵 Preloaded audio playback completed");
         };
         
         audio.onerror = () => {
-          console.error("Cached audio playback failed, falling back to text-to-speech");
+          console.error("Preloaded audio playback failed, falling back to text-to-speech");
+          setShowQuestion(false);
           // Fall back to text-to-speech generation
           handleTextToSpeechFallback();
         };
@@ -743,6 +786,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     } catch (error) {
       console.error("Error in handleListenResponse:", error);
       setIsResponding(false);
+      setShowQuestion(false);
       setShowListenButton(true);
     }
   };
