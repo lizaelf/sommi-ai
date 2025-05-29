@@ -167,7 +167,7 @@ const HomeGlobal = () => {
                 key={wine.id}
                 className="bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-colors"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-start gap-4">
                   {/* Wine Bottle Image */}
                   <div className="flex items-center justify-center">
                     <img
