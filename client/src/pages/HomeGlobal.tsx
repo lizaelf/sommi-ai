@@ -105,30 +105,16 @@ const HomeGlobal = () => {
       <div className="pt-20 px-4">
         {/* Ridge Vineyards Logo */}
         <div className="text-center mb-8">
-          <h2 
-            className="text-4xl font-light tracking-widest mb-6"
+          <img 
+            src="/attached_assets/winary-logo.png" 
+            alt="Ridge Vineyards" 
+            className="mx-auto"
             style={{
-              fontFamily: "Lora, serif",
-              fontSize: "48px",
-              lineHeight: "56px",
-              fontWeight: 300,
-              letterSpacing: "0.1em"
+              height: "auto",
+              maxWidth: "300px",
+              width: "100%"
             }}
-          >
-            RIDGE
-          </h2>
-          <p 
-            className="text-lg tracking-wider"
-            style={{
-              fontFamily: "Lora, serif",
-              fontSize: "18px",
-              lineHeight: "24px",
-              fontWeight: 300,
-              letterSpacing: "0.05em"
-            }}
-          >
-            VINEYARDS
-          </p>
+          />
         </div>
 
         {/* Welcome Text */}
