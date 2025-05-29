@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 
-const CellarWinePage = () => {
+const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {

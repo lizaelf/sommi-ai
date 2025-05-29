@@ -15,7 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/cellar" component={Cellar} />
-      <Route path="/cellar-wines" component={CellarWinePage} />
+      <Route path="/home-global" component={CellarWinePage} />
       <Route path="/wine/details" component={WineDetails} />
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={WineDetails} />
