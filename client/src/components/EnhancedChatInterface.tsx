@@ -34,6 +34,10 @@ interface EnhancedChatInterfaceProps {
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyButton = false }) => {
+  // Check if user has shared contact information
+  const [hasSharedContact, setHasSharedContact] = useState(() => {
+    return localStorage.getItem('hasSharedContact') === 'true';
+  });
   // Simplified content formatter for lists and bold text
   const formatContent = (content: string) => {
     if (!content) return null;
@@ -883,7 +887,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 padding: '0 20px',
                 marginBottom: '20px'
               }}>
-                {showBuyButton && (
+                {showBuyButton && hasSharedContact && (
                   <>
                     <h1 style={{
                       ...typography.h1,
@@ -1136,6 +1140,42 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       No conversation history yet. Start asking questions about wine to see your summary here.
                     </div>
                   )}
+                  </>
+                )}
+                
+                {/* View Chat History Button for users who haven't shared contact */}
+                {showBuyButton && !hasSharedContact && (
+                  <div style={{
+                    textAlign: 'center',
+                    marginBottom: '32px'
+                  }}>
+                    <button
+                      onClick={() => setLocation('/cellar')}
+                      style={{
+                        padding: '12px 24px',
+                        borderRadius: '24px',
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        color: 'white',
+                        fontFamily: 'Inter, sans-serif',
+                        fontSize: '16px',
+                        fontWeight: '400',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                      }}
+                    >
+                      View chat history
+                    </button>
+                  </div>
+                )}
                   
                   {/* Typing Indicator */}
                   {isTyping && (
