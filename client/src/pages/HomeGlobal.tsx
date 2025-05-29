@@ -365,10 +365,10 @@ const HomeGlobal = () => {
         <div className="h-20"></div>
       </div>
 
-      {/* Circle glow effect at bottom */}
+      {/* Circle glow effect at top */}
       <div style={{
         position: 'fixed',
-        bottom: '-90px',
+        top: '8px',
         left: '50%',
         transform: 'translateX(-50%)',
         width: '180px',
@@ -376,7 +376,7 @@ const HomeGlobal = () => {
         borderRadius: '50%',
         backgroundColor: '#8E8E8E',
         filter: 'blur(60px)',
-        opacity: 0.7,
+        opacity: 0.3,
         zIndex: 0,
         pointerEvents: 'none'
       }} />
