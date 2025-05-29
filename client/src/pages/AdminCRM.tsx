@@ -122,7 +122,7 @@ export default function AdminCRM() {
               </svg>
             </button>
             <h1 style={{ ...typography.h1, color: "white" }}>
-              Wine Collection
+              Admin
             </h1>
           </div>
           <Button onClick={handleAddWine}>Add Wine</Button>
