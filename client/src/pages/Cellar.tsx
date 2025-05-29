@@ -900,7 +900,10 @@ const Cellar = () => {
                 setTimeout(() => setAnimationState("open"), 50);
               }}
               style={{
-                padding: "12px 24px",
+                height: "56px",
+                minHeight: "56px",
+                maxHeight: "56px",
+                padding: "0 24px",
                 borderRadius: "24px",
                 backgroundColor: "transparent",
                 border: "1px solid rgba(255, 255, 255, 0.3)",
@@ -911,7 +914,11 @@ const Cellar = () => {
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
-                maxWidth: "320px"
+                maxWidth: "320px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxSizing: "border-box"
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
