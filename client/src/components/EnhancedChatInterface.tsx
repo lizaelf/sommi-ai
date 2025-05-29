@@ -52,76 +52,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   // State for contact bottom sheet
   const [showContactSheet, setShowContactSheet] = useState(false);
 
-  // Set up portal element for contact bottom sheet
-  useEffect(() => {
-    const portal = document.createElement("div");
-    document.body.appendChild(portal);
-    setPortalElement(portal);
 
-    return () => {
-      document.body.removeChild(portal);
-    };
-  }, []);
 
   const handleCloseContactSheet = () => {
     setShowContactSheet(false);
-    setAnimationState("closing");
-    setTimeout(() => setAnimationState("closed"), 300);
   };
 
-  // Form validation and handling from Cellar page
-  const validateForm = () => {
-    const newErrors = {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-    };
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    }
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((error) => error === "");
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
+  const handleFormSubmit = async (submissionData: any) => {
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          phone: `${selectedCountry.dial_code}${formData.phone}`,
-        }),
+        body: JSON.stringify(submissionData),
       });
 
       const data = await response.json();
@@ -162,12 +106,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         });
       } else {
         console.error("Failed to save contact:", data);
-        if (data.errors) {
-          setErrors(data.errors);
-        }
+        throw new Error("Failed to submit contact information");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      throw error; // Re-throw to let the shared component handle the error display
     }
   };
 
@@ -1775,320 +1718,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         </main>
       </div>
 
-      {/* Contact Bottom Sheet */}
-      {animationState !== "closed" &&
-        portalElement &&
-        createPortal(
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              zIndex: 9999,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-end",
-              opacity:
-                animationState === "open"
-                  ? 1
-                  : animationState === "opening"
-                    ? 0.8
-                    : 0,
-              transition: "opacity 0.3s ease-out",
-            }}
-            onClick={handleCloseContactSheet}
-          >
-            <div
-              style={{
-                background:
-                  "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
-                backdropFilter: "blur(20px)",
-                width: "100%",
-                maxWidth: "500px",
-                borderRadius: "24px 24px 0px 0px",
-                borderTop: "1px solid rgba(255, 255, 255, 0.20)",
-                paddingTop: "24px",
-                paddingLeft: "24px",
-                paddingRight: "24px",
-                paddingBottom: "28px",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
-                transform:
-                  animationState === "open"
-                    ? "translateY(0)"
-                    : "translateY(100%)",
-                transition: "transform 0.3s ease-out",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "16px",
-                  right: "16px",
-                  cursor: "pointer",
-                  zIndex: 10,
-                }}
-                onClick={handleCloseContactSheet}
-              >
-                <X size={24} color="white" />
-              </div>
-
-              {/* Header */}
-              <div style={{ marginBottom: "24px", marginTop: "0px" }}>
-                <h2
-                  style={{
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 500,
-                    textAlign: "center",
-                    margin: "0 0 12px 0",
-                  }}
-                >
-                  Want to see wine history?
-                </h2>
-
-                <p
-                  style={{
-                    color: "#CECECE",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 400,
-                    lineHeight: "1.3",
-                    textAlign: "center",
-                    margin: "0 0 8px 0",
-                  }}
-                >
-                  Enter your contact info
-                </p>
-              </div>
-
-              {/* Form Fields */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={(e) =>
-                    handleInputChange("firstName", e.target.value)
-                  }
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                {errors.firstName && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.firstName}
-                  </div>
-                )}
-
-                <input
-                  type="text"
-                  placeholder="Last name"
-                  value={formData.lastName}
-                  onChange={(e) =>
-                    handleInputChange("lastName", e.target.value)
-                  }
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                {errors.lastName && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.lastName}
-                  </div>
-                )}
-
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                {errors.email && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.email}
-                  </div>
-                )}
-
-                {/* Phone number with country selector */}
-                <div style={{ position: "relative" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      height: "64px",
-                      width: "100%",
-                      boxSizing: "border-box",
-                    }}
-                    className="contact-form-input"
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        paddingLeft: "24px",
-                        paddingRight: "12px",
-                        cursor: "pointer",
-                        borderRight: "1px solid rgba(255, 255, 255, 0.2)",
-                      }}
-                      onClick={() => setShowCountryDropdown(true)}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <span style={{ fontSize: "16px" }}>
-                          {selectedCountry.flag}
-                        </span>
-                        <span
-                          style={{
-                            color: "white",
-                            fontFamily: "Inter, sans-serif",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {selectedCountry.dial_code}
-                        </span>
-                      </div>
-                    </div>
-                    <input
-                      type="tel"
-                      placeholder="Phone number"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        handleInputChange("phone", e.target.value)
-                      }
-                      className="contact-form-input"
-                      style={{
-                        display: "flex",
-                        height: "56px",
-                        padding: "16px 24px",
-                        alignItems: "center",
-                        flex: 1,
-                        color: "white",
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "16px",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-                  {errors.phone && (
-                    <div
-                      style={{
-                        color: "#ff4444",
-                        fontSize: "14px",
-                        marginTop: "4px",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      {errors.phone}
-                    </div>
-                  )}
-                </div>
-
-                {/* Save Button */}
-                <div
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  <button
-                    onClick={handleSubmit}
-                    className="save-button"
-                    style={{
-                      width: "100%",
-                      height: "56px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "black",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    Join Somm
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>,
-          portalElement,
-        )}
+      {/* Contact Form Bottom Sheet */}
+      <ContactFormBottomSheet
+        isOpen={showContactSheet}
+        onClose={handleCloseContactSheet}
+        onSubmit={handleFormSubmit}
+        title="Want to see wine history?"
+        description="Enter your contact info"
+      />
     </div>
   );
 };
