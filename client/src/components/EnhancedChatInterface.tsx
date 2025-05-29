@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
+import { createPortal } from 'react-dom';
 import { useToast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -41,6 +42,28 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
   
   // State for contact bottom sheet
   const [showContactSheet, setShowContactSheet] = useState(false);
+  const [animationState, setAnimationState] = useState<
+    "closed" | "opening" | "open" | "closing"
+  >("closed");
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  
+  // Set up portal element for contact bottom sheet
+  useEffect(() => {
+    const portal = document.createElement('div');
+    document.body.appendChild(portal);
+    setPortalElement(portal);
+    
+    return () => {
+      document.body.removeChild(portal);
+    };
+  }, []);
+
+  const handleCloseContactSheet = () => {
+    setShowContactSheet(false);
+    setAnimationState("closing");
+    setTimeout(() => setAnimationState("closed"), 300);
+  };
+
   // Simplified content formatter for lists and bold text
   const formatContent = (content: string) => {
     if (!content) return null;
@@ -1029,7 +1052,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       // Show "View chat history" button when user hasn't shared contact info
                       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                         <button 
-                          onClick={() => setShowContactSheet(true)}
+                          onClick={() => {
+                            setShowContactSheet(true);
+                            setAnimationState("opening");
+                            setTimeout(() => setAnimationState("open"), 50);
+                          }}
                           style={{
                             backgroundColor: 'rgba(255, 255, 255, 0.08)',
                             borderRadius: '32px',
@@ -1301,100 +1328,157 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
       </div>
       
       {/* Contact Bottom Sheet */}
-      {showContactSheet && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'flex-end'
-          }}
-          onClick={() => setShowContactSheet(false)}
-        >
-          <div 
+      {animationState !== "closed" &&
+        portalElement &&
+        createPortal(
+          <div
             style={{
-              backgroundColor: '#1C1C1C',
-              borderTopLeftRadius: '24px',
-              borderTopRightRadius: '24px',
-              width: '100%',
-              padding: '24px',
-              maxHeight: '80vh',
-              overflow: 'auto'
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 9999,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-end",
+              opacity:
+                animationState === "open"
+                  ? 1
+                  : animationState === "opening"
+                    ? 0.8
+                    : 0,
+              transition: "opacity 0.3s ease-out",
             }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={handleCloseContactSheet}
           >
-            <div style={{
-              width: '40px',
-              height: '4px',
-              backgroundColor: 'rgba(255, 255, 255, 0.3)',
-              borderRadius: '2px',
-              margin: '0 auto 24px auto'
-            }} />
-            
-            <h2 style={{
-              color: 'white',
-              fontSize: '24px',
-              fontWeight: 600,
-              marginBottom: '16px',
-              textAlign: 'center'
-            }}>
-              Share Your Contact Info
-            </h2>
-            
-            <p style={{
-              color: '#DBDBDB',
-              fontSize: '16px',
-              marginBottom: '24px',
-              textAlign: 'center'
-            }}>
-              To view your chat history and personalized wine recommendations, please share your contact information.
-            </p>
-            
-            <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
-              <button
-                onClick={() => setShowContactSheet(false)}
+            <div
+              style={{
+                background:
+                  "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
+                backdropFilter: "blur(20px)",
+                width: "100%",
+                maxWidth: "500px",
+                borderRadius: "24px 24px 0px 0px",
+                borderTop: "1px solid rgba(255, 255, 255, 0.20)",
+                paddingTop: "24px",
+                paddingLeft: "24px",
+                paddingRight: "24px",
+                paddingBottom: "28px",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
+                transform:
+                  animationState === "open"
+                    ? "translateY(0)"
+                    : "translateY(100%)",
+                transition: "transform 0.3s ease-out",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Handle bar */}
+              <div
                 style={{
-                  flex: 1,
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '32px',
-                  height: '56px',
-                  border: 'none',
-                  color: 'white',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  cursor: 'pointer'
+                  width: "40px",
+                  height: "4px",
+                  backgroundColor: "rgba(255, 255, 255, 0.30)",
+                  borderRadius: "2px",
+                  alignSelf: "center",
+                  marginBottom: "24px",
+                }}
+              />
+
+              {/* Title */}
+              <h2
+                style={{
+                  color: "white",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "24px",
+                  fontWeight: 600,
+                  lineHeight: "32px",
+                  textAlign: "center",
+                  margin: "0 0 12px 0",
                 }}
               >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setShowContactSheet(false);
-                  setLocation('/cellar');
-                }}
+                Share Your Contact Info
+              </h2>
+
+              {/* Description */}
+              <p
                 style={{
-                  flex: 1,
-                  backgroundColor: 'white',
-                  borderRadius: '32px',
-                  height: '56px',
-                  border: 'none',
-                  color: 'black',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  cursor: 'pointer'
+                  color: "rgba(255, 255, 255, 0.70)",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  lineHeight: "24px",
+                  textAlign: "center",
+                  margin: "0 0 32px 0",
                 }}
               >
-                Share Contact
-              </button>
+                To view your chat history and personalized wine recommendations, please share your contact information.
+              </p>
+
+              {/* Buttons */}
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button
+                  onClick={handleCloseContactSheet}
+                  style={{
+                    flex: 1,
+                    height: "56px",
+                    backgroundColor: "rgba(255, 255, 255, 0.08)",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    borderRadius: "32px",
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.25)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.15)";
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleCloseContactSheet();
+                    setLocation('/cellar');
+                  }}
+                  style={{
+                    flex: 1,
+                    height: "56px",
+                    backgroundColor: "white",
+                    border: "none",
+                    borderRadius: "32px",
+                    color: "black",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "white";
+                  }}
+                >
+                  Share Contact
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          portalElement
+        )}
     </div>
   );
 };
