@@ -13,8 +13,8 @@ const Cellar = () => {
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(() => {
     // Only show modal automatically if user hasn't shared contact AND hasn't closed it before
-    const hasShared = localStorage.getItem('hasSharedContact') === 'true';
-    const hasClosed = localStorage.getItem('hasClosedContactForm') === 'true';
+    const hasShared = localStorage.getItem("hasSharedContact") === "true";
+    const hasClosed = localStorage.getItem("hasClosedContactForm") === "true";
     return !hasShared && !hasClosed;
   });
   const [, setLocation] = useLocation();
@@ -23,8 +23,8 @@ const Cellar = () => {
     "closed" | "opening" | "open" | "closing"
   >(() => {
     // Show contact sheet automatically if user hasn't shared contact AND hasn't closed it before
-    const hasShared = localStorage.getItem('hasSharedContact') === 'true';
-    const hasClosed = localStorage.getItem('hasClosedContactForm') === 'true';
+    const hasShared = localStorage.getItem("hasSharedContact") === "true";
+    const hasClosed = localStorage.getItem("hasClosedContactForm") === "true";
     return !hasShared && !hasClosed ? "opening" : "closed";
   });
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
@@ -56,23 +56,23 @@ const Cellar = () => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     // Check localStorage for saved contact sharing status
-    return localStorage.getItem('hasSharedContact') === 'true';
+    return localStorage.getItem("hasSharedContact") === "true";
   });
-  
+
   const [hasClosedContactForm, setHasClosedContactForm] = useState(() => {
     // Check if user has previously closed the contact form
-    return localStorage.getItem('hasClosedContactForm') === 'true';
+    return localStorage.getItem("hasClosedContactForm") === "true";
   });
 
   // Function to reset account status (clear all user data)
   const resetAccountStatus = () => {
     // Clear all localStorage items
-    localStorage.removeItem('hasSharedContact');
-    localStorage.removeItem('hasClosedContactForm');
-    localStorage.removeItem('currentConversationId');
-    localStorage.removeItem('conversations');
-    localStorage.removeItem('messages');
-    
+    localStorage.removeItem("hasSharedContact");
+    localStorage.removeItem("hasClosedContactForm");
+    localStorage.removeItem("currentConversationId");
+    localStorage.removeItem("conversations");
+    localStorage.removeItem("messages");
+
     // Force immediate state updates
     setHasSharedContact(false);
     setHasClosedContactForm(false);
@@ -82,7 +82,7 @@ const Cellar = () => {
       email: "",
       phone: "",
     });
-    
+
     // Force page reload to ensure clean state
     setTimeout(() => {
       window.location.reload();
@@ -386,7 +386,7 @@ const Cellar = () => {
       if (response.ok) {
         console.log("Contact saved successfully:", data);
         setHasSharedContact(true); // Mark user as having shared contact info
-        localStorage.setItem('hasSharedContact', 'true'); // Persist the choice
+        localStorage.setItem("hasSharedContact", "true"); // Persist the choice
         setShowModal(false);
         setAnimationState("closing");
         setTimeout(() => setAnimationState("closed"), 300);
@@ -437,11 +437,11 @@ const Cellar = () => {
     setShowModal(false);
     setAnimationState("closing");
     setTimeout(() => setAnimationState("closed"), 300);
-    
+
     // Mark that user has closed the contact form (so it won't show automatically again)
     setHasClosedContactForm(true);
-    localStorage.setItem('hasClosedContactForm', 'true');
-    
+    localStorage.setItem("hasClosedContactForm", "true");
+
     // Note: Do NOT set hasSharedContact to true here - only when Save is clicked
   };
 
@@ -894,16 +894,18 @@ const Cellar = () => {
 
         {/* Fixed bottom button for non-submitted users */}
         {!hasSharedContact && (
-          <div style={{
-            position: "fixed",
-            bottom: "0",
-            left: "0",
-            right: "0",
-            backgroundColor: "#1C1C1C",
-            padding: "16px",
-            zIndex: 50,
-            borderTop: "1px solid rgba(255, 255, 255, 0.2)"
-          }}>
+          <div
+            style={{
+              position: "fixed",
+              bottom: "0",
+              left: "0",
+              right: "0",
+              backgroundColor: "#1C1C1C",
+              padding: "16px",
+              zIndex: 50,
+              borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+            }}
+          >
             <button
               onClick={() => {
                 setShowModal(true);
@@ -928,10 +930,11 @@ const Cellar = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+                e.currentTarget.style.backgroundColor =
+                  "rgba(255, 255, 255, 0.05)";
                 e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.4)";
               }}
               onMouseLeave={(e) => {
@@ -939,7 +942,7 @@ const Cellar = () => {
                 e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
               }}
             >
-              Want to see wine history?
+              View wine history
             </button>
           </div>
         )}
@@ -1450,7 +1453,7 @@ const Cellar = () => {
                       border: "1px solid rgba(255, 255, 255, 0.12)",
                     }}
                   >
-                    Share contacts
+                    Save
                   </div>
                 </div>
               </div>

@@ -30,22 +30,29 @@ export default function WineDetails() {
     <div className="min-h-screen bg-background">
       <div className="relative">
         
-        {/* App Header - Fully transparent by default, filled with blur when scrolled */}
-        <div 
-          style={{
-            backgroundColor: scrolled ? 'rgba(23, 23, 23, 0.5)' : 'rgba(10, 10, 10, 0)',
-            backdropFilter: scrolled ? 'blur(20px)' : 'none',
-            WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-            borderBottom: 'none',
-            height: '75px',
-            paddingLeft: '24px',
-            paddingRight: '24px'
-          }}
-          className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
+        {/* Fixed Header with back button navigation */}
+        <div
+          className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
+            scrolled
+              ? "bg-black/90 backdrop-blur-sm border-b border-white/10"
+              : "bg-transparent"
+          }`}
         >
           <Link to="/">
-            <Logo />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              className="text-white"
+            >
+              <path
+                fill="currentColor"
+                d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
+              />
+            </svg>
           </Link>
+          <h1 className="text-lg font-medium text-white">Wine Details</h1>
           <div className="flex items-center space-x-3">
             <Link to="/cellar">
               <div style={{
