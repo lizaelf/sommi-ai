@@ -120,9 +120,8 @@ const HomeGlobal = () => {
             alt="Ridge Vineyards"
             className="mx-auto"
             style={{
-              height: "auto",
-              maxWidth: "300px",
-              width: "100%",
+              height: "54px",
+              width: "auto",
             }}
           />
         </div>
