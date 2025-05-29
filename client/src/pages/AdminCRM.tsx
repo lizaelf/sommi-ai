@@ -127,8 +127,36 @@ export default function AdminCRM() {
                     flexDirection: "column",
                     alignItems: "center",
                     gap: "16px",
+                    position: "relative",
                   }}
                 >
+                  {/* Edit Icon */}
+                  <button
+                    onClick={() => {
+                      const element = document.getElementById(`edit-form-${card.id}`);
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                    style={{
+                      position: "absolute",
+                      top: "12px",
+                      right: "12px",
+                      background: "rgba(255, 255, 255, 0.1)",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "8px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    className="hover:bg-white/20 transition-colors"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                  </button>
                   {/* Wine Image */}
                   <div
                     style={{
@@ -308,99 +336,7 @@ export default function AdminCRM() {
             </div>
           </div>
 
-          {/* Wine Cards Editing Forms */}
-          <div className="space-y-6">
-            <h3 style={{ ...typography.h1, color: 'white' }}>Edit Wine Details</h3>
-            {wineCards.map((card) => (
-              <div key={card.id} className="p-6 bg-white/5 rounded-lg border border-white/20">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 style={{ ...typography.bodyPlus1, color: 'white' }}>
-                    Wine ID{card.id} - {card.name}
-                  </h4>
-                  <button
-                    onClick={() => deleteWineCard(card.id)}
-                    className="p-2 text-red-400 hover:text-red-300 transition-colors"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                    </svg>
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm text-white/80 mb-2">Wine Name</label>
-                    <input
-                      type="text"
-                      value={card.name}
-                      onChange={(e) => updateWineCard(card.id, 'name', e.target.value)}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-white/80 mb-2">Number of Bottles</label>
-                    <input
-                      type="number"
-                      value={card.bottles}
-                      onChange={(e) => updateWineCard(card.id, 'bottles', parseInt(e.target.value))}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                </div>
 
-                <div className="space-y-4">
-                  <h5 className="text-sm text-white/80">Ratings</h5>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-xs text-white/60 mb-1">Vivino (VN)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={card.ratings.vn}
-                        onChange={(e) => updateWineCardRating(card.id, 'vn', parseInt(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-1">James Halliday (JD)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={card.ratings.jd}
-                        onChange={(e) => updateWineCardRating(card.id, 'jd', parseInt(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-1">Wine Spectator (WS)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={card.ratings.ws}
-                        onChange={(e) => updateWineCardRating(card.id, 'ws', parseInt(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-1">ABV (%)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="20"
-                        step="0.1"
-                        value={card.ratings.abv}
-                        onChange={(e) => updateWineCardRating(card.id, 'abv', parseFloat(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
