@@ -79,10 +79,9 @@ const Cellar = () => {
       email: "",
       phone: "",
     });
-    toast({
-      title: "Account Reset",
-      description: "Your account status has been reset. You are now logged out.",
-    });
+    
+    // Reload the page to reset all states
+    window.location.reload();
   };
 
   const countries = [
@@ -630,29 +629,38 @@ const Cellar = () => {
           </svg>
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
-        <div
-          onClick={() => {
-            setShowWineSearch(!showWineSearch);
-            setIsSearchActive(!showWineSearch);
-          }}
-          className={`cursor-pointer transition-all duration-200 ${
-            showWineSearch
-              ? "text-white scale-110"
-              : "text-white/80 hover:text-white"
-          }`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="transition-all duration-200"
+        <div className="flex items-center gap-3">
+          {/* Temporary Reset Button for Testing */}
+          <button
+            onClick={resetAccountStatus}
+            className="text-xs bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-white"
           >
-            <path
-              fill="currentColor"
-              d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"
-            ></path>
-          </svg>
+            Reset
+          </button>
+          <div
+            onClick={() => {
+              setShowWineSearch(!showWineSearch);
+              setIsSearchActive(!showWineSearch);
+            }}
+            className={`cursor-pointer transition-all duration-200 ${
+              showWineSearch
+                ? "text-white scale-110"
+                : "text-white/80 hover:text-white"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              className="transition-all duration-200"
+            >
+              <path
+                fill="currentColor"
+                d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"
+              ></path>
+            </svg>
+          </div>
         </div>
       </div>
 
