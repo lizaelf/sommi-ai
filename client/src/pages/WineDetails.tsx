@@ -1,37 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'wouter';
+import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
-import wineBottlePath1 from "@assets/Product Image.png";
-import wineBottlePath2 from "@assets/image-2.png";
+import { getWineDisplayName } from '../../../shared/wineConfig';
 
-const wines = [
-  {
-    id: 1,
-    name: "2021 Lytton Springs",
-    bottles: 6,
-    image: wineBottlePath1,
-    ratings: { vn: 95, jd: 93, ws: 94, abv: 14.8 }
-  },
-  {
-    id: 2,
-    name: "2020 Geyserville",
-    bottles: 8,
-    image: wineBottlePath2,
-    ratings: { vn: 92, jd: 91, ws: 93, abv: 14.5 }
-  }
-];
+interface WineData {
+  id: number;
+  name: string;
+  bottles: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+}
 
 export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
-  const params = useParams();
-  const wineId = parseInt(params.id || "1");
-  const wine = wines.find(w => w.id === wineId) || wines[0];
+  const [selectedWine, setSelectedWine] = useState<WineData | null>(null);
   
-  // Add scroll listener to detect when page is scrolled
+  // Check for selected wine data and scroll listener
   useEffect(() => {
+    // Check localStorage for selected wine data
+    const storedWine = localStorage.getItem('selectedWine');
+    console.log('WineDetails - Stored wine data:', storedWine);
+    if (storedWine) {
+      const wineData = JSON.parse(storedWine);
+      console.log('WineDetails - Parsed wine data:', wineData);
+      setSelectedWine(wineData);
+      console.log('WineDetails - Set selectedWine state to:', wineData);
+      // Clear after use
+      localStorage.removeItem('selectedWine');
+    }
+
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setScrolled(true);
@@ -51,52 +56,83 @@ export default function WineDetails() {
   return (
     <div className="min-h-screen bg-background">
       <div className="relative">
-        
-        {/* Fixed Header with back button navigation */}
+        {/* App Header - Same as Scanned page */}
         <div
-          className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
-            scrolled
-              ? "bg-black/90 backdrop-blur-sm border-b border-white/10"
-              : "bg-transparent"
-          }`}
+          style={{
+            backgroundColor: scrolled
+              ? "rgba(23, 23, 23, 0.5)"
+              : "rgba(10, 10, 10, 0)",
+            backdropFilter: scrolled ? "blur(20px)" : "none",
+            WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+            borderBottom: "none",
+            height: "75px",
+            paddingLeft: "24px",
+            paddingRight: "24px",
+          }}
+          className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
         >
-          <Link to="/home-global">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              className="text-white"
+          {/* Back Button */}
+          <Link href="/home-global">
+            <Button
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                color: "white",
+                padding: "0",
+                height: "auto",
+                fontSize: "16px",
+                fontWeight: 400,
+              }}
             >
-              <path
-                fill="currentColor"
-                d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
-              />
-            </svg>
+              ← Back
+            </Button>
           </Link>
-          <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">{wine.name}</h1>
-          <div></div>
+
+          {/* Logo */}
+          <Logo />
+
+          {/* Empty space for layout balance */}
+          <div style={{ width: "60px" }}></div>
+        </div>
+        
+        {/* Empty space to account for the fixed header */}
+        <div className="h-14"></div>
+        
+        {/* Wine Title */}
+        <div className="px-4 pt-4 pb-2">
+          <h1
+            style={{
+              fontFamily: "Lora, serif",
+              fontSize: "24px",
+              lineHeight: "32px",
+              fontWeight: 500,
+              color: "white",
+              textAlign: "center"
+            }}
+          >
+            {(() => {
+              console.log('WineDetails - Rendering title, selectedWine:', selectedWine);
+              return selectedWine ? selectedWine.name : getWineDisplayName();
+            })()}
+          </h1>
         </div>
 
-        {/* Wine Image Section */}
-        <div className="pt-[75px] pb-4">
-          <div className="flex justify-center items-center px-4">
+        {/* Wine Image - show selected wine image if available */}
+        {selectedWine && (
+          <div className="flex justify-center items-center px-4 pb-4">
             <img
-              src={wine.image}
-              alt={wine.name}
+              src={selectedWine.image}
+              alt={selectedWine.name}
               style={{
                 height: "170px",
                 width: "auto",
               }}
             />
           </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div>
-          <EnhancedChatInterface showBuyButton={true} />
-        </div>
+        )}
       </div>
+      
+      <EnhancedChatInterface />
     </div>
   );
 }
