@@ -15,7 +15,12 @@ const HomeGlobal = () => {
     if (wineId === 1) {
       setLocation('/');
     } else {
-      setLocation(`/wine/${wineId}`);
+      // Store wine data in localStorage for the Scanned page to use
+      const selectedWine = wines.find(w => w.id === wineId);
+      if (selectedWine) {
+        localStorage.setItem('selectedWine', JSON.stringify(selectedWine));
+      }
+      setLocation('/');
     }
   };
 

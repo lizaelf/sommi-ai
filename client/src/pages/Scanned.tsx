@@ -8,9 +8,18 @@ import { getWineDisplayName } from '../../../shared/wineConfig';
 
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
+  const [selectedWine, setSelectedWine] = useState(null);
   
-  // Add scroll listener to detect when page is scrolled
+  // Check for selected wine data and scroll listener
   useEffect(() => {
+    // Check localStorage for selected wine data
+    const storedWine = localStorage.getItem('selectedWine');
+    if (storedWine) {
+      setSelectedWine(JSON.parse(storedWine));
+      // Clear the stored data after use
+      localStorage.removeItem('selectedWine');
+    }
+
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setScrolled(true);
@@ -97,9 +106,23 @@ export default function Scanned() {
               textAlign: "center"
             }}
           >
-            {getWineDisplayName()}
+            {selectedWine ? selectedWine.name : getWineDisplayName()}
           </h1>
         </div>
+
+        {/* Wine Image - only show if selectedWine exists */}
+        {selectedWine && (
+          <div className="flex justify-center items-center px-4 pb-4">
+            <img
+              src={selectedWine.image}
+              alt={selectedWine.name}
+              style={{
+                height: "170px",
+                width: "auto",
+              }}
+            />
+          </div>
+        )}
       </div>
       
       <EnhancedChatInterface />
