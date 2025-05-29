@@ -44,7 +44,10 @@ const Cellar = () => {
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [hasSharedContact, setHasSharedContact] = useState(false);
+  const [hasSharedContact, setHasSharedContact] = useState(() => {
+    // Check localStorage for saved contact sharing status
+    return localStorage.getItem('hasSharedContact') === 'true';
+  });
 
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
@@ -343,7 +346,10 @@ const Cellar = () => {
       if (response.ok) {
         console.log("Contact saved successfully:", data);
         setHasSharedContact(true); // Mark user as having shared contact info
+        localStorage.setItem('hasSharedContact', 'true'); // Persist the choice
         setShowModal(false);
+        setAnimationState("closing");
+        setTimeout(() => setAnimationState("closed"), 300);
 
         // Show toast notification
         toast({
@@ -389,6 +395,9 @@ const Cellar = () => {
 
   const handleClose = () => {
     setShowModal(false);
+    setAnimationState("closing");
+    setTimeout(() => setAnimationState("closed"), 300);
+    // Note: Do NOT set hasSharedContact to true here - only when Save is clicked
   };
 
   const handleWineClick = (wineId: number) => {
@@ -820,6 +829,129 @@ const Cellar = () => {
             }}
           />
         </div>
+
+        {/* Conditional Content Based on Contact Sharing */}
+        {hasSharedContact ? (
+          <>
+            {/* Summary Section */}
+            <div style={{
+              margin: "24px 16px",
+              padding: "24px",
+              borderRadius: "16px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <h1 style={{
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "24px",
+                fontWeight: "600",
+                margin: "0 0 16px 0"
+              }}>
+                Summary
+              </h1>
+              <div style={{
+                color: "#CECECE",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: "400",
+                lineHeight: "1.5"
+              }}>
+                Your wine exploration journey with Sassicaia. Based on your conversations, you've shown interest in food pairings, tasting notes, and serving recommendations.
+              </div>
+            </div>
+
+            {/* History Section */}
+            <div style={{
+              margin: "0 16px 24px 16px",
+              padding: "24px",
+              borderRadius: "16px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <h1 style={{
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "24px",
+                fontWeight: "600",
+                margin: "0 0 16px 0"
+              }}>
+                History
+              </h1>
+              <div style={{
+                color: "#CECECE",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: "400",
+                lineHeight: "1.5",
+                marginBottom: "16px"
+              }}>
+                Recent conversations about Sassicaia wine characteristics, optimal serving conditions, and food pairing suggestions.
+              </div>
+              <button
+                onClick={() => setLocation("/conversation-dialog")}
+                style={{
+                  padding: "12px 24px",
+                  borderRadius: "24px",
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  color: "white",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.25)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.15)";
+                }}
+              >
+                Show whole dialog
+              </button>
+            </div>
+          </>
+        ) : (
+          /* View Chat History Button when contact not shared */
+          <div style={{
+            margin: "24px 16px",
+            textAlign: "center"
+          }}>
+            <button
+              onClick={() => {
+                setShowModal(true);
+                setAnimationState("opening");
+                setTimeout(() => setAnimationState("open"), 50);
+              }}
+              style={{
+                padding: "12px 24px",
+                borderRadius: "24px",
+                backgroundColor: "transparent",
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: "400",
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+              }}
+            >
+              View chat history
+            </button>
+          </div>
+        )}
 
         {/* Contact Info Bottom Sheet */}
         {animationState !== "closed" &&
