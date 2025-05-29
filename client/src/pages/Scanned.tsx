@@ -179,7 +179,7 @@ export default function Scanned() {
         )}
       </div>
       
-      <EnhancedChatInterface />
+      <EnhancedChatInterface selectedWine={selectedWine} />
     </div>
   );
 }
