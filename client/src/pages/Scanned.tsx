@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
+import WineBottleImage from '@/components/WineBottleImage';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 
@@ -32,6 +33,7 @@ export default function Scanned() {
       const wineData = JSON.parse(storedWine);
       console.log('Parsed wine data:', wineData);
       setSelectedWine(wineData);
+      console.log('Set selectedWine state to:', wineData);
       // Don't clear immediately - keep for debugging
       // localStorage.removeItem('selectedWine');
     }
@@ -122,13 +124,16 @@ export default function Scanned() {
               textAlign: "center"
             }}
           >
-            {selectedWine ? selectedWine.name : getWineDisplayName()}
+{(() => {
+              console.log('Rendering title, selectedWine:', selectedWine);
+              return selectedWine ? selectedWine.name : getWineDisplayName();
+            })()}
           </h1>
         </div>
 
-        {/* Wine Image - only show if selectedWine exists */}
-        {selectedWine && (
-          <div className="flex justify-center items-center px-4 pb-4">
+        {/* Wine Image - show selected wine image or default bottle */}
+        <div className="flex justify-center items-center px-4 pb-4">
+          {selectedWine ? (
             <img
               src={selectedWine.image}
               alt={selectedWine.name}
@@ -137,8 +142,10 @@ export default function Scanned() {
                 width: "auto",
               }}
             />
-          </div>
-        )}
+          ) : (
+            <WineBottleImage />
+          )}
+        </div>
       </div>
       
       <EnhancedChatInterface />
