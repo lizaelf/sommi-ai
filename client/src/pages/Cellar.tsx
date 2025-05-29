@@ -1,371 +1,448 @@
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { ContactFormBottomSheet } from "@/components/ContactFormBottomSheet";
 import { useToast } from "@/hooks/use-toast";
+import { ContactFormBottomSheet } from "@/components/ContactFormBottomSheet";
 import backgroundImage from "@assets/Background.png";
 import wineBottleImage from "@assets/Product Image.png";
-import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@assets/Logo.png";
 import lineImage from "@assets/line.png";
-import savedImage from "@assets/saved.png";
-import wineCircleImage from "@assets/wine-circle.png";
 
-export default function Cellar() {
+const Cellar = () => {
   const { toast } = useToast();
-  const [location] = useLocation();
-  
-  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">(() => {
-    // Don't show modal if user has already shared contact or closed it before
+  const [showModal, setShowModal] = useState(() => {
+    // Only show modal automatically if user hasn't shared contact AND hasn't closed it before
     const hasShared = localStorage.getItem('hasSharedContact') === 'true';
     const hasClosed = localStorage.getItem('hasClosedContactForm') === 'true';
-    return !hasShared && !hasClosed ? "opening" : "closed";
+    return !hasShared && !hasClosed;
   });
-  
-  const [showWineSearch, setShowWineSearch] = useState(false);
-  const [wineSearchQuery, setWineSearchQuery] = useState("");
-  const [isSearchActive, setIsSearchActive] = useState(false);
-  const [hasSharedContact, setHasSharedContact] = useState(() => {
-    // Check localStorage for saved contact sharing status
-    return localStorage.getItem('hasSharedContact') === 'true';
-  });
-  
-  const [hasClosedContactForm, setHasClosedContactForm] = useState(() => {
-    // Check if user has previously closed the contact form
-    return localStorage.getItem('hasClosedContactForm') === 'true';
-  });
+  const [, setLocation] = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [hasSharedContact, setHasSharedContact] = useState(() => 
+    localStorage.getItem('hasSharedContact') === 'true'
+  );
 
-  // Function to reset account status (clear all user data)
-  const resetAccountStatus = () => {
-    // Clear all localStorage items
-    localStorage.removeItem('hasSharedContact');
-    localStorage.removeItem('hasClosedContactForm');
-    localStorage.removeItem('currentConversationId');
-    localStorage.removeItem('conversations');
-    localStorage.removeItem('messages');
-    
-    // Force immediate state updates
-    setHasSharedContact(false);
-    setHasClosedContactForm(false);
-    
-    // Force page reload to ensure clean state
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
-  };
-
-  // Auto-show contact form only if user hasn't shared contact and hasn't closed it before
+  // Body scroll lock effect
   useEffect(() => {
-    if (animationState === "opening") {
-      const timer = setTimeout(() => {
-        setAnimationState("open");
-      }, 500);
-      return () => clearTimeout(timer);
+    if (showModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  }, [animationState]);
 
-  const openContactForm = () => {
-    setAnimationState("opening");
-    setTimeout(() => setAnimationState("open"), 50);
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showModal]);
+
+  // Auto-open contact sheet for non-submitted users on mount
+  useEffect(() => {
+    if (showModal) {
+      setShowContactForm(true);
+    }
+  }, [showModal]);
+
+  const handleContactFormSubmit = (formData: any) => {
+    setHasSharedContact(true);
+    localStorage.setItem('hasSharedContact', 'true');
+    
+    // Show success toast notification
+    toast({
+      description: (
+        <span
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontSize: "16px",
+            fontWeight: 500,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Select wine to see past info and chats
+        </span>
+      ),
+      duration: 5000,
+      className: "bg-white text-black border-none",
+      style: {
+        position: "fixed",
+        top: "74px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "auto",
+        maxWidth: "none",
+        padding: "8px 24px",
+        borderRadius: "32px",
+        boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+        zIndex: 9999,
+      },
+    });
   };
 
   const handleClose = () => {
-    // Mark that user has closed the contact form
+    setShowModal(false);
+    setShowContactForm(false);
+    
+    // Mark that user has closed the contact form (so it won't show automatically again)
     localStorage.setItem('hasClosedContactForm', 'true');
-    setHasClosedContactForm(true);
-    setAnimationState("closing");
-    setTimeout(() => setAnimationState("closed"), 300);
   };
 
-  const handleContactSuccess = () => {
-    setHasSharedContact(true);
-    setHasClosedContactForm(false);
+  const handleWineClick = (wineId: number) => {
+    setLocation(`/wine-details/${wineId}`);
   };
+
+  // Scroll detection effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        position: "relative",
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        overflow: "hidden",
-      }}
-    >
+    <div className="min-h-screen bg-black text-white relative">
+      <style>
+        {`
+          /* Contact form inputs - transparent when empty */
+          .contact-form-input {
+            background: rgba(255, 255, 255, 0.0) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 16px !important;
+            transition: all 0.3s ease !important;
+          }
+
+          .contact-form-input:focus {
+            border-color: white !important;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+          }
+
+          .contact-form-input:not(:placeholder-shown) {
+            background: rgba(255, 255, 255, 0.08) !important;
+          }
+
+          /* Save button - Remove all browser styling */
+          .save-button {
+            all: unset !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: linear-gradient(180deg, 
+              rgba(255, 255, 255, 0.12) 0%, 
+              rgba(255, 255, 255, 0.08) 50%, 
+              rgba(255, 255, 255, 0.04) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 16px !important;
+            transition: all 0.3s ease !important;
+            cursor: pointer !important;
+            box-sizing: border-box !important;
+          }
+
+          .save-button:hover {
+            background: linear-gradient(180deg, 
+              rgba(255, 255, 255, 0.20) 0%, 
+              rgba(255, 255, 255, 0.16) 50%, 
+              rgba(255, 255, 255, 0.12) 100%) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            transform: translateY(-1px) !important;
+          }
+
+          .save-button:active {
+            transform: translateY(0) !important;
+            background: linear-gradient(180deg, 
+              rgba(255, 255, 255, 0.08) 0%, 
+              rgba(255, 255, 255, 0.04) 50%, 
+              rgba(255, 255, 255, 0.02) 100%) !important;
+          }
+        `}
+      </style>
+
       {/* Header */}
       <div
         style={{
-          position: "absolute",
-          top: "0px",
-          left: "0px",
-          right: "0px",
-          height: "72px",
-          background: "rgba(28, 28, 28, 0.90)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 24px",
-          zIndex: 10,
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 40,
+          backgroundColor: isScrolled ? "rgba(28, 28, 28, 0.95)" : "transparent",
+          backdropFilter: isScrolled ? "blur(20px)" : "none",
+          borderBottom: isScrolled ? "1px solid rgba(255, 255, 255, 0.1)" : "none",
+          transition: "all 0.3s ease",
         }}
       >
-        {/* Logo */}
-        <Link to="/">
-          <img
-            src={logoImage}
-            alt="Logo"
-            style={{
-              height: "32px",
-              cursor: "pointer",
-            }}
-          />
-        </Link>
-
-        {/* Reset Button for Testing */}
-        <button
-          onClick={resetAccountStatus}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            borderRadius: "8px",
-            color: "white",
-            fontSize: "14px",
-            cursor: "pointer",
-            fontFamily: "Inter, sans-serif",
-          }}
-        >
-          Reset Account
-        </button>
-      </div>
-
-      {/* Main Content */}
-      <div
-        style={{
-          position: "absolute",
-          top: "72px",
-          left: "0px",
-          right: "0px",
-          bottom: "0px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          padding: "48px 24px 24px 24px",
-          overflowY: "auto",
-        }}
-      >
-        {/* My cellar title */}
-        <h1
-          style={{
-            color: "white",
-            fontFamily: "Lora, serif",
-            fontSize: "24px",
-            fontWeight: 500,
-            lineHeight: "32px",
-            textAlign: "left",
-            width: "100%",
-            maxWidth: "500px",
-            margin: "0 0 32px 0",
-          }}
-        >
-          My cellar
-        </h1>
-
-        {/* Wine Circle with Wine Name */}
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            marginBottom: hasSharedContact ? "32px" : "48px",
+            justifyContent: "space-between",
+            padding: "16px 24px",
+            height: "56px",
           }}
         >
-          <img
-            src={wineCircleImage}
-            alt="Wine"
+          <Link href="/">
+            <div style={{ cursor: "pointer" }}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19 12H5M12 19L5 12L12 5"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </Link>
+
+          <div
             style={{
-              width: "120px",
-              height: "120px",
-              marginBottom: "16px",
-            }}
-          />
-          <h2
-            style={{
-              color: "white",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "20px",
-              fontWeight: 500,
-              textAlign: "center",
-              margin: "0",
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
             }}
           >
-            Sassicaia. 2020
-          </h2>
+            <img
+              src={logoImage}
+              alt="SipSmart Logo"
+              style={{
+                height: "32px",
+                width: "auto",
+              }}
+            />
+          </div>
+
+          {/* Test reset button - for development only */}
+          {!hasSharedContact && (
+            <button
+              onClick={() => {
+                localStorage.removeItem('hasSharedContact');
+                localStorage.removeItem('hasClosedContactForm');
+                setHasSharedContact(false);
+                setShowContactForm(true);
+              }}
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "8px",
+                color: "white",
+                padding: "8px 12px",
+                fontSize: "12px",
+                cursor: "pointer",
+              }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Content with top padding to account for fixed header */}
+      <div style={{ paddingTop: "88px" }}>
+        {/* Background hero section */}
+        <div
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            height: "340px",
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              bottom: "24px",
+              left: "24px",
+              right: "24px",
+            }}
+          >
+            <h1
+              style={{
+                fontFamily: "Lora, serif",
+                fontSize: "24px",
+                fontWeight: 400,
+                color: "white",
+                margin: 0,
+                textAlign: "left",
+              }}
+            >
+              Cellar
+            </h1>
+          </div>
         </div>
 
-        {/* Wine Details Section */}
-        {hasSharedContact && (
+        {/* Wine rack sections */}
+        <div style={{ backgroundColor: "#1C1C1C" }}>
+          {/* First wine rack */}
           <div
             style={{
-              width: "100%",
-              maxWidth: "500px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
+              backgroundImage: `url(${wineBottleImage})`,
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              height: "228px",
             }}
           >
-            {/* Summary */}
-            <div
-              style={{
-                background: "rgba(28, 28, 28, 0.85)",
-                backdropFilter: "blur(20px)",
-                borderRadius: "16px",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                padding: "24px",
-              }}
-            >
-              <h3
-                style={{
-                  color: "white",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "18px",
-                  fontWeight: 500,
-                  margin: "0 0 16px 0",
-                }}
-              >
-                Summary
-              </h3>
-              <p
-                style={{
-                  color: "#CECECE",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  lineHeight: "1.5",
-                  margin: "0 0 16px 0",
-                }}
-              >
-                The Tenuta San Guido Bolgheri Sassicaia DOC offers an elegant
-                and sophisticated tasting experience with complex aromas and a
-                refined palate structure.
-              </p>
-              <Link to="/conversation-dialog">
-                <button
-                  style={{
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                    padding: "0",
-                  }}
-                >
-                  Show whole dialog
-                </button>
-              </Link>
-            </div>
-
-            {/* History */}
-            <div
-              style={{
-                background: "rgba(28, 28, 28, 0.85)",
-                backdropFilter: "blur(20px)",
-                borderRadius: "16px",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                padding: "24px",
-              }}
-            >
-              <h3
-                style={{
-                  color: "white",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "18px",
-                  fontWeight: 500,
-                  margin: "0 0 16px 0",
-                }}
-              >
-                History
-              </h3>
-              <p
-                style={{
-                  color: "#CECECE",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  lineHeight: "1.5",
-                  margin: "0 0 16px 0",
-                }}
-              >
-                Created by Marchese Mario Incisa della Rocchetta in the 1940s,
-                Sassicaia was revolutionary as one of Italy's first Bordeaux-style
-                blends, featuring Cabernet Sauvignon and Cabernet Franc.
-              </p>
-              <Link to="/wine-details">
-                <button
-                  style={{
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                    padding: "0",
-                  }}
-                >
-                  Show details
-                </button>
-              </Link>
+            {/* Empty divs above the image */}
+            <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(1)}
+              />
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(2)}
+              />
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(3)}
+              />
             </div>
           </div>
-        )}
 
-        {/* Want to see wine history button (when contact not shared) */}
-        {!hasSharedContact && (
+          {/* Line separator */}
           <div
             style={{
-              position: "fixed",
-              bottom: "0px",
-              left: "0px",
-              right: "0px",
-              padding: "16px 24px 24px 24px",
-              background: "linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 40%)",
-              backdropFilter: "blur(10px)",
-              zIndex: 5,
+              backgroundImage: `url(${lineImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              height: "10px",
+            }}
+          />
+
+          {/* Second wine rack */}
+          <div
+            style={{
+              backgroundImage: `url(${wineBottleImage})`,
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              height: "228px",
             }}
           >
+            {/* Empty divs above the image */}
+            <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(4)}
+              />
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(5)}
+              />
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(6)}
+              />
+            </div>
+          </div>
+
+          {/* Line separator */}
+          <div
+            style={{
+              backgroundImage: `url(${lineImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              height: "10px",
+            }}
+          />
+
+          {/* Third wine rack */}
+          <div
+            style={{
+              backgroundImage: `url(${wineBottleImage})`,
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              height: "228px",
+            }}
+          >
+            {/* Empty divs above the image */}
+            <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(7)}
+              />
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(8)}
+              />
+              <div
+                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
+                onClick={() => handleWineClick(9)}
+              />
+            </div>
+          </div>
+
+          {/* Line separator below last wine rack */}
+          <div
+            style={{
+              backgroundImage: `url(${lineImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              height: "10px",
+            }}
+          />
+        </div>
+
+        {/* Fixed bottom button for non-submitted users */}
+        {!hasSharedContact && (
+          <div style={{
+            position: "fixed",
+            bottom: "0",
+            left: "0",
+            right: "0",
+            backgroundColor: "#1C1C1C",
+            padding: "16px",
+            zIndex: 50,
+            borderTop: "1px solid rgba(255, 255, 255, 0.2)"
+          }}>
             <button
-              onClick={openContactForm}
+              onClick={() => setShowContactForm(true)}
               style={{
-                width: "100%",
                 height: "56px",
+                minHeight: "56px",
+                maxHeight: "56px",
+                padding: "16px 24px",
+                alignItems: "center",
+                alignSelf: "stretch",
+                background: "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 100%)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
                 borderRadius: "16px",
-                background: "rgba(28, 28, 28, 0.9)",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
                 color: "white",
+                textAlign: "center",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "16px",
-                fontWeight: 400,
+                fontWeight: 500,
+                lineHeight: "24px",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                outline: "none",
+                width: "100%",
+                boxSizing: "border-box",
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
-                boxSizing: "border-box"
+                transition: "all 0.3s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.4)";
+                const target = e.currentTarget;
+                target.style.background = "linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.16) 50%, rgba(255, 255, 255, 0.12) 100%)";
+                target.style.borderColor = "rgba(255, 255, 255, 0.4)";
+                target.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                const target = e.currentTarget;
+                target.style.background = "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 100%)";
+                target.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                target.style.transform = "translateY(0)";
               }}
             >
               Want to see wine history?
@@ -373,13 +450,22 @@ export default function Cellar() {
           </div>
         )}
 
-        {/* Contact Info Bottom Sheet */}
-        <ContactFormBottomSheet 
-          isOpen={animationState !== "closed"}
-          onClose={handleClose}
-          onSuccess={handleContactSuccess}
-        />
+        {/* Empty space to account for fixed bottom button */}
+        {!hasSharedContact && (
+          <div style={{ height: "88px" }} />
+        )}
       </div>
+
+      {/* Contact Form Bottom Sheet */}
+      <ContactFormBottomSheet
+        isOpen={showContactForm}
+        onClose={handleClose}
+        onSubmit={handleContactFormSubmit}
+        title="Want to see wine history?"
+        subtitle="Enter your contact info"
+      />
     </div>
   );
-}
+};
+
+export default Cellar;
