@@ -4,7 +4,6 @@ import wineryLogoPath from "@assets/winary-logo.png";
 import wineBottlePath1 from "@assets/image-1.png";
 import wineBottlePath2 from "@assets/image-2.png";
 import typography from "@/styles/typography";
-import WineImage from "@/components/WineImage";
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -364,22 +363,6 @@ const HomeGlobal = () => {
 
         {/* Bottom padding for safe area */}
         <div className="h-20"></div>
-      </div>
-
-      {/* Wine Circle Animation - positioned at bottom center */}
-      <div 
-        style={{
-          position: 'fixed',
-          bottom: '40px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '180px',
-          height: '180px',
-          zIndex: 10,
-          pointerEvents: 'none'
-        }}
-      >
-        <WineImage size={180} />
       </div>
     </div>
   );
