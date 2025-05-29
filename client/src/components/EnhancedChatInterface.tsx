@@ -343,7 +343,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 marginBottom: '0',
                 ...typography.h1
               }}>
-                {getWineVintage()} {getWineDisplayName()}
+                {getWineDisplayName()}. {getWineVintage()}
               </div>
               
               {/* Wine region with typography styling and flag */}
