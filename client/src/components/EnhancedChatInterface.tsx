@@ -1126,6 +1126,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 )}
               </div>
             )}
+            </div>
                 
                 {/* View Chat History Button for users who haven't shared contact */}
                 {showBuyButton && !hasSharedContact && (
