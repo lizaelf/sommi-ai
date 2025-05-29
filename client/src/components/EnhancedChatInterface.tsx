@@ -81,7 +81,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
         id: Date.now(),
         role: 'user',
         content: content.trim(),
-        conversationId: currentConversationId || 0
+        conversationId: currentConversationId || 0,
+        createdAt: new Date()
       };
 
       await addMessage(userMessage);
@@ -92,7 +93,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
           id: Date.now() + 1,
           role: 'assistant',
           content: "Thank you for your question about this wine. This is a placeholder response while the API integration is being completed.",
-          conversationId: currentConversationId || 0
+          conversationId: currentConversationId || 0,
+          createdAt: new Date()
         };
 
         await addMessage(assistantMessage);

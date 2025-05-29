@@ -433,14 +433,16 @@ const Cellar = () => {
                 transition: "all 0.3s ease",
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = "linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.16) 50%, rgba(255, 255, 255, 0.12) 100%)";
-                e.target.style.borderColor = "rgba(255, 255, 255, 0.4)";
-                e.target.style.transform = "translateY(-1px)";
+                const target = e.currentTarget;
+                target.style.background = "linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.16) 50%, rgba(255, 255, 255, 0.12) 100%)";
+                target.style.borderColor = "rgba(255, 255, 255, 0.4)";
+                target.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
-                e.target.style.background = "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 100%)";
-                e.target.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                e.target.style.transform = "translateY(0)";
+                const target = e.currentTarget;
+                target.style.background = "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 100%)";
+                target.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                target.style.transform = "translateY(0)";
               }}
             >
               Want to see wine history?
