@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import wineryLogoPath from "@assets/winary-logo.png";
 import wineBottlePath from "@assets/image-1.png";
+import typography from "@/styles/typography";
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -204,30 +205,152 @@ const HomeGlobal = () => {
                     </p>
 
                     {/* Ratings */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          padding: 8,
+                          alignItems: "baseline",
+                          gap: 4,
+                          background: "rgba(255, 255, 255, 0.10)",
+                          borderRadius: 8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "white",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.num,
+                          }}
+                        >
                           {wine.ratings.vn}
-                        </span>
-                        <span className="text-white/40 text-xs">VN</span>
+                        </div>
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "rgba(255, 255, 255, 0.60)",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.body1R,
+                          }}
+                        >
+                          VN
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">
+                      <div
+                        style={{
+                          display: "flex",
+                          padding: 8,
+                          alignItems: "baseline",
+                          gap: 4,
+                          background: "rgba(255, 255, 255, 0.10)",
+                          borderRadius: 8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "white",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.num,
+                          }}
+                        >
                           {wine.ratings.jd}
-                        </span>
-                        <span className="text-white/40 text-xs">JD</span>
+                        </div>
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "rgba(255, 255, 255, 0.60)",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.body1R,
+                          }}
+                        >
+                          JD
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">
+                      <div
+                        style={{
+                          display: "flex",
+                          padding: 8,
+                          alignItems: "baseline",
+                          gap: 4,
+                          background: "rgba(255, 255, 255, 0.10)",
+                          borderRadius: 8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "white",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.num,
+                          }}
+                        >
                           {wine.ratings.ws}
-                        </span>
-                        <span className="text-white/40 text-xs">WS</span>
+                        </div>
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "rgba(255, 255, 255, 0.60)",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.body1R,
+                          }}
+                        >
+                          WS
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">
+                      <div
+                        style={{
+                          display: "flex",
+                          padding: 8,
+                          alignItems: "baseline",
+                          gap: 4,
+                          background: "rgba(255, 255, 255, 0.10)",
+                          borderRadius: 8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "white",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.num,
+                          }}
+                        >
                           {wine.ratings.abv}%
-                        </span>
-                        <span className="text-white/40 text-xs">ABV</span>
+                        </div>
+                        <div
+                          style={{
+                            justifyContent: "center",
+                            display: "flex",
+                            color: "rgba(255, 255, 255, 0.60)",
+                            wordWrap: "break-word",
+                            height: "16px",
+                            ...typography.body1R,
+                          }}
+                        >
+                          ABV
+                        </div>
                       </div>
                     </div>
                   </div>
