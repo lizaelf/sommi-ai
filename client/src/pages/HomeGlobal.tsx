@@ -11,7 +11,11 @@ const HomeGlobal = () => {
   const [location, setLocation] = useLocation();
 
   const handleWineClick = (wineId: number) => {
-    setLocation(`/wine/${wineId}`);
+    if (wineId === 1) {
+      setLocation('/');
+    } else {
+      setLocation(`/wine/${wineId}`);
+    }
   };
 
   useEffect(() => {
