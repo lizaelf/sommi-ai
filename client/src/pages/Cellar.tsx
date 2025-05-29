@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/use-toast";
+import { ContactFormBottomSheet } from '@/components/ContactFormBottomSheet';
 import backgroundImage from "@assets/Background.png";
 import wineBottleImage from "@assets/Product Image.png";
 import usFlagImage from "@assets/US-flag.png";
@@ -19,38 +20,7 @@ const Cellar = () => {
   });
   const [, setLocation] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [animationState, setAnimationState] = useState<
-    "closed" | "opening" | "open" | "closing"
-  >(() => {
-    // Show contact sheet automatically if user hasn't shared contact AND hasn't closed it before
-    const hasShared = localStorage.getItem('hasSharedContact') === 'true';
-    const hasClosed = localStorage.getItem('hasClosedContactForm') === 'true';
-    return !hasShared && !hasClosed ? "opening" : "closed";
-  });
-  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
 
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-
-  const [selectedCountry, setSelectedCountry] = useState({
-    dial_code: "+1",
-    flag: "🇺🇸",
-    name: "United States",
-    code: "US",
-  });
-
-  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const [countrySearchQuery, setCountrySearchQuery] = useState("");
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -76,12 +46,6 @@ const Cellar = () => {
     // Force immediate state updates
     setHasSharedContact(false);
     setHasClosedContactForm(false);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-    });
     
     // Force page reload to ensure clean state
     setTimeout(() => {
@@ -89,9 +53,42 @@ const Cellar = () => {
     }, 100);
   };
 
-  const countries = [
-    { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
-    { name: "Albania", dial_code: "+355", code: "AL", flag: "🇦🇱" },
+  const handleFormSubmit = async (submissionData: any) => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (response.ok) {
+        // Mark that user has shared contact info
+        localStorage.setItem('hasSharedContact', 'true');
+        setHasSharedContact(true);
+        
+        // Close the modal
+        setShowModal(false);
+        
+        toast({
+          title: "Success!",
+          description: "Your contact information has been saved.",
+        });
+      } else {
+        throw new Error("Failed to submit");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      throw error; // Re-throw to let the shared component handle the error display
+    }
+  };
+
+  const handleClose = () => {
+    localStorage.setItem('hasClosedContactForm', 'true');
+    setHasClosedContactForm(true);
+    setShowModal(false);
+  };
     { name: "Algeria", dial_code: "+213", code: "DZ", flag: "🇩🇿" },
     { name: "Andorra", dial_code: "+376", code: "AD", flag: "🇦🇩" },
     { name: "Angola", dial_code: "+244", code: "AO", flag: "🇦🇴" },
