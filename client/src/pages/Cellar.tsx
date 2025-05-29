@@ -44,6 +44,8 @@ const Cellar = () => {
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [hasSharedContact, setHasSharedContact] = useState(false);
+  const [showViewChatButton, setShowViewChatButton] = useState(false);
 
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
@@ -341,6 +343,10 @@ const Cellar = () => {
 
       if (response.ok) {
         console.log("Contact saved successfully:", data);
+        
+        // Mark that user has shared their contact info
+        setHasSharedContact(true);
+        setShowViewChatButton(false);
         setShowModal(false);
 
         // Show toast notification
@@ -386,11 +392,21 @@ const Cellar = () => {
   };
 
   const handleClose = () => {
+    // If user closes without saving, don't mark as shared contact
+    // Show "View chat history" button instead of Summary/History
+    setShowViewChatButton(true);
+    setHasSharedContact(false);
     setShowModal(false);
   };
 
   const handleWineClick = (wineId: number) => {
     setLocation(`/wine-details/${wineId}`);
+  };
+
+  const handleViewChatHistory = () => {
+    // Open the contact form again when "View chat history" is clicked
+    setShowModal(true);
+    setShowViewChatButton(false);
   };
 
   // Scroll detection effect
@@ -818,6 +834,102 @@ const Cellar = () => {
             }}
           />
         </div>
+
+        {/* Conditional UI based on contact sharing status */}
+        {showViewChatButton && !hasSharedContact ? (
+          // Show "View chat history" button when user hasn't shared contact
+          <div style={{ 
+            padding: "24px 16px",
+            display: "flex",
+            justifyContent: "center"
+          }}>
+            <button
+              onClick={handleViewChatHistory}
+              style={{
+                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "32px",
+                padding: "16px 32px",
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                backdropFilter: "blur(10px)"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+              }}
+            >
+              View chat history
+            </button>
+          </div>
+        ) : hasSharedContact ? (
+          // Show Summary and History components when user has shared contact
+          <div style={{ padding: "24px 16px" }}>
+            {/* Summary Section */}
+            <div style={{
+              marginBottom: "32px",
+              padding: "20px",
+              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)",
+              borderRadius: "16px",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <h1 style={{
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "24px",
+                fontWeight: 600,
+                marginBottom: "16px",
+                margin: 0
+              }}>
+                Summary
+              </h1>
+              <div style={{
+                color: "#CECECE",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                lineHeight: "1.5"
+              }}>
+                Your wine exploration journey and preferences will appear here.
+              </div>
+            </div>
+
+            {/* History Section */}
+            <div style={{
+              padding: "20px",
+              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)",
+              borderRadius: "16px",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <h1 style={{
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "24px",
+                fontWeight: 600,
+                marginBottom: "16px",
+                margin: 0
+              }}>
+                History
+              </h1>
+              <div style={{
+                color: "#CECECE",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                lineHeight: "1.5"
+              }}>
+                Your conversation history and wine discoveries will be displayed here.
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
 
         {/* Contact Info Bottom Sheet */}
         {animationState !== "closed" &&
