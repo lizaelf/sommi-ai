@@ -891,6 +891,7 @@ const Cellar = () => {
         {!hasSharedContact && (
           <div style={{
             margin: "24px 16px",
+            paddingBottom: "24px",
             textAlign: "center"
           }}>
             <button
@@ -914,7 +915,6 @@ const Cellar = () => {
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
-                maxWidth: "320px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
