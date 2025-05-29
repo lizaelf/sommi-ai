@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { createPortal } from 'react-dom';
 import { useToast } from '@/hooks/use-toast';
+import { X } from "lucide-react";
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import VoiceAssistant from './VoiceAssistant';
@@ -40,12 +41,35 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
     return localStorage.getItem('hasSharedContact') === 'true';
   });
   
-  // State for contact bottom sheet
+  // State for contact bottom sheet - using same structure as Cellar page
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [animationState, setAnimationState] = useState<
     "closed" | "opening" | "open" | "closing"
   >("closed");
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+
+  const [selectedCountry, setSelectedCountry] = useState({
+    dial_code: "+1",
+    flag: "🇺🇸",
+    name: "United States",
+    code: "US",
+  });
+
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
   
   // Set up portal element for contact bottom sheet
   useEffect(() => {
@@ -62,6 +86,108 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
     setShowContactSheet(false);
     setAnimationState("closing");
     setTimeout(() => setAnimationState("closed"), 300);
+  };
+
+  // Form validation and handling from Cellar page
+  const validateForm = () => {
+    const newErrors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+    };
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    }
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every((error) => error === "");
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field as keyof typeof errors]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          phone: `${selectedCountry.dial_code}${formData.phone}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('hasSharedContact', 'true');
+        setHasSharedContact(true);
+        handleCloseContactSheet();
+        
+        // Show success toast notification
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Contact saved successfully!
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+      } else {
+        console.error("Failed to save contact:", data);
+        if (data.errors) {
+          setErrors(data.errors);
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   // Simplified content formatter for lists and bold text
@@ -1377,103 +1503,267 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Handle bar */}
+              {/* Close button */}
               <div
                 style={{
-                  width: "40px",
-                  height: "4px",
-                  backgroundColor: "rgba(255, 255, 255, 0.30)",
-                  borderRadius: "2px",
-                  alignSelf: "center",
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  cursor: "pointer",
+                  zIndex: 10,
+                }}
+                onClick={handleCloseContactSheet}
+              >
+                <X size={24} color="white" />
+              </div>
+
+              {/* Header */}
+              <div style={{ marginBottom: "24px", marginTop: "0px" }}>
+                <h2
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    margin: "0 0 12px 0",
+                  }}
+                >
+                  Want to see wine history?
+                </h2>
+
+                <p
+                  style={{
+                    color: "#CECECE",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    lineHeight: "1.3",
+                    textAlign: "center",
+                    margin: "0 0 8px 0",
+                  }}
+                >
+                  Enter your contact info
+                </p>
+              </div>
+
+              {/* Form Fields */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "16px",
                   marginBottom: "24px",
                 }}
-              />
-
-              {/* Title */}
-              <h2
-                style={{
-                  color: "white",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "24px",
-                  fontWeight: 600,
-                  lineHeight: "32px",
-                  textAlign: "center",
-                  margin: "0 0 12px 0",
-                }}
               >
-                Share Your Contact Info
-              </h2>
-
-              {/* Description */}
-              <p
-                style={{
-                  color: "rgba(255, 255, 255, 0.70)",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  fontWeight: 400,
-                  lineHeight: "24px",
-                  textAlign: "center",
-                  margin: "0 0 32px 0",
-                }}
-              >
-                To view your chat history and personalized wine recommendations, please share your contact information.
-              </p>
-
-              {/* Buttons */}
-              <div style={{ display: "flex", gap: "12px" }}>
-                <button
-                  onClick={handleCloseContactSheet}
+                <input
+                  type="text"
+                  placeholder="First name"
+                  value={formData.firstName}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
+                  className="contact-form-input"
                   style={{
-                    flex: 1,
+                    display: "flex",
                     height: "56px",
-                    backgroundColor: "rgba(255, 255, 255, 0.08)",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                    borderRadius: "32px",
+                    padding: "16px 24px",
+                    alignItems: "center",
+                    width: "100%",
                     color: "white",
                     fontFamily: "Inter, sans-serif",
                     fontSize: "16px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
+                    outline: "none",
+                    boxSizing: "border-box",
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
-                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.25)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.15)";
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    handleCloseContactSheet();
-                    setLocation('/cellar');
-                  }}
+                />
+                {errors.firstName && (
+                  <div
+                    style={{
+                      color: "#ff4444",
+                      fontSize: "14px",
+                      marginTop: "-12px",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {errors.firstName}
+                  </div>
+                )}
+
+                <input
+                  type="text"
+                  placeholder="Last name"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
+                  className="contact-form-input"
                   style={{
-                    flex: 1,
+                    display: "flex",
                     height: "56px",
-                    backgroundColor: "white",
-                    border: "none",
-                    borderRadius: "32px",
-                    color: "black",
+                    padding: "16px 24px",
+                    alignItems: "center",
+                    width: "100%",
+                    color: "white",
                     fontFamily: "Inter, sans-serif",
                     fontSize: "16px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
+                    outline: "none",
+                    boxSizing: "border-box",
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+                />
+                {errors.lastName && (
+                  <div
+                    style={{
+                      color: "#ff4444",
+                      fontSize: "14px",
+                      marginTop: "-12px",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {errors.lastName}
+                  </div>
+                )}
+
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    handleInputChange("email", e.target.value)
+                  }
+                  className="contact-form-input"
+                  style={{
+                    display: "flex",
+                    height: "56px",
+                    padding: "16px 24px",
+                    alignItems: "center",
+                    width: "100%",
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    outline: "none",
+                    boxSizing: "border-box",
                   }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "white";
+                />
+                {errors.email && (
+                  <div
+                    style={{
+                      color: "#ff4444",
+                      fontSize: "14px",
+                      marginTop: "-12px",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {errors.email}
+                  </div>
+                )}
+
+                {/* Phone number with country selector */}
+                <div style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      height: "56px",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    className="contact-form-input"
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        paddingLeft: "24px",
+                        paddingRight: "12px",
+                        cursor: "pointer",
+                        borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+                      }}
+                      onClick={() => setShowCountryDropdown(true)}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>
+                          {selectedCountry.flag}
+                        </span>
+                        <span
+                          style={{
+                            color: "white",
+                            fontFamily: "Inter, sans-serif",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {selectedCountry.dial_code}
+                        </span>
+                      </div>
+                    </div>
+                    <input
+                      type="tel"
+                      placeholder="Phone number"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                      className="contact-form-input"
+                      style={{
+                        display: "flex",
+                        height: "56px",
+                        padding: "16px 24px",
+                        alignItems: "center",
+                        flex: 1,
+                        color: "white",
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "16px",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+                  {errors.phone && (
+                    <div
+                      style={{
+                        color: "#ff4444",
+                        fontSize: "14px",
+                        marginTop: "4px",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      {errors.phone}
+                    </div>
+                  )}
+                </div>
+
+                {/* Save Button */}
+                <div
+                  style={{
+                    width: "100%",
                   }}
                 >
-                  Share Contact
-                </button>
+                  <button
+                    onClick={handleSubmit}
+                    className="save-button"
+                    style={{
+                      width: "100%",
+                      height: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "black",
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           </div>,
