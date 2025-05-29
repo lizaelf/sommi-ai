@@ -1587,14 +1587,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                     style={{
                       color: "#ff4444",
                       fontSize: "14px",
-                      marginTop: "4px",
+                      marginTop: "-12px",
                       fontFamily: "Inter, sans-serif",
                     }}
                   >
                     {errors.firstName}
                   </div>
                 )}
-                
+
                 <input
                   type="text"
                   placeholder="Last name"
@@ -1663,25 +1663,27 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   </div>
                 )}
 
-                {/* Phone Input Row - Country Selector + Phone Input */}
-                <div style={{ display: "flex", gap: "8px", width: "100%" }}>
-                  {/* Country Code Selector - 100px Width */}
-                  <div style={{ position: "relative", width: "100px" }}>
+                {/* Phone number with country selector */}
+                <div style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      height: "64px",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    className="contact-form-input"
+                  >
                     <div
-                      onClick={() =>
-                        setShowCountryDropdown(!showCountryDropdown)
-                      }
-                      className="contact-form-input"
                       style={{
                         display: "flex",
-                        height: "64px",
-                        padding: "16px 12px",
-                        justifyContent: "center",
                         alignItems: "center",
-                        width: "100px",
+                        paddingLeft: "24px",
+                        paddingRight: "12px",
                         cursor: "pointer",
-                        boxSizing: "border-box",
+                        borderRight: "1px solid rgba(255, 255, 255, 0.2)",
                       }}
+                      onClick={() => setShowCountryDropdown(true)}
                     >
                       <div
                         style={{
@@ -1704,127 +1706,28 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                         </span>
                       </div>
                     </div>
-
-                    {/* Country Dropdown Modal */}
-                    {showCountryDropdown && (
-                      <div
-                        style={{
-                          position: "fixed",
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          backgroundColor: "rgba(0, 0, 0, 0.8)",
-                          zIndex: 1000,
-                          display: "flex",
-                          alignItems: "flex-end",
-                        }}
-                        onClick={() => setShowCountryDropdown(false)}
-                      >
-                        <div
-                          style={{
-                            width: "100%",
-                            backgroundColor: "#2A2A29",
-                            borderTopLeftRadius: "16px",
-                            borderTopRightRadius: "16px",
-                            maxHeight: "60vh",
-                            overflowY: "auto",
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div
-                            style={{
-                              padding: "16px 24px",
-                              borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-                            }}
-                          >
-                            <span
-                              style={{
-                                color: "white",
-                                fontFamily: "Inter, sans-serif",
-                                fontSize: "18px",
-                                fontWeight: "600",
-                              }}
-                            >
-                              Select Country
-                            </span>
-                          </div>
-                          {filteredCountries.map((country: any, index: number) => (
-                            <div
-                              key={country.code}
-                              onClick={() => {
-                                setSelectedCountry(country);
-                                setShowCountryDropdown(false);
-                              }}
-                              style={{
-                                padding: "16px 24px",
-                                borderBottom:
-                                  index < filteredCountries.length - 1
-                                    ? "1px solid rgba(255, 255, 255, 0.08)"
-                                    : "none",
-                                cursor: "pointer",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "12px",
-                                }}
-                              >
-                                <span style={{ fontSize: "20px" }}>
-                                  {country.flag}
-                                </span>
-                                <span
-                                  style={{
-                                    color: "white",
-                                    fontFamily: "Inter, sans-serif",
-                                    fontSize: "16px",
-                                  }}
-                                >
-                                  {country.name}
-                                </span>
-                              </div>
-                              <span
-                                style={{
-                                  color: "#959493",
-                                  fontFamily: "Inter, sans-serif",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {country.dial_code}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    <input
+                      type="tel"
+                      placeholder="Phone number"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                      className="contact-form-input"
+                      style={{
+                        display: "flex",
+                        height: "56px",
+                        padding: "16px 24px",
+                        alignItems: "center",
+                        flex: 1,
+                        color: "white",
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "16px",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
                   </div>
-
-                  {/* Phone Input - Flexible Width */}
-                  <input
-                    type="tel"
-                    placeholder="Phone number"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    className="contact-form-input"
-                    style={{
-                      display: "flex",
-                      height: "64px",
-                      padding: "16px 24px",
-                      alignItems: "center",
-                      flex: 1,
-                      color: "white",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                </div>
                   {errors.phone && (
                     <div
                       style={{
