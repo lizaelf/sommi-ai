@@ -1,9 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
-import { createPortal } from 'react-dom';
 import { useToast } from '@/hooks/use-toast';
-import { X } from "lucide-react";
+import { ContactFormBottomSheet } from './ContactFormBottomSheet';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import VoiceAssistant from './VoiceAssistant';
@@ -41,35 +40,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
     return localStorage.getItem('hasSharedContact') === 'true';
   });
   
-  // State for contact bottom sheet - using same structure as Cellar page
+  // State for contact bottom sheet
   const [showContactSheet, setShowContactSheet] = useState(false);
-  const [animationState, setAnimationState] = useState<
-    "closed" | "opening" | "open" | "closing"
-  >("closed");
-  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-
-  const [selectedCountry, setSelectedCountry] = useState({
-    dial_code: "+1",
-    flag: "🇺🇸",
-    name: "United States",
-    code: "US",
-  });
-
-  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const [countrySearchQuery, setCountrySearchQuery] = useState("");
   
   // Set up portal element for contact bottom sheet
   useEffect(() => {
