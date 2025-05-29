@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useConversation } from '../hooks/useConversation';
-import { ChatInput } from './ChatInput';
-import { ChatInterface } from './ChatInterface';
-import { VoiceAssistant } from './VoiceAssistant';
-import { VoiceBottomSheet } from './VoiceBottomSheet';
-import { WineBottleImage } from './WineBottleImage';
+import ChatInput from './ChatInput';
+import ChatInterface from './ChatInterface';
+import VoiceAssistant from './VoiceAssistant';
+import VoiceBottomSheet from './VoiceBottomSheet';
+import WineBottleImage from './WineBottleImage';
 import { ShiningText } from './ShiningText';
 import { getWineDisplayName, getWineVintage } from '../../../shared/wineConfig';
 
