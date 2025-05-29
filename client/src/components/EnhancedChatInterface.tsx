@@ -1126,7 +1126,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 )}
               </div>
             )}
-            </div>
                 
                 {/* View Chat History Button for users who haven't shared contact */}
                 {showBuyButton && !hasSharedContact && (
@@ -1182,6 +1181,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   <button id="play-audio-btn">Play Response Audio</button>
                 </div>
               </div>
+            </div>
             
             {/* Extra space at the bottom */}
             <div style={{ height: '80px' }}></div>
