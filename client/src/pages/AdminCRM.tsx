@@ -383,85 +383,286 @@ export default function AdminCRM() {
               <Button onClick={handleSaveWineCards}>Save Changes</Button>
             </div>
 
-            {wineCards.map((card) => (
-              <div key={card.id} className="p-6 bg-white/5 rounded-lg border border-white/20">
-                <h3 style={{ ...typography.bodyPlus1, color: 'white', marginBottom: '16px' }}>
-                  Wine Card {card.id}
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm text-white/80 mb-2">Wine Name</label>
-                    <input
-                      type="text"
-                      value={card.name}
-                      onChange={(e) => updateWineCard(card.id, 'name', e.target.value)}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-white/80 mb-2">Number of Bottles</label>
-                    <input
-                      type="number"
-                      value={card.bottles}
-                      onChange={(e) => updateWineCard(card.id, 'bottles', parseInt(e.target.value))}
-                      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
-                    />
-                  </div>
-                </div>
+            {/* Wine Cards Preview */}
+            <div className="space-y-6">
+              <h3 style={{ ...typography.bodyPlus1, color: 'white' }}>Wine Cards Preview</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {wineCards.map((card) => (
+                  <div
+                    key={card.id}
+                    style={{
+                      background: "rgba(25, 25, 25, 0.8)",
+                      borderRadius: "16px",
+                      border: "1px solid #494949",
+                      padding: "20px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "16px",
+                    }}
+                  >
+                    {/* Wine Image */}
+                    <div
+                      style={{
+                        width: "100px",
+                        height: "130px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(255, 255, 255, 0.05)",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <img
+                        src={card.image}
+                        alt={card.name}
+                        style={{
+                          maxHeight: "120px",
+                          width: "auto",
+                        }}
+                      />
+                    </div>
 
-                <div className="space-y-4">
-                  <h4 className="text-sm text-white/80">Ratings</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {/* Wine Info */}
+                    <div style={{ textAlign: "center", width: "100%" }}>
+                      <div
+                        style={{
+                          ...typography.bodyPlus1,
+                          color: "white",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        {card.name}
+                      </div>
+
+                      <div
+                        style={{
+                          ...typography.body1R,
+                          color: "rgba(255, 255, 255, 0.60)",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        {card.bottles} bottles
+                      </div>
+
+                      {/* Ratings */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: "8px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            padding: "6px 8px",
+                            alignItems: "baseline",
+                            gap: "4px",
+                            background: "rgba(255, 255, 255, 0.10)",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              ...typography.num,
+                              color: "white",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {card.ratings.vn}
+                          </span>
+                          <span
+                            style={{
+                              ...typography.body1R,
+                              color: "rgba(255, 255, 255, 0.60)",
+                              fontSize: "12px",
+                            }}
+                          >
+                            VN
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            padding: "6px 8px",
+                            alignItems: "baseline",
+                            gap: "4px",
+                            background: "rgba(255, 255, 255, 0.10)",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              ...typography.num,
+                              color: "white",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {card.ratings.jd}
+                          </span>
+                          <span
+                            style={{
+                              ...typography.body1R,
+                              color: "rgba(255, 255, 255, 0.60)",
+                              fontSize: "12px",
+                            }}
+                          >
+                            JD
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            padding: "6px 8px",
+                            alignItems: "baseline",
+                            gap: "4px",
+                            background: "rgba(255, 255, 255, 0.10)",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              ...typography.num,
+                              color: "white",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {card.ratings.ws}
+                          </span>
+                          <span
+                            style={{
+                              ...typography.body1R,
+                              color: "rgba(255, 255, 255, 0.60)",
+                              fontSize: "12px",
+                            }}
+                          >
+                            WS
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            padding: "6px 8px",
+                            alignItems: "baseline",
+                            gap: "4px",
+                            background: "rgba(255, 255, 255, 0.10)",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              ...typography.num,
+                              color: "white",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {card.ratings.abv}%
+                          </span>
+                          <span
+                            style={{
+                              ...typography.body1R,
+                              color: "rgba(255, 255, 255, 0.60)",
+                              fontSize: "12px",
+                            }}
+                          >
+                            ABV
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Wine Cards Editing Forms */}
+            <div className="space-y-6">
+              <h3 style={{ ...typography.bodyPlus1, color: 'white' }}>Edit Wine Cards</h3>
+              {wineCards.map((card) => (
+                <div key={card.id} className="p-6 bg-white/5 rounded-lg border border-white/20">
+                  <h4 style={{ ...typography.bodyPlus1, color: 'white', marginBottom: '16px' }}>
+                    Wine Card {card.id} - {card.name}
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-xs text-white/60 mb-1">Vivino (VN)</label>
+                      <label className="block text-sm text-white/80 mb-2">Wine Name</label>
                       <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={card.ratings.vn}
-                        onChange={(e) => updateWineCardRating(card.id, 'vn', parseInt(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                        type="text"
+                        value={card.name}
+                        onChange={(e) => updateWineCard(card.id, 'name', e.target.value)}
+                        className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-white/60 mb-1">James Halliday (JD)</label>
+                      <label className="block text-sm text-white/80 mb-2">Number of Bottles</label>
                       <input
                         type="number"
-                        min="0"
-                        max="100"
-                        value={card.ratings.jd}
-                        onChange={(e) => updateWineCardRating(card.id, 'jd', parseInt(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-1">Wine Spectator (WS)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={card.ratings.ws}
-                        onChange={(e) => updateWineCardRating(card.id, 'ws', parseInt(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-1">ABV (%)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="20"
-                        step="0.1"
-                        value={card.ratings.abv}
-                        onChange={(e) => updateWineCardRating(card.id, 'abv', parseFloat(e.target.value))}
-                        className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                        value={card.bottles}
+                        onChange={(e) => updateWineCard(card.id, 'bottles', parseInt(e.target.value))}
+                        className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
                       />
                     </div>
                   </div>
+
+                  <div className="space-y-4">
+                    <h5 className="text-sm text-white/80">Ratings</h5>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">Vivino (VN)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={card.ratings.vn}
+                          onChange={(e) => updateWineCardRating(card.id, 'vn', parseInt(e.target.value))}
+                          className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">James Halliday (JD)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={card.ratings.jd}
+                          onChange={(e) => updateWineCardRating(card.id, 'jd', parseInt(e.target.value))}
+                          className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">Wine Spectator (WS)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={card.ratings.ws}
+                          onChange={(e) => updateWineCardRating(card.id, 'ws', parseInt(e.target.value))}
+                          className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">ABV (%)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.1"
+                          value={card.ratings.abv}
+                          onChange={(e) => updateWineCardRating(card.id, 'abv', parseFloat(e.target.value))}
+                          className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
