@@ -126,6 +126,21 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
       console.log("Opening bottom sheet...");
     } else {
       document.body.style.overflow = '';
+      
+      // Stop any playing OpenAI TTS audio when closing
+      const currentAudio = (window as any).currentOpenAIAudio;
+      if (currentAudio) {
+        console.log("OpenAI TTS audio stopped when closing bottom sheet");
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        (window as any).currentOpenAIAudio = null;
+      }
+      
+      // Also cancel any speech synthesis
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        console.log("Speech synthesis cancelled when closing");
+      }
     }
     
     return () => {
