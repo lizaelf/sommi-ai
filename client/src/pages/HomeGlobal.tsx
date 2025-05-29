@@ -156,7 +156,10 @@ const HomeGlobal = () => {
             {wines.map((wine) => (
               <div
                 key={wine.id}
-                className="bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-colors"
+                className="rounded-xl p-4 transition-colors"
+                style={{
+                  border: "1px solid #494949"
+                }}
               >
                 <div className="flex items-start gap-4">
                   {/* Wine Bottle Image */}
