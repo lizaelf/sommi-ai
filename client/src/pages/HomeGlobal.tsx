@@ -4,6 +4,7 @@ import wineryLogoPath from "@assets/winary-logo.png";
 import wineBottlePath1 from "@assets/image-1.png";
 import wineBottlePath2 from "@assets/image-2.png";
 import typography from "@/styles/typography";
+import Logo from "@/components/Logo";
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,17 +63,7 @@ const HomeGlobal = () => {
         className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
       >
         <Link to="/home-global">
-          <div
-            style={{
-              fontFamily: "Lora, serif",
-              fontSize: "24px",
-              lineHeight: "32px",
-              fontWeight: 500,
-              color: "white",
-            }}
-          >
-            SOMM
-          </div>
+          <Logo />
         </Link>
         <div className="flex items-center space-x-3">
           <Link to="/cellar">
