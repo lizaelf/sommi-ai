@@ -139,44 +139,7 @@ export default function Scanned() {
           </div>
         </div>
         
-        {/* Empty space to account for the fixed header */}
-        <div className="h-14"></div>
-        
-        {/* Wine Title */}
-        <div className="px-4 pt-4 pb-2">
-          {/* Debug indicator */}
-          {selectedWine && (
-            <div style={{ color: "red", fontSize: "12px", textAlign: "center", marginBottom: "8px" }}>
-              DEBUG: Selected Wine ID {selectedWine.id}
-            </div>
-          )}
-          <h1
-            style={{
-              fontFamily: "Lora, serif",
-              fontSize: "24px",
-              lineHeight: "32px",
-              fontWeight: 500,
-              color: "white",
-              textAlign: "center"
-            }}
-          >
-            {selectedWine ? selectedWine.name : getWineDisplayName()}
-          </h1>
-        </div>
 
-        {/* Wine Image - show selected wine image if available */}
-        {selectedWine && (
-          <div className="flex justify-center items-center px-4 pb-4">
-            <img
-              src={selectedWine.image}
-              alt={selectedWine.name}
-              style={{
-                height: "170px",
-                width: "auto",
-              }}
-            />
-          </div>
-        )}
       </div>
       
       <EnhancedChatInterface selectedWine={selectedWine} />
