@@ -20,6 +20,7 @@ interface WineCardData {
 export default function AdminCRM() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [editingWine, setEditingWine] = useState<WineCardData | null>(null);
   const [wineCards, setWineCards] = useState<WineCardData[]>([
     {
       id: 1,
@@ -141,15 +142,7 @@ export default function AdminCRM() {
                   {/* Edit Icon */}
                   <button
                     onClick={() => {
-                      const element = document.getElementById(
-                        `edit-form-${card.id}`,
-                      );
-                      if (element) {
-                        element.scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                        });
-                      }
+                      setEditingWine({ ...card });
                     }}
                     style={{
                       position: "absolute",
@@ -355,6 +348,165 @@ export default function AdminCRM() {
           </div>
         </div>
       </div>
+
+      {/* Edit Wine Modal */}
+      {editingWine && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setEditingWine(null)}
+        >
+          <div
+            style={{
+              background: "rgba(25, 25, 25, 0.95)",
+              borderRadius: "16px",
+              border: "1px solid #494949",
+              padding: "24px",
+              maxWidth: "500px",
+              width: "90%",
+              maxHeight: "80vh",
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 style={{ ...typography.h1, color: 'white' }}>
+                Edit Wine
+              </h3>
+              <button
+                onClick={() => setEditingWine(null)}
+                className="p-2 text-white/60 hover:text-white transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/80 mb-2">Wine Name</label>
+                <input
+                  type="text"
+                  value={editingWine.name}
+                  onChange={(e) => setEditingWine(prev => prev ? { ...prev, name: e.target.value } : null)}
+                  className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-white/80 mb-2">Number of Bottles</label>
+                <input
+                  type="number"
+                  value={editingWine.bottles}
+                  onChange={(e) => setEditingWine(prev => prev ? { ...prev, bottles: parseInt(e.target.value) } : null)}
+                  className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-sm text-white/80">Ratings</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-white/60 mb-1">Vivino (VN)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editingWine.ratings.vn}
+                      onChange={(e) => setEditingWine(prev => prev ? {
+                        ...prev,
+                        ratings: { ...prev.ratings, vn: parseInt(e.target.value) }
+                      } : null)}
+                      className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/60 mb-1">James Halliday (JD)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editingWine.ratings.jd}
+                      onChange={(e) => setEditingWine(prev => prev ? {
+                        ...prev,
+                        ratings: { ...prev.ratings, jd: parseInt(e.target.value) }
+                      } : null)}
+                      className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/60 mb-1">Wine Spectator (WS)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editingWine.ratings.ws}
+                      onChange={(e) => setEditingWine(prev => prev ? {
+                        ...prev,
+                        ratings: { ...prev.ratings, ws: parseInt(e.target.value) }
+                      } : null)}
+                      className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/60 mb-1">ABV (%)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      step="0.1"
+                      value={editingWine.ratings.abv}
+                      onChange={(e) => setEditingWine(prev => prev ? {
+                        ...prev,
+                        ratings: { ...prev.ratings, abv: parseFloat(e.target.value) }
+                      } : null)}
+                      className="w-full p-2 bg-white/5 border border-white/20 rounded text-white text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={() => {
+                    setWineCards(prev => prev.map(card => 
+                      card.id === editingWine.id ? editingWine : card
+                    ));
+                    setEditingWine(null);
+                    toast({
+                      title: "Wine Updated",
+                      description: "Wine details have been saved successfully.",
+                    });
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  Save Changes
+                </Button>
+                <button
+                  onClick={() => {
+                    deleteWineCard(editingWine.id);
+                    setEditingWine(null);
+                  }}
+                  className="px-4 py-2 text-red-400 hover:text-red-300 border border-red-400/20 hover:border-red-300/40 rounded-lg transition-colors"
+                >
+                  Delete Wine
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
