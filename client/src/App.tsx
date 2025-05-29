@@ -9,6 +9,7 @@ import WineDetails from "@/pages/WineDetails";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
 import HomeGlobal from "@/pages/HomeGlobal";
+import AdminCRM from "@/pages/AdminCRM";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine/:id" component={WineDetails} />
       <Route path="/wine-details/:id" component={WineDetails} />
+      <Route path="/admin-crm" component={AdminCRM} />
       <Route component={NotFound} />
     </Switch>
   );
