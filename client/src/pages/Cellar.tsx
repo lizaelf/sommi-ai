@@ -931,10 +931,10 @@ const Cellar = () => {
         ) : null}
       </div>
 
-        {/* Contact Info Bottom Sheet */}
-        {animationState !== "closed" &&
-          portalElement &&
-          createPortal(
+      {/* Contact Info Bottom Sheet */}
+      {animationState !== "closed" &&
+        portalElement &&
+        createPortal(
             <div
               style={{
                 position: "fixed",
@@ -1444,7 +1444,6 @@ const Cellar = () => {
             </div>,
             portalElement,
           )}
-      </div>
     </div>
   );
 };
