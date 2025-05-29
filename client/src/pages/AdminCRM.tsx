@@ -55,9 +55,13 @@ export default function AdminCRM() {
     const newWine: WineCardData = {
       id: Math.max(...wineCards.map((w) => w.id)) + 1,
       name: "New Wine",
+      year: 2023,
       bottles: 1,
       image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
       ratings: { vn: 90, jd: 90, ws: 90, abv: 13.5 },
+      buyAgainLink: "https://example.com",
+      qrCode: "QR_NEW",
+      qrLink: "https://example.com/qr"
     };
 
     setWineCards((prev) => [...prev, newWine]);
@@ -68,7 +72,7 @@ export default function AdminCRM() {
     });
   };
 
-  const updateWineCard = (cardId: number, field: string, value: any) => {
+  const updateWineCard = (cardId: number, field: keyof WineCardData, value: any) => {
     setWineCards((prev) =>
       prev.map((card) =>
         card.id === cardId ? { ...card, [field]: value } : card,
@@ -92,6 +96,8 @@ export default function AdminCRM() {
       ),
     );
   };
+
+
 
   const deleteWineCard = (cardId: number) => {
     setWineCards((prev) => prev.filter((card) => card.id !== cardId));
@@ -189,35 +195,7 @@ export default function AdminCRM() {
                     alignItems: "stretch",
                   }}
                 >
-                  {/* Edit Icon */}
-                  <button
-                    onClick={() => {
-                      setEditingWine({ ...card });
-                    }}
-                    style={{
-                      position: "absolute",
-                      top: "12px",
-                      right: "12px",
-                      background: "rgba(255, 255, 255, 0.1)",
-                      border: "none",
-                      borderRadius: "6px",
-                      padding: "8px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                    className="hover:bg-white/20 transition-colors"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="white"
-                    >
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                    </svg>
-                  </button>
+
 
                   {/* Left Side: Wine Image */}
                   <div
