@@ -432,94 +432,71 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         try {
           console.log("Voice input was used and in voice mode - finding message to speak automatically...");
           
-          // Find the last assistant message
-          const messagesContainer = document.getElementById('conversation');
-          console.log("Messages container found:", !!messagesContainer);
+          // Use the stored message text from the render function
+          const messageText = (window as any).lastResponseText;
           
-          if (messagesContainer) {
-            // Get all the chat messages
-            const messageElements = messagesContainer.querySelectorAll('[data-role="assistant"]');
-            console.log("Assistant message elements found:", messageElements.length);
+          if (messageText && messageText.length > 10) {
+            console.log("Found stored message text:", messageText.substring(0, 50) + "...");
             
-            if (messageElements && messageElements.length > 0) {
-              // Get the last message
-              const lastMessage = messageElements[messageElements.length - 1];
-              
-              if (lastMessage && lastMessage.textContent) {
-                const messageText = lastMessage.textContent || '';
-                console.log("Found message to speak:", messageText.substring(0, 50) + "...");
-                
-                // Store the message text for the Listen Response button
-                (window as any).lastResponseText = messageText;
-                console.log("💾 Stored response text for Listen Response:", messageText.substring(0, 100) + "...");
-                
-                // Pre-generate audio for instant playback
-                console.log("🎵 Pre-generating audio for instant playback...");
-                fetch('/api/text-to-speech', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ text: messageText })
-                }).then(async response => {
-                  if (response.ok) {
-                    const audioBlob = await response.blob();
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    // Cache the pre-generated audio
-                    (window as any).cachedAudioUrl = audioUrl;
-                    console.log("✅ Audio pre-generated and cached for instant playback");
-                  }
-                }).catch(err => {
-                  console.error("Failed to pre-generate audio:", err);
-                });
-                
-                // FORCE Listen Response button to appear - AI response is ready
-                console.log("🎯 AI RESPONSE READY - Forcing Listen Response button to appear");
-                setIsVoiceThinking(false);
-                setIsResponding(false);
-                setResponseComplete(true);
-                setHasReceivedFirstResponse(true);
-                setShowListenButton(true);
-                setShowBottomSheet(true);
-                
-                console.log("✅ Listen Response button state set to TRUE");
-                
-                // Also store with multiple fallback methods
-                setTimeout(() => {
-                  (window as any).lastResponseText = messageText;
-                  (window as any).backupResponseText = messageText;
-                  console.log("💾 Re-stored response text with backup");
-                }, 200);
-                
-                // Aggressive clearing of thinking state with multiple attempts
-                setTimeout(() => {
-                  console.log("🔧 First cleanup - ensuring thinking state is false");
-                  setIsVoiceThinking(false);
-                  setShowListenButton(true);
-                }, 50);
-                
-                setTimeout(() => {
-                  console.log("🔧 Second cleanup - double ensuring thinking state is false");
-                  setIsVoiceThinking(false);
-                  setShowListenButton(true);
-                }, 200);
-                
-                setTimeout(() => {
-                  console.log("🔧 Final cleanup - triple ensuring Listen Response button appears");
-                  setIsVoiceThinking(false);
-                  setShowListenButton(true);
-                  setShowBottomSheet(true);
-                  console.log("✅ Listen Response button should now be fully visible!");
-                }, 500);
-
-              } else {
-                console.log("Last message has no text content");
-                setUsedVoiceInput(false);
-                setShowBottomSheet(false);
+            // Pre-generate audio for instant playback
+            console.log("🎵 Pre-generating audio for instant playback...");
+            fetch('/api/text-to-speech', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: messageText })
+            }).then(async response => {
+              if (response.ok) {
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                // Cache the pre-generated audio
+                (window as any).cachedAudioUrl = audioUrl;
+                console.log("✅ Audio pre-generated and cached for instant playback");
               }
-            } else {
-              setUsedVoiceInput(false);
-              setShowBottomSheet(false);
-            }
+            }).catch(err => {
+              console.error("Failed to pre-generate audio:", err);
+            });
+            
+            // FORCE Listen Response button to appear - AI response is ready
+            console.log("🎯 AI RESPONSE READY - Forcing Listen Response button to appear");
+            setIsVoiceThinking(false);
+            setIsResponding(false);
+            setResponseComplete(true);
+            setHasReceivedFirstResponse(true);
+            setShowListenButton(true);
+            setShowBottomSheet(true);
+            
+            console.log("✅ Listen Response button state set to TRUE");
+            
+            // Also store with multiple fallback methods
+            setTimeout(() => {
+              (window as any).lastResponseText = messageText;
+              (window as any).backupResponseText = messageText;
+              console.log("💾 Re-stored response text with backup");
+            }, 200);
+            
+            // Aggressive clearing of thinking state with multiple attempts
+            setTimeout(() => {
+              console.log("🔧 First cleanup - ensuring thinking state is false");
+              setIsVoiceThinking(false);
+              setShowListenButton(true);
+            }, 50);
+            
+            setTimeout(() => {
+              console.log("🔧 Second cleanup - double ensuring thinking state is false");
+              setIsVoiceThinking(false);
+              setShowListenButton(true);
+            }, 200);
+            
+            setTimeout(() => {
+              console.log("🔧 Final cleanup - triple ensuring Listen Response button appears");
+              setIsVoiceThinking(false);
+              setShowListenButton(true);
+              setShowBottomSheet(true);
+              console.log("✅ Listen Response button should now be fully visible!");
+            }, 500);
+
           } else {
+            console.log("No stored message text found");
             setUsedVoiceInput(false);
             setShowBottomSheet(false);
           }
