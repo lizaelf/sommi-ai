@@ -144,6 +144,12 @@ export default function Scanned() {
         
         {/* Wine Title */}
         <div className="px-4 pt-4 pb-2">
+          {/* Debug indicator */}
+          {selectedWine && (
+            <div style={{ color: "red", fontSize: "12px", textAlign: "center", marginBottom: "8px" }}>
+              DEBUG: Selected Wine ID {selectedWine.id}
+            </div>
+          )}
           <h1
             style={{
               fontFamily: "Lora, serif",
@@ -154,7 +160,7 @@ export default function Scanned() {
               textAlign: "center"
             }}
           >
-{selectedWine ? selectedWine.name : getWineDisplayName()}
+            {selectedWine ? selectedWine.name : getWineDisplayName()}
           </h1>
         </div>
 
