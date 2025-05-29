@@ -7,6 +7,7 @@ import typography from "@/styles/typography";
 interface WineCardData {
   id: number;
   name: string;
+  year: number;
   bottles: number;
   image: string;
   ratings: {
@@ -15,6 +16,9 @@ interface WineCardData {
     ws: number;
     abv: number;
   };
+  buyAgainLink: string;
+  qrCode: string;
+  qrLink: string;
 }
 
 export default function AdminCRM() {
@@ -25,16 +29,24 @@ export default function AdminCRM() {
     {
       id: 1,
       name: 'Ridge "Lytton Springs" Dry Creek Zinfandel',
+      year: 2021,
       bottles: 4,
       image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
       ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+      buyAgainLink: "https://ridge.com/product/lytton-springs",
+      qrCode: "QR_CODE_1",
+      qrLink: "https://ridge.com/wines/lytton-springs"
     },
     {
       id: 2,
-      name: "2021 Monte Bello Cabernet Sauvignon",
+      name: "Monte Bello Cabernet Sauvignon",
+      year: 2021,
       bottles: 2,
       image: "/@fs/home/runner/workspace/attached_assets/image-2.png",
       ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+      buyAgainLink: "https://ridge.com/product/monte-bello",
+      qrCode: "QR_CODE_2",
+      qrLink: "https://ridge.com/wines/monte-bello"
     },
   ]);
 
@@ -123,7 +135,7 @@ export default function AdminCRM() {
           {/* Wine Cards Preview */}
           <div className="space-y-6">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-4">
               {wineCards.map((card) => (
                 <div
                   key={card.id}
@@ -133,10 +145,9 @@ export default function AdminCRM() {
                     border: "1px solid #494949",
                     padding: "20px",
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "16px",
+                    gap: "20px",
                     position: "relative",
+                    alignItems: "stretch",
                   }}
                 >
                   {/* Edit Icon */}
@@ -168,178 +179,124 @@ export default function AdminCRM() {
                       <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                     </svg>
                   </button>
-                  {/* Wine Image */}
+
+                  {/* Left Side: Wine Image */}
                   <div
                     style={{
-                      width: "100px",
-                      height: "130px",
+                      width: "120px",
+                      height: "160px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       background: "rgba(255, 255, 255, 0.05)",
                       borderRadius: "8px",
+                      flexShrink: 0,
                     }}
                   >
                     <img
                       src={card.image}
                       alt={card.name}
                       style={{
-                        maxHeight: "120px",
+                        maxHeight: "150px",
+                        maxWidth: "110px",
                         width: "auto",
+                        height: "auto",
                       }}
                     />
                   </div>
 
-                  {/* Wine Info */}
-                  <div style={{ textAlign: "center", width: "100%" }}>
-                    <div
-                      style={{
-                        ...typography.bodyPlus1,
-                        color: "white",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      {card.name}
+                  {/* Right Side: Wine Details */}
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {/* ID */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
+                        ID:
+                      </span>
+                      <span style={{ ...typography.bodyPlus1, color: "white" }}>
+                        {card.id}
+                      </span>
                     </div>
 
-                    <div
-                      style={{
-                        ...typography.body1R,
-                        color: "rgba(255, 255, 255, 0.60)",
-                        marginBottom: "16px",
-                      }}
-                    >
-                      {card.bottles} bottles
+                    {/* Wine Name */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
+                        Wine name:
+                      </span>
+                      <span style={{ ...typography.bodyPlus1, color: "white" }}>
+                        {card.name}
+                      </span>
                     </div>
 
-                    {/* Ratings */}
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "8px",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          padding: "6px 8px",
-                          alignItems: "baseline",
-                          gap: "4px",
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            ...typography.num,
-                            color: "white",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {card.ratings.vn}
-                        </span>
-                        <span
-                          style={{
-                            ...typography.body1R,
-                            color: "rgba(255, 255, 255, 0.60)",
-                            fontSize: "12px",
-                          }}
-                        >
-                          VN
-                        </span>
-                      </div>
+                    {/* Wine Year */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
+                        Wine year:
+                      </span>
+                      <span style={{ ...typography.bodyPlus1, color: "white" }}>
+                        {card.year}
+                      </span>
+                    </div>
 
-                      <div
-                        style={{
-                          display: "flex",
-                          padding: "6px 8px",
-                          alignItems: "baseline",
-                          gap: "4px",
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            ...typography.num,
-                            color: "white",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {card.ratings.jd}
-                        </span>
-                        <span
-                          style={{
-                            ...typography.body1R,
-                            color: "rgba(255, 255, 255, 0.60)",
-                            fontSize: "12px",
-                          }}
-                        >
-                          JD
-                        </span>
+                    {/* Ratings Row */}
+                    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>VN:</span>
+                        <span style={{ ...typography.num, color: "white" }}>{card.ratings.vn}</span>
                       </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>JD:</span>
+                        <span style={{ ...typography.num, color: "white" }}>{card.ratings.jd}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>WS:</span>
+                        <span style={{ ...typography.num, color: "white" }}>{card.ratings.ws}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>ABV:</span>
+                        <span style={{ ...typography.num, color: "white" }}>{card.ratings.abv}%</span>
+                      </div>
+                    </div>
 
-                      <div
-                        style={{
-                          display: "flex",
-                          padding: "6px 8px",
-                          alignItems: "baseline",
-                          gap: "4px",
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: "8px",
-                        }}
+                    {/* Buy Again Link */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
+                        Buy again:
+                      </span>
+                      <a 
+                        href={card.buyAgainLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ ...typography.body1R, color: "#3B82F6", textDecoration: "underline" }}
+                        className="hover:text-blue-400 transition-colors"
                       >
-                        <span
-                          style={{
-                            ...typography.num,
-                            color: "white",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {card.ratings.ws}
-                        </span>
-                        <span
-                          style={{
-                            ...typography.body1R,
-                            color: "rgba(255, 255, 255, 0.60)",
-                            fontSize: "12px",
-                          }}
-                        >
-                          WS
-                        </span>
-                      </div>
+                        {card.buyAgainLink}
+                      </a>
+                    </div>
 
-                      <div
-                        style={{
-                          display: "flex",
-                          padding: "6px 8px",
-                          alignItems: "baseline",
-                          gap: "4px",
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: "8px",
-                        }}
+                    {/* QR */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
+                        QR:
+                      </span>
+                      <span style={{ ...typography.bodyPlus1, color: "white" }}>
+                        {card.qrCode}
+                      </span>
+                    </div>
+
+                    {/* QR Link */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
+                        QR Link:
+                      </span>
+                      <a 
+                        href={card.qrLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ ...typography.body1R, color: "#3B82F6", textDecoration: "underline" }}
+                        className="hover:text-blue-400 transition-colors"
                       >
-                        <span
-                          style={{
-                            ...typography.num,
-                            color: "white",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {card.ratings.abv}%
-                        </span>
-                        <span
-                          style={{
-                            ...typography.body1R,
-                            color: "rgba(255, 255, 255, 0.60)",
-                            fontSize: "12px",
-                          }}
-                        >
-                          ABV
-                        </span>
-                      </div>
+                        {card.qrLink}
+                      </a>
                     </div>
                   </div>
                 </div>
