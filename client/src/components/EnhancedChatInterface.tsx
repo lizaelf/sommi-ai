@@ -58,6 +58,70 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   showBuyButton = false,
   selectedWine = null,
 }) => {
+  // Get wine-specific content based on selected wine
+  const getWineHistory = () => {
+    if (selectedWine && selectedWine.id === 2) {
+      return 'Ridge Vineyards\' Monte Bello, first produced in 1962, represents the pinnacle of California Cabernet Sauvignon craftsmanship. Located in the Santa Cruz Mountains at elevations up to 2600 feet, this historic vineyard was acquired by Ridge in 1959. The vineyard\'s unique terroir, with its limestone soils and cool mountain climate, produces Cabernet Sauvignon of exceptional complexity and aging potential. Ridge\'s traditional winemaking approach, emphasizing natural fermentation and minimal intervention, allows the true character of this legendary mountain vineyard to shine through.';
+    }
+    return WINE_CONFIG.history;
+  };
+
+  const getWineName = () => {
+    if (selectedWine && selectedWine.id === 2) {
+      return selectedWine.name;
+    }
+    return getWineDisplayName();
+  };
+
+  const getFoodPairingContent = () => {
+    if (selectedWine && selectedWine.id === 2) {
+      return {
+        description: `${selectedWine.name}'s bold structure and powerful tannins make it perfect for hearty meat dishes`,
+        dishes: [
+          "Grilled ribeye steak with herbs",
+          "Braised beef brisket",
+          "Roasted leg of lamb with rosemary", 
+          "Prime rib with mushroom sauce"
+        ],
+        conclusion: "The wine's robust tannins and mountain character complement rich, flavorful meats perfectly."
+      };
+    }
+    return {
+      description: `${getWineDisplayName()}'s elegant structure and complex flavor profile makes it perfect for premium red meat preparations`,
+      dishes: [
+        "Grilled bistecca with herbs",
+        "Braised short ribs with rich sauce",
+        "Roasted rack of lamb with Mediterranean herbs",
+        "Aged beef tenderloin with mushrooms"
+      ],
+      conclusion: "The wine's refined tannins and mineral complexity complement sophisticated meat dishes beautifully."
+    };
+  };
+
+  const getCheesePairingContent = () => {
+    if (selectedWine && selectedWine.id === 2) {
+      return {
+        description: `${selectedWine.name}'s bold tannin structure and complex flavors pair beautifully with these robust cheeses`,
+        cheeses: [
+          "Aged Cheddar (7+ years)",
+          "Roquefort or Stilton blue cheese",
+          "Aged Gouda or aged Gruyère",
+          "Pecorino Romano or aged Manchego"
+        ],
+        conclusion: "The wine's powerful structure and mountain fruit create excellent harmony with bold, aged cheeses."
+      };
+    }
+    return {
+      description: `${getWineDisplayName()}'s sophisticated tannin structure and complex flavors pair beautifully with these artisanal cheeses`,
+      cheeses: [
+        "Aged Parmigiano-Reggiano (24+ months)",
+        "Aged Gouda or Manchego",
+        "Gorgonzola or blue cheese varieties",
+        "Aged sheep's milk cheese"
+      ],
+      conclusion: "The wine's elegant mineral backbone and structured tannins create perfect harmony with aged cheeses."
+    };
+  };
   // Check if user has shared contact information
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     return localStorage.getItem("hasSharedContact") === "true";
@@ -758,7 +822,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     ...typography.body,
                   }}
                 >
-                  {WINE_CONFIG.history}
+                  {getWineHistory()}
                 </p>
               </div>
 
@@ -890,19 +954,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       className="pl-[0px] pr-[0px]"
                     >
                       <p>
-                        {getWineDisplayName()}'s elegant structure and complex
-                        flavor profile makes it perfect for premium red meat
-                        preparations:
+                        {getFoodPairingContent().description}:
                       </p>
                       <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        <li>Grilled bistecca with herbs</li>
-                        <li>Braised short ribs with rich sauce</li>
-                        <li>Roasted rack of lamb with Mediterranean herbs</li>
-                        <li>Aged beef tenderloin with mushrooms</li>
+                        {getFoodPairingContent().dishes.map((dish, index) => (
+                          <li key={index}>{dish}</li>
+                        ))}
                       </ul>
                       <p>
-                        The wine's refined tannins and mineral complexity
-                        complement sophisticated meat dishes beautifully.
+                        {getFoodPairingContent().conclusion}
                       </p>
                     </div>
                   )}
@@ -991,19 +1051,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                     >
                       <p>
-                        {getWineDisplayName()}'s sophisticated tannin structure
-                        and complex flavors pair beautifully with these
-                        artisanal cheeses:
+                        {getCheesePairingContent().description}:
                       </p>
                       <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        <li>Aged Parmigiano-Reggiano (24+ months)</li>
-                        <li>Aged Gouda or Manchego</li>
-                        <li>Gorgonzola or blue cheese varieties</li>
-                        <li>Aged sheep's milk cheese</li>
+                        {getCheesePairingContent().cheeses.map((cheese, index) => (
+                          <li key={index}>{cheese}</li>
+                        ))}
                       </ul>
                       <p>
-                        The wine's elegant mineral backbone and structured
-                        tannins create perfect harmony with aged cheeses.
+                        {getCheesePairingContent().conclusion}
                       </p>
                     </div>
                   )}
