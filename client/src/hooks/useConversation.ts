@@ -11,7 +11,12 @@ import {
 } from '@/lib/adapters';
 
 // Key for storing the current conversation ID in localStorage
-const LS_CURRENT_CONVERSATION_KEY = 'chatgpt_wine_current_conversation_id';
+const getConversationKey = (wineId?: string | number) => {
+  if (wineId) {
+    return `chatgpt_wine_conversation_${wineId}`;
+  }
+  return 'chatgpt_wine_current_conversation_id';
+};
 
 /**
  * Return type for the useConversation hook with client-side compatible types
@@ -29,8 +34,9 @@ interface UseConversationReturn {
 
 /**
  * Hook to manage conversation state with IndexedDB persistence
+ * @param wineId - Optional wine identifier for wine-specific conversations
  */
-export function useConversation(): UseConversationReturn {
+export function useConversation(wineId?: string | number): UseConversationReturn {
   // State for tracking the current conversation ID
   const [currentConversationId, setCurrentConversationIdState] = useState<number | null>(null);
   // State for storing messages in the current conversation
@@ -63,7 +69,7 @@ export function useConversation(): UseConversationReturn {
           // Update state
           setCurrentConversationIdState(mostRecent.id);
           // Update localStorage
-          localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, mostRecent.id.toString());
+          localStorage.setItem(getConversationKey(wineId), mostRecent.id.toString());
           
           // Load messages
           if (mostRecent.messages && mostRecent.messages.length > 0) {
@@ -94,7 +100,7 @@ export function useConversation(): UseConversationReturn {
       
       try {
         // First, check if there's a specific conversation ID in localStorage
-        const savedConversationId = localStorage.getItem(LS_CURRENT_CONVERSATION_KEY);
+        const savedConversationId = localStorage.getItem(getConversationKey(wineId));
         
         if (savedConversationId) {
           const conversationId = parseInt(savedConversationId, 10);
@@ -142,7 +148,7 @@ export function useConversation(): UseConversationReturn {
     }
     
     initializeConversation();
-  }, []);
+  }, [wineId]);
   
   // Function to add a message to the current conversation
   const addMessage = useCallback(async (message: Message | ClientMessage) => {
@@ -178,7 +184,7 @@ export function useConversation(): UseConversationReturn {
     setCurrentConversationIdState(id);
     
     if (id) {
-      localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, id.toString());
+      localStorage.setItem(getConversationKey(wineId), id.toString());
       
       // Load messages for this conversation
       try {
@@ -193,7 +199,7 @@ export function useConversation(): UseConversationReturn {
         setMessages([]);
       }
     } else {
-      localStorage.removeItem(LS_CURRENT_CONVERSATION_KEY);
+      localStorage.removeItem(getConversationKey(wineId));
       setMessages([]);
     }
   }, []);
@@ -213,7 +219,7 @@ export function useConversation(): UseConversationReturn {
       
       if (id) {
         // Update localStorage
-        localStorage.setItem(LS_CURRENT_CONVERSATION_KEY, id.toString());
+        localStorage.setItem(getConversationKey(wineId), id.toString());
         
         // Update state
         setCurrentConversationIdState(id);
