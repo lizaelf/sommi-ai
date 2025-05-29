@@ -11,7 +11,12 @@ import lineImage from "@assets/line.png";
 
 const Cellar = () => {
   const { toast } = useToast();
-  const [showModal, setShowModal] = useState(true); // Show modal immediately when entering cellar
+  const [showModal, setShowModal] = useState(() => {
+    // Only show modal automatically if user hasn't shared contact AND hasn't closed it before
+    const hasShared = localStorage.getItem('hasSharedContact') === 'true';
+    const hasClosed = localStorage.getItem('hasClosedContactForm') === 'true';
+    return !hasShared && !hasClosed;
+  });
   const [, setLocation] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [animationState, setAnimationState] = useState<
@@ -47,6 +52,11 @@ const Cellar = () => {
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     // Check localStorage for saved contact sharing status
     return localStorage.getItem('hasSharedContact') === 'true';
+  });
+  
+  const [hasClosedContactForm, setHasClosedContactForm] = useState(() => {
+    // Check if user has previously closed the contact form
+    return localStorage.getItem('hasClosedContactForm') === 'true';
   });
 
   const countries = [
@@ -397,6 +407,11 @@ const Cellar = () => {
     setShowModal(false);
     setAnimationState("closing");
     setTimeout(() => setAnimationState("closed"), 300);
+    
+    // Mark that user has closed the contact form (so it won't show automatically again)
+    setHasClosedContactForm(true);
+    localStorage.setItem('hasClosedContactForm', 'true');
+    
     // Note: Do NOT set hasSharedContact to true here - only when Save is clicked
   };
 
