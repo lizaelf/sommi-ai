@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
+import wineryLogoPath from "@assets/winary-logo.png";
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -106,7 +107,7 @@ const HomeGlobal = () => {
         {/* Ridge Vineyards Logo */}
         <div className="text-center mb-8">
           <img 
-            src="/attached_assets/winary-logo.png" 
+            src={wineryLogoPath} 
             alt="Ridge Vineyards" 
             className="mx-auto"
             style={{
