@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import wineryLogoPath from "@assets/winary-logo.png";
+import wineBottlePath from "@assets/image-1.png";
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -166,41 +167,15 @@ const HomeGlobal = () => {
               >
                 <div className="flex items-center gap-4">
                   {/* Wine Bottle Image */}
-                  <div className="w-16 h-20 bg-white/10 rounded-lg flex items-center justify-center">
-                    <svg
-                      width="32"
-                      height="48"
-                      viewBox="0 0 32 48"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="text-white/60"
-                    >
-                      <rect
-                        x="11"
-                        y="8"
-                        width="10"
-                        height="4"
-                        fill="currentColor"
-                        rx="1"
-                      />
-                      <rect
-                        x="10"
-                        y="12"
-                        width="12"
-                        height="32"
-                        fill="currentColor"
-                        rx="2"
-                      />
-                      <rect
-                        x="12"
-                        y="16"
-                        width="8"
-                        height="24"
-                        fill="currentColor"
-                        opacity="0.3"
-                        rx="1"
-                      />
-                    </svg>
+                  <div className="flex items-center justify-center">
+                    <img
+                      src={wineBottlePath}
+                      alt="Wine Bottle"
+                      style={{
+                        height: "170px",
+                        width: "auto",
+                      }}
+                    />
                   </div>
 
                   {/* Wine Info */}
