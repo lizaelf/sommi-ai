@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useLocation } from 'wouter';
-import { useToast } from '@/hooks/use-toast';
-import Button from '@/components/ui/Button';
-import typography from '@/styles/typography';
+import React, { useState } from "react";
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import Button from "@/components/ui/Button";
+import typography from "@/styles/typography";
 
 interface WineCardData {
   id: number;
@@ -23,31 +23,31 @@ export default function AdminCRM() {
   const [wineCards, setWineCards] = useState<WineCardData[]>([
     {
       id: 1,
-      name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+      name: 'Ridge "Lytton Springs" Dry Creek Zinfandel',
       bottles: 4,
       image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
-      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 }
+      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
     },
     {
       id: 2,
       name: "2021 Monte Bello Cabernet Sauvignon",
       bottles: 2,
       image: "/@fs/home/runner/workspace/attached_assets/image-2.png",
-      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 }
-    }
+      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+    },
   ]);
 
   const handleAddWine = async () => {
     const newWine: WineCardData = {
-      id: Math.max(...wineCards.map(w => w.id)) + 1,
+      id: Math.max(...wineCards.map((w) => w.id)) + 1,
       name: "New Wine",
       bottles: 1,
       image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
-      ratings: { vn: 90, jd: 90, ws: 90, abv: 13.5 }
+      ratings: { vn: 90, jd: 90, ws: 90, abv: 13.5 },
     };
-    
-    setWineCards(prev => [...prev, newWine]);
-    
+
+    setWineCards((prev) => [...prev, newWine]);
+
     toast({
       title: "Wine Added",
       description: "New wine has been added to your collection.",
@@ -55,27 +55,33 @@ export default function AdminCRM() {
   };
 
   const updateWineCard = (cardId: number, field: string, value: any) => {
-    setWineCards(prev => prev.map(card => 
-      card.id === cardId 
-        ? { ...card, [field]: value }
-        : card
-    ));
+    setWineCards((prev) =>
+      prev.map((card) =>
+        card.id === cardId ? { ...card, [field]: value } : card,
+      ),
+    );
   };
 
-  const updateWineCardRating = (cardId: number, ratingType: string, value: number) => {
-    setWineCards(prev => prev.map(card => 
-      card.id === cardId 
-        ? { 
-            ...card, 
-            ratings: { ...card.ratings, [ratingType]: value }
-          }
-        : card
-    ));
+  const updateWineCardRating = (
+    cardId: number,
+    ratingType: string,
+    value: number,
+  ) => {
+    setWineCards((prev) =>
+      prev.map((card) =>
+        card.id === cardId
+          ? {
+              ...card,
+              ratings: { ...card.ratings, [ratingType]: value },
+            }
+          : card,
+      ),
+    );
   };
 
   const deleteWineCard = (cardId: number) => {
-    setWineCards(prev => prev.filter(card => card.id !== cardId));
-    
+    setWineCards((prev) => prev.filter((card) => card.id !== cardId));
+
     toast({
       title: "Wine Removed",
       description: "Wine has been removed from your collection.",
@@ -89,7 +95,7 @@ export default function AdminCRM() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setLocation('/home-global')}
+              onClick={() => setLocation("/home-global")}
               className="text-white hover:text-white/80 transition-colors"
             >
               <svg
@@ -102,7 +108,9 @@ export default function AdminCRM() {
                 <path d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0" />
               </svg>
             </button>
-            <h1 style={{ ...typography.h1, color: 'white' }}>Wine Collection</h1>
+            <h1 style={{ ...typography.h1, color: "white" }}>
+              Wine Collection
+            </h1>
           </div>
           <Button onClick={handleAddWine}>Add Wine</Button>
         </div>
@@ -113,7 +121,7 @@ export default function AdminCRM() {
         <div className="space-y-8">
           {/* Wine Cards Preview */}
           <div className="space-y-6">
-            <h2 style={{ ...typography.h1, color: 'white' }}>Admin</h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {wineCards.map((card) => (
                 <div
@@ -133,9 +141,14 @@ export default function AdminCRM() {
                   {/* Edit Icon */}
                   <button
                     onClick={() => {
-                      const element = document.getElementById(`edit-form-${card.id}`);
+                      const element = document.getElementById(
+                        `edit-form-${card.id}`,
+                      );
                       if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        element.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
                       }
                     }}
                     style={{
@@ -153,8 +166,13 @@ export default function AdminCRM() {
                     }}
                     className="hover:bg-white/20 transition-colors"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="white"
+                    >
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                     </svg>
                   </button>
                   {/* Wine Image */}
@@ -335,8 +353,6 @@ export default function AdminCRM() {
               ))}
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
