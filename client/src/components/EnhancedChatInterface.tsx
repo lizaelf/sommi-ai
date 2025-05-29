@@ -36,12 +36,27 @@ declare global {
 }
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
+interface SelectedWine {
+  id: number;
+  name: string;
+  image: string;
+  bottles: number;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+}
+
 interface EnhancedChatInterfaceProps {
   showBuyButton?: boolean;
+  selectedWine?: SelectedWine | null;
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   showBuyButton = false,
+  selectedWine = null,
 }) => {
   // Check if user has shared contact information
   const [hasSharedContact, setHasSharedContact] = useState(() => {
@@ -545,7 +560,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   ...typography.h1,
                 }}
               >
-                {getWineVintage()} {getWineDisplayName()}
+                {selectedWine ? `2021 ${selectedWine.name}` : `${getWineVintage()} ${getWineDisplayName()}`}
               </div>
 
               {/* Wine region with typography styling and flag */}
@@ -567,7 +582,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 }}
               >
                 <USFlagImage />
-                <span>{getWineRegion()}</span>
+                <span>{selectedWine ? "Santa Cruz Mountains | California | United States" : getWineRegion()}</span>
               </div>
 
               {/* Wine ratings section */}
