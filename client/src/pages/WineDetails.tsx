@@ -78,8 +78,22 @@ export default function WineDetails() {
           <div></div>
         </div>
 
+        {/* Wine Image Section */}
+        <div className="pt-[75px] pb-4">
+          <div className="flex justify-center items-center px-4">
+            <img
+              src={wine.image}
+              alt={wine.name}
+              style={{
+                height: "170px",
+                width: "auto",
+              }}
+            />
+          </div>
+        </div>
+
         {/* Main Content Area */}
-        <div className="pt-[75px]">
+        <div>
           <EnhancedChatInterface showBuyButton={true} />
         </div>
       </div>
