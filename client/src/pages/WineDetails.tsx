@@ -60,7 +60,7 @@ export default function WineDetails() {
               : "bg-transparent"
           }`}
         >
-          <Link to="/cellar">
+          <Link to="/home-global">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
