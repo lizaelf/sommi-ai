@@ -113,7 +113,7 @@ export default function AdminCRM() {
         <div className="space-y-8">
           {/* Wine Cards Preview */}
           <div className="space-y-6">
-            <h2 style={{ ...typography.h1, color: 'white' }}>Your Wines</h2>
+            <h2 style={{ ...typography.h1, color: 'white' }}>Admin</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {wineCards.map((card) => (
                 <div
