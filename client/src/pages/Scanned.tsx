@@ -154,10 +154,7 @@ export default function Scanned() {
               textAlign: "center"
             }}
           >
-{(() => {
-              console.log('Rendering title, selectedWine:', selectedWine);
-              return selectedWine ? selectedWine.name : getWineDisplayName();
-            })()}
+{selectedWine ? selectedWine.name : getWineDisplayName()}
           </h1>
         </div>
 
