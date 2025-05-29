@@ -1198,6 +1198,64 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 </div>
               </div>
 
+              {/* Chat history section - Show when user hasn't shared contact info */}
+              {showBuyButton && !hasSharedContact && (
+                <div
+                  style={{
+                    width: "100%",
+                    padding: "0 20px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <h1
+                    style={{
+                      ...typography.h1,
+                      color: "white",
+                      marginBottom: "24px",
+                      textAlign: "left",
+                    }}
+                  >
+                    Chat history
+                  </h1>
+                  <div style={{ textAlign: "center" }}>
+                    <button
+                      onClick={() => {
+                        setShowContactSheet(true);
+                        setAnimationState("opening");
+                        setTimeout(() => setAnimationState("open"), 50);
+                      }}
+                      style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.08)",
+                        borderRadius: "32px",
+                        height: "56px",
+                        minHeight: "56px",
+                        maxHeight: "56px",
+                        padding: "0 16px",
+                        margin: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "none",
+                        color: "white",
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        outline: "none",
+                        width: "100%",
+                        maxWidth: "320px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        boxSizing: "border-box",
+                        lineHeight: "1",
+                      }}
+                    >
+                      View chat history
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Previous Discussion Section - Only show on Home page, not Wine Details */}
               {messages.length > 0 && !showBuyButton && (
                 <div
@@ -1475,53 +1533,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           </div>
                         )}
                       </>
-                    ) : (
-                      // Show "Chat history" section when user hasn't shared contact info
-                      <div
-                        style={{ textAlign: "center", marginBottom: "32px" }}
-                      >
-                        <h1
-                          style={{
-                            ...typography.h1,
-                            color: "white",
-                            margin: "0 0 24px 0",
-                            textAlign: "left",
-                          }}
-                        >
-                          Chat history
-                        </h1>
-                        <button
-                          onClick={() => {
-                            setShowContactSheet(true);
-                            setAnimationState("opening");
-                            setTimeout(() => setAnimationState("open"), 50);
-                          }}
-                          style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.08)",
-                            borderRadius: "32px",
-                            height: "56px",
-                            minHeight: "56px",
-                            maxHeight: "56px",
-                            padding: "0 16px",
-                            margin: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            border: "none",
-                            color: "white",
-                            fontFamily: "Inter, sans-serif",
-                            fontSize: "16px",
-                            fontWeight: 500,
-                            cursor: "pointer",
-                            outline: "none",
-                            width: "100%",
-                            boxSizing: "border-box",
-                            lineHeight: "1",
-                          }}
-                        >
-                          View wine history
-                        </button>
-                      </div>
                     )}
                   </>
                 )}
