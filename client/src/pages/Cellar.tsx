@@ -44,6 +44,7 @@ const Cellar = () => {
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [hasSharedContact, setHasSharedContact] = useState(false);
 
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
@@ -341,6 +342,7 @@ const Cellar = () => {
 
       if (response.ok) {
         console.log("Contact saved successfully:", data);
+        setHasSharedContact(true); // Mark user as having shared contact info
         setShowModal(false);
 
         // Show toast notification
