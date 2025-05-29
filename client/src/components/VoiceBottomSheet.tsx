@@ -317,38 +317,63 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             </div>
           </div>
         ) : isResponding ? (
-          // Show stop button when audio is playing
+          // Show user question or stop button when audio is playing
           <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
-            <button
-              className="voice-bottom-sheet-button"
-              onClick={onMute}
-              style={{
+            {/* Show user's question briefly when Listen Response is clicked */}
+            {(window as any).showUserQuestion && (window as any).currentUserQuestion ? (
+              <div style={{
                 width: '100%',
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 borderRadius: '32px',
-                height: '56px',
-                padding: '0 16px',
+                minHeight: '56px',
+                padding: '16px',
                 margin: 0,
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                gap: '8px',
                 color: 'white',
-                border: 'none',
-                cursor: 'pointer',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '16px',
-                fontWeight: 500,
-                outline: 'none',
-                transition: 'none',
+                fontWeight: 'normal',
+                textAlign: 'center',
+                lineHeight: '1.4',
                 boxSizing: 'border-box'
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
-                <path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
-              </svg>
-              Stop
-            </button>
+              }}>
+                "{(window as any).currentUserQuestion}"
+              </div>
+            ) : (
+              // Show stop button when speech is playing
+              <button
+                className="voice-bottom-sheet-button"
+                onClick={onMute}
+                style={{
+                  width: '100%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  borderRadius: '32px',
+                  height: '56px',
+                  padding: '0 16px',
+                  margin: 0,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  outline: 'none',
+                  transition: 'none',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                  <path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
+                </svg>
+                Stop
+              </button>
+            )}
           </div>
         ) : isThinking && !showListenButton ? (
           <div style={{ 
