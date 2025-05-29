@@ -893,44 +893,7 @@ const Cellar = () => {
           />
         </div>
 
-        {/* Conditional Content Based on Contact Sharing */}
-        {!hasSharedContact && (
-          /* View Chat History Button when contact not shared */
-          <div style={{
-            margin: "24px 16px",
-            textAlign: "center"
-          }}>
-            <button
-              onClick={() => {
-                setShowModal(true);
-                setAnimationState("opening");
-                setTimeout(() => setAnimationState("open"), 50);
-              }}
-              style={{
-                padding: "12px 24px",
-                borderRadius: "24px",
-                backgroundColor: "transparent",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                color: "white",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: "400",
-                cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
-              }}
-            >
-              View chat history
-            </button>
-          </div>
-        )}
+
 
         {/* Contact Info Bottom Sheet */}
         {animationState !== "closed" &&
