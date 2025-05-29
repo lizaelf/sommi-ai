@@ -4,7 +4,7 @@ import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
-import wineBottlePath1 from "@assets/image-1.png";
+import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 
 const wines = [
