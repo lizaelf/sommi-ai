@@ -1180,10 +1180,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                         <h1 style={{
                           color: 'white',
                           fontFamily: 'Inter, sans-serif',
-                          fontSize: '24px',
-                          fontWeight: '600',
+                          fontSize: '32px',
+                          fontWeight: '700',
                           margin: '0 0 24px 0',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          lineHeight: '1.2'
                         }}>
                           Chat history
                         </h1>
