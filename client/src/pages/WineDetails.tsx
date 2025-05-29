@@ -53,39 +53,7 @@ export default function WineDetails() {
             </svg>
           </Link>
           <h1 className="text-lg font-medium text-white">Wine Details</h1>
-          <div className="flex items-center space-x-3">
-            <Link to="/cellar">
-              <div style={{
-                width: 'auto',
-                height: '40px',
-                display: 'inline-flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                background: 'rgba(255, 255, 255, 0.04)',
-                borderRadius: '24px',
-                border: '1px solid transparent',
-                backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
-                backgroundOrigin: 'border-box',
-                backgroundClip: 'padding-box, border-box',
-                padding: '0 16px',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}>
-                <span style={{
-                  color: 'white',
-                  fontSize: '14px',
-                  lineHeight: 'normal',
-                  fontFamily: 'Inter, sans-serif',
-                  fontWeight: '400',
-                  display: 'inline-block',
-                  padding: '0',
-                  margin: '0'
-                }}>
-                  My cellar
-                </span>
-              </div>
-            </Link>
-          </div>
+          <div></div>
         </div>
 
         {/* Main Content Area */}
