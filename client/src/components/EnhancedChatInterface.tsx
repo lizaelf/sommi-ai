@@ -1214,7 +1214,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                             lineHeight: '1'
                           }}
                         >
-                          Want to see wine history?
+                          View wine history
                         </button>
                       </div>
                     )}
