@@ -202,7 +202,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       localStorage.removeItem(getConversationKey(wineId));
       setMessages([]);
     }
-  }, []);
+  }, [wineId]);
   
   // Create a new conversation
   const createNewConversation = useCallback(async (): Promise<number | null> => {
@@ -237,7 +237,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       console.error("Error creating new conversation", error);
       return null;
     }
-  }, []);
+  }, [wineId]);
   
   // Clear the current conversation
   const clearConversation = useCallback(async () => {

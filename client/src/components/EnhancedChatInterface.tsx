@@ -374,7 +374,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     createNewConversation,
     clearConversation,
     refetchMessages,
-  } = useConversation();
+  } = useConversation(selectedWine ? `wine_${selectedWine.id}` : 'default');
 
   // Basic states
   const [isTyping, setIsTyping] = useState(false);
