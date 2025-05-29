@@ -1660,19 +1660,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         );
                       })()
                     )
-                  ) : (
-                    <div
-                      style={{
-                        textAlign: "center",
-                        color: "#888",
-                        padding: "40px 20px",
-                        fontSize: "16px",
-                      }}
-                    >
-                      No conversation history yet. Start asking questions about
-                      wine to see your summary here.
-                    </div>
-                  )}
+                  ) : null}
 
                   {/* Typing Indicator */}
                   {isTyping && (
@@ -1918,7 +1906,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     padding: "16px 24px",
                     alignItems: "center",
                     width: "100%",
-                    color: "white",
+                    background: "transparent !important",
+                    backgroundColor: "transparent !important",
+                    color: "white !important",
                     fontFamily: "Inter, sans-serif",
                     fontSize: "16px",
                     outline: "none",
@@ -1952,7 +1942,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     padding: "16px 24px",
                     alignItems: "center",
                     width: "100%",
-                    color: "white",
+                    color: "white !important",
                     fontFamily: "Inter, sans-serif",
                     fontSize: "16px",
                     outline: "none",
