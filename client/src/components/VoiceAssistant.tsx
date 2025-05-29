@@ -453,6 +453,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                 (window as any).lastResponseText = messageText;
                 console.log("💾 Stored response text for Listen Response:", messageText.substring(0, 100) + "...");
                 
+                // Pre-generate audio for instant playback
+                console.log("🎵 Pre-generating audio for instant playback...");
+                fetch('/api/text-to-speech', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ text: messageText })
+                }).then(async response => {
+                  if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    // Cache the pre-generated audio
+                    (window as any).cachedAudioUrl = audioUrl;
+                    console.log("✅ Audio pre-generated and cached for instant playback");
+                  }
+                }).catch(err => {
+                  console.error("Failed to pre-generate audio:", err);
+                });
+                
                 // FORCE Listen Response button to appear - AI response is ready
                 console.log("🎯 AI RESPONSE READY - Forcing Listen Response button to appear");
                 setIsVoiceThinking(false);
@@ -726,6 +744,45 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setShowListenButton(false); // Hide button while playing
     
     try {
+      // Check if we have cached audio for instant playback
+      const cachedAudioUrl = (window as any).cachedAudioUrl;
+      if (cachedAudioUrl) {
+        console.log("🚀 Using cached audio for instant playback");
+        setIsResponding(true);
+        
+        const audio = new Audio(cachedAudioUrl);
+        (window as any).currentOpenAIAudio = audio;
+        
+        audio.onended = () => {
+          setIsResponding(false);
+          setShowListenButton(true);
+          (window as any).currentOpenAIAudio = null;
+          console.log("🎵 Cached audio playback completed");
+        };
+        
+        audio.onerror = () => {
+          console.error("Cached audio playback failed, falling back to text-to-speech");
+          // Fall back to text-to-speech generation
+          handleTextToSpeechFallback();
+        };
+        
+        await audio.play();
+        return;
+      }
+      
+      // Fallback to text-to-speech generation
+      console.log("No cached audio available, generating text-to-speech...");
+      await handleTextToSpeechFallback();
+    } catch (error) {
+      console.error("Error in handleListenResponse:", error);
+      setIsResponding(false);
+      setShowListenButton(true);
+    }
+  };
+
+  // Fallback function for text-to-speech generation
+  const handleTextToSpeechFallback = async () => {
+    try {
       // First try stored text, then search DOM for latest assistant message
       let messageText = (window as any).lastResponseText || (window as any).backupResponseText;
       
@@ -808,6 +865,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         };
         
         await audio.play();
+      } else {
+        console.error("Failed to generate text-to-speech");
+        setIsResponding(false);
+        setShowListenButton(true);
       }
     } catch (error) {
       console.error('Error playing response:', error);
