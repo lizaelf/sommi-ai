@@ -42,31 +42,63 @@ const HomeGlobal = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Fixed Header */}
-      <div
-        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
-          isScrolled
-            ? "bg-black/90 backdrop-blur-sm border-b border-white/10"
-            : "bg-transparent"
-        }`}
+      {/* App Header - Same as Scanned page */}
+      <div 
+        style={{
+          backgroundColor: isScrolled ? 'rgba(23, 23, 23, 0.5)' : 'rgba(10, 10, 10, 0)',
+          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none',
+          borderBottom: 'none',
+          height: '75px',
+          paddingLeft: '24px',
+          paddingRight: '24px'
+        }}
+        className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
       >
-        <div></div>
-        <h1 
-          className="text-lg font-medium"
-          style={{
+        <Link to="/home-global">
+          <div style={{
             fontFamily: "Lora, serif",
             fontSize: "24px",
             lineHeight: "32px",
-            fontWeight: 500
-          }}
-        >
-          SOMM
-        </h1>
-        <Link href="/cellar">
-          <div className="bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-full cursor-pointer">
-            <span className="text-white text-sm font-medium">My cellar</span>
+            fontWeight: 500,
+            color: "white"
+          }}>
+            SOMM
           </div>
         </Link>
+        <div className="flex items-center space-x-3">
+          <Link to="/cellar">
+            <div style={{
+              width: 'auto',
+              height: '40px',
+              display: 'inline-flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              background: 'rgba(255, 255, 255, 0.04)',
+              borderRadius: '24px',
+              border: '1px solid transparent',
+              backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
+              backgroundOrigin: 'border-box',
+              backgroundClip: 'padding-box, border-box',
+              padding: '0 16px',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}>
+              <span style={{
+                color: 'white',
+                fontSize: '14px',
+                lineHeight: 'normal',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: '400',
+                display: 'inline-block',
+                padding: '0',
+                margin: '0'
+              }}>
+                My cellar
+              </span>
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* Content */}
