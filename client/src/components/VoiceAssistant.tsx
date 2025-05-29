@@ -438,24 +438,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           if (messageText && messageText.length > 10) {
             console.log("Found stored message text:", messageText.substring(0, 50) + "...");
             
-            // Pre-generate audio for instant playback
-            console.log("🎵 Pre-generating audio for instant playback...");
-            fetch('/api/text-to-speech', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text: messageText })
-            }).then(async response => {
-              if (response.ok) {
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                // Cache the pre-generated audio
-                (window as any).cachedAudioUrl = audioUrl;
-                console.log("✅ Audio pre-generated and cached for instant playback");
-              }
-            }).catch(err => {
-              console.error("Failed to pre-generate audio:", err);
-            });
-            
             // FORCE Listen Response button to appear - AI response is ready
             console.log("🎯 AI RESPONSE READY - Forcing Listen Response button to appear");
             setIsVoiceThinking(false);
@@ -496,7 +478,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             }, 500);
 
           } else {
-            console.log("No stored message text found");
+            console.log("Last message has no text content");
             setUsedVoiceInput(false);
             setShowBottomSheet(false);
           }
