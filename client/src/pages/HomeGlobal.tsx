@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import wineryLogoPath from "@assets/winary-logo.png";
 import wineBottlePath1 from "@assets/image-1.png";
 import wineBottlePath2 from "@assets/image-2.png";
@@ -8,6 +8,11 @@ import Logo from "@/components/Logo";
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [location, setLocation] = useLocation();
+
+  const handleWineClick = (wineId: number) => {
+    setLocation(`/wine/${wineId}`);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -132,7 +137,7 @@ const HomeGlobal = () => {
               color: "#CECECE",
             }}
           >
-            Welcome to Ridge Vineyards where each bottle is a story of place,
+            Welcome to Ridge Vineyards where each bottle is a story of place,
             time, and the people who bring it to life.
           </p>
         </div>
@@ -146,7 +151,7 @@ const HomeGlobal = () => {
               fontSize: "24px",
               lineHeight: "32px",
               fontWeight: 500,
-              marginBottom: "24px"
+              marginBottom: "24px",
             }}
           >
             Your wines
@@ -157,10 +162,11 @@ const HomeGlobal = () => {
             {wines.map((wine) => (
               <div
                 key={wine.id}
-                className="rounded-xl p-4 transition-colors"
+                className="rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5"
                 style={{
-                  border: "1px solid #494949"
+                  border: "1px solid #494949",
                 }}
+                onClick={() => handleWineClick(wine.id)}
               >
                 <div className="flex items-start gap-4">
                   {/* Wine Bottle Image */}
@@ -192,9 +198,9 @@ const HomeGlobal = () => {
                       className="text-white/60 text-sm mb-3"
                       style={{
                         fontFamily: "Inter, sans-serif",
-                        fontSize: "13px",
+                        fontSize: "14px",
                         lineHeight: "16px",
-                        fontWeight: 500,
+                        fontWeight: 400,
                       }}
                     >
                       {wine.bottles} Bottles
@@ -361,20 +367,22 @@ const HomeGlobal = () => {
       </div>
 
       {/* Circle glow effect at top */}
-      <div style={{
-        position: 'fixed',
-        top: '8px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '272px',
-        height: '272px',
-        borderRadius: '50%',
-        backgroundColor: '#8E8E8E',
-        filter: 'blur(60px)',
-        opacity: 0.3,
-        zIndex: 0,
-        pointerEvents: 'none'
-      }} />
+      <div
+        style={{
+          position: "fixed",
+          top: "8px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "272px",
+          height: "272px",
+          borderRadius: "50%",
+          backgroundColor: "#8E8E8E",
+          filter: "blur(60px)",
+          opacity: 0.3,
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 };

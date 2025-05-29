@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'wouter';
+import { Link, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';

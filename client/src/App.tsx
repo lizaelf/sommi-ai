@@ -18,6 +18,7 @@ function Router() {
       <Route path="/home-global" component={HomeGlobal} />
       <Route path="/wine/details" component={WineDetails} />
       <Route path="/wine/conversation" component={ConversationDialog} />
+      <Route path="/wine/:id" component={WineDetails} />
       <Route path="/wine-details/:id" component={WineDetails} />
       <Route component={NotFound} />
     </Switch>
