@@ -58,6 +58,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   showBuyButton = false,
   selectedWine = null,
 }) => {
+  console.log('EnhancedChatInterface received selectedWine:', selectedWine);
   // Check if user has shared contact information
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     return localStorage.getItem("hasSharedContact") === "true";
