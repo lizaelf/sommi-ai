@@ -1,7 +1,6 @@
-import { X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { ContactFormBottomSheet } from "@/components/ContactFormBottomSheet";
 import { useToast } from "@/hooks/use-toast";
 import backgroundImage from "@assets/Background.png";
 import wineBottleImage from "@assets/Product Image.png";
