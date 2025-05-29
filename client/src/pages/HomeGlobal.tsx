@@ -36,7 +36,7 @@ const HomeGlobal = () => {
   const wines = [
     {
       id: 1,
-      name: getWineDisplayName(),
+      name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
       bottles: 4,
       image: wineBottlePath1,
       ratings: {
