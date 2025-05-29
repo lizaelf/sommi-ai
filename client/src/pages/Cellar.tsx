@@ -892,12 +892,17 @@ const Cellar = () => {
           />
         </div>
 
-        {/* Show "Want to see wine history?" button for non-submitted users */}
-        {/* Debug: hasSharedContact = {hasSharedContact.toString()} */}
+        {/* Fixed bottom button for non-submitted users */}
         {!hasSharedContact && (
           <div style={{
-            margin: "24px 16px 48px 16px",
-            textAlign: "center"
+            position: "fixed",
+            bottom: "0",
+            left: "0",
+            right: "0",
+            backgroundColor: "#1C1C1C",
+            padding: "16px",
+            zIndex: 50,
+            borderTop: "1px solid rgba(255, 255, 255, 0.2)"
           }}>
             <button
               onClick={() => {
