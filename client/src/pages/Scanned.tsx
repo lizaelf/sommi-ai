@@ -5,7 +5,7 @@ import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 
-export default function Home() {
+export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
   
   // Add scroll listener to detect when page is scrolled

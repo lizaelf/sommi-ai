@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
+import Scanned from "@/pages/Scanned";
 import WineDetails from "@/pages/WineDetails";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
@@ -13,7 +13,7 @@ import HomeGlobal from "@/pages/HomeGlobal";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Scanned} />
       <Route path="/cellar" component={Cellar} />
       <Route path="/home-global" component={HomeGlobal} />
       <Route path="/wine/details" component={WineDetails} />
