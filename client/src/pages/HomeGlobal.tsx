@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import wineryLogoPath from "@assets/winary-logo.png";
-import wineBottlePath from "@assets/image-1.png";
+import wineBottlePath1 from "@assets/image-1.png";
+import wineBottlePath2 from "@assets/image-2.png";
 import typography from "@/styles/typography";
 
 const HomeGlobal = () => {
@@ -21,7 +22,7 @@ const HomeGlobal = () => {
       id: 1,
       name: "2022 Estate Chardonnay",
       bottles: 4,
-      image: "/wine-bottle-white.svg",
+      image: wineBottlePath1,
       ratings: {
         vn: 95,
         jd: 93,
@@ -33,7 +34,7 @@ const HomeGlobal = () => {
       id: 2,
       name: "2021 Monte Bello Cabernet Sauvignon",
       bottles: 2,
-      image: "/wine-bottle-red.svg",
+      image: wineBottlePath2,
       ratings: {
         vn: 95,
         jd: 93,
@@ -170,7 +171,7 @@ const HomeGlobal = () => {
                   {/* Wine Bottle Image */}
                   <div className="flex items-center justify-center">
                     <img
-                      src={wineBottlePath}
+                      src={wine.image}
                       alt="Wine Bottle"
                       style={{
                         height: "170px",
