@@ -1028,7 +1028,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   {messages.length > 0 ? (
                     showFullConversation ? (
                       // Show full conversation
-                      (<>
+                      <>
                         {messages.map((message, index) => (
                           <div key={`${message.id}-${index}`} style={{
                             display: 'flex',
@@ -1141,8 +1141,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       No conversation history yet. Start asking questions about wine to see your summary here.
                     </div>
                   )}
-                </>
-                )}
+                </div>
+              )}
                 
                 {/* View Chat History Button for users who haven't shared contact */}
                 {showBuyButton && !hasSharedContact && (
