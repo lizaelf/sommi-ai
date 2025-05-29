@@ -7,7 +7,7 @@ import { VoiceAssistant } from './VoiceAssistant';
 import { VoiceBottomSheet } from './VoiceBottomSheet';
 import { WineBottleImage } from './WineBottleImage';
 import { ShiningText } from './ShiningText';
-import { getWineDisplayName, getWineVintage } from '../../../shared/wineConfig';
+import { getWineDisplayName, getWineVintage } from '../../shared/wineConfig';
 
 declare global {
   interface Window {
