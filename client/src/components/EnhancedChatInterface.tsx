@@ -1024,125 +1024,108 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                 )}
                 
                 {/* Conversation Content */}
-                <div id="conversation" className="space-y-4 mb-96">
-                  {messages.length > 0 ? (
-                    showFullConversation ? (
-                      // Show full conversation
-                      <>
-                        {messages.map((message, index) => (
-                          <div key={`${message.id}-${index}`} style={{
-                            display: 'flex',
-                            justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                            width: '100%',
-                            marginBottom: '12px'
-                          }}>
-                            <div 
-                              style={{
-                                backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                                borderRadius: '16px',
-                                padding: '16px',
-                                width: message.role === 'user' ? 'fit-content' : '100%',
-                                maxWidth: message.role === 'user' ? '80%' : '100%'
-                              }}
-                              data-role={message.role}
-                            >
-                              {message.role === 'assistant' ? (
-                                <div style={{
-                                  color: '#DBDBDB',
-                                  fontFamily: 'Inter, system-ui, sans-serif',
-                                  fontSize: '16px',
-                                  lineHeight: '1.6'
-                                }}>
-                                  {formatContent(message.content)}
-                                </div>
-                              ) : (
-                                <div style={{
-                                  color: '#000000',
-                                  fontFamily: 'Inter, system-ui, sans-serif',
-                                  fontSize: '16px',
-                                  lineHeight: '1.6'
-                                }}>
-                                  {formatContent(message.content)}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                        {/* Back to Summary Button */}
-                        <div style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '20px' }}>
-                          <button 
-                            onClick={() => setShowFullConversation(false)}
-                            style={{
-                              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                              borderRadius: '32px',
-                              height: '56px',
-                              minHeight: '56px',
-                              maxHeight: '56px',
-                              padding: '0 16px',
-                              margin: 0,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              border: 'none',
-                              color: 'white',
-                              fontFamily: 'Inter, sans-serif',
+                {messages.length > 0 && showFullConversation && (
+                  <div id="conversation" className="space-y-4 mb-96">
+                    {messages.map((message, index) => (
+                      <div key={`${message.id}-${index}`} style={{
+                        display: 'flex',
+                        justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                        width: '100%',
+                        marginBottom: '12px'
+                      }}>
+                        <div 
+                          style={{
+                            backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
+                            borderRadius: '16px',
+                            padding: '16px',
+                            width: message.role === 'user' ? 'fit-content' : '100%',
+                            maxWidth: message.role === 'user' ? '80%' : '100%'
+                          }}
+                          data-role={message.role}
+                        >
+                          {message.role === 'assistant' ? (
+                            <div style={{
+                              color: '#DBDBDB',
+                              fontFamily: 'Inter, system-ui, sans-serif',
                               fontSize: '16px',
-                              fontWeight: 500,
-                              cursor: 'pointer',
-                              outline: 'none',
-                              width: '100%',
-                              maxWidth: '320px',
-                              marginLeft: 'auto',
-                              marginRight: 'auto',
-                              boxSizing: 'border-box',
-                              lineHeight: '1'
-                            }}
-                          >
-                            Back to Summary
-                          </button>
+                              lineHeight: '1.6'
+                            }}>
+                              {formatContent(message.content)}
+                            </div>
+                          ) : (
+                            <div style={{
+                              color: '#000000',
+                              fontFamily: 'Inter, system-ui, sans-serif',
+                              fontSize: '16px',
+                              lineHeight: '1.6'
+                            }}>
+                              {formatContent(message.content)}
+                            </div>
+                          )}
                         </div>
-                      </>)
-                    ) : (
-                      // Show summary
-                      ((() => {
-                        // Generate summary content for 3 main topics
-                        const summaryTopics = [
-                          {
-                            title: "Tasting Profile",
-                            summary: "Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish."
-                          },
-                          {
-                            title: "Food Pairing",
-                            summary: "Learn which dishes complement this wine best and how to create perfect pairings for your dining experience."
-                          },
-                          {
-                            title: "Wine Origin",
-                            summary: "Explore the terroir, region, and winemaking traditions that shaped this bottle's distinctive character."
-                          }
-                        ];
-
-                        return (
-                          <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
-
-
-
-
-                          </div>
-                        );
-                      })())
-                    )
-                  ) : (
-                    <div style={{
-                      textAlign: 'center',
-                      color: '#888',
-                      padding: '40px 20px',
-                      fontSize: '16px'
-                    }}>
-                      No conversation history yet. Start asking questions about wine to see your summary here.
+                      </div>
+                    ))}
+                    {/* Back to Summary Button */}
+                    <div style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '20px' }}>
+                      <button 
+                        onClick={() => setShowFullConversation(false)}
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                          borderRadius: '32px',
+                          height: '56px',
+                          minHeight: '56px',
+                          maxHeight: '56px',
+                          padding: '0 16px',
+                          margin: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: 'none',
+                          color: 'white',
+                          fontFamily: 'Inter, sans-serif',
+                          fontSize: '16px',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          outline: 'none',
+                          width: '100%',
+                          maxWidth: '320px',
+                          marginLeft: 'auto',
+                          marginRight: 'auto',
+                          boxSizing: 'border-box',
+                          lineHeight: '1'
+                        }}
+                      >
+                        Back to Summary
+                      </button>
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+
+                {/* Summary Content */}
+                {messages.length > 0 && !showFullConversation && hasSharedContact && (
+                  <div style={{
+                    textAlign: 'center',
+                    color: '#888',
+                    padding: '40px 20px',
+                    fontSize: '16px'
+                  }}>
+                    Summary content will appear here as you chat about wine.
+                  </div>
+                )}
+
+                {/* No Messages State */}
+                {messages.length === 0 && hasSharedContact && (
+                  <div style={{
+                    textAlign: 'center',
+                    color: '#888',
+                    padding: '40px 20px',
+                    fontSize: '16px'
+                  }}>
+                    No conversation history yet. Start asking questions about wine to see your summary here.
+                  </div>
+                )}
+              </div>
+            )}
                 
                 {/* View Chat History Button for users who haven't shared contact */}
                 {showBuyButton && !hasSharedContact && (
