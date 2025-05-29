@@ -38,6 +38,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     return localStorage.getItem('hasSharedContact') === 'true';
   });
+  
+  // State for contact bottom sheet
+  const [showContactSheet, setShowContactSheet] = useState(false);
   // Simplified content formatter for lists and bold text
   const formatContent = (content: string) => {
     if (!content) return null;
@@ -1026,7 +1029,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       // Show "View chat history" button when user hasn't shared contact info
                       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                         <button 
-                          onClick={() => setLocation('/cellar')}
+                          onClick={() => setShowContactSheet(true)}
                           style={{
                             backgroundColor: 'rgba(255, 255, 255, 0.08)',
                             borderRadius: '32px',
@@ -1296,6 +1299,102 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
           </div>
         </main>
       </div>
+      
+      {/* Contact Bottom Sheet */}
+      {showContactSheet && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'flex-end'
+          }}
+          onClick={() => setShowContactSheet(false)}
+        >
+          <div 
+            style={{
+              backgroundColor: '#1C1C1C',
+              borderTopLeftRadius: '24px',
+              borderTopRightRadius: '24px',
+              width: '100%',
+              padding: '24px',
+              maxHeight: '80vh',
+              overflow: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              width: '40px',
+              height: '4px',
+              backgroundColor: 'rgba(255, 255, 255, 0.3)',
+              borderRadius: '2px',
+              margin: '0 auto 24px auto'
+            }} />
+            
+            <h2 style={{
+              color: 'white',
+              fontSize: '24px',
+              fontWeight: 600,
+              marginBottom: '16px',
+              textAlign: 'center'
+            }}>
+              Share Your Contact Info
+            </h2>
+            
+            <p style={{
+              color: '#DBDBDB',
+              fontSize: '16px',
+              marginBottom: '24px',
+              textAlign: 'center'
+            }}>
+              To view your chat history and personalized wine recommendations, please share your contact information.
+            </p>
+            
+            <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
+              <button
+                onClick={() => setShowContactSheet(false)}
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  borderRadius: '32px',
+                  height: '56px',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowContactSheet(false);
+                  setLocation('/cellar');
+                }}
+                style={{
+                  flex: 1,
+                  backgroundColor: 'white',
+                  borderRadius: '32px',
+                  height: '56px',
+                  border: 'none',
+                  color: 'black',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
+              >
+                Share Contact
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
