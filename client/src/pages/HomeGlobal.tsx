@@ -15,11 +15,11 @@ const HomeGlobal = () => {
     console.log('Wine clicked with ID:', wineId);
     console.log('Available wines:', wines);
     
+    // Both wines use the same master template, just with different data
     if (wineId === 1) {
-      setLocation('/');
+      setLocation('/'); // Master template without parameters
     } else {
-      // Navigate to scanned page with wine ID parameter
-      setLocation(`/?wine=${wineId}`);
+      setLocation(`/?wine=${wineId}`); // Instance template with wine parameter
     }
   };
 

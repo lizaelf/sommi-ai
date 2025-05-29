@@ -596,6 +596,48 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <span>{getWineRegion()}</span>
               </div>
 
+              {/* Wine Navigation Links */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "12px",
+                  padding: "16px 20px",
+                  marginBottom: "20px",
+                }}
+              >
+                <a
+                  href="/"
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    backgroundColor: selectedWine ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)",
+                    color: "white",
+                    textDecoration: "none",
+                    fontSize: "14px",
+                    fontWeight: selectedWine ? 400 : 600,
+                    border: selectedWine ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid rgba(255, 255, 255, 0.4)",
+                  }}
+                >
+                  Ridge Vineyards
+                </a>
+                <a
+                  href="/?wine=2"
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    backgroundColor: selectedWine?.id === 2 ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.1)",
+                    color: "white",
+                    textDecoration: "none",
+                    fontSize: "14px",
+                    fontWeight: selectedWine?.id === 2 ? 600 : 400,
+                    border: selectedWine?.id === 2 ? "1px solid rgba(255, 255, 255, 0.4)" : "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                >
+                  Monte Bello
+                </a>
+              </div>
+
               {/* Wine ratings section */}
               <div
                 style={{
