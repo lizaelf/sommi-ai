@@ -34,6 +34,8 @@ interface EnhancedChatInterfaceProps {
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyButton = false }) => {
+  const [, setLocation] = useLocation();
+  
   // Check if user has shared contact information
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     return localStorage.getItem('hasSharedContact') === 'true';
@@ -124,7 +126,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
-  const [, setLocation] = useLocation();
   const { toast } = useToast();
   
   // Create a ref for the chat container to allow scrolling
@@ -1140,7 +1141,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       No conversation history yet. Start asking questions about wine to see your summary here.
                     </div>
                   )}
-                  </>
+                </>
                 )}
                 
                 {/* View Chat History Button for users who haven't shared contact */}
