@@ -21,7 +21,12 @@ const Cellar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [animationState, setAnimationState] = useState<
     "closed" | "opening" | "open" | "closing"
-  >("closed");
+  >(() => {
+    // Show contact sheet automatically if user hasn't shared contact AND hasn't closed it before
+    const hasShared = localStorage.getItem('hasSharedContact') === 'true';
+    const hasClosed = localStorage.getItem('hasClosedContactForm') === 'true';
+    return !hasShared && !hasClosed ? "opening" : "closed";
+  });
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -493,6 +498,14 @@ const Cellar = () => {
       setTimeout(() => setAnimationState("closed"), 300);
     }
   }, [showModal, animationState]);
+
+  // Auto-open contact sheet for non-submitted users on mount
+  useEffect(() => {
+    if (animationState === "opening") {
+      setShowModal(true);
+      setTimeout(() => setAnimationState("open"), 50);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white relative">
