@@ -5,6 +5,7 @@ import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
+import { getWineDisplayName } from '../../../shared/wineConfig';
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -30,7 +31,7 @@ const HomeGlobal = () => {
   const wines = [
     {
       id: 1,
-      name: "2022 Estate Chardonnay",
+      name: getWineDisplayName(),
       bottles: 4,
       image: wineBottlePath1,
       ratings: {
