@@ -1026,7 +1026,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       // Show "View chat history" button when user hasn't shared contact info
                       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                         <button 
-                          onClick={() => setLocation('/wine/conversation')}
+                          onClick={() => setLocation('/cellar')}
                           style={{
                             backgroundColor: 'rgba(255, 255, 255, 0.08)',
                             borderRadius: '32px',
