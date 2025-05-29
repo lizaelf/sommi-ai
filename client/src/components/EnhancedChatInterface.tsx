@@ -34,6 +34,10 @@ interface EnhancedChatInterfaceProps {
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyButton = false }) => {
+  // Check if user has shared contact information
+  const [hasSharedContact, setHasSharedContact] = useState(() => {
+    return localStorage.getItem('hasSharedContact') === 'true';
+  });
   // Simplified content formatter for lists and bold text
   const formatContent = (content: string) => {
     if (!content) return null;
@@ -885,17 +889,19 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
               }}>
                 {showBuyButton && (
                   <>
-                    <h1 style={{
-                      ...typography.h1,
-                      color: 'white',
-                      marginBottom: '24px',
-                      textAlign: 'left'
-                    }}>
-                      Summary
-                    </h1>
-                    
-                    {/* Discussion Summary */}
-                    {messages.length > 0 && (
+                    {hasSharedContact ? (
+                      <>
+                        <h1 style={{
+                          ...typography.h1,
+                          color: 'white',
+                          marginBottom: '24px',
+                          textAlign: 'left'
+                        }}>
+                          Summary
+                        </h1>
+                        
+                        {/* Discussion Summary */}
+                        {messages.length > 0 && (
                       <div style={{ marginBottom: '32px' }}>
                         {(() => {
                           // Extract latest 3 unique topics from conversation
