@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { ContactFormBottomSheet } from './ContactFormBottomSheet';
@@ -7,29 +6,13 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import VoiceAssistant from './VoiceAssistant';
 import WineBottleImage from './WineBottleImage';
-import USFlagImage from './USFlagImage';
 import { useConversation } from '@/hooks/useConversation';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
-import { getWineDisplayName, getWineRegion, getWineVintage, WINE_CONFIG } from '@shared/wineConfig';
+import { getWineDisplayName, getWineRegion, getWineVintage } from '@shared/wineConfig';
 import { ShiningText } from '@/components/ShiningText';
 import { TextGenerateEffect } from './ui/text-generate-effect';
-// Import typography styles
 
-// Extend Window interface to include voiceAssistant
-declare global {
-  interface Window {
-    voiceAssistant?: {
-      speakResponse: (text: string) => Promise<void>;
-      playLastAudio: () => void;
-      speakLastAssistantMessage: () => void;
-      muteAndSavePosition: () => void;
-      resumeFromMute: () => void;
-    };
-  }
-}
-
-// Create an enhanced chat interface that uses IndexedDB for persistence
 interface EnhancedChatInterfaceProps {
   showBuyButton?: boolean;
 }
@@ -42,1380 +25,351 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
   
   // State for contact bottom sheet
   const [showContactSheet, setShowContactSheet] = useState(false);
-  
 
+  const handleContactFormSubmit = (formData: any) => {
+    setHasSharedContact(true);
+    localStorage.setItem('hasSharedContact', 'true');
+    
+    toast({
+      title: "Success!",
+      description: "Your contact information has been saved.",
+    });
+  };
 
   const handleCloseContactSheet = () => {
     setShowContactSheet(false);
-    setAnimationState("closing");
-    setTimeout(() => setAnimationState("closed"), 300);
+    localStorage.setItem('hasClosedContactForm', 'true');
   };
 
-  // Form validation and handling from Cellar page
-  const validateForm = () => {
-    const newErrors = {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-    };
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showFullConversation, setShowFullConversation] = useState(false);
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    }
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((error) => error === "");
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          phone: `${selectedCountry.dial_code}${formData.phone}`,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        localStorage.setItem('hasSharedContact', 'true');
-        setHasSharedContact(true);
-        handleCloseContactSheet();
-        
-        // Show success toast notification
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Contact saved successfully!
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
-      } else {
-        console.error("Failed to save contact:", data);
-        if (data.errors) {
-          setErrors(data.errors);
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
-
-  // Simplified content formatter for lists and bold text
-  const formatContent = (content: string) => {
-    if (!content) return null;
-    
-    // Handle bold text first
-    const formatText = (text: string) => {
-      const parts = text.split(/(\*\*.*?\*\*)/g);
-      return parts.map((part, i) => 
-        part.startsWith('**') && part.endsWith('**') 
-          ? <strong key={i}>{part.slice(2, -2)}</strong>
-          : part
-      );
-    };
-
-    const lines = content.split('\n');
-    const elements: React.ReactNode[] = [];
-    let listItems: string[] = [];
-
-    lines.forEach((line, i) => {
-      const isListItem = /^[-•*]\s|^\d+\.\s/.test(line.trim());
-      
-      if (isListItem) {
-        listItems.push(line.trim().replace(/^[-•*]\s|^\d+\.\s/, ''));
-      } else {
-        // Render accumulated list items
-        if (listItems.length > 0) {
-          elements.push(
-            <div key={`list-${i}`} style={{ margin: '8px 0' }}>
-              {listItems.map((item, j) => (
-                <div key={j} style={{ display: 'flex', marginBottom: '4px', paddingLeft: '8px' }}>
-                  <span style={{ color: '#6A53E7', marginRight: '8px' }}>•</span>
-                  <span>{formatText(item)}</span>
-                </div>
-              ))}
-            </div>
-          );
-          listItems = [];
-        }
-        
-        // Regular text
-        if (line.trim()) {
-          elements.push(
-            <div key={i} style={{ marginBottom: '8px', whiteSpace: 'pre-wrap' }}>
-              {formatText(line)}
-            </div>
-          );
-        }
-      }
-    });
-
-    // Handle remaining list items
-    if (listItems.length > 0) {
-      elements.push(
-        <div key="final-list" style={{ margin: '8px 0' }}>
-          {listItems.map((item, j) => (
-            <div key={j} style={{ display: 'flex', marginBottom: '4px', paddingLeft: '8px' }}>
-              <span style={{ color: '#6A53E7', marginRight: '8px' }}>•</span>
-              <span>{formatText(item)}</span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    return <>{elements}</>;
-  };
-
-  // Use our enhanced conversation hook
   const {
-    currentConversationId,
-    setCurrentConversationId,
     messages,
     addMessage,
-    conversations,
     createNewConversation,
-    clearConversation,
-    refetchMessages
+    currentConversationId
   } = useConversation();
 
-  // Basic states 
-  const [isTyping, setIsTyping] = useState(false);
-  const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
-  const [hideSuggestions, setHideSuggestions] = useState(false);
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
-  const [showFullConversation, setShowFullConversation] = useState(false);
-  const [, setLocation] = useLocation();
-  const { toast } = useToast();
-  
-  // Create a ref for the chat container to allow scrolling
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  // API status check
-  const { data: apiStatus } = useQuery({
-    queryKey: ['/api/status'],
-    refetchInterval: 30000,
-  });
-  
-  // Scroll behavior - only when suggestions are clicked or user asks questions
+  // Initialize conversation on mount
   useEffect(() => {
-    if (chatContainerRef.current && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      
-      // If the last message is from the user, scroll immediately to show it at the top
-      if (lastMessage && lastMessage.role === 'user') {
-        setTimeout(() => {
-          console.log("Auto-scrolling to show user question at top immediately");
-          
-          // Find the conversation container
-          const conversationContainer = document.getElementById('conversation');
-          if (conversationContainer) {
-            // Get all message elements within the conversation
-            const messageElements = conversationContainer.children;
-            
-            if (messageElements.length > 0) {
-              const lastUserMessageElement = messageElements[messageElements.length - 1] as HTMLElement;
-              
-              // Scroll to show the user's question at the top of the screen
-              lastUserMessageElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-                inline: 'nearest'
-              });
-              
-              console.log("Scrolled to user question immediately");
-            }
-          }
-        }, 100); // Short delay to ensure DOM is updated
-      }
-      // Also scroll when AI response arrives but question was already at top
-      else if (lastMessage && lastMessage.role === 'assistant' && messages.length >= 2) {
-        const userQuestion = messages[messages.length - 2];
-        if (userQuestion && userQuestion.role === 'user') {
-          setTimeout(() => {
-            console.log("Maintaining user question at top after AI response");
-            
-            const conversationContainer = document.getElementById('conversation');
-            if (conversationContainer) {
-              const messageElements = conversationContainer.children;
-              
-              if (messageElements.length >= 2) {
-                const lastUserMessageElement = messageElements[messageElements.length - 2] as HTMLElement;
-                
-                lastUserMessageElement.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start',
-                  inline: 'nearest'
-                });
-              }
-            }
-          }, 300);
-        }
+    async function initializeConversation() {
+      try {
+        await createNewConversation();
+      } catch (error) {
+        console.error('Failed to initialize conversation:', error);
       }
     }
-    // On initial load, scroll to top to show beginning of page
-    else if (chatContainerRef.current && messages.length === 0) {
-      chatContainerRef.current.scrollTo({
-        top: 0,
-        behavior: 'auto'
-      });
-    }
-  }, [messages.length]); // Only depend on messages.length to trigger when new messages are added
-  
-  // Reset suggestions visibility when conversation changes
-  useEffect(() => {
-    if (messages.length === 0) {
-      setHideSuggestions(false);
-    }
-  }, [messages.length]);
-
-  // Handle sending a message
-  const handleSendMessage = async (content: string) => {
-    if (content.trim() === '' || !currentConversationId) return;
     
-    // Hide suggestions after sending a message
-    setHideSuggestions(true);
+    if (!currentConversationId) {
+      initializeConversation();
+    }
+  }, [createNewConversation, currentConversationId]);
+
+  const handleSendMessage = async (content: string) => {
+    if (!content.trim() || isTyping) return;
+
     setIsTyping(true);
     
     try {
-      // Add user message to UI immediately
-      const tempUserMessage: ClientMessage = {
+      // Create user message
+      const userMessage: ClientMessage = {
         id: Date.now(),
-        content,
         role: 'user',
-        conversationId: currentConversationId,
-        createdAt: new Date().toISOString()
+        content: content.trim(),
+        conversationId: currentConversationId || 0
       };
-      
-      // Add message to the conversation
-      await addMessage(tempUserMessage);
-      
-      // Create a system message containing the prompt
-      // Optimize the prompt for faster responses by explicitly requesting brevity
-      const systemPrompt = "You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses very concise and to the point. Aim for 2-3 sentences maximum unless specifically asked for more detail.";
-      
-      // Make the API request with optimization flags
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'X-Priority': 'high' // Signal high priority to the server
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content }
-          ],
-          conversationId: currentConversationId,
-          optimize_for_speed: true // Additional flag to optimize for speed
-        })
-      });
-      
-      const responseData = await response.json();
-      
-      // Add the assistant's response to the UI immediately
-      if (responseData.message && responseData.message.content) {
+
+      await addMessage(userMessage);
+
+      // Simulate AI response (replace with actual API call)
+      setTimeout(async () => {
         const assistantMessage: ClientMessage = {
-          id: Date.now() + 1, // Ensure unique ID
-          content: responseData.message.content,
+          id: Date.now() + 1,
           role: 'assistant',
-          conversationId: currentConversationId,
-          createdAt: new Date().toISOString()
+          content: "Thank you for your question about this wine. This is a placeholder response while the API integration is being completed.",
+          conversationId: currentConversationId || 0
         };
-        
-        // Mark this as the latest message for animation
-        setLatestMessageId(assistantMessage.id);
-        
-        // Add assistant message to the conversation
+
         await addMessage(assistantMessage);
-        
-        // Auto-speak the assistant's response if window.voiceAssistant is available
-        if (window.voiceAssistant && window.voiceAssistant.speakResponse) {
-          try {
-            console.log("Auto-speaking the assistant's response");
-            await window.voiceAssistant.speakResponse(assistantMessage.content);
-          } catch (error) {
-            console.error("Failed to auto-speak response:", error);
-          }
-        }
-      }
-      
-      // Refresh all messages
-      refetchMessages();
-      
+        setIsTyping(false);
+      }, 1000);
+
     } catch (error) {
-      console.error('Error in chat request:', error);
+      console.error('Error sending message:', error);
       toast({
         title: "Error",
-        description: `Failed to get a response: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        variant: "destructive"
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
       });
-    } finally {
       setIsTyping(false);
     }
   };
 
-  // Display loading state if no currentConversationId
-  if (!currentConversationId) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-100px)]">
-        <div className="text-center">
-          <div className="typing-indicator">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <p className="mt-4 text-gray-600">Loading conversation...</p>
-        </div>
-      </div>
-    );
-  }
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current;
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
+  const handleShowFullDialog = () => {
+    if (currentConversationId) {
+      setLocation(`/conversation/${currentConversationId}`);
+    }
+  };
 
   return (
-    <div className="flex flex-col h-[100dvh] max-h-[100dvh]">
+    <div className="flex flex-col h-screen bg-black text-white">
+      {/* Fixed Header */}
+      <div className="flex-none bg-black border-b border-gray-800 p-4">
+        <div className="text-center space-y-1">
+          <div className="flex items-center justify-center gap-3">
+            <WineBottleImage />
+            <div>
+              <h1 style={{
+                ...typography.h1,
+                color: 'white',
+                margin: 0,
+                fontSize: '20px'
+              }}>
+                {getWineDisplayName()}.{' '}
+                <span style={{ color: '#8D8D8D' }}>
+                  {getWineVintage()}
+                </span>
+              </h1>
+              <p style={{
+                ...typography.body,
+                color: '#8D8D8D',
+                margin: 0,
+                fontSize: '14px'
+              }}>
+                {getWineRegion()}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-background overflow-hidden">
-          {/* Scrollable container */}
-          <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
-            {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
-            <div className="w-full flex flex-col items-center justify-center py-8 relative" style={{ 
-              backgroundColor: '#0A0A0A',
-              paddingTop: '75px', // Match the header height exactly
-              minHeight: '100vh', // Make the div full screen height
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0
-            }}>
-              
-              {/* Wine bottle image */}
-              <WineBottleImage />
-              
-              {/* Wine name with typography styling */}
-              <div style={{
-                width: '100%', 
-                textAlign: 'center', 
-                justifyContent: 'center', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                color: 'white', 
-                wordWrap: 'break-word',
-                position: 'relative',
-                zIndex: 2,
-                padding: '0 20px',
-                marginBottom: '0',
-                ...typography.h1
-              }}>
-                {getWineDisplayName()}. {getWineVintage()}
-              </div>
-              
-              {/* Wine region with typography styling and flag */}
-              <div style={{
-                textAlign: 'center',
-                justifyContent: 'center', 
-                display: 'flex', 
-                flexDirection: 'row', 
-                alignItems: 'center',
-                color: 'rgba(255, 255, 255, 0.60)', 
-                wordWrap: 'break-word',
-                position: 'relative',
-                zIndex: 2,
-                padding: '20px 20px',
-                gap: '6px',
-                marginBottom: '0',
-                ...typography.body1R
-              }}>
-                <USFlagImage />
-                <span>{getWineRegion()}</span>
-              </div>
-              
-              {/* Wine ratings section */}
-              <div style={{
-                width: '100%', 
-                height: '100%', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                gap: 4, 
-                display: 'flex',
-                position: 'relative',
-                zIndex: 2,
-                padding: '0 20px',
-                marginBottom: '0'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  padding: 8,
-                  alignItems: 'baseline',
-                  gap: 4,
-                  background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8
-                }}>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'white', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.num
-                  }}>95</div>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'rgba(255, 255, 255, 0.60)', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.body1R
-                  }}>VN</div>
-                </div>
-                <div style={{
-                  display: 'flex',
-                  padding: 8,
-                  alignItems: 'baseline',
-                  gap: 4,
-                  background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8
-                }}>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'white', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.num
-                  }}>93</div>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'rgba(255, 255, 255, 0.60)', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.body1R
-                  }}>JD</div>
-                </div>
-                <div style={{
-                  display: 'flex',
-                  padding: 8,
-                  alignItems: 'baseline',
-                  gap: 4,
-                  background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8
-                }}>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'white', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.num
-                  }}>93</div>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'rgba(255, 255, 255, 0.60)', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.body1R
-                  }}>WS</div>
-                </div>
-                <div style={{
-                  display: 'flex',
-                  padding: 8,
-                  alignItems: 'baseline',
-                  gap: 4,
-                  background: 'rgba(255, 255, 255, 0.10)', 
-                  borderRadius: 8
-                }}>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'white', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.num
-                  }}>14.3%</div>
-                  <div style={{
-                    justifyContent: 'center', 
-                    display: 'flex', 
-                    color: 'rgba(255, 255, 255, 0.60)', 
-                    wordWrap: 'break-word',
-                    height: '16px',
-                    ...typography.body1R
-                  }}>ABV</div>
-                </div>
-              </div>
-
-              {/* Historic Heritage Section */}
-              <div style={{
-                width: '100%',
-                padding: '0 20px',
-                marginTop: '48px',
-                marginBottom: '20px'
-              }}>
-                <p style={{
-                  color: 'white',
-                  marginBottom: '16px',
-                  ...typography.body
-                }}>
-                  {WINE_CONFIG.history}
-                </p>
-              </div>
-
-              {/* Food Pairing Section */}
-              <div style={{
-                width: '100%',
-                padding: '0 20px',
-                marginBottom: '20px'
-              }}>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-hidden">
+            <div 
+              ref={scrollAreaRef}
+              className="h-full overflow-y-auto p-4 space-y-6"
+              style={{
+                paddingBottom: isKeyboardFocused ? '120px' : '80px'
+              }}
+            >
+              {/* Food pairing section */}
+              <div className="space-y-4">
                 <h1 style={{
                   ...typography.h1,
                   color: 'white',
-                  marginBottom: '24px',
+                  margin: '0 0 16px 0',
                   textAlign: 'left'
                 }}>
                   Food pairing
                 </h1>
-
-                {/* Red Meat Pairing - Expandable */}
-                <div 
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(expandedItem === 'redMeat' ? null : 'redMeat');
-                  }}
-                  style={{
-                    backgroundColor: '#191919',
-                    borderRadius: '16px',
-                    padding: '0 20px',
-                    minHeight: '64px', // Use minHeight instead of fixed height to allow expansion
-                    marginBottom: '12px',
-                    display: 'flex',
-                    flexDirection: 'column', // Change to column for expanded view
-                    gap: '10px',
-                    alignSelf: 'stretch',
-                    cursor: 'pointer', // Show pointer cursor to indicate clickable
-                    transition: 'all 0.3s ease', // Smooth transition for expanding
-                    borderTop: '2px solid transparent',
-                    borderRight: '1px solid transparent',
-                    borderBottom: '1px solid transparent',
-                    borderLeft: '1px solid transparent',
-                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box'
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    minHeight: '64px',
-                    width: '100%'
+                <div className="space-y-2">
+                  <p style={{
+                    ...typography.body,
+                    color: 'white',
+                    margin: 0,
+                    lineHeight: '1.5'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '24px' }}>🥩</span>
-                      <span style={{ 
-                        color: 'white', 
-                        ...typography.bodyPlus1
-                      }}>Red Meat</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ 
-                        color: 'black',
-                        backgroundColor: '#e0e0e0',
-                        padding: '6px 14px',
-                        borderRadius: '999px',
-                        ...typography.buttonPlus1
-                      }}>
-                        Perfect match
-                      </span>
-                      {/* Rotating chevron icon for expanded state */}
-                      <svg 
-                        width="20" 
-                        height="20" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          transform: expandedItem === 'redMeat' ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.3s ease'
-                        }}
-                      >
-                        <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                      </svg>
-                    </div>
-                  </div>
-                  
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === 'redMeat' && (
-                    <div
-                      style={{
-                        padding: '0 0 20px 0', // Remove left padding
-                        color: 'white',
-                        ...typography.body // Using Body text style as requested
-                      }}
-                      className="pl-[0px] pr-[0px]">
-                      <p>{getWineDisplayName()}'s elegant structure and complex flavor profile makes it perfect for premium red meat preparations:</p>
-                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Grilled bistecca with herbs</li>
-                        <li>Braised short ribs with rich sauce</li>
-                        <li>Roasted rack of lamb with Mediterranean herbs</li>
-                        <li>Aged beef tenderloin with mushrooms</li>
-                      </ul>
-                      <p>The wine's refined tannins and mineral complexity complement sophisticated meat dishes beautifully.</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Cheese Pairings - Expandable */}
-                <div 
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(expandedItem === 'cheese' ? null : 'cheese');
-                  }}
-                  style={{
-                    backgroundColor: '#191919',
-                    borderRadius: '16px',
-                    padding: '0 20px',
-                    minHeight: '64px',
-                    marginBottom: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                    alignSelf: 'stretch',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    borderTop: '2px solid transparent',
-                    borderRight: '1px solid transparent',
-                    borderBottom: '1px solid transparent',
-                    borderLeft: '1px solid transparent',
-                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box'
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    minHeight: '64px',
-                    width: '100%'
+                    <strong>Grilled red meats</strong> - The wine's robust tannins and full body complement the rich flavors of grilled beef, lamb, or venison.
+                  </p>
+                  <p style={{
+                    ...typography.body,
+                    color: 'white',
+                    margin: 0,
+                    lineHeight: '1.5'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '24px' }}>🧀</span>
-                      <span style={{ color: 'white', ...typography.bodyPlus1 }}>Cheese Pairings</span>
-                    </div>
-                    <svg 
-                      width="20" 
-                      height="20" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        transform: expandedItem === 'cheese' ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.3s ease'
-                      }}
-                    >
-                      <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                    </svg>
-                  </div>
-                  
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === 'cheese' && (
-                    <div style={{
-                      padding: '0 0 20px 0',
-                      color: 'white',
-                      ...typography.body
-                    }}>
-                      <p>{getWineDisplayName()}'s sophisticated tannin structure and complex flavors pair beautifully with these artisanal cheeses:</p>
-                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Aged Parmigiano-Reggiano (24+ months)</li>
-                        <li>Aged Gouda or Manchego</li>
-                        <li>Gorgonzola or blue cheese varieties</li>
-                        <li>Aged sheep's milk cheese</li>
-                      </ul>
-                      <p>The wine's elegant mineral backbone and structured tannins create perfect harmony with aged cheeses.</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Vegetarian Options - Expandable */}
-                <div 
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(expandedItem === 'vegetarian' ? null : 'vegetarian');
-                  }}
-                  style={{
-                    backgroundColor: '#191919',
-                    borderRadius: '16px',
-                    padding: '0 20px',
-                    minHeight: '64px',
-                    marginBottom: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                    alignSelf: 'stretch',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    borderTop: '2px solid transparent',
-                    borderRight: '1px solid transparent',
-                    borderBottom: '1px solid transparent',
-                    borderLeft: '1px solid transparent',
-                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box'
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    minHeight: '64px',
-                    width: '100%'
+                    <strong>Aged cheeses</strong> - Pairs beautifully with aged Pecorino Toscano, Parmigiano-Reggiano, or strong blue cheeses.
+                  </p>
+                  <p style={{
+                    ...typography.body,
+                    color: 'white',
+                    margin: 0,
+                    lineHeight: '1.5'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '24px' }}>🥗</span>
-                      <span style={{ color: 'white', ...typography.bodyPlus1 }}>Vegetarian Options</span>
-                    </div>
-                    <svg 
-                      width="20" 
-                      height="20" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        transform: expandedItem === 'vegetarian' ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.3s ease'
-                      }}
-                    >
-                      <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                    </svg>
-                  </div>
-                  
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === 'vegetarian' && (
-                    <div style={{
-                      padding: '0 0 20px 0',
-                      color: 'white',
-                      ...typography.body
-                    }}>
-                      <p>{getWineDisplayName()}'s refined structure and elegant fruit character complement these sophisticated vegetarian dishes:</p>
-                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Hearty bean and vegetable stew</li>
-                        <li>Grilled portobello with herbs and olive oil</li>
-                        <li>Pasta with truffle and aged cheese</li>
-                        <li>Roasted eggplant parmigiana</li>
-                      </ul>
-                      <p>The wine's mineral complexity and balanced tannins enhance rich, hearty vegetarian cuisine.</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Avoid pairing with - Expandable */}
-                <div 
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(expandedItem === 'avoid' ? null : 'avoid');
-                  }}
-                  style={{
-                    backgroundColor: '#191919',
-                    borderRadius: '16px',
-                    padding: '0 20px',
-                    minHeight: '64px',
-                    marginBottom: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                    alignSelf: 'stretch',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    borderTop: '2px solid transparent',
-                    borderRight: '1px solid transparent',
-                    borderBottom: '1px solid transparent',
-                    borderLeft: '1px solid transparent',
-                    backgroundImage: 'linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)',
-                    backgroundOrigin: 'border-box',
-                    backgroundClip: 'padding-box, border-box'
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    minHeight: '64px',
-                    width: '100%'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '24px', color: 'red' }}>❌</span>
-                      <span style={{ color: 'white', ...typography.bodyPlus1 }}>Avoid pairing with</span>
-                    </div>
-                    <svg 
-                      width="20" 
-                      height="20" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        transform: expandedItem === 'avoid' ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.3s ease'
-                      }}
-                    >
-                      <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06" fill="white"/>
-                    </svg>
-                  </div>
-                  
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === 'avoid' && (
-                    <div style={{
-                      padding: '0 0 20px 0',
-                      color: 'white',
-                      ...typography.body
-                    }}>
-                      <p>While {getWineDisplayName()} is exceptional, these combinations don't showcase its elegant qualities:</p>
-                      <ul style={{ paddingLeft: '20px', margin: '10px 0' }}>
-                        <li>Delicate fish preparations like sole or sea bass</li>
-                        <li>Fresh shellfish or raw oysters</li>
-                        <li>Very spicy Asian curries or hot dishes</li>
-                        <li>Light salads with acidic vinaigrettes</li>
-                        <li>Sweet desserts or milk chocolate</li>
-                      </ul>
-                      <p>The wine's structured tannins and complex flavors can overpower delicate dishes or clash with excessive sweetness.</p>
-                    </div>
-                  )}
+                    <strong>Game dishes</strong> - Wild boar, duck, or braised short ribs enhance the wine's earthy and complex character.
+                  </p>
                 </div>
               </div>
-              
-              {/* Previous Discussion Section - Only show on Home page, not Wine Details */}
-              {messages.length > 0 && !showBuyButton && (
-                <div style={{
-                  width: '100%',
-                  padding: '0 20px',
-                  marginBottom: '20px'
-                }}>
+
+              {/* Conditional sections based on contact sharing status */}
+              {hasSharedContact ? (
+                <>
+                  {/* Summary section for users who shared contact */}
+                  <div className="space-y-4">
+                    <h1 style={{
+                      ...typography.h1,
+                      color: 'white',
+                      margin: '0 0 16px 0',
+                      textAlign: 'left'
+                    }}>
+                      Summary
+                    </h1>
+                    <p style={{
+                      ...typography.body,
+                      color: '#8D8D8D',
+                      margin: 0,
+                      fontStyle: 'italic'
+                    }}>
+                      No conversation summary available yet.
+                    </p>
+                  </div>
+
+                  {/* Chat history section for users who shared contact */}
+                  <div className="space-y-4">
+                    <h1 style={{
+                      ...typography.h1,
+                      color: 'white',
+                      margin: '0 0 16px 0',
+                      textAlign: 'left'
+                    }}>
+                      Chat history
+                    </h1>
+                  </div>
+                </>
+              ) : (
+                // Show "Chat history" section when user hasn't shared contact info
+                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                   <h1 style={{
                     ...typography.h1,
                     color: 'white',
-                    marginBottom: '24px',
+                    margin: '0 0 24px 0',
                     textAlign: 'left'
                   }}>
-                    Previous Discussion
+                    Chat history
                   </h1>
-                  <div style={{ 
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px'
-                  }}>
-                    {messages.slice(-6).map((message, index) => (
+                  <button 
+                    onClick={() => setShowContactSheet(true)}
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                      borderRadius: '32px',
+                      height: '56px',
+                      minHeight: '56px',
+                      maxHeight: '56px',
+                      padding: '0 16px',
+                      margin: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: 'none',
+                      color: 'white',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      outline: 'none',
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      lineHeight: '1'
+                    }}
+                  >
+                    Want to see wine history?
+                  </button>
+                </div>
+              )}
+              
+              {/* Conversation Content */}
+              <div id="conversation" className="space-y-4 mb-96">
+                {messages.length > 0 ? (
+                  <>
+                    {messages.map((message, index) => (
                       <div key={`${message.id}-${index}`} style={{
                         display: 'flex',
                         justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                        width: '100%'
+                        width: '100%',
+                        marginBottom: '12px'
                       }}>
-                        <div 
-                          data-role={message.role}
-                          style={{
-                            backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                            borderRadius: '16px',
-                            padding: message.role === 'user' ? '12px 16px 4px 16px' : '12px 0',
-                            maxWidth: message.role === 'user' ? '80%' : '100%',
-                            ...typography.body
-                          }}>
-                          <div style={{ color: message.role === 'user' ? '#000' : '#DBDBDB' }}>
-                            {(() => {
-                              // Store assistant message text for voice playback
-                              if (message.role === 'assistant' && message.content) {
-                                setTimeout(() => {
-                                  (window as any).lastResponseText = message.content;
-                                  console.log("💾 Stored assistant message at render:", message.content.substring(0, 50) + "...");
-                                }, 0);
-                              }
-                              return formatContent(message.content);
-                            })()}
-                          </div>
+                        <div style={{
+                          maxWidth: '85%',
+                          padding: '12px 16px',
+                          borderRadius: message.role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                          backgroundColor: message.role === 'user' ? '#007AFF' : 'rgba(255, 255, 255, 0.1)',
+                          color: 'white'
+                        }}>
+                          <ChatMessage message={message} />
                         </div>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Conversation Section */}
-              <div style={{
-                width: '100%',
-                padding: '0 20px',
-                marginBottom: '20px'
-              }}>
-                {showBuyButton && (
-                  <>
-                    {hasSharedContact ? (
-                      <>
-                        <h1 style={{
-                          ...typography.h1,
-                          color: 'white',
-                          marginBottom: '24px',
-                          textAlign: 'left'
-                        }}>
-                          Summary
-                        </h1>
-                        
-                        {/* Discussion Summary */}
-                        {messages.length > 0 && (
-                          <div style={{ marginBottom: '32px' }}>
-                        {(() => {
-                          // Extract latest 3 unique topics from conversation
-                          const topics = [];
-                          const processedTopics = new Set();
-                          
-                          // Go through messages in reverse to get latest topics
-                          for (let i = messages.length - 1; i >= 0 && topics.length < 3; i--) {
-                            const message = messages[i];
-                            if (message.role === 'user') {
-                              const content = message.content.toLowerCase();
-                              let topicTitle = '';
-                              let description = '';
-                              
-                              if (content.includes('tasting') || content.includes('flavor') || content.includes('notes')) {
-                                topicTitle = 'Tasting Profile';
-                                description = 'Explore the complex flavors, aromas, and tasting notes that define this exceptional wine\'s character and distinguish it from other varietals.';
-                              } else if (content.includes('food') || content.includes('pairing') || content.includes('recipe')) {
-                                topicTitle = 'Food Pairing';
-                                description = 'Discover perfect culinary combinations and learn which dishes complement this wine\'s unique characteristics for optimal dining experiences.';
-                              } else if (content.includes('origin') || content.includes('where') || content.includes('region') || content.includes('terroir')) {
-                                topicTitle = 'Wine Origin';
-                                description = 'Learn about the prestigious terroir, winemaking traditions, and regional influences that shape this wine\'s distinctive personality and quality.';
-                              } else if (content.includes('price') || content.includes('cost') || content.includes('value')) {
-                                topicTitle = 'Value & Investment';
-                                description = 'Understand the wine\'s market position, investment potential, and what makes it a worthy addition to any serious wine collection.';
-                              } else if (content.includes('vintage') || content.includes('year') || content.includes('age')) {
-                                topicTitle = 'Vintage Character';
-                                description = 'Discover how this specific vintage expresses the unique conditions of its growing season and how it compares to other years.';
-                              }
-                              
-                              if (topicTitle && !processedTopics.has(topicTitle)) {
-                                topics.push({ title: topicTitle, description });
-                                processedTopics.add(topicTitle);
-                              }
-                            }
-                          }
-                          
-                          // If we don't have enough topics from user questions, add defaults
-                          const defaultTopics = [
-                            {
-                              title: 'Tasting Profile',
-                              description: 'Explore the complex flavors, aromas, and tasting notes that define this exceptional wine\'s character and distinguish it from other varietals.'
-                            },
-                            {
-                              title: 'Food Pairing', 
-                              description: 'Discover perfect culinary combinations and learn which dishes complement this wine\'s unique characteristics for optimal dining experiences.'
-                            },
-                            {
-                              title: 'Wine Origin',
-                              description: 'Learn about the prestigious terroir, winemaking traditions, and regional influences that shape this wine\'s distinctive personality and quality.'
-                            }
-                          ];
-                          
-                          // Fill remaining slots with default topics
-                          for (const defaultTopic of defaultTopics) {
-                            if (topics.length < 3 && !processedTopics.has(defaultTopic.title)) {
-                              topics.push(defaultTopic);
-                            }
-                          }
-                          
-                          return topics.slice(0, 3).map((topic, index) => (
-                            <div key={index} style={{ marginBottom: '24px' }}>
-                              <h2 style={{
-                                fontFamily: 'Inter, sans-serif',
-                                fontSize: '20px',
-                                fontWeight: 500,
-                                color: 'white',
-                                textAlign: 'left',
-                                margin: 0,
-                                marginBottom: '12px'
-                              }}>
-                                {topic.title}
-                              </h2>
-                              <p style={{
-                                ...typography.body,
-                                color: '#DBDBDB',
-                                textAlign: 'left',
-                                margin: 0
-                              }}>
-                                {topic.description}
-                              </p>
-                            </div>
-                          ));
-                        })()}
-                        
-                        {/* Show whole dialog button */}
-                        <button 
-                          onClick={() => setLocation('/wine/conversation')}
-                          style={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                            borderRadius: '32px',
-                            height: '56px',
-                            minHeight: '56px',
-                            maxHeight: '56px',
-                            padding: '0 16px',
-                            margin: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            border: 'none',
-                            color: 'white',
-                            fontFamily: 'Inter, sans-serif',
-                            fontSize: '16px',
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                            outline: 'none',
-                            width: '100%',
-                            maxWidth: '320px',
-                            marginLeft: 'auto',
-                            marginRight: 'auto',
-                            boxSizing: 'border-box',
-                            lineHeight: '1'
-                          }}
-                        >
-                          Show whole dialog
-                        </button>
-                      </div>
-                        )}
-                      </>
-                    ) : (
-                      // Show "Chat history" section when user hasn't shared contact info
-                      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                        <h1 style={{
-                          ...typography.h1,
-                          color: 'white',
-                          margin: '0 0 24px 0',
-                          textAlign: 'left'
-                        }}>
-                          Chat history
-                        </h1>
-                        <button 
-                          onClick={() => setShowContactSheet(true)}
-                          style={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                            borderRadius: '32px',
-                            height: '56px',
-                            minHeight: '56px',
-                            maxHeight: '56px',
-                            padding: '0 16px',
-                            margin: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            border: 'none',
-                            color: 'white',
-                            fontFamily: 'Inter, sans-serif',
-                            fontSize: '16px',
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                            outline: 'none',
-                            width: '100%',
-                            boxSizing: 'border-box',
-                            lineHeight: '1'
-                          }}
-                        >
-                          Want to see wine history?
-                        </button>
-                      </div>
-                    )}
                   </>
+                ) : (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '40px 20px',
+                    color: '#8D8D8D'
+                  }}>
+                    <ShiningText text="Start a conversation about this wine..." />
+                  </div>
                 )}
-                
-                {/* Conversation Content */}
-                <div id="conversation" className="space-y-4 mb-96">
-                  {messages.length > 0 ? (
-                    showFullConversation ? (
-                      // Show full conversation
-                      (<>
-                        {messages.map((message, index) => (
-                          <div key={`${message.id}-${index}`} style={{
-                            display: 'flex',
-                            justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                            width: '100%',
-                            marginBottom: '12px'
-                          }}>
-                            <div 
-                              style={{
-                                backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                                borderRadius: '16px',
-                                padding: '16px',
-                                width: message.role === 'user' ? 'fit-content' : '100%',
-                                maxWidth: message.role === 'user' ? '80%' : '100%'
-                              }}
-                              data-role={message.role}
-                            >
-                              {message.role === 'assistant' ? (
-                                <div style={{
-                                  color: '#DBDBDB',
-                                  fontFamily: 'Inter, system-ui, sans-serif',
-                                  fontSize: '16px',
-                                  lineHeight: '1.6'
-                                }}>
-                                  {formatContent(message.content)}
-                                </div>
-                              ) : (
-                                <div style={{
-                                  color: '#000000',
-                                  fontFamily: 'Inter, system-ui, sans-serif',
-                                  fontSize: '16px',
-                                  lineHeight: '1.6'
-                                }}>
-                                  {formatContent(message.content)}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                        {/* Back to Summary Button */}
-                        <div style={{ textAlign: 'center', marginBottom: '20px', paddingTop: '20px' }}>
-                          <button 
-                            onClick={() => setShowFullConversation(false)}
-                            style={{
-                              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                              borderRadius: '32px',
-                              height: '56px',
-                              minHeight: '56px',
-                              maxHeight: '56px',
-                              padding: '0 16px',
-                              margin: 0,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              border: 'none',
-                              color: 'white',
-                              fontFamily: 'Inter, sans-serif',
-                              fontSize: '16px',
-                              fontWeight: 500,
-                              cursor: 'pointer',
-                              outline: 'none',
-                              width: '100%',
-                              maxWidth: '320px',
-                              marginLeft: 'auto',
-                              marginRight: 'auto',
-                              boxSizing: 'border-box',
-                              lineHeight: '1'
-                            }}
-                          >
-                            Back to Summary
-                          </button>
-                        </div>
-                      </>)
-                    ) : (
-                      // Show summary
-                      ((() => {
-                        // Generate summary content for 3 main topics
-                        const summaryTopics = [
-                          {
-                            title: "Tasting Profile",
-                            summary: "Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish."
-                          },
-                          {
-                            title: "Food Pairing",
-                            summary: "Learn which dishes complement this wine best and how to create perfect pairings for your dining experience."
-                          },
-                          {
-                            title: "Wine Origin",
-                            summary: "Explore the terroir, region, and winemaking traditions that shaped this bottle's distinctive character."
-                          }
-                        ];
 
-                        return (
-                          <div style={{ color: '#DBDBDB', fontFamily: 'Inter, system-ui, sans-serif' }}>
-
-
-
-
-                          </div>
-                        );
-                      })())
-                    )
-                  ) : (
-                    <div style={{
-                      textAlign: 'center',
-                      color: '#888',
-                      padding: '40px 20px',
-                      fontSize: '16px'
-                    }}>
-                      No conversation history yet. Start asking questions about wine to see your summary here.
-                    </div>
-                  )}
-                  
-                  {/* Typing Indicator */}
-                  {isTyping && (
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: '100%',
-                      marginBottom: '12px',
-                      padding: '16px'
-                    }}>
-                      <ShiningText text="Thinking..." />
-                    </div>
-                  )}
-                </div>
-                
-                {/* Hidden Audio Controls - kept for compatibility */}
-                <div id="audio-controls" style={{display: 'none', visibility: 'hidden'}}>
-                  <button id="play-audio-btn">Play Response Audio</button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Extra space at the bottom */}
-            <div style={{ height: '80px' }}></div>
-          </div>
-          
-          {/* Input Area or Buy Button - Fixed to Bottom */}
-          <div style={{
-            backgroundColor: '#1C1C1C',
-            padding: '16px',
-            zIndex: 50,
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderTop: '1px solid rgba(255, 255, 255, 0.2)'
-          }}>
-            <div className="max-w-3xl mx-auto">
-              {showBuyButton ? (
-                // Show Buy Again Button for WineDetails page
-                <button 
-                  onClick={() => {
-                    // Handle buy again functionality
-                    console.log('Buy again clicked');
-                  }}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    borderRadius: '32px',
-                    height: '56px',
-                    minHeight: '56px',
-                    maxHeight: '56px',
-                    padding: '0 16px',
-                    margin: 0,
+                {/* Typing indicator */}
+                {isTyping && (
+                  <div style={{
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    color: 'white',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '16px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    outline: 'none',
+                    justifyContent: 'flex-start',
                     width: '100%',
-                    boxSizing: 'border-box',
-                    lineHeight: '1'
-                  }}
-                >
-                  Buy again
-                </button>
-              ) : (
-                // Show suggestions and input for Home page
-                <>
-
-
-                  {/* Suggestion chips - always visible above input */}
-                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                    <button 
-                      onClick={() => handleSendMessage("Tasting notes")}
-                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                    >
-                      Tasting notes
-                    </button>
-                    <button 
-                      onClick={() => handleSendMessage("Simple recipes for this wine")}
-                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                    >
-                      Simple recipes
-                    </button>
-                    <button 
-                      onClick={() => handleSendMessage("Where is this wine from?")}
-                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                    >
-                      Where it's from
-                    </button>
+                    marginBottom: '12px'
+                  }}>
+                    <div style={{
+                      maxWidth: '85%',
+                      padding: '12px 16px',
+                      borderRadius: '18px 18px 18px 4px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      color: 'white'
+                    }}>
+                      <TextGenerateEffect words="Thinking..." duration={0.5} />
+                    </div>
                   </div>
-                  
-                  <div className="relative flex items-center">
-                    <ChatInput 
-                      onSendMessage={handleSendMessage} 
-                      isProcessing={isTyping}
-                      onFocus={() => setIsKeyboardFocused(true)}
-                      onBlur={() => setIsKeyboardFocused(false)}
-                      voiceButtonComponent={
-                        <VoiceAssistant
-                          onSendMessage={handleSendMessage}
-                          isProcessing={isTyping}
-                        />
-                      }
-                    />
-                  </div>
-                </>
+                )}
+              </div>
+
+              {/* Buy Button - only show if showBuyButton prop is true */}
+              {showBuyButton && (
+                <div className="text-center py-8">
+                  <button
+                    onClick={() => setLocation('/checkout')}
+                    className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors"
+                  >
+                    Buy this wine
+                  </button>
+                </div>
               )}
             </div>
           </div>
         </main>
       </div>
+
+      {/* Fixed Input Area */}
+      {!isKeyboardFocused && (
+        <div className="flex-none bg-black border-t border-gray-800">
+          <div className="p-4">
+            <ChatInput 
+              onSendMessage={handleSendMessage} 
+              isProcessing={isTyping}
+              onFocus={() => setIsKeyboardFocused(true)}
+              onBlur={() => setIsKeyboardFocused(false)}
+              voiceButtonComponent={
+                <VoiceAssistant
+                  onSendMessage={handleSendMessage}
+                  isProcessing={isTyping}
+                />
+              }
+            />
+          </div>
+        </div>
+      )}
       
       {/* Contact Bottom Sheet */}
       <ContactFormBottomSheet
@@ -1425,310 +379,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
         title="Want to see wine history?"
         subtitle="Enter your contact info"
       />
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              zIndex: 9999,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-end",
-              opacity:
-                animationState === "open"
-                  ? 1
-                  : animationState === "opening"
-                    ? 0.8
-                    : 0,
-              transition: "opacity 0.3s ease-out",
-            }}
-            onClick={handleCloseContactSheet}
-          >
-            <div
-              style={{
-                background:
-                  "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
-                backdropFilter: "blur(20px)",
-                width: "100%",
-                maxWidth: "500px",
-                borderRadius: "24px 24px 0px 0px",
-                borderTop: "1px solid rgba(255, 255, 255, 0.20)",
-                paddingTop: "24px",
-                paddingLeft: "24px",
-                paddingRight: "24px",
-                paddingBottom: "28px",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
-                transform:
-                  animationState === "open"
-                    ? "translateY(0)"
-                    : "translateY(100%)",
-                transition: "transform 0.3s ease-out",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "16px",
-                  right: "16px",
-                  cursor: "pointer",
-                  zIndex: 10,
-                }}
-                onClick={handleCloseContactSheet}
-              >
-                <X size={24} color="white" />
-              </div>
-
-              {/* Header */}
-              <div style={{ marginBottom: "24px", marginTop: "0px" }}>
-                <h2
-                  style={{
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 500,
-                    textAlign: "center",
-                    margin: "0 0 12px 0",
-                  }}
-                >
-                  Want to see wine history?
-                </h2>
-
-                <p
-                  style={{
-                    color: "#CECECE",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 400,
-                    lineHeight: "1.3",
-                    textAlign: "center",
-                    margin: "0 0 8px 0",
-                  }}
-                >
-                  Enter your contact info
-                </p>
-              </div>
-
-              {/* Form Fields */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={(e) =>
-                    handleInputChange("firstName", e.target.value)
-                  }
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                {errors.firstName && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.firstName}
-                  </div>
-                )}
-
-                <input
-                  type="text"
-                  placeholder="Last name"
-                  value={formData.lastName}
-                  onChange={(e) =>
-                    handleInputChange("lastName", e.target.value)
-                  }
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                {errors.lastName && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.lastName}
-                  </div>
-                )}
-
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    handleInputChange("email", e.target.value)
-                  }
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                {errors.email && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.email}
-                  </div>
-                )}
-
-                {/* Phone number with country selector */}
-                <div style={{ position: "relative" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      height: "64px",
-                      width: "100%",
-                      boxSizing: "border-box",
-                    }}
-                    className="contact-form-input"
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        paddingLeft: "24px",
-                        paddingRight: "12px",
-                        cursor: "pointer",
-                        borderRight: "1px solid rgba(255, 255, 255, 0.2)",
-                      }}
-                      onClick={() => setShowCountryDropdown(true)}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <span style={{ fontSize: "16px" }}>
-                          {selectedCountry.flag}
-                        </span>
-                        <span
-                          style={{
-                            color: "white",
-                            fontFamily: "Inter, sans-serif",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {selectedCountry.dial_code}
-                        </span>
-                      </div>
-                    </div>
-                    <input
-                      type="tel"
-                      placeholder="Phone number"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        handleInputChange("phone", e.target.value)
-                      }
-                      className="contact-form-input"
-                      style={{
-                        display: "flex",
-                        height: "56px",
-                        padding: "16px 24px",
-                        alignItems: "center",
-                        flex: 1,
-                        color: "white",
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "16px",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-                  {errors.phone && (
-                    <div
-                      style={{
-                        color: "#ff4444",
-                        fontSize: "14px",
-                        marginTop: "4px",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      {errors.phone}
-                    </div>
-                  )}
-                </div>
-
-                {/* Save Button */}
-                <div
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  <button
-                    onClick={handleSubmit}
-                    className="save-button"
-                    style={{
-                      width: "100%",
-                      height: "56px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "black",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
-                  >
     </div>
   );
 };
