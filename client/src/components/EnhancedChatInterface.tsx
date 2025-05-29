@@ -1766,7 +1766,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       boxSizing: "border-box",
                     }}
                   >
-                    Join Somm
+                    Share contacts
                   </button>
                 </div>
               </div>
