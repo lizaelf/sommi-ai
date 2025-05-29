@@ -364,6 +364,22 @@ const HomeGlobal = () => {
         {/* Bottom padding for safe area */}
         <div className="h-20"></div>
       </div>
+
+      {/* Circle glow effect at bottom */}
+      <div style={{
+        position: 'fixed',
+        bottom: '-90px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '180px',
+        height: '180px',
+        borderRadius: '50%',
+        backgroundColor: '#8E8E8E',
+        filter: 'blur(60px)',
+        opacity: 0.7,
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
     </div>
   );
 };
