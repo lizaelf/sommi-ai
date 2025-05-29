@@ -12,14 +12,15 @@ const HomeGlobal = () => {
   const [location, setLocation] = useLocation();
 
   const handleWineClick = (wineId: number) => {
-    console.log('Wine clicked with ID:', wineId);
-    console.log('Available wines:', wines);
-    
-    // Both wines use the same master template, just with different data
     if (wineId === 1) {
-      setLocation('/'); // Master template without parameters
+      setLocation('/');
     } else {
-      setLocation(`/?wine=${wineId}`); // Instance template with wine parameter
+      // Store wine data in localStorage for the Scanned page to use
+      const selectedWine = wines.find(w => w.id === wineId);
+      if (selectedWine) {
+        localStorage.setItem('selectedWine', JSON.stringify(selectedWine));
+      }
+      setLocation('/');
     }
   };
 

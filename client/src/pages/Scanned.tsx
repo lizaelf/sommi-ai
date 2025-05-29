@@ -3,65 +3,21 @@ import { Link } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
-import WineBottleImage from '@/components/WineBottleImage';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 
-interface WineData {
-  id: number;
-  name: string;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-}
-
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
-  const [selectedWine, setSelectedWine] = useState<WineData | null>(null);
+  const [selectedWine, setSelectedWine] = useState(null);
   
-  // Import wine data from HomeGlobal
-  const wines = [
-    {
-      id: 1,
-      name: "Ridge Vineyards \"Lytton Springs\" Dry Creek Zinfandel",
-      bottles: 4,
-      image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
-      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
-    },
-    {
-      id: 2,
-      name: "2021 Monte Bello Cabernet Sauvignon",
-      bottles: 2,
-      image: "/@fs/home/runner/workspace/attached_assets/image-2.png",
-      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
-    },
-  ];
-  
-  // Universal wine page logic - handles both master and instance
+  // Check for selected wine data and scroll listener
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const wineId = urlParams.get('wine');
-    
-    console.log('URL wine parameter:', wineId);
-    
-    if (wineId) {
-      // Instance mode - specific wine selected
-      const wineIdNum = parseInt(wineId, 10);
-      const wine = wines.find(w => w.id === wineIdNum);
-      console.log('Found wine for ID', wineIdNum, ':', wine);
-      if (wine) {
-        setSelectedWine(wine);
-        console.log('Set selectedWine to:', wine);
-      }
-    } else {
-      // Master mode - no specific wine, use default (ID1)
-      console.log('No wine parameter, using master mode (ID1)');
-      setSelectedWine(null);
+    // Check localStorage for selected wine data
+    const storedWine = localStorage.getItem('selectedWine');
+    if (storedWine) {
+      setSelectedWine(JSON.parse(storedWine));
+      // Clear the stored data after use
+      localStorage.removeItem('selectedWine');
     }
 
     const handleScroll = () => {
@@ -135,10 +91,41 @@ export default function Scanned() {
           </div>
         </div>
         
+        {/* Empty space to account for the fixed header */}
+        <div className="h-14"></div>
+        
+        {/* Wine Title */}
+        <div className="px-4 pt-4 pb-2">
+          <h1
+            style={{
+              fontFamily: "Lora, serif",
+              fontSize: "24px",
+              lineHeight: "32px",
+              fontWeight: 500,
+              color: "white",
+              textAlign: "center"
+            }}
+          >
+            {selectedWine ? selectedWine.name : getWineDisplayName()}
+          </h1>
+        </div>
 
+        {/* Wine Image - only show if selectedWine exists */}
+        {selectedWine && (
+          <div className="flex justify-center items-center px-4 pb-4">
+            <img
+              src={selectedWine.image}
+              alt={selectedWine.name}
+              style={{
+                height: "170px",
+                width: "auto",
+              }}
+            />
+          </div>
+        )}
       </div>
       
-      <EnhancedChatInterface selectedWine={selectedWine} />
+      <EnhancedChatInterface />
     </div>
   );
 }

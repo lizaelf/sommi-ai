@@ -36,29 +36,13 @@ declare global {
 }
 
 // Create an enhanced chat interface that uses IndexedDB for persistence
-interface WineData {
-  id: number;
-  name: string;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-}
-
 interface EnhancedChatInterfaceProps {
   showBuyButton?: boolean;
-  selectedWine?: WineData | null;
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   showBuyButton = false,
-  selectedWine = null,
 }) => {
-  console.log('EnhancedChatInterface received selectedWine:', selectedWine);
   // Check if user has shared contact information
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     return localStorage.getItem("hasSharedContact") === "true";
@@ -542,18 +526,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               }}
             >
               {/* Wine bottle image */}
-              {selectedWine ? (
-                <img
-                  src={selectedWine.image}
-                  alt={selectedWine.name}
-                  style={{
-                    height: "170px",
-                    width: "auto",
-                  }}
-                />
-              ) : (
-                <WineBottleImage />
-              )}
+              <WineBottleImage />
 
               {/* Wine name with typography styling */}
               <div
@@ -572,7 +545,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   ...typography.h1,
                 }}
               >
-{selectedWine ? selectedWine.name : `${getWineVintage()} ${getWineDisplayName()}`}
+                {getWineVintage()} {getWineDisplayName()}
               </div>
 
               {/* Wine region with typography styling and flag */}
@@ -595,48 +568,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               >
                 <USFlagImage />
                 <span>{getWineRegion()}</span>
-              </div>
-
-              {/* Wine Navigation Links */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "12px",
-                  padding: "16px 20px",
-                  marginBottom: "20px",
-                }}
-              >
-                <a
-                  href="/"
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: "8px",
-                    backgroundColor: selectedWine ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)",
-                    color: "white",
-                    textDecoration: "none",
-                    fontSize: "14px",
-                    fontWeight: selectedWine ? 400 : 600,
-                    border: selectedWine ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid rgba(255, 255, 255, 0.4)",
-                  }}
-                >
-                  Ridge Vineyards
-                </a>
-                <a
-                  href="/?wine=2"
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: "8px",
-                    backgroundColor: selectedWine?.id === 2 ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.1)",
-                    color: "white",
-                    textDecoration: "none",
-                    fontSize: "14px",
-                    fontWeight: selectedWine?.id === 2 ? 600 : 400,
-                    border: selectedWine?.id === 2 ? "1px solid rgba(255, 255, 255, 0.4)" : "1px solid rgba(255, 255, 255, 0.2)",
-                  }}
-                >
-                  Monte Bello
-                </a>
               </div>
 
               {/* Wine ratings section */}
