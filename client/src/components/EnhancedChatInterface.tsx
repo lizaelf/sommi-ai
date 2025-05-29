@@ -902,7 +902,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                         
                         {/* Discussion Summary */}
                         {messages.length > 0 && (
-                      <div style={{ marginBottom: '32px' }}>
+                          <div style={{ marginBottom: '32px' }}>
                         {(() => {
                           // Extract latest 3 unique topics from conversation
                           const topics = [];
@@ -1018,6 +1018,42 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                           }}
                         >
                           Show whole dialog
+                        </button>
+                      </div>
+                        )}
+                      </>
+                    ) : (
+                      // Show "View chat history" button when user hasn't shared contact info
+                      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                        <button 
+                          onClick={() => setLocation('/wine/conversation')}
+                          style={{
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                            borderRadius: '32px',
+                            height: '56px',
+                            minHeight: '56px',
+                            maxHeight: '56px',
+                            padding: '0 16px',
+                            margin: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: 'none',
+                            color: 'white',
+                            fontFamily: 'Inter, sans-serif',
+                            fontSize: '16px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            outline: 'none',
+                            width: '100%',
+                            maxWidth: '320px',
+                            marginLeft: 'auto',
+                            marginRight: 'auto',
+                            boxSizing: 'border-box',
+                            lineHeight: '1'
+                          }}
+                        >
+                          View chat history
                         </button>
                       </div>
                     )}
