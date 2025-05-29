@@ -24,18 +24,48 @@ export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedWine, setSelectedWine] = useState<WineData | null>(null);
   
-  // Check for selected wine data and scroll listener
+  // Wine data array - same as HomeGlobal
+  const wines = [
+    {
+      id: 1,
+      name: "Ridge Vineyards \"Lytton Springs\" Dry Creek Zinfandel",
+      bottles: 4,
+      image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
+      ratings: {
+        vn: 95,
+        jd: 93,
+        ws: 93,
+        abv: 14.3,
+      },
+    },
+    {
+      id: 2,
+      name: "2021 Monte Bello Cabernet Sauvignon",
+      bottles: 2,
+      image: "/@fs/home/runner/workspace/attached_assets/image-2.png",
+      ratings: {
+        vn: 95,
+        jd: 93,
+        ws: 93,
+        abv: 14.3,
+      },
+    },
+  ];
+  
+  // Check for wine ID in URL parameters and scroll listener
   useEffect(() => {
-    // Check localStorage for selected wine data
-    const storedWine = localStorage.getItem('selectedWine');
-    console.log('Stored wine data:', storedWine);
-    if (storedWine) {
-      const wineData = JSON.parse(storedWine);
-      console.log('Parsed wine data:', wineData);
-      setSelectedWine(wineData);
-      console.log('Set selectedWine state to:', wineData);
-      // Don't clear immediately - keep for debugging
-      // localStorage.removeItem('selectedWine');
+    // Check for wine ID in URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const wineId = urlParams.get('wine');
+    
+    if (wineId) {
+      const wineIdNum = parseInt(wineId, 10);
+      const wine = wines.find(w => w.id === wineIdNum);
+      console.log('Found wine from URL parameter:', wine);
+      if (wine) {
+        setSelectedWine(wine);
+        console.log('Set selectedWine state to:', wine);
+      }
     }
 
     const handleScroll = () => {
