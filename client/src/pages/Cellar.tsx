@@ -59,6 +59,27 @@ const Cellar = () => {
     return localStorage.getItem('hasClosedContactForm') === 'true';
   });
 
+  // Function to reset account status (clear all user data)
+  const resetAccountStatus = () => {
+    localStorage.removeItem('hasSharedContact');
+    localStorage.removeItem('hasClosedContactForm');
+    localStorage.removeItem('currentConversationId');
+    localStorage.removeItem('conversations');
+    localStorage.removeItem('messages');
+    setHasSharedContact(false);
+    setHasClosedContactForm(false);
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+    });
+    toast({
+      title: "Account Reset",
+      description: "Your account status has been reset. You are now logged out.",
+    });
+  };
+
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
     { name: "Albania", dial_code: "+355", code: "AL", flag: "🇦🇱" },
@@ -596,29 +617,56 @@ const Cellar = () => {
           </svg>
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
-        <div
-          onClick={() => {
-            setShowWineSearch(!showWineSearch);
-            setIsSearchActive(!showWineSearch);
-          }}
-          className={`cursor-pointer transition-all duration-200 ${
-            showWineSearch
-              ? "text-white scale-110"
-              : "text-white/80 hover:text-white"
-          }`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="transition-all duration-200"
+        <div className="flex items-center gap-3">
+          {/* Reset Account Button */}
+          <div
+            onClick={resetAccountStatus}
+            className="cursor-pointer text-white/60 hover:text-white transition-all duration-200"
+            title="Reset Account"
           >
-            <path
-              fill="currentColor"
-              d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"
-            ></path>
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M3 21v-5h5"/>
+            </svg>
+          </div>
+          
+          {/* Search Button */}
+          <div
+            onClick={() => {
+              setShowWineSearch(!showWineSearch);
+              setIsSearchActive(!showWineSearch);
+            }}
+            className={`cursor-pointer transition-all duration-200 ${
+              showWineSearch
+                ? "text-white scale-110"
+                : "text-white/80 hover:text-white"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              className="transition-all duration-200"
+            >
+              <path
+                fill="currentColor"
+                d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"
+              ></path>
+            </svg>
+          </div>
         </div>
       </div>
 
