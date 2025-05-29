@@ -635,13 +635,6 @@ const Cellar = () => {
         </Link>
         <h1 className="text-lg font-medium">Cellar</h1>
         <div className="flex items-center gap-3">
-          {/* Temporary Reset Button for Testing */}
-          <button
-            onClick={resetAccountStatus}
-            className="text-xs bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-white"
-          >
-            Reset
-          </button>
           <div
             onClick={() => {
               setShowWineSearch(!showWineSearch);
