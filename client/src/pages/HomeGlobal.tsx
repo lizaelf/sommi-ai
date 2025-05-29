@@ -223,4 +223,4 @@ const HomeGlobal = () => {
   );
 };
 
-export default CellarWinePage;
+export default HomeGlobal;

@@ -8,14 +8,14 @@ import Home from "@/pages/Home";
 import WineDetails from "@/pages/WineDetails";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
-import CellarWinePage from "@/pages/CellarWinePage";
+import HomeGlobal from "@/pages/HomeGlobal";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/cellar" component={Cellar} />
-      <Route path="/home-global" component={CellarWinePage} />
+      <Route path="/home-global" component={HomeGlobal} />
       <Route path="/wine/details" component={WineDetails} />
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={WineDetails} />
