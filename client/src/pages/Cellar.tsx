@@ -1,25 +1,26 @@
-import { X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
+import { ContactFormBottomSheet } from "@/components/ContactFormBottomSheet";
 import { useToast } from "@/hooks/use-toast";
-import { ContactFormBottomSheet } from '@/components/ContactFormBottomSheet';
 import backgroundImage from "@assets/Background.png";
 import wineBottleImage from "@assets/Product Image.png";
 import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@assets/Logo.png";
 import lineImage from "@assets/line.png";
+import savedImage from "@assets/saved.png";
+import wineCircleImage from "@assets/wine-circle.png";
 
-const Cellar = () => {
+export default function Cellar() {
   const { toast } = useToast();
-  const [showModal, setShowModal] = useState(() => {
-    // Only show modal automatically if user hasn't shared contact AND hasn't closed it before
+  const [location] = useLocation();
+  
+  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">(() => {
+    // Don't show modal if user has already shared contact or closed it before
     const hasShared = localStorage.getItem('hasSharedContact') === 'true';
     const hasClosed = localStorage.getItem('hasClosedContactForm') === 'true';
-    return !hasShared && !hasClosed;
+    return !hasShared && !hasClosed ? "opening" : "closed";
   });
-  const [, setLocation] = useLocation();
-  const [isScrolled, setIsScrolled] = useState(false);
-
+  
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -52,523 +53,333 @@ const Cellar = () => {
     }, 100);
   };
 
-  const handleFormSubmit = async (submissionData: any) => {
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submissionData),
-      });
-
-      if (response.ok) {
-        // Mark that user has shared contact info
-        localStorage.setItem('hasSharedContact', 'true');
-        setHasSharedContact(true);
-        
-        // Close the modal
-        setShowModal(false);
-        
-        toast({
-          title: "Success!",
-          description: "Your contact information has been saved.",
-        });
-      } else {
-        throw new Error("Failed to submit");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      throw error; // Re-throw to let the shared component handle the error display
+  // Auto-show contact form only if user hasn't shared contact and hasn't closed it before
+  useEffect(() => {
+    if (animationState === "opening") {
+      const timer = setTimeout(() => {
+        setAnimationState("open");
+      }, 500);
+      return () => clearTimeout(timer);
     }
+  }, [animationState]);
+
+  const openContactForm = () => {
+    setAnimationState("opening");
+    setTimeout(() => setAnimationState("open"), 50);
   };
 
   const handleClose = () => {
+    // Mark that user has closed the contact form
     localStorage.setItem('hasClosedContactForm', 'true');
     setHasClosedContactForm(true);
-    setShowModal(false);
+    setAnimationState("closing");
+    setTimeout(() => setAnimationState("closed"), 300);
   };
 
-  const handleNavigation = () => {
-    setLocation("/");
+  const handleContactSuccess = () => {
+    setHasSharedContact(true);
+    setHasClosedContactForm(false);
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const searchResults = [
-    "2019 Tenuta San Guido Bolgheri Sassicaia DOC",
-    "2019 Tenuta San Guido Le Difese",
-    "2019 Tenuta San Guido Guidalberto",
-  ];
-
-  const filteredResults = searchResults.filter((result) =>
-    result.toLowerCase().includes(wineSearchQuery.toLowerCase())
-  );
 
   return (
     <div
       style={{
+        width: "100vw",
+        height: "100vh",
         position: "relative",
-        minHeight: "100vh",
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        display: "flex",
-        flexDirection: "column",
+        overflow: "hidden",
       }}
     >
       {/* Header */}
       <div
         style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 50,
-          padding: "24px",
-          background: isScrolled
-            ? "rgba(255, 255, 255, 0.05)"
-            : "transparent",
-          backdropFilter: isScrolled ? "blur(10px)" : "none",
-          borderBottom: isScrolled ? "1px solid rgba(255, 255, 255, 0.08)" : "none",
-          transition: "all 0.3s ease",
+          position: "absolute",
+          top: "0px",
+          left: "0px",
+          right: "0px",
+          height: "72px",
+          background: "rgba(28, 28, 28, 0.90)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 24px",
+          zIndex: 10,
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div
-            onClick={handleNavigation}
+        {/* Logo */}
+        <Link to="/">
+          <img
+            src={logoImage}
+            alt="Logo"
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
+              height: "32px",
               cursor: "pointer",
             }}
-          >
-            <img
-              src={logoImage}
-              alt="Logo"
-              style={{
-                height: "30px",
-                objectFit: "contain",
-              }}
-            />
-          </div>
+          />
+        </Link>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "24px",
-            }}
-          >
-            <div
-              onClick={() => setShowWineSearch(!showWineSearch)}
-              style={{
-                color: "white",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: "500",
-                cursor: "pointer",
-                textDecoration: "none",
-              }}
-            >
-              Search
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search Modal */}
-      {showWineSearch && (
-        <div
+        {/* Reset Button for Testing */}
+        <button
+          onClick={resetAccountStatus}
           style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.8)",
-            zIndex: 100,
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "center",
-            paddingTop: "120px",
+            padding: "8px 16px",
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            borderRadius: "8px",
+            color: "white",
+            fontSize: "14px",
+            cursor: "pointer",
+            fontFamily: "Inter, sans-serif",
           }}
-          onClick={() => setShowWineSearch(false)}
         >
-          <div
-            style={{
-              width: "90%",
-              maxWidth: "500px",
-              backgroundColor: "#1C1C1C",
-              borderRadius: "16px",
-              padding: "24px",
-              position: "relative",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "16px",
-                right: "16px",
-                cursor: "pointer",
-                padding: "8px",
-              }}
-              onClick={() => setShowWineSearch(false)}
-            >
-              <X size={20} color="white" />
-            </div>
-
-            <div
-              style={{
-                marginBottom: "24px",
-              }}
-            >
-              <h2
-                style={{
-                  color: "white",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "20px",
-                  fontWeight: "600",
-                  marginBottom: "16px",
-                }}
-              >
-                Search Wines
-              </h2>
-
-              <div style={{ position: "relative" }}>
-                <input
-                  type="text"
-                  placeholder="Search for wines..."
-                  value={wineSearchQuery}
-                  onChange={(e) => {
-                    setWineSearchQuery(e.target.value);
-                    setIsSearchActive(e.target.value.length > 0);
-                  }}
-                  style={{
-                    width: "100%",
-                    height: "48px",
-                    padding: "0 16px",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "white";
-                    e.target.style.boxShadow = "0 0 0 2px rgba(255, 255, 255, 0.2)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                    e.target.style.boxShadow = "none";
-                  }}
-                />
-              </div>
-            </div>
-
-            {isSearchActive && (
-              <div>
-                {filteredResults.length > 0 ? (
-                  filteredResults.map((result, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        padding: "12px 16px",
-                        borderBottom:
-                          index < filteredResults.length - 1
-                            ? "1px solid rgba(255, 255, 255, 0.1)"
-                            : "none",
-                        cursor: "pointer",
-                        borderRadius: "8px",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          "rgba(255, 255, 255, 0.05)")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "transparent")
-                      }
-                    >
-                      <span
-                        style={{
-                          color: "white",
-                          fontFamily: "Inter, sans-serif",
-                          fontSize: "16px",
-                        }}
-                      >
-                        {result}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div
-                    style={{
-                      padding: "16px",
-                      textAlign: "center",
-                      color: "#888",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "14px",
-                    }}
-                  >
-                    No wines found matching your search.
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+          Reset Account
+        </button>
+      </div>
 
       {/* Main Content */}
       <div
         style={{
-          flex: 1,
-          paddingTop: "88px",
-          paddingLeft: "24px",
-          paddingRight: "24px",
-          paddingBottom: "140px",
+          position: "absolute",
+          top: "72px",
+          left: "0px",
+          right: "0px",
+          bottom: "0px",
           display: "flex",
           flexDirection: "column",
-          gap: "32px",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          padding: "48px 24px 24px 24px",
+          overflowY: "auto",
         }}
       >
-        {/* Wine Image */}
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+        {/* My cellar title */}
+        <h1
+          style={{
+            color: "white",
+            fontFamily: "Lora, serif",
+            fontSize: "24px",
+            fontWeight: 500,
+            lineHeight: "32px",
+            textAlign: "left",
+            width: "100%",
+            maxWidth: "500px",
+            margin: "0 0 32px 0",
+          }}
+        >
+          My cellar
+        </h1>
+
+        {/* Wine Circle with Wine Name */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginBottom: hasSharedContact ? "32px" : "48px",
+          }}
+        >
           <img
-            src={wineBottleImage}
-            alt="Wine Bottle"
+            src={wineCircleImage}
+            alt="Wine"
             style={{
-              width: "auto",
-              height: "280px",
-              maxWidth: "100%",
-              objectFit: "contain",
+              width: "120px",
+              height: "120px",
+              marginBottom: "16px",
             }}
           />
-        </div>
-
-        {/* Wine Title */}
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <h1
-            style={{
-              fontFamily: "Lora, serif",
-              fontSize: "28px",
-              fontWeight: "500",
-              lineHeight: "36px",
-              color: "white",
-              margin: "0 0 12px 0",
-            }}
-          >
-            2020 Tenuta San Guido
-          </h1>
           <h2
             style={{
-              fontFamily: "Lora, serif",
-              fontSize: "28px",
-              fontWeight: "500",
-              lineHeight: "36px",
               color: "white",
-              margin: "0 0 16px 0",
-            }}
-          >
-            Bolgheri Sassicaia DOC
-          </h2>
-          <p
-            style={{
               fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: "400",
-              lineHeight: "24px",
-              color: "#CECECE",
+              fontSize: "20px",
+              fontWeight: 500,
+              textAlign: "center",
               margin: "0",
             }}
           >
-            Bolgheri | Tuscany | Italy
-          </p>
+            Sassicaia. 2020
+          </h2>
         </div>
 
-        {/* Decorative Line */}
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <img
-            src={lineImage}
-            alt="Decorative Line"
+        {/* Wine Details Section */}
+        {hasSharedContact && (
+          <div
             style={{
               width: "100%",
-              maxWidth: "200px",
-              height: "auto",
+              maxWidth: "500px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
             }}
-          />
-        </div>
-
-        {/* Content sections based on contact sharing status */}
-        {hasSharedContact ? (
-          <>
-            {/* Summary Section */}
-            <div>
-              <h2
+          >
+            {/* Summary */}
+            <div
+              style={{
+                background: "rgba(28, 28, 28, 0.85)",
+                backdropFilter: "blur(20px)",
+                borderRadius: "16px",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                padding: "24px",
+              }}
+            >
+              <h3
                 style={{
-                  fontFamily: "Lora, serif",
-                  fontSize: "24px",
-                  fontWeight: "500",
-                  lineHeight: "32px",
                   color: "white",
-                  marginBottom: "16px",
-                  textAlign: "left",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "18px",
+                  fontWeight: 500,
+                  margin: "0 0 16px 0",
                 }}
               >
                 Summary
-              </h2>
+              </h3>
               <p
                 style={{
+                  color: "#CECECE",
                   fontFamily: "Inter, sans-serif",
                   fontSize: "16px",
-                  fontWeight: "400",
-                  lineHeight: "24px",
-                  color: "#CECECE",
-                  margin: "0",
+                  lineHeight: "1.5",
+                  margin: "0 0 16px 0",
                 }}
               >
-                The 2020 Tenuta San Guido Bolgheri Sassicaia DOC offers an exquisite 
-                expression of Cabernet Sauvignon and Cabernet Franc from Tuscany's 
-                prestigious Bolgheri region. This vintage showcases remarkable balance 
-                with notes of dark fruit, cedar, and refined tannins.
+                The Tenuta San Guido Bolgheri Sassicaia DOC offers an elegant
+                and sophisticated tasting experience with complex aromas and a
+                refined palate structure.
               </p>
+              <Link to="/conversation-dialog">
+                <button
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 400,
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    padding: "0",
+                  }}
+                >
+                  Show whole dialog
+                </button>
+              </Link>
             </div>
 
-            {/* History Section */}
-            <div>
-              <h2
+            {/* History */}
+            <div
+              style={{
+                background: "rgba(28, 28, 28, 0.85)",
+                backdropFilter: "blur(20px)",
+                borderRadius: "16px",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                padding: "24px",
+              }}
+            >
+              <h3
                 style={{
-                  fontFamily: "Lora, serif",
-                  fontSize: "24px",
-                  fontWeight: "500",
-                  lineHeight: "32px",
                   color: "white",
-                  marginBottom: "16px",
-                  textAlign: "left",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "18px",
+                  fontWeight: 500,
+                  margin: "0 0 16px 0",
                 }}
               >
                 History
-              </h2>
+              </h3>
               <p
                 style={{
+                  color: "#CECECE",
                   fontFamily: "Inter, sans-serif",
                   fontSize: "16px",
-                  fontWeight: "400",
-                  lineHeight: "24px",
-                  color: "#CECECE",
-                  margin: "0",
+                  lineHeight: "1.5",
+                  margin: "0 0 16px 0",
                 }}
               >
-                Sassicaia was born from the vision of Mario Incisa della Rocchetta in the 1940s, 
-                who planted Cabernet Sauvignon in the hills of Bolgheri. Initially produced 
-                for family consumption, it became commercially available in 1968 and 
-                revolutionized Italian winemaking by proving that world-class Bordeaux-style 
-                wines could be made in Tuscany.
+                Created by Marchese Mario Incisa della Rocchetta in the 1940s,
+                Sassicaia was revolutionary as one of Italy's first Bordeaux-style
+                blends, featuring Cabernet Sauvignon and Cabernet Franc.
               </p>
+              <Link to="/wine-details">
+                <button
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 400,
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    padding: "0",
+                  }}
+                >
+                  Show details
+                </button>
+              </Link>
             </div>
-
-            {/* Temporary Reset Button for Testing */}
-            <div style={{ marginTop: "32px", textAlign: "center" }}>
-              <button
-                onClick={resetAccountStatus}
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.3)",
-                  borderRadius: "8px",
-                  padding: "12px 24px",
-                  color: "white",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
-              >
-                Reset (Testing Only)
-              </button>
-            </div>
-          </>
-        ) : (
-          /* Show message for users who haven't shared contact */
-          <div
-            style={{
-              textAlign: "center",
-              color: "#CECECE",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: "400",
-              lineHeight: "24px",
-              padding: "32px 0",
-            }}
-          >
-            Share your contact information to access detailed wine history and analysis.
           </div>
         )}
-      </div>
 
-      {/* Fixed bottom button for non-shared users */}
-      {!hasSharedContact && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "24px",
-            left: "24px",
-            right: "24px",
-            zIndex: 10,
-          }}
-        >
-          <button
-            onClick={() => setShowModal(true)}
+        {/* Want to see wine history button (when contact not shared) */}
+        {!hasSharedContact && (
+          <div
             style={{
-              width: "100%",
-              height: "56px",
-              backgroundColor: "rgba(28, 28, 28, 0.9)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: "16px",
-              color: "white",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: "500",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+              position: "fixed",
+              bottom: "0px",
+              left: "0px",
+              right: "0px",
+              padding: "16px 24px 24px 24px",
+              background: "linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 40%)",
+              backdropFilter: "blur(10px)",
+              zIndex: 5,
             }}
           >
-            Want to see wine history?
-          </button>
-        </div>
-      )}
+            <button
+              onClick={openContactForm}
+              style={{
+                width: "100%",
+                height: "56px",
+                borderRadius: "16px",
+                background: "rgba(28, 28, 28, 0.9)",
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 400,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxSizing: "border-box"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+              }}
+            >
+              Want to see wine history?
+            </button>
+          </div>
+        )}
 
-      {/* Contact Form Bottom Sheet */}
-      <ContactFormBottomSheet
-        isOpen={showModal}
-        onClose={handleClose}
-        onSubmit={handleFormSubmit}
-        title="Want to see wine history?"
-        description="Enter your contact info"
-      />
+        {/* Contact Info Bottom Sheet */}
+        <ContactFormBottomSheet 
+          isOpen={animationState !== "closed"}
+          onClose={handleClose}
+          onSuccess={handleContactSuccess}
+        />
+      </div>
     </div>
   );
-};
-
-export default Cellar;
+}
