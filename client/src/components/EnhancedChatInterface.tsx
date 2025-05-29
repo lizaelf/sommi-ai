@@ -43,16 +43,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
   // State for contact bottom sheet
   const [showContactSheet, setShowContactSheet] = useState(false);
   
-  // Set up portal element for contact bottom sheet
-  useEffect(() => {
-    const portal = document.createElement('div');
-    document.body.appendChild(portal);
-    setPortalElement(portal);
-    
-    return () => {
-      document.body.removeChild(portal);
-    };
-  }, []);
+
 
   const handleCloseContactSheet = () => {
     setShowContactSheet(false);
@@ -1158,11 +1149,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                           Chat history
                         </h1>
                         <button 
-                          onClick={() => {
-                            setShowContactSheet(true);
-                            setAnimationState("opening");
-                            setTimeout(() => setAnimationState("open"), 50);
-                          }}
+                          onClick={() => setShowContactSheet(true)}
                           style={{
                             backgroundColor: 'rgba(255, 255, 255, 0.08)',
                             borderRadius: '32px',
@@ -1431,9 +1418,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
       </div>
       
       {/* Contact Bottom Sheet */}
-      {animationState !== "closed" &&
-        portalElement &&
-        createPortal(
+      <ContactFormBottomSheet
+        isOpen={showContactSheet}
+        onClose={handleCloseContactSheet}
+        onSubmit={handleContactFormSubmit}
+        title="Want to see wine history?"
+        subtitle="Enter your contact info"
+      />
           <div
             style={{
               position: "fixed",
@@ -1738,14 +1729,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                       boxSizing: "border-box",
                     }}
                   >
-                    Join Somm
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>,
-          portalElement
-        )}
     </div>
   );
 };
