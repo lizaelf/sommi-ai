@@ -32,8 +32,8 @@ export default function Scanned() {
       const wineData = JSON.parse(storedWine);
       console.log('Parsed wine data:', wineData);
       setSelectedWine(wineData);
-      // Clear the stored data after use
-      localStorage.removeItem('selectedWine');
+      // Don't clear immediately - keep for debugging
+      // localStorage.removeItem('selectedWine');
     }
 
     const handleScroll = () => {
