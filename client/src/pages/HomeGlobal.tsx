@@ -24,8 +24,8 @@ const HomeGlobal = () => {
         vn: 95,
         jd: 93,
         ws: 93,
-        abv: 14.3
-      }
+        abv: 14.3,
+      },
     },
     {
       id: 2,
@@ -36,65 +36,74 @@ const HomeGlobal = () => {
         vn: 95,
         jd: 93,
         ws: 93,
-        abv: 14.3
-      }
-    }
+        abv: 14.3,
+      },
+    },
   ];
 
   return (
     <div className="min-h-screen bg-black text-white">
       {/* App Header - Same as Scanned page */}
-      <div 
+      <div
         style={{
-          backgroundColor: isScrolled ? 'rgba(23, 23, 23, 0.5)' : 'rgba(10, 10, 10, 0)',
-          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none',
-          borderBottom: 'none',
-          height: '75px',
-          paddingLeft: '24px',
-          paddingRight: '24px'
+          backgroundColor: isScrolled
+            ? "rgba(23, 23, 23, 0.5)"
+            : "rgba(10, 10, 10, 0)",
+          backdropFilter: isScrolled ? "blur(20px)" : "none",
+          WebkitBackdropFilter: isScrolled ? "blur(20px)" : "none",
+          borderBottom: "none",
+          height: "75px",
+          paddingLeft: "24px",
+          paddingRight: "24px",
         }}
         className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
       >
         <Link to="/home-global">
-          <div style={{
-            fontFamily: "Lora, serif",
-            fontSize: "24px",
-            lineHeight: "32px",
-            fontWeight: 500,
-            color: "white"
-          }}>
+          <div
+            style={{
+              fontFamily: "Lora, serif",
+              fontSize: "24px",
+              lineHeight: "32px",
+              fontWeight: 500,
+              color: "white",
+            }}
+          >
             SOMM
           </div>
         </Link>
         <div className="flex items-center space-x-3">
           <Link to="/cellar">
-            <div style={{
-              width: 'auto',
-              height: '40px',
-              display: 'inline-flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              background: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: '24px',
-              border: '1px solid transparent',
-              backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
-              backgroundOrigin: 'border-box',
-              backgroundClip: 'padding-box, border-box',
-              padding: '0 16px',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap'
-            }}>
-              <span style={{
-                color: 'white',
-                fontSize: '14px',
-                lineHeight: 'normal',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: '400',
-                display: 'inline-block',
-                padding: '0',
-                margin: '0'
-              }}>
+            <div
+              style={{
+                width: "auto",
+                height: "40px",
+                display: "inline-flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "rgba(255, 255, 255, 0.04)",
+                borderRadius: "24px",
+                border: "1px solid transparent",
+                backgroundImage:
+                  "linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+                padding: "0 16px",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span
+                style={{
+                  color: "white",
+                  fontSize: "14px",
+                  lineHeight: "normal",
+                  fontFamily: "Inter, sans-serif",
+                  fontWeight: "400",
+                  display: "inline-block",
+                  padding: "0",
+                  margin: "0",
+                }}
+              >
                 My cellar
               </span>
             </div>
@@ -106,42 +115,44 @@ const HomeGlobal = () => {
       <div className="pt-20 px-4">
         {/* Ridge Vineyards Logo */}
         <div className="text-center mb-8">
-          <img 
-            src={wineryLogoPath} 
-            alt="Ridge Vineyards" 
+          <img
+            src={wineryLogoPath}
+            alt="Ridge Vineyards"
             className="mx-auto"
             style={{
               height: "auto",
               maxWidth: "300px",
-              width: "100%"
+              width: "100%",
             }}
           />
         </div>
 
         {/* Welcome Text */}
         <div className="mb-8">
-          <p 
-            className="text-white/80 leading-relaxed"
+          <p
+            className="leading-relaxed"
             style={{
               fontFamily: "Inter, sans-serif",
               fontSize: "16px",
               lineHeight: "24px",
-              fontWeight: 400
+              fontWeight: 400,
+              color: "#CECECE",
             }}
           >
-            Welcome to Ridge Vineyards where each bottle is a story of place, time, and the people who bring it to life.
+            Welcome to Ridge Vineyards where each bottle is a story of place,
+            time, and the people who bring it to life.
           </p>
         </div>
 
         {/* Your wines section */}
         <div className="mb-6">
-          <h3 
+          <h3
             className="text-xl font-medium mb-6"
             style={{
               fontFamily: "Lora, serif",
               fontSize: "24px",
               lineHeight: "32px",
-              fontWeight: 500
+              fontWeight: 500,
             }}
           >
             Your wines
@@ -165,32 +176,54 @@ const HomeGlobal = () => {
                       xmlns="http://www.w3.org/2000/svg"
                       className="text-white/60"
                     >
-                      <rect x="11" y="8" width="10" height="4" fill="currentColor" rx="1"/>
-                      <rect x="10" y="12" width="12" height="32" fill="currentColor" rx="2"/>
-                      <rect x="12" y="16" width="8" height="24" fill="currentColor" opacity="0.3" rx="1"/>
+                      <rect
+                        x="11"
+                        y="8"
+                        width="10"
+                        height="4"
+                        fill="currentColor"
+                        rx="1"
+                      />
+                      <rect
+                        x="10"
+                        y="12"
+                        width="12"
+                        height="32"
+                        fill="currentColor"
+                        rx="2"
+                      />
+                      <rect
+                        x="12"
+                        y="16"
+                        width="8"
+                        height="24"
+                        fill="currentColor"
+                        opacity="0.3"
+                        rx="1"
+                      />
                     </svg>
                   </div>
 
                   {/* Wine Info */}
                   <div className="flex-1">
-                    <h4 
+                    <h4
                       className="font-medium mb-1"
                       style={{
                         fontFamily: "Inter, sans-serif",
-                        fontSize: "18px",
-                        lineHeight: "24px",
-                        fontWeight: 500
+                        fontSize: "20px",
+                        lineHeight: "28px",
+                        fontWeight: 500,
                       }}
                     >
                       {wine.name}
                     </h4>
-                    <p 
+                    <p
                       className="text-white/60 text-sm mb-3"
                       style={{
                         fontFamily: "Inter, sans-serif",
-                        fontSize: "14px",
-                        lineHeight: "20px",
-                        fontWeight: 400
+                        fontSize: "13px",
+                        lineHeight: "16px",
+                        fontWeight: 500,
                       }}
                     >
                       {wine.bottles} Bottles
@@ -199,19 +232,27 @@ const HomeGlobal = () => {
                     {/* Ratings */}
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">{wine.ratings.vn}</span>
+                        <span className="text-white font-medium text-sm">
+                          {wine.ratings.vn}
+                        </span>
                         <span className="text-white/40 text-xs">VN</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">{wine.ratings.jd}</span>
+                        <span className="text-white font-medium text-sm">
+                          {wine.ratings.jd}
+                        </span>
                         <span className="text-white/40 text-xs">JD</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">{wine.ratings.ws}</span>
+                        <span className="text-white font-medium text-sm">
+                          {wine.ratings.ws}
+                        </span>
                         <span className="text-white/40 text-xs">WS</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-white font-medium text-sm">{wine.ratings.abv}%</span>
+                        <span className="text-white font-medium text-sm">
+                          {wine.ratings.abv}%
+                        </span>
                         <span className="text-white/40 text-xs">ABV</span>
                       </div>
                     </div>
