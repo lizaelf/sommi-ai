@@ -55,7 +55,7 @@ export const WINE_CONFIG = {
 // Helper functions to extract specific information
 export const getWineDisplayName = () => WINE_CONFIG.name;
 export const getFullWineName = () => WINE_CONFIG.fullName;
-export const getWineRegion = () => `${WINE_CONFIG.region} | ${WINE_CONFIG.county} | ${WINE_CONFIG.country}`;
+export const getWineRegion = () => `${WINE_CONFIG.region} | ${WINE_CONFIG.county} | ${WINE_CONFIG.state}`;
 export const getWineVarietal = () => WINE_CONFIG.varietal;
 export const getWineVintage = () => WINE_CONFIG.vintage;
 export const getWinery = () => WINE_CONFIG.winery;
