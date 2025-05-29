@@ -24,48 +24,44 @@ export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedWine, setSelectedWine] = useState<WineData | null>(null);
   
-  // Wine data array - same as HomeGlobal
+  // Import wine data from HomeGlobal
   const wines = [
     {
       id: 1,
       name: "Ridge Vineyards \"Lytton Springs\" Dry Creek Zinfandel",
       bottles: 4,
       image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
-      ratings: {
-        vn: 95,
-        jd: 93,
-        ws: 93,
-        abv: 14.3,
-      },
+      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
     },
     {
       id: 2,
       name: "2021 Monte Bello Cabernet Sauvignon",
       bottles: 2,
       image: "/@fs/home/runner/workspace/attached_assets/image-2.png",
-      ratings: {
-        vn: 95,
-        jd: 93,
-        ws: 93,
-        abv: 14.3,
-      },
+      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
     },
   ];
   
-  // Check for wine ID in URL parameters and scroll listener
+  // Universal wine page logic - handles both master and instance
   useEffect(() => {
-    // Check for wine ID in URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const wineId = urlParams.get('wine');
     
+    console.log('URL wine parameter:', wineId);
+    
     if (wineId) {
+      // Instance mode - specific wine selected
       const wineIdNum = parseInt(wineId, 10);
       const wine = wines.find(w => w.id === wineIdNum);
-      console.log('Found wine from URL parameter:', wine);
+      console.log('Found wine for ID', wineIdNum, ':', wine);
       if (wine) {
         setSelectedWine(wine);
-        console.log('Set selectedWine state to:', wine);
+        console.log('Set selectedWine to:', wine);
       }
+    } else {
+      // Master mode - no specific wine, use default (ID1)
+      console.log('No wine parameter, using master mode (ID1)');
+      setSelectedWine(null);
     }
 
     const handleScroll = () => {
