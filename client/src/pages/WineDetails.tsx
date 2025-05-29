@@ -4,6 +4,7 @@ import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
+import { getWineDisplayName, getWineVintage } from '../../shared/wineConfig';
 
 export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
@@ -52,7 +53,7 @@ export default function WineDetails() {
               />
             </svg>
           </Link>
-          <h1 className="text-lg font-medium text-white">Wine Details</h1>
+          <h1 className="text-lg font-medium text-white text-left flex-1">{getWineDisplayName()}. {getWineVintage()}</h1>
           <div></div>
         </div>
 
