@@ -504,6 +504,67 @@ const Cellar = () => {
               }}
               onClick={(e) => e.stopPropagation()}
             >
+              <style>
+                {`
+                  /* Contact form inputs - transparent when empty */
+                  .contact-form-input {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    -webkit-appearance: none !important;
+                    -moz-appearance: none !important;
+                    appearance: none !important;
+                    
+                    /* Gradient border */
+                    border-top: 2px solid transparent !important;
+                    border-right: 1px solid transparent !important;
+                    border-bottom: 1px solid transparent !important;
+                    border-left: 1px solid transparent !important;
+                    border-radius: 16px !important;
+                    
+                    /* Empty state - dark background */
+                    background-image: 
+                      linear-gradient(#1C1C1C, #1C1C1C), 
+                      radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+                    background-origin: border-box !important;
+                    background-clip: padding-box, border-box !important;
+                    overflow: hidden !important;
+                  }
+                  
+                  /* Filled inputs - 8% white background */
+                  .contact-form-input:not(:placeholder-shown) {
+                    background-image: 
+                      linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), 
+                      radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+                  }
+                  
+                  /* Focus state - keep current background */
+                  .contact-form-input:focus {
+                    background-image: 
+                      linear-gradient(#1C1C1C, #1C1C1C), 
+                      radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+                    outline: none !important;
+                  }
+                  
+                  /* Focus state when filled - 8% white background */
+                  .contact-form-input:focus:not(:placeholder-shown) {
+                    background-image: 
+                      linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), 
+                      radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%) !important;
+                    background-origin: border-box !important;
+                    background-clip: padding-box, border-box !important;
+                    overflow: hidden !important;
+                  }
+                  
+                  /* Override autofill - 8% white background */
+                  input:-webkit-autofill,
+                  input:-webkit-autofill:hover,
+                  input:-webkit-autofill:focus,
+                  input:-webkit-autofill:active {
+                    -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.08) inset !important;
+                    -webkit-text-fill-color: white !important;
+                  }
+                `}
+              </style>
               {/* Contact Form Header */}
               <div
                 style={{
@@ -549,13 +610,13 @@ const Cellar = () => {
                     placeholder="First Name"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    className="contact-form-input"
                     style={{
-                      width: "100%",
+                      display: "flex",
                       height: "56px",
                       padding: "16px 24px",
-                      background: "transparent",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      borderRadius: "16px",
+                      alignItems: "center",
+                      flex: "1 0 0",
                       color: "white",
                       fontFamily: "Inter, sans-serif",
                       fontSize: "16px",
@@ -584,13 +645,13 @@ const Cellar = () => {
                     placeholder="Last Name"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    className="contact-form-input"
                     style={{
-                      width: "100%",
+                      display: "flex",
                       height: "56px",
                       padding: "16px 24px",
-                      background: "transparent",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      borderRadius: "16px",
+                      alignItems: "center",
+                      flex: "1 0 0",
                       color: "white",
                       fontFamily: "Inter, sans-serif",
                       fontSize: "16px",
@@ -619,13 +680,13 @@ const Cellar = () => {
                     placeholder="Email"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
+                    className="contact-form-input"
                     style={{
-                      width: "100%",
+                      display: "flex",
                       height: "56px",
                       padding: "16px 24px",
-                      background: "transparent",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      borderRadius: "16px",
+                      alignItems: "center",
+                      flex: "1 0 0",
                       color: "white",
                       fontFamily: "Inter, sans-serif",
                       fontSize: "16px",
@@ -677,15 +738,18 @@ const Cellar = () => {
                       placeholder="Phone Number"
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
+                      className="contact-form-input"
                       style={{
-                        flex: 1,
+                        display: "flex",
+                        height: "56px",
                         padding: "16px 24px",
-                        background: "transparent",
-                        border: "none",
+                        alignItems: "center",
+                        flex: 1,
                         color: "white",
                         fontFamily: "Inter, sans-serif",
                         fontSize: "16px",
                         outline: "none",
+                        boxSizing: "border-box",
                       }}
                     />
                   </div>
