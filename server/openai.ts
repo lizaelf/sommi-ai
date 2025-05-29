@@ -191,9 +191,6 @@ export async function textToSpeech(text: string): Promise<Buffer> {
   try {
     console.log("Converting text to speech...");
     
-    // Limit text length to optimize response time
-    const MAX_TEXT_LENGTH = 500;
-    
     // Clean up the text for better speech synthesis
     // Remove markdown-like formatting if any
     let cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1')
@@ -201,17 +198,6 @@ export async function textToSpeech(text: string): Promise<Buffer> {
                        .replace(/#+\s/g, '')
                        .replace(/\n\n/g, '. ')
                        .trim();
-    
-    // Truncate the text if it's too long
-    if (cleanText.length > MAX_TEXT_LENGTH) {
-      // Find the last complete sentence within the limit
-      const lastPeriodIndex = cleanText.lastIndexOf('.', MAX_TEXT_LENGTH);
-      if (lastPeriodIndex > 0) {
-        cleanText = cleanText.substring(0, lastPeriodIndex + 1);
-      } else {
-        cleanText = cleanText.substring(0, MAX_TEXT_LENGTH) + "...";
-      }
-    }
     
     // Check cache first for consistency
     const cacheKey = `${VoiceConfig.VOICE}_${cleanText}`;
