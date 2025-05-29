@@ -66,11 +66,14 @@ const Cellar = () => {
 
   // Function to reset account status (clear all user data)
   const resetAccountStatus = () => {
+    // Clear all localStorage items
     localStorage.removeItem('hasSharedContact');
     localStorage.removeItem('hasClosedContactForm');
     localStorage.removeItem('currentConversationId');
     localStorage.removeItem('conversations');
     localStorage.removeItem('messages');
+    
+    // Force immediate state updates
     setHasSharedContact(false);
     setHasClosedContactForm(false);
     setFormData({
@@ -80,8 +83,10 @@ const Cellar = () => {
       phone: "",
     });
     
-    // Reload the page to reset all states
-    window.location.reload();
+    // Force page reload to ensure clean state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   const countries = [
@@ -888,6 +893,7 @@ const Cellar = () => {
         </div>
 
         {/* Show "Want to see wine history?" button for non-submitted users */}
+        {/* Debug: hasSharedContact = {hasSharedContact.toString()} */}
         {!hasSharedContact && (
           <div style={{
             margin: "24px 16px 48px 16px",
