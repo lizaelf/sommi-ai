@@ -1571,7 +1571,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   className="contact-form-input"
                   style={{
                     display: "flex",
-                    height: "56px",
+                    height: "64px",
                     padding: "16px 24px",
                     alignItems: "center",
                     width: "100%",
@@ -1605,7 +1605,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   className="contact-form-input"
                   style={{
                     display: "flex",
-                    height: "56px",
+                    height: "64px",
                     padding: "16px 24px",
                     alignItems: "center",
                     width: "100%",
@@ -1639,7 +1639,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   className="contact-form-input"
                   style={{
                     display: "flex",
-                    height: "56px",
+                    height: "64px",
                     padding: "16px 24px",
                     alignItems: "center",
                     width: "100%",
@@ -1668,7 +1668,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
                   <div
                     style={{
                       display: "flex",
-                      height: "56px",
+                      height: "64px",
                       width: "100%",
                       boxSizing: "border-box",
                     }}
