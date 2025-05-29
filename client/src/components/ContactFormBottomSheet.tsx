@@ -316,13 +316,15 @@ export function ContactFormBottomSheet({
       setAnimationState("opening");
       const element = document.body;
       setPortalElement(element);
-      setTimeout(() => setAnimationState("open"), 50);
+      const timer = setTimeout(() => setAnimationState("open"), 50);
+      return () => clearTimeout(timer);
     } else {
       setAnimationState("closing");
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setAnimationState("closed");
         setPortalElement(null);
       }, 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 

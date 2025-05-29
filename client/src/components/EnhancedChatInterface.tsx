@@ -1410,8 +1410,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         <button
                           onClick={() => {
                             setShowContactSheet(true);
-                            setAnimationState("opening");
-                            setTimeout(() => setAnimationState("open"), 50);
                           }}
                           style={{
                             backgroundColor: "rgba(255, 255, 255, 0.08)",
