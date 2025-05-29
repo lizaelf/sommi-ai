@@ -4,6 +4,7 @@ import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
+import { getWineDisplayName } from '../../../shared/wineConfig';
 
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
@@ -83,6 +84,22 @@ export default function Scanned() {
         
         {/* Empty space to account for the fixed header */}
         <div className="h-14"></div>
+        
+        {/* Wine Title */}
+        <div className="px-4 pt-4 pb-2">
+          <h1
+            style={{
+              fontFamily: "Lora, serif",
+              fontSize: "24px",
+              lineHeight: "32px",
+              fontWeight: 500,
+              color: "white",
+              textAlign: "center"
+            }}
+          >
+            {getWineDisplayName()}
+          </h1>
+        </div>
       </div>
       
       <EnhancedChatInterface />
