@@ -172,6 +172,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           recognitionRef.current.interimResults = true; // Show interim results for better UX
           recognitionRef.current.maxAlternatives = 1; // Only return best match
           
+          // Add longer timeout settings to prevent cutting off speech
+          if ('speechTimeout' in recognitionRef.current) {
+            recognitionRef.current.speechTimeout = 10000; // 10 seconds of silence before ending
+          }
+          if ('speechTimeoutBuffer' in recognitionRef.current) {
+            recognitionRef.current.speechTimeoutBuffer = 5000; // 5 second buffer
+          }
+          
           // Re-attach event handlers to the fresh instance
           recognitionRef.current.onresult = (event: any) => {
             // Get final results only to avoid duplicates
