@@ -12,13 +12,18 @@ const HomeGlobal = () => {
   const [location, setLocation] = useLocation();
 
   const handleWineClick = (wineId: number) => {
+    console.log('Wine clicked with ID:', wineId);
+    console.log('Available wines:', wines);
+    
     if (wineId === 1) {
       setLocation('/');
     } else {
       // Store wine data in localStorage for the Scanned page to use
       const selectedWine = wines.find(w => w.id === wineId);
+      console.log('Selected wine:', selectedWine);
       if (selectedWine) {
         localStorage.setItem('selectedWine', JSON.stringify(selectedWine));
+        console.log('Stored wine data in localStorage:', JSON.stringify(selectedWine));
       }
       setLocation('/');
     }

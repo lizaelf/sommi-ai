@@ -6,16 +6,32 @@ import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 
+interface WineData {
+  id: number;
+  name: string;
+  bottles: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+}
+
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
-  const [selectedWine, setSelectedWine] = useState(null);
+  const [selectedWine, setSelectedWine] = useState<WineData | null>(null);
   
   // Check for selected wine data and scroll listener
   useEffect(() => {
     // Check localStorage for selected wine data
     const storedWine = localStorage.getItem('selectedWine');
+    console.log('Stored wine data:', storedWine);
     if (storedWine) {
-      setSelectedWine(JSON.parse(storedWine));
+      const wineData = JSON.parse(storedWine);
+      console.log('Parsed wine data:', wineData);
+      setSelectedWine(wineData);
       // Clear the stored data after use
       localStorage.removeItem('selectedWine');
     }
