@@ -131,9 +131,9 @@ export default function Scanned() {
           </h1>
         </div>
 
-        {/* Wine Image - show selected wine image or default bottle */}
-        <div className="flex justify-center items-center px-4 pb-4">
-          {selectedWine ? (
+        {/* Wine Image - show selected wine image if available */}
+        {selectedWine && (
+          <div className="flex justify-center items-center px-4 pb-4">
             <img
               src={selectedWine.image}
               alt={selectedWine.name}
@@ -142,10 +142,8 @@ export default function Scanned() {
                 width: "auto",
               }}
             />
-          ) : (
-            <WineBottleImage />
-          )}
-        </div>
+          </div>
+        )}
       </div>
       
       <EnhancedChatInterface />
