@@ -6,7 +6,7 @@ import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { getAllWines, saveAllWines, type WineData } from "@/utils/wineDataManager";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface WineCardData {
   id: number;
@@ -172,7 +172,7 @@ export default function AdminCRM() {
         <div className="space-y-8">
           {/* Search Bar - Only show when toggled */}
           {showSearch && (
-            <div style={{ marginBottom: "24px" }}>
+            <div style={{ marginBottom: "24px", position: "relative" }}>
               <input
                 type="text"
                 placeholder="Search wines by name..."
@@ -186,10 +186,32 @@ export default function AdminCRM() {
                   width: "100%",
                   fontSize: "16px",
                   fontWeight: "400",
-                  padding: "0 16px",
+                  padding: "0 16px 0 16px",
+                  paddingRight: "48px"
                 }}
                 autoFocus
               />
+              <div
+                onClick={() => {
+                  setShowSearch(false);
+                  setSearchTerm("");
+                }}
+                style={{
+                  position: "absolute",
+                  right: "16px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: "24px",
+                  height: "24px",
+                  color: "rgba(255, 255, 255, 0.6)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <X size={16} />
+              </div>
             </div>
           )}
 
