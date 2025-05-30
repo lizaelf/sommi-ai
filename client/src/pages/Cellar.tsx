@@ -839,7 +839,7 @@ const Cellar = () => {
             right: "0",
             backgroundColor: "#2A2A29",
             borderRadius: "16px",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
+            border: "none",
             padding: "0",
             margin: "0 16px",
             zIndex: 1000,
