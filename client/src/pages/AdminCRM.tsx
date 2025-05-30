@@ -253,7 +253,13 @@ export default function AdminCRM() {
                       }}
                     >
                       <img
-                        src={card.image && !card.image.includes("Product%20Image.png") ? card.image : placeholderImage}
+                        src={
+                          card.image && 
+                          !card.image.includes("Product%20Image.png") && 
+                          card.name !== "" 
+                            ? card.image 
+                            : (card.name === "" ? placeholderImage : card.image)
+                        }
                         alt={card.name || "Wine placeholder"}
                         style={{
                           maxHeight: "90px",
