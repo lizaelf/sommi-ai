@@ -399,9 +399,19 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   // Create a ref for the chat container to allow scrolling
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const voiceAssistantRef = useRef<any>(null);
+  const recognitionRef = useRef<any>(null);
+  const [isListening, setIsListening] = useState(false);
   
   // Function to handle microphone button click
   const handleMicClick = async () => {
+    // Prevent multiple simultaneous recordings
+    if (isListening) {
+      console.log("Already listening, stopping current session");
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      return;
+    }
     console.log("Microphone button clicked - starting voice recognition directly");
     
     try {
@@ -413,6 +423,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       }
       
       const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
       recognition.lang = 'en-US';
       recognition.continuous = true;
       recognition.interimResults = true;
@@ -431,6 +442,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       
       recognition.onstart = () => {
         console.log("Voice recognition started");
+        setIsListening(true);
       };
       
       recognition.onresult = (event: any) => {
@@ -465,6 +477,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       
       recognition.onend = () => {
         console.log("Voice recognition ended");
+        setIsListening(false);
+        recognitionRef.current = null;
       };
       
       recognition.start();
