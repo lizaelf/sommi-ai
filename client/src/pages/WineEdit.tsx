@@ -677,20 +677,8 @@ export default function WineEdit() {
       </div>
 
       {/* Fixed Save Button */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          width: "100%",
-          background: "#0A0A0A",
-          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-          padding: "16px 16px calc(env(safe-area-inset-bottom, 0px) + 16px)",
-          zIndex: 1000,
-        }}
-      >
-        <Button onClick={saveWine} fullWidth>
+      <div className="fixed bottom-0 left-0 right-0 w-full z-50 border-t border-white/10 bg-background px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4">
+        <Button className="w-full" onClick={saveWine}>
           Save Changes
         </Button>
       </div>
