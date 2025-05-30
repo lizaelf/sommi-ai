@@ -379,10 +379,12 @@ export default function WineEdit() {
               />
             </div>
             <div
-              onClick={() => {
+              onClick={(e) => {
                 try {
-                  // Find the QR code SVG element
-                  const qrSvg = document.querySelector('svg');
+                  // Find the QR code SVG element specifically within the QR container
+                  const clickedElement = e.currentTarget;
+                  const qrContainer = clickedElement.parentElement;
+                  const qrSvg = qrContainer?.querySelector('svg');
                   
                   if (qrSvg) {
                     // Create a canvas to convert SVG to PNG
