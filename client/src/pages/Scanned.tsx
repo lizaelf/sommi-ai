@@ -21,17 +21,28 @@ interface SelectedWine {
 
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
-  const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
   
-  // Check for selected wine data and scroll listener
-  useEffect(() => {
-    // Check localStorage for selected wine data
-    const storedWine = localStorage.getItem('selectedWine');
-    if (storedWine) {
-      setSelectedWine(JSON.parse(storedWine));
-      // Clear the stored data after use
-      localStorage.removeItem('selectedWine');
+  // Load selected wine data immediately during render to prevent glitches
+  const loadSelectedWine = () => {
+    try {
+      const storedWine = localStorage.getItem('selectedWine');
+      if (storedWine) {
+        const wine = JSON.parse(storedWine);
+        // Clear the stored data after use
+        localStorage.removeItem('selectedWine');
+        return wine;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error loading selected wine:', error);
+      return null;
     }
+  };
+  
+  const selectedWine = loadSelectedWine();
+  
+  // Add scroll listener
+  useEffect(() => {
 
     const handleScroll = () => {
       if (window.scrollY > 10) {
