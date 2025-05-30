@@ -137,8 +137,6 @@ export default function ConversationDialog() {
             border: 'none',
             color: 'white',
             cursor: 'pointer',
-            padding: '8px',
-            borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
