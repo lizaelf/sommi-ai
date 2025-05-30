@@ -42,14 +42,14 @@ export default function AdminCRM() {
     const newWineId = wineCards.length > 0 ? Math.max(...wineCards.map((w) => w.id)) + 1 : 1;
     const newWine: WineCardData = {
       id: newWineId,
-      name: "New Wine",
-      year: 2023,
-      bottles: 1,
+      name: "",
+      year: 0,
+      bottles: 0,
       image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
-      ratings: { vn: 90, jd: 90, ws: 90, abv: 13.5 },
-      buyAgainLink: "https://example.com",
+      ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+      buyAgainLink: "",
       qrCode: `QR_${newWineId.toString().padStart(3, '0')}`,
-      qrLink: `https://example.com/qr/${newWineId}`
+      qrLink: ""
     };
 
     // Add wine at the top of the list
@@ -58,11 +58,6 @@ export default function AdminCRM() {
     
     // Save to storage
     saveAllWines(updatedWines);
-
-    toast({
-      title: "Wine Added",
-      description: "New wine has been added to your collection.",
-    });
 
     // Navigate to wine edit page for the new wine
     setLocation(`/wine-edit/${newWine.id}`);
