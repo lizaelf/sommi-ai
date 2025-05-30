@@ -55,6 +55,7 @@ export default function WineEdit() {
   const { toast } = useToast();
   const wineId = parseInt(params.id || "1");
   const [scrolled, setScrolled] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   
   // Get wine data from localStorage or use default
   const getStoredWines = (): WineCardData[] => {
@@ -88,6 +89,24 @@ export default function WineEdit() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.dropdown-container')) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const updateWine = (field: keyof WineCardData, value: any) => {
     setWine(prev => ({ ...prev, [field]: value }));
@@ -150,22 +169,101 @@ export default function WineEdit() {
             : "bg-transparent"
         }`}
       >
-        <button onClick={() => setLocation("/admin-crm")}>
+        <button 
+          onClick={() => setLocation("/admin-crm")}
+          style={{
+            background: "none",
+            border: "none",
+            padding: "0",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
             viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             className="text-white"
           >
-            <path
-              fill="currentColor"
-              d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
-            />
+            <path d="m15 18-6-6 6-6"/>
           </svg>
         </button>
         <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">Edit Wine</h1>
-        <div></div>
+        <div className="relative dropdown-container">
+          <button 
+            onClick={() => setShowDropdown(!showDropdown)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: "4px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white"
+            >
+              <circle cx="12" cy="12" r="1"/>
+              <circle cx="12" cy="5" r="1"/>
+              <circle cx="12" cy="19" r="1"/>
+            </svg>
+          </button>
+          
+          {showDropdown && (
+            <div 
+              style={{
+                position: "absolute",
+                top: "100%",
+                right: "0",
+                marginTop: "8px",
+                background: "rgba(0, 0, 0, 0.9)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                borderRadius: "8px",
+                minWidth: "140px",
+                zIndex: 1000
+              }}
+            >
+              <button
+                onClick={() => {
+                  deleteWine();
+                  setShowDropdown(false);
+                }}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  background: "transparent",
+                  border: "none",
+                  color: "#ef4444",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  ...typography.body1R
+                }}
+                className="hover:bg-red-500/10 transition-colors"
+              >
+                Delete Wine
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Content */}
@@ -376,8 +474,9 @@ export default function WineEdit() {
             </div>
           </div>
 
-          {/* Buy Again Link */}
+          {/* Buy Again */}
           <div style={{ marginBottom: "24px" }}>
+            <h3 style={{ ...typography.h1, color: "white", marginBottom: "16px" }}>Buy again</h3>
             <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
               Buy Again Link
             </label>
@@ -424,21 +523,6 @@ export default function WineEdit() {
             <Button onClick={saveWine} style={{ flex: 1 }}>
               Save Changes
             </Button>
-            <button
-              onClick={deleteWine}
-              style={{
-                padding: "12px 24px",
-                background: "transparent",
-                border: "1px solid #ef4444",
-                borderRadius: "8px",
-                color: "#ef4444",
-                cursor: "pointer",
-                ...typography.body1R
-              }}
-              className="hover:bg-red-500/10 transition-colors"
-            >
-              Delete Wine
-            </button>
           </div>
         </div>
       </div>
