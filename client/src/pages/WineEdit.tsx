@@ -271,7 +271,7 @@ export default function WineEdit() {
       <div className="pt-20 p-6">
           <div style={{ display: "flex", gap: "20px", marginBottom: "24px" }}>
             {/* Wine Image with Update Button */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", flex: 1 }}>
               <div
                 style={{
                   width: "120px",
