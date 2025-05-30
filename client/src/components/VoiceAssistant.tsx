@@ -264,20 +264,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const startListening = async () => {
+    console.log("🎤 startListening called, current recognition:", !!recognitionRef.current, "isListening:", isListening);
+    
     if (!recognitionRef.current) {
+      console.log("🔧 Initializing speech recognition...");
       await initializeSpeechRecognition();
     }
 
     if (recognitionRef.current && !isListening) {
       try {
+        console.log("🎤 Starting speech recognition...");
         setIsListening(true);
         setStatus('Listening for your question...');
         recognitionRef.current.start();
         
         // Open bottom sheet when starting to listen
         setShowBottomSheet(true);
+        console.log("✅ Speech recognition started successfully");
       } catch (error) {
-        console.error('Error starting recognition:', error);
+        console.error('❌ Error starting recognition:', error);
         setIsListening(false);
         setStatus('');
         toast({
@@ -286,6 +291,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           variant: "destructive",
         });
       }
+    } else {
+      console.log("⚠️ Cannot start listening - recognitionRef:", !!recognitionRef.current, "isListening:", isListening);
     }
   };
 
@@ -338,9 +345,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleAsk = () => {
+    console.log("🎤 Microphone button clicked! isListening:", isListening, "isProcessing:", isProcessing);
     if (isListening) {
+      console.log("Stopping listening...");
       stopListening();
     } else {
+      console.log("Starting listening...");
       setResponseComplete(false);
       startListening();
     }
