@@ -828,6 +828,7 @@ const Cellar = () => {
             backdropFilter: "blur(20px)",
             minWidth: "200px",
           }}
+          data-profile-menu
         >
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <button
