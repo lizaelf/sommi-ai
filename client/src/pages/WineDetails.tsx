@@ -8,28 +8,47 @@ import { getWineDisplayName } from '../../../shared/wineConfig';
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 
-const wines = [
-  {
-    id: 1,
-    name: "2021 Lytton Springs",
-    bottles: 6,
-    image: wineBottlePath1,
-    ratings: { vn: 95, jd: 93, ws: 94, abv: 14.8 }
-  },
-  {
-    id: 2,
-    name: "2020 Geyserville",
-    bottles: 8,
-    image: wineBottlePath2,
-    ratings: { vn: 92, jd: 91, ws: 93, abv: 14.5 }
-  }
-];
+interface Wine {
+  id: number;
+  name: string;
+  year: number;
+  bottles: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+  buyAgainLink?: string;
+  qrCode?: string;
+  qrLink?: string;
+}
 
 export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
+  const [wine, setWine] = useState<Wine | null>(null);
   const params = useParams();
   const wineId = parseInt(params.id || "1");
-  const wine = wines.find(w => w.id === wineId) || wines[0];
+  
+  useEffect(() => {
+    // Load wine data from CRM master data source
+    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+    const foundWine = crmWines.find((w: Wine) => w.id === wineId);
+    if (foundWine) {
+      setWine(foundWine);
+    } else {
+      // Fallback to default wine if not found
+      setWine({
+        id: 1,
+        name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+        year: 2021,
+        bottles: 6,
+        image: wineBottlePath1,
+        ratings: { vn: 95, jd: 93, ws: 94, abv: 14.8 }
+      });
+    }
+  }, [wineId]);
   
   // Add scroll listener to detect when page is scrolled
   useEffect(() => {
@@ -75,21 +94,27 @@ export default function WineDetails() {
               />
             </svg>
           </Link>
-          <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">{getWineDisplayName()}</h1>
+          <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">
+            {wine ? `${wine.year} ${wine.name}` : getWineDisplayName()}
+          </h1>
           <div></div>
         </div>
 
         {/* Wine Image Section */}
         <div className="pt-[75px] pb-4">
           <div className="flex justify-center items-center px-4">
-            <img
-              src={wine.image}
-              alt={wine.name}
-              style={{
-                height: "170px",
-                width: "auto",
-              }}
-            />
+            {wine ? (
+              <img
+                src={wine.image}
+                alt={wine.name}
+                style={{
+                  height: "170px",
+                  width: "auto",
+                }}
+              />
+            ) : (
+              <div style={{ height: "170px", width: "auto" }}>Loading...</div>
+            )}
           </div>
         </div>
 
