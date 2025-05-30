@@ -12,6 +12,7 @@ import {
 } from "@/utils/wineDataManager";
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
+import placeholderImage from "@assets/Placeholder.png";
 
 interface WineCardData {
   id: number;
@@ -349,7 +350,20 @@ export default function WineEdit() {
               }}
               className="hover:bg-white/8 transition-colors"
             >
-              {!(wine.image && !wine.image.includes("Product%20Image.png")) && "Upload"}
+              {!(wine.image && !wine.image.includes("Product%20Image.png")) && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                  <img 
+                    src={placeholderImage} 
+                    alt="Wine placeholder" 
+                    style={{ 
+                      width: "60px", 
+                      height: "60px", 
+                      opacity: 0.3 
+                    }} 
+                  />
+                  <span>Upload</span>
+                </div>
+              )}
               <input
                 type="file"
                 accept="image/*"

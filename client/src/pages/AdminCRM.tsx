@@ -7,6 +7,7 @@ import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { getAllWines, saveAllWines, type WineData } from "@/utils/wineDataManager";
 import { Search, X } from "lucide-react";
+import placeholderImage from "@assets/Placeholder.png";
 
 interface WineCardData {
   id: number;
@@ -252,8 +253,8 @@ export default function AdminCRM() {
                       }}
                     >
                       <img
-                        src={card.image}
-                        alt={card.name}
+                        src={card.image && !card.image.includes("Product%20Image.png") ? card.image : placeholderImage}
+                        alt={card.name || "Wine placeholder"}
                         style={{
                           maxHeight: "90px",
                           maxWidth: "70px",
