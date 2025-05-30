@@ -48,12 +48,18 @@ export const getEditableWineData = (wineId: number): WineData | null => {
   const config = getCurrentWineConfig();
   
   if (wineId === 1) {
+    // Extract wine name from the full name
+    let wineName = config.name;
+    if (wineName.includes('Ridge "') && wineName.includes('"')) {
+      wineName = wineName.replace('Ridge "', '').replace('" Dry Creek Zinfandel', '');
+    }
+    
     return {
       id: 1,
-      name: config.name.replace('Ridge "', '').replace('" Dry Creek Zinfandel', ''),
+      name: wineName,
       year: config.vintage,
       bottles: 6,
-      image: '/src/assets/Product Image.png',
+      image: '/assets/Product Image.png',
       ratings: {
         vn: 95,
         jd: 93,

@@ -72,13 +72,16 @@ export default function WineEdit() {
   const [wine, setWine] = useState<WineCardData>(() => {
     // First try to get from wine data manager for real wine data
     const editableWine = getEditableWineData(wineId);
+    console.log('Loading wine data for ID:', wineId, 'Editable wine:', editableWine);
     if (editableWine) {
       return editableWine;
     }
     
     // Fallback to stored wines
     const wines = getStoredWines();
-    return wines.find(w => w.id === wineId) || wines[0];
+    const fallbackWine = wines.find(w => w.id === wineId) || wines[0];
+    console.log('Using fallback wine:', fallbackWine);
+    return fallbackWine;
   });
 
   // Add scroll listener to detect when page is scrolled
