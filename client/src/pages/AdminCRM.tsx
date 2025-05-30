@@ -175,7 +175,7 @@ export default function AdminCRM() {
         <div>
           {/* Search Bar - Only show when toggled */}
           {showSearch && (
-            <div style={{ marginBottom: "16px", position: "relative" }}>
+            <div style={{ marginBottom: "16px", position: "relative", paddingLeft: "16px", paddingRight: "16px" }}>
               <input
                 type="text"
                 placeholder="Search wines by name..."
