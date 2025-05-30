@@ -41,9 +41,21 @@ export default function AdminCRM() {
   // Load wines from CRM storage on component mount
   useEffect(() => {
     const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-    console.log("Loaded CRM wines:", crmWines);
+    
+    // Fix ID3 to have empty image for placeholder demonstration
+    const fixedWines = crmWines.map(wine => {
+      if (wine.id === 3) {
+        return { ...wine, image: "" };
+      }
+      return wine;
+    });
+    
+    console.log("Loaded CRM wines:", fixedWines);
     console.log("Placeholder image path:", placeholderImage);
-    setWineCards(crmWines);
+    setWineCards(fixedWines);
+    
+    // Save the fixed data back to storage
+    localStorage.setItem('admin-wines', JSON.stringify(fixedWines));
   }, []);
 
   // Filter wines based on search term
