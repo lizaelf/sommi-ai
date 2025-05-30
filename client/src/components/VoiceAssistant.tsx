@@ -976,6 +976,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isThinking={isProcessing || (isVoiceThinking && !showListenButton && !responseComplete) || status === 'Processing your question...'}
         showSuggestions={hasReceivedFirstResponse && !isListening && !isResponding && !isVoiceThinking && responseComplete && !showListenButton}
         showListenButton={showListenButton && !isListening && !isResponding}
+        isLoadingAudio={isLoadingAudio}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
       />

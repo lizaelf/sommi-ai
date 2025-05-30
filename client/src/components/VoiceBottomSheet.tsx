@@ -47,12 +47,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     "Serving"
   ];
 
-  // Reset loading state when audio starts playing
-  useEffect(() => {
-    if (isResponding && isLoadingAudio) {
-      setIsLoadingAudio(false);
-    }
-  }, [isResponding, isLoadingAudio]);
+  // Loading state is now managed by parent component (VoiceAssistant)
 
   // Function to speak suggestion using OpenAI TTS
   const speakSuggestion = async (suggestion: string) => {
