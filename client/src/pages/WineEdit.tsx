@@ -364,16 +364,15 @@ export default function WineEdit() {
                   type="text"
                   value={wine.name}
                   onChange={(e) => updateWine('name', e.target.value)}
+                  className="contact-form-input"
                   style={{ 
                     ...typography.bodyPlus1, 
                     color: "white !important", 
-                    background: wine.name ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "8px",
-                    padding: "12px",
+                    height: "56px",
                     width: "100%",
                     fontSize: "16px",
-                    fontWeight: "400"
+                    fontWeight: "400",
+                    padding: "0 16px"
                   }}
                   placeholder="Enter wine name"
                 />
@@ -387,16 +386,15 @@ export default function WineEdit() {
                   type="number"
                   value={wine.year}
                   onChange={(e) => updateWine('year', parseInt(e.target.value))}
+                  className="contact-form-input"
                   style={{ 
                     ...typography.bodyPlus1, 
                     color: "white !important", 
-                    background: wine.year ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "8px",
-                    padding: "12px",
+                    height: "56px",
                     width: "120px",
                     fontSize: "16px",
-                    fontWeight: "400"
+                    fontWeight: "400",
+                    padding: "0 16px"
                   }}
                   placeholder="Year"
                 />
@@ -418,16 +416,15 @@ export default function WineEdit() {
                   max="100"
                   value={wine.ratings.vn}
                   onChange={(e) => updateWineRating('vn', parseInt(e.target.value))}
+                  className="contact-form-input"
                   style={{ 
                     ...typography.num, 
                     color: "white !important", 
-                    background: wine.ratings.vn ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "8px",
-                    padding: "12px",
+                    height: "56px",
                     width: "100%",
                     fontSize: "16px",
-                    fontWeight: "400"
+                    fontWeight: "400",
+                    padding: "0 16px"
                   }}
                 />
               </div>
@@ -441,16 +438,15 @@ export default function WineEdit() {
                   max="100"
                   value={wine.ratings.jd}
                   onChange={(e) => updateWineRating('jd', parseInt(e.target.value))}
+                  className="contact-form-input"
                   style={{ 
                     ...typography.num, 
                     color: "white !important", 
-                    background: wine.ratings.jd ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "8px",
-                    padding: "12px",
+                    height: "56px",
                     width: "100%",
                     fontSize: "16px",
-                    fontWeight: "400"
+                    fontWeight: "400",
+                    padding: "0 16px"
                   }}
                 />
               </div>
@@ -464,14 +460,15 @@ export default function WineEdit() {
                   max="100"
                   value={wine.ratings.ws}
                   onChange={(e) => updateWineRating('ws', parseInt(e.target.value))}
+                  className="contact-form-input"
                   style={{ 
                     ...typography.num, 
-                    color: "white", 
-                    background: "rgba(255, 255, 255, 0.1)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "8px",
-                    padding: "12px",
-                    width: "100%"
+                    color: "white !important", 
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px"
                   }}
                 />
               </div>
@@ -486,14 +483,15 @@ export default function WineEdit() {
                   step="0.1"
                   value={wine.ratings.abv}
                   onChange={(e) => updateWineRating('abv', parseFloat(e.target.value))}
+                  className="contact-form-input"
                   style={{ 
                     ...typography.num, 
-                    color: "white", 
-                    background: "rgba(255, 255, 255, 0.1)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "8px",
-                    padding: "12px",
-                    width: "100%"
+                    color: "white !important", 
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px"
                   }}
                 />
               </div>
@@ -510,15 +508,17 @@ export default function WineEdit() {
               type="url"
               value={wine.buyAgainLink}
               onChange={(e) => updateWine('buyAgainLink', e.target.value)}
+              className="contact-form-input"
               style={{ 
                 ...typography.body1R, 
-                color: "white", 
-                background: "rgba(255, 255, 255, 0.1)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                borderRadius: "8px",
-                padding: "12px",
-                width: "100%"
+                color: "white !important", 
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px"
               }}
+              placeholder="Enter buy again link"
             />
           </div>
 
