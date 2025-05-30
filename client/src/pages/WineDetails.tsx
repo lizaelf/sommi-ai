@@ -27,20 +27,21 @@ interface Wine {
 
 export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
-  const [wine, setWine] = useState<Wine | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
-  useEffect(() => {
-    // Load wine data from CRM master data source
-    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-    const foundWine = crmWines.find((w: Wine) => w.id === wineId);
-    if (foundWine) {
-      setWine(foundWine);
+  // Load wine data immediately during render to prevent glitches
+  const loadWineData = () => {
+    try {
+      const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+      return crmWines.find((w: Wine) => w.id === wineId) || null;
+    } catch (error) {
+      console.error('Error loading wine data:', error);
+      return null;
     }
-    setIsLoading(false);
-  }, [wineId]);
+  };
+  
+  const wine = loadWineData();
   
   // Add scroll listener to detect when page is scrolled
   useEffect(() => {
@@ -60,15 +61,6 @@ export default function WineDetails() {
     };
   }, []);
   
-  // Don't render anything until wine data is loaded to prevent header glitch
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <div className="relative">
