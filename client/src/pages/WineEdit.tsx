@@ -189,9 +189,32 @@ export default function WineEdit() {
       }
 
       toast({
-        title: "Wine deleted",
-        description: "",
+        description: (
+          <span
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Wine deleted
+          </span>
+        ),
+        duration: 5000,
         className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
       });
 
       setLocation("/admin-crm");
