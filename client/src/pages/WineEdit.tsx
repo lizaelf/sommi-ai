@@ -309,15 +309,15 @@ export default function WineEdit() {
                 color: "white",
                 fontSize: "16px",
                 fontWeight: "400",
-                border: wine.image ? "none" : "2px dashed rgba(255, 255, 255, 0.3)",
-                backgroundImage: wine.image ? `url(${wine.image})` : "none",
+                border: (wine.image && !wine.image.includes("Product%20Image.png")) ? "none" : "2px dashed rgba(255, 255, 255, 0.3)",
+                backgroundImage: (wine.image && !wine.image.includes("Product%20Image.png")) ? `url(${wine.image})` : "none",
                 backgroundSize: "contain",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
               }}
               className="hover:bg-white/8 transition-colors"
             >
-              {!wine.image && "Upload"}
+              {!(wine.image && !wine.image.includes("Product%20Image.png")) && "Upload"}
               <input
                 type="file"
                 accept="image/*"
