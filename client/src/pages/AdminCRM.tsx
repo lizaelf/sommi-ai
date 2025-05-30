@@ -31,12 +31,18 @@ export default function AdminCRM() {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [wineCards, setWineCards] = useState<WineCardData[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Load wines from storage on component mount
   useEffect(() => {
     const wines = getAllWines();
     setWineCards(wines);
   }, []);
+
+  // Filter wines based on search term
+  const filteredWines = wineCards.filter(wine =>
+    wine.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleAddWine = async () => {
     const newWineId = wineCards.length > 0 ? Math.max(...wineCards.map((w) => w.id)) + 1 : 1;
@@ -148,11 +154,30 @@ export default function AdminCRM() {
       {/* Content */}
       <div className="pt-20 p-6">
         <div className="space-y-8">
+          {/* Search Bar */}
+          <div style={{ marginBottom: "24px" }}>
+            <input
+              type="text"
+              placeholder="Search wines by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="contact-form-input"
+              style={{
+                ...typography.body1R,
+                color: "white !important",
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px",
+              }}
+            />
+          </div>
+
           {/* Wine Cards Preview */}
           <div className="space-y-6">
-
             <div className="space-y-4">
-              {wineCards.map((card) => (
+              {filteredWines.map((card) => (
                 <div
                   key={card.id}
                   style={{
