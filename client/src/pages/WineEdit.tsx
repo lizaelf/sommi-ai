@@ -284,38 +284,40 @@ export default function WineEdit() {
       {/* Content */}
       <div className="pt-20 p-6">
         <div style={{ display: "flex", gap: "20px", marginBottom: "24px" }}>
-          {/* Wine Image with Update Button */}
+          {/* Wine Image Upload */}
           <div
             style={{
+              flex: 1,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               gap: "8px",
-              flex: 1,
             }}
           >
-            <div
+            <label
+              htmlFor="image-upload"
               style={{
-                width: "120px",
-                height: "160px",
+                width: "100%",
+                height: "200px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 background: "rgba(255, 255, 255, 0.05)",
                 borderRadius: "8px",
-                flexShrink: 0,
+                cursor: "pointer",
+                ...typography.bodyPlus1,
+                color: "white",
+                fontSize: "16px",
+                fontWeight: "400",
+                border: wine.image ? "none" : "2px dashed rgba(255, 255, 255, 0.3)",
+                backgroundImage: wine.image ? `url(${wine.image})` : "none",
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
               }}
+              className="hover:bg-white/8 transition-colors"
             >
-              <img
-                src={wine.image}
-                alt={wine.name}
-                style={{
-                  maxHeight: "150px",
-                  maxWidth: "110px",
-                  width: "auto",
-                  height: "auto",
-                }}
-              />
+              {!wine.image && "Upload"}
               <input
                 type="file"
                 accept="image/*"
@@ -332,26 +334,6 @@ export default function WineEdit() {
                 style={{ display: "none" }}
                 id="image-upload"
               />
-            </div>
-            <label
-              htmlFor="image-upload"
-              style={{
-                background: "rgba(255, 255, 255, 0.12)",
-                borderRadius: "24px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                ...typography.bodyPlus1,
-                color: "white",
-                fontSize: "12px",
-                fontWeight: "400",
-                width: "100%",
-                height: "40px",
-              }}
-              className="hover:bg-white/8 transition-colors"
-            >
-              Update
             </label>
           </div>
 
