@@ -169,9 +169,21 @@ export default function WineEdit() {
 
   const deleteWine = () => {
     try {
+      console.log("Deleting wine with ID:", wine.id);
       const wines = getStoredWines();
+      console.log("Current wines before delete:", wines);
       const updatedWines = wines.filter((w) => w.id !== wine.id);
+      console.log("Updated wines after delete:", updatedWines);
       localStorage.setItem("adminWineCards", JSON.stringify(updatedWines));
+
+      // Also remove from wine data manager if it exists there
+      try {
+        const wineDataKey = `editableWineData_${wine.id}`;
+        localStorage.removeItem(wineDataKey);
+        console.log("Removed wine data:", wineDataKey);
+      } catch (e) {
+        console.log("No wine data to remove:", e);
+      }
 
       toast({
         title: "Wine Deleted",
@@ -180,6 +192,7 @@ export default function WineEdit() {
 
       setLocation("/admin-crm");
     } catch (error) {
+      console.error("Delete error:", error);
       toast({
         title: "Error",
         description: "Failed to delete wine.",
