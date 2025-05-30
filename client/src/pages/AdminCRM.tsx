@@ -56,7 +56,7 @@ export default function AdminCRM() {
       name: "",
       year: 0,
       bottles: 0,
-      image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
+      image: "",
       ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
       buyAgainLink: "",
       qrCode: `QR_${newWineId.toString().padStart(3, '0')}`,
@@ -250,7 +250,7 @@ export default function AdminCRM() {
                         }}
                       >
                         <img
-                          src={card.image || placeholderImage}
+                          src={card.image && card.image.trim() !== "" ? card.image : placeholderImage}
                           alt={card.name || "Wine placeholder"}
                           style={{
                             maxHeight: "90px",
