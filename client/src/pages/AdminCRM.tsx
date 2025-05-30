@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
+import { QRCodeSVG } from "qrcode.react";
+import { generateWineQRData } from "@/utils/cellarManager";
 
 interface WineCardData {
   id: number;
@@ -459,64 +461,37 @@ export default function AdminCRM() {
                       )}
                     </div>
 
-                    {/* QR */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
-                        QR:
+                    {/* QR Code */}
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px", marginTop: "4px" }}>
+                        QR Code:
                       </span>
-                      {isEditMode ? (
-                        <input
-                          type="text"
-                          value={card.qrCode}
-                          onChange={(e) => updateWineCard(card.id, 'qrCode', e.target.value)}
-                          style={{ 
-                            ...typography.bodyPlus1, 
-                            color: "white", 
-                            background: "rgba(255, 255, 255, 0.1)",
-                            border: "1px solid rgba(255, 255, 255, 0.2)",
-                            borderRadius: "4px",
-                            padding: "4px 8px",
-                            flex: 1
-                          }}
-                        />
-                      ) : (
-                        <span style={{ ...typography.bodyPlus1, color: "white" }}>
-                          {card.qrCode}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* QR Link */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
-                        QR Link:
-                      </span>
-                      {isEditMode ? (
-                        <input
-                          type="url"
-                          value={card.qrLink}
-                          onChange={(e) => updateWineCard(card.id, 'qrLink', e.target.value)}
-                          style={{ 
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        {/* QR Code Display */}
+                        <div style={{ 
+                          background: "white", 
+                          padding: "8px", 
+                          borderRadius: "8px",
+                          display: "inline-block"
+                        }}>
+                          <QRCode 
+                            value={generateWineQRData(card.id)}
+                            size={80}
+                            level="M"
+                          />
+                        </div>
+                        {/* QR Code URL */}
+                        <div style={{ maxWidth: "200px" }}>
+                          <span style={{ 
                             ...typography.body1R, 
-                            color: "white", 
-                            background: "rgba(255, 255, 255, 0.1)",
-                            border: "1px solid rgba(255, 255, 255, 0.2)",
-                            borderRadius: "4px",
-                            padding: "4px 8px",
-                            flex: 1
-                          }}
-                        />
-                      ) : (
-                        <a 
-                          href={card.qrLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ ...typography.body1R, color: "#3B82F6", textDecoration: "underline" }}
-                          className="hover:text-blue-400 transition-colors"
-                        >
-                          {card.qrLink}
-                        </a>
-                      )}
+                            color: "rgba(255, 255, 255, 0.8)",
+                            fontSize: "12px",
+                            wordBreak: "break-all"
+                          }}>
+                            {generateWineQRData(card.id)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
