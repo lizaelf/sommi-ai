@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
-import { QRCodeSVG } from "qrcode.react";
 import { generateWineQRData } from "@/utils/cellarManager";
 
 interface WineCardData {
@@ -472,13 +471,21 @@ export default function AdminCRM() {
                           background: "white", 
                           padding: "8px", 
                           borderRadius: "8px",
-                          display: "inline-block"
+                          width: "96px",
+                          height: "96px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "2px solid #000"
                         }}>
-                          <QRCode 
-                            value={generateWineQRData(card.id)}
-                            size={80}
-                            level="M"
-                          />
+                          <div style={{
+                            fontSize: "10px",
+                            textAlign: "center",
+                            color: "#000",
+                            lineHeight: "12px"
+                          }}>
+                            QR Code<br/>Wine #{card.id}
+                          </div>
                         </div>
                         {/* QR Code URL */}
                         <div style={{ maxWidth: "200px" }}>
