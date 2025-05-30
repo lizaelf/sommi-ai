@@ -837,13 +837,10 @@ const Cellar = () => {
             top: "80px",
             left: "0",
             right: "0",
-            backgroundColor: "#2A2A29",
-            borderRadius: "16px",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
+            backgroundColor: "transparent",
             padding: "0",
             margin: "0 16px",
             zIndex: 1000,
-            backdropFilter: "blur(20px)",
           }}
           data-profile-menu
         >
