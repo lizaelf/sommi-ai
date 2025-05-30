@@ -26,8 +26,8 @@ interface WineCardData {
 export default function AdminCRM() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [editingWine, setEditingWine] = useState<WineCardData | null>(null);
-  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [wineCards, setWineCards] = useState<WineCardData[]>([
     {
@@ -111,17 +111,7 @@ export default function AdminCRM() {
     });
   };
 
-  const toggleCardExpansion = (cardId: number) => {
-    setExpandedCards(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(cardId)) {
-        newSet.delete(cardId);
-      } else {
-        newSet.add(cardId);
-      }
-      return newSet;
-    });
-  };
+
 
   return (
     <div className="min-h-screen bg-background text-white">
@@ -153,322 +143,75 @@ export default function AdminCRM() {
           <div className="space-y-6">
 
             <div className="space-y-4">
-              {wineCards.map((card) => {
-                const isExpanded = expandedCards.has(card.id);
-                return (
+              {wineCards.map((card) => (
+                <div
+                  key={card.id}
+                  style={{
+                    background: "rgba(25, 25, 25, 0.8)",
+                    borderRadius: "16px",
+                    border: "1px solid #494949",
+                    padding: "20px",
+                    position: "relative",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setLocation(`/wine-edit/${card.id}`)}
+                >
                   <div
-                    key={card.id}
                     style={{
-                      background: "rgba(25, 25, 25, 0.8)",
-                      borderRadius: "16px",
-                      border: "1px solid #494949",
-                      padding: "20px",
-                      position: "relative",
+                      display: "flex",
+                      gap: "20px",
+                      alignItems: "center",
                     }}
                   >
-                    {/* Collapsed View - Essential Info */}
+                    {/* Wine Image */}
                     <div
                       style={{
+                        width: "80px",
+                        height: "100px",
                         display: "flex",
-                        gap: "20px",
                         alignItems: "center",
-                        cursor: "pointer",
+                        justifyContent: "center",
+                        background: "rgba(255, 255, 255, 0.05)",
+                        borderRadius: "8px",
+                        flexShrink: 0,
                       }}
-                      onClick={() => toggleCardExpansion(card.id)}
                     >
-                      {/* Wine Image */}
-                      <div
+                      <img
+                        src={card.image}
+                        alt={card.name}
                         style={{
-                          width: "80px",
-                          height: "100px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          background: "rgba(255, 255, 255, 0.05)",
-                          borderRadius: "8px",
-                          flexShrink: 0,
+                          maxHeight: "90px",
+                          maxWidth: "70px",
+                          width: "auto",
+                          height: "auto",
                         }}
-                      >
-                        <img
-                          src={card.image}
-                          alt={card.name}
-                          style={{
-                            maxHeight: "90px",
-                            maxWidth: "70px",
-                            width: "auto",
-                            height: "auto",
-                          }}
-                        />
-                      </div>
+                      />
+                    </div>
 
-                      {/* Essential Info */}
-                      <div style={{ flex: 1 }}>
-                        <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", marginBottom: "4px" }}>
-                          ID: {card.id}
-                        </div>
-                        <div style={{ ...typography.bodyPlus1, color: "white" }}>
-                          {card.year} {card.name}
-                        </div>
+                    {/* Essential Info */}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", marginBottom: "4px" }}>
+                        ID: {card.id}
                       </div>
-
-                      {/* Expand/Collapse Icon */}
-                      <div style={{ padding: "8px" }}>
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="white"
-                          style={{
-                            transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                            transition: "transform 0.2s ease",
-                          }}
-                        >
-                          <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
-                        </svg>
+                      <div style={{ ...typography.bodyPlus1, color: "white" }}>
+                        {card.year} {card.name}
                       </div>
                     </div>
 
-                    {/* Expanded View - Detailed Info */}
-                    {isExpanded && (
-                      <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "1px solid #494949" }}>
-                        <div style={{ display: "flex", gap: "20px" }}>
-                          {/* Left Side: Wine Image with Edit */}
-                          <div
-                            style={{
-                              width: "120px",
-                              height: "160px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              background: "rgba(255, 255, 255, 0.05)",
-                              borderRadius: "8px",
-                              flexShrink: 0,
-                              position: "relative",
-                            }}
-                          >
-                            <img
-                              src={card.image}
-                              alt={card.name}
-                              style={{
-                                maxHeight: "150px",
-                                maxWidth: "110px",
-                                width: "auto",
-                                height: "auto",
-                              }}
-                            />
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  const reader = new FileReader();
-                                  reader.onload = (event) => {
-                                    updateWineCard(card.id, 'image', event.target?.result as string);
-                                  };
-                                  reader.readAsDataURL(file);
-                                }
-                              }}
-                              style={{ display: "none" }}
-                              id={`image-upload-${card.id}`}
-                            />
-                            <label
-                              htmlFor={`image-upload-${card.id}`}
-                              style={{
-                                position: "absolute",
-                                bottom: "4px",
-                                right: "4px",
-                                background: "rgba(255, 255, 255, 0.9)",
-                                borderRadius: "4px",
-                                padding: "4px",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                              className="hover:bg-white transition-colors"
-                            >
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="black">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                              </svg>
-                            </label>
-                          </div>
-
-                          {/* Right Side: Editable Details */}
-                          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px" }}>
-                            {/* Wine Name */}
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
-                                Wine name:
-                              </span>
-                              <input
-                                type="text"
-                                value={card.name}
-                                onChange={(e) => updateWineCard(card.id, 'name', e.target.value)}
-                                style={{ 
-                                  ...typography.bodyPlus1, 
-                                  color: "white", 
-                                  background: "rgba(255, 255, 255, 0.1)",
-                                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                                  borderRadius: "4px",
-                                  padding: "4px 8px",
-                                  flex: 1
-                                }}
-                              />
-                            </div>
-
-                            {/* Wine Year */}
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
-                                Wine year:
-                              </span>
-                              <input
-                                type="number"
-                                value={card.year}
-                                onChange={(e) => updateWineCard(card.id, 'year', parseInt(e.target.value))}
-                                style={{ 
-                                  ...typography.bodyPlus1, 
-                                  color: "white", 
-                                  background: "rgba(255, 255, 255, 0.1)",
-                                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                                  borderRadius: "4px",
-                                  padding: "4px 8px",
-                                  width: "80px"
-                                }}
-                              />
-                            </div>
-
-                            {/* Ratings Row */}
-                            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>VN:</span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  value={card.ratings.vn}
-                                  onChange={(e) => updateWineCardRating(card.id, 'vn', parseInt(e.target.value))}
-                                  style={{ 
-                                    ...typography.num, 
-                                    color: "white", 
-                                    background: "rgba(255, 255, 255, 0.1)",
-                                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                                    borderRadius: "4px",
-                                    padding: "2px 4px",
-                                    width: "50px"
-                                  }}
-                                />
-                              </div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>JD:</span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  value={card.ratings.jd}
-                                  onChange={(e) => updateWineCardRating(card.id, 'jd', parseInt(e.target.value))}
-                                  style={{ 
-                                    ...typography.num, 
-                                    color: "white", 
-                                    background: "rgba(255, 255, 255, 0.1)",
-                                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                                    borderRadius: "4px",
-                                    padding: "2px 4px",
-                                    width: "50px"
-                                  }}
-                                />
-                              </div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>WS:</span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  value={card.ratings.ws}
-                                  onChange={(e) => updateWineCardRating(card.id, 'ws', parseInt(e.target.value))}
-                                  style={{ 
-                                    ...typography.num, 
-                                    color: "white", 
-                                    background: "rgba(255, 255, 255, 0.1)",
-                                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                                    borderRadius: "4px",
-                                    padding: "2px 4px",
-                                    width: "50px"
-                                  }}
-                                />
-                              </div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>ABV:</span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max="20"
-                                  step="0.1"
-                                  value={card.ratings.abv}
-                                  onChange={(e) => updateWineCardRating(card.id, 'abv', parseFloat(e.target.value))}
-                                  style={{ 
-                                    ...typography.num, 
-                                    color: "white", 
-                                    background: "rgba(255, 255, 255, 0.1)",
-                                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                                    borderRadius: "4px",
-                                    padding: "2px 4px",
-                                    width: "60px"
-                                  }}
-                                />
-                              </div>
-                            </div>
-
-                            {/* Buy Again Link */}
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px" }}>
-                                Buy again:
-                              </span>
-                              <input
-                                type="url"
-                                value={card.buyAgainLink}
-                                onChange={(e) => updateWineCard(card.id, 'buyAgainLink', e.target.value)}
-                                style={{ 
-                                  ...typography.body1R, 
-                                  color: "white", 
-                                  background: "rgba(255, 255, 255, 0.1)",
-                                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                                  borderRadius: "4px",
-                                  padding: "4px 8px",
-                                  flex: 1
-                                }}
-                              />
-                            </div>
-
-                            {/* QR Code */}
-                            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
-                              <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", minWidth: "80px", marginTop: "4px" }}>
-                                QR Code:
-                              </span>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                                <SimpleQRCode 
-                                  value={`${window.location.origin}/wine-scan?id=${card.id}`}
-                                  size={80}
-                                />
-                                <div style={{ maxWidth: "200px" }}>
-                                  <span style={{ 
-                                    ...typography.body1R, 
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    fontSize: "12px",
-                                    wordBreak: "break-all"
-                                  }}>
-                                    {`${window.location.origin}/wine-scan?id=${card.id}`}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    {/* Arrow Icon */}
+                    <div style={{ padding: "8px" }}>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                      >
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+                      </svg>
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
