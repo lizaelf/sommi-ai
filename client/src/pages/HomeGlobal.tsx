@@ -55,7 +55,9 @@ const HomeGlobal = () => {
     // Load wines from CRM storage
     const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
     if (crmWines.length > 0) {
-      setWines(crmWines);
+      // Show only wines with ID1 and ID2
+      const filteredWines = crmWines.filter((wine: Wine) => wine.id === 1 || wine.id === 2);
+      setWines(filteredWines);
     } else {
       // Initialize with default data if no CRM data exists
       const defaultWines = [
