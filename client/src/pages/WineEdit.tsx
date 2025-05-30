@@ -719,13 +719,31 @@ export default function WineEdit() {
           width: "100%",
           background: "#0A0A0A",
           borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-          padding: "16px 20px", // ← FIX: Add horizontal padding
+          padding: "16px 20px",
           zIndex: 1000,
+          boxSizing: "border-box"
         }}
       >
-        <Button onClick={saveWine} fullWidth={true}>
+        <button
+          onClick={saveWine}
+          style={{
+            width: "100%",
+            height: "56px",
+            background: "rgba(255, 255, 255, 0.12)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            borderRadius: "32px",
+            color: "white",
+            fontFamily: "Inter, sans-serif",
+            fontSize: "16px",
+            fontWeight: 500,
+            cursor: "pointer",
+            boxSizing: "border-box",
+            margin: 0,
+            padding: "0 16px"
+          }}
+        >
           Save Changes
-        </Button>
+        </button>
       </div>
     </div>
   );
