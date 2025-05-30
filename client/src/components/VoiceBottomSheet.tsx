@@ -37,6 +37,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const [userQuestion, setUserQuestion] = useState<string>('');
+  const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
 
   // Wine-related suggestions
   const suggestions = [
@@ -44,6 +45,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     "Tasting notes", 
     "Serving"
   ];
+
+  // Reset loading state when audio starts playing
+  useEffect(() => {
+    if (isResponding && isLoadingAudio) {
+      setIsLoadingAudio(false);
+    }
+  }, [isResponding, isLoadingAudio]);
 
   // Function to speak suggestion using OpenAI TTS
   const speakSuggestion = async (suggestion: string) => {
@@ -408,7 +416,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               }}>
                 <button
                   className="voice-bottom-sheet-button"
-                  onClick={onListenResponse}
+                  onClick={() => {
+                    setIsLoadingAudio(true);
+                    onListenResponse?.();
+                  }}
+                  disabled={isLoadingAudio}
                   style={{
                     width: '100%',
                     backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -422,17 +434,26 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     gap: '8px',
                     color: 'white',
                     border: 'none',
-                    cursor: 'pointer',
+                    cursor: isLoadingAudio ? 'default' : 'pointer',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '16px',
                     fontWeight: 500,
                     outline: 'none',
                     transition: 'none',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    opacity: isLoadingAudio ? 0.7 : 1
                   }}
                 >
-                  <span style={{ fontSize: '18px' }}>🎧</span>
-                  Listen Response
+                  {isLoadingAudio ? (
+                    <>
+                      <ShiningText text="Loading..." />
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: '18px' }}>🎧</span>
+                      Listen Response
+                    </>
+                  )}
                 </button>
               </div>
             )}
