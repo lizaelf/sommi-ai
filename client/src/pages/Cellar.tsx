@@ -865,18 +865,26 @@ const Cellar = () => {
                 setShowProfileMenu(false);
                 // Load existing contact data if available
                 const savedContactData = localStorage.getItem("contactData");
+                console.log("Loading saved contact data:", savedContactData);
                 if (savedContactData) {
-                  const contactData = JSON.parse(savedContactData);
-                  setFormData({
-                    firstName: contactData.firstName || "",
-                    lastName: contactData.lastName || "",
-                    email: contactData.email || "",
-                    phone: contactData.phone || "",
-                  });
-                  // Also set the country if saved
-                  if (contactData.country) {
-                    setSelectedCountry(contactData.country);
+                  try {
+                    const contactData = JSON.parse(savedContactData);
+                    console.log("Parsed contact data:", contactData);
+                    setFormData({
+                      firstName: contactData.firstName || "",
+                      lastName: contactData.lastName || "",
+                      email: contactData.email || "",
+                      phone: contactData.phone || "",
+                    });
+                    // Also set the country if saved
+                    if (contactData.country) {
+                      setSelectedCountry(contactData.country);
+                    }
+                  } catch (error) {
+                    console.error("Error parsing saved contact data:", error);
                   }
+                } else {
+                  console.log("No saved contact data found");
                 }
                 setShowModal(true);
                 setAnimationState("opening");
