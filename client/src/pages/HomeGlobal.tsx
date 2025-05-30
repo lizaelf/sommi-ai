@@ -9,10 +9,23 @@ import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { getAllWines, getEditableWineData, type WineData } from "@/utils/wineDataManager";
 
+interface HomeWine {
+  id: number;
+  name: string;
+  bottles: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+}
+
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [location, setLocation] = useLocation();
-  const [wines, setWines] = useState<WineData[]>([]);
+  const [wines, setWines] = useState<HomeWine[]>([]);
 
   const handleWineClick = (wineId: number) => {
     if (wineId === 1) {
@@ -64,9 +77,12 @@ const HomeGlobal = () => {
   useEffect(() => {
     // Load wines from CRM master data source
     const crmWines = getAllWines();
-    const homeWines = crmWines.map(wine => ({
-      ...wine,
+    const homeWines: HomeWine[] = crmWines.map(wine => ({
+      id: wine.id,
+      name: wine.name,
+      bottles: wine.bottles,
       image: getWineImage(wine.id, wine.image),
+      ratings: wine.ratings,
     }));
     setWines(homeWines);
   }, []);
