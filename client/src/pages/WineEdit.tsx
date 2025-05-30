@@ -217,7 +217,7 @@ export default function WineEdit() {
           </svg>
         </button>
         <h1 className="text-lg font-medium text-white text-center flex-1 truncate overflow-hidden whitespace-nowrap">
-          Edit Wine
+          {wine.name === "" ? "Add Wine" : "Edit Wine"}
         </h1>
         <div className="relative dropdown-container">
           <button
