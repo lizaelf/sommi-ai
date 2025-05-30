@@ -10,6 +10,7 @@ import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
 import HomeGlobal from "@/pages/HomeGlobal";
 import AdminCRM from "@/pages/AdminCRM";
+import WineScan from "@/pages/WineScan";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/wine/:id" component={WineDetails} />
       <Route path="/wine-details/:id" component={WineDetails} />
       <Route path="/admin-crm" component={AdminCRM} />
+      <Route path="/scan-wine/:id" component={WineScan} />
       <Route component={NotFound} />
     </Switch>
   );

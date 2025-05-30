@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/use-toast";
+import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import backgroundImage from "@assets/Background.png";
 import wineBottleImage from "@assets/Product Image.png";
 import usFlagImage from "@assets/US-flag.png";
@@ -48,6 +49,9 @@ const Cellar = () => {
     name: "United States",
     code: "US",
   });
+
+  // Cellar wines state
+  const [cellarWines, setCellarWines] = useState<CellarWine[]>([]);
 
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
@@ -492,6 +496,26 @@ const Cellar = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Load cellar wines effect
+  useEffect(() => {
+    const loadCellarWines = () => {
+      const wines = CellarManager.getCellarWines();
+      setCellarWines(wines);
+    };
+
+    loadCellarWines();
+
+    // Listen for storage changes to update wines when scanned from other tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'userCellarWines') {
+        loadCellarWines();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Portal setup effect

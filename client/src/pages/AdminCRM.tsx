@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
+import { SimpleQRCode } from "@/components/SimpleQRCode";
 
 interface WineCardData {
   id: number;
@@ -467,26 +468,10 @@ export default function AdminCRM() {
                       </span>
                       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                         {/* QR Code Display */}
-                        <div style={{ 
-                          background: "white", 
-                          padding: "8px", 
-                          borderRadius: "8px",
-                          width: "96px",
-                          height: "96px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          border: "2px solid #000"
-                        }}>
-                          <div style={{
-                            fontSize: "10px",
-                            textAlign: "center",
-                            color: "#000",
-                            lineHeight: "12px"
-                          }}>
-                            QR Code<br/>Wine #{card.id}
-                          </div>
-                        </div>
+                        <SimpleQRCode 
+                          value={generateWineQRData(card.id)}
+                          size={80}
+                        />
                         {/* QR Code URL */}
                         <div style={{ maxWidth: "200px" }}>
                           <span style={{ 
