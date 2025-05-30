@@ -128,43 +128,20 @@ export default function AdminCRM() {
               Save All
             </Button>
           )}
-          <button
+          <div
             onClick={() => setShowSearch(!showSearch)}
             style={{
               width: '40px',
               height: '40px',
-              minWidth: '40px',
-              minHeight: '40px',
-              maxWidth: '40px',
-              maxHeight: '40px',
-              padding: 0,
-              margin: 0,
-              border: 'none',
-              borderWidth: 0,
-              borderStyle: 'none',
-              background: 'transparent',
-              backgroundColor: 'transparent',
-              backgroundImage: 'none',
               color: 'white',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              outline: 'none',
-              outlineWidth: 0,
-              boxShadow: 'none',
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              MozAppearance: 'none',
-              borderRadius: 0,
-              textDecoration: 'none',
-              fontSize: 'inherit',
-              fontFamily: 'inherit',
-              lineHeight: 'normal'
+              justifyContent: 'center'
             }}
           >
             <Search size={20} />
-          </button>
+          </div>
           <button
             onClick={handleAddWine}
             className="admin-add-button"
