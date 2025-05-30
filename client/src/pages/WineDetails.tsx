@@ -28,6 +28,7 @@ interface Wine {
 export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
   const [wine, setWine] = useState<Wine | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
@@ -38,6 +39,7 @@ export default function WineDetails() {
     if (foundWine) {
       setWine(foundWine);
     }
+    setIsLoading(false);
   }, [wineId]);
   
   // Add scroll listener to detect when page is scrolled
@@ -58,6 +60,15 @@ export default function WineDetails() {
     };
   }, []);
   
+  // Don't render anything until wine data is loaded to prevent header glitch
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="relative">
