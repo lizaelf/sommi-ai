@@ -162,11 +162,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         recognitionRef.current.maxAlternatives = 1;
         
         // Extended timeout settings to prevent cutting off speech
+        // Give users much more time to speak complete questions
         if ('speechTimeout' in recognitionRef.current) {
-          recognitionRef.current.speechTimeout = 15000;
+          recognitionRef.current.speechTimeout = 30000; // 30 seconds
         }
         if ('speechTimeoutBuffer' in recognitionRef.current) {
-          recognitionRef.current.speechTimeoutBuffer = 8000;
+          recognitionRef.current.speechTimeoutBuffer = 15000; // 15 seconds buffer
+        }
+        if ('silenceTimeout' in recognitionRef.current) {
+          recognitionRef.current.silenceTimeout = 8000; // 8 seconds silence before stopping
         }
         
         recognitionRef.current.onresult = (event: any) => {
@@ -185,6 +189,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           // Update status with interim results to show activity
           if (interimTranscript.trim()) {
             setStatus(`Listening: "${interimTranscript.trim()}"`);
+          } else if (!finalTranscript.trim()) {
+            setStatus('Listening for your question...');
           }
           
           // Only process when we have a final result
@@ -395,10 +401,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     
     console.log("No cached audio available, generating text-to-speech...");
     setIsLoadingAudio(true);
+    setShowListenButton(false); // Hide listen button while loading
     
     try {
       console.log("Playing stored response with OpenAI TTS");
-      setIsResponding(true);
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
@@ -415,6 +421,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         
         audio.onplay = () => {
           setIsLoadingAudio(false); // Clear loading state when audio starts
+          setIsResponding(true); // Set responding state when audio actually starts
         };
         
         audio.onended = () => {
