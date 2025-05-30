@@ -269,7 +269,6 @@ export default function WineEdit() {
 
       {/* Content */}
       <div className="pt-20 p-6">
-        <div className="max-w-2xl mx-auto">
           <div style={{ display: "flex", gap: "20px", marginBottom: "24px" }}>
             {/* Wine Image with Update Button */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
@@ -435,7 +434,6 @@ export default function WineEdit() {
 
           {/* Ratings */}
           <div style={{ marginBottom: "24px" }}>
-            <h3 style={{ ...typography.h1, color: "white", marginBottom: "16px" }}>Ratings</h3>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
               <div>
                 <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
@@ -531,7 +529,6 @@ export default function WineEdit() {
 
           {/* Buy Again */}
           <div style={{ marginBottom: "24px" }}>
-            <h3 style={{ ...typography.h1, color: "white", marginBottom: "16px" }}>Buy again</h3>
             <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
               Buy Again Link
             </label>
@@ -563,9 +560,8 @@ export default function WineEdit() {
             </span>
           </div>
 
-          {/* Bottom padding to prevent content from being hidden behind fixed button */}
-          <div style={{ height: "100px" }}></div>
-        </div>
+        {/* Bottom padding to prevent content from being hidden behind fixed button */}
+        <div style={{ height: "100px" }}></div>
       </div>
 
       {/* Fixed Save Button */}
