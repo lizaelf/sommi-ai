@@ -330,21 +330,24 @@ export default function WineEdit() {
                 htmlFor="image-upload"
                 style={{
                   position: "absolute",
-                  bottom: "4px",
-                  right: "4px",
-                  background: "rgba(255, 255, 255, 0.9)",
-                  borderRadius: "4px",
-                  padding: "4px",
+                  bottom: "8px",
+                  right: "8px",
+                  background: "rgba(0, 0, 0, 0.12)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "24px",
+                  padding: "6px 12px",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  ...typography.bodyPlus1,
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "400",
                 }}
-                className="hover:bg-white transition-colors"
+                className="hover:bg-white/8 transition-colors"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="black">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                </svg>
+                Update
               </label>
             </div>
 
