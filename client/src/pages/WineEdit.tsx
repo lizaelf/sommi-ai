@@ -676,46 +676,11 @@ export default function WineEdit() {
         <div style={{ height: "100px" }}></div>
       </div>
 
-      {/* Fixed Buy Again Button */}
-      <div
-        style={{
-          backgroundColor: "#1C1C1C",
-          padding: "16px",
-          zIndex: 50,
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          borderTop: "1px solid rgba(255, 255, 255, 0.2)",
-        }}
-      >
-        <div className="max-w-3xl mx-auto">
-          <button
-            onClick={saveWine}
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.08)",
-              borderRadius: "32px",
-              height: "56px",
-              minHeight: "56px",
-              maxHeight: "56px",
-              padding: "0 16px",
-              margin: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "none",
-              color: "white",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              cursor: "pointer",
-              outline: "none",
-              width: "100%",
-            }}
-          >
-            Save Changes
-          </button>
-        </div>
+      {/* Fixed Save Button */}
+      <div className="fixed bottom-0 left-0 w-full z-50 border-t border-white/10 bg-background px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4">
+        <Button className="w-full" onClick={saveWine}>
+          Save Changes
+        </Button>
       </div>
     </div>
   );
