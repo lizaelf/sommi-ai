@@ -134,8 +134,8 @@ export default function AdminCRM() {
           )}
           <button
             onClick={handleAddWine}
+            className="admin-add-button"
             style={{
-              height: "40px",
               padding: "0 16px",
               background: 'rgba(255, 255, 255, 0.04)',
               borderRadius: 24,
