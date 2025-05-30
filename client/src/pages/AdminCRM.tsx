@@ -44,7 +44,7 @@ export default function AdminCRM() {
     const homeGlobalWines = [
       {
         id: 1,
-        name: "Lytton Springs",
+        name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
         year: 2021,
         bottles: 4,
         image: wineBottlePath1,
@@ -60,7 +60,7 @@ export default function AdminCRM() {
       },
       {
         id: 2,
-        name: "Monte Bello",
+        name: "Ridge Monte Bello Cabernet Sauvignon",
         year: 2021,
         bottles: 2,
         image: wineBottlePath2,
