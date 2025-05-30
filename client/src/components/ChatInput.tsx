@@ -126,7 +126,39 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
               </svg>
             </div>
           ) : (
-            voiceButtonComponent
+            // Show microphone button when input is empty
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer'
+              }}
+              onClick={() => {
+                // Trigger voice input if voiceButtonComponent has click handler
+                if (voiceButtonComponent && typeof voiceButtonComponent === 'object' && 'props' in voiceButtonComponent) {
+                  // Get the voice component and trigger its functionality
+                  const voiceElement = document.querySelector('[data-voice-button]');
+                  if (voiceElement) {
+                    (voiceElement as HTMLElement).click();
+                  }
+                }
+              }}
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                viewBox="0 0 20 20"
+                style={{ color: 'white' }}
+              >
+                <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
+              </svg>
+            </div>
           )}
         </div>
       </div>
