@@ -1431,6 +1431,49 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             >
                               Show whole dialog
                             </button>
+
+                            {/* Ask more button */}
+                            <button
+                              onClick={() => {
+                                // Focus on the chat input to encourage user to ask more questions
+                                const chatInput = document.querySelector('input[placeholder*="Ask"], textarea[placeholder*="Ask"]') as HTMLElement;
+                                if (chatInput) {
+                                  chatInput.focus();
+                                }
+                                // Scroll to the chat input area
+                                const chatContainer = document.getElementById('conversation');
+                                if (chatContainer) {
+                                  chatContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                }
+                              }}
+                              style={{
+                                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                                borderRadius: "32px",
+                                height: "56px",
+                                minHeight: "56px",
+                                maxHeight: "56px",
+                                padding: "0 16px",
+                                margin: "16px 0 0 0",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                border: "none",
+                                color: "white",
+                                fontFamily: "Inter, sans-serif",
+                                fontSize: "16px",
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                outline: "none",
+                                width: "100%",
+                                maxWidth: "320px",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                boxSizing: "border-box",
+                                lineHeight: "1",
+                              }}
+                            >
+                              Ask more
+                            </button>
                           </div>
                         )}
                       </>
