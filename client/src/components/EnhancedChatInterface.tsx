@@ -398,6 +398,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
   // Create a ref for the chat container to allow scrolling
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const voiceAssistantRef = useRef<any>(null);
+  
+  // Function to handle microphone button click
+  const handleMicClick = () => {
+    console.log("Microphone button clicked in EnhancedChatInterface");
+    if (voiceAssistantRef.current && voiceAssistantRef.current.startListening) {
+      voiceAssistantRef.current.startListening();
+    }
+  };
 
   // API status check
   const { data: apiStatus } = useQuery({

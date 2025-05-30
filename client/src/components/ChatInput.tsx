@@ -6,11 +6,12 @@ interface ChatInputProps {
   onFocus?: () => void;
   onBlur?: () => void;
   voiceButtonComponent?: React.ReactNode;
+  onMicClick?: () => void;
 }
 
 // Suggestions are now handled in the parent component
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, voiceButtonComponent }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, voiceButtonComponent, onMicClick }) => {
   const [message, setMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -139,13 +140,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                 cursor: 'pointer'
               }}
               onClick={() => {
-                // Trigger voice input if voiceButtonComponent has click handler
-                if (voiceButtonComponent && typeof voiceButtonComponent === 'object' && 'props' in voiceButtonComponent) {
-                  // Get the voice component and trigger its functionality
-                  const voiceElement = document.querySelector('[data-voice-button]');
-                  if (voiceElement) {
-                    (voiceElement as HTMLElement).click();
-                  }
+                console.log("Microphone button clicked in ChatInput");
+                if (onMicClick) {
+                  onMicClick();
                 }
               }}
             >
