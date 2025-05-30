@@ -414,23 +414,52 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       
       const recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
-      recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.continuous = true;
+      recognition.interimResults = true;
       recognition.maxAlternatives = 1;
+      
+      // Extended timeout settings to prevent cutting off speech
+      if ('speechTimeout' in recognition) {
+        recognition.speechTimeout = 30000; // 30 seconds
+      }
+      if ('speechTimeoutBuffer' in recognition) {
+        recognition.speechTimeoutBuffer = 15000; // 15 seconds buffer
+      }
+      if ('silenceTimeout' in recognition) {
+        recognition.silenceTimeout = 8000; // 8 seconds silence before stopping
+      }
       
       recognition.onstart = () => {
         console.log("Voice recognition started");
       };
       
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        console.log("Voice recognition result:", transcript);
-        if (transcript.trim()) {
-          handleSendMessage(transcript.trim());
+      recognition.onresult = (event: any) => {
+        const results = event.results;
+        let finalTranscript = '';
+        let interimTranscript = '';
+        
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].isFinal) {
+            finalTranscript = results[i][0].transcript;
+          } else {
+            interimTranscript += results[i][0].transcript;
+          }
+        }
+        
+        // Show interim results in console for feedback
+        if (interimTranscript.trim()) {
+          console.log("Listening:", interimTranscript.trim());
+        }
+        
+        // Only process when we have a final result
+        if (finalTranscript.trim()) {
+          console.log("Voice recognition final result:", finalTranscript);
+          recognition.stop();
+          handleSendMessage(finalTranscript.trim());
         }
       };
       
-      recognition.onerror = (event) => {
+      recognition.onerror = (event: any) => {
         console.error("Voice recognition error:", event.error);
       };
       
