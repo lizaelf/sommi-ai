@@ -248,8 +248,6 @@ export default function AdminCRM() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        background: "rgba(255, 255, 255, 0.05)",
-                        borderRadius: "8px",
                         flexShrink: 0,
                       }}
                     >
