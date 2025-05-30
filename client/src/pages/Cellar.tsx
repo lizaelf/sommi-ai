@@ -825,18 +825,19 @@ const Cellar = () => {
           style={{
             position: "fixed",
             top: "80px",
-            right: "16px",
+            left: "0",
+            right: "0",
             backgroundColor: "#2A2A29",
             borderRadius: "16px",
             border: "1px solid rgba(255, 255, 255, 0.12)",
-            padding: "16px",
+            padding: "0",
+            margin: "0 16px",
             zIndex: 1000,
             backdropFilter: "blur(20px)",
-            minWidth: "200px",
           }}
           data-profile-menu
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
             <button
               onClick={() => {
                 setShowProfileMenu(false);
@@ -848,26 +849,26 @@ const Cellar = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "12px",
-                padding: "12px 16px",
-                borderRadius: "8px",
+                padding: "20px 24px",
                 backgroundColor: "transparent",
                 border: "none",
                 color: "white",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
+                fontSize: "16px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
+                borderBottom: "1px solid #373737",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 5a3 3 0 1 1-3 3 3 3 0 0 1 3-3zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 11 16h2a3.987 3.987 0 0 1 3.951 2.512A8.949 8.949 0 0 1 12 20z"
                   fill="currentColor"
@@ -884,26 +885,26 @@ const Cellar = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "12px",
-                padding: "12px 16px",
-                borderRadius: "8px",
+                padding: "20px 24px",
                 backgroundColor: "transparent",
                 border: "none",
                 color: "white",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
+                fontSize: "16px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
+                borderBottom: "1px solid #373737",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
                   fill="currentColor"
@@ -920,13 +921,12 @@ const Cellar = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "12px",
-                padding: "12px 16px",
-                borderRadius: "8px",
+                padding: "20px 24px",
                 backgroundColor: "transparent",
                 border: "none",
                 color: "#ff6b6b",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
+                fontSize: "16px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
@@ -939,7 +939,7 @@ const Cellar = () => {
                 e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
                   fill="currentColor"
