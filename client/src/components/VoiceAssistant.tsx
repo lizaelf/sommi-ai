@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
 import VoiceBottomSheet from './VoiceBottomSheet';
 
@@ -87,11 +86,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     if (!isProcessing && usedVoiceInput && !isVoiceThinking) {
       console.log("Status check triggered, current status:", status, "isProcessing:", isProcessing);
       
-      // If AI has responded and we're not thinking or responding, show Listen Response button
       if (!isListening && !isResponding && !isVoiceThinking && !responseComplete) {
         console.log("Fallback: AI response should be ready, checking for Listen Response button");
         
-        // Small delay to ensure response is ready
         setTimeout(() => {
           if (!isListening && !isResponding && !isVoiceThinking) {
             console.log("🚨 Forcing fallback: AI responded but thinking is stuck");
@@ -104,7 +101,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
     }
 
-    // Debug logging for Listen Button state
     console.log("🔍 LISTEN BUTTON DEBUG:", {
       showListenButton,
       isListening,
@@ -123,26 +119,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const handleCloseBottomSheet = () => {
     setShowBottomSheet(false);
     
-    // Clean up any ongoing speech synthesis
     if (window.speechSynthesis && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
       console.log("Speech synthesis cancelled when closing");
     }
     
-    // Clean up any OpenAI TTS audio
     if ((window as any).currentOpenAIAudio) {
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio = null;
     }
     
-    // Stop any ongoing recognition
     if (recognitionRef.current) {
       recognitionRef.current.abort();
     }
     setIsListening(false);
     setStatus('');
 
-    // If user hasn't asked a question yet, don't show suggestions
     if (!hasAskedQuestion) {
       toast({
         title: "Voice Assistant",
@@ -165,7 +157,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setStatus('Listening for your question...');
     setResponseComplete(false);
 
-    // Handle mobile audio permissions
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -199,13 +190,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         
         // Extended timeout settings to prevent cutting off speech
         if ('speechTimeout' in recognitionRef.current) {
-          recognitionRef.current.speechTimeout = 15000; // 15 seconds of silence before ending
+          recognitionRef.current.speechTimeout = 15000;
         }
         if ('speechTimeoutBuffer' in recognitionRef.current) {
-          recognitionRef.current.speechTimeoutBuffer = 8000; // 8 second buffer
+          recognitionRef.current.speechTimeoutBuffer = 8000;
         }
         if ('noSpeechTimeout' in recognitionRef.current) {
-          recognitionRef.current.noSpeechTimeout = 20000; // 20 seconds total timeout
+          recognitionRef.current.noSpeechTimeout = 20000;
         }
         
         recognitionRef.current.onresult = (event: any) => {
@@ -299,7 +290,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleMute = () => {
-    // Stop OpenAI TTS audio if playing
     if ((window as any).currentOpenAIAudio) {
       console.log("Stop button clicked - stopping OpenAI TTS audio playback");
       try {
@@ -312,7 +302,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
     }
     
-    // Stop speech synthesis
     if (window.speechSynthesis && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
       console.log("Speech synthesis cancelled");
@@ -322,7 +311,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setResponseComplete(true);
     setHasReceivedFirstResponse(true);
     
-    // Auto-restart listening after manual stop
     console.log("Auto-restarting voice recognition after audio finished");
     setTimeout(() => {
       if (autoRestartEnabled && usedVoiceInput) {
@@ -351,7 +339,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const handleListenResponse = async () => {
     console.log("Listen Response button clicked");
     
-    // Check if there's cached audio available
     if ((window as any).cachedResponseAudio) {
       console.log("Playing cached audio response");
       try {
@@ -375,11 +362,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         return;
       } catch (error) {
         console.error("Error playing cached audio:", error);
-        // Fall through to generate new audio
       }
     }
 
-    // Get the last AI response text
     const lastAssistantMessage = (window as any).storedAssistantText;
     
     if (!lastAssistantMessage) {
@@ -395,7 +380,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("Playing stored response with OpenAI TTS");
       setIsResponding(true);
       
-      // Use OpenAI TTS API
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: {
@@ -409,11 +393,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
         
-        // Store reference for stop button
         (window as any).currentOpenAIAudio = audio;
         
         audio.onplay = () => {
-          setIsLoadingAudio(false); // Clear loading state when audio starts
+          setIsLoadingAudio(false);
         };
         
         audio.onended = () => {
@@ -446,7 +429,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  // Effect to show Listen Response button after AI response is complete
   useEffect(() => {
     if (usedVoiceInput && !isProcessing && !isVoiceThinking) {
       console.log("Fallback: AI response should be ready, checking for Listen Response button");
@@ -464,50 +446,46 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   return (
     <div style={{ position: 'relative' }}>
-      {/* Voice input button */}
       {!isListening && !showBottomSheet && (
-        <>
-          <div 
-            onClick={() => {
-              if (!isListening) {
-                setShowBottomSheet(true);
-              }
-            }}
+        <div 
+          onClick={() => {
+            if (!isListening) {
+              setShowBottomSheet(true);
+            }
+          }}
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            width: '64px',
+            height: '64px',
+            backgroundColor: isProcessing ? '#666666' : '#333333',
+            border: isProcessing ? '2px solid #999999' : '2px solid #FFFFFF',
+            borderRadius: '50%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: isProcessing ? 'default' : 'pointer',
+            zIndex: 1000,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            transition: 'all 0.2s ease',
+            pointerEvents: isProcessing ? 'none' : 'auto'
+          }}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 20 20"
             style={{
-              position: 'fixed',
-              bottom: '24px',
-              right: '24px',
-              width: '64px',
-              height: '64px',
-              backgroundColor: isProcessing ? '#666666' : '#333333',
-              border: isProcessing ? '2px solid #999999' : '2px solid #FFFFFF',
-              borderRadius: '50%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              cursor: isProcessing ? 'default' : 'pointer',
-              zIndex: 1000,
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-              transition: 'all 0.2s ease',
-              pointerEvents: isProcessing ? 'none' : 'auto'
+              color: isProcessing ? '#999999' : 'white'
             }}
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 20 20"
-              style={{
-                color: isProcessing ? '#999999' : 'white'
-              }}
-            >
-              <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
-            </svg>
-          </div>
-        </>
+            <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
+          </svg>
+        </div>
       )}
       
-      {/* Voice Bottom Sheet */}
       <VoiceBottomSheet 
         isOpen={showBottomSheet} 
         onClose={handleCloseBottomSheet}
@@ -522,7 +500,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
       />
-
     </div>
   );
 };
