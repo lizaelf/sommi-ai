@@ -187,15 +187,7 @@ export default function WineEdit() {
       >
         <button 
           onClick={() => setLocation("/admin-crm")}
-          style={{
-            background: "none",
-            border: "none",
-            padding: "0",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
+          className="header-button"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -216,15 +208,8 @@ export default function WineEdit() {
         <div className="relative dropdown-container">
           <button 
             onClick={() => setShowDropdown(!showDropdown)}
-            style={{
-              background: "none",
-              border: "none",
-              padding: "4px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}
+            className="header-button"
+            style={{ padding: "4px" }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
