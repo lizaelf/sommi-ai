@@ -398,110 +398,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
   // Create a ref for the chat container to allow scrolling
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const voiceAssistantRef = useRef<any>(null);
-  const recognitionRef = useRef<any>(null);
-  const [isListening, setIsListening] = useState(false);
-  
-  // Function to handle microphone button click
-  const handleMicClick = async () => {
-    // Prevent multiple simultaneous recordings
-    if (isListening) {
-      console.log("Already listening, stopping current session");
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      return;
-    }
-    console.log("Microphone button clicked - starting voice recognition directly");
-    
-    try {
-      // Check microphone permissions first
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        console.log("Requesting microphone permissions...");
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log("Microphone permission granted");
-      }
-      
-      // Initialize speech recognition directly
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        console.log("Speech recognition not supported");
-        return;
-      }
-      
-      const recognition = new SpeechRecognition();
-      recognitionRef.current = recognition;
-      recognition.lang = 'en-US';
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.maxAlternatives = 1;
-      
-      // Extended timeout settings to prevent cutting off speech
-      if ('speechTimeout' in recognition) {
-        recognition.speechTimeout = 30000; // 30 seconds
-      }
-      if ('speechTimeoutBuffer' in recognition) {
-        recognition.speechTimeoutBuffer = 15000; // 15 seconds buffer
-      }
-      if ('silenceTimeout' in recognition) {
-        recognition.silenceTimeout = 8000; // 8 seconds silence before stopping
-      }
-      
-      recognition.onstart = () => {
-        console.log("Voice recognition started");
-        setIsListening(true);
-      };
-      
-      recognition.onresult = (event: any) => {
-        const results = event.results;
-        let finalTranscript = '';
-        let interimTranscript = '';
-        
-        for (let i = 0; i < results.length; i++) {
-          if (results[i].isFinal) {
-            finalTranscript = results[i][0].transcript;
-          } else {
-            interimTranscript += results[i][0].transcript;
-          }
-        }
-        
-        // Show interim results in console for feedback
-        if (interimTranscript.trim()) {
-          console.log("Listening:", interimTranscript.trim());
-        }
-        
-        // Only process when we have a final result
-        if (finalTranscript.trim()) {
-          console.log("Voice recognition final result:", finalTranscript);
-          recognition.stop();
-          handleSendMessage(finalTranscript.trim());
-        }
-      };
-      
-      recognition.onerror = (event: any) => {
-        console.error("Voice recognition error:", event.error);
-        setIsListening(false);
-        recognitionRef.current = null;
-        
-        if (event.error === 'not-allowed') {
-          console.log("Microphone permission denied - please allow microphone access");
-        } else if (event.error === 'no-speech') {
-          console.log("No speech detected - try speaking closer to the microphone");
-        }
-      };
-      
-      recognition.onend = () => {
-        console.log("Voice recognition ended");
-        setIsListening(false);
-        recognitionRef.current = null;
-      };
-      
-      recognition.start();
-      
-    } catch (error) {
-      console.error("Error starting voice recognition:", error);
-    }
-  };
 
   // API status check
   const { data: apiStatus } = useQuery({
@@ -650,10 +546,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Mark this as the latest message for animation
         setLatestMessageId(assistantMessage.id);
 
-        // Store assistant message for voice playback
-        (window as any).storedAssistantMessage = assistantMessage.content;
-        console.log("💾 Stored assistant message for voice playback:", assistantMessage.content.substring(0, 50) + "...");
-
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
@@ -661,7 +553,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         if (window.voiceAssistant && window.voiceAssistant.speakResponse) {
           try {
             console.log("Auto-speaking the assistant's response");
-            console.log("speakResponse disabled - use Listen Response button instead");
+            await window.voiceAssistant.speakResponse(assistantMessage.content);
           } catch (error) {
             console.error("Failed to auto-speak response:", error);
           }
@@ -1946,7 +1838,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       isProcessing={isTyping}
                       onFocus={() => setIsKeyboardFocused(true)}
                       onBlur={() => setIsKeyboardFocused(false)}
-                      onMicClick={handleMicClick}
                       voiceButtonComponent={
                         <VoiceAssistant
                           onSendMessage={handleSendMessage}

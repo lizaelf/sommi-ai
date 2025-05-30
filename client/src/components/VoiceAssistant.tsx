@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
 import VoiceBottomSheet from './VoiceBottomSheet';
 
@@ -10,7 +9,6 @@ interface VoiceAssistantProps {
 }
 
 const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProcessing }) => {
-  console.log("VoiceAssistant component is rendering");
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false);
@@ -22,11 +20,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isVoiceThinking, setIsVoiceThinking] = useState(false);
   const [hasAskedQuestion, setHasAskedQuestion] = useState(false);
   const [showListenButton, setShowListenButton] = useState(false);
-  const [isLoadingAudio, setIsLoadingAudio] = useState(false); // Loading state for TTS
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
-
-
 
   // Effect to handle audio status changes for auto-restart
   useEffect(() => {
@@ -45,65 +41,66 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         }
       }
       
-      // Auto-restart logic
-      if (autoRestartEnabled && usedVoiceInput && !isProcessing && !showBottomSheet && hasReceivedFirstResponse) {
-        if (status === 'stopped' && event.detail?.reason !== 'user_stopped') {
-          setTimeout(() => {
-            if (usedVoiceInput && !isProcessing && !isVoiceThinking) {
-              console.log("Auto-restarting voice recognition after audio finished");
-              startListening();
-            }
-          }, 500);
-        }
+      // Auto-restart logic after audio ends
+      if (status === 'stopped' && autoRestartEnabled && usedVoiceInput && !isProcessing) {
+        console.log("Auto-restarting voice recognition after audio finished");
+        setTimeout(() => {
+          if (!isListening && !isProcessing && !showBottomSheet && hasReceivedFirstResponse) {
+            console.log("Auto-restart conditions met - starting listening");
+            startListening();
+          } else if (usedVoiceInput && !isProcessing && !isVoiceThinking) {
+            setShowBottomSheet(true);
+          }
+        }, 500);
+      }
+    };
+
+    const handleMicStatusChange = (event: CustomEvent) => {
+      const micStatus = event.detail?.status;
+      
+      if (micStatus === 'processing') {
+        setIsVoiceThinking(true);
+        setResponseComplete(false);
+        setShowListenButton(false);
+        setShowBottomSheet(true);
+      } else if (micStatus === 'ready' && hasAskedQuestion) {
+        toast({
+          title: "Microphone ready",
+          description: "You can ask your question now",
+          variant: "default",
+        });
       }
     };
 
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
-    return () => window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
-  }, [autoRestartEnabled, usedVoiceInput, isProcessing, showBottomSheet, hasReceivedFirstResponse, isVoiceThinking]);
-
-  // Effect to handle status changes and show Listen Response button
-  useEffect(() => {
-    console.log("Status check triggered, current status:", status, "isProcessing:", isProcessing);
+    window.addEventListener('mic-status', handleMicStatusChange as EventListener);
     
-    if (!status && !isProcessing && usedVoiceInput && responseComplete && !isVoiceThinking && !isResponding) {
-      console.log("✅ Status condition met - processing complete with correct status");
-      console.log("Voice input was used and in voice mode - finding message to speak automatically...");
+    return () => {
+      window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
+      window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
+    };
+  }, [autoRestartEnabled, usedVoiceInput, isProcessing, isListening, showBottomSheet, hasReceivedFirstResponse, isVoiceThinking, hasAskedQuestion, toast]);
+
+  // Effect to check if Listen Response button should be shown after AI responds
+  useEffect(() => {
+    if (!isProcessing && usedVoiceInput && !isVoiceThinking) {
+      console.log("Status check triggered, current status:", status, "isProcessing:", isProcessing);
       
-      // Get the stored message text
-      const storedMessageText = (window as any).storedAssistantMessage;
-      if (storedMessageText) {
-        console.log("Found stored message text:", storedMessageText.substring(0, 50) + "...");
-        console.log("🎯 AI RESPONSE READY - Forcing Listen Response button to appear");
+      if (!isListening && !isResponding && !isVoiceThinking && !responseComplete) {
+        console.log("Fallback: AI response should be ready, checking for Listen Response button");
         
-        setIsVoiceThinking(false);
-        setResponseComplete(true);
-        setShowListenButton(true);
-        console.log("✅ Listen Response button state set to TRUE");
-        
-        // Preload TTS audio for instant playback
-        console.log("🔊 Preloading TTS audio for instant playback...");
-        preloadTTSAudio(storedMessageText);
+        setTimeout(() => {
+          if (!isListening && !isResponding && !isVoiceThinking) {
+            console.log("🚨 Forcing fallback: AI responded but thinking is stuck");
+            setIsVoiceThinking(false);
+            setResponseComplete(true);
+            setShowListenButton(true);
+            setShowBottomSheet(true);
+          }
+        }, 2000);
       }
     }
-    
-    // Fallback mechanism if thinking gets stuck
-    if (!isProcessing && usedVoiceInput && isVoiceThinking) {
-      console.log("Fallback: AI response should be ready, checking for Listen Response button");
-      setTimeout(() => {
-        console.log("Auto-restarting voice recognition after audio finished");
-        if (isVoiceThinking && !isResponding) {
-          console.log("🚨 Forcing fallback: AI responded but thinking is stuck");
-          setIsVoiceThinking(false);
-          setResponseComplete(true);
-          setShowListenButton(true);
-        }
-      }, 2000);
-    }
-  }, [status, isProcessing, usedVoiceInput, responseComplete, isVoiceThinking, isResponding]);
 
-  // Show debug information for Listen Response button
-  useEffect(() => {
     console.log("🔍 LISTEN BUTTON DEBUG:", {
       showListenButton,
       isListening,
@@ -116,38 +113,65 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       status,
       finalCondition: showListenButton && !isListening && !isResponding
     });
-  }, [showListenButton, isListening, isResponding, isVoiceThinking, responseComplete, hasReceivedFirstResponse, usedVoiceInput, isProcessing, status]);
 
-  // Preload TTS audio function
-  const preloadTTSAudio = async (text: string) => {
-    try {
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+  }, [usedVoiceInput, isProcessing, isVoiceThinking, status, showListenButton, isListening, isResponding, responseComplete, hasReceivedFirstResponse]);
+
+  const handleCloseBottomSheet = () => {
+    setShowBottomSheet(false);
+    
+    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      console.log("Speech synthesis cancelled when closing");
+    }
+    
+    if ((window as any).currentOpenAIAudio) {
+      (window as any).currentOpenAIAudio.pause();
+      (window as any).currentOpenAIAudio = null;
+    }
+    
+    if (recognitionRef.current) {
+      recognitionRef.current.abort();
+    }
+    setIsListening(false);
+    setStatus('');
+
+    if (!hasAskedQuestion) {
+      toast({
+        title: "Voice Assistant",
+        description: "Tap the microphone to ask me anything about this wine!",
+        variant: "default",
       });
-
-      if (response.ok) {
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        // Cache the audio URL for instant playback
-        (window as any).cachedAudioUrl = audioUrl;
-        console.log("✅ TTS audio preloaded and cached successfully");
-      }
-    } catch (error) {
-      console.error("Failed to preload TTS audio:", error);
     }
   };
 
-  const initializeSpeechRecognition = async () => {
-    // Initialize audio context on mobile devices
-    if (!isAudioContextInitialized()) {
+  const startListening = async () => {
+    if (!isAudioContextInitialized() && typeof window !== 'undefined') {
       try {
         await initAudioContext();
-        console.log("Audio context created");
       } catch (error) {
-        console.log("❌ Audio context failed to initialize");
+        console.error("Failed to initialize audio context:", error);
+      }
+    }
+
+    setIsListening(true);
+    setStatus('Listening for your question...');
+    setResponseComplete(false);
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          } 
+        });
+        stream.getTracks().forEach(track => track.stop());
+        (window as any).mobileAudioEnabled = true;
+        console.log("✅ Mobile audio permissions granted");
+      } catch {
+        console.log("❌ Mobile audio blocked - will use text fallback");
+        (window as any).mobileAudioEnabled = false;
       }
     }
 
@@ -165,15 +189,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         recognitionRef.current.maxAlternatives = 1;
         
         // Extended timeout settings to prevent cutting off speech
-        // Give users much more time to speak complete questions
         if ('speechTimeout' in recognitionRef.current) {
-          recognitionRef.current.speechTimeout = 30000; // 30 seconds
+          recognitionRef.current.speechTimeout = 15000;
         }
         if ('speechTimeoutBuffer' in recognitionRef.current) {
-          recognitionRef.current.speechTimeoutBuffer = 15000; // 15 seconds buffer
+          recognitionRef.current.speechTimeoutBuffer = 8000;
         }
-        if ('silenceTimeout' in recognitionRef.current) {
-          recognitionRef.current.silenceTimeout = 8000; // 8 seconds silence before stopping
+        if ('noSpeechTimeout' in recognitionRef.current) {
+          recognitionRef.current.noSpeechTimeout = 20000;
         }
         
         recognitionRef.current.onresult = (event: any) => {
@@ -189,17 +212,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             }
           }
           
-          // Update status with interim results to show activity
-          if (interimTranscript.trim()) {
-            setStatus(`Listening: "${interimTranscript.trim()}"`);
-          } else if (!finalTranscript.trim()) {
-            setStatus('Listening for your question...');
+          if (interimTranscript && !finalTranscript) {
+            console.log("Interim transcript:", interimTranscript);
+            setStatus('Listening...');
           }
           
-          // Only process when we have a final result
-          if (finalTranscript.trim()) {
-            finalTranscript = finalTranscript.trim();
-            
+          if (finalTranscript) {
             console.log("Final transcript:", finalTranscript);
             setStatus('Processing your question...');
             setUsedVoiceInput(true);
@@ -208,7 +226,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             
             (window as any).lastUserQuestion = finalTranscript;
             
-            console.log("Setting timeout for thinking state");
             const thinkingTimeout = setTimeout(() => {
               if (isVoiceThinking && !isResponding) {
                 console.log("Thinking timeout - no response received, showing suggestions");
@@ -238,207 +255,148 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         recognitionRef.current.onend = () => {
           setIsListening(false);
           setStatus('');
-          
-          const micStoppedEvent = new CustomEvent('mic-status', {
-            detail: { status: 'stopped' }
-          });
-          window.dispatchEvent(micStoppedEvent);
         };
-
+        
         recognitionRef.current.onerror = (event: any) => {
-          console.error('Speech recognition error:', event.error);
+          console.error("Speech recognition error:", event.error);
           setIsListening(false);
           setStatus('');
           
           if (event.error === 'not-allowed') {
             toast({
-              title: "Permission needed",
+              title: "Microphone Access Required",
               description: "Please allow microphone access to use voice features.",
               variant: "destructive",
             });
           }
         };
-
+        
+        recognitionRef.current.start();
       } else {
-        console.log('Speech recognition not supported');
+        console.log("Speech recognition not supported");
+        setIsListening(false);
+        
         toast({
-          title: "Not supported",
-          description: "Speech recognition is not supported in this browser.",
+          title: "Voice Recognition Not Supported",
+          description: "Your browser doesn't support voice recognition. Please type your question instead.",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('Error initializing speech recognition:', error);
-    }
-  };
-
-  const startListening = async () => {
-    if (!recognitionRef.current) {
-      await initializeSpeechRecognition();
-    }
-
-    if (recognitionRef.current && !isListening) {
-      try {
-        setIsListening(true);
-        setStatus('Listening for your question...');
-        recognitionRef.current.start();
-        
-        // Open bottom sheet when starting to listen
-        setShowBottomSheet(true);
-      } catch (error) {
-        console.error('Error starting recognition:', error);
-        setIsListening(false);
-        setStatus('');
-        toast({
-          title: "Error",
-          description: "Failed to start voice recognition. Please try again.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  // Expose startListening function globally for microphone button
-  useEffect(() => {
-    console.log("Setting up global voice recognition function");
-    (window as any).voiceAssistantStartListening = () => {
-      console.log("Voice assistant startListening called via global function");
-      startListening();
-    };
-    console.log("Global voice function set:", typeof (window as any).voiceAssistantStartListening);
-    return () => {
-      console.log("Cleaning up global voice recognition function");
-      delete (window as any).voiceAssistantStartListening;
-    };
-  }, []);
-
-  const stopListening = () => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
+      console.error("Error starting speech recognition:", error);
       setIsListening(false);
       setStatus('');
     }
   };
 
   const handleMute = () => {
-    console.log("Stop button clicked - stopping OpenAI TTS audio playback");
-    
-    // Stop OpenAI TTS audio
     if ((window as any).currentOpenAIAudio) {
-      (window as any).currentOpenAIAudio.pause();
-      (window as any).currentOpenAIAudio.currentTime = 0;
-      console.log("OpenAI TTS audio stopped successfully");
-      (window as any).currentOpenAIAudio = null;
+      console.log("Stop button clicked - stopping OpenAI TTS audio playback");
+      try {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio.currentTime = 0;
+        (window as any).currentOpenAIAudio = null;
+        console.log("OpenAI TTS audio stopped successfully");
+      } catch (error) {
+        console.error("Error stopping OpenAI TTS audio:", error);
+      }
     }
     
-    // Stop Web Speech API
-    if (window.speechSynthesis.speaking) {
+    if (window.speechSynthesis && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
       console.log("Speech synthesis cancelled");
     }
     
     setIsResponding(false);
     setResponseComplete(true);
+    setHasReceivedFirstResponse(true);
     
-    if (!hasAskedQuestion) {
-      toast({
-        title: "Welcome!",
-        description: "Ask me anything about Ridge \"Lytton Springs\" Dry Creek Zinfandel.",
-      });
-    }
-    
-    // Auto-restart logic
-    if (autoRestartEnabled && usedVoiceInput) {
-      setTimeout(() => {
-        console.log("Auto-restarting voice recognition after audio finished");
-        startListening();
-      }, 500);
-    } else {
-      console.log("Stop button clicked - enabling suggestions after manual stop");
-      setHasReceivedFirstResponse(true);
-      setShowBottomSheet(true);
-    }
+    console.log("Auto-restarting voice recognition after audio finished");
+    setTimeout(() => {
+      if (autoRestartEnabled && usedVoiceInput) {
+        console.log("Stop button clicked - enabling suggestions after manual stop");
+        setShowBottomSheet(true);
+      }
+    }, 300);
   };
 
   const handleAsk = () => {
-    if (isListening) {
-      stopListening();
-    } else {
-      setResponseComplete(false);
+    setShowBottomSheet(false);
+    setTimeout(() => {
       startListening();
-    }
+    }, 100);
   };
 
-  const handleCloseBottomSheet = () => {
-    if (!isListening) {
-      setShowBottomSheet(false);
-    }
+  const handleSuggestionClick = (suggestion: string) => {
+    setShowBottomSheet(false);
+    setTimeout(() => {
+      onSendMessage(suggestion);
+      setUsedVoiceInput(false);
+      setHasAskedQuestion(true);
+    }, 100);
   };
 
   const handleListenResponse = async () => {
     console.log("Listen Response button clicked");
     
-    // Check if we have cached audio
-    const cachedAudioUrl = (window as any).cachedAudioUrl;
-    if (cachedAudioUrl) {
-      console.log("Using cached audio for instant playback");
-      setIsLoadingAudio(false);
-      setIsResponding(true);
-      
-      const audio = new Audio(cachedAudioUrl);
-      (window as any).currentOpenAIAudio = audio;
-      
-      audio.onended = () => {
-        URL.revokeObjectURL(cachedAudioUrl);
-        setIsResponding(false);
-        setShowListenButton(true);
-        (window as any).currentOpenAIAudio = null;
-        (window as any).cachedAudioUrl = null;
-      };
-      
-      audio.onerror = () => {
-        URL.revokeObjectURL(cachedAudioUrl);
-        setIsResponding(false);
-        setShowListenButton(true);
-        (window as any).currentOpenAIAudio = null;
-        (window as any).cachedAudioUrl = null;
-      };
-      
-      await audio.play();
-      return;
+    if ((window as any).cachedResponseAudio) {
+      console.log("Playing cached audio response");
+      try {
+        const audio = (window as any).cachedResponseAudio;
+        (window as any).currentOpenAIAudio = audio;
+        setIsResponding(true);
+        
+        audio.onended = () => {
+          setIsResponding(false);
+          setShowListenButton(true);
+          (window as any).currentOpenAIAudio = null;
+        };
+        
+        audio.onerror = () => {
+          setIsResponding(false);
+          setShowListenButton(true);
+          (window as any).currentOpenAIAudio = null;
+        };
+        
+        await audio.play();
+        return;
+      } catch (error) {
+        console.error("Error playing cached audio:", error);
+      }
     }
+
+    const lastAssistantMessage = (window as any).storedAssistantText;
     
-    // No cached audio available, generate it
-    const storedMessage = (window as any).storedAssistantMessage;
-    if (!storedMessage) {
-      console.error("No assistant message found to play");
+    if (!lastAssistantMessage) {
+      console.error("No assistant message found to speak");
+      setIsResponding(false);
       setShowListenButton(true);
       return;
     }
     
-    console.log("No cached audio available, generating text-to-speech...");
-    setIsLoadingAudio(true);
-    setShowListenButton(false); // Hide listen button while loading
-    
     try {
+      console.log("No cached audio available, generating text-to-speech...");
+      setIsLoadingAudio(true);
       console.log("Playing stored response with OpenAI TTS");
+      setIsResponding(true);
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: storedMessage }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: lastAssistantMessage }),
       });
 
       if (response.ok) {
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
-        
         const audio = new Audio(audioUrl);
+        
         (window as any).currentOpenAIAudio = audio;
         
         audio.onplay = () => {
-          setIsLoadingAudio(false); // Clear loading state when audio starts
-          setIsResponding(true); // Set responding state when audio actually starts
+          setIsLoadingAudio(false);
         };
         
         audio.onended = () => {
@@ -460,100 +418,72 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       } else {
         console.error("Failed to generate text-to-speech");
         setIsResponding(false);
+        setIsLoadingAudio(false);
         setShowListenButton(true);
       }
     } catch (error) {
-      console.error("Error in handleListenResponse:", error);
+      console.error("Error in text-to-speech:", error);
       setIsResponding(false);
       setIsLoadingAudio(false);
       setShowListenButton(true);
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setResponseComplete(false);
-    setIsVoiceThinking(false);
-    setShowListenButton(false);
-    
-    onSendMessage(suggestion);
-    
-    setUsedVoiceInput(false);
-    setHasAskedQuestion(true);
-    
-    // Clear thinking timeout
-    if ((window as any).currentThinkingTimeout) {
-      clearTimeout((window as any).currentThinkingTimeout);
-      setIsVoiceThinking(false);
-      toast({
-        title: "Processing...",
-        description: "Getting your answer ready.",
-      });
-    }
-  };
-
-  // Effect to show bottom sheet when conditions are met
   useEffect(() => {
-    const shouldShowBottomSheet = 
-      (isListening) || 
-      (usedVoiceInput && !isProcessing && (isVoiceThinking || responseComplete || showListenButton || hasReceivedFirstResponse));
-    
-    if (shouldShowBottomSheet) {
-      console.log("Opening bottom sheet...");
-      setShowBottomSheet(true);
+    if (usedVoiceInput && !isProcessing && !isVoiceThinking) {
+      console.log("Fallback: AI response should be ready, checking for Listen Response button");
+      
+      setTimeout(() => {
+        if (!isListening && !isResponding && !isVoiceThinking) {
+          setIsVoiceThinking(false);
+          setResponseComplete(true);
+          setShowListenButton(true);
+          setShowBottomSheet(true);
+        }
+      }, 1000);
     }
-  }, [isListening, usedVoiceInput, isProcessing, isVoiceThinking, responseComplete, showListenButton, hasReceivedFirstResponse]);
+  }, [usedVoiceInput, isProcessing, isVoiceThinking, isListening, isResponding]);
 
   return (
     <div style={{ position: 'relative' }}>
-      {!showBottomSheet && (
-        <>
-          <div 
-            data-voice-button
-            onClick={handleAsk}
+      {!isListening && !showBottomSheet && (
+        <div 
+          onClick={() => {
+            if (!isListening) {
+              setShowBottomSheet(true);
+            }
+          }}
+          style={{
+            position: 'fixed',
+            bottom: '54px',
+            right: '24px',
+            width: '64px',
+            height: '64px',
+            backgroundColor: isProcessing ? '#666666' : '#333333',
+            border: isProcessing ? '2px solid #999999' : '2px solid #FFFFFF',
+            borderRadius: '50%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: isProcessing ? 'default' : 'pointer',
+            zIndex: 1000,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            transition: 'all 0.2s ease',
+            pointerEvents: isProcessing ? 'none' : 'auto'
+          }}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 20 20"
             style={{
-              position: 'fixed',
-              bottom: '32px', // Align with ChatInput center (16px padding + 32px to center on 64px input)
-              right: '12px', // 12px from the edge of input container
-              width: '56px',
-              height: '56px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #5D1D1E 0%, #8B2635 100%)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(93, 29, 30, 0.4)',
-              zIndex: 1000,
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-              ...(isProcessing ? { opacity: 0.7, cursor: 'not-allowed' } : {})
-            }}
-            onMouseEnter={(e) => {
-              if (!isProcessing) {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(93, 29, 30, 0.5)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isProcessing) {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(93, 29, 30, 0.4)';
-              }
+              color: isProcessing ? '#999999' : 'white'
             }}
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="24" 
-              height="24" 
-              viewBox="0 0 20 20"
-              style={{
-                color: isProcessing ? '#999999' : 'white'
-              }}
-            >
-              <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
-            </svg>
-          </div>
-        </>
+            <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
+          </svg>
+        </div>
       )}
       
       <VoiceBottomSheet 
