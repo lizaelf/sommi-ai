@@ -299,11 +299,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   // Expose startListening function globally for microphone button
   useEffect(() => {
+    console.log("Setting up global voice recognition function");
     (window as any).voiceAssistantStartListening = () => {
       console.log("Voice assistant startListening called via global function");
       startListening();
     };
+    console.log("Global voice function set:", typeof (window as any).voiceAssistantStartListening);
     return () => {
+      console.log("Cleaning up global voice recognition function");
       delete (window as any).voiceAssistantStartListening;
     };
   }, []);
