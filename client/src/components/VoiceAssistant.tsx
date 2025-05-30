@@ -847,7 +847,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
       
       console.log("Playing stored response with OpenAI TTS");
-      setIsLoadingAudio(false); // Clear loading state when starting TTS
       setIsResponding(true);
       
       // Use OpenAI TTS API
@@ -865,6 +864,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         // Store reference for stop button
         (window as any).currentOpenAIAudio = audio;
         
+        audio.onplay = () => {
+          setIsLoadingAudio(false); // Clear loading state when audio starts
+        };
+        
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
           setIsResponding(false);
@@ -875,6 +878,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         audio.onerror = () => {
           URL.revokeObjectURL(audioUrl);
           setIsResponding(false);
+          setIsLoadingAudio(false);
           setShowListenButton(true); // Show button again on error
           (window as any).currentOpenAIAudio = null;
         };
