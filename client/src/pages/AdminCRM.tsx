@@ -131,17 +131,19 @@ export default function AdminCRM() {
           <button
             onClick={() => setShowSearch(!showSearch)}
             style={{
-              padding: "8px",
-              background: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: 24,
-              border: '1px solid rgba(255, 255, 255, 0.12)',
+              width: '40px',
+              height: '40px',
+              padding: 0,
+              margin: 0,
+              border: 'none',
+              background: 'none',
               color: 'white',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '40px',
-              height: '40px'
+              outline: 'none',
+              boxShadow: 'none'
             }}
           >
             <Search size={20} />
