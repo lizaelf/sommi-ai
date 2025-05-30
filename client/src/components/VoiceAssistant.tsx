@@ -10,6 +10,7 @@ interface VoiceAssistantProps {
 }
 
 const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProcessing }) => {
+  console.log("VoiceAssistant component is rendering");
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false);
