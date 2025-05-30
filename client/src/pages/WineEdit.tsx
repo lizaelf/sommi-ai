@@ -402,7 +402,7 @@ export default function WineEdit() {
               }}
             >
               <SimpleQRCode
-                value={`${window.location.origin}/wine-scan?id=${wine.id}`}
+                value={`${window.location.origin}/scan-wine/${wine.id}`}
                 size={120}
               />
             </div>
