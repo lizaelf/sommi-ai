@@ -54,6 +54,7 @@ const Cellar = () => {
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     // Check localStorage for saved contact sharing status
     return localStorage.getItem("hasSharedContact") === "true";
@@ -88,6 +89,23 @@ const Cellar = () => {
       window.location.reload();
     }, 100);
   };
+
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showProfileMenu) {
+        const target = event.target as Element;
+        if (!target.closest('[data-profile-menu]') && !target.closest('[data-profile-icon]')) {
+          setShowProfileMenu(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileMenu]);
 
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
@@ -659,6 +677,23 @@ const Cellar = () => {
               ></path>
             </svg>
           </div>
+          <div
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
+            data-profile-icon
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="currentColor"
+                d="M17.755 14a2.25 2.25 0 0 1 2.248 2.25v.575c0 .894-.32 1.759-.9 2.438c-1.57 1.833-3.957 2.738-7.103 2.738s-5.532-.905-7.098-2.74a3.75 3.75 0 0 1-.898-2.434v-.578A2.25 2.25 0 0 1 6.253 14zm0 1.5H6.252a.75.75 0 0 0-.75.75v.577c0 .535.192 1.053.54 1.46c1.253 1.469 3.22 2.214 5.957 2.214c2.739 0 4.706-.745 5.963-2.213a2.25 2.25 0 0 0 .54-1.463v-.576a.75.75 0 0 0-.748-.749M12 2.005a5 5 0 1 1 0 10a5 5 0 0 1 0-10m0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7"
+              />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -775,6 +810,107 @@ const Cellar = () => {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Profile Menu */}
+      {showProfileMenu && (
+        <div
+          style={{
+            position: "fixed",
+            top: "80px",
+            right: "16px",
+            backgroundColor: "#2A2A29",
+            borderRadius: "16px",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            padding: "16px",
+            zIndex: 1000,
+            backdropFilter: "blur(20px)",
+            minWidth: "200px",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <button
+              onClick={() => {
+                setShowProfileMenu(false);
+                setShowModal(true);
+                setAnimationState("opening");
+                setTimeout(() => setAnimationState("open"), 50);
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                backgroundColor: "transparent",
+                border: "none",
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                width: "100%",
+                textAlign: "left",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 5a3 3 0 1 1-3 3 3 3 0 0 1 3-3zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 11 16h2a3.987 3.987 0 0 1 3.951 2.512A8.949 8.949 0 0 1 12 20z"
+                  fill="currentColor"
+                />
+              </svg>
+              Edit Contact Info
+            </button>
+            <button
+              onClick={() => {
+                setShowProfileMenu(false);
+                resetAccountStatus();
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                backgroundColor: "transparent",
+                border: "none",
+                color: "#ff6b6b",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                width: "100%",
+                textAlign: "left",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 107, 107, 0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M16 13v-2a4 4 0 1 0-8 0v2H7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1zM10 11a2 2 0 1 1 4 0v2h-4v-2z"
+                  fill="currentColor"
+                />
+                <path
+                  d="m8.5 2.5l1.5 1.5h4l1.5-1.5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+              Log Out
+            </button>
+          </div>
         </div>
       )}
 
