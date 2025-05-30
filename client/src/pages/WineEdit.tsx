@@ -436,7 +436,7 @@ export default function WineEdit() {
                   ...typography.bodyPlus1, 
                   color: "white !important", 
                   height: "56px",
-                  width: "100%",
+                  width: "200px",
                   fontSize: "16px",
                   fontWeight: "400",
                   padding: "0 16px"
