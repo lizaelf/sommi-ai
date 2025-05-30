@@ -171,7 +171,7 @@ export default function AdminCRM() {
       </div>
 
       {/* Content */}
-      <div className="pt-20" style={{ padding: "16px" }}>
+      <div style={{ paddingTop: "80px", padding: "16px" }}>
         <div>
           {/* Search Bar - Only show when toggled */}
           {showSearch && (
