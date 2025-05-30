@@ -171,11 +171,11 @@ export default function AdminCRM() {
       </div>
 
       {/* Content */}
-      <div className="pt-20 p-6">
-        <div className="space-y-8">
+      <div className="pt-20" style={{ padding: "16px" }}>
+        <div>
           {/* Search Bar - Only show when toggled */}
           {showSearch && (
-            <div style={{ marginBottom: "24px", position: "relative" }}>
+            <div style={{ marginBottom: "16px", position: "relative" }}>
               <input
                 type="text"
                 placeholder="Search wines by name..."
@@ -219,16 +219,15 @@ export default function AdminCRM() {
           )}
 
           {/* Wine Cards Preview */}
-          <div className="space-y-6">
-            <div className="space-y-4">
+          <div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {filteredWines.map((card) => (
                 <div
                   key={card.id}
                   style={{
-                    background: "rgba(25, 25, 25, 0.8)",
                     borderRadius: "16px",
                     border: "1px solid #494949",
-                    padding: "20px",
+                    padding: "16px",
                     position: "relative",
                     cursor: "pointer",
                   }}
