@@ -481,7 +481,55 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   return (
     <div style={{ position: 'relative' }}>
-      {/* Microphone button removed */}
+      {!showBottomSheet && (
+        <>
+          <div 
+            onClick={handleAsk}
+            style={{
+              position: 'fixed',
+              bottom: '24px',
+              right: '24px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #5D1D1E 0%, #8B2635 100%)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(93, 29, 30, 0.4)',
+              zIndex: 1000,
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              ...(isProcessing ? { opacity: 0.7, cursor: 'not-allowed' } : {})
+            }}
+            onMouseEnter={(e) => {
+              if (!isProcessing) {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(93, 29, 30, 0.5)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isProcessing) {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(93, 29, 30, 0.4)';
+              }
+            }}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="24" 
+              height="24" 
+              viewBox="0 0 20 20"
+              style={{
+                color: isProcessing ? '#999999' : 'white'
+              }}
+            >
+              <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
+            </svg>
+          </div>
+        </>
+      )}
       
       <VoiceBottomSheet 
         isOpen={showBottomSheet} 
