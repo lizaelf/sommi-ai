@@ -403,8 +403,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   // Function to handle microphone button click
   const handleMicClick = () => {
     console.log("Microphone button clicked in EnhancedChatInterface");
+    console.log("Available voice function:", typeof (window as any).voiceAssistantStartListening);
     if ((window as any).voiceAssistantStartListening) {
+      console.log("Calling voice recognition function...");
       (window as any).voiceAssistantStartListening();
+    } else {
+      console.log("Voice recognition function not found on window object");
     }
   };
 
