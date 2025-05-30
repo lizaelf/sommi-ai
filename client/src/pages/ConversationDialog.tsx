@@ -112,13 +112,23 @@ export default function ConversationDialog() {
       backgroundColor: '#1C1C1C',
       color: 'white'
     }}>
-      {/* Fixed Header matching Cellar page style */}
+      {/* Fixed Header with back button navigation - matching WineDetails style */}
       <div
-        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
-          scrolled
-            ? "bg-black/90 backdrop-blur-sm border-b border-white/10"
-            : "bg-transparent"
-        }`}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px',
+          transition: 'all 0.3s ease',
+          backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.9)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(4px)' : 'none',
+          borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+        }}
       >
         <button
           onClick={handleBackClick}
@@ -137,7 +147,7 @@ export default function ConversationDialog() {
             width="24"
             height="24"
             viewBox="0 0 24 24"
-            className="text-white"
+            style={{ color: 'white' }}
           >
             <path
               fill="currentColor"
@@ -145,7 +155,20 @@ export default function ConversationDialog() {
             />
           </svg>
         </button>
-        <h1 className="text-lg font-medium">{getWineDisplayName()}</h1>
+        
+        <h1 style={{
+          fontSize: '18px',
+          fontWeight: 500,
+          color: 'white',
+          margin: 0,
+          textAlign: 'left',
+          flex: 1,
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis'
+        }}>
+          {getWineDisplayName()}
+        </h1>
         <div></div>
       </div>
 
