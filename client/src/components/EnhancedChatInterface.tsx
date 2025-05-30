@@ -58,6 +58,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   showBuyButton = false,
   selectedWine = null,
 }) => {
+  const [currentWine, setCurrentWine] = useState<any>(null);
+
+  // Load current wine data from CRM
+  useEffect(() => {
+    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+    const wine = crmWines.find((w: any) => w.id === 1) || crmWines[0];
+    if (wine) {
+      setCurrentWine(wine);
+    }
+  }, []);
   // Get wine-specific content based on selected wine
   const getWineHistory = () => {
     if (selectedWine && selectedWine.id === 2) {
@@ -624,7 +634,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   ...typography.h1,
                 }}
               >
-                {selectedWine ? `2021 ${selectedWine.name}` : `${getWineVintage()} ${getWineDisplayName()}`}
+                {selectedWine ? `2021 ${selectedWine.name}` : currentWine ? `${currentWine.year} ${currentWine.name}` : `${getWineVintage()} ${getWineDisplayName()}`}
               </div>
 
               {/* Wine region with typography styling and flag */}
