@@ -487,7 +487,7 @@ export default function WineEdit() {
                 fontWeight: "400",
                 padding: "0 16px",
               }}
-              placeholder="Enter wine name"
+              placeholder="Set wine name"
             />
           </div>
 
@@ -504,8 +504,8 @@ export default function WineEdit() {
             </label>
             <input
               type="number"
-              value={wine.year}
-              onChange={(e) => updateWine("year", parseInt(e.target.value))}
+              value={wine.year || ""}
+              onChange={(e) => updateWine("year", parseInt(e.target.value) || 0)}
               className="contact-form-input"
               style={{
                 ...typography.bodyPlus1,
@@ -516,7 +516,7 @@ export default function WineEdit() {
                 fontWeight: "400",
                 padding: "0 16px",
               }}
-              placeholder="Year"
+              placeholder="Set wine year"
             />
           </div>
         </div>
@@ -545,9 +545,9 @@ export default function WineEdit() {
                 type="number"
                 min="0"
                 max="100"
-                value={wine.ratings.vn}
+                value={wine.ratings.vn || ""}
                 onChange={(e) =>
-                  updateWineRating("vn", parseInt(e.target.value))
+                  updateWineRating("vn", parseInt(e.target.value) || 0)
                 }
                 className="contact-form-input"
                 style={{
@@ -559,6 +559,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
+                placeholder="Set Vivino rating"
               />
             </div>
             <div>
@@ -576,9 +577,9 @@ export default function WineEdit() {
                 type="number"
                 min="0"
                 max="100"
-                value={wine.ratings.jd}
+                value={wine.ratings.jd || ""}
                 onChange={(e) =>
-                  updateWineRating("jd", parseInt(e.target.value))
+                  updateWineRating("jd", parseInt(e.target.value) || 0)
                 }
                 className="contact-form-input"
                 style={{
@@ -590,6 +591,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
+                placeholder="Set James Halliday rating"
               />
             </div>
             <div>
@@ -607,9 +609,9 @@ export default function WineEdit() {
                 type="number"
                 min="0"
                 max="100"
-                value={wine.ratings.ws}
+                value={wine.ratings.ws || ""}
                 onChange={(e) =>
-                  updateWineRating("ws", parseInt(e.target.value))
+                  updateWineRating("ws", parseInt(e.target.value) || 0)
                 }
                 className="contact-form-input"
                 style={{
@@ -621,6 +623,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
+                placeholder="Set Wine Spectator rating"
               />
             </div>
             <div>
@@ -639,9 +642,9 @@ export default function WineEdit() {
                 min="0"
                 max="20"
                 step="0.1"
-                value={wine.ratings.abv}
+                value={wine.ratings.abv || ""}
                 onChange={(e) =>
-                  updateWineRating("abv", parseFloat(e.target.value))
+                  updateWineRating("abv", parseFloat(e.target.value) || 0)
                 }
                 className="contact-form-input"
                 style={{
@@ -653,6 +656,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
+                placeholder="Set ABV percentage"
               />
             </div>
           </div>
@@ -684,7 +688,7 @@ export default function WineEdit() {
               fontWeight: "400",
               padding: "0 16px",
             }}
-            placeholder="Enter buy again link"
+            placeholder="Set buy again link"
           />
         </div>
 
