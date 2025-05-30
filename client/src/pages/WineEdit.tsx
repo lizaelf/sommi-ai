@@ -271,53 +271,50 @@ export default function WineEdit() {
       <div className="pt-20 p-6">
         <div className="max-w-2xl mx-auto">
           <div style={{ display: "flex", gap: "20px", marginBottom: "24px" }}>
-            {/* Wine Image */}
-            <div
-              style={{
-                width: "120px",
-                height: "160px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "rgba(255, 255, 255, 0.05)",
-                borderRadius: "8px",
-                flexShrink: 0,
-                position: "relative",
-              }}
-            >
-              <img
-                src={wine.image}
-                alt={wine.name}
+            {/* Wine Image with Update Button */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <div
                 style={{
-                  maxHeight: "150px",
-                  maxWidth: "110px",
-                  width: "auto",
-                  height: "auto",
+                  width: "120px",
+                  height: "160px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  borderRadius: "8px",
+                  flexShrink: 0,
                 }}
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                      updateWine('image', event.target?.result as string);
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
-                style={{ display: "none" }}
-                id="image-upload"
-              />
+              >
+                <img
+                  src={wine.image}
+                  alt={wine.name}
+                  style={{
+                    maxHeight: "150px",
+                    maxWidth: "110px",
+                    width: "auto",
+                    height: "auto",
+                  }}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        updateWine('image', event.target?.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  style={{ display: "none" }}
+                  id="image-upload"
+                />
+              </div>
               <label
                 htmlFor="image-upload"
                 style={{
-                  position: "absolute",
-                  bottom: "-24px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
                   background: "rgba(0, 0, 0, 0.12)",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
                   borderRadius: "24px",
@@ -364,8 +361,8 @@ export default function WineEdit() {
                     }
                   }}
                   style={{
-                    position: "absolute",
-                    bottom: "-24px",
+                    position: "relative",
+                    bottom: "-8px",
                     left: "50%",
                     transform: "translateX(-50%)",
                     background: "rgba(0, 0, 0, 0.12)",
