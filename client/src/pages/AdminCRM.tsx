@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
-import { getAllWines, saveAllWines, type WineData } from "@/utils/wineDataManager";
+import { getAllWines, saveAllWines, getEditableWineData, type WineData } from "@/utils/wineDataManager";
 import { Search, X } from "lucide-react";
 import placeholderImage from "@assets/Placeholder.png";
 
@@ -253,13 +253,22 @@ export default function AdminCRM() {
                       }}
                     >
                       <img
-                        src={
-                          !card.image || 
-                          card.image.includes("Product%20Image.png") || 
-                          card.image.includes("Product Image.png")
+                        src={(() => {
+                          // First check if there's editable wine data with custom image
+                          const editableWine = getEditableWineData(card.id);
+                          if (editableWine && editableWine.image && 
+                              !editableWine.image.includes("Product%20Image.png") && 
+                              !editableWine.image.includes("Product Image.png")) {
+                            return editableWine.image;
+                          }
+                          
+                          // Otherwise use card image or placeholder
+                          return (!card.image || 
+                                  card.image.includes("Product%20Image.png") || 
+                                  card.image.includes("Product Image.png"))
                             ? placeholderImage 
-                            : card.image
-                        }
+                            : card.image;
+                        })()}
                         alt={card.name || "Wine placeholder"}
                         style={{
                           maxHeight: "90px",
