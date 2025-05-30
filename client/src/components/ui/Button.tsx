@@ -26,10 +26,10 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       style={{
-        width: fullWidth ? '100%' : 'auto',
-        padding: fullWidth ? '0px' : '0px 24px', // No padding for full width buttons
+        width: (fullWidth || className?.includes('w-full')) ? '100%' : 'auto',
+        padding: (fullWidth || className?.includes('w-full')) ? '0px' : '0px 24px', // No padding for full width buttons
         background: 'rgba(255, 255, 255, 0.04)',
-        borderRadius: fullWidth ? 0 : 24, // No border radius for full width buttons
+        borderRadius: (fullWidth || className?.includes('w-full')) ? 0 : 24, // No border radius for full width buttons
         border: '1px solid transparent',
         backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
         backgroundOrigin: 'border-box',
