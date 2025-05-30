@@ -82,6 +82,26 @@ export default function ConversationDialog() {
     }
   }, [messages]);
 
+  const [scrolled, setScrolled] = useState(false);
+  
+  // Add scroll listener to detect when page is scrolled
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    // Clean up the listener when component unmounts
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const handleBackClick = () => {
     setLocation('/wine/details');
   };
@@ -92,20 +112,24 @@ export default function ConversationDialog() {
       backgroundColor: '#1C1C1C',
       color: 'white'
     }}>
-      {/* Header with back button and wine name */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: '#1C1C1C',
-        padding: '16px 20px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '16px',
-        zIndex: 1000
-      }}>
+      {/* Fixed Header with back button navigation - matching WineDetails style */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px',
+          transition: 'all 0.3s ease',
+          backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.9)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(4px)' : 'none',
+          borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+        }}
+      >
         <button
           onClick={handleBackClick}
           style={{
@@ -120,18 +144,34 @@ export default function ConversationDialog() {
             justifyContent: 'center'
           }}
         >
-          <ArrowLeft size={24} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style={{ color: 'white' }}
+          >
+            <path
+              fill="currentColor"
+              d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
+            />
+          </svg>
         </button>
         
-        <h2 style={{
-          fontFamily: 'Inter, sans-serif',
-          fontSize: '20px',
+        <h1 style={{
+          fontSize: '18px',
           fontWeight: 500,
           color: 'white',
-          margin: 0
+          margin: 0,
+          textAlign: 'left',
+          flex: 1,
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis'
         }}>
           {getWineDisplayName()}
-        </h2>
+        </h1>
+        <div></div>
       </div>
 
       {/* Conversation Content */}
