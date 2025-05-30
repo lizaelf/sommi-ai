@@ -6,6 +6,7 @@ import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { getAllWines, saveAllWines, type WineData } from "@/utils/wineDataManager";
+import { Search } from "lucide-react";
 
 interface WineCardData {
   id: number;
@@ -32,6 +33,7 @@ export default function AdminCRM() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [wineCards, setWineCards] = useState<WineCardData[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
 
   // Load wines from storage on component mount
   useEffect(() => {
@@ -127,6 +129,24 @@ export default function AdminCRM() {
             </Button>
           )}
           <button
+            onClick={() => setShowSearch(!showSearch)}
+            style={{
+              padding: "8px",
+              background: 'rgba(255, 255, 255, 0.04)',
+              borderRadius: 24,
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '40px',
+              height: '40px'
+            }}
+          >
+            <Search size={20} />
+          </button>
+          <button
             onClick={handleAddWine}
             className="admin-add-button"
             style={{
@@ -154,25 +174,28 @@ export default function AdminCRM() {
       {/* Content */}
       <div className="pt-20 p-6">
         <div className="space-y-8">
-          {/* Search Bar */}
-          <div style={{ marginBottom: "24px" }}>
-            <input
-              type="text"
-              placeholder="Search wines by name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="contact-form-input"
-              style={{
-                ...typography.body1R,
-                color: "white !important",
-                height: "56px",
-                width: "100%",
-                fontSize: "16px",
-                fontWeight: "400",
-                padding: "0 16px",
-              }}
-            />
-          </div>
+          {/* Search Bar - Only show when toggled */}
+          {showSearch && (
+            <div style={{ marginBottom: "24px" }}>
+              <input
+                type="text"
+                placeholder="Search wines by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="contact-form-input"
+                style={{
+                  ...typography.body1R,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+                autoFocus
+              />
+            </div>
+          )}
 
           {/* Wine Cards Preview */}
           <div className="space-y-6">
