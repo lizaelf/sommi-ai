@@ -365,10 +365,19 @@ export default function WineEdit() {
               gap: "8px",
             }}
           >
-            <SimpleQRCode
-              value={`${window.location.origin}/wine-scan?id=${wine.id}`}
-              size={120}
-            />
+            <div
+              style={{
+                height: "150px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <SimpleQRCode
+                value={`${window.location.origin}/wine-scan?id=${wine.id}`}
+                size={120}
+              />
+            </div>
             <div
               onClick={() => {
                 // Create a canvas to convert QR code to image for download
