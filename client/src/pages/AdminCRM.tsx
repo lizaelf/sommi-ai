@@ -8,6 +8,8 @@ import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { getAllWines, saveAllWines, getEditableWineData, type WineData } from "@/utils/wineDataManager";
 import { Search, X } from "lucide-react";
 import placeholderImage from "@assets/Placeholder.png";
+import wineBottlePath1 from "@assets/Product Image.png";
+import wineBottlePath2 from "@assets/image-2.png";
 
 interface WineCardData {
   id: number;
@@ -262,7 +264,15 @@ export default function AdminCRM() {
                             return editableWine.image;
                           }
                           
-                          // Otherwise use card image or placeholder
+                          // Use specific images for default wines ID1 and ID2
+                          if (card.id === 1) {
+                            return wineBottlePath1;
+                          }
+                          if (card.id === 2) {
+                            return wineBottlePath2;
+                          }
+                          
+                          // For other wines, use placeholder if using default product image
                           return (!card.image || 
                                   card.image.includes("Product%20Image.png") || 
                                   card.image.includes("Product Image.png"))
