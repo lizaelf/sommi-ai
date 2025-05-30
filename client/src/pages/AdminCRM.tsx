@@ -279,8 +279,6 @@ export default function AdminCRM() {
                       style={{
                         height: "1px",
                         backgroundColor: "#373737",
-                        marginLeft: "16px",
-                        marginRight: "16px",
                       }}
                     />
                   )}
