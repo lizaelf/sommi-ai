@@ -200,7 +200,7 @@ const HomeGlobal = () => {
                         fontWeight: 500,
                       }}
                     >
-                      {wine.name}
+                      {wine.year} {wine.name}
                     </h4>
                     <p
                       className="text-white/60 text-sm mb-3"

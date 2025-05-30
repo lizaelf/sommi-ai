@@ -43,7 +43,7 @@ export default function AdminCRM() {
     const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
     
     // Fix ID3 to have empty image for placeholder demonstration
-    const fixedWines = crmWines.map(wine => {
+    const fixedWines = crmWines.map((wine: WineCardData) => {
       if (wine.id === 3) {
         return { ...wine, image: "" };
       }
