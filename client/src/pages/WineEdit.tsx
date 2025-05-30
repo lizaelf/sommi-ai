@@ -204,8 +204,9 @@ export default function WineEdit() {
       }
 
       toast({
-        title: "Wine Deleted",
-        description: "Wine has been removed from your collection.",
+        title: "Wine deleted",
+        description: "",
+        className: "bg-white text-black border-none",
       });
 
       setLocation("/admin-crm");
