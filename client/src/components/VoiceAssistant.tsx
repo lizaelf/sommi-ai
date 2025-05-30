@@ -25,13 +25,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
-  // Expose startListening function globally for microphone button
-  useEffect(() => {
-    (window as any).voiceAssistantStartListening = startListening;
-    return () => {
-      delete (window as any).voiceAssistantStartListening;
-    };
-  }, [startListening]);
+
 
   // Effect to handle audio status changes for auto-restart
   useEffect(() => {
@@ -302,6 +296,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
     }
   };
+
+  // Expose startListening function globally for microphone button
+  useEffect(() => {
+    (window as any).voiceAssistantStartListening = () => {
+      console.log("Voice assistant startListening called via global function");
+      startListening();
+    };
+    return () => {
+      delete (window as any).voiceAssistantStartListening;
+    };
+  }, []);
 
   const stopListening = () => {
     if (recognitionRef.current && isListening) {
