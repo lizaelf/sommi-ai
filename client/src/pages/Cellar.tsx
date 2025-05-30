@@ -1024,6 +1024,82 @@ const Cellar = () => {
 
       {/* Content with top padding to account for fixed header */}
       <div className="pt-16">
+        {/* Scanned Wines Section */}
+        {cellarWines.length > 0 && (
+          <div style={{ margin: "0 16px 24px 16px" }}>
+            <h2 style={{
+              color: "white",
+              fontFamily: "Lora, serif",
+              fontSize: "24px",
+              lineHeight: "32px",
+              fontWeight: "500",
+              marginBottom: "16px"
+            }}>
+              Your Scanned Wines
+            </h2>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gap: "16px"
+            }}>
+              {cellarWines.map((wine) => (
+                <div
+                  key={wine.id}
+                  onClick={() => handleWineClick(wine.id)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    borderRadius: "12px",
+                    padding: "16px",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                  }}
+                >
+                  <div style={{
+                    width: "100%",
+                    height: "120px",
+                    background: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "8px",
+                    marginBottom: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "rgba(255, 255, 255, 0.6)",
+                    fontSize: "12px"
+                  }}>
+                    Wine Image
+                  </div>
+                  <div style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    marginBottom: "4px",
+                    lineHeight: "18px"
+                  }}>
+                    {wine.year} {wine.name}
+                  </div>
+                  <div style={{
+                    color: "rgba(255, 255, 255, 0.6)",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "12px"
+                  }}>
+                    Scanned {wine.scannedCount} time{wine.scannedCount !== 1 ? 's' : ''}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Cellar Container with rounded corners */}
         <div
           style={{
