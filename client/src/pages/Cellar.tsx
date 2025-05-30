@@ -59,7 +59,7 @@ const Cellar = () => {
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [notificationPreferences, setNotificationPreferences] = useState(() => {
     const saved = localStorage.getItem("notificationPreferences");
-    return saved ? JSON.parse(saved) : { email: true, phone: false };
+    return saved ? JSON.parse(saved) : { email: true, phone: true };
   });
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     // Check localStorage for saved contact sharing status
