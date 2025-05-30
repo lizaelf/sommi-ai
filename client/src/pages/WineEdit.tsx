@@ -4,6 +4,8 @@ import { useToast } from '@/hooks/use-toast';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { SimpleQRCode } from '@/components/SimpleQRCode';
+import { WINE_CONFIG } from '@shared/wineConfig';
+import { getCurrentWineConfig, getEditableWineData, saveEditableWineData } from '@/utils/wineDataManager';
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 
@@ -27,11 +29,11 @@ interface WineCardData {
 const defaultWines: WineCardData[] = [
   {
     id: 1,
-    name: "Lytton Springs",
-    year: 2021,
+    name: WINE_CONFIG.name.replace('Ridge "', '').replace('" Dry Creek Zinfandel', ''),
+    year: WINE_CONFIG.vintage,
     bottles: 6,
     image: wineBottlePath1,
-    ratings: { vn: 95, jd: 93, ws: 94, abv: 14.8 },
+    ratings: { vn: 95, jd: 93, ws: WINE_CONFIG.ratings.ws, abv: 14.8 },
     buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
     qrCode: "QR_001",
     qrLink: "https://ridgewine.com/qr/001"
@@ -125,9 +127,24 @@ export default function WineEdit() {
       const updatedWines = wines.map(w => w.id === wine.id ? wine : w);
       localStorage.setItem('adminWineCards', JSON.stringify(updatedWines));
       
+      // Also update the global wine config if this is wine ID 1 (main wine)
+      if (wine.id === 1) {
+        const updatedConfig = {
+          ...WINE_CONFIG,
+          name: `Ridge "${wine.name}" Dry Creek Zinfandel`,
+          fullName: `Ridge "${wine.name}" Dry Creek Zinfandel`,
+          vintage: wine.year,
+          ratings: {
+            ...WINE_CONFIG.ratings,
+            ws: wine.ratings.ws
+          }
+        };
+        localStorage.setItem('wine-config', JSON.stringify(updatedConfig));
+      }
+      
       toast({
         title: "Wine Updated",
-        description: "Wine details have been saved successfully.",
+        description: "Wine details have been saved and will be reflected across all pages.",
       });
       
       setLocation("/admin-crm");
