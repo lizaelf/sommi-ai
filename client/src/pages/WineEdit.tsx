@@ -315,8 +315,9 @@ export default function WineEdit() {
                 htmlFor="image-upload"
                 style={{
                   position: "absolute",
-                  bottom: "0px",
-                  right: "8px",
+                  bottom: "-24px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
                   background: "rgba(0, 0, 0, 0.12)",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
                   borderRadius: "24px",
