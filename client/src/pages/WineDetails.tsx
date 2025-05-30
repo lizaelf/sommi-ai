@@ -4,6 +4,7 @@ import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
+import { getWineDisplayName } from '../../../shared/wineConfig';
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 
@@ -74,7 +75,7 @@ export default function WineDetails() {
               />
             </svg>
           </Link>
-          <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">{wine.name}</h1>
+          <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">{getWineDisplayName()}</h1>
           <div></div>
         </div>
 
