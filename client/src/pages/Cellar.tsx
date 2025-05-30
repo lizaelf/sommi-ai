@@ -849,6 +849,7 @@ const Cellar = () => {
         >
           <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
             <button
+              className="profile-menu-item"
               onClick={() => {
                 setShowProfileMenu(false);
                 setShowModal(true);
@@ -887,6 +888,7 @@ const Cellar = () => {
               Edit Contact Info
             </button>
             <button
+              className="profile-menu-item"
               onClick={() => {
                 setShowProfileMenu(false);
                 setShowNotificationsModal(true);
@@ -923,6 +925,7 @@ const Cellar = () => {
               Manage notifications
             </button>
             <button
+              className="profile-menu-item"
               onClick={() => {
                 setShowProfileMenu(false);
                 setShowDeleteConfirmation(true);

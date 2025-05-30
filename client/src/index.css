@@ -10,6 +10,11 @@
     background: #5D1D1E !important;
     background-color: #5D1D1E !important;
   }
+  
+  .profile-menu-item {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
 }
 
 @tailwind base;
