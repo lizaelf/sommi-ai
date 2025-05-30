@@ -487,8 +487,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             onClick={handleAsk}
             style={{
               position: 'fixed',
-              bottom: '80px', // Align with ChatInput area (64px input height + 16px padding)
-              right: '24px',
+              bottom: '32px', // Align with ChatInput center (16px padding + 32px to center on 64px input)
+              right: '12px', // 12px from the edge of input container
               width: '56px',
               height: '56px',
               borderRadius: '50%',
