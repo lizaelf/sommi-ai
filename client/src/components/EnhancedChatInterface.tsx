@@ -1379,137 +1379,25 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         {messages.length > 0 && (
                           <div style={{ marginBottom: "32px" }}>
                             {(() => {
-                              // Extract latest 3 unique topics from conversation
-                              const topics = [];
-                              const processedTopics = new Set();
+                              // Generate a comprehensive summary based on the conversation
+                              const summaryText = messages.length > 0 
+                                ? "Based on your conversation, you've explored the unique characteristics, flavor profile, and pairing possibilities of this exceptional wine. The discussion covered various aspects including its distinctive terroir, winemaking traditions, and what makes it a standout choice for wine enthusiasts. Your questions and our AI sommelier's responses have provided valuable insights into this wine's complexity and versatility."
+                                : "This wine offers a rich tapestry of flavors and aromas that reflect its prestigious terroir and traditional winemaking methods. From its complex tasting profile to perfect food pairings, this bottle represents the finest expression of its varietal and region.";
 
-                              // Go through messages in reverse to get latest topics
-                              for (
-                                let i = messages.length - 1;
-                                i >= 0 && topics.length < 3;
-                                i--
-                              ) {
-                                const message = messages[i];
-                                if (message.role === "user") {
-                                  const content = message.content.toLowerCase();
-                                  let topicTitle = "";
-                                  let description = "";
-
-                                  if (
-                                    content.includes("tasting") ||
-                                    content.includes("flavor") ||
-                                    content.includes("notes")
-                                  ) {
-                                    topicTitle = "Tasting Profile";
-                                    description =
-                                      "Explore the complex flavors, aromas, and tasting notes that define this exceptional wine's character and distinguish it from other varietals.";
-                                  } else if (
-                                    content.includes("food") ||
-                                    content.includes("pairing") ||
-                                    content.includes("recipe")
-                                  ) {
-                                    topicTitle = "Food Pairing";
-                                    description =
-                                      "Discover perfect culinary combinations and learn which dishes complement this wine's unique characteristics for optimal dining experiences.";
-                                  } else if (
-                                    content.includes("origin") ||
-                                    content.includes("where") ||
-                                    content.includes("region") ||
-                                    content.includes("terroir")
-                                  ) {
-                                    topicTitle = "Wine Origin";
-                                    description =
-                                      "Learn about the prestigious terroir, winemaking traditions, and regional influences that shape this wine's distinctive personality and quality.";
-                                  } else if (
-                                    content.includes("price") ||
-                                    content.includes("cost") ||
-                                    content.includes("value")
-                                  ) {
-                                    topicTitle = "Value & Investment";
-                                    description =
-                                      "Understand the wine's market position, investment potential, and what makes it a worthy addition to any serious wine collection.";
-                                  } else if (
-                                    content.includes("vintage") ||
-                                    content.includes("year") ||
-                                    content.includes("age")
-                                  ) {
-                                    topicTitle = "Vintage Character";
-                                    description =
-                                      "Discover how this specific vintage expresses the unique conditions of its growing season and how it compares to other years.";
-                                  }
-
-                                  if (
-                                    topicTitle &&
-                                    !processedTopics.has(topicTitle)
-                                  ) {
-                                    topics.push({
-                                      title: topicTitle,
-                                      description,
-                                    });
-                                    processedTopics.add(topicTitle);
-                                  }
-                                }
-                              }
-
-                              // If we don't have enough topics from user questions, add defaults
-                              const defaultTopics = [
-                                {
-                                  title: "Tasting Profile",
-                                  description:
-                                    "Explore the complex flavors, aromas, and tasting notes that define this exceptional wine's character and distinguish it from other varietals.",
-                                },
-                                {
-                                  title: "Food Pairing",
-                                  description:
-                                    "Discover perfect culinary combinations and learn which dishes complement this wine's unique characteristics for optimal dining experiences.",
-                                },
-                                {
-                                  title: "Wine Origin",
-                                  description:
-                                    "Learn about the prestigious terroir, winemaking traditions, and regional influences that shape this wine's distinctive personality and quality.",
-                                },
-                              ];
-
-                              // Fill remaining slots with default topics
-                              for (const defaultTopic of defaultTopics) {
-                                if (
-                                  topics.length < 3 &&
-                                  !processedTopics.has(defaultTopic.title)
-                                ) {
-                                  topics.push(defaultTopic);
-                                }
-                              }
-
-                              return topics.slice(0, 3).map((topic, index) => (
-                                <div
-                                  key={index}
-                                  style={{ marginBottom: "24px" }}
-                                >
-                                  <h2
-                                    style={{
-                                      fontFamily: "Inter, sans-serif",
-                                      fontSize: "20px",
-                                      fontWeight: 500,
-                                      color: "white",
-                                      textAlign: "left",
-                                      margin: 0,
-                                      marginBottom: "12px",
-                                    }}
-                                  >
-                                    {topic.title}
-                                  </h2>
+                              return (
+                                <div>
                                   <p
                                     style={{
                                       ...typography.body,
-                                      color: "#DBDBDB",
-                                      textAlign: "left",
+                                      color: "rgba(255, 255, 255, 0.8)",
+                                      lineHeight: "1.6",
                                       margin: 0,
                                     }}
                                   >
-                                    {topic.description}
+                                    {summaryText}
                                   </p>
                                 </div>
-                              ));
+                              );
                             })()}
 
                             {/* Show whole dialog button */}
