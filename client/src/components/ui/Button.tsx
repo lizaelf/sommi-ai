@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       style={{
         width: fullWidth ? '100%' : 'auto',
-        padding: '0px 24px', // Adjusted padding to accommodate fixed height
+        padding: fullWidth ? '0px' : '0px 24px', // No padding for full width buttons
         background: 'rgba(255, 255, 255, 0.04)',
         borderRadius: 24,
         border: '1px solid transparent',

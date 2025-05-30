@@ -367,7 +367,7 @@ export default function WineEdit() {
           >
             <div
               style={{
-                height: "150px",
+                height: "160px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
