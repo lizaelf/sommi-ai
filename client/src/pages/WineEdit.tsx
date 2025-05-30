@@ -760,7 +760,7 @@ export default function WineEdit() {
             textAlign: "center"
           }}
         >
-          {wine.name === "" ? "Add" : "Save Changes"}
+          Save
         </button>
       </div>
     </div>
