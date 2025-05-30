@@ -21,6 +21,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isVoiceThinking, setIsVoiceThinking] = useState(false); // Local thinking state for voice interactions
   const [hasAskedQuestion, setHasAskedQuestion] = useState(false); // Track if user has asked at least one question
   const [showListenButton, setShowListenButton] = useState(false); // Show Listen Response button
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false); // Loading state for TTS
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -735,6 +736,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   // Handle Listen Response button click
   const handleListenResponse = async () => {
     console.log("Listen Response button clicked");
+    setIsLoadingAudio(true); // Show loading state
     setShowListenButton(false); // Hide button while playing
     
     // Store the user's last question to show during playback
@@ -758,6 +760,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         audio.onplay = () => {
           // Hide question and show stop button when speech starts
           (window as any).showUserQuestion = false;
+          setIsLoadingAudio(false); // Clear loading state when audio starts
           console.log("Speech started, showing stop button");
         };
         
@@ -844,6 +847,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
       
       console.log("Playing stored response with OpenAI TTS");
+      setIsLoadingAudio(false); // Clear loading state when starting TTS
       setIsResponding(true);
       
       // Use OpenAI TTS API

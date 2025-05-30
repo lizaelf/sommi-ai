@@ -14,6 +14,7 @@ interface VoiceBottomSheetProps {
   isThinking?: boolean;
   showSuggestions?: boolean;
   showListenButton?: boolean;
+  isLoadingAudio?: boolean;
   onSuggestionClick?: (suggestion: string) => void;
   onListenResponse?: () => void;
 }
@@ -28,6 +29,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   isThinking = false,
   showSuggestions = false,
   showListenButton = false,
+  isLoadingAudio = false,
   onSuggestionClick,
   onListenResponse
 }) => {
@@ -37,7 +39,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const [userQuestion, setUserQuestion] = useState<string>('');
-  const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
 
   // Wine-related suggestions
   const suggestions = [
@@ -416,10 +417,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               }}>
                 <button
                   className="voice-bottom-sheet-button"
-                  onClick={() => {
-                    setIsLoadingAudio(true);
-                    onListenResponse?.();
-                  }}
+                  onClick={onListenResponse}
                   disabled={isLoadingAudio}
                   style={{
                     width: '100%',
