@@ -108,8 +108,8 @@ export default function AdminCRM() {
     const updatedWines = [newWine, ...wineCards];
     setWineCards(updatedWines);
     
-    // Save to storage
-    saveAllWines(updatedWines);
+    // Save to CRM master data source
+    localStorage.setItem('admin-wines', JSON.stringify(updatedWines));
 
     // Navigate to wine edit page for the new wine
     setLocation(`/wine-edit/${newWine.id}`);
