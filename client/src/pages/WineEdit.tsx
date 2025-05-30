@@ -381,36 +381,48 @@ export default function WineEdit() {
             <div
               onClick={() => {
                 try {
-                  // Find the QR code canvas more specifically
-                  const qrContainer = document.querySelector('[data-testid="qr-code"], .qr-code');
-                  const qrElement = qrContainer?.querySelector('canvas') || document.querySelector('canvas');
+                  // Find the QR code SVG element
+                  const qrSvg = document.querySelector('svg');
                   
-                  if (qrElement) {
-                    // Create a new canvas for download
+                  if (qrSvg) {
+                    // Create a canvas to convert SVG to PNG
                     const canvas = document.createElement("canvas");
                     const ctx = canvas.getContext("2d");
                     
                     if (ctx) {
-                      canvas.width = 120;
-                      canvas.height = 120;
+                      // Set canvas size (including padding for white background)
+                      canvas.width = 136; // 120 + 16px padding
+                      canvas.height = 136; // 120 + 16px padding
                       
                       // Set white background
                       ctx.fillStyle = 'white';
-                      ctx.fillRect(0, 0, 120, 120);
+                      ctx.fillRect(0, 0, 136, 136);
                       
-                      // Draw the QR code
-                      ctx.drawImage(qrElement, 0, 0, 120, 120);
-
-                      // Create download link
-                      const link = document.createElement("a");
-                      link.download = `wine-${wine.id}-qr.png`;
-                      link.href = canvas.toDataURL('image/png');
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
+                      // Convert SVG to image
+                      const svgData = new XMLSerializer().serializeToString(qrSvg);
+                      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                      const url = URL.createObjectURL(svgBlob);
+                      
+                      const img = new Image();
+                      img.onload = () => {
+                        // Draw the QR code centered with padding
+                        ctx.drawImage(img, 8, 8, 120, 120);
+                        
+                        // Create download link
+                        const link = document.createElement("a");
+                        link.download = `wine-${wine.id}-qr.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Clean up
+                        URL.revokeObjectURL(url);
+                      };
+                      img.src = url;
                     }
                   } else {
-                    console.error('QR code canvas not found');
+                    console.error('QR code SVG not found');
                     alert('Unable to find QR code for download');
                   }
                 } catch (error) {
