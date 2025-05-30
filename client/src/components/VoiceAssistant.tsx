@@ -484,6 +484,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       {!showBottomSheet && (
         <>
           <div 
+            data-voice-button
             onClick={handleAsk}
             style={{
               position: 'fixed',
