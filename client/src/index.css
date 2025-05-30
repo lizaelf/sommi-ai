@@ -5,6 +5,11 @@
   .all-\[unset\] {
     all: unset;
   }
+  
+  .delete-account-button {
+    background: #5D1D1E !important;
+    background-color: #5D1D1E !important;
+  }
 }
 
 @tailwind base;

@@ -1227,12 +1227,14 @@ const Cellar = () => {
                       setShowDeleteConfirmation(false);
                       resetAccountStatus();
                     }}
+                    className="delete-account-button"
                     style={{
                       flex: 1,
                       height: "56px",
                       padding: "0 24px",
                       borderRadius: "24px",
-                      backgroundColor: "#5D1D1E !important",
+                      background: "#5D1D1E",
+                      backgroundColor: "#5D1D1E",
                       border: "none",
                       color: "white",
                       fontFamily: "Inter, sans-serif",
