@@ -336,57 +336,81 @@ export default function WineEdit() {
               </label>
             </div>
 
-            {/* Basic Info */}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
+            {/* QR Code */}
+            <div style={{ flex: 1, display: "flex", alignItems: "flex-start", justifyContent: "flex-end" }}>
               <div>
-                <span style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                  Wine ID: {wine.id}
-                </span>
-              </div>
-              
-              <div>
-                <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                  Wine Name
-                </label>
-                <input
-                  type="text"
-                  value={wine.name}
-                  onChange={(e) => updateWine('name', e.target.value)}
-                  className="contact-form-input"
-                  style={{ 
-                    ...typography.bodyPlus1, 
-                    color: "white !important", 
-                    height: "56px",
-                    width: "100%",
-                    fontSize: "16px",
-                    fontWeight: "400",
-                    padding: "0 16px"
-                  }}
-                  placeholder="Enter wine name"
+                <SimpleQRCode 
+                  value={`${window.location.origin}/wine-scan?id=${wine.id}`}
+                  size={120}
                 />
+                <div style={{ 
+                  ...typography.body1R, 
+                  color: "rgba(255, 255, 255, 0.8)",
+                  fontSize: "10px",
+                  wordBreak: "break-all",
+                  maxWidth: "120px",
+                  marginTop: "8px",
+                  textAlign: "center"
+                }}>
+                  Scan to add to cellar
+                </div>
               </div>
+            </div>
+          </div>
 
-              <div>
-                <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                  Wine Year
-                </label>
-                <input
-                  type="number"
-                  value={wine.year}
-                  onChange={(e) => updateWine('year', parseInt(e.target.value))}
-                  className="contact-form-input"
-                  style={{ 
-                    ...typography.bodyPlus1, 
-                    color: "white !important", 
-                    height: "56px",
-                    width: "120px",
-                    fontSize: "16px",
-                    fontWeight: "400",
-                    padding: "0 16px"
-                  }}
-                  placeholder="Year"
-                />
-              </div>
+          {/* Basic Info - moved below image */}
+          <div style={{ marginBottom: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div>
+              <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
+                Wine ID
+              </label>
+              <span style={{ ...typography.body1R, color: "white" }}>
+                {wine.id}
+              </span>
+            </div>
+            
+            <div>
+              <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
+                Wine Name
+              </label>
+              <input
+                type="text"
+                value={wine.name}
+                onChange={(e) => updateWine('name', e.target.value)}
+                className="contact-form-input"
+                style={{ 
+                  ...typography.bodyPlus1, 
+                  color: "white !important", 
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px"
+                }}
+                placeholder="Enter wine name"
+              />
+            </div>
+
+            <div>
+              <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
+                Wine Year
+              </label>
+              <input
+                type="number"
+                value={wine.year}
+                onChange={(e) => updateWine('year', parseInt(e.target.value))}
+                className="contact-form-input"
+                style={{ 
+                  ...typography.bodyPlus1, 
+                  color: "white !important", 
+                  height: "56px",
+                  width: "200px",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px"
+                }}
+                placeholder="Year"
+              />
             </div>
           </div>
 
@@ -510,27 +534,7 @@ export default function WineEdit() {
             />
           </div>
 
-          {/* QR Code */}
-          <div style={{ marginBottom: "32px" }}>
-            <h3 style={{ ...typography.h1, color: "white", marginBottom: "16px" }}>QR Code</h3>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
-              <SimpleQRCode 
-                value={`${window.location.origin}/wine-scan?id=${wine.id}`}
-                size={120}
-              />
-              <div>
-                <div style={{ 
-                  ...typography.body1R, 
-                  color: "rgba(255, 255, 255, 0.8)",
-                  fontSize: "12px",
-                  wordBreak: "break-all",
-                  maxWidth: "300px"
-                }}>
-                  {`${window.location.origin}/wine-scan?id=${wine.id}`}
-                </div>
-              </div>
-            </div>
-          </div>
+
 
           {/* Bottom padding to prevent content from being hidden behind fixed button */}
           <div style={{ height: "100px" }}></div>
