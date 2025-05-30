@@ -579,11 +579,9 @@ export default function WineEdit() {
         padding: "16px 24px",
         zIndex: 1000
       }}>
-        <div className="max-w-2xl mx-auto">
-          <Button onClick={saveWine} fullWidth={true}>
-            Save Changes
-          </Button>
-        </div>
+        <Button onClick={saveWine} fullWidth={true}>
+          Save Changes
+        </Button>
       </div>
     </div>
   );
