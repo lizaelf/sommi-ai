@@ -547,12 +547,26 @@ export default function WineEdit() {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div style={{ display: "flex", gap: "16px" }}>
-            <Button onClick={saveWine} style={{ flex: 1 }}>
-              Save Changes
-            </Button>
-          </div>
+          {/* Bottom padding to prevent content from being hidden behind fixed button */}
+          <div style={{ height: "100px" }}></div>
+        </div>
+      </div>
+
+      {/* Fixed Save Button */}
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: "#0A0A0A",
+        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        padding: "16px 24px",
+        zIndex: 1000
+      }}>
+        <div className="max-w-2xl mx-auto">
+          <Button onClick={saveWine} style={{ width: "100%" }}>
+            Save Changes
+          </Button>
         </div>
       </div>
     </div>
