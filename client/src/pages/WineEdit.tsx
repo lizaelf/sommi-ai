@@ -317,7 +317,6 @@ export default function WineEdit() {
                   background: "rgba(0, 0, 0, 0.12)",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
                   borderRadius: "24px",
-                  padding: "6px 12px",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -326,6 +325,8 @@ export default function WineEdit() {
                   color: "white",
                   fontSize: "12px",
                   fontWeight: "400",
+                  width: "100%",
+                  height: "40px",
                 }}
                 className="hover:bg-white/8 transition-colors"
               >
