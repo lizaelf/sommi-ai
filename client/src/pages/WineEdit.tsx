@@ -216,7 +216,7 @@ export default function WineEdit() {
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">
+        <h1 className="text-lg font-medium text-white text-center flex-1 truncate overflow-hidden whitespace-nowrap">
           Edit Wine
         </h1>
         <div className="relative dropdown-container">
@@ -369,7 +369,7 @@ export default function WineEdit() {
               value={`${window.location.origin}/wine-scan?id=${wine.id}`}
               size={120}
             />
-            <button
+            <div
               onClick={() => {
                 // Create a canvas to convert QR code to image for download
                 const canvas = document.createElement("canvas");
@@ -403,12 +403,11 @@ export default function WineEdit() {
                 fontWeight: "400",
                 width: "100%",
                 height: "40px",
-                border: "none",
               }}
               className="hover:bg-white/8 transition-colors"
             >
               Download
-            </button>
+            </div>
           </div>
         </div>
 
