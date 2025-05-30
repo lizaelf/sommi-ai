@@ -401,14 +401,47 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const voiceAssistantRef = useRef<any>(null);
   
   // Function to handle microphone button click
-  const handleMicClick = () => {
-    console.log("Microphone button clicked in EnhancedChatInterface");
-    console.log("Available voice function:", typeof (window as any).voiceAssistantStartListening);
-    if ((window as any).voiceAssistantStartListening) {
-      console.log("Calling voice recognition function...");
-      (window as any).voiceAssistantStartListening();
-    } else {
-      console.log("Voice recognition function not found on window object");
+  const handleMicClick = async () => {
+    console.log("Microphone button clicked - starting voice recognition directly");
+    
+    try {
+      // Initialize speech recognition directly
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.log("Speech recognition not supported");
+        return;
+      }
+      
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      
+      recognition.onstart = () => {
+        console.log("Voice recognition started");
+      };
+      
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        console.log("Voice recognition result:", transcript);
+        if (transcript.trim()) {
+          handleSendMessage(transcript.trim());
+        }
+      };
+      
+      recognition.onerror = (event) => {
+        console.error("Voice recognition error:", event.error);
+      };
+      
+      recognition.onend = () => {
+        console.log("Voice recognition ended");
+      };
+      
+      recognition.start();
+      
+    } catch (error) {
+      console.error("Error starting voice recognition:", error);
     }
   };
 
