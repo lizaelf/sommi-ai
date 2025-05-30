@@ -31,32 +31,9 @@ interface WineCardData {
   qrLink: string;
 }
 
-const defaultWines: WineCardData[] = [
-  {
-    id: 1,
-    name: WINE_CONFIG.name
-      .replace('Ridge "', "")
-      .replace('" Dry Creek Zinfandel', ""),
-    year: WINE_CONFIG.vintage,
-    bottles: 6,
-    image: wineBottlePath1,
-    ratings: { vn: 95, jd: 93, ws: WINE_CONFIG.ratings.ws, abv: 14.8 },
-    buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
-    qrCode: "QR_001",
-    qrLink: "https://ridgewine.com/qr/001",
-  },
-  {
-    id: 2,
-    name: "Geyserville",
-    year: 2020,
-    bottles: 8,
-    image: wineBottlePath2,
-    ratings: { vn: 92, jd: 91, ws: 93, abv: 14.5 },
-    buyAgainLink: "https://ridgewine.com/wines/geyserville",
-    qrCode: "QR_002",
-    qrLink: "https://ridgewine.com/qr/002",
-  },
-];
+const getCRMWines = (): WineCardData[] => {
+  return JSON.parse(localStorage.getItem('admin-wines') || '[]');
+};
 
 export default function WineEdit() {
   const [, setLocation] = useLocation();
@@ -66,13 +43,12 @@ export default function WineEdit() {
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Get wine data from localStorage or use default
+  // Get wine data from CRM storage
   const getStoredWines = (): WineCardData[] => {
     try {
-      const stored = localStorage.getItem("adminWineCards");
-      return stored ? JSON.parse(stored) : defaultWines;
+      return getCRMWines();
     } catch {
-      return defaultWines;
+      return [];
     }
   };
 

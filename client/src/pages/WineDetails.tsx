@@ -37,16 +37,6 @@ export default function WineDetails() {
     const foundWine = crmWines.find((w: Wine) => w.id === wineId);
     if (foundWine) {
       setWine(foundWine);
-    } else {
-      // Fallback to default wine if not found
-      setWine({
-        id: 1,
-        name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
-        year: 2021,
-        bottles: 6,
-        image: wineBottlePath1,
-        ratings: { vn: 95, jd: 93, ws: 94, abv: 14.8 }
-      });
     }
   }, [wineId]);
   

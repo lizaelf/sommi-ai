@@ -38,51 +38,10 @@ export default function AdminCRM() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
-  // Load wines from storage on component mount
+  // Load wines from CRM storage on component mount
   useEffect(() => {
-    // Load wines from CRM storage as master data source
     const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-    if (crmWines.length > 0) {
-      setWineCards(crmWines);
-    } else {
-      // Initialize with default data if no CRM data exists
-      const defaultWines = [
-        {
-          id: 1,
-          name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
-          year: 2021,
-          bottles: 4,
-          image: wineBottlePath1,
-          ratings: {
-            vn: 95,
-            jd: 93,
-            ws: 93,
-            abv: 14.3,
-          },
-          buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
-          qrCode: "QR_001",
-          qrLink: "https://ridgewine.com/qr/001"
-        },
-        {
-          id: 2,
-          name: "Ridge Monte Bello Cabernet Sauvignon",
-          year: 2021,
-          bottles: 2,
-          image: wineBottlePath2,
-          ratings: {
-            vn: 95,
-            jd: 93,
-            ws: 93,
-            abv: 14.3,
-          },
-          buyAgainLink: "https://ridgewine.com/wines/monte-bello",
-          qrCode: "QR_002",
-          qrLink: "https://ridgewine.com/qr/002"
-        },
-      ];
-      localStorage.setItem('admin-wines', JSON.stringify(defaultWines));
-      setWineCards(defaultWines);
-    }
+    setWineCards(crmWines);
   }, []);
 
   // Filter wines based on search term
