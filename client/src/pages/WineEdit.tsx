@@ -469,7 +469,7 @@ export default function WineEdit() {
                 fontWeight: "400",
                 padding: "0 16px",
               }}
-              placeholder="Set wine name"
+              placeholder="Set"
             />
           </div>
 
@@ -498,7 +498,7 @@ export default function WineEdit() {
                 fontWeight: "400",
                 padding: "0 16px",
               }}
-              placeholder="Set wine year"
+              placeholder="Set"
             />
           </div>
         </div>
@@ -541,7 +541,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set Vivino rating"
+                placeholder="Set"
               />
             </div>
             <div>
@@ -573,7 +573,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set James Halliday rating"
+                placeholder="Set"
               />
             </div>
             <div>
@@ -605,7 +605,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set Wine Spectator rating"
+                placeholder="Set"
               />
             </div>
             <div>
@@ -638,7 +638,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set ABV percentage"
+                placeholder="Set"
               />
             </div>
           </div>
@@ -670,7 +670,7 @@ export default function WineEdit() {
               fontWeight: "400",
               padding: "0 16px",
             }}
-            placeholder="Set buy again link"
+            placeholder="Set"
           />
         </div>
 
