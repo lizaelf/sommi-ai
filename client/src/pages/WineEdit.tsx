@@ -392,15 +392,6 @@ export default function WineEdit() {
           <div style={{ marginBottom: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                Wine ID
-              </label>
-              <span style={{ ...typography.body1R, color: "white" }}>
-                {wine.id}
-              </span>
-            </div>
-            
-            <div>
-              <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
                 Wine Name
               </label>
               <input
@@ -564,7 +555,15 @@ export default function WineEdit() {
             />
           </div>
 
-
+          {/* Wine ID - moved to bottom */}
+          <div style={{ marginBottom: "24px" }}>
+            <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
+              Wine ID
+            </label>
+            <span style={{ ...typography.body1R, color: "white" }}>
+              {wine.id}
+            </span>
+          </div>
 
           {/* Bottom padding to prevent content from being hidden behind fixed button */}
           <div style={{ height: "100px" }}></div>
