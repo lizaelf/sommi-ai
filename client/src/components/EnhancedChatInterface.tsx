@@ -1422,9 +1422,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 cursor: "pointer",
                                 outline: "none",
                                 width: "100%",
-                                maxWidth: "320px",
-                                marginLeft: "auto",
-                                marginRight: "auto",
                                 boxSizing: "border-box",
                                 lineHeight: "1",
                               }}
@@ -1465,9 +1462,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 cursor: "pointer",
                                 outline: "none",
                                 width: "100%",
-                                maxWidth: "320px",
-                                marginLeft: "auto",
-                                marginRight: "auto",
                                 boxSizing: "border-box",
                                 lineHeight: "1",
                               }}
