@@ -366,13 +366,16 @@ export default function WineEdit() {
                   onChange={(e) => updateWine('name', e.target.value)}
                   style={{ 
                     ...typography.bodyPlus1, 
-                    color: "white", 
-                    background: "rgba(255, 255, 255, 0.1)",
+                    color: "white !important", 
+                    background: wine.name ? "rgba(255, 255, 255, 0.08)" : "transparent",
                     border: "1px solid rgba(255, 255, 255, 0.2)",
                     borderRadius: "8px",
                     padding: "12px",
-                    width: "100%"
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400"
                   }}
+                  placeholder="Enter wine name"
                 />
               </div>
 
@@ -386,13 +389,16 @@ export default function WineEdit() {
                   onChange={(e) => updateWine('year', parseInt(e.target.value))}
                   style={{ 
                     ...typography.bodyPlus1, 
-                    color: "white", 
-                    background: "rgba(255, 255, 255, 0.1)",
+                    color: "white !important", 
+                    background: wine.year ? "rgba(255, 255, 255, 0.08)" : "transparent",
                     border: "1px solid rgba(255, 255, 255, 0.2)",
                     borderRadius: "8px",
                     padding: "12px",
-                    width: "120px"
+                    width: "120px",
+                    fontSize: "16px",
+                    fontWeight: "400"
                   }}
+                  placeholder="Year"
                 />
               </div>
             </div>
@@ -414,12 +420,14 @@ export default function WineEdit() {
                   onChange={(e) => updateWineRating('vn', parseInt(e.target.value))}
                   style={{ 
                     ...typography.num, 
-                    color: "white", 
-                    background: "rgba(255, 255, 255, 0.1)",
+                    color: "white !important", 
+                    background: wine.ratings.vn ? "rgba(255, 255, 255, 0.08)" : "transparent",
                     border: "1px solid rgba(255, 255, 255, 0.2)",
                     borderRadius: "8px",
                     padding: "12px",
-                    width: "100%"
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400"
                   }}
                 />
               </div>
@@ -435,12 +443,14 @@ export default function WineEdit() {
                   onChange={(e) => updateWineRating('jd', parseInt(e.target.value))}
                   style={{ 
                     ...typography.num, 
-                    color: "white", 
-                    background: "rgba(255, 255, 255, 0.1)",
+                    color: "white !important", 
+                    background: wine.ratings.jd ? "rgba(255, 255, 255, 0.08)" : "transparent",
                     border: "1px solid rgba(255, 255, 255, 0.2)",
                     borderRadius: "8px",
                     padding: "12px",
-                    width: "100%"
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400"
                   }}
                 />
               </div>
