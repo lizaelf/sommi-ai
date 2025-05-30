@@ -415,6 +415,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     console.log("Microphone button clicked - starting voice recognition directly");
     
     try {
+      // Check microphone permissions first
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        console.log("Requesting microphone permissions...");
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Microphone permission granted");
+      }
+      
       // Initialize speech recognition directly
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -473,6 +480,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       
       recognition.onerror = (event: any) => {
         console.error("Voice recognition error:", event.error);
+        setIsListening(false);
+        recognitionRef.current = null;
+        
+        if (event.error === 'not-allowed') {
+          console.log("Microphone permission denied - please allow microphone access");
+        } else if (event.error === 'no-speech') {
+          console.log("No speech detected - try speaking closer to the microphone");
+        }
       };
       
       recognition.onend = () => {
