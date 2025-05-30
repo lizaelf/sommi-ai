@@ -120,29 +120,19 @@ export default function ConversationDialog() {
               : "bg-transparent"
           }`}
         >
-          <button
+          <svg
             onClick={handleBackClick}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              padding: 0,
-              margin: 0,
-              cursor: 'pointer'
-            }}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            className="text-white cursor-pointer"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              className="text-white"
-            >
-              <path
-                fill="currentColor"
-                d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
-              />
-            </svg>
-          </button>
+            <path
+              fill="currentColor"
+              d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
+            />
+          </svg>
           <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">{getWineDisplayName()}</h1>
           <div></div>
         </div>
