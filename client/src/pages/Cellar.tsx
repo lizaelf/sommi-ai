@@ -411,6 +411,17 @@ const Cellar = () => {
         console.log("Contact saved successfully:", data);
         setHasSharedContact(true); // Mark user as having shared contact info
         localStorage.setItem("hasSharedContact", "true"); // Persist the choice
+        
+        // Store contact data locally for editing
+        const contactDataToStore = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          country: selectedCountry,
+        };
+        localStorage.setItem("contactData", JSON.stringify(contactDataToStore));
+        
         setShowModal(false);
         setAnimationState("closing");
         setTimeout(() => setAnimationState("closed"), 300);
@@ -852,6 +863,21 @@ const Cellar = () => {
               className="profile-menu-item"
               onClick={() => {
                 setShowProfileMenu(false);
+                // Load existing contact data if available
+                const savedContactData = localStorage.getItem("contactData");
+                if (savedContactData) {
+                  const contactData = JSON.parse(savedContactData);
+                  setFormData({
+                    firstName: contactData.firstName || "",
+                    lastName: contactData.lastName || "",
+                    email: contactData.email || "",
+                    phone: contactData.phone || "",
+                  });
+                  // Also set the country if saved
+                  if (contactData.country) {
+                    setSelectedCountry(contactData.country);
+                  }
+                }
                 setShowModal(true);
                 setAnimationState("opening");
                 setTimeout(() => setAnimationState("open"), 50);
