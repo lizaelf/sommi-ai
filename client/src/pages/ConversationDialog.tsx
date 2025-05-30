@@ -103,7 +103,7 @@ export default function ConversationDialog() {
   }, []);
 
   const handleBackClick = () => {
-    setLocation('/wine/details');
+    setLocation('/wine-details/1');
   };
 
   return (

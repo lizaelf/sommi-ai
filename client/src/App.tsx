@@ -19,9 +19,7 @@ function Router() {
       <Route path="/" component={Scanned} />
       <Route path="/cellar" component={Cellar} />
       <Route path="/home-global" component={HomeGlobal} />
-      <Route path="/wine/details" component={WineDetails} />
       <Route path="/wine/conversation" component={ConversationDialog} />
-      <Route path="/wine/:id" component={WineDetails} />
       <Route path="/wine-details/:id" component={WineDetails} />
       <Route path="/admin-crm" component={AdminCRM} />
       <Route path="/wine-edit/:id" component={WineEdit} />
