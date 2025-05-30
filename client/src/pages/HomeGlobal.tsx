@@ -3,29 +3,13 @@ import { Link, useLocation } from "wouter";
 import wineryLogoPath from "@assets/winary-logo.png";
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
-import placeholderImage from "@assets/Placeholder.png";
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
-import { getAllWines, getEditableWineData, type WineData } from "@/utils/wineDataManager";
-
-interface HomeWine {
-  id: number;
-  name: string;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-}
 
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [location, setLocation] = useLocation();
-  const [wines, setWines] = useState<HomeWine[]>([]);
 
   const handleWineClick = (wineId: number) => {
     if (wineId === 1) {
@@ -49,43 +33,32 @@ const HomeGlobal = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const getWineImage = (wineId: number, defaultImage: string) => {
-    // First check if there's editable wine data with custom image
-    const editableWine = getEditableWineData(wineId);
-    if (editableWine && editableWine.image && 
-        !editableWine.image.includes("Product%20Image.png") && 
-        !editableWine.image.includes("Product Image.png")) {
-      return editableWine.image;
-    }
-    
-    // Use specific images for default wines ID1 and ID2
-    if (wineId === 1) {
-      return wineBottlePath1;
-    }
-    if (wineId === 2) {
-      return wineBottlePath2;
-    }
-    
-    // For other wines, use placeholder if using default product image
-    return (!defaultImage || 
-            defaultImage.includes("Product%20Image.png") || 
-            defaultImage.includes("Product Image.png"))
-      ? placeholderImage 
-      : defaultImage;
-  };
-
-  useEffect(() => {
-    // Load wines from CRM master data source
-    const crmWines = getAllWines();
-    const homeWines: HomeWine[] = crmWines.map(wine => ({
-      id: wine.id,
-      name: wine.name,
-      bottles: wine.bottles,
-      image: getWineImage(wine.id, wine.image),
-      ratings: wine.ratings,
-    }));
-    setWines(homeWines);
-  }, []);
+  const wines = [
+    {
+      id: 1,
+      name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+      bottles: 4,
+      image: wineBottlePath1,
+      ratings: {
+        vn: 95,
+        jd: 93,
+        ws: 93,
+        abv: 14.3,
+      },
+    },
+    {
+      id: 2,
+      name: "2021 Monte Bello Cabernet Sauvignon",
+      bottles: 2,
+      image: wineBottlePath2,
+      ratings: {
+        vn: 95,
+        jd: 93,
+        ws: 93,
+        abv: 14.3,
+      },
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-black text-white">
