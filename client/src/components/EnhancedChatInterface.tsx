@@ -403,8 +403,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   // Function to handle microphone button click
   const handleMicClick = () => {
     console.log("Microphone button clicked in EnhancedChatInterface");
-    if (voiceAssistantRef.current && voiceAssistantRef.current.startListening) {
-      voiceAssistantRef.current.startListening();
+    if ((window as any).voiceAssistantStartListening) {
+      (window as any).voiceAssistantStartListening();
     }
   };
 
@@ -1854,7 +1854,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       onMicClick={handleMicClick}
                       voiceButtonComponent={
                         <VoiceAssistant
-                          ref={voiceAssistantRef}
                           onSendMessage={handleSendMessage}
                           isProcessing={isTyping}
                         />

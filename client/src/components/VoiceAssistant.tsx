@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
@@ -9,7 +9,7 @@ interface VoiceAssistantProps {
   isProcessing: boolean;
 }
 
-const VoiceAssistant = forwardRef<any, VoiceAssistantProps>(({ onSendMessage, isProcessing }, ref) => {
+const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProcessing }) => {
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false);
@@ -25,10 +25,13 @@ const VoiceAssistant = forwardRef<any, VoiceAssistantProps>(({ onSendMessage, is
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
-  // Expose startListening function through ref
-  useImperativeHandle(ref, () => ({
-    startListening
-  }));
+  // Expose startListening function globally for microphone button
+  useEffect(() => {
+    (window as any).voiceAssistantStartListening = startListening;
+    return () => {
+      delete (window as any).voiceAssistantStartListening;
+    };
+  }, [startListening]);
 
   // Effect to handle audio status changes for auto-restart
   useEffect(() => {
@@ -560,8 +563,6 @@ const VoiceAssistant = forwardRef<any, VoiceAssistantProps>(({ onSendMessage, is
       />
     </div>
   );
-});
-
-VoiceAssistant.displayName = 'VoiceAssistant';
+};
 
 export default VoiceAssistant;
