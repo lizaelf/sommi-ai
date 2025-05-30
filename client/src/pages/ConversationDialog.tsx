@@ -187,12 +187,9 @@ export default function ConversationDialog() {
 
               return Object.entries(messagesByDate).map(([dateKey, dayMessages]: [string, any]) => (
                 <div key={dateKey}>
-                  {/* Sticky Date Header */}
+                  {/* Date Header */}
                   <div
                     style={{
-                      position: "sticky",
-                      top: "75px", // Account for main header
-                      zIndex: 10,
                       display: "flex",
                       justifyContent: "center",
                       marginBottom: "16px",
@@ -216,12 +213,19 @@ export default function ConversationDialog() {
                           fontFamily: "Inter, sans-serif",
                         }}
                       >
-                        {new Date(dateKey).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        {(() => {
+                          const messageDate = new Date(dateKey);
+                          const currentYear = new Date().getFullYear();
+                          const messageYear = messageDate.getFullYear();
+                          const includeYear = messageYear !== currentYear;
+                          
+                          return messageDate.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: includeYear ? 'numeric' : undefined,
+                            month: 'long',
+                            day: 'numeric'
+                          });
+                        })()}
                       </span>
                     </div>
                   </div>
