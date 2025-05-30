@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
+import { getAllWines, saveAllWines, type WineData } from "@/utils/wineDataManager";
 
 interface WineCardData {
   id: number;
@@ -29,50 +30,42 @@ export default function AdminCRM() {
 
 
   const [isEditMode, setIsEditMode] = useState(false);
-  const [wineCards, setWineCards] = useState<WineCardData[]>([
-    {
-      id: 1,
-      name: 'Ridge "Lytton Springs" Dry Creek Zinfandel',
-      year: 2021,
-      bottles: 4,
-      image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
-      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
-      buyAgainLink: "https://ridge.com/product/lytton-springs",
-      qrCode: "QR_CODE_1",
-      qrLink: "https://ridge.com/wines/lytton-springs"
-    },
-    {
-      id: 2,
-      name: "Monte Bello Cabernet Sauvignon",
-      year: 2021,
-      bottles: 2,
-      image: "/@fs/home/runner/workspace/attached_assets/image-2.png",
-      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
-      buyAgainLink: "https://ridge.com/product/monte-bello",
-      qrCode: "QR_CODE_2",
-      qrLink: "https://ridge.com/wines/monte-bello"
-    },
-  ]);
+  const [wineCards, setWineCards] = useState<WineCardData[]>([]);
+
+  // Load wines from storage on component mount
+  useEffect(() => {
+    const wines = getAllWines();
+    setWineCards(wines);
+  }, []);
 
   const handleAddWine = async () => {
+    const newWineId = wineCards.length > 0 ? Math.max(...wineCards.map((w) => w.id)) + 1 : 1;
     const newWine: WineCardData = {
-      id: Math.max(...wineCards.map((w) => w.id)) + 1,
+      id: newWineId,
       name: "New Wine",
       year: 2023,
       bottles: 1,
       image: "/@fs/home/runner/workspace/attached_assets/Product%20Image.png",
       ratings: { vn: 90, jd: 90, ws: 90, abv: 13.5 },
       buyAgainLink: "https://example.com",
-      qrCode: "QR_NEW",
-      qrLink: "https://example.com/qr"
+      qrCode: `QR_${newWineId.toString().padStart(3, '0')}`,
+      qrLink: `https://example.com/qr/${newWineId}`
     };
 
-    setWineCards((prev) => [...prev, newWine]);
+    // Add wine at the top of the list
+    const updatedWines = [newWine, ...wineCards];
+    setWineCards(updatedWines);
+    
+    // Save to storage
+    saveAllWines(updatedWines);
 
     toast({
       title: "Wine Added",
       description: "New wine has been added to your collection.",
     });
+
+    // Navigate to wine edit page for the new wine
+    setLocation(`/wine-edit/${newWine.id}`);
   };
 
   const updateWineCard = (cardId: number, field: keyof WineCardData, value: any) => {
