@@ -132,7 +132,7 @@ export default function AdminCRM() {
               Save All
             </Button>
           )}
-          <Button onClick={handleAddWine}>Add Wine</Button>
+          <Button onClick={handleAddWine} style={{ height: "40px" }}>Add Wine</Button>
         </div>
       </div>
 
@@ -198,17 +198,7 @@ export default function AdminCRM() {
                       </div>
                     </div>
 
-                    {/* Arrow Icon */}
-                    <div style={{ padding: "8px" }}>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="white"
-                      >
-                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
-                      </svg>
-                    </div>
+
                   </div>
                 </div>
               ))}
