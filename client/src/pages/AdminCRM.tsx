@@ -253,11 +253,14 @@ export default function AdminCRM() {
                       }}
                     >
                       <img
-                        src={
-                          card.image && !card.image.includes("Product%20Image.png")
-                            ? card.image 
-                            : placeholderImage
-                        }
+                        src={(() => {
+                          console.log(`Wine ${card.id} image:`, card.image);
+                          const shouldUsePlaceholder = !card.image || 
+                            card.image.includes("Product%20Image.png") || 
+                            card.image.includes("Product Image.png");
+                          console.log(`Should use placeholder for wine ${card.id}:`, shouldUsePlaceholder);
+                          return shouldUsePlaceholder ? placeholderImage : card.image;
+                        })()}
                         alt={card.name || "Wine placeholder"}
                         style={{
                           maxHeight: "90px",
