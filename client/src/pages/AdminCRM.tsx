@@ -132,7 +132,7 @@ export default function AdminCRM() {
               Save All
             </Button>
           )}
-          <Button onClick={handleAddWine} style={{ height: "40px" }}>Add Wine</Button>
+          <Button onClick={handleAddWine} style={{ height: "40px", padding: "0 16px", lineHeight: "40px", minHeight: "40px", maxHeight: "40px" }}>Add Wine</Button>
         </div>
       </div>
 
