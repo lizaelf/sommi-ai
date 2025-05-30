@@ -553,7 +553,7 @@ export default function WineEdit() {
         zIndex: 1000
       }}>
         <div className="max-w-2xl mx-auto">
-          <Button onClick={saveWine} style={{ width: "100%" }}>
+          <Button onClick={saveWine} fullWidth={true}>
             Save Changes
           </Button>
         </div>
