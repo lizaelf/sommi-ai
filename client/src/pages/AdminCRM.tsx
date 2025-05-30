@@ -237,7 +237,7 @@ export default function AdminCRM() {
                     style={{
                       display: "flex",
                       gap: "20px",
-                      alignItems: "center",
+                      alignItems: "flex-start",
                     }}
                   >
                     {/* Wine Image */}
@@ -265,11 +265,11 @@ export default function AdminCRM() {
 
                     {/* Essential Info */}
                     <div style={{ flex: 1 }}>
-                      <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", marginBottom: "4px" }}>
-                        ID: {card.id}
-                      </div>
-                      <div style={{ ...typography.bodyPlus1, color: "white" }}>
+                      <div style={{ ...typography.bodyPlus1, color: "white", marginBottom: "4px" }}>
                         {card.year} {card.name}
+                      </div>
+                      <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>
+                        ID: {card.id}
                       </div>
                     </div>
 
