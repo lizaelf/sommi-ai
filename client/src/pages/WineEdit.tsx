@@ -70,6 +70,13 @@ export default function WineEdit() {
   };
 
   const [wine, setWine] = useState<WineCardData>(() => {
+    // First try to get from wine data manager for real wine data
+    const editableWine = getEditableWineData(wineId);
+    if (editableWine) {
+      return editableWine;
+    }
+    
+    // Fallback to stored wines
     const wines = getStoredWines();
     return wines.find(w => w.id === wineId) || wines[0];
   });
@@ -123,24 +130,13 @@ export default function WineEdit() {
 
   const saveWine = () => {
     try {
+      // Save to admin wine cards for display purposes
       const wines = getStoredWines();
       const updatedWines = wines.map(w => w.id === wine.id ? wine : w);
       localStorage.setItem('adminWineCards', JSON.stringify(updatedWines));
       
-      // Also update the global wine config if this is wine ID 1 (main wine)
-      if (wine.id === 1) {
-        const updatedConfig = {
-          ...WINE_CONFIG,
-          name: `Ridge "${wine.name}" Dry Creek Zinfandel`,
-          fullName: `Ridge "${wine.name}" Dry Creek Zinfandel`,
-          vintage: wine.year,
-          ratings: {
-            ...WINE_CONFIG.ratings,
-            ws: wine.ratings.ws
-          }
-        };
-        localStorage.setItem('wine-config', JSON.stringify(updatedConfig));
-      }
+      // Update the actual wine configuration that affects all pages
+      saveEditableWineData(wine);
       
       toast({
         title: "Wine Updated",
