@@ -145,18 +145,26 @@ export default function WineEdit() {
 
   const saveWine = () => {
     try {
-      // Save to admin wine cards for display purposes
-      const wines = getStoredWines();
-      const updatedWines = wines.map((w) => (w.id === wine.id ? wine : w));
-      localStorage.setItem("adminWineCards", JSON.stringify(updatedWines));
+      // Save to CRM master data source
+      const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+      const existingIndex = crmWines.findIndex((w: any) => w.id === wine.id);
+      
+      if (existingIndex !== -1) {
+        // Update existing wine
+        crmWines[existingIndex] = wine;
+      } else {
+        // Add new wine
+        crmWines.push(wine);
+      }
+      
+      localStorage.setItem('admin-wines', JSON.stringify(crmWines));
 
-      // Update the actual wine configuration that affects all pages
+      // Also save to individual wine data storage for backwards compatibility
       saveEditableWineData(wine);
 
       toast({
         title: "Wine Updated",
-        description:
-          "Wine details have been saved and will be reflected across all pages.",
+        description: "Wine details have been saved and will be reflected across all pages.",
       });
 
       setLocation("/admin-crm");

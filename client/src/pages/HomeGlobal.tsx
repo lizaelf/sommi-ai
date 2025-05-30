@@ -7,9 +7,27 @@ import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
 
+interface Wine {
+  id: number;
+  name: string;
+  year: number;
+  bottles: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+  buyAgainLink?: string;
+  qrCode?: string;
+  qrLink?: string;
+}
+
 const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [location, setLocation] = useLocation();
+  const [wines, setWines] = useState<Wine[]>([]);
 
   const handleWineClick = (wineId: number) => {
     if (wineId === 1) {
@@ -33,32 +51,41 @@ const HomeGlobal = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const wines = [
-    {
-      id: 1,
-      name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
-      bottles: 4,
-      image: wineBottlePath1,
-      ratings: {
-        vn: 95,
-        jd: 93,
-        ws: 93,
-        abv: 14.3,
-      },
-    },
-    {
-      id: 2,
-      name: "2021 Monte Bello Cabernet Sauvignon",
-      bottles: 2,
-      image: wineBottlePath2,
-      ratings: {
-        vn: 95,
-        jd: 93,
-        ws: 93,
-        abv: 14.3,
-      },
-    },
-  ];
+  useEffect(() => {
+    // Load wines from CRM storage
+    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+    if (crmWines.length > 0) {
+      setWines(crmWines);
+    } else {
+      // Initialize with default data if no CRM data exists
+      const defaultWines = [
+        {
+          id: 1,
+          name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+          year: 2021,
+          bottles: 4,
+          image: wineBottlePath1,
+          ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+          buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
+          qrCode: "QR_001",
+          qrLink: "https://ridgewine.com/qr/001"
+        },
+        {
+          id: 2,
+          name: "Ridge Monte Bello Cabernet Sauvignon",
+          year: 2021,
+          bottles: 2,
+          image: wineBottlePath2,
+          ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+          buyAgainLink: "https://ridgewine.com/wines/monte-bello",
+          qrCode: "QR_002",
+          qrLink: "https://ridgewine.com/qr/002"
+        }
+      ];
+      localStorage.setItem('admin-wines', JSON.stringify(defaultWines));
+      setWines(defaultWines);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white">

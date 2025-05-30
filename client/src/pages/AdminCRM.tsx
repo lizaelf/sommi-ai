@@ -40,45 +40,49 @@ export default function AdminCRM() {
 
   // Load wines from storage on component mount
   useEffect(() => {
-    // Use the same wine data as HomeGlobal page for ID1 and ID2
-    const homeGlobalWines = [
-      {
-        id: 1,
-        name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
-        year: 2021,
-        bottles: 4,
-        image: wineBottlePath1,
-        ratings: {
-          vn: 95,
-          jd: 93,
-          ws: 93,
-          abv: 14.3,
+    // Load wines from CRM storage as master data source
+    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+    if (crmWines.length > 0) {
+      setWineCards(crmWines);
+    } else {
+      // Initialize with default data if no CRM data exists
+      const defaultWines = [
+        {
+          id: 1,
+          name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+          year: 2021,
+          bottles: 4,
+          image: wineBottlePath1,
+          ratings: {
+            vn: 95,
+            jd: 93,
+            ws: 93,
+            abv: 14.3,
+          },
+          buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
+          qrCode: "QR_001",
+          qrLink: "https://ridgewine.com/qr/001"
         },
-        buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
-        qrCode: "QR_001",
-        qrLink: "https://ridgewine.com/qr/001"
-      },
-      {
-        id: 2,
-        name: "Ridge Monte Bello Cabernet Sauvignon",
-        year: 2021,
-        bottles: 2,
-        image: wineBottlePath2,
-        ratings: {
-          vn: 95,
-          jd: 93,
-          ws: 93,
-          abv: 14.3,
+        {
+          id: 2,
+          name: "Ridge Monte Bello Cabernet Sauvignon",
+          year: 2021,
+          bottles: 2,
+          image: wineBottlePath2,
+          ratings: {
+            vn: 95,
+            jd: 93,
+            ws: 93,
+            abv: 14.3,
+          },
+          buyAgainLink: "https://ridgewine.com/wines/monte-bello",
+          qrCode: "QR_002",
+          qrLink: "https://ridgewine.com/qr/002"
         },
-        buyAgainLink: "https://ridgewine.com/wines/monte-bello",
-        qrCode: "QR_002",
-        qrLink: "https://ridgewine.com/qr/002"
-      },
-    ];
-    
-    // Merge with any additional wines from storage (ID > 2)
-    const additionalWines = getAllWines().filter(wine => wine.id > 2);
-    setWineCards([...homeGlobalWines, ...additionalWines]);
+      ];
+      localStorage.setItem('admin-wines', JSON.stringify(defaultWines));
+      setWineCards(defaultWines);
+    }
   }, []);
 
   // Filter wines based on search term
