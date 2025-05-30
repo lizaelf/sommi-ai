@@ -1851,8 +1851,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       isProcessing={isTyping}
                       onFocus={() => setIsKeyboardFocused(true)}
                       onBlur={() => setIsKeyboardFocused(false)}
+                      onMicClick={handleMicClick}
                       voiceButtonComponent={
                         <VoiceAssistant
+                          ref={voiceAssistantRef}
                           onSendMessage={handleSendMessage}
                           isProcessing={isTyping}
                         />

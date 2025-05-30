@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
@@ -9,7 +9,7 @@ interface VoiceAssistantProps {
   isProcessing: boolean;
 }
 
-const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProcessing }) => {
+const VoiceAssistant = forwardRef<any, VoiceAssistantProps>(({ onSendMessage, isProcessing }, ref) => {
   const [isListening, setIsListening] = useState(false);
   const [status, setStatus] = useState('');
   const [usedVoiceInput, setUsedVoiceInput] = useState(false);
@@ -24,6 +24,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isLoadingAudio, setIsLoadingAudio] = useState(false); // Loading state for TTS
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
+
+  // Expose startListening function through ref
+  useImperativeHandle(ref, () => ({
+    startListening
+  }));
 
   // Effect to handle audio status changes for auto-restart
   useEffect(() => {
@@ -555,6 +560,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       />
     </div>
   );
-};
+});
+
+VoiceAssistant.displayName = 'VoiceAssistant';
 
 export default VoiceAssistant;
