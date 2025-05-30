@@ -145,45 +145,103 @@ export default function ConversationDialog() {
           margin: '0 auto'
         }}>
           {messages.length > 0 ? (
-            messages.map((message, index) => (
-              <div key={`${message.id}-${index}`} style={{
-                display: 'flex',
-                justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                width: '100%',
-                marginBottom: '16px'
-              }}>
-                <div 
-                  style={{
-                    backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
-                    borderRadius: '16px',
-                    padding: '16px',
-                    width: message.role === 'user' ? 'fit-content' : '100%',
-                    maxWidth: message.role === 'user' ? '80%' : '100%'
-                  }}
-                  data-role={message.role}
-                >
-                  {message.role === 'assistant' ? (
-                    <div style={{
-                      color: '#DBDBDB',
-                      fontFamily: 'Inter, system-ui, sans-serif',
-                      fontSize: '16px',
-                      lineHeight: '1.6'
-                    }}>
-                      {formatContent(message.content)}
+            (() => {
+              // Group messages by date
+              const messagesByDate = messages.reduce((groups: any, message: any, index: number) => {
+                const messageDate = new Date(message.createdAt || Date.now());
+                const dateKey = messageDate.toDateString();
+                
+                if (!groups[dateKey]) {
+                  groups[dateKey] = [];
+                }
+                groups[dateKey].push({ ...message, originalIndex: index });
+                return groups;
+              }, {});
+
+              return Object.entries(messagesByDate).map(([dateKey, dayMessages]: [string, any]) => (
+                <div key={dateKey}>
+                  {/* Sticky Date Header */}
+                  <div
+                    style={{
+                      position: "sticky",
+                      top: "75px", // Account for main header
+                      zIndex: 10,
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "16px",
+                      marginTop: Object.keys(messagesByDate).indexOf(dateKey) > 0 ? "24px" : "0px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        backgroundColor: "rgba(28, 28, 28, 0.9)",
+                        backdropFilter: "blur(8px)",
+                        borderRadius: "16px",
+                        padding: "6px 12px",
+                        border: "1px solid rgba(255, 255, 255, 0.1)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "rgba(255, 255, 255, 0.8)",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          fontFamily: "Inter, sans-serif",
+                        }}
+                      >
+                        {new Date(dateKey).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
                     </div>
-                  ) : (
-                    <div style={{
-                      color: '#000000',
-                      fontFamily: 'Inter, system-ui, sans-serif',
-                      fontSize: '16px',
-                      lineHeight: '1.6'
+                  </div>
+
+                  {/* Messages for this date */}
+                  {dayMessages.map((message: any, msgIndex: number) => (
+                    <div key={`${message.id}-${message.originalIndex}`} style={{
+                      display: 'flex',
+                      justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                      width: '100%',
+                      marginBottom: '16px'
                     }}>
-                      {formatContent(message.content)}
+                      <div 
+                        style={{
+                          backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
+                          borderRadius: '16px',
+                          padding: '16px',
+                          width: message.role === 'user' ? 'fit-content' : '100%',
+                          maxWidth: message.role === 'user' ? '80%' : '100%'
+                        }}
+                        data-role={message.role}
+                      >
+                        {message.role === 'assistant' ? (
+                          <div style={{
+                            color: '#DBDBDB',
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            fontSize: '16px',
+                            lineHeight: '1.6'
+                          }}>
+                            {formatContent(message.content)}
+                          </div>
+                        ) : (
+                          <div style={{
+                            color: '#000000',
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            fontSize: '16px',
+                            lineHeight: '1.6'
+                          }}>
+                            {formatContent(message.content)}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
+                  ))}
                 </div>
-              </div>
-            ))
+              ));
+            })()
           ) : (
             <div style={{
               textAlign: 'center',
