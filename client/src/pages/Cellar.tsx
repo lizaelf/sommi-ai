@@ -55,6 +55,12 @@ const Cellar = () => {
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const [notificationPreferences, setNotificationPreferences] = useState(() => {
+    const saved = localStorage.getItem("notificationPreferences");
+    return saved ? JSON.parse(saved) : { email: true, phone: false };
+  });
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     // Check localStorage for saved contact sharing status
     return localStorage.getItem("hasSharedContact") === "true";
@@ -872,7 +878,43 @@ const Cellar = () => {
             <button
               onClick={() => {
                 setShowProfileMenu(false);
-                resetAccountStatus();
+                setShowNotificationsModal(true);
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "12px 16px",
+                borderRadius: "8px",
+                backgroundColor: "transparent",
+                border: "none",
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                width: "100%",
+                textAlign: "left",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+                  fill="currentColor"
+                />
+              </svg>
+              Manage notifications
+            </button>
+            <button
+              onClick={() => {
+                setShowProfileMenu(false);
+                setShowDeleteConfirmation(true);
               }}
               style={{
                 display: "flex",
@@ -899,17 +941,11 @@ const Cellar = () => {
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path
-                  d="M16 13v-2a4 4 0 1 0-8 0v2H7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1zM10 11a2 2 0 1 1 4 0v2h-4v-2z"
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
                   fill="currentColor"
                 />
-                <path
-                  d="m8.5 2.5l1.5 1.5h4l1.5-1.5"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
               </svg>
-              Log Out
+              Delete my account
             </button>
           </div>
         </div>
@@ -1076,6 +1112,303 @@ const Cellar = () => {
             </button>
           </div>
         )}
+
+        {/* Delete Account Confirmation Bottom Sheet */}
+        {showDeleteConfirmation &&
+          portalElement &&
+          createPortal(
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 9999,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
+              }}
+              onClick={() => setShowDeleteConfirmation(false)}
+            >
+              <div
+                style={{
+                  background:
+                    "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
+                  backdropFilter: "blur(20px)",
+                  width: "100%",
+                  maxWidth: "500px",
+                  borderRadius: "24px 24px 0px 0px",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.20)",
+                  padding: "24px",
+                  display: "flex",
+                  flexDirection: "column",
+                  boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "16px",
+                    right: "16px",
+                    cursor: "pointer",
+                    zIndex: 10,
+                  }}
+                  onClick={() => setShowDeleteConfirmation(false)}
+                >
+                  <X size={24} color="white" />
+                </div>
+
+                <h2
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    margin: "0 0 16px 0",
+                  }}
+                >
+                  Delete Account
+                </h2>
+
+                <p
+                  style={{
+                    color: "#CECECE",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    lineHeight: "1.4",
+                    textAlign: "center",
+                    margin: "0 0 32px 0",
+                  }}
+                >
+                  Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.
+                </p>
+
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <button
+                    onClick={() => setShowDeleteConfirmation(false)}
+                    style={{
+                      flex: 1,
+                      height: "56px",
+                      padding: "0 24px",
+                      borderRadius: "24px",
+                      backgroundColor: "transparent",
+                      border: "1px solid rgba(255, 255, 255, 0.3)",
+                      color: "white",
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDeleteConfirmation(false);
+                      resetAccountStatus();
+                    }}
+                    style={{
+                      flex: 1,
+                      height: "56px",
+                      padding: "0 24px",
+                      borderRadius: "24px",
+                      backgroundColor: "#ff6b6b",
+                      border: "none",
+                      color: "white",
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    Delete Account
+                  </button>
+                </div>
+              </div>
+            </div>,
+            portalElement
+          )}
+
+        {/* Notifications Management Modal */}
+        {showNotificationsModal &&
+          portalElement &&
+          createPortal(
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 9999,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
+              }}
+              onClick={() => setShowNotificationsModal(false)}
+            >
+              <div
+                style={{
+                  background:
+                    "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
+                  backdropFilter: "blur(20px)",
+                  width: "100%",
+                  maxWidth: "500px",
+                  borderRadius: "24px 24px 0px 0px",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.20)",
+                  padding: "24px",
+                  display: "flex",
+                  flexDirection: "column",
+                  boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "16px",
+                    right: "16px",
+                    cursor: "pointer",
+                    zIndex: 10,
+                  }}
+                  onClick={() => setShowNotificationsModal(false)}
+                >
+                  <X size={24} color="white" />
+                </div>
+
+                <h2
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    margin: "0 0 24px 0",
+                  }}
+                >
+                  Manage Notifications
+                </h2>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "20px",
+                    marginBottom: "32px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "16px 0",
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          color: "white",
+                          fontFamily: "Inter, sans-serif",
+                          fontSize: "16px",
+                          fontWeight: "500",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        Email notifications
+                      </div>
+                      <div
+                        style={{
+                          color: "#CECECE",
+                          fontFamily: "Inter, sans-serif",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Receive updates and recommendations via email
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={notificationPreferences.email}
+                      onChange={(e) => {
+                        const newPrefs = { ...notificationPreferences, email: e.target.checked };
+                        setNotificationPreferences(newPrefs);
+                        localStorage.setItem("notificationPreferences", JSON.stringify(newPrefs));
+                        toast({
+                          title: "Thanks! Your preferences updated",
+                          duration: 3000,
+                        });
+                      }}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "16px 0",
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          color: "white",
+                          fontFamily: "Inter, sans-serif",
+                          fontSize: "16px",
+                          fontWeight: "500",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        Phone notifications
+                      </div>
+                      <div
+                        style={{
+                          color: "#CECECE",
+                          fontFamily: "Inter, sans-serif",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Receive SMS alerts and reminders
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={notificationPreferences.phone}
+                      onChange={(e) => {
+                        const newPrefs = { ...notificationPreferences, phone: e.target.checked };
+                        setNotificationPreferences(newPrefs);
+                        localStorage.setItem("notificationPreferences", JSON.stringify(newPrefs));
+                        toast({
+                          title: "Thanks! Your preferences updated",
+                          duration: 3000,
+                        });
+                      }}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>,
+            portalElement
+          )}
 
         {/* Contact Info Bottom Sheet */}
         {animationState !== "closed" &&
