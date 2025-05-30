@@ -455,7 +455,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           }}
           style={{
             position: 'fixed',
-            bottom: '24px',
+            bottom: '54px',
             right: '24px',
             width: '64px',
             height: '64px',
