@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import Button from '@/components/ui/Button';
@@ -54,6 +54,7 @@ export default function WineEdit() {
   const params = useParams();
   const { toast } = useToast();
   const wineId = parseInt(params.id || "1");
+  const [scrolled, setScrolled] = useState(false);
   
   // Get wine data from localStorage or use default
   const getStoredWines = (): WineCardData[] => {
@@ -69,6 +70,24 @@ export default function WineEdit() {
     const wines = getStoredWines();
     return wines.find(w => w.id === wineId) || wines[0];
   });
+
+  // Add scroll listener to detect when page is scrolled
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    // Clean up the listener when component unmounts
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const updateWine = (field: keyof WineCardData, value: any) => {
     setWine(prev => ({ ...prev, [field]: value }));
@@ -123,17 +142,21 @@ export default function WineEdit() {
 
   return (
     <div className="min-h-screen bg-background text-white">
-      {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
-        <button
-          onClick={() => setLocation("/admin-crm")}
-          className="text-white"
-        >
+      {/* Fixed Header with back button navigation */}
+      <div
+        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
+          scrolled
+            ? "bg-black/90 backdrop-blur-sm border-b border-white/10"
+            : "bg-transparent"
+        }`}
+      >
+        <button onClick={() => setLocation("/admin-crm")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
             viewBox="0 0 24 24"
+            className="text-white"
           >
             <path
               fill="currentColor"
@@ -141,9 +164,7 @@ export default function WineEdit() {
             />
           </svg>
         </button>
-        <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">
-          Edit Wine
-        </h1>
+        <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">Edit Wine</h1>
         <div></div>
       </div>
 
