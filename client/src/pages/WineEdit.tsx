@@ -315,7 +315,7 @@ export default function WineEdit() {
                 htmlFor="image-upload"
                 style={{
                   position: "absolute",
-                  bottom: "8px",
+                  bottom: "0px",
                   right: "8px",
                   background: "rgba(0, 0, 0, 0.12)",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -364,7 +364,7 @@ export default function WineEdit() {
                   }}
                   style={{
                     position: "absolute",
-                    bottom: "-32px",
+                    bottom: "-24px",
                     left: "50%",
                     transform: "translateX(-50%)",
                     background: "rgba(0, 0, 0, 0.12)",
@@ -425,7 +425,7 @@ export default function WineEdit() {
                   ...typography.bodyPlus1, 
                   color: "white !important", 
                   height: "56px",
-                  width: "200px",
+                  width: "100%",
                   fontSize: "16px",
                   fontWeight: "400",
                   padding: "0 16px"
