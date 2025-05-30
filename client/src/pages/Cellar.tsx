@@ -1211,9 +1211,13 @@ const Cellar = () => {
                       color: "white",
                       fontFamily: "Inter, sans-serif",
                       fontSize: "16px",
-                      fontWeight: "400",
+                      fontWeight: "500",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
+                      textAlign: "center",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     Cancel
@@ -1228,14 +1232,18 @@ const Cellar = () => {
                       height: "56px",
                       padding: "0 24px",
                       borderRadius: "24px",
-                      backgroundColor: "#ff6b6b",
+                      backgroundColor: "#5D1D1E",
                       border: "none",
                       color: "white",
                       fontFamily: "Inter, sans-serif",
                       fontSize: "16px",
-                      fontWeight: "400",
+                      fontWeight: "500",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
+                      textAlign: "center",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     Delete Account
