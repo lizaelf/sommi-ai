@@ -1450,7 +1450,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 minHeight: "56px",
                                 maxHeight: "56px",
                                 padding: "0 16px",
-                                margin: "16px 0 0 0",
+                                margin: "8px 0 0 0",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
