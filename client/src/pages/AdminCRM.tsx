@@ -112,49 +112,45 @@ export default function AdminCRM() {
 
   return (
     <div className="min-h-screen bg-background text-white">
-      {/* Header */}
-      <div className="border-b border-white/10 bg-black/90 backdrop-blur-sm">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setLocation("/home-global")}
-              className="text-white hover:text-white/80 transition-colors"
+      {/* Fixed Header with back button navigation */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
+        <button
+          onClick={() => setLocation("/home-global")}
+          className="text-white"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
+            />
+          </svg>
+        </button>
+        <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">Admin</h1>
+        <div className="flex gap-3">
+          {isEditMode && (
+            <Button 
+              onClick={() => {
+                setIsEditMode(false);
+                toast({
+                  title: "Changes Saved",
+                  description: "All wine details have been saved successfully.",
+                });
+              }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0" />
-              </svg>
-            </button>
-            <h1 style={{ ...typography.h1, color: "white" }}>
-              Admin
-            </h1>
-          </div>
-          <div className="flex gap-3">
-            {isEditMode && (
-              <Button 
-                onClick={() => {
-                  setIsEditMode(false);
-                  toast({
-                    title: "Changes Saved",
-                    description: "All wine details have been saved successfully.",
-                  });
-                }}
-              >
-                Save All
-              </Button>
-            )}
-            <Button onClick={handleAddWine}>Add Wine</Button>
-          </div>
+              Save All
+            </Button>
+          )}
+          <Button onClick={handleAddWine}>Add Wine</Button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="pt-20 p-6">
         <div className="space-y-8">
           {/* Wine Cards Preview */}
           <div className="space-y-6">
