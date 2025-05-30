@@ -335,54 +335,49 @@ export default function WineEdit() {
             </div>
 
             {/* QR Code */}
-            <div style={{ flex: 1, display: "flex", alignItems: "flex-start", justifyContent: "flex-end" }}>
-              <div style={{ position: "relative" }}>
-                <SimpleQRCode 
-                  value={`${window.location.origin}/wine-scan?id=${wine.id}`}
-                  size={120}
-                />
-                <button
-                  onClick={() => {
-                    // Create a canvas to convert QR code to image for download
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const qrElement = document.querySelector('canvas') as HTMLCanvasElement;
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <SimpleQRCode 
+                value={`${window.location.origin}/wine-scan?id=${wine.id}`}
+                size={120}
+              />
+              <button
+                onClick={() => {
+                  // Create a canvas to convert QR code to image for download
+                  const canvas = document.createElement('canvas');
+                  const ctx = canvas.getContext('2d');
+                  const qrElement = document.querySelector('canvas') as HTMLCanvasElement;
+                  
+                  if (qrElement && ctx) {
+                    canvas.width = 120;
+                    canvas.height = 120;
+                    ctx.drawImage(qrElement, 0, 0);
                     
-                    if (qrElement && ctx) {
-                      canvas.width = 120;
-                      canvas.height = 120;
-                      ctx.drawImage(qrElement, 0, 0);
-                      
-                      // Create download link
-                      const link = document.createElement('a');
-                      link.download = `wine-${wine.id}-qr.png`;
-                      link.href = canvas.toDataURL();
-                      link.click();
-                    }
-                  }}
-                  style={{
-                    position: "relative",
-                    bottom: "-8px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    background: "rgba(0, 0, 0, 0.12)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    borderRadius: "24px",
-                    padding: "6px 12px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ...typography.bodyPlus1,
-                    color: "white",
-                    fontSize: "12px",
-                    fontWeight: "400",
-                  }}
-                  className="hover:bg-white/8 transition-colors"
-                >
-                  Download
-                </button>
-              </div>
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.download = `wine-${wine.id}-qr.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                  }
+                }}
+                style={{
+                  background: "rgba(0, 0, 0, 0.12)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "24px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  ...typography.bodyPlus1,
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "400",
+                  width: "100%",
+                  height: "40px",
+                }}
+                className="hover:bg-white/8 transition-colors"
+              >
+                Download
+              </button>
             </div>
           </div>
 
