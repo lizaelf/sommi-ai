@@ -576,7 +576,7 @@ export default function WineEdit() {
         right: 0,
         background: "#0A0A0A",
         borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-        padding: "16px 24px",
+        padding: "16px 0px",
         zIndex: 1000
       }}>
         <Button onClick={saveWine} fullWidth={true}>
