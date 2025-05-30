@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'wouter';
-import { useToast } from '@/hooks/use-toast';
-import Button from '@/components/ui/Button';
-import typography from '@/styles/typography';
-import { SimpleQRCode } from '@/components/SimpleQRCode';
-import { WINE_CONFIG } from '@shared/wineConfig';
-import { getCurrentWineConfig, getEditableWineData, saveEditableWineData } from '@/utils/wineDataManager';
+import React, { useState, useEffect } from "react";
+import { useLocation, useParams } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import Button from "@/components/ui/Button";
+import typography from "@/styles/typography";
+import { SimpleQRCode } from "@/components/SimpleQRCode";
+import { WINE_CONFIG } from "@shared/wineConfig";
+import {
+  getCurrentWineConfig,
+  getEditableWineData,
+  saveEditableWineData,
+} from "@/utils/wineDataManager";
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 
@@ -29,14 +33,16 @@ interface WineCardData {
 const defaultWines: WineCardData[] = [
   {
     id: 1,
-    name: WINE_CONFIG.name.replace('Ridge "', '').replace('" Dry Creek Zinfandel', ''),
+    name: WINE_CONFIG.name
+      .replace('Ridge "', "")
+      .replace('" Dry Creek Zinfandel', ""),
     year: WINE_CONFIG.vintage,
     bottles: 6,
     image: wineBottlePath1,
     ratings: { vn: 95, jd: 93, ws: WINE_CONFIG.ratings.ws, abv: 14.8 },
     buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
     qrCode: "QR_001",
-    qrLink: "https://ridgewine.com/qr/001"
+    qrLink: "https://ridgewine.com/qr/001",
   },
   {
     id: 2,
@@ -47,8 +53,8 @@ const defaultWines: WineCardData[] = [
     ratings: { vn: 92, jd: 91, ws: 93, abv: 14.5 },
     buyAgainLink: "https://ridgewine.com/wines/geyserville",
     qrCode: "QR_002",
-    qrLink: "https://ridgewine.com/qr/002"
-  }
+    qrLink: "https://ridgewine.com/qr/002",
+  },
 ];
 
 export default function WineEdit() {
@@ -58,11 +64,11 @@ export default function WineEdit() {
   const wineId = parseInt(params.id || "1");
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  
+
   // Get wine data from localStorage or use default
   const getStoredWines = (): WineCardData[] => {
     try {
-      const stored = localStorage.getItem('adminWineCards');
+      const stored = localStorage.getItem("adminWineCards");
       return stored ? JSON.parse(stored) : defaultWines;
     } catch {
       return defaultWines;
@@ -72,15 +78,20 @@ export default function WineEdit() {
   const [wine, setWine] = useState<WineCardData>(() => {
     // First try to get from wine data manager for real wine data
     const editableWine = getEditableWineData(wineId);
-    console.log('Loading wine data for ID:', wineId, 'Editable wine:', editableWine);
+    console.log(
+      "Loading wine data for ID:",
+      wineId,
+      "Editable wine:",
+      editableWine,
+    );
     if (editableWine) {
       return editableWine;
     }
-    
+
     // Fallback to stored wines
     const wines = getStoredWines();
-    const fallbackWine = wines.find(w => w.id === wineId) || wines[0];
-    console.log('Using fallback wine:', fallbackWine);
+    const fallbackWine = wines.find((w) => w.id === wineId) || wines[0];
+    console.log("Using fallback wine:", fallbackWine);
     return fallbackWine;
   });
 
@@ -93,12 +104,12 @@ export default function WineEdit() {
         setScrolled(false);
       }
     };
-    
-    window.addEventListener('scroll', handleScroll);
-    
+
+    window.addEventListener("scroll", handleScroll);
+
     // Clean up the listener when component unmounts
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -106,28 +117,28 @@ export default function WineEdit() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
-      if (!target.closest('.dropdown-container')) {
+      if (!target.closest(".dropdown-container")) {
         setShowDropdown(false);
       }
     };
 
     if (showDropdown) {
-      document.addEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [showDropdown]);
 
   const updateWine = (field: keyof WineCardData, value: any) => {
-    setWine(prev => ({ ...prev, [field]: value }));
+    setWine((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateWineRating = (ratingType: string, value: number) => {
-    setWine(prev => ({
+    setWine((prev) => ({
       ...prev,
-      ratings: { ...prev.ratings, [ratingType]: value }
+      ratings: { ...prev.ratings, [ratingType]: value },
     }));
   };
 
@@ -135,17 +146,18 @@ export default function WineEdit() {
     try {
       // Save to admin wine cards for display purposes
       const wines = getStoredWines();
-      const updatedWines = wines.map(w => w.id === wine.id ? wine : w);
-      localStorage.setItem('adminWineCards', JSON.stringify(updatedWines));
-      
+      const updatedWines = wines.map((w) => (w.id === wine.id ? wine : w));
+      localStorage.setItem("adminWineCards", JSON.stringify(updatedWines));
+
       // Update the actual wine configuration that affects all pages
       saveEditableWineData(wine);
-      
+
       toast({
         title: "Wine Updated",
-        description: "Wine details have been saved and will be reflected across all pages.",
+        description:
+          "Wine details have been saved and will be reflected across all pages.",
       });
-      
+
       setLocation("/admin-crm");
     } catch (error) {
       toast({
@@ -158,14 +170,14 @@ export default function WineEdit() {
   const deleteWine = () => {
     try {
       const wines = getStoredWines();
-      const updatedWines = wines.filter(w => w.id !== wine.id);
-      localStorage.setItem('adminWineCards', JSON.stringify(updatedWines));
-      
+      const updatedWines = wines.filter((w) => w.id !== wine.id);
+      localStorage.setItem("adminWineCards", JSON.stringify(updatedWines));
+
       toast({
         title: "Wine Deleted",
         description: "Wine has been removed from your collection.",
       });
-      
+
       setLocation("/admin-crm");
     } catch (error) {
       toast({
@@ -185,7 +197,7 @@ export default function WineEdit() {
             : "bg-transparent"
         }`}
       >
-        <button 
+        <button
           onClick={() => setLocation("/admin-crm")}
           className="header-button"
         >
@@ -201,12 +213,14 @@ export default function WineEdit() {
             strokeLinejoin="round"
             className="text-white"
           >
-            <path d="m15 18-6-6 6-6"/>
+            <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-        <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">Edit Wine</h1>
+        <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">
+          Edit Wine
+        </h1>
         <div className="relative dropdown-container">
-          <button 
+          <button
             onClick={() => setShowDropdown(!showDropdown)}
             className="header-button"
             style={{ padding: "4px" }}
@@ -223,14 +237,14 @@ export default function WineEdit() {
               strokeLinejoin="round"
               className="text-white"
             >
-              <circle cx="12" cy="12" r="1"/>
-              <circle cx="12" cy="5" r="1"/>
-              <circle cx="12" cy="19" r="1"/>
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="19" r="1" />
             </svg>
           </button>
-          
+
           {showDropdown && (
-            <div 
+            <div
               style={{
                 position: "absolute",
                 top: "100%",
@@ -240,7 +254,7 @@ export default function WineEdit() {
                 border: "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "8px",
                 minWidth: "140px",
-                zIndex: 1000
+                zIndex: 1000,
               }}
             >
               <button
@@ -256,7 +270,7 @@ export default function WineEdit() {
                   color: "#ef4444",
                   cursor: "pointer",
                   textAlign: "left",
-                  ...typography.body1R
+                  ...typography.body1R,
                 }}
                 className="hover:bg-red-500/10 transition-colors"
               >
@@ -269,308 +283,405 @@ export default function WineEdit() {
 
       {/* Content */}
       <div className="pt-20 p-6">
-          <div style={{ display: "flex", gap: "20px", marginBottom: "24px" }}>
-            {/* Wine Image with Update Button */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", flex: 1 }}>
-              <div
+        <div style={{ display: "flex", gap: "20px", marginBottom: "24px" }}>
+          {/* Wine Image with Update Button */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "8px",
+              flex: 1,
+            }}
+          >
+            <div
+              style={{
+                width: "120px",
+                height: "160px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "8px",
+                flexShrink: 0,
+              }}
+            >
+              <img
+                src={wine.image}
+                alt={wine.name}
                 style={{
-                  width: "120px",
-                  height: "160px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  borderRadius: "8px",
-                  flexShrink: 0,
+                  maxHeight: "150px",
+                  maxWidth: "110px",
+                  width: "auto",
+                  height: "auto",
                 }}
-              >
-                <img
-                  src={wine.image}
-                  alt={wine.name}
-                  style={{
-                    maxHeight: "150px",
-                    maxWidth: "110px",
-                    width: "auto",
-                    height: "auto",
-                  }}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = (event) => {
-                        updateWine('image', event.target?.result as string);
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
-                  style={{ display: "none" }}
-                  id="image-upload"
-                />
-              </div>
-              <label
-                htmlFor="image-upload"
-                style={{
-                  background: "rgba(0, 0, 0, 0.12)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "24px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  ...typography.bodyPlus1,
-                  color: "white",
-                  fontSize: "12px",
-                  fontWeight: "400",
-                  width: "100%",
-                  height: "40px",
-                }}
-                className="hover:bg-white/8 transition-colors"
-              >
-                Update
-              </label>
-            </div>
-
-            {/* QR Code */}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-              <SimpleQRCode 
-                value={`${window.location.origin}/wine-scan?id=${wine.id}`}
-                size={120}
               />
-              <button
-                onClick={() => {
-                  // Create a canvas to convert QR code to image for download
-                  const canvas = document.createElement('canvas');
-                  const ctx = canvas.getContext('2d');
-                  const qrElement = document.querySelector('canvas') as HTMLCanvasElement;
-                  
-                  if (qrElement && ctx) {
-                    canvas.width = 120;
-                    canvas.height = 120;
-                    ctx.drawImage(qrElement, 0, 0);
-                    
-                    // Create download link
-                    const link = document.createElement('a');
-                    link.download = `wine-${wine.id}-qr.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      updateWine("image", event.target?.result as string);
+                    };
+                    reader.readAsDataURL(file);
                   }
                 }}
-                style={{
-                  background: "rgba(0, 0, 0, 0.12)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "24px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  ...typography.bodyPlus1,
-                  color: "white",
-                  fontSize: "12px",
-                  fontWeight: "400",
-                  width: "100%",
-                  height: "40px",
-                }}
-                className="hover:bg-white/8 transition-colors"
-              >
-                Download
-              </button>
-            </div>
-          </div>
-
-          {/* Basic Info - moved below image */}
-          <div style={{ marginBottom: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div>
-              <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                Wine Name
-              </label>
-              <input
-                type="text"
-                value={wine.name}
-                onChange={(e) => updateWine('name', e.target.value)}
-                className="contact-form-input"
-                style={{ 
-                  ...typography.bodyPlus1, 
-                  color: "white !important", 
-                  height: "56px",
-                  width: "100%",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  padding: "0 16px"
-                }}
-                placeholder="Enter wine name"
+                style={{ display: "none" }}
+                id="image-upload"
               />
             </div>
-
-            <div>
-              <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                Wine Year
-              </label>
-              <input
-                type="number"
-                value={wine.year}
-                onChange={(e) => updateWine('year', parseInt(e.target.value))}
-                className="contact-form-input"
-                style={{ 
-                  ...typography.bodyPlus1, 
-                  color: "white !important", 
-                  height: "56px",
-                  width: "100%",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  padding: "0 16px"
-                }}
-                placeholder="Year"
-              />
-            </div>
+            <label
+              htmlFor="image-upload"
+              style={{
+                background: "rgba(255, 255, 255, 0.12)",
+                borderRadius: "24px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                ...typography.bodyPlus1,
+                color: "white",
+                fontSize: "12px",
+                fontWeight: "400",
+                width: "100%",
+                height: "40px",
+              }}
+              className="hover:bg-white/8 transition-colors"
+            >
+              Update
+            </label>
           </div>
 
-          {/* Ratings */}
-          <div style={{ marginBottom: "24px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
-              <div>
-                <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                  Vivino (VN)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={wine.ratings.vn}
-                  onChange={(e) => updateWineRating('vn', parseInt(e.target.value))}
-                  className="contact-form-input"
-                  style={{ 
-                    ...typography.num, 
-                    color: "white !important", 
-                    height: "56px",
-                    width: "100%",
-                    fontSize: "16px",
-                    fontWeight: "400",
-                    padding: "0 16px"
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                  James Halliday (JD)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={wine.ratings.jd}
-                  onChange={(e) => updateWineRating('jd', parseInt(e.target.value))}
-                  className="contact-form-input"
-                  style={{ 
-                    ...typography.num, 
-                    color: "white !important", 
-                    height: "56px",
-                    width: "100%",
-                    fontSize: "16px",
-                    fontWeight: "400",
-                    padding: "0 16px"
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                  Wine Spectator (WS)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={wine.ratings.ws}
-                  onChange={(e) => updateWineRating('ws', parseInt(e.target.value))}
-                  className="contact-form-input"
-                  style={{ 
-                    ...typography.num, 
-                    color: "white !important", 
-                    height: "56px",
-                    width: "100%",
-                    fontSize: "16px",
-                    fontWeight: "400",
-                    padding: "0 16px"
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-                  ABV (%)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="0.1"
-                  value={wine.ratings.abv}
-                  onChange={(e) => updateWineRating('abv', parseFloat(e.target.value))}
-                  className="contact-form-input"
-                  style={{ 
-                    ...typography.num, 
-                    color: "white !important", 
-                    height: "56px",
-                    width: "100%",
-                    fontSize: "16px",
-                    fontWeight: "400",
-                    padding: "0 16px"
-                  }}
-                />
-              </div>
-            </div>
-          </div>
+          {/* QR Code */}
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <SimpleQRCode
+              value={`${window.location.origin}/wine-scan?id=${wine.id}`}
+              size={120}
+            />
+            <button
+              onClick={() => {
+                // Create a canvas to convert QR code to image for download
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                const qrElement = document.querySelector(
+                  "canvas",
+                ) as HTMLCanvasElement;
 
-          {/* Buy Again */}
-          <div style={{ marginBottom: "24px" }}>
-            <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-              Buy Again Link
+                if (qrElement && ctx) {
+                  canvas.width = 120;
+                  canvas.height = 120;
+                  ctx.drawImage(qrElement, 0, 0);
+
+                  // Create download link
+                  const link = document.createElement("a");
+                  link.download = `wine-${wine.id}-qr.png`;
+                  link.href = canvas.toDataURL();
+                  link.click();
+                }
+              }}
+              style={{
+                background: "rgba(255, 255, 255, 0.12)",
+                borderRadius: "24px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                ...typography.bodyPlus1,
+                color: "white",
+                fontSize: "12px",
+                fontWeight: "400",
+                width: "100%",
+                height: "40px",
+                border: "none",
+              }}
+              className="hover:bg-white/8 transition-colors"
+            >
+              Download
+            </button>
+          </div>
+        </div>
+
+        {/* Basic Info - moved below image */}
+        <div
+          style={{
+            marginBottom: "24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Wine Name
             </label>
             <input
-              type="url"
-              value={wine.buyAgainLink}
-              onChange={(e) => updateWine('buyAgainLink', e.target.value)}
+              type="text"
+              value={wine.name}
+              onChange={(e) => updateWine("name", e.target.value)}
               className="contact-form-input"
-              style={{ 
-                ...typography.body1R, 
-                color: "white !important", 
+              style={{
+                ...typography.bodyPlus1,
+                color: "white !important",
                 height: "56px",
                 width: "100%",
                 fontSize: "16px",
                 fontWeight: "400",
-                padding: "0 16px"
+                padding: "0 16px",
               }}
-              placeholder="Enter buy again link"
+              placeholder="Enter wine name"
             />
           </div>
 
-          {/* Wine ID - moved to bottom */}
-          <div style={{ marginBottom: "24px" }}>
-            <label style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)", display: "block", marginBottom: "8px" }}>
-              Wine ID
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Wine Year
             </label>
-            <span style={{ ...typography.body1R, color: "white" }}>
-              {wine.id}
-            </span>
+            <input
+              type="number"
+              value={wine.year}
+              onChange={(e) => updateWine("year", parseInt(e.target.value))}
+              className="contact-form-input"
+              style={{
+                ...typography.bodyPlus1,
+                color: "white !important",
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px",
+              }}
+              placeholder="Year"
+            />
           </div>
+        </div>
+
+        {/* Ratings */}
+        <div style={{ marginBottom: "24px" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "16px",
+            }}
+          >
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Vivino (VN)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={wine.ratings.vn}
+                onChange={(e) =>
+                  updateWineRating("vn", parseInt(e.target.value))
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                James Halliday (JD)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={wine.ratings.jd}
+                onChange={(e) =>
+                  updateWineRating("jd", parseInt(e.target.value))
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Wine Spectator (WS)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={wine.ratings.ws}
+                onChange={(e) =>
+                  updateWineRating("ws", parseInt(e.target.value))
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                ABV (%)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="20"
+                step="0.1"
+                value={wine.ratings.abv}
+                onChange={(e) =>
+                  updateWineRating("abv", parseFloat(e.target.value))
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Buy Again */}
+        <div style={{ marginBottom: "24px" }}>
+          <label
+            style={{
+              ...typography.body1R,
+              color: "rgba(255, 255, 255, 0.60)",
+              display: "block",
+              marginBottom: "8px",
+            }}
+          >
+            Buy Again Link
+          </label>
+          <input
+            type="url"
+            value={wine.buyAgainLink}
+            onChange={(e) => updateWine("buyAgainLink", e.target.value)}
+            className="contact-form-input"
+            style={{
+              ...typography.body1R,
+              color: "white !important",
+              height: "56px",
+              width: "100%",
+              fontSize: "16px",
+              fontWeight: "400",
+              padding: "0 16px",
+            }}
+            placeholder="Enter buy again link"
+          />
+        </div>
+
+        {/* Wine ID - moved to bottom */}
+        <div style={{ marginBottom: "24px" }}>
+          <label
+            style={{
+              ...typography.body1R,
+              color: "rgba(255, 255, 255, 0.60)",
+              display: "block",
+              marginBottom: "8px",
+            }}
+          >
+            Wine ID
+          </label>
+          <span style={{ ...typography.body1R, color: "white" }}>
+            {wine.id}
+          </span>
+        </div>
 
         {/* Bottom padding to prevent content from being hidden behind fixed button */}
         <div style={{ height: "100px" }}></div>
       </div>
 
       {/* Fixed Save Button */}
-      <div style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: "#0A0A0A",
-        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-        padding: "16px 0px",
-        zIndex: 1000
-      }}>
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          width: "100%",
+          background: "#0A0A0A",
+          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          padding: "16px 0px",
+          zIndex: 1000,
+        }}
+      >
         <Button onClick={saveWine} fullWidth={true}>
           Save Changes
         </Button>
