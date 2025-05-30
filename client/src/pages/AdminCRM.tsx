@@ -171,7 +171,7 @@ export default function AdminCRM() {
       </div>
 
       {/* Content */}
-      <div style={{ paddingTop: "80px", padding: "16px" }}>
+      <div style={{ paddingTop: "72px", paddingLeft: "16px", paddingRight: "16px" }}>
         <div>
           {/* Search Bar - Only show when toggled */}
           {showSearch && (
@@ -220,61 +220,70 @@ export default function AdminCRM() {
 
           {/* Wine Cards Preview */}
           <div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {filteredWines.map((card) => (
-                <div
-                  key={card.id}
-                  style={{
-                    borderRadius: "16px",
-                    border: "1px solid #494949",
-                    padding: "16px",
-                    position: "relative",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setLocation(`/wine-edit/${card.id}`)}
-                >
+            <div>
+              {filteredWines.map((card, index) => (
+                <div key={card.id}>
                   <div
                     style={{
-                      display: "flex",
-                      gap: "20px",
-                      alignItems: "flex-start",
+                      padding: "16px",
+                      position: "relative",
+                      cursor: "pointer",
                     }}
+                    onClick={() => setLocation(`/wine-edit/${card.id}`)}
                   >
-                    {/* Wine Image */}
                     <div
                       style={{
-                        width: "80px",
-                        height: "100px",
                         display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
+                        gap: "20px",
+                        alignItems: "flex-start",
                       }}
                     >
-                      <img
-                        src={card.image || placeholderImage}
-                        alt={card.name || "Wine placeholder"}
+                      {/* Wine Image */}
+                      <div
                         style={{
-                          maxHeight: "90px",
-                          maxWidth: "70px",
-                          width: "auto",
-                          height: "auto",
+                          width: "80px",
+                          height: "100px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
                         }}
-                      />
-                    </div>
-
-                    {/* Essential Info */}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ ...typography.bodyPlus1, color: "white", marginBottom: "4px" }}>
-                        {card.year} {card.name}
+                      >
+                        <img
+                          src={card.image || placeholderImage}
+                          alt={card.name || "Wine placeholder"}
+                          style={{
+                            maxHeight: "90px",
+                            maxWidth: "70px",
+                            width: "auto",
+                            height: "auto",
+                          }}
+                        />
                       </div>
-                      <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>
-                        ID: {card.id}
+
+                      {/* Essential Info */}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ ...typography.bodyPlus1, color: "white", marginBottom: "4px" }}>
+                          {card.year} {card.name}
+                        </div>
+                        <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>
+                          ID: {card.id}
+                        </div>
                       </div>
                     </div>
-
-
                   </div>
+                  
+                  {/* Divider between cards */}
+                  {index < filteredWines.length - 1 && (
+                    <div
+                      style={{
+                        height: "1px",
+                        backgroundColor: "#373737",
+                        marginLeft: "16px",
+                        marginRight: "16px",
+                      }}
+                    />
+                  )}
                 </div>
               ))}
             </div>
