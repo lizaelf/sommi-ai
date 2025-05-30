@@ -657,7 +657,17 @@ const Cellar = () => {
             />
           </svg>
         </Link>
-        <h1 className="text-lg font-medium">Cellar</h1>
+        <h1 
+          className="text-lg font-medium"
+          style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            color: "white"
+          }}
+        >
+          Cellar
+        </h1>
         <div className="flex items-center gap-3">
           <div
             onClick={() => setShowProfileMenu(!showProfileMenu)}
