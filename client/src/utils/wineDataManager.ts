@@ -1,4 +1,5 @@
 import { WINE_CONFIG } from '@shared/wineConfig';
+import productImagePath from "@assets/Product Image.png";
 
 export interface WineData {
   id: number;
@@ -59,7 +60,7 @@ export const getEditableWineData = (wineId: number): WineData | null => {
       name: wineName,
       year: config.vintage,
       bottles: 6,
-      image: '/assets/Product Image.png',
+      image: productImagePath,
       ratings: {
         vn: 95,
         jd: 93,
