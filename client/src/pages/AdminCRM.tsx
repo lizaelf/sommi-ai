@@ -132,7 +132,28 @@ export default function AdminCRM() {
               Save All
             </Button>
           )}
-          <Button onClick={handleAddWine} style={{ height: "40px", padding: "0 16px", lineHeight: "40px", minHeight: "40px", maxHeight: "40px" }}>Add Wine</Button>
+          <button
+            onClick={handleAddWine}
+            style={{
+              height: "40px",
+              padding: "0 16px",
+              background: 'rgba(255, 255, 255, 0.04)',
+              borderRadius: 24,
+              border: '1px solid transparent',
+              backgroundImage: 'linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))',
+              backgroundOrigin: 'border-box',
+              backgroundClip: 'padding-box, border-box',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              fontWeight: '500'
+            }}
+          >
+            Add Wine
+          </button>
         </div>
       </div>
 
