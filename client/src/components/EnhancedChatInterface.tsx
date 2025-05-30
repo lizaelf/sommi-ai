@@ -694,7 +694,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       ...typography.num,
                     }}
                   >
-                    95
+                    {currentWine ? currentWine.ratings.vn : 95}
                   </div>
                   <div
                     style={{
@@ -729,7 +729,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       ...typography.num,
                     }}
                   >
-                    93
+                    {currentWine ? currentWine.ratings.jd : 93}
                   </div>
                   <div
                     style={{
@@ -764,7 +764,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       ...typography.num,
                     }}
                   >
-                    93
+                    {currentWine ? currentWine.ratings.ws : 93}
                   </div>
                   <div
                     style={{
@@ -799,7 +799,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       ...typography.num,
                     }}
                   >
-                    14.3%
+                    {currentWine ? `${currentWine.ratings.abv}%` : '14.3%'}
                   </div>
                   <div
                     style={{
