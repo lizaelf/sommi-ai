@@ -338,22 +338,10 @@ export default function WineEdit() {
 
             {/* QR Code */}
             <div style={{ flex: 1, display: "flex", alignItems: "flex-start", justifyContent: "flex-end" }}>
-              <div
-                style={{
-                  width: "120px",
-                  height: "120px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  borderRadius: "8px",
-                  flexShrink: 0,
-                  position: "relative",
-                }}
-              >
+              <div style={{ position: "relative" }}>
                 <SimpleQRCode 
                   value={`${window.location.origin}/wine-scan?id=${wine.id}`}
-                  size={100}
+                  size={120}
                 />
                 <button
                   onClick={() => {
@@ -376,8 +364,9 @@ export default function WineEdit() {
                   }}
                   style={{
                     position: "absolute",
-                    bottom: "8px",
-                    right: "8px",
+                    bottom: "-32px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
                     background: "rgba(0, 0, 0, 0.12)",
                     border: "1px solid rgba(255, 255, 255, 0.2)",
                     borderRadius: "24px",
