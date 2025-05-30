@@ -677,7 +677,7 @@ export default function WineEdit() {
       </div>
 
       {/* Fixed Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 w-full z-50 border-t border-white/10 bg-background px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4">
+      <div className="fixed bottom-0 left-0 w-full z-50 border-t border-white/10 bg-background px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4">
         <Button className="w-full" onClick={saveWine}>
           Save Changes
         </Button>
