@@ -12,7 +12,10 @@ export function SimpleQRCode({ value, size = 80 }: SimpleQRCodeProps) {
       background: 'white',
       padding: '8px',
       borderRadius: '8px',
-      display: 'inline-block'
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '150px'
     }}>
       <QRCodeSVG 
         value={value}
