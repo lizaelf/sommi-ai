@@ -733,13 +733,15 @@ export default function WineEdit() {
             border: "1px solid rgba(255, 255, 255, 0.12)",
             borderRadius: "32px",
             color: "white",
-            fontFamily: "Inter, sans-serif",
-            fontSize: "16px",
-            fontWeight: 500,
+            ...typography.button,
             cursor: "pointer",
             boxSizing: "border-box",
             margin: 0,
-            padding: "0 16px"
+            padding: "0 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center"
           }}
         >
           Save Changes
