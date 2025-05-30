@@ -320,6 +320,28 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               Listening...
             </div>
           </div>
+        ) : isLoadingAudio ? (
+          // Show loading state when generating audio
+          <div style={{ 
+            width: '100%', 
+            maxWidth: '320px', 
+            height: '56px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center' 
+          }}>
+            <div style={{
+              color: '#CECECE',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '16px',
+              fontWeight: 'normal',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <ShiningText text="Loading..." />
+            </div>
+          </div>
         ) : isResponding ? (
           // Show user question or stop button when audio is playing
           <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
