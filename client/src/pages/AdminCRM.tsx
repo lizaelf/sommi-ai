@@ -40,8 +40,45 @@ export default function AdminCRM() {
 
   // Load wines from storage on component mount
   useEffect(() => {
-    const wines = getAllWines();
-    setWineCards(wines);
+    // Use the same wine data as HomeGlobal page for ID1 and ID2
+    const homeGlobalWines = [
+      {
+        id: 1,
+        name: "Lytton Springs",
+        year: 2021,
+        bottles: 4,
+        image: wineBottlePath1,
+        ratings: {
+          vn: 95,
+          jd: 93,
+          ws: 93,
+          abv: 14.3,
+        },
+        buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
+        qrCode: "QR_001",
+        qrLink: "https://ridgewine.com/qr/001"
+      },
+      {
+        id: 2,
+        name: "Monte Bello",
+        year: 2021,
+        bottles: 2,
+        image: wineBottlePath2,
+        ratings: {
+          vn: 95,
+          jd: 93,
+          ws: 93,
+          abv: 14.3,
+        },
+        buyAgainLink: "https://ridgewine.com/wines/monte-bello",
+        qrCode: "QR_002",
+        qrLink: "https://ridgewine.com/qr/002"
+      },
+    ];
+    
+    // Merge with any additional wines from storage (ID > 2)
+    const additionalWines = getAllWines().filter(wine => wine.id > 2);
+    setWineCards([...homeGlobalWines, ...additionalWines]);
   }, []);
 
   // Filter wines based on search term
@@ -255,30 +292,7 @@ export default function AdminCRM() {
                       }}
                     >
                       <img
-                        src={(() => {
-                          // First check if there's editable wine data with custom image
-                          const editableWine = getEditableWineData(card.id);
-                          if (editableWine && editableWine.image && 
-                              !editableWine.image.includes("Product%20Image.png") && 
-                              !editableWine.image.includes("Product Image.png")) {
-                            return editableWine.image;
-                          }
-                          
-                          // Use specific images for default wines ID1 and ID2
-                          if (card.id === 1) {
-                            return wineBottlePath1;
-                          }
-                          if (card.id === 2) {
-                            return wineBottlePath2;
-                          }
-                          
-                          // For other wines, use placeholder if using default product image
-                          return (!card.image || 
-                                  card.image.includes("Product%20Image.png") || 
-                                  card.image.includes("Product Image.png"))
-                            ? placeholderImage 
-                            : card.image;
-                        })()}
+                        src={card.image || placeholderImage}
                         alt={card.name || "Wine placeholder"}
                         style={{
                           maxHeight: "90px",
