@@ -331,28 +331,28 @@
 
 @keyframes slide-lr {
   0% {
-    transform: translateX(-200%);
+    transform: translateX(-100%);
   }
   100% {
-    transform: translateX(200%);
+    transform: translateX(100%);
   }
 }
 
 @keyframes slide-lr-delayed {
   0% {
-    transform: translateX(-200%);
+    transform: translateX(-100%);
   }
   100% {
-    transform: translateX(200%);
+    transform: translateX(100%);
   }
 }
 
 @keyframes slide-lr-slow {
   0% {
-    transform: translateX(-200%);
+    transform: translateX(-100%);
   }
   100% {
-    transform: translateX(200%);
+    transform: translateX(100%);
   }
 }
 
