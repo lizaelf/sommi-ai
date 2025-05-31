@@ -30,35 +30,15 @@ export async function checkApiStatus(): Promise<{ isValid: boolean; message: str
     };
   }
 
-  try {
-    // Make a minimal API call to test the connection
-    await openai.chat.completions.create({
-      model: FALLBACK_MODEL,
-      messages: [{ role: "user", content: "Hello" }],
-      max_tokens: 5
-    });
-    
+  // Skip actual API call for status checks to avoid quota usage
+  // Only validate API key presence
+  if (process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY) {
     isApiKeyValid = true;
-    return { isValid: true, message: "API connected successfully" };
-  } catch (err) {
-    const error = err as any;
-    console.error("API check failed:", error);
-    isApiKeyValid = false;
-    
-    let message = "API connection failed. ";
-    
-    if (error?.status === 401) {
-      message += "Invalid API key.";
-    } else if (error?.status === 429) {
-      message += "Rate limit exceeded. Please try again later.";
-    } else if (error?.status === 404) {
-      message += "The requested model is not available.";
-    } else {
-      message += error?.message || "Unknown error.";
-    }
-    
-    return { isValid: false, message };
+    return { isValid: true, message: "API key configured" };
   }
+
+  isApiKeyValid = false;
+  return { isValid: false, message: "API key not configured" };
 }
 
 // Function to generate chat completion from OpenAI API
