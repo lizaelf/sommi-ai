@@ -72,13 +72,13 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
         let volume = Math.min(average / 128, 1.0); // Normalize 0-1
         
         // Enhance volume sensitivity and apply smoothing
-        volume = Math.pow(volume, 0.6); // Make it more responsive to quieter sounds
+        volume = Math.pow(volume, 0.4); // More responsive to all sound levels
         
-        // Convert to scale: 1.0 (silence) to 1.6 (loud) - much more dramatic
-        const targetScale = 1.0 + (volume * 0.6);
+        // Convert to scale: 1.0 (silence) to 2.0 (loud) - very dramatic 100% size increase
+        const targetScale = 1.0 + (volume * 1.0);
         
         // Smooth interpolation for less jittery movement
-        scale = scale + (targetScale - scale) * 0.15; // Slower, smoother transitions
+        scale = scale + (targetScale - scale) * 0.2; // Slightly more responsive
         
         // Only log occasionally to reduce console spam
         if (frameCount.current % 30 === 0) {
