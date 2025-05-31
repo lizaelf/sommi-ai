@@ -649,7 +649,7 @@ export default function WineEdit() {
                 fontWeight: "400",
                 padding: "0 16px",
               }}
-              placeholder="Set"
+              placeholder="2021"
             />
           </div>
         </div>
@@ -692,7 +692,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set"
+                placeholder="95"
               />
             </div>
             <div>
@@ -724,7 +724,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set"
+                placeholder="93"
               />
             </div>
             <div>
@@ -756,7 +756,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set"
+                placeholder="92"
               />
             </div>
             <div>
@@ -789,7 +789,7 @@ export default function WineEdit() {
                   fontWeight: "400",
                   padding: "0 16px",
                 }}
-                placeholder="Set"
+                placeholder="14.8"
               />
             </div>
           </div>
@@ -821,7 +821,7 @@ export default function WineEdit() {
               fontWeight: "400",
               padding: "0 16px",
             }}
-            placeholder="Set"
+            placeholder="https://winery.com/wine"
           />
         </div>
 
