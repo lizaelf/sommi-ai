@@ -134,8 +134,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           flexDirection: 'column',
           alignItems: 'center',
           boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
-          overflow: 'hidden',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          position: 'relative'
         }}
         onClick={(e) => e.stopPropagation()}
         >
