@@ -290,9 +290,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               
               {/* Listen Response Button */}
               {showListenButton && onListenResponse && (
-                <div style={{
-                  width: '100%'
-                }}>
+                <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
                   <button
                     className="voice-bottom-sheet-button"
                     onClick={onListenResponse}
