@@ -48,6 +48,12 @@ const typography = {
   },
   
   // Body text styles using Inter font
+  bodyPlus1: {
+    fontSize: '16px',
+    lineHeight: '24px',
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: '400'
+  },
   
   body: {
     fontSize: '16px',

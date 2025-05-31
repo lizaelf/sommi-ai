@@ -147,10 +147,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// DISABLED - speakResponse function removed to prevent autoplay
+// speakResponse function for Listen Response functionality
 async function speakResponse(text) {
-  console.log("speakResponse disabled - use Listen Response button instead");
-  return; // Exit early - no autoplay
   try {
     // Check if this is a resume from mute
     if (wasMuted && pausedText) {

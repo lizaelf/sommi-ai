@@ -480,7 +480,16 @@ export default function AdminCRM() {
 
                       {/* Essential Info */}
                       <div style={{ flex: 1 }}>
-                        <div style={{ ...typography.bodyPlus1, color: "white", marginBottom: "4px" }}>
+                        <div style={{ 
+                          ...typography.body, 
+                          color: "white", 
+                          marginBottom: "4px",
+                          border: "none !important",
+                          textDecoration: "none !important",
+                          outline: "none !important",
+                          boxShadow: "none !important",
+                          backgroundImage: "none !important"
+                        }}>
                           {card.year} {card.name}
                         </div>
                         <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>
