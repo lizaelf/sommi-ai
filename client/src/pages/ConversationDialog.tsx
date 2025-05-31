@@ -213,33 +213,26 @@ export default function ConversationDialog() {
                         style={{
                           backgroundColor: message.role === 'user' ? '#DBDBDB' : 'transparent',
                           borderRadius: '16px',
-                          padding: '16px 16px',
+                          paddingTop: '16px',
+                          paddingBottom: '16px',
+                          paddingLeft: '16px',
+                          paddingRight: '16px',
                           width: message.role === 'user' ? 'fit-content' : '100%',
-                          maxWidth: message.role === 'user' ? '80%' : '100%'
+                          maxWidth: message.role === 'user' ? '80%' : '100%',
+                          display: 'flex',
+                          alignItems: 'flex-start'
                         }}
                         data-role={message.role}
                       >
-                        {message.role === 'assistant' ? (
-                          <div style={{
-                            ...typography.body,
-                            lineHeight: '20px',
-                            color: '#DBDBDB',
-                            margin: 0,
-                            padding: 0
-                          }}>
-                            {formatContent(message.content)}
-                          </div>
-                        ) : (
-                          <div style={{
-                            ...typography.body,
-                            lineHeight: '20px',
-                            color: '#000000',
-                            margin: 0,
-                            padding: 0
-                          }}>
-                            {formatContent(message.content)}
-                          </div>
-                        )}
+                        <div style={{
+                          ...typography.body,
+                          color: message.role === 'user' ? '#000000' : '#DBDBDB',
+                          margin: 0,
+                          padding: 0,
+                          width: '100%'
+                        }}>
+                          {formatContent(message.content)}
+                        </div>
                       </div>
                     </div>
                   ))}
