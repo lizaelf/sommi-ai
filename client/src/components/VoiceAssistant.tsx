@@ -20,6 +20,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isResponding, setIsResponding] = useState(false);
   const [showListenButton, setShowListenButton] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [showAskButton, setShowAskButton] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -385,9 +386,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setIsResponding(false);
     setShowListenButton(false); // Hide listen button after stop
     setIsLoadingAudio(false);
+    setShowAskButton(true); // Show ask button after stopping audio
   };
 
   const handleAsk = () => {
+    setShowAskButton(false); // Hide ask button when starting new question
     handleCloseBottomSheet();
     startListening();
   };
@@ -508,6 +511,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isThinking={isProcessing}
         showSuggestions={!isListening && !isResponding && !isProcessing}
         showListenButton={showListenButton && !isListening && !isResponding}
+        showAskButton={showAskButton && !isListening && !isResponding}
         isLoadingAudio={isLoadingAudio}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}

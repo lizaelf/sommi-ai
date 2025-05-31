@@ -13,6 +13,7 @@ interface VoiceBottomSheetProps {
   isThinking?: boolean;
   showSuggestions?: boolean;
   showListenButton?: boolean;
+  showAskButton?: boolean;
   isLoadingAudio?: boolean;
   onSuggestionClick?: (suggestion: string) => void;
   onListenResponse?: () => void;
@@ -28,6 +29,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   isThinking = false,
   showSuggestions = false,
   showListenButton = false,
+  showAskButton = false,
   isLoadingAudio = false,
   onSuggestionClick,
   onListenResponse
@@ -385,8 +387,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 </div>
               )}
 
-              {/* Ask Button - Hidden */}
-              {false && (
+              {/* Ask Button */}
+              {showAskButton && (
                 <div style={{
                   width: '100%',
                   paddingLeft: '16px',
