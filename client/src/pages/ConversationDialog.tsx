@@ -174,30 +174,35 @@ export default function ConversationDialog() {
                     <div
                       style={{
                         borderRadius: "16px",
-                        padding: "8px 12px",
+                        paddingTop: "8px",
+                        paddingBottom: "8px",
+                        paddingLeft: "12px",
+                        paddingRight: "12px",
                         border: "1px solid rgba(255, 255, 255, 0.1)",
+                        boxSizing: 'border-box'
                       }}
                     >
-                      <span
-                        style={{
-                          ...typography.body1R,
-                          color: "rgba(255, 255, 255, 0.8)",
-                        }}
-                      >
-                        {(() => {
-                          const messageDate = new Date(dateKey);
-                          const currentYear = new Date().getFullYear();
-                          const messageYear = messageDate.getFullYear();
-                          const includeYear = messageYear !== currentYear;
-                          
-                          return messageDate.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: includeYear ? 'numeric' : undefined,
-                            month: 'long',
-                            day: 'numeric'
-                          });
-                        })()}
-                      </span>
+                      <div style={{ ...typography.body1R, marginBottom: 0 }}>
+                        <span
+                          style={{
+                            color: "rgba(255, 255, 255, 0.8)",
+                          }}
+                        >
+                          {(() => {
+                            const messageDate = new Date(dateKey);
+                            const currentYear = new Date().getFullYear();
+                            const messageYear = messageDate.getFullYear();
+                            const includeYear = messageYear !== currentYear;
+                            
+                            return messageDate.toLocaleDateString('en-US', {
+                              weekday: 'long',
+                              year: includeYear ? 'numeric' : undefined,
+                              month: 'long',
+                              day: 'numeric'
+                            });
+                          })()}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
