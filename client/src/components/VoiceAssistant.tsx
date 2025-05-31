@@ -393,7 +393,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleListenResponse = async () => {
+    console.log("Listen Response button clicked - checking for assistant message");
     const lastAssistantMessage = (window as any).lastAssistantMessageText;
+    
+    console.log("Last assistant message found:", lastAssistantMessage ? "Yes" : "No");
+    console.log("Message preview:", lastAssistantMessage ? lastAssistantMessage.substring(0, 100) + "..." : "None");
     
     if (!lastAssistantMessage) {
       console.log("No assistant message available for TTS");
