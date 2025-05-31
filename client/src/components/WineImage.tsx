@@ -96,24 +96,44 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     }
   };
 
-  // Initialize audio context and analyzer for frequency analysis
+  // Initialize audio context and connect microphone when listening starts
   useEffect(() => {
-    // Create audio context if it doesn't exist
-    if (!audioContext) {
-      try {
-        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        analyser.smoothingTimeConstant = 0.85; // Higher value for smoother transitions
-        const bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-      } catch (err) {
-        console.warn('AudioContext not supported or blocked by browser policy:', err);
+    const setupMicrophone = async () => {
+      if (isListening && !source) {
+        try {
+          // Create audio context if it doesn't exist
+          if (!audioContext) {
+            audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.3;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+          }
+
+          // Get microphone stream and connect to analyzer
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false
+            } 
+          });
+
+          source = audioContext.createMediaStreamSource(stream);
+          source.connect(analyser);
+          
+          console.log("Microphone connected to audio analyzer");
+        } catch (err) {
+          console.warn('Could not connect microphone to analyzer:', err);
+        }
       }
-    }
+    };
+
+    setupMicrophone();
 
     return () => {
-      // Cleanup audio analysis resources
-      if (source) {
+      // Cleanup when not listening
+      if (!isListening && source) {
         try {
           source.disconnect();
         } catch (e) {
@@ -122,7 +142,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
         source = null;
       }
     };
-  }, []);
+  }, [isListening]);
 
   // Monitor global window events for audio status and connect to audio sources
   useEffect(() => {
