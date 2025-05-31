@@ -296,7 +296,7 @@ export default function AdminCRM() {
                   className="contact-form-input"
                   style={{
                     ...typography.body1R,
-                    color: "white !important",
+                    color: "rgba(255, 255, 255, 0.60) !important",
                     height: "56px",
                     width: "100%",
                     fontSize: "16px",
