@@ -72,6 +72,10 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       
       // Apply smoothing for natural response
       volumeLevel = Math.pow(volumeLevel, 0.7);
+    } else {
+      // Fallback: gentle pulsing when no audio data available
+      const time = frameCount.current * 0.05; // Slower pulse
+      volumeLevel = (Math.sin(time) + 1) / 4; // Gentle pulse 0 to 0.5
     }
     
     // Scale from 100% (silence) to 140% (loud audio)
