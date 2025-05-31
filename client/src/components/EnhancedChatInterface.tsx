@@ -591,7 +591,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-background overflow-hidden">
+        <main className="flex-1 flex flex-col bg-background overflow-hidden" style={{
+          backgroundColor: "#0A0A0A !important",
+          backgroundImage: "none !important"
+        }}>
           {/* Scrollable container */}
           <div
             ref={chatContainerRef}

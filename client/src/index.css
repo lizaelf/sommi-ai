@@ -228,6 +228,30 @@
     content: "✧ ";
     color: white;
   }
+
+  /* Background enforcement for main pages */
+  .bg-background,
+  [class*="bg-background"] {
+    background: #0A0A0A !important;
+    background-color: #0A0A0A !important;
+    background-image: none !important;
+  }
+
+  /* Remove any browser-applied backgrounds */
+  body {
+    background: #0A0A0A !important;
+    background-color: #0A0A0A !important;
+    background-image: none !important;
+  }
+
+  /* Ensure main containers maintain background */
+  main, 
+  .min-h-screen,
+  [class*="min-h-screen"] {
+    background: #0A0A0A !important;
+    background-color: #0A0A0A !important;
+    background-image: none !important;
+  }
 }
 
 /* Custom styles for chat application */
