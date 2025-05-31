@@ -425,7 +425,7 @@ export default function WineEdit() {
               }}
             >
               <SimpleQRCode
-                value={`${window.location.origin}/scan-wine/${wine.id}`}
+                value={wine.qrLink || `${window.location.origin}/scan-wine/${wine.id}`}
                 size={120}
               />
             </div>
@@ -740,6 +740,36 @@ export default function WineEdit() {
               padding: "0 16px",
             }}
             placeholder="Set"
+          />
+        </div>
+
+        {/* Website Link (QR Code Destination) */}
+        <div style={{ marginBottom: "24px" }}>
+          <label
+            style={{
+              ...typography.body1R,
+              color: "rgba(255, 255, 255, 0.60)",
+              display: "block",
+              marginBottom: "8px",
+            }}
+          >
+            Website Link (QR Code Goes Here)
+          </label>
+          <input
+            type="url"
+            value={wine.qrLink || `${window.location.origin}/scan-wine/${wine.id}`}
+            onChange={(e) => updateWine("qrLink", e.target.value)}
+            className="contact-form-input"
+            style={{
+              ...typography.body1R,
+              color: "white !important",
+              height: "56px",
+              width: "100%",
+              fontSize: "16px",
+              fontWeight: "400",
+              padding: "0 16px",
+            }}
+            placeholder={`${window.location.origin}/scan-wine/${wine.id}`}
           />
         </div>
 
