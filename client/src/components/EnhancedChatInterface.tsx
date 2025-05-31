@@ -894,7 +894,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       <span
                         style={{
                           color: "white",
-                          ...typography.bodyPlus1,
+                          ...typography.body,
                         }}
                       >
                         Red Meat
