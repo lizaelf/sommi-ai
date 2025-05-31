@@ -1775,8 +1775,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 // Show Buy Again Button for WineDetails page
                 <button
                   onClick={() => {
-                    // Handle buy again functionality
-                    console.log("Buy again clicked");
+                    if (currentWine?.buyAgainLink) {
+                      window.open(currentWine.buyAgainLink, '_blank');
+                    } else {
+                      console.log("No buy again link available");
+                    }
                   }}
                   style={{
                     backgroundColor: "rgba(255, 255, 255, 0.08)",
