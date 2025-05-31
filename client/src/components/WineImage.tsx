@@ -64,9 +64,9 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     const time = frameCount.current * 0.1;
     const pulse = (Math.sin(time) + 1) / 2; // 0 to 1
     
-    // Very dramatic size changes from 70% to 200%
-    const minScale = 0.7;
-    const maxScale = 2.0;
+    // Reasonable size changes from 90% to 130%
+    const minScale = 0.9;
+    const maxScale = 1.3;
     const targetScale = minScale + (pulse * (maxScale - minScale));
     const targetSize = baseSize * targetScale;
     
@@ -327,9 +327,8 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
           transform: 'translate(-50%, -50%)',
           zIndex: 1,
           opacity: 1, // Full opacity for the wine image
-          // Add color overlay to make animation more visible
-          filter: (isListening || isProcessing || isPlaying || showTestAnimation) ? 
-            'hue-rotate(60deg) brightness(1.3)' : 'none'
+          // Keep original appearance - no color changes
+          filter: 'none'
         }}
       />
       
