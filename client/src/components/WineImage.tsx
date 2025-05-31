@@ -58,43 +58,26 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
   // Function to handle smooth animation based on actual audio volume
   const animate = () => {
-    let volumeLevel = 0;
+    frameCount.current += 1;
     
-    // Get real-time audio data for volume-based scaling
-    if (analyser && dataArray) {
-      analyser.getByteFrequencyData(dataArray);
-      
-      // Calculate average volume from frequency data with better sensitivity
-      const sum = dataArray.reduce((a, b) => a + b, 0);
-      volumeLevel = Math.min(sum / dataArray.length / 128, 1.0); // Normalize to 0-1 range with better sensitivity
-      
-      // Apply smoothing to reduce jitter
-      volumeLevel = Math.pow(volumeLevel, 0.7); // Apply power curve for more natural response
-    }
+    // Simple pulsing animation that's guaranteed to be visible
+    const time = frameCount.current * 0.1;
+    const pulse = (Math.sin(time) + 1) / 2; // 0 to 1
     
-    // Scale from 50% to 250% based on audio level for very dramatic animation
-    const minScale = 0.5;  // 50% minimum size
-    const maxScale = 2.5;  // 250% maximum size for extremely dramatic effect
-    const scaleRange = maxScale - minScale; // 2.0 (200% range)
-    
-    // Calculate target scale based on volume with enhanced sensitivity
-    const enhancedVolume = Math.pow(volumeLevel, 0.5); // Make it more responsive to lower volumes
-    const targetScale = minScale + (enhancedVolume * scaleRange);
+    // Very dramatic size changes from 70% to 200%
+    const minScale = 0.7;
+    const maxScale = 2.0;
+    const targetScale = minScale + (pulse * (maxScale - minScale));
     const targetSize = baseSize * targetScale;
     
-    // More responsive interpolation for visible movement
-    const currentSize = size;
-    const lerpFactor = 0.25; // Increased smoothing factor for more visible changes
-    const smoothedSize = currentSize + (targetSize - currentSize) * lerpFactor;
+    // Direct size update without smoothing for immediate visible changes
+    setSize(targetSize);
     
-    // Update size with smooth scaling
-    setSize(smoothedSize);
+    console.log(`WineImage: Frame ${frameCount.current}, pulse: ${pulse.toFixed(2)}, scale: ${targetScale.toFixed(2)}, size: ${targetSize.toFixed(1)}px`);
     
-    // More dramatic opacity changes that follow the volume
-    const targetOpacity = 0.2 + (enhancedVolume * 0.6); // Range from 0.2 to 0.8
-    const currentOpacity = opacity;
-    const smoothedOpacity = currentOpacity + (targetOpacity - currentOpacity) * lerpFactor;
-    setOpacity(smoothedOpacity);
+    // Simple opacity that pulses with the size
+    const targetOpacity = 0.4 + (pulse * 0.4); // Range from 0.4 to 0.8
+    setOpacity(targetOpacity);
     
     // Continue animation if in any active state
     if (isListening || isProcessing || isPlaying) {
