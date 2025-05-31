@@ -172,10 +172,8 @@ export default function ConversationDialog() {
                   >
                     <div
                       style={{
-                        backgroundColor: "rgba(28, 28, 28, 0.9)",
-                        backdropFilter: "blur(8px)",
                         borderRadius: "16px",
-                        padding: "6px 12px",
+                        padding: "12px 12px",
                         border: "1px solid rgba(255, 255, 255, 0.1)",
                       }}
                     >
@@ -214,9 +212,9 @@ export default function ConversationDialog() {
                     }}>
                       <div 
                         style={{
-                          backgroundColor: message.role === 'user' ? '#F5F5F5' : 'transparent',
+                          backgroundColor: message.role === 'user' ? '#DBDBDB' : 'transparent',
                           borderRadius: '16px',
-                          padding: '16px',
+                          padding: '16px 16px',
                           width: message.role === 'user' ? 'fit-content' : '100%',
                           maxWidth: message.role === 'user' ? '80%' : '100%'
                         }}
