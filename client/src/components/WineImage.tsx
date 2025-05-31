@@ -344,10 +344,8 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
           transform: 'translate(-50%, -50%)',
           zIndex: 1,
           opacity: 1, // Full opacity for the wine image
-          // Add a visible outline during animation
-          filter: (isListening || isProcessing || isPlaying || showTestAnimation) ? 
-            `drop-shadow(0 0 ${opacity * 15}px rgba(255, 255, 255, 0.6))` : 'none',
-          transition: 'filter 0.3s ease'
+          // Remove glow effect to restore scaling animation
+          filter: 'none'
         }}
       />
       

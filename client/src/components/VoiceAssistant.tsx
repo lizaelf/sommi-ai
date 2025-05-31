@@ -148,9 +148,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         
         // Dispatch mic-status event for animation
         console.log('VoiceAssistant: Dispatching listening event');
-        window.dispatchEvent(new CustomEvent('mic-status', {
-          detail: { status: 'listening' }
-        }));
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('mic-status', {
+            detail: { status: 'listening' }
+          }));
+        }, 100); // Small delay to ensure event listeners are ready
       };
       
       recognition.onresult = (event: any) => {
