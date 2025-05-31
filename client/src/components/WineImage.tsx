@@ -66,19 +66,20 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       try {
         analyser.getByteFrequencyData(dataArray);
         
-        // Calculate volume from frequency data
+        // Calculate volume from frequency data with better smoothing
         const sum = dataArray.reduce((a, b) => a + b, 0);
         const average = sum / dataArray.length;
         let volume = Math.min(average / 128, 1.0); // Normalize 0-1
         
-        // Enhance volume sensitivity and apply smoothing
-        volume = Math.pow(volume, 0.3); // Even more responsive to all sound levels
+        // Apply multiple smoothing layers for ultra-smooth animation
+        volume = Math.pow(volume, 0.3); // Enhance sensitivity
         
         // Convert to scale: 1.0 (silence) to 3.0 (loud) - extremely dramatic 200% size increase
         const targetScale = 1.0 + (volume * 2.0);
         
-        // Smooth interpolation for less jittery movement
-        scale = scale + (targetScale - scale) * 0.25; // More responsive for dramatic effect
+        // Ultra-smooth interpolation with momentum-based smoothing
+        const lerpFactor = 0.08; // Much slower, smoother transitions
+        scale = scale + (targetScale - scale) * lerpFactor;
         
         // Only log occasionally to reduce console spam
         if (frameCount.current % 30 === 0) {
