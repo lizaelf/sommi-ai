@@ -26,8 +26,8 @@ export default function AdminCRM() {
   const [showDataSync, setShowDataSync] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load wines from unified data system on component mount
-  useEffect(() => {
+  // Function to load wine data
+  const loadWineData = () => {
     // Initialize unified data system
     DataSyncManager.initialize();
     
@@ -37,6 +37,32 @@ export default function AdminCRM() {
     console.log("Loaded CRM wines:", allWines);
     console.log("Placeholder image path:", placeholderImage);
     setWineCards(allWines);
+  };
+
+  // Load wines from unified data system on component mount
+  useEffect(() => {
+    loadWineData();
+  }, []);
+
+  // Refresh wine data when page becomes visible (when returning from wine edit)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadWineData();
+      }
+    };
+
+    const handleFocus = () => {
+      loadWineData();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   // Filter wines based on search term
