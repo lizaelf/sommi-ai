@@ -276,52 +276,27 @@ export default function AdminCRM() {
               top: "72px",
               left: "0",
               right: "0",
-              backgroundColor: "#191919",
               padding: "16px",
-              zIndex: 40,
-              borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+              zIndex: 40
             }}>
-              <div style={{ position: "relative" }}>
-                <input
-                  type="text"
-                  placeholder="Search wines by name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="contact-form-input"
-                  style={{
-                    ...typography.body1R,
-                    color: "white !important",
-                    height: "56px",
-                    width: "100%",
-                    fontSize: "16px",
-                    fontWeight: "400",
-                    padding: "0 16px 0 16px",
-                    paddingRight: "48px"
-                  }}
-                  autoFocus
-                />
-                <div
-                  onClick={() => {
-                    setShowSearch(false);
-                    setSearchTerm("");
-                  }}
-                  style={{
-                    position: "absolute",
-                    right: "16px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    width: "24px",
-                    height: "24px",
-                    color: "rgba(255, 255, 255, 0.6)",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  <X size={16} />
-                </div>
-              </div>
+              <input
+                type="text"
+                placeholder="Search wines by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="contact-form-input"
+                style={{
+                  ...typography.body1R,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                  borderRadius: "24px"
+                }}
+                autoFocus
+              />
             </div>
           )}
 
