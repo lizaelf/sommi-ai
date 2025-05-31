@@ -59,11 +59,34 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
   const animate = () => {
     frameCount.current += 1;
     
-    // Simple time-based animation that always works
-    const time = Date.now() * 0.003; // Slower animation
-    const scale = 1.0 + Math.sin(time) * 0.15; // Scale between 85% and 115%
-    const newSize = baseSize * scale;
+    let scale = 1.0; // Default size
     
+    // Try to get real audio data
+    if (analyser && dataArray) {
+      try {
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Calculate volume from frequency data
+        const sum = dataArray.reduce((a, b) => a + b, 0);
+        const average = sum / dataArray.length;
+        const volume = Math.min(average / 128, 1.0); // Normalize 0-1
+        
+        // Convert to scale: 1.0 (silence) to 1.3 (loud)
+        scale = 1.0 + (volume * 0.3);
+        
+        console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
+      } catch (error) {
+        // If audio fails, use gentle pulse
+        const time = Date.now() * 0.003;
+        scale = 1.0 + Math.sin(time) * 0.1;
+      }
+    } else {
+      // Fallback pulse animation
+      const time = Date.now() * 0.003;
+      scale = 1.0 + Math.sin(time) * 0.1;
+    }
+    
+    const newSize = baseSize * scale;
     setSize(newSize);
     setOpacity(0.8);
     
