@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { BackgroundGradientAnimation } from "./ui/background-gradient-animation";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -13,7 +12,6 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, voiceButtonComponent }) => {
   const [message, setMessage] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,7 +31,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
 
   // Suggestion click handler removed - now handled in parent component
 
-  const inputContainer = (
+  return (
     <div className="relative w-full">
       <div
         style={{
@@ -51,37 +49,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           overflow: 'hidden'
         }}
       >
-        {isFocused && (
-          <BackgroundGradientAnimation
-            gradientBackgroundStart="rgb(20, 20, 20)"
-            gradientBackgroundEnd="rgb(40, 40, 40)"
-            firstColor="120, 120, 255"
-            secondColor="255, 120, 200"
-            thirdColor="120, 255, 180"
-            fourthColor="255, 180, 120"
-            fifthColor="200, 200, 255"
-            pointerColor="160, 160, 255"
-            size="40%"
-            blendingValue="overlay"
-            className="absolute inset-0 rounded-3xl"
-            containerClassName="absolute inset-0 rounded-3xl"
-            interactive={false}
-          />
-        )}
         <input
           ref={inputRef}
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => {
-            setIsFocused(true);
-            onFocus && onFocus();
-          }}
-          onBlur={() => {
-            setIsFocused(false);
-            onBlur && onBlur();
-          }}
+          onFocus={() => onFocus && onFocus()}
+          onBlur={() => onBlur && onBlur()}
           style={{
             display: 'flex',
             padding: '0 50px 4px 24px',
@@ -89,7 +64,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             alignItems: 'center',
             alignSelf: 'stretch',
             borderRadius: '24px',
-            backgroundColor: isFocused ? 'transparent' : '#1C1C1C',
+            backgroundColor: '#1C1C1C',
             border: 'none',
             width: '100%',
             height: '64px',
@@ -97,17 +72,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             color: 'white',
             WebkitAppearance: 'none',
             appearance: 'none',
-            background: isFocused ? 'transparent' : '#1C1C1C',
+            background: '#1C1C1C',
             fontFamily: 'Inter, sans-serif',
             fontSize: '16px',
             lineHeight: '24px',
             fontWeight: 400,
-            position: 'relative',
-            zIndex: 10,
+            position: 'absolute',
             left: 0,
             top: 0
           }}
-          className={`text-sm pr-12 placeholder-[#999999] flex items-center ${isFocused ? '!bg-transparent' : 'bg-[#1C1C1C] !bg-[#1C1C1C]'}`}
+          className="text-sm pr-12 bg-[#1C1C1C] !bg-[#1C1C1C] placeholder-[#999999] flex items-center"
           placeholder="Ask me about..."
           disabled={isProcessing}
           onKeyPress={(e) => {
@@ -158,8 +132,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
       </div>
     </div>
   );
-
-  return inputContainer;
 };
 
 export default ChatInput;
