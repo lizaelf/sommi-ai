@@ -44,52 +44,76 @@ export const saveWineConfig = (updates: any) => {
   }
 };
 
+// Get default wines - always available
+const getDefaultWines = (): WineData[] => {
+  const config = getCurrentWineConfig();
+  let wineName = config.name;
+  if (wineName.includes('Ridge "') && wineName.includes('"')) {
+    wineName = wineName.replace('Ridge "', '').replace('" Dry Creek Zinfandel', '');
+  }
+  
+  return [
+    {
+      id: 1,
+      name: wineName,
+      year: config.vintage,
+      bottles: 6,
+      image: productImagePath,
+      ratings: {
+        vn: 95,
+        jd: 93,
+        ws: config.ratings.ws,
+        abv: 14.8
+      },
+      buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
+      qrCode: "QR_001",
+      qrLink: "https://ridgewine.com/qr/001"
+    },
+    {
+      id: 2,
+      name: "Monte Bello Cabernet Sauvignon",
+      year: 2021,
+      bottles: 2,
+      image: productImagePath,
+      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+      buyAgainLink: "https://ridge.com/product/monte-bello",
+      qrCode: "QR_002",
+      qrLink: "https://ridge.com/wines/monte-bello"
+    }
+  ];
+};
+
 // Get all wines from storage
 export const getAllWines = (): WineData[] => {
   try {
+    const defaultWines = getDefaultWines();
     const stored = localStorage.getItem('admin-wines');
+    
     if (stored) {
-      return JSON.parse(stored);
+      const storedWines = JSON.parse(stored);
+      
+      // Ensure ID1 and ID2 are always present by merging with defaults
+      const mergedWines = [...defaultWines];
+      
+      // Add or update wines from storage
+      storedWines.forEach((storedWine: WineData) => {
+        const existingIndex = mergedWines.findIndex(w => w.id === storedWine.id);
+        if (existingIndex >= 0) {
+          // Update existing wine (ID1 or ID2)
+          mergedWines[existingIndex] = storedWine;
+        } else {
+          // Add new wine (ID > 2)
+          mergedWines.push(storedWine);
+        }
+      });
+      
+      return mergedWines;
     }
     
     // Return default wines if none stored
-    const config = getCurrentWineConfig();
-    let wineName = config.name;
-    if (wineName.includes('Ridge "') && wineName.includes('"')) {
-      wineName = wineName.replace('Ridge "', '').replace('" Dry Creek Zinfandel', '');
-    }
-    
-    return [
-      {
-        id: 1,
-        name: wineName,
-        year: config.vintage,
-        bottles: 6,
-        image: productImagePath,
-        ratings: {
-          vn: 95,
-          jd: 93,
-          ws: config.ratings.ws,
-          abv: 14.8
-        },
-        buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
-        qrCode: "QR_001",
-        qrLink: "https://ridgewine.com/qr/001"
-      },
-      {
-        id: 2,
-        name: "Monte Bello Cabernet Sauvignon",
-        year: 2021,
-        bottles: 2,
-        image: productImagePath,
-        ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
-        buyAgainLink: "https://ridge.com/product/monte-bello",
-        qrCode: "QR_002",
-        qrLink: "https://ridge.com/wines/monte-bello"
-      }
-    ];
+    return defaultWines;
   } catch {
-    return [];
+    return getDefaultWines();
   }
 };
 
