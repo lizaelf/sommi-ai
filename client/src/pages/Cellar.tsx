@@ -1023,7 +1023,7 @@ const Cellar = () => {
       )}
 
       {/* Content with top padding to account for fixed header */}
-      <div className="pt-16">
+      <div style={{ paddingTop: '75px' }}>
         {/* Scanned Wines Section */}
         {cellarWines.length > 0 && (
           <div style={{ margin: "0 16px 24px 16px" }}>
