@@ -40,10 +40,11 @@ export default function AdminCRM() {
 
   // Load wines from CRM storage on component mount
   useEffect(() => {
-    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+    // Use getAllWines which provides default data if localStorage is empty
+    const allWines = getAllWines();
     
     // Fix ID3 to have empty image for placeholder demonstration
-    const fixedWines = crmWines.map((wine: WineCardData) => {
+    const fixedWines = allWines.map((wine: WineCardData) => {
       if (wine.id === 3) {
         return { ...wine, image: "" };
       }
