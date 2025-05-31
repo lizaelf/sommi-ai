@@ -188,9 +188,9 @@ export default function AdminCRM() {
 
 
   return (
-    <div className="min-h-screen bg-background text-white">
+    <div className="min-h-screen text-white">
       {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4">
         <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">Admin</h1>
         <div className="flex gap-3">
           {isEditMode && (
@@ -258,10 +258,8 @@ export default function AdminCRM() {
               top: "72px",
               left: "0",
               right: "0",
-              backgroundColor: "#191919",
               padding: "16px",
-              zIndex: 40,
-              borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+              zIndex: 40
             }}>
               <div style={{ position: "relative" }}>
                 <input
