@@ -72,10 +72,10 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       volumeLevel = Math.pow(volumeLevel, 0.7); // Apply power curve for more natural response
     }
     
-    // Scale from 60% to 150% based on audio level (90% range total)
-    const minScale = 0.6;  // 60% minimum size
-    const maxScale = 1.5;  // 150% maximum size (25% more than original 120%)
-    const scaleRange = maxScale - minScale; // 0.9 (90% range)
+    // Scale from 80% to 180% based on audio level for more visible animation
+    const minScale = 0.8;  // 80% minimum size
+    const maxScale = 1.8;  // 180% maximum size for dramatic effect
+    const scaleRange = maxScale - minScale; // 1.0 (100% range)
     
     // Calculate target scale based on volume with enhanced sensitivity
     const enhancedVolume = Math.pow(volumeLevel, 0.5); // Make it more responsive to lower volumes
@@ -334,7 +334,11 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 1,
-          opacity: 1 // Full opacity for the wine image
+          opacity: 1, // Full opacity for the wine image
+          // Add a visible outline during animation
+          filter: (isListening || isProcessing || isPlaying || showTestAnimation) ? 
+            `drop-shadow(0 0 ${opacity * 15}px rgba(255, 255, 255, 0.6))` : 'none',
+          transition: 'filter 0.3s ease'
         }}
       />
       
