@@ -365,6 +365,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleCloseBottomSheet = () => {
+    // Stop any playing audio when closing
+    if ((window as any).currentOpenAIAudio) {
+      console.log("Closing bottom sheet - stopping OpenAI TTS audio playback");
+      (window as any).currentOpenAIAudio.pause();
+      (window as any).currentOpenAIAudio.currentTime = 0;
+      (window as any).currentOpenAIAudio = null;
+    }
+    
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    
+    // Reset all states
+    setIsResponding(false);
+    setShowListenButton(false);
+    setIsLoadingAudio(false);
+    setShowAskButton(false);
     setShowBottomSheet(false);
     stopListening();
   };
