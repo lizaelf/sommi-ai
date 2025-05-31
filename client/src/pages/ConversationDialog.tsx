@@ -225,7 +225,9 @@ export default function ConversationDialog() {
                             color: '#DBDBDB',
                             fontFamily: 'Inter, system-ui, sans-serif',
                             fontSize: '16px',
-                            lineHeight: '1.6'
+                            lineHeight: '1.4',
+                            margin: 0,
+                            padding: 0
                           }}>
                             {formatContent(message.content)}
                           </div>
@@ -234,7 +236,9 @@ export default function ConversationDialog() {
                             color: '#000000',
                             fontFamily: 'Inter, system-ui, sans-serif',
                             fontSize: '16px',
-                            lineHeight: '1.6'
+                            lineHeight: '1.4',
+                            margin: 0,
+                            padding: 0
                           }}>
                             {formatContent(message.content)}
                           </div>
