@@ -13,15 +13,6 @@
  */
 
 const typography = {
-  
-  // Section header (for larger headers that need to be bigger than h1)
-  sectionHeader: {
-    fontSize: '32px',
-    lineHeight: '40px',
-    fontFamily: 'Lora, serif',
-    fontWeight: '400'
-  },
-  
   // Heading styles using Lora font
   h1: {
     fontSize: '24px',
@@ -43,11 +34,17 @@ const typography = {
     fontSize: '14px',
     lineHeight: '16px',
     fontFamily: 'Inter, sans-serif',
-    fontWeight: '500',
+    fontWeight: '400',
     verticalAlign: 'middle'
   },
   
   // Body text styles using Inter font
+  bodyPlus1: {
+    fontSize: '16px',
+    lineHeight: '24px',
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: '400'
+  },
   
   body: {
     fontSize: '16px',
@@ -78,6 +75,14 @@ const typography = {
     fontFamily: 'Inter, sans-serif',
     fontWeight: '600'
   },
+  
+  // Section header (for larger headers that need to be bigger than h1)
+  sectionHeader: {
+    fontSize: '32px',
+    lineHeight: '40px',
+    fontFamily: 'Lora, serif',
+    fontWeight: '400'
+  }
 };
 
 export default typography;
