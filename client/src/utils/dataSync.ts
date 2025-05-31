@@ -107,16 +107,23 @@ export class DataSyncManager {
   
   // Add or update a wine
   static addOrUpdateWine(wine: UnifiedWineData): void {
+    console.log(`DataSyncManager: Adding/updating wine with ID ${wine.id}:`, { id: wine.id, name: wine.name, year: wine.year });
     const wines = this.getUnifiedWineData();
+    console.log(`DataSyncManager: Current wines before add/update:`, wines.map(w => ({ id: w.id, name: w.name })));
+    
     const existingIndex = wines.findIndex(w => w.id === wine.id);
     
     if (existingIndex >= 0) {
+      console.log(`DataSyncManager: Updating existing wine at index ${existingIndex}`);
       wines[existingIndex] = wine;
     } else {
+      console.log(`DataSyncManager: Adding new wine`);
       wines.push(wine);
     }
     
+    console.log(`DataSyncManager: Wines after add/update:`, wines.map(w => ({ id: w.id, name: w.name })));
     this.saveUnifiedWineData(wines);
+    console.log(`DataSyncManager: Wine ${wine.id} add/update completed`);
   }
   
   // Remove a wine
