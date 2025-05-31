@@ -174,6 +174,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     // Function to handle microphone status change and connect to mic stream
     const handleMicStatusChange = (event: CustomEvent) => {
       console.log('WineImage: Mic status changed:', event.detail?.status);
+      console.log('WineImage: Full event detail:', event.detail);
       if (event.detail?.status === 'listening') {
         console.log('WineImage: Setting listening to true');
         setIsListening(true);
@@ -229,14 +230,22 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       }
     };
 
-    // Add event listeners
-    window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
-    window.addEventListener('mic-status', handleMicStatusChange as EventListener);
+    // Add event listeners with debug logging
+    console.log('WineImage: Adding event listeners');
+    const audioListener = (e: any) => handleAudioStatusChange(e);
+    const micListener = (e: any) => handleMicStatusChange(e);
+    
+    window.addEventListener('audio-status', audioListener);
+    window.addEventListener('mic-status', micListener);
+    
+    // Test that events are being received
+    console.log('WineImage: Event listeners added');
 
     // Cleanup
     return () => {
-      window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
-      window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
+      console.log('WineImage: Removing event listeners');
+      window.removeEventListener('audio-status', audioListener);
+      window.removeEventListener('mic-status', micListener);
       cancelAnimationFrame(animationRef.current);
       
       // Disconnect audio source
