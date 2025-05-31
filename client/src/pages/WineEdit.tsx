@@ -620,7 +620,7 @@ export default function WineEdit() {
                 fontWeight: "400",
                 padding: "0 16px",
               }}
-              placeholder="Set"
+              placeholder="Enter wine name"
             />
           </div>
 
