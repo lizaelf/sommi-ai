@@ -50,7 +50,7 @@ export default function ConversationDialog() {
         
         if (line.trim()) {
           elements.push(
-            <div key={i} style={{ marginBottom: '8px', whiteSpace: 'pre-wrap' }}>
+            <div key={i} style={{ marginBottom: i === lines.length - 1 ? '0px' : '8px', whiteSpace: 'pre-wrap' }}>
               {formatText(line)}
             </div>
           );
@@ -227,7 +227,9 @@ export default function ConversationDialog() {
                           margin: 0,
                           padding: 0
                         }}>
-                          {formatContent(message.content)}
+                          <div style={{ ...typography.body, marginBottom: 0 }}>
+                            {formatContent(message.content)}
+                          </div>
                         </div>
                       </div>
                     </div>
