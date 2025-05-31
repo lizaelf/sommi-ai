@@ -218,7 +218,8 @@ export default function ConversationDialog() {
                         style={{
                           backgroundColor: message.role === 'user' ? '#DBDBDB' : 'transparent',
                           borderRadius: '16px',
-                          padding: '16px',
+                          paddingTop: '16px',
+                          paddingBottom: '16px',
                           width: message.role === 'user' ? 'fit-content' : '100%',
                           maxWidth: message.role === 'user' ? '80%' : '100%',
                           boxSizing: 'border-box'
