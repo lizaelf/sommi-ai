@@ -180,10 +180,8 @@ export default function ConversationDialog() {
                     >
                       <span
                         style={{
+                          ...typography.body1R,
                           color: "rgba(255, 255, 255, 0.8)",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          fontFamily: "Inter, sans-serif",
                         }}
                       >
                         {(() => {
