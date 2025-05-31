@@ -90,10 +90,15 @@ export default function WineDetails() {
           <h1 
             className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap"
             style={{
-              border: 'none',
-              borderBottom: 'none',
-              textDecoration: 'none',
-              outline: 'none'
+              border: 'none !important',
+              borderBottom: 'none !important',
+              borderTop: 'none !important',
+              borderLeft: 'none !important',
+              borderRight: 'none !important',
+              textDecoration: 'none !important',
+              outline: 'none !important',
+              boxShadow: 'none !important',
+              backgroundImage: 'none !important'
             }}
           >
             {wine ? `${wine.year} ${wine.name}` : getWineDisplayName()}
