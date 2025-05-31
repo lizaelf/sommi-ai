@@ -455,9 +455,47 @@ export default function WineEdit() {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
+                    console.log(`Processing image upload: ${file.name} (${Math.round(file.size / 1024)}KB)`);
+                    
                     const reader = new FileReader();
                     reader.onload = (event) => {
-                      updateWine("image", event.target?.result as string);
+                      const result = event.target?.result as string;
+                      
+                      // Check image size and compress if needed
+                      const img = new Image();
+                      img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Set maximum dimensions
+                        const maxWidth = 800;
+                        const maxHeight = 800;
+                        let { width, height } = img;
+                        
+                        // Calculate new dimensions
+                        if (width > height) {
+                          if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                          }
+                        } else {
+                          if (height > maxHeight) {
+                            width = (width * maxHeight) / height;
+                            height = maxHeight;
+                          }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        // Draw and compress
+                        ctx?.drawImage(img, 0, 0, width, height);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        
+                        console.log(`Image compressed: ${Math.round(compressedDataUrl.length / 1024)}KB`);
+                        updateWine("image", compressedDataUrl);
+                      };
+                      img.src = result;
                     };
                     reader.readAsDataURL(file);
                   }

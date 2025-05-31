@@ -87,15 +87,31 @@ export class DataSyncManager {
   // Save unified wine data
   static saveUnifiedWineData(wines: UnifiedWineData[]): void {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(wines));
+      const dataString = JSON.stringify(wines);
+      const dataSize = new Blob([dataString]).size;
+      console.log(`DataSyncManager: Attempting to save ${wines.length} wines (${Math.round(dataSize / 1024)}KB)`);
+      
+      // Check if data might be too large for localStorage (5MB limit)
+      if (dataSize > 4 * 1024 * 1024) { // 4MB warning threshold
+        console.warn('Wine data is very large, may exceed localStorage limits');
+      }
+      
+      localStorage.setItem(STORAGE_KEY, dataString);
       localStorage.setItem(SYNC_VERSION_KEY, CURRENT_VERSION);
       
       // Also update legacy storage for backwards compatibility
-      localStorage.setItem('admin-wines', JSON.stringify(wines));
+      localStorage.setItem('admin-wines', dataString);
       
       console.log('Unified wine data saved successfully');
     } catch (error) {
       console.error('Error saving unified wine data:', error);
+      
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.error('LocalStorage quota exceeded. Wine data too large.');
+        throw new Error('Storage limit exceeded. Try using smaller images or remove unused wines.');
+      }
+      
+      throw error;
     }
   }
   
