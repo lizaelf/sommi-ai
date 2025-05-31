@@ -637,8 +637,8 @@ export default function WineEdit() {
             </label>
             <input
               type="number"
-              value={wine.year || ""}
-              onChange={(e) => updateWine("year", parseInt(e.target.value) || 0)}
+              value={wine.year === new Date().getFullYear() && isNewWine ? "" : wine.year || ""}
+              onChange={(e) => updateWine("year", parseInt(e.target.value) || new Date().getFullYear())}
               className="contact-form-input"
               style={{
                 ...typography.body,
