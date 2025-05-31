@@ -69,12 +69,21 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
         // Calculate volume from frequency data
         const sum = dataArray.reduce((a, b) => a + b, 0);
         const average = sum / dataArray.length;
-        const volume = Math.min(average / 128, 1.0); // Normalize 0-1
+        let volume = Math.min(average / 128, 1.0); // Normalize 0-1
         
-        // Convert to scale: 1.0 (silence) to 1.3 (loud)
-        scale = 1.0 + (volume * 0.3);
+        // Enhance volume sensitivity and apply smoothing
+        volume = Math.pow(volume, 0.6); // Make it more responsive to quieter sounds
         
-        console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
+        // Convert to scale: 1.0 (silence) to 1.6 (loud) - much more dramatic
+        const targetScale = 1.0 + (volume * 0.6);
+        
+        // Smooth interpolation for less jittery movement
+        scale = scale + (targetScale - scale) * 0.15; // Slower, smoother transitions
+        
+        // Only log occasionally to reduce console spam
+        if (frameCount.current % 30 === 0) {
+          console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
+        }
       } catch (error) {
         // If audio fails, use gentle pulse
         const time = Date.now() * 0.003;
@@ -120,7 +129,9 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
           });
 
           source = audioContext.createMediaStreamSource(stream);
-          source.connect(analyser);
+          if (analyser) {
+            source.connect(analyser);
+          }
           
           console.log("Microphone connected to audio analyzer");
         } catch (err) {
