@@ -45,28 +45,8 @@ export default function AdminCRM() {
   );
 
   const handleAddWine = async () => {
-    const newWineId = wineCards.length > 0 ? Math.max(...wineCards.map((w) => w.id)) + 1 : 1;
-    const newWine: WineCardData = {
-      id: newWineId,
-      name: "",
-      year: 0,
-      bottles: 0,
-      image: "",
-      ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
-      buyAgainLink: "",
-      qrCode: `QR_${newWineId.toString().padStart(3, '0')}`,
-      qrLink: ""
-    };
-
-    // Add wine at the top of the list
-    const updatedWines = [newWine, ...wineCards];
-    setWineCards(updatedWines);
-    
-    // Save to CRM master data source
-    localStorage.setItem('admin-wines', JSON.stringify(updatedWines));
-
-    // Navigate to wine edit page for the new wine
-    setLocation(`/wine-edit/${newWine.id}`);
+    // Navigate to add wine page with placeholders
+    setLocation("/add-wine");
   };
 
   const updateWineCard = (cardId: number, field: keyof WineCardData, value: any) => {
