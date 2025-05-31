@@ -951,17 +951,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                       className="pl-[0px] pr-[0px]"
                     >
-                      <p>
-                        {getFoodPairingContent().description}:
-                      </p>
                       <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         {getFoodPairingContent().dishes.map((dish, index) => (
                           <li key={index}>{dish}</li>
                         ))}
                       </ul>
-                      <p>
-                        {getFoodPairingContent().conclusion}
-                      </p>
                     </div>
                   )}
                 </div>
@@ -1040,17 +1034,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         ...typography.body,
                       }}
                     >
-                      <p>
-                        {getCheesePairingContent().description}:
-                      </p>
                       <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         {getCheesePairingContent().cheeses.map((cheese, index) => (
                           <li key={index}>{cheese}</li>
                         ))}
                       </ul>
-                      <p>
-                        {getCheesePairingContent().conclusion}
-                      </p>
                     </div>
                   )}
                 </div>
@@ -1129,21 +1117,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         ...typography.body,
                       }}
                     >
-                      <p>
-                        {getWineDisplayName()}'s refined structure and elegant
-                        fruit character complement these sophisticated
-                        vegetarian dishes:
-                      </p>
                       <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         <li>Hearty bean and vegetable stew</li>
                         <li>Grilled portobello with herbs and olive oil</li>
                         <li>Pasta with truffle and aged cheese</li>
                         <li>Roasted eggplant parmigiana</li>
                       </ul>
-                      <p>
-                        The wine's mineral complexity and balanced tannins
-                        enhance rich, hearty vegetarian cuisine.
-                      </p>
                     </div>
                   )}
                 </div>
@@ -1220,10 +1199,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         ...typography.body,
                       }}
                     >
-                      <p>
-                        While {getWineDisplayName()} is exceptional, these
-                        combinations don't showcase its elegant qualities:
-                      </p>
                       <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         <li>
                           Delicate fish preparations like sole or sea bass
@@ -1233,11 +1208,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         <li>Light salads with acidic vinaigrettes</li>
                         <li>Sweet desserts or milk chocolate</li>
                       </ul>
-                      <p>
-                        The wine's structured tannins and complex flavors can
-                        overpower delicate dishes or clash with excessive
-                        sweetness.
-                      </p>
                     </div>
                   )}
                 </div>
