@@ -328,3 +328,44 @@
 .animate-fifth {
   animation: fifth 60s linear infinite;
 }
+
+@keyframes slide-lr {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-lr-delayed {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-lr-slow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-lr {
+  animation: slide-lr 2s ease-in-out infinite;
+}
+
+.animate-slide-lr-delayed {
+  animation: slide-lr-delayed 2.5s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-slide-lr-slow {
+  animation: slide-lr-slow 3s ease-in-out infinite;
+  animation-delay: 1s;
+}

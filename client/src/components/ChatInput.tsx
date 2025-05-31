@@ -52,21 +52,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         }}
       >
         {isFocused && (
-          <BackgroundGradientAnimation
-            gradientBackgroundStart="rgb(20, 20, 20)"
-            gradientBackgroundEnd="rgb(40, 40, 40)"
-            firstColor="120, 120, 255"
-            secondColor="255, 120, 200"
-            thirdColor="120, 255, 180"
-            fourthColor="255, 180, 120"
-            fifthColor="200, 200, 255"
-            pointerColor="160, 160, 255"
-            size="30%"
-            blendingValue="overlay"
-            className="absolute inset-0 rounded-3xl"
-            containerClassName="absolute inset-0 rounded-3xl"
-            interactive={false}
-          />
+          <div className="absolute inset-0 rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-slide-lr"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent animate-slide-lr-delayed"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow"></div>
+          </div>
         )}
         <input
           ref={inputRef}
