@@ -87,7 +87,15 @@ export default function WineDetails() {
               />
             </svg>
           </Link>
-          <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">
+          <h1 
+            className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap"
+            style={{
+              border: 'none',
+              borderBottom: 'none',
+              textDecoration: 'none',
+              outline: 'none'
+            }}
+          >
             {wine ? `${wine.year} ${wine.name}` : getWineDisplayName()}
           </h1>
           <div></div>
