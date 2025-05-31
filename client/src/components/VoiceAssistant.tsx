@@ -24,16 +24,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
-  // Check for saved microphone permission on component mount
-  useEffect(() => {
-    // Sync browser permission with cookie on load
-    syncMicrophonePermissionWithBrowser();
-    
-    const savedPermission = getMicrophonePermission();
-    if (savedPermission?.granted) {
-      console.log('Found saved microphone permission - ready for immediate voice access');
-    }
-  }, []);
+  // Don't request mic permission on mount - only when user clicks mic button
 
   // Handle audio status changes and page visibility
   useEffect(() => {
