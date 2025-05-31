@@ -259,11 +259,11 @@ export default function AdminCRM() {
           {/* Search Bar - Full Screen Width Below Header */}
           {showSearch && (
             <div style={{
-              position: "fixed",
-              top: "72px",
+              position: "fill",
+              top: "76px",
               left: "0",
               right: "0",
-              padding: "16px",
+              padding: "0 16px",
               zIndex: 40
             }}>
               <input
@@ -391,7 +391,7 @@ export default function AdminCRM() {
           )}
 
           {/* Wine Cards Preview */}
-          <div>
+          <div style={{ marginTop: "16px" }}>
             <div>
               {filteredWines.map((card, index) => (
                 <div key={card.id}>
