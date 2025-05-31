@@ -481,7 +481,7 @@ export default function WineEdit() {
               }}
             >
               <SimpleQRCode
-                value={wine.qrLink || `https://your-deployed-app.replit.app/wine-details/${wine.id}`}
+                value={wine.qrLink && wine.qrLink.includes('/wine-details/') ? wine.qrLink : `${window.location.origin}/wine-details/${wine.id}`}
                 size={120}
               />
             </div>
@@ -813,7 +813,7 @@ export default function WineEdit() {
           </label>
           <input
             type="url"
-            value={wine.qrLink || `https://your-deployed-app.replit.app/wine-details/${wine.id}`}
+            value={wine.qrLink && wine.qrLink.includes('/wine-details/') ? wine.qrLink : `${window.location.origin}/wine-details/${wine.id}`}
             onChange={(e) => updateWine("qrLink", e.target.value)}
             className="contact-form-input"
             style={{
@@ -825,7 +825,7 @@ export default function WineEdit() {
               fontWeight: "400",
               padding: "0 16px",
             }}
-            placeholder={`https://your-deployed-app.replit.app/wine-details/${wine.id}`}
+            placeholder={`${window.location.origin}/wine-details/${wine.id}`}
           />
         </div>
 
