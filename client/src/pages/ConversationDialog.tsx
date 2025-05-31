@@ -107,10 +107,8 @@ export default function ConversationDialog() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#1C1C1C',
-      color: 'white'
+    <div className="bg-background text-white" style={{
+      minHeight: '100vh'
     }}>
         {/* Fixed Header with back button navigation */}
         <div
