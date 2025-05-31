@@ -107,13 +107,31 @@
     /* iOS safe area handling for home indicator */
     padding-bottom: env(safe-area-inset-bottom);
     background: linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%);
+    /* Ensure background extends beyond viewport */
+    margin: 0;
+    min-height: calc(100vh + env(safe-area-inset-bottom));
+    min-height: calc(100dvh + env(safe-area-inset-bottom));
   }
   
   /* Ensure the entire viewport including safe areas has the same background */
   html {
     background: linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%);
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: calc(100vh + env(safe-area-inset-bottom));
+    min-height: calc(100dvh + env(safe-area-inset-bottom));
+    /* Extend background to cover entire screen including safe areas */
+    background-attachment: fixed;
+  }
+  
+  /* Add a pseudo-element to fill the safe area at the bottom */
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: calc(-1 * env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-bottom);
+    background: #1C1C1C;
+    z-index: -1;
   }
   
   button {
