@@ -22,7 +22,7 @@ export default function AdminCRM() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [wineCards, setWineCards] = useState<WineCardData[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch, setShowSearch] = useState(true);
   const [showDataSync, setShowDataSync] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
