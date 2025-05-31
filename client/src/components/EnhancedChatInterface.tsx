@@ -871,14 +871,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     alignSelf: "stretch",
                     cursor: "pointer", // Show pointer cursor to indicate clickable
                     transition: "all 0.3s ease", // Smooth transition for expanding
-                    borderTop: "2px solid transparent",
-                    borderRight: "1px solid transparent",
-                    borderBottom: "1px solid transparent",
-                    borderLeft: "1px solid transparent",
-                    backgroundImage:
-                      "linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)",
-                    backgroundOrigin: "border-box",
-                    backgroundClip: "padding-box, border-box",
                   }}
                 >
                   {/* Header row - always visible */}
@@ -994,14 +986,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     alignSelf: "stretch",
                     cursor: "pointer",
                     transition: "all 0.3s ease",
-                    borderTop: "2px solid transparent",
-                    borderRight: "1px solid transparent",
-                    borderBottom: "1px solid transparent",
-                    borderLeft: "1px solid transparent",
-                    backgroundImage:
-                      "linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)",
-                    backgroundOrigin: "border-box",
-                    backgroundClip: "padding-box, border-box",
                   }}
                 >
                   {/* Header row - always visible */}
@@ -1091,14 +1075,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     alignSelf: "stretch",
                     cursor: "pointer",
                     transition: "all 0.3s ease",
-                    borderTop: "2px solid transparent",
-                    borderRight: "1px solid transparent",
-                    borderBottom: "1px solid transparent",
-                    borderLeft: "1px solid transparent",
-                    backgroundImage:
-                      "linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)",
-                    backgroundOrigin: "border-box",
-                    backgroundClip: "padding-box, border-box",
                   }}
                 >
                   {/* Header row - always visible */}
@@ -1190,14 +1166,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     alignSelf: "stretch",
                     cursor: "pointer",
                     transition: "all 0.3s ease",
-                    borderTop: "2px solid transparent",
-                    borderRight: "1px solid transparent",
-                    borderBottom: "1px solid transparent",
-                    borderLeft: "1px solid transparent",
-                    backgroundImage:
-                      "linear-gradient(#191919, #191919), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0) 100%)",
-                    backgroundOrigin: "border-box",
-                    backgroundClip: "padding-box, border-box",
                   }}
                 >
                   {/* Header row - always visible */}
