@@ -452,6 +452,7 @@ export default function AdminCRM() {
                         display: "flex",
                         gap: "20px",
                         alignItems: "flex-start",
+                        padding: "16px",
                       }}
                     >
                       {/* Wine Image */}
