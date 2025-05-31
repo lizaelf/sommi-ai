@@ -76,7 +76,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const startListening = () => {
+    console.log('startListening called');
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      console.log('Speech recognition not supported');
       toast({
         title: "Speech Recognition Not Supported",
         description: "Your browser doesn't support speech recognition",
@@ -146,6 +148,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       };
       
       recognitionRef.current = recognition;
+      console.log('Starting speech recognition...');
       recognition.start();
     } catch (error) {
       console.error('Error starting speech recognition:', error);
