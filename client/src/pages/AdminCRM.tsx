@@ -1,32 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
-import { getAllWines, saveAllWines, getEditableWineData, type WineData } from "@/utils/wineDataManager";
-import { Search, X } from "lucide-react";
+import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
+import { Search, X, Download, Upload, RefreshCw } from "lucide-react";
 import placeholderImage from "@assets/Placeholder.png";
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 
-interface WineCardData {
-  id: number;
-  name: string;
-  year: number;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  buyAgainLink: string;
-  qrCode: string;
-  qrLink: string;
-}
+// Use unified wine data interface
+type WineCardData = UnifiedWineData;
 
 export default function AdminCRM() {
   const [, setLocation] = useLocation();
@@ -37,26 +23,20 @@ export default function AdminCRM() {
   const [wineCards, setWineCards] = useState<WineCardData[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showDataSync, setShowDataSync] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load wines from CRM storage on component mount
+  // Load wines from unified data system on component mount
   useEffect(() => {
-    // Use getAllWines which provides default data if localStorage is empty
-    const allWines = getAllWines();
+    // Initialize unified data system
+    DataSyncManager.initialize();
     
-    // Fix ID3 to have empty image for placeholder demonstration
-    const fixedWines = allWines.map((wine: WineCardData) => {
-      if (wine.id === 3) {
-        return { ...wine, image: "" };
-      }
-      return wine;
-    });
+    // Get wines from unified data source
+    const allWines = DataSyncManager.getUnifiedWineData();
     
-    console.log("Loaded CRM wines:", fixedWines);
+    console.log("Loaded CRM wines:", allWines);
     console.log("Placeholder image path:", placeholderImage);
-    setWineCards(fixedWines);
-    
-    // Save the fixed data back to storage
-    localStorage.setItem('admin-wines', JSON.stringify(fixedWines));
+    setWineCards(allWines);
   }, []);
 
   // Filter wines based on search term
