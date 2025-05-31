@@ -302,7 +302,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                       backgroundColor: 'rgba(255, 255, 255, 0.08)',
                       borderRadius: '0px',
                       height: '56px',
-                      padding: '0 24px',
+                      padding: '0 16px',
                       margin: 0,
                       display: 'flex',
                       justifyContent: 'center',

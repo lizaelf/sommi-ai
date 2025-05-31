@@ -107,6 +107,10 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     // Continue animation if in any active state
     if (isListening || isProcessing || isPlaying || showTestAnimation) {
       animationRef.current = requestAnimationFrame(animate);
+    } else {
+      // In silence, stop animation and return to base size
+      setSize(baseSize);
+      setOpacity(0.6);
     }
   };
 

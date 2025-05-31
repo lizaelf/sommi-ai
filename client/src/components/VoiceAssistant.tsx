@@ -383,7 +383,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
     
     setIsResponding(false);
-    setShowListenButton(true);
+    setShowListenButton(false); // Hide listen button after stop
+    setIsLoadingAudio(false);
   };
 
   const handleAsk = () => {
