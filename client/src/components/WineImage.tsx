@@ -1,5 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import wineCircleImage from '@assets/wine-circle.png';
+import { 
+  shouldSkipPermissionPrompt,
+  requestMicrophonePermission 
+} from '@/utils/microphonePermissions';
 
 // Audio analysis helper
 let audioContext: AudioContext | null = null;
@@ -120,17 +124,30 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
             dataArray = new Uint8Array(analyser.frequencyBinCount);
           }
 
-          // Get microphone stream and connect to analyzer
-          const stream = await navigator.mediaDevices.getUserMedia({ 
-            audio: {
-              echoCancellation: false,
-              noiseSuppression: false,
-              autoGainControl: false
-            } 
-          });
+          // Get microphone stream using saved permissions if available
+          let stream;
+          if (shouldSkipPermissionPrompt()) {
+            console.log('Using saved microphone permission for wine animation');
+            const hasPermission = await requestMicrophonePermission();
+            if (!hasPermission) {
+              console.log('Saved permission invalid for wine animation');
+              return;
+            }
+            stream = (window as any).currentMicrophoneStream;
+          } else {
+            console.log('Requesting fresh microphone permission for wine animation');
+            const hasPermission = await requestMicrophonePermission();
+            if (!hasPermission) {
+              console.log('Microphone permission denied for wine animation');
+              return;
+            }
+            stream = (window as any).currentMicrophoneStream;
+          }
 
-          // Store stream for cleanup
-          (window as any).currentMicrophoneStream = stream;
+          if (!stream) {
+            console.warn('No microphone stream available for wine animation');
+            return;
+          }
 
           source = audioContext.createMediaStreamSource(stream);
           if (analyser) {

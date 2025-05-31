@@ -2,6 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
 import VoiceBottomSheet from './VoiceBottomSheet';
+import { 
+  getMicrophonePermission, 
+  requestMicrophonePermission, 
+  shouldSkipPermissionPrompt,
+  syncMicrophonePermissionWithBrowser 
+} from '@/utils/microphonePermissions';
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -16,6 +22,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
+
+  // Check for saved microphone permission on component mount
+  useEffect(() => {
+    // Sync browser permission with cookie on load
+    syncMicrophonePermissionWithBrowser();
+    
+    const savedPermission = getMicrophonePermission();
+    if (savedPermission?.granted) {
+      console.log('Found saved microphone permission - ready for immediate voice access');
+    }
+  }, []);
 
   // Handle audio status changes and page visibility
   useEffect(() => {
@@ -132,7 +149,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  const startListening = () => {
+  const startListening = async () => {
     console.log('startListening called');
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       console.log('Speech recognition not supported');
@@ -165,6 +182,55 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         },
       });
       return;
+    }
+
+    // Check if we can skip permission prompt
+    if (shouldSkipPermissionPrompt()) {
+      console.log('Using saved microphone permission');
+      // Try to get microphone access directly using saved permission
+      try {
+        const hasPermission = await requestMicrophonePermission();
+        if (!hasPermission) {
+          console.log('Saved permission invalid, requesting fresh permission');
+        }
+      } catch (error) {
+        console.log('Error with saved permission, requesting fresh permission');
+      }
+    } else {
+      // Request fresh permission
+      console.log('Requesting fresh microphone permission');
+      const hasPermission = await requestMicrophonePermission();
+      if (!hasPermission) {
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Microphone access required for voice input
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+        return;
+      }
     }
 
     try {
