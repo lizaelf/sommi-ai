@@ -250,7 +250,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             width: '40px',
             height: '40px',
             borderRadius: '50%',
-            backgroundColor: isProcessing ? '#444444' : '#666666',
+            backgroundColor: 'transparent',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
