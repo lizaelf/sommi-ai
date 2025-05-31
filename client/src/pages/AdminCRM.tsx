@@ -45,8 +45,10 @@ export default function AdminCRM() {
   );
 
   const handleAddWine = async () => {
-    // Navigate to add wine page with placeholders
-    setLocation("/add-wine");
+    // Navigate to edit wine page with new wine ID
+    const existingWines = DataSyncManager.getUnifiedWineData();
+    const newWineId = existingWines.length > 0 ? Math.max(...existingWines.map(w => w.id)) + 1 : 1;
+    setLocation(`/wine-edit/${newWineId}?new=true`);
   };
 
   const updateWineCard = (cardId: number, field: keyof WineCardData, value: any) => {

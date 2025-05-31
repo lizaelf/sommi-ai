@@ -25,6 +25,9 @@ export default function WineEdit() {
   const wineId = parseInt(params.id || "1");
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  
+  // Check if this is a new wine being added
+  const isNewWine = new URLSearchParams(window.location.search).get('new') === 'true';
 
   // Get wine data from CRM storage
   const getStoredWines = (): WineCardData[] => {
@@ -36,6 +39,26 @@ export default function WineEdit() {
   };
 
   const [wine, setWine] = useState<WineCardData>(() => {
+    // If this is a new wine, create empty wine data
+    if (isNewWine) {
+      return {
+        id: wineId,
+        name: "",
+        year: new Date().getFullYear(),
+        bottles: 0,
+        image: "",
+        ratings: {
+          vn: 0,
+          jd: 0,
+          ws: 0,
+          abv: 0
+        },
+        buyAgainLink: "",
+        qrCode: `QR_${wineId.toString().padStart(3, '0')}`,
+        qrLink: `${window.location.origin}/wine-details/${wineId}`
+      };
+    }
+    
     // Get wine from unified data system
     const editableWine = DataSyncManager.getWineById(wineId);
     console.log(
@@ -145,7 +168,7 @@ export default function WineEdit() {
               whiteSpace: "nowrap",
             }}
           >
-            Saved
+            {isNewWine ? "Wine added successfully" : "Wine updated successfully"}
           </span>
         ),
         duration: 2000,
@@ -329,68 +352,71 @@ export default function WineEdit() {
           </svg>
         </button>
         <h1 className="text-lg font-medium text-white text-center flex-1 truncate overflow-hidden whitespace-nowrap">
-          {wine.name === "" ? "Add Wine" : "Edit Wine"}
+          {isNewWine ? "Add New Wine" : "Edit Wine"}
         </h1>
-        <div className="relative dropdown-container">
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="header-button"
-            style={{ padding: "4px" }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-white"
+        {!isNewWine && (
+          <div className="relative dropdown-container">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="header-button"
+              style={{ padding: "4px" }}
             >
-              <circle cx="12" cy="12" r="1" />
-              <circle cx="12" cy="5" r="1" />
-              <circle cx="12" cy="19" r="1" />
-            </svg>
-          </button>
-
-          {showDropdown && (
-            <div
-              style={{
-                position: "absolute",
-                top: "100%",
-                right: "0",
-                marginTop: "8px",
-                background: "rgba(0, 0, 0, 0.9)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "8px",
-                minWidth: "140px",
-                zIndex: 1000,
-              }}
-            >
-              <button
-                onClick={() => {
-                  deleteWine();
-                  setShowDropdown(false);
-                }}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  background: "transparent",
-                  border: "none",
-                  color: "#ef4444",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  ...typography.body1R,
-                }}
-                className="hover:bg-red-500/10 transition-colors"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-white"
               >
-                Delete Wine
-              </button>
-            </div>
-          )}
-        </div>
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
+              </svg>
+            </button>
+
+            {showDropdown && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: "0",
+                  marginTop: "8px",
+                  background: "rgba(0, 0, 0, 0.9)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRadius: "8px",
+                  minWidth: "140px",
+                  zIndex: 1000,
+                }}
+              >
+                <button
+                  onClick={() => {
+                    deleteWine();
+                    setShowDropdown(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    background: "transparent",
+                    border: "none",
+                    color: "#ef4444",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    ...typography.body1R,
+                  }}
+                  className="hover:bg-red-500/10 transition-colors"
+                >
+                  Delete Wine
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        {isNewWine && <div style={{ width: "32px" }}></div>}
       </div>
 
       {/* Content */}

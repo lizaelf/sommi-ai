@@ -12,7 +12,7 @@ import HomeGlobal from "@/pages/HomeGlobal";
 import AdminCRM from "@/pages/AdminCRM";
 import WineScan from "@/pages/WineScan";
 import WineEdit from "@/pages/WineEdit";
-import AddWine from "@/pages/AddWine";
+
 
 function Router() {
   return (
@@ -23,7 +23,7 @@ function Router() {
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={WineDetails} />
       <Route path="/admin-crm" component={AdminCRM} />
-      <Route path="/add-wine" component={AddWine} />
+
       <Route path="/wine-edit/:id" component={WineEdit} />
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route component={NotFound} />
