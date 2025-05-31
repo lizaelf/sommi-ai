@@ -222,6 +222,7 @@ export default function ConversationDialog() {
                         {message.role === 'assistant' ? (
                           <div style={{
                             ...typography.body,
+                            lineHeight: '20px',
                             color: '#DBDBDB',
                             margin: 0,
                             padding: 0
@@ -231,6 +232,7 @@ export default function ConversationDialog() {
                         ) : (
                           <div style={{
                             ...typography.body,
+                            lineHeight: '20px',
                             color: '#000000',
                             margin: 0,
                             padding: 0
