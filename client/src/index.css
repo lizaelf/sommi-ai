@@ -104,6 +104,16 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* iOS safe area handling for home indicator */
+    padding-bottom: env(safe-area-inset-bottom);
+    background: linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%);
+  }
+  
+  /* Ensure the entire viewport including safe areas has the same background */
+  html {
+    background: linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%);
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   
   button {
