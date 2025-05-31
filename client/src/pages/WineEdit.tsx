@@ -137,23 +137,40 @@ export default function WineEdit() {
 
   const saveWine = () => {
     try {
+      console.log('Starting wine save process for:', wine);
+      
+      // Validate wine data
+      if (!wine.name || wine.name.trim() === '') {
+        throw new Error('Wine name is required');
+      }
+      
+      if (!wine.id || isNaN(wine.id)) {
+        throw new Error('Invalid wine ID');
+      }
+      
       // Save to CRM master data source
       const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+      console.log('Current CRM wines:', crmWines);
+      
       const existingIndex = crmWines.findIndex((w: any) => w.id === wine.id);
       
       if (existingIndex !== -1) {
         // Update existing wine
+        console.log('Updating existing wine at index:', existingIndex);
         crmWines[existingIndex] = wine;
       } else {
         // Add new wine
+        console.log('Adding new wine to CRM');
         crmWines.push(wine);
       }
       
       localStorage.setItem('admin-wines', JSON.stringify(crmWines));
+      console.log('Successfully saved to CRM storage');
 
       // Also save to individual wine data storage for backwards compatibility
       try {
         saveEditableWineData(wine);
+        console.log('Successfully saved to individual wine data storage');
       } catch (saveError) {
         console.warn('Failed to save to individual wine data storage:', saveError);
         // Continue with success - CRM data was saved successfully
@@ -190,6 +207,9 @@ export default function WineEdit() {
 
       setLocation("/admin-crm");
     } catch (error) {
+      console.error('Wine save failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
       toast({
         description: (
           <span
@@ -200,7 +220,7 @@ export default function WineEdit() {
               whiteSpace: "nowrap",
             }}
           >
-            Failed to save wine details
+            {errorMessage}
           </span>
         ),
         duration: 2000,
