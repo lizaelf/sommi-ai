@@ -1,25 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useRoute } from 'wouter';
 import { CellarManager } from '@/utils/cellarManager';
+import { getAllWines } from '@/utils/wineDataManager';
 import { useToast } from '@/hooks/use-toast';
 import typography from '@/styles/typography';
 import { ChevronLeft } from 'lucide-react';
-
-// Wine data mapping for the available wines
-const WINE_DATA = {
-  1: {
-    id: 1,
-    name: "Ridge 'Lytton Springs' Dry Creek Zinfandel",
-    year: 2021,
-    image: "/api/placeholder/170/200"
-  },
-  2: {
-    id: 2,
-    name: "Ridge Monte Bello Cabernet Sauvignon",
-    year: 2019,
-    image: "/api/placeholder/170/200"
-  }
-};
 
 export default function WineScan() {
   const [match, params] = useRoute('/scan-wine/:id');
@@ -28,7 +13,10 @@ export default function WineScan() {
   const { toast } = useToast();
 
   const wineId = params?.id ? parseInt(params.id, 10) : null;
-  const wine = wineId && WINE_DATA[wineId as keyof typeof WINE_DATA] ? WINE_DATA[wineId as keyof typeof WINE_DATA] : null;
+  
+  // Get wine data from the real wine data manager
+  const allWines = getAllWines();
+  const wine = wineId ? allWines.find(w => w.id === wineId) : null;
 
   useEffect(() => {
     // Check if wine is already in cellar
@@ -168,11 +156,24 @@ export default function WineScan() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          border: '2px solid rgba(255, 255, 255, 0.2)'
+          border: '2px solid rgba(255, 255, 255, 0.2)',
+          overflow: 'hidden'
         }}>
-          <div style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-            Wine Image
-          </div>
+          {wine.image ? (
+            <img 
+              src={wine.image} 
+              alt={wine.name}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+          ) : (
+            <div style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
+              Wine Image
+            </div>
+          )}
         </div>
 
         {/* Wine Name */}
