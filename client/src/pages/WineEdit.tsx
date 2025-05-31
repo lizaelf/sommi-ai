@@ -168,7 +168,7 @@ export default function WineEdit() {
               whiteSpace: "nowrap",
             }}
           >
-            {isNewWine ? "Wine added successfully" : "Wine updated successfully"}
+            {isNewWine ? "Wine added" : "Wine updated"}
           </span>
         ),
         duration: 2000,
@@ -190,7 +190,7 @@ export default function WineEdit() {
       setLocation("/admin-crm");
     } catch (error) {
       console.error('Wine save failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       toast({
         description: (
@@ -352,7 +352,7 @@ export default function WineEdit() {
           </svg>
         </button>
         <h1 className="text-lg font-medium text-white text-center flex-1 truncate overflow-hidden whitespace-nowrap">
-          {isNewWine ? "Add New Wine" : "Edit Wine"}
+          {isNewWine ? "Add wine" : "Edit wine"}
         </h1>
         {!isNewWine && (
           <div className="relative dropdown-container">
