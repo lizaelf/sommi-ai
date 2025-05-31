@@ -133,6 +133,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
   useEffect(() => {
     // Function to handle audio playback status change
     const handleAudioStatusChange = (event: CustomEvent) => {
+      console.log('WineImage: Audio status changed:', event.detail?.status);
       if (event.detail?.status === 'playing') {
         setIsPlaying(true);
         
@@ -171,6 +172,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
     // Function to handle microphone status change and connect to mic stream
     const handleMicStatusChange = (event: CustomEvent) => {
+      console.log('WineImage: Mic status changed:', event.detail?.status);
       if (event.detail?.status === 'listening') {
         setIsListening(true);
         setIsProcessing(false);
@@ -249,7 +251,9 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
   // Start/stop animation when listening, processing, or playing changes
   useEffect(() => {
+    console.log('WineImage: Animation state changed - listening:', isListening, 'processing:', isProcessing, 'playing:', isPlaying);
     if (isListening || isProcessing || isPlaying) {
+      console.log('WineImage: Starting animation');
       // Only start a new animation if there isn't one already running
       if (!animationRef.current) {
         animationRef.current = requestAnimationFrame(animate);
