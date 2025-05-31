@@ -313,8 +313,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 </div>
               )}
               
-              {/* Suggestions Section */}
-              {showSuggestions && onSuggestionClick && (
+              {/* Suggestions Section - Hidden */}
+              {false && showSuggestions && onSuggestionClick && (
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
@@ -368,40 +368,42 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 </div>
               )}
 
-              {/* Ask Button */}
-              <div style={{
-                width: '100%',
-                paddingLeft: '16px',
-                paddingRight: '16px'
-              }}>
-                <button
-                  className="voice-bottom-sheet-button-white"
-                  onClick={onAsk}
-                  style={{
-                    width: '100%',
-                    backgroundColor: 'white',
-                    borderRadius: '32px',
-                    height: '56px',
-                    padding: '0 16px',
-                    margin: 0,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: 'black',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '16px',
-                    fontWeight: 500,
-                    outline: 'none',
-                    transition: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  Ask
-                </button>
-              </div>
+              {/* Ask Button - Hidden */}
+              {false && (
+                <div style={{
+                  width: '100%',
+                  paddingLeft: '16px',
+                  paddingRight: '16px'
+                }}>
+                  <button
+                    className="voice-bottom-sheet-button-white"
+                    onClick={onAsk}
+                    style={{
+                      width: '100%',
+                      backgroundColor: 'white',
+                      borderRadius: '32px',
+                      height: '56px',
+                      padding: '0 16px',
+                      margin: 0,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: 'black',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      outline: 'none',
+                      transition: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    Ask
+                  </button>
+                </div>
+              )}
 
             </div>
           )}
