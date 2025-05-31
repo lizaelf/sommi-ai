@@ -361,11 +361,11 @@
 }
 
 .animate-slide-lr-delayed {
-  animation: slide-lr-delayed 7.5s ease-in-out infinite;
+  animation: slide-lr-delayed 6s ease-in-out infinite;
   animation-delay: 1.5s;
 }
 
 .animate-slide-lr-slow {
-  animation: slide-lr-slow 9s ease-in-out infinite;
+  animation: slide-lr-slow 6s ease-in-out infinite;
   animation-delay: 3s;
 }
