@@ -227,36 +227,16 @@ export default function WineEdit() {
     try {
       console.log("Deleting wine with ID:", wine.id);
       
-      // Remove from admin-wines storage (used by AdminCRM)
-      try {
-        const adminWines = localStorage.getItem('admin-wines');
-        if (adminWines) {
-          const wines = JSON.parse(adminWines);
-          const updatedWines = wines.filter((w: any) => w.id !== wine.id);
-          localStorage.setItem('admin-wines', JSON.stringify(updatedWines));
-          console.log("Removed from admin-wines storage");
-        }
-      } catch (e) {
-        console.log("No admin-wines to update:", e);
-      }
+      // Use DataSyncManager to remove wine from unified system
+      DataSyncManager.removeWine(wine.id);
       
-      // Remove from adminWineCards storage (legacy)
-      try {
-        const wines = getStoredWines();
-        const updatedWines = wines.filter((w) => w.id !== wine.id);
-        localStorage.setItem("adminWineCards", JSON.stringify(updatedWines));
-        console.log("Removed from adminWineCards storage");
-      } catch (e) {
-        console.log("No adminWineCards to update:", e);
-      }
-
-      // Remove from individual wine data storage
+      // Clean up any legacy storage entries
       try {
         const wineDataKey = `editableWineData_${wine.id}`;
         localStorage.removeItem(wineDataKey);
-        console.log("Removed wine data:", wineDataKey);
+        console.log("Removed individual wine data:", wineDataKey);
       } catch (e) {
-        console.log("No wine data to remove:", e);
+        console.log("No individual wine data to remove:", e);
       }
 
       toast({

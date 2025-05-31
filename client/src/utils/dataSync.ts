@@ -121,9 +121,15 @@ export class DataSyncManager {
   
   // Remove a wine
   static removeWine(wineId: number): void {
+    console.log(`DataSyncManager: Removing wine with ID ${wineId}`);
     const wines = this.getUnifiedWineData();
+    console.log(`DataSyncManager: Current wines before removal:`, wines.map(w => ({ id: w.id, name: w.name })));
+    
     const filteredWines = wines.filter(w => w.id !== wineId);
+    console.log(`DataSyncManager: Wines after filtering:`, filteredWines.map(w => ({ id: w.id, name: w.name })));
+    
     this.saveUnifiedWineData(filteredWines);
+    console.log(`DataSyncManager: Wine ${wineId} removal completed`);
   }
   
   // Get wine by ID
