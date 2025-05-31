@@ -1,6 +1,9 @@
 // Unified Wine Data Synchronization System
 // Ensures all users see identical wine inventory across all environments
 
+// Import wine bottle image that works in both environments
+import wineBottleImage from "@assets/Product Image.png";
+
 export interface UnifiedWineData {
   id: number;
   name: string;
@@ -25,7 +28,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
     year: 2021,
     bottles: 6,
-    image: "/assets/Product Image.png",
+    image: wineBottleImage,
     ratings: {
       vn: 95,
       jd: 93,
@@ -41,7 +44,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     name: "Monte Bello Cabernet Sauvignon",
     year: 2021,
     bottles: 2,
-    image: "/assets/Product Image.png",
+    image: wineBottleImage,
     ratings: {
       vn: 95,
       jd: 93,
@@ -56,7 +59,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.1.0';
+const CURRENT_VERSION = '1.2.0';
 
 export class DataSyncManager {
   
