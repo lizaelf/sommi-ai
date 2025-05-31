@@ -173,7 +173,7 @@ export default function ConversationDialog() {
                     <div
                       style={{
                         borderRadius: "16px",
-                        padding: "12px 12px",
+                        padding: "8px 12px",
                         border: "1px solid rgba(255, 255, 255, 0.1)",
                       }}
                     >
@@ -208,7 +208,7 @@ export default function ConversationDialog() {
                       display: 'flex',
                       justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
                       width: '100%',
-                      marginBottom: '16px'
+                      marginBottom: '12px'
                     }}>
                       <div 
                         style={{
