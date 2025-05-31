@@ -33,7 +33,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
 
   // Suggestion click handler removed - now handled in parent component
 
-  return (
+  const inputContainer = (
     <div className="relative w-full">
       <div
         style={{
@@ -139,6 +139,30 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         </div>
       </div>
     </div>
+  );
+
+  return isFocused ? (
+    <BackgroundGradientAnimation
+      gradientBackgroundStart="rgb(20, 20, 20)"
+      gradientBackgroundEnd="rgb(40, 40, 40)"
+      firstColor="120, 120, 255"
+      secondColor="255, 120, 200"
+      thirdColor="120, 255, 180"
+      fourthColor="255, 180, 120"
+      fifthColor="200, 200, 255"
+      pointerColor="160, 160, 255"
+      size="60%"
+      blendingValue="overlay"
+      className="fixed inset-0 z-0"
+      containerClassName="fixed inset-0 z-0"
+      interactive={false}
+    >
+      <div className="relative z-10 w-full">
+        {inputContainer}
+      </div>
+    </BackgroundGradientAnimation>
+  ) : (
+    inputContainer
   );
 };
 
