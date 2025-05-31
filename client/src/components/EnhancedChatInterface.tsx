@@ -546,18 +546,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Mark this as the latest message for animation
         setLatestMessageId(assistantMessage.id);
 
+        // Store the assistant message for Listen Response button
+        (window as any).lastAssistantMessageText = assistantMessage.content;
+
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
-        // Auto-speak the assistant's response if window.voiceAssistant is available
-        if (window.voiceAssistant && window.voiceAssistant.speakResponse) {
-          try {
-            console.log("Auto-speaking the assistant's response");
-            await window.voiceAssistant.speakResponse(assistantMessage.content);
-          } catch (error) {
-            console.error("Failed to auto-speak response:", error);
-          }
-        }
+        // Auto-speak the assistant's response is disabled - use Listen Response button instead
+        console.log("speakResponse disabled - use Listen Response button instead");
       }
 
       // Refresh all messages

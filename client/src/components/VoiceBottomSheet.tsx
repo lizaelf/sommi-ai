@@ -285,8 +285,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               display: 'flex', 
               flexDirection: 'column', 
               gap: '16px',
-              width: '100%',
-              maxWidth: '320px'
+              width: '100%'
             }}>
               
               {/* Listen Response Button */}
@@ -301,9 +300,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     style={{
                       width: '100%',
                       backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      borderRadius: '32px',
+                      borderRadius: '0px',
                       height: '56px',
-                      padding: '0 16px',
+                      padding: '0 24px',
                       margin: 0,
                       display: 'flex',
                       justifyContent: 'center',
