@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { BackgroundGradientAnimation } from "./ui/background-gradient-animation";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -12,6 +13,7 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, voiceButtonComponent }) => {
   const [message, setMessage] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -55,8 +57,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => onFocus && onFocus()}
-          onBlur={() => onBlur && onBlur()}
+          onFocus={() => {
+            setIsFocused(true);
+            onFocus && onFocus();
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            onBlur && onBlur();
+          }}
           style={{
             display: 'flex',
             padding: '0 50px 4px 24px',
