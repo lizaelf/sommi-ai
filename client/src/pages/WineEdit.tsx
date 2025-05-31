@@ -36,8 +36,8 @@ export default function WineEdit() {
   };
 
   const [wine, setWine] = useState<WineCardData>(() => {
-    // First try to get from wine data manager for real wine data
-    const editableWine = getEditableWineData(wineId);
+    // Get wine from unified data system
+    const editableWine = DataSyncManager.getWineById(wineId);
     console.log(
       "Loading wine data for ID:",
       wineId,
@@ -131,33 +131,9 @@ export default function WineEdit() {
         throw new Error('Invalid wine ID');
       }
       
-      // Save to CRM master data source
-      const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-      console.log('Current CRM wines:', crmWines);
-      
-      const existingIndex = crmWines.findIndex((w: any) => w.id === wine.id);
-      
-      if (existingIndex !== -1) {
-        // Update existing wine
-        console.log('Updating existing wine at index:', existingIndex);
-        crmWines[existingIndex] = wine;
-      } else {
-        // Add new wine
-        console.log('Adding new wine to CRM');
-        crmWines.push(wine);
-      }
-      
-      localStorage.setItem('admin-wines', JSON.stringify(crmWines));
-      console.log('Successfully saved to CRM storage');
-
-      // Also save to individual wine data storage for backwards compatibility
-      try {
-        saveEditableWineData(wine);
-        console.log('Successfully saved to individual wine data storage');
-      } catch (saveError) {
-        console.warn('Failed to save to individual wine data storage:', saveError);
-        // Continue with success - CRM data was saved successfully
-      }
+      // Save to unified data system
+      DataSyncManager.addOrUpdateWine(wine);
+      console.log('Successfully saved to unified data system');
 
       toast({
         description: (
