@@ -60,24 +60,34 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
   const animate = () => {
     frameCount.current += 1;
     
-    // Simple pulsing animation that's guaranteed to be visible
-    const time = frameCount.current * 0.1;
-    const pulse = (Math.sin(time) + 1) / 2; // 0 to 1
+    let volumeLevel = 0;
     
-    // Reasonable size changes from 90% to 130%
-    const minScale = 0.9;
-    const maxScale = 1.3;
-    const targetScale = minScale + (pulse * (maxScale - minScale));
+    // Get real-time audio data for volume-based scaling
+    if (analyser && dataArray) {
+      analyser.getByteFrequencyData(dataArray);
+      
+      // Calculate average volume from frequency data
+      const sum = dataArray.reduce((a, b) => a + b, 0);
+      volumeLevel = Math.min(sum / dataArray.length / 128, 1.0); // Normalize to 0-1
+      
+      // Apply smoothing for natural response
+      volumeLevel = Math.pow(volumeLevel, 0.7);
+    }
+    
+    // Scale from 100% (silence) to 140% (loud audio)
+    const baseScale = 1.0;  // 100% baseline for silence
+    const maxScale = 1.4;   // 140% maximum for loud audio
+    const targetScale = baseScale + (volumeLevel * (maxScale - baseScale));
     const targetSize = baseSize * targetScale;
     
-    // Direct size update without smoothing for immediate visible changes
-    setSize(targetSize);
+    // Smooth size interpolation
+    const currentSize = size;
+    const lerpFactor = 0.3; // Responsive but smooth
+    const smoothedSize = currentSize + (targetSize - currentSize) * lerpFactor;
+    setSize(smoothedSize);
     
-    console.log(`WineImage: Frame ${frameCount.current}, pulse: ${pulse.toFixed(2)}, scale: ${targetScale.toFixed(2)}, size: ${targetSize.toFixed(1)}px`);
-    
-    // Simple opacity that pulses with the size
-    const targetOpacity = 0.4 + (pulse * 0.4); // Range from 0.4 to 0.8
-    setOpacity(targetOpacity);
+    // Keep opacity constant for cleaner look
+    setOpacity(0.8);
     
     // Continue animation if in any active state
     if (isListening || isProcessing || isPlaying) {
