@@ -307,7 +307,6 @@ export default function AdminCRM() {
                     padding: "0 16px 0 16px",
                     paddingRight: "48px"
                   }}
-                  autoFocus
                 />
                 <div
                   onClick={() => {
