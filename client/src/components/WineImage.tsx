@@ -174,6 +174,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     const handleMicStatusChange = (event: CustomEvent) => {
       console.log('WineImage: Mic status changed:', event.detail?.status);
       if (event.detail?.status === 'listening') {
+        console.log('WineImage: Setting listening to true');
         setIsListening(true);
         setIsProcessing(false);
         

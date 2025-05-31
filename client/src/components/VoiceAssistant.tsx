@@ -101,6 +101,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("Voice recognition started");
         
         // Dispatch mic-status event for animation
+        console.log('VoiceAssistant: Dispatching listening event');
         window.dispatchEvent(new CustomEvent('mic-status', {
           detail: { status: 'listening' }
         }));
