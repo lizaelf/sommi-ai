@@ -254,7 +254,7 @@ export default function AdminCRM() {
       </div>
 
       {/* Content */}
-      <div style={{ paddingTop: showSearch ? "160px" : "72px" }}>
+      <div style={{ paddingTop: showSearch ? "80px" : "72px" }}>
         <div>
           {/* Search Bar - Full Screen Width Below Header */}
           {showSearch && (
@@ -268,7 +268,7 @@ export default function AdminCRM() {
             }}>
               <input
                 type="text"
-                placeholder="Search wines by name..."
+                placeholder="Search by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="contact-form-input"
@@ -391,7 +391,7 @@ export default function AdminCRM() {
           )}
 
           {/* Wine Cards Preview */}
-          <div style={{ marginTop: "16px" }}>
+          <div>
             <div>
               {filteredWines.map((card, index) => (
                 <div key={card.id}>
