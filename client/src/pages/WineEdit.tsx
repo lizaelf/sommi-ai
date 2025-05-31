@@ -69,6 +69,22 @@ export default function WineEdit() {
     const wines = getStoredWines();
     const fallbackWine = wines.find((w) => w.id === wineId) || wines[0];
     console.log("Using fallback wine:", fallbackWine);
+    
+    // If no wine found, create a default one to prevent errors
+    if (!fallbackWine) {
+      return {
+        id: wineId,
+        name: "",
+        year: 0,
+        bottles: 0,
+        image: "",
+        ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+        buyAgainLink: "",
+        qrCode: `QR_${String(wineId).padStart(3, '0')}`,
+        qrLink: ""
+      };
+    }
+    
     return fallbackWine;
   });
 
