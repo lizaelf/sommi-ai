@@ -151,7 +151,14 @@
   }
   
   button:hover {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3)) !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    background-image: none !important;
+  }
+  
+  button:active,
+  button:focus {
+    background: rgba(255, 255, 255, 0.16) !important;
+    background-image: none !important;
   }
   
   input {

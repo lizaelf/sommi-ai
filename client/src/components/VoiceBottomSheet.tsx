@@ -372,7 +372,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                           minWidth: 'fit-content'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
                           e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
                         }}
                         onMouseLeave={(e) => {

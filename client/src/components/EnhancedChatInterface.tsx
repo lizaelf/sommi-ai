@@ -1409,6 +1409,18 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             {/* Show whole dialog button */}
                             <button
                               onClick={() => setLocation("/wine/conversation")}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                              }}
+                              onMouseDown={(e) => {
+                                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                              }}
+                              onMouseUp={(e) => {
+                                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                              }}
                               style={{
                                 backgroundColor: "rgba(255, 255, 255, 0.08)",
                                 borderRadius: "32px",
@@ -1430,6 +1442,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 width: "100%",
                                 boxSizing: "border-box",
                                 lineHeight: "1",
+                                transition: "background-color 0.2s ease",
                               }}
                             >
                               Show whole dialog

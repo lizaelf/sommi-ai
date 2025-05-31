@@ -2052,6 +2052,18 @@ const Cellar = () => {
                 >
                   <div
                     onClick={handleSave}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.16)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
+                    }}
+                    onMouseDown={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.16)";
+                    }}
+                    onMouseUp={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.16)";
+                    }}
                     style={{
                       width: "100%",
                       height: "56px",
@@ -2071,6 +2083,7 @@ const Cellar = () => {
                       borderRadius: "24px",
                       background: "rgba(255, 255, 255, 0.04)",
                       border: "1px solid rgba(255, 255, 255, 0.12)",
+                      transition: "background 0.2s ease"
                     }}
                   >
                     Save
