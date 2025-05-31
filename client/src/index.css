@@ -358,14 +358,15 @@
 
 .animate-slide-lr {
   animation: slide-lr 6s ease-in-out infinite;
+  animation-delay: 0s;
 }
 
 .animate-slide-lr-delayed {
   animation: slide-lr-delayed 6s ease-in-out infinite;
-  animation-delay: 1.5s;
+  animation-delay: 2s;
 }
 
 .animate-slide-lr-slow {
   animation: slide-lr-slow 6s ease-in-out infinite;
-  animation-delay: 3s;
+  animation-delay: 4s;
 }
