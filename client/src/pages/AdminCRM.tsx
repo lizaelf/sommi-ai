@@ -227,20 +227,7 @@ export default function AdminCRM() {
             </Button>
           )}
 
-          <div
-            onClick={() => setShowSearch(!showSearch)}
-            style={{
-              width: '40px',
-              height: '40px',
-              color: 'white',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Search size={20} />
-          </div>
+
           <button
             onClick={handleAddWine}
             className="admin-add-button"
