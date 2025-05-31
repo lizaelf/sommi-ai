@@ -310,7 +310,6 @@ export default function AdminCRM() {
                 />
                 <div
                   onClick={() => {
-                    setShowSearch(false);
                     setSearchTerm("");
                   }}
                   style={{
