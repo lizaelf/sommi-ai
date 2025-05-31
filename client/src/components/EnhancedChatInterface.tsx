@@ -951,11 +951,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                       className="pl-[0px] pr-[0px]"
                     >
-                      <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         {getFoodPairingContent().dishes.map((dish, index) => (
-                          <li key={index}>{dish}</li>
+                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                            <span style={{ fontSize: "16px" }}>🥩</span>
+                            <span>{dish}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1034,11 +1037,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         ...typography.body,
                       }}
                     >
-                      <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         {getCheesePairingContent().cheeses.map((cheese, index) => (
-                          <li key={index}>{cheese}</li>
+                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                            <span style={{ fontSize: "16px" }}>🧀</span>
+                            <span>{cheese}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1117,12 +1123,24 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         ...typography.body,
                       }}
                     >
-                      <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        <li>Hearty bean and vegetable stew</li>
-                        <li>Grilled portobello with herbs and olive oil</li>
-                        <li>Pasta with truffle and aged cheese</li>
-                        <li>Roasted eggplant parmigiana</li>
-                      </ul>
+                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px" }}>🥗</span>
+                          <span>Hearty bean and vegetable stew</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px" }}>🥗</span>
+                          <span>Grilled portobello with herbs and olive oil</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px" }}>🥗</span>
+                          <span>Pasta with truffle and aged cheese</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px" }}>🥗</span>
+                          <span>Roasted eggplant parmigiana</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1199,15 +1217,28 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         ...typography.body,
                       }}
                     >
-                      <ul style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        <li>
-                          Delicate fish preparations like sole or sea bass
-                        </li>
-                        <li>Fresh shellfish or raw oysters</li>
-                        <li>Very spicy Asian curries or hot dishes</li>
-                        <li>Light salads with acidic vinaigrettes</li>
-                        <li>Sweet desserts or milk chocolate</li>
-                      </ul>
+                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
+                          <span>Delicate fish preparations like sole or sea bass</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
+                          <span>Fresh shellfish or raw oysters</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
+                          <span>Very spicy Asian curries or hot dishes</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
+                          <span>Light salads with acidic vinaigrettes</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
+                          <span>Sweet desserts or milk chocolate</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
