@@ -4,6 +4,7 @@ import { useConversation } from '../hooks/useConversation';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { TextGenerateEffect } from '../components/ui/text-generate-effect';
 import { useState, useEffect } from 'react';
+import typography from '../styles/typography';
 
 export default function ConversationDialog() {
   const [, setLocation] = useLocation();
@@ -222,10 +223,8 @@ export default function ConversationDialog() {
                       >
                         {message.role === 'assistant' ? (
                           <div style={{
+                            ...typography.body,
                             color: '#DBDBDB',
-                            fontFamily: 'Inter, system-ui, sans-serif',
-                            fontSize: '16px',
-                            lineHeight: '1.4',
                             margin: 0,
                             padding: 0
                           }}>
@@ -233,10 +232,8 @@ export default function ConversationDialog() {
                           </div>
                         ) : (
                           <div style={{
+                            ...typography.body,
                             color: '#000000',
-                            fontFamily: 'Inter, system-ui, sans-serif',
-                            fontSize: '16px',
-                            lineHeight: '1.4',
                             margin: 0,
                             padding: 0
                           }}>
