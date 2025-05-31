@@ -29,6 +29,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showTestAnimation, setShowTestAnimation] = useState(false);
   const [frequencyData, setFrequencyData] = useState<number[]>([]);
   const animationRef = useRef<number>(0);
   const frameCount = useRef(0);
@@ -250,10 +251,21 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     };
   }, []);
 
+  // Add a test animation on mount to verify it's working
+  useEffect(() => {
+    // Start a brief test animation after 1 second to verify visibility
+    const timer = setTimeout(() => {
+      setShowTestAnimation(true);
+      setTimeout(() => setShowTestAnimation(false), 3000); // 3 second test
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   // Start/stop animation when listening, processing, or playing changes
   useEffect(() => {
-    console.log('WineImage: Animation state changed - listening:', isListening, 'processing:', isProcessing, 'playing:', isPlaying);
-    if (isListening || isProcessing || isPlaying) {
+    console.log('WineImage: Animation state changed - listening:', isListening, 'processing:', isProcessing, 'playing:', isPlaying, 'test:', showTestAnimation);
+    if (isListening || isProcessing || isPlaying || showTestAnimation) {
       console.log('WineImage: Starting animation');
       // Only start a new animation if there isn't one already running
       if (!animationRef.current) {
@@ -267,8 +279,8 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       const returnToBase = () => {
         const currentSize = size;
         const currentOpacity = opacity;
-        const targetSize = baseSize * 0.85; // Return to 85% base size (more visible)
-        const targetOpacity = 0.4; // Higher opacity when inactive
+        const targetSize = baseSize; // Return to full base size
+        const targetOpacity = 0.6; // Higher opacity when inactive for better visibility
         
         const lerpFactor = 0.15; // Faster return to base
         const newSize = currentSize + (targetSize - currentSize) * lerpFactor;
@@ -327,7 +339,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       />
       
       {/* Inner circle provides focused area - without background color */}
-      {(isListening || isProcessing || isPlaying) && (
+      {(isListening || isProcessing || isPlaying || showTestAnimation) && (
         <div 
           style={{
             width: `${size * 0.7}px`,
