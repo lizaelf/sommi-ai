@@ -56,42 +56,45 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     return [bass, mid, treble];
   };
 
-  // Function to handle smooth animation based on actual audio volume
   const animate = () => {
     frameCount.current += 1;
     
+    // Get frequency data for volume-based scaling
+    const frequencies = getAudioData();
     let volumeLevel = 0;
     
-    // Get real-time audio data for volume-based scaling
-    if (analyser && dataArray) {
-      analyser.getByteFrequencyData(dataArray);
-      
+    if (frequencies.length > 0) {
       // Calculate average volume from frequency data
-      const sum = dataArray.reduce((a, b) => a + b, 0);
-      volumeLevel = Math.min(sum / dataArray.length / 128, 1.0); // Normalize to 0-1
+      const sum = frequencies.reduce((a, b) => a + b, 0);
+      volumeLevel = sum / frequencies.length / 255; // Normalize to 0-1
       
-      // Apply smoothing for natural response
-      volumeLevel = Math.pow(volumeLevel, 0.7);
-    } else {
-      // Fallback: gentle pulsing when no audio data available
-      const time = frameCount.current * 0.05; // Slower pulse
-      volumeLevel = (Math.sin(time) + 1) / 4; // Gentle pulse 0 to 0.5
+      // Apply smoothing to reduce jitter
+      volumeLevel = Math.pow(volumeLevel, 0.7); // Apply power curve for more natural response
     }
     
-    // Scale from 100% (silence) to 140% (loud audio)
-    const baseScale = 1.0;  // 100% baseline for silence
-    const maxScale = 1.4;   // 140% maximum for loud audio
-    const targetScale = baseScale + (volumeLevel * (maxScale - baseScale));
+    // Scale from 60% to 150% based on audio level (90% range total)
+    const minScale = 0.6;  // 60% minimum size
+    const maxScale = 1.5;  // 150% maximum size (25% more than original 120%)
+    const scaleRange = maxScale - minScale; // 0.9 (90% range)
+    
+    // Calculate target scale based on volume with enhanced sensitivity
+    const enhancedVolume = Math.pow(volumeLevel, 0.5); // Make it more responsive to lower volumes
+    const targetScale = minScale + (enhancedVolume * scaleRange);
     const targetSize = baseSize * targetScale;
     
-    // Smooth size interpolation
+    // More responsive interpolation for visible movement
     const currentSize = size;
-    const lerpFactor = 0.3; // Responsive but smooth
+    const lerpFactor = 0.25; // Increased smoothing factor for more visible changes
     const smoothedSize = currentSize + (targetSize - currentSize) * lerpFactor;
+    
+    // Update size with smooth scaling
     setSize(smoothedSize);
     
-    // Keep opacity constant for cleaner look
-    setOpacity(0.8);
+    // More dramatic opacity changes that follow the volume
+    const targetOpacity = 0.2 + (enhancedVolume * 0.6); // Range from 0.2 to 0.8
+    const currentOpacity = opacity;
+    const smoothedOpacity = currentOpacity + (targetOpacity - currentOpacity) * lerpFactor;
+    setOpacity(smoothedOpacity);
     
     // Continue animation if in any active state
     if (isListening || isProcessing || isPlaying) {
