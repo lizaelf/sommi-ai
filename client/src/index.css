@@ -152,6 +152,23 @@
     background-image: none !important;
   }
 
+  /* Gradient animation for focused inputs */
+  input[type=text]:focus, input[type=email]:focus, input[type=tel]:focus, textarea:focus {
+    outline: none !important;
+    border: 3px solid transparent !important;
+    background-image: linear-gradient(white, white), linear-gradient(315deg, rgb(236, 160, 255), rgb(170, 178, 255), rgb(132, 255, 201)) !important;
+    background-origin: border-box !important;
+    background-clip: padding-box, border-box !important;
+    animation: bg-hue 2s linear infinite !important;
+  }
+
+  /* Keyframes for the gradient animation */
+  @keyframes bg-hue {
+    100% {
+      filter: hue-rotate(360deg);
+    }
+  }
+
   /* Header buttons without global button styling */
   .header-button {
     all: unset !important;
