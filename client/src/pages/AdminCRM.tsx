@@ -226,21 +226,7 @@ export default function AdminCRM() {
               Save All
             </Button>
           )}
-          <div
-            onClick={() => setShowDataSync(!showDataSync)}
-            style={{
-              width: '40px',
-              height: '40px',
-              color: 'white',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            title="Data Sync"
-          >
-            <RefreshCw size={20} />
-          </div>
+
           <div
             onClick={() => setShowSearch(!showSearch)}
             style={{
@@ -281,49 +267,60 @@ export default function AdminCRM() {
       </div>
 
       {/* Content */}
-      <div style={{ paddingTop: "72px" }}>
+      <div style={{ paddingTop: showSearch ? "160px" : "72px" }}>
         <div>
-          {/* Search Bar - Only show when toggled */}
+          {/* Search Bar - Full Screen Width Below Header */}
           {showSearch && (
-            <div style={{ marginBottom: "16px", position: "relative", paddingLeft: "16px", paddingRight: "16px" }}>
-              <input
-                type="text"
-                placeholder="Search wines by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="contact-form-input"
-                style={{
-                  ...typography.body1R,
-                  color: "white !important",
-                  height: "56px",
-                  width: "100%",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  padding: "0 16px 0 16px",
-                  paddingRight: "48px"
-                }}
-                autoFocus
-              />
-              <div
-                onClick={() => {
-                  setShowSearch(false);
-                  setSearchTerm("");
-                }}
-                style={{
-                  position: "absolute",
-                  right: "16px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  width: "24px",
-                  height: "24px",
-                  color: "rgba(255, 255, 255, 0.6)",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <X size={16} />
+            <div style={{
+              position: "fixed",
+              top: "72px",
+              left: "0",
+              right: "0",
+              backgroundColor: "#191919",
+              padding: "16px",
+              zIndex: 40,
+              borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <div style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  placeholder="Search wines by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="contact-form-input"
+                  style={{
+                    ...typography.body1R,
+                    color: "white !important",
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px 0 16px",
+                    paddingRight: "48px"
+                  }}
+                  autoFocus
+                />
+                <div
+                  onClick={() => {
+                    setShowSearch(false);
+                    setSearchTerm("");
+                  }}
+                  style={{
+                    position: "absolute",
+                    right: "16px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: "24px",
+                    height: "24px",
+                    color: "rgba(255, 255, 255, 0.6)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <X size={16} />
+                </div>
               </div>
             </div>
           )}
