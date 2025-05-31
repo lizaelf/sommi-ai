@@ -40,16 +40,61 @@ export default function WineScan() {
       setAddedToCellar(true);
       
       toast({
-        title: addedTocellar ? "Wine moved to top" : "Wine added to cellar",
-        description: addedTocellar 
-          ? `${wine.name} ${wine.year} moved to top of your cellar`
-          : `${wine.name} ${wine.year} added to your cellar`,
+        description: (
+          <span
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {addedTocellar ? "Wine moved to top" : "Wine added to cellar"}
+          </span>
+        ),
+        duration: 2000,
+        className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add wine to cellar",
-        variant: "destructive"
+        description: (
+          <span
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Failed to add wine to cellar
+          </span>
+        ),
+        duration: 2000,
+        className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
       });
     } finally {
       setIsAdding(false);

@@ -60,9 +60,32 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       } catch (error) {
         console.error('Failed to initialize audio context:', error);
         toast({
-          title: "Audio Error",
-          description: "Failed to initialize audio system",
-          variant: "destructive",
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Failed to initialize audio system
+            </span>
+          ),
+          duration: 2000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
         });
         return;
       }
@@ -80,9 +103,32 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       console.log('Speech recognition not supported');
       toast({
-        title: "Speech Recognition Not Supported",
-        description: "Your browser doesn't support speech recognition",
-        variant: "destructive",
+        description: (
+          <span
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Speech recognition not supported
+          </span>
+        ),
+        duration: 2000,
+        className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
       });
       return;
     }
