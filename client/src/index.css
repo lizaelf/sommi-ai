@@ -152,23 +152,6 @@
     background-image: none !important;
   }
 
-  /* Gradient animation for focused inputs */
-  input[type=text]:focus, input[type=email]:focus, input[type=tel]:focus, textarea:focus {
-    outline: none !important;
-    border: 3px solid transparent !important;
-    background-image: linear-gradient(white, white), linear-gradient(315deg, rgb(236, 160, 255), rgb(170, 178, 255), rgb(132, 255, 201)) !important;
-    background-origin: border-box !important;
-    background-clip: padding-box, border-box !important;
-    animation: bg-hue 2s linear infinite !important;
-  }
-
-  /* Keyframes for the gradient animation */
-  @keyframes bg-hue {
-    100% {
-      filter: hue-rotate(360deg);
-    }
-  }
-
   /* Header buttons without global button styling */
   .header-button {
     all: unset !important;
@@ -279,4 +262,69 @@
   30% {
     transform: translateY(-4px);
   }
+}
+
+@keyframes first {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes second {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes third {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fourth {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes fifth {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-first {
+  animation: first 20s linear infinite;
+}
+
+.animate-second {
+  animation: second 30s linear infinite;
+}
+
+.animate-third {
+  animation: third 40s linear infinite;
+}
+
+.animate-fourth {
+  animation: fourth 50s linear infinite;
+}
+
+.animate-fifth {
+  animation: fifth 60s linear infinite;
 }
