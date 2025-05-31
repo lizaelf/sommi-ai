@@ -152,7 +152,12 @@ export default function WineEdit() {
       localStorage.setItem('admin-wines', JSON.stringify(crmWines));
 
       // Also save to individual wine data storage for backwards compatibility
-      saveEditableWineData(wine);
+      try {
+        saveEditableWineData(wine);
+      } catch (saveError) {
+        console.warn('Failed to save to individual wine data storage:', saveError);
+        // Continue with success - CRM data was saved successfully
+      }
 
       toast({
         description: (
