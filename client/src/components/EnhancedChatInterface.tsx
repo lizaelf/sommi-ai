@@ -1003,7 +1003,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                     >
                       <span style={{ fontSize: "24px" }}>🧀</span>
-                      <span style={{ color: "white", ...typography.bodyPlus1 }}>
+                      <span style={{ color: "white", ...typography.body }}>
                         Cheese Pairings
                       </span>
                     </div>
@@ -1089,7 +1089,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                     >
                       <span style={{ fontSize: "24px" }}>🥗</span>
-                      <span style={{ color: "white", ...typography.bodyPlus1 }}>
+                      <span style={{ color: "white", ...typography.body }}>
                         Vegetarian Options
                       </span>
                     </div>
@@ -1183,7 +1183,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                     >
                       <span style={{ fontSize: "24px", color: "red" }}>❌</span>
-                      <span style={{ color: "white", ...typography.bodyPlus1 }}>
+                      <span style={{ color: "white", ...typography.body }}>
                         Avoid pairing with
                       </span>
                     </div>

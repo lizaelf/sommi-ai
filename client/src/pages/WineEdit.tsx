@@ -81,7 +81,7 @@ export default function WineEdit() {
       return {
         id: wineId,
         name: "",
-        year: 0,
+        year: new Date().getFullYear(),
         bottles: 0,
         image: "",
         ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
@@ -612,7 +612,7 @@ export default function WineEdit() {
               onChange={(e) => updateWine("name", e.target.value)}
               className="contact-form-input"
               style={{
-                ...typography.bodyPlus1,
+                ...typography.body,
                 color: "white !important",
                 height: "56px",
                 width: "100%",
@@ -641,7 +641,7 @@ export default function WineEdit() {
               onChange={(e) => updateWine("year", parseInt(e.target.value) || 0)}
               className="contact-form-input"
               style={{
-                ...typography.bodyPlus1,
+                ...typography.body,
                 color: "white !important",
                 height: "56px",
                 width: "100%",
