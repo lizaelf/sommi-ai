@@ -5,34 +5,17 @@ import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { WINE_CONFIG } from "@shared/wineConfig";
-import {
-  getCurrentWineConfig,
-  getEditableWineData,
-  saveEditableWineData,
-} from "@/utils/wineDataManager";
+import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
+import { getCurrentWineConfig } from "@/utils/wineDataManager";
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 import placeholderImage from "@assets/Placeholder.png";
 
-interface WineCardData {
-  id: number;
-  name: string;
-  year: number;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  buyAgainLink: string;
-  qrCode: string;
-  qrLink: string;
-}
+// Use unified wine data interface
+type WineCardData = UnifiedWineData;
 
 const getCRMWines = (): WineCardData[] => {
-  return JSON.parse(localStorage.getItem('admin-wines') || '[]');
+  return DataSyncManager.getUnifiedWineData();
 };
 
 export default function WineEdit() {

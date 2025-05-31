@@ -97,12 +97,110 @@ export default function AdminCRM() {
 
 
   const deleteWineCard = (cardId: number) => {
+    DataSyncManager.removeWine(cardId);
     setWineCards((prev) => prev.filter((card) => card.id !== cardId));
 
     toast({
       title: "Wine Removed",
       description: "Wine has been removed from your collection.",
     });
+  };
+
+  // Data synchronization functions
+  const handleExportData = () => {
+    try {
+      const exportData = DataSyncManager.exportData();
+      const blob = new Blob([exportData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `wine-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Data Exported",
+        description: "Wine data has been exported successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export wine data.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleImportData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonData = e.target?.result as string;
+        const result = DataSyncManager.importData(jsonData);
+        
+        if (result.success) {
+          // Refresh the wine cards display
+          const updatedWines = DataSyncManager.getUnifiedWineData();
+          setWineCards(updatedWines);
+          
+          toast({
+            title: "Data Imported",
+            description: result.message,
+          });
+        } else {
+          toast({
+            title: "Import Failed",
+            description: result.message,
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Import Failed",
+          description: "Invalid file format or corrupted data.",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    reader.readAsText(file);
+    // Reset the input
+    if (event.target) event.target.value = '';
+  };
+
+  const handleSyncCheck = async () => {
+    try {
+      const result = await DataSyncManager.syncWithDeployedEnvironment();
+      
+      if (result.success) {
+        // Refresh the wine cards display
+        const updatedWines = DataSyncManager.getUnifiedWineData();
+        setWineCards(updatedWines);
+        
+        toast({
+          title: "Sync Complete",
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: "Sync Warning",
+          description: result.message,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Sync Failed",
+        description: "Failed to check synchronization status.",
+        variant: "destructive"
+      });
+    }
   };
 
 
@@ -116,6 +214,8 @@ export default function AdminCRM() {
           {isEditMode && (
             <Button 
               onClick={() => {
+                // Save all wine data to unified system
+                DataSyncManager.saveUnifiedWineData(wineCards);
                 setIsEditMode(false);
                 toast({
                   title: "Changes Saved",
@@ -126,6 +226,21 @@ export default function AdminCRM() {
               Save All
             </Button>
           )}
+          <div
+            onClick={() => setShowDataSync(!showDataSync)}
+            style={{
+              width: '40px',
+              height: '40px',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title="Data Sync"
+          >
+            <RefreshCw size={20} />
+          </div>
           <div
             onClick={() => setShowSearch(!showSearch)}
             style={{
@@ -209,6 +324,109 @@ export default function AdminCRM() {
                 }}
               >
                 <X size={16} />
+              </div>
+            </div>
+          )}
+
+          {/* Data Sync Interface */}
+          {showDataSync && (
+            <div style={{
+              padding: "16px",
+              backgroundColor: "#191919",
+              margin: "16px",
+              borderRadius: "16px"
+            }}>
+              <div style={{
+                ...typography.body1R,
+                color: "white",
+                marginBottom: "16px",
+                fontSize: "18px",
+                fontWeight: "600"
+              }}>
+                Data Synchronization
+              </div>
+              
+              <div style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.7)",
+                marginBottom: "16px",
+                fontSize: "14px"
+              }}>
+                Sync wine inventory data between Replit development and deployed environments
+              </div>
+              
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px"
+              }}>
+                <Button
+                  onClick={handleExportData}
+                  style={{
+                    backgroundColor: "#007AFF",
+                    color: "white",
+                    height: "48px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px"
+                  }}
+                >
+                  <Download size={16} />
+                  Export Data
+                </Button>
+                
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImportData}
+                  accept=".json"
+                  style={{ display: 'none' }}
+                />
+                
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    backgroundColor: "#34C759",
+                    color: "white",
+                    height: "48px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px"
+                  }}
+                >
+                  <Upload size={16} />
+                  Import Data
+                </Button>
+                
+                <Button
+                  onClick={handleSyncCheck}
+                  style={{
+                    backgroundColor: "#FF9500",
+                    color: "white",
+                    height: "48px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px"
+                  }}
+                >
+                  <RefreshCw size={16} />
+                  Check Sync Status
+                </Button>
+              </div>
+              
+              <div style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.5)",
+                marginTop: "16px",
+                fontSize: "12px",
+                lineHeight: "1.4"
+              }}>
+                • Export: Download current wine data to share between environments<br/>
+                • Import: Upload wine data from another environment<br/>
+                • Check Sync: Verify data consistency and integrity
               </div>
             </div>
           )}
