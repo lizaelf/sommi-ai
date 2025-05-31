@@ -138,8 +138,8 @@ export default function ConversationDialog() {
 
       {/* Conversation Content */}
       <div style={{
-        padding: '20px',
-        paddingTop: '90px',
+        padding: '16px',
+        paddingTop: '64px',
         paddingBottom: '40px'
       }}>
         <div style={{
@@ -218,8 +218,7 @@ export default function ConversationDialog() {
                         style={{
                           backgroundColor: message.role === 'user' ? '#DBDBDB' : 'transparent',
                           borderRadius: '16px',
-                          paddingTop: '16px',
-                          paddingBottom: '16px',
+                          padding: '16px',
                           width: message.role === 'user' ? 'fit-content' : '100%',
                           maxWidth: message.role === 'user' ? '80%' : '100%',
                           boxSizing: 'border-box'

@@ -1215,6 +1215,7 @@ const Cellar = () => {
               right: "0",
               backgroundColor: "#1C1C1C",
               padding: "16px",
+              paddingBottom: "calc(16px + env(safe-area-inset-bottom))",
               zIndex: 50,
               borderTop: "1px solid rgba(255, 255, 255, 0.2)",
             }}

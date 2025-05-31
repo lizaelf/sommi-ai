@@ -887,6 +887,7 @@ export default function WineEdit() {
           background: "#0A0A0A",
           borderTop: "1px solid rgba(255, 255, 255, 0.1)",
           padding: "16px 20px",
+          paddingBottom: "calc(16px + env(safe-area-inset-bottom))",
           zIndex: 1000,
           boxSizing: "border-box"
         }}
