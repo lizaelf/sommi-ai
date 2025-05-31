@@ -417,7 +417,7 @@ export default function AdminCRM() {
                 <div key={card.id}>
                   <div
                     style={{
-                      padding: "16px",
+                      padding: "0",
                       position: "relative",
                       cursor: "pointer",
                     }}
