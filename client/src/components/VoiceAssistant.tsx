@@ -97,6 +97,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         setIsListening(true);
         setShowBottomSheet(true);
         console.log("Voice recognition started");
+        
+        // Dispatch mic-status event for animation
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'listening' }
+        }));
       };
       
       recognition.onresult = (event: any) => {
@@ -104,12 +109,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("Final transcript:", transcript);
         
         setIsListening(false);
+        
+        // Dispatch processing event for animation
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'processing' }
+        }));
+        
         onSendMessage(transcript);
       };
       
       recognition.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
+        
+        // Dispatch stopped event for animation on error
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'stopped' }
+        }));
         
         if (event.error !== 'aborted') {
           toast({
@@ -122,6 +138,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       recognition.onend = () => {
         setIsListening(false);
+        
+        // Dispatch stopped event for animation
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'stopped' }
+        }));
       };
       
       recognitionRef.current = recognition;
