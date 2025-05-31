@@ -213,23 +213,19 @@ export default function ConversationDialog() {
                         style={{
                           backgroundColor: message.role === 'user' ? '#DBDBDB' : 'transparent',
                           borderRadius: '16px',
-                          paddingTop: '16px',
-                          paddingBottom: '16px',
-                          paddingLeft: '16px',
-                          paddingRight: '16px',
+                          padding: '16px',
                           width: message.role === 'user' ? 'fit-content' : '100%',
                           maxWidth: message.role === 'user' ? '80%' : '100%',
-                          display: 'flex',
-                          alignItems: 'flex-start'
+                          boxSizing: 'border-box'
                         }}
                         data-role={message.role}
                       >
                         <div style={{
                           ...typography.body,
+                          lineHeight: '1.25',
                           color: message.role === 'user' ? '#000000' : '#DBDBDB',
                           margin: 0,
-                          padding: 0,
-                          width: '100%'
+                          padding: 0
                         }}>
                           {formatContent(message.content)}
                         </div>
