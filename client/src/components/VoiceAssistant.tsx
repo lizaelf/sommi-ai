@@ -17,7 +17,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
-  // Handle audio status changes
+  // Handle audio status changes and page visibility
   useEffect(() => {
     const handleAudioStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
@@ -29,10 +29,44 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
     };
 
+    // Stop microphone when user leaves the page/tab
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("Page hidden - stopping microphone access");
+        stopListening();
+        setShowBottomSheet(false);
+        
+        // Stop any ongoing audio playback
+        if ((window as any).currentOpenAIAudio) {
+          (window as any).currentOpenAIAudio.pause();
+          (window as any).currentOpenAIAudio = null;
+        }
+        
+        // Cancel speech synthesis
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        
+        setIsResponding(false);
+        setIsLoadingAudio(false);
+      }
+    };
+
+    // Stop microphone when user navigates away
+    const handleBeforeUnload = () => {
+      console.log("Page unloading - stopping microphone access");
+      stopListening();
+    };
+
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
     
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();

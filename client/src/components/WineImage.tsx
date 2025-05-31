@@ -129,6 +129,9 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
             } 
           });
 
+          // Store stream for cleanup
+          (window as any).currentMicrophoneStream = stream;
+
           source = audioContext.createMediaStreamSource(stream);
           if (analyser) {
             source.connect(analyser);
@@ -141,11 +144,51 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
       }
     };
 
+    // Handle page visibility changes to stop microphone
+    const handleVisibilityChange = () => {
+      if (document.hidden && source) {
+        console.log("Page hidden - stopping microphone stream");
+        
+        // Stop microphone stream
+        const stream = (window as any).currentMicrophoneStream;
+        if (stream) {
+          stream.getTracks().forEach((track: MediaStreamTrack) => {
+            track.stop();
+            console.log("Stopped microphone track");
+          });
+          (window as any).currentMicrophoneStream = null;
+        }
+        
+        // Disconnect source
+        try {
+          source.disconnect();
+        } catch (e) {
+          // Ignore disconnection errors
+        }
+        source = null;
+      }
+    };
+
     setupMicrophone();
 
+    // Add visibility change listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      // Remove visibility change listener
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      
       // Cleanup when not listening
       if (!isListening && source) {
+        // Stop microphone stream
+        const stream = (window as any).currentMicrophoneStream;
+        if (stream) {
+          stream.getTracks().forEach((track: MediaStreamTrack) => {
+            track.stop();
+          });
+          (window as any).currentMicrophoneStream = null;
+        }
+        
         try {
           source.disconnect();
         } catch (e) {
