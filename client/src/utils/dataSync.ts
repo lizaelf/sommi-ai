@@ -37,7 +37,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     },
     buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
     qrCode: "QR_001",
-    qrLink: "https://ridgewine.com/qr/001"
+    qrLink: "/scanned?wine=1"
   },
   {
     id: 2,
@@ -53,7 +53,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     },
     buyAgainLink: "https://ridge.com/product/monte-bello",
     qrCode: "QR_002",
-    qrLink: "https://ridge.com/wines/monte-bello"
+    qrLink: "/scanned?wine=2"
   },
   {
     id: 3,
@@ -69,13 +69,13 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     },
     buyAgainLink: "https://www.ridgewine.com/wines/2020-geyserville/",
     qrCode: "QR_003",
-    qrLink: "https://ridgewine.com/qr/003"
+    qrLink: "/scanned?wine=3"
   }
 ];
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.3.0';
+const CURRENT_VERSION = '1.4.0';
 
 export class DataSyncManager {
   
