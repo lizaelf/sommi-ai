@@ -1,15 +1,24 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useLocation } from 'wouter';
 
 interface SimpleQRCodeProps {
   value: string;
   size?: number;
+  wineId?: number;
 }
 
-export function SimpleQRCode({ value, size = 80 }: SimpleQRCodeProps) {
+export function SimpleQRCode({ value, size = 80, wineId }: SimpleQRCodeProps) {
+  const [, setLocation] = useLocation();
+
   const handleClick = () => {
-    // Navigate to the QR code URL
-    window.open(value, '_blank');
+    if (wineId) {
+      // Navigate to the Scanned wine page with the specific wine ID
+      setLocation(`/scanned?wine=${wineId}`);
+    } else {
+      // Fallback to external URL
+      window.open(value, '_blank');
+    }
   };
 
   return (

@@ -552,6 +552,7 @@ export default function WineEdit() {
               <SimpleQRCode
                 value={wine.qrLink && wine.qrLink.includes('/wine-details/') ? wine.qrLink : `${window.location.origin}/wine-details/${wine.id}`}
                 size={120}
+                wineId={wine.id}
               />
             </div>
             <div

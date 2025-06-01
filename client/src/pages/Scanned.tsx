@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
+import { DataSyncManager } from '@/utils/dataSync';
 
 interface SelectedWine {
   id: number;
@@ -21,10 +22,24 @@ interface SelectedWine {
 
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
+  const [location] = useLocation();
   
-  // Load selected wine data immediately during render to prevent glitches
+  // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
     try {
+      // Check for wine ID in URL parameters
+      const urlParams = new URLSearchParams(location.split('?')[1] || '');
+      const wineId = urlParams.get('wine');
+      
+      if (wineId) {
+        // Get wine data from DataSyncManager using the ID from URL
+        const wine = DataSyncManager.getWineById(parseInt(wineId));
+        if (wine) {
+          return wine;
+        }
+      }
+      
+      // Fallback to localStorage for backwards compatibility
       const storedWine = localStorage.getItem('selectedWine');
       if (storedWine) {
         const wine = JSON.parse(storedWine);
