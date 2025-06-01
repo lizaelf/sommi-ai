@@ -123,6 +123,8 @@ export default function WineDetails() {
                   height: "170px",
                   width: "auto",
                 }}
+                onLoad={() => console.log("Wine image loaded successfully:", wine.image)}
+                onError={() => console.log("Wine image failed to load:", wine.image)}
               />
             ) : (
               <div style={{ height: "170px", width: "auto" }}>Loading...</div>
