@@ -150,47 +150,6 @@ export default function Scanned() {
       </div>
       
       <EnhancedChatInterface selectedWine={selectedWine} />
-      
-      {/* Fixed Close Button */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: "0",
-          left: "0",
-          right: "0",
-          padding: "16px",
-          paddingBottom: "calc(16px + env(safe-area-inset-bottom))",
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-          zIndex: 1000,
-        }}
-      >
-        <Link to="/admin-crm">
-          <button
-            style={{
-              width: "100%",
-              height: "56px",
-              backgroundColor: "rgba(255, 255, 255, 0.12)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: "24px",
-              color: "white",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: "500",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s ease",
-            }}
-            className="hover:bg-white/20 active:scale-95"
-          >
-            Close
-          </button>
-        </Link>
-      </div>
     </div>
   );
 }
