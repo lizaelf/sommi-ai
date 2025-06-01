@@ -5,6 +5,7 @@ import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
+import { DataSyncManager } from '@/utils/dataSync';
 import wineBottlePath1 from "@assets/Product Image.png";
 import wineBottlePath2 from "@assets/image-2.png";
 
@@ -30,11 +31,13 @@ export default function WineDetails() {
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
-  // Load wine data immediately during render to prevent glitches
+  // Load wine data using unified DataSyncManager to ensure consistency
   const loadWineData = () => {
     try {
-      const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-      return crmWines.find((w: Wine) => w.id === wineId) || null;
+      console.log(`WineDetails: Loading wine data for ID ${wineId}`);
+      const wine = DataSyncManager.getWineById(wineId);
+      console.log(`WineDetails: Found wine:`, wine);
+      return wine || null;
     } catch (error) {
       console.error('Error loading wine data:', error);
       return null;
