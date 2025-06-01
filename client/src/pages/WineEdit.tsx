@@ -504,6 +504,31 @@ export default function WineEdit() {
                 id="image-upload"
               />
             </label>
+            
+            {/* Reupload button - only show when image exists */}
+            {wine.image && (
+              <div
+                onClick={() => document.getElementById('image-upload')?.click()}
+                style={{
+                  background: "rgba(255, 255, 255, 0.12)",
+                  borderRadius: "24px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  ...typography.body,
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "400",
+                  width: "100%",
+                  height: "40px",
+                  marginTop: "8px"
+                }}
+                className="hover:bg-white/8 transition-colors"
+              >
+                Reupload
+              </div>
+            )}
           </div>
 
           {/* QR Code */}
