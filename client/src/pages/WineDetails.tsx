@@ -132,7 +132,13 @@ export default function WineDetails() {
 
         {/* Main Content Area */}
         <div>
-          <EnhancedChatInterface showBuyButton={true} />
+          <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
+            id: wine.id,
+            name: wine.name,
+            image: wine.image,
+            bottles: wine.bottles,
+            ratings: wine.ratings
+          } : null} />
         </div>
       </div>
     </div>
