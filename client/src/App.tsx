@@ -18,6 +18,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Scanned} />
+      <Route path="/scanned" component={Scanned} />
       <Route path="/cellar" component={Cellar} />
       <Route path="/home-global" component={HomeGlobal} />
       <Route path="/wine/conversation" component={ConversationDialog} />
