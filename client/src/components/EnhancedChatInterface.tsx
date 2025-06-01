@@ -518,6 +518,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       const systemPrompt =
         "You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses very concise and to the point. Aim for 2-3 sentences maximum unless specifically asked for more detail.";
 
+      // Debug log the wine data being sent
+      console.log("Sending wine data to API:", currentWine);
+      
       // Make the API request with optimization flags
       const response = await fetch("/api/chat", {
         method: "POST",
