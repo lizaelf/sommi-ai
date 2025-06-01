@@ -33,8 +33,10 @@ export default function Scanned() {
       const wineId = urlParams.get('wine');
       
       if (wineId) {
+        console.log('URL contains wine ID:', wineId);
         // Get wine data from DataSyncManager using the ID from URL
         const wine = DataSyncManager.getWineById(parseInt(wineId));
+        console.log('DataSyncManager returned wine:', wine);
         if (wine) {
           return wine;
         }
