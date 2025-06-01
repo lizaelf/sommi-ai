@@ -141,6 +141,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     return localStorage.getItem("hasSharedContact") === "true";
   });
 
+  // State to control showing chat input interface instead of contact form
+  const [showChatInput, setShowChatInput] = useState(false);
+
   // State for contact bottom sheet - using same structure as Cellar page
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [animationState, setAnimationState] = useState<
@@ -1432,16 +1435,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             {/* Ask more button */}
                             <button
                               onClick={() => {
-                                // Focus on the chat input to encourage user to ask more questions
-                                const chatInput = document.querySelector('input[placeholder*="Ask"], textarea[placeholder*="Ask"]') as HTMLElement;
-                                if (chatInput) {
-                                  chatInput.focus();
-                                }
-                                // Scroll to the chat input area
-                                const chatContainer = document.getElementById('conversation');
-                                if (chatContainer) {
-                                  chatContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                                }
+                                setShowChatInput(true);
                               }}
                               style={{
                                 backgroundColor: "rgba(255, 255, 255, 0.08)",
@@ -1761,7 +1755,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             }}
           >
             <div className="max-w-3xl mx-auto">
-              {showBuyButton ? (
+              {showBuyButton && !showChatInput ? (
                 // Show Buy Again Button for WineDetails page
                 <button
                   onClick={() => {
