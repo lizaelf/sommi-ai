@@ -24,6 +24,9 @@ interface Wine {
   buyAgainLink?: string;
   qrCode?: string;
   qrLink?: string;
+  location?: string;
+  description?: string;
+  foodPairing?: string[];
 }
 
 export default function WineDetails() {
@@ -131,6 +134,102 @@ export default function WineDetails() {
             )}
           </div>
         </div>
+
+        {/* Wine Details Section */}
+        {wine && (
+          <div className="px-6 pb-6 space-y-4">
+            {/* Location */}
+            {wine.location && (
+              <div>
+                <h3 style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#CECECE",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px"
+                }}>
+                  LOCATION
+                </h3>
+                <p style={{
+                  fontFamily: "Lora, serif",
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                  color: "white",
+                  margin: 0
+                }}>
+                  {wine.location}
+                </p>
+              </div>
+            )}
+
+            {/* Description */}
+            {wine.description && (
+              <div>
+                <h3 style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#CECECE",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px"
+                }}>
+                  DESCRIPTION
+                </h3>
+                <p style={{
+                  fontFamily: "Lora, serif",
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                  color: "white",
+                  margin: 0
+                }}>
+                  {wine.description}
+                </p>
+              </div>
+            )}
+
+            {/* Food Pairing */}
+            {wine.foodPairing && wine.foodPairing.length > 0 && (
+              <div>
+                <h3 style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#CECECE",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px"
+                }}>
+                  FOOD PAIRING
+                </h3>
+                <div style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px"
+                }}>
+                  {wine.foodPairing.map((food: string, index: number) => (
+                    <span
+                      key={index}
+                      style={{
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "14px",
+                        padding: "6px 12px",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "16px",
+                        color: "white",
+                        border: "1px solid rgba(255, 255, 255, 0.2)"
+                      }}
+                    >
+                      {food}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Main Content Area */}
         <div>
