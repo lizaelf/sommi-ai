@@ -115,6 +115,14 @@ export class DataSyncManager {
     }
   }
   
+  // Get wine by ID
+  static getWineById(id: number): UnifiedWineData | undefined {
+    const wines = this.getUnifiedWineData();
+    const wine = wines.find(w => w.id === id);
+    console.log(`DataSyncManager: Looking for wine ID ${id}, found:`, wine ? { id: wine.id, name: wine.name } : 'not found');
+    return wine;
+  }
+
   // Reset to master data
   static resetToMasterData(): void {
     this.saveUnifiedWineData([...MASTER_WINE_DATA]);
@@ -155,11 +163,7 @@ export class DataSyncManager {
     console.log(`DataSyncManager: Wine ${wineId} removal completed`);
   }
   
-  // Get wine by ID
-  static getWineById(wineId: number): UnifiedWineData | undefined {
-    const wines = this.getUnifiedWineData();
-    return wines.find(w => w.id === wineId);
-  }
+
   
   // Export data for synchronization
   static exportData(): string {
