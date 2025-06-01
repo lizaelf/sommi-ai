@@ -7,13 +7,22 @@ interface SimpleQRCodeProps {
 }
 
 export function SimpleQRCode({ value, size = 80 }: SimpleQRCodeProps) {
+  const handleClick = () => {
+    // Navigate to the QR code URL
+    window.open(value, '_blank');
+  };
+
   return (
-    <div style={{
-      background: 'black',
-      padding: '8px',
-      borderRadius: '8px',
-      display: 'inline-block'
-    }}>
+    <div 
+      onClick={handleClick}
+      style={{
+        background: 'black',
+        padding: '8px',
+        borderRadius: '8px',
+        display: 'inline-block',
+        cursor: 'pointer'
+      }}
+    >
       <QRCodeSVG 
         value={value}
         size={size}
