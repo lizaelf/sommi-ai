@@ -1,6 +1,38 @@
 import OpenAI from "openai";
 import { generateWineSystemPrompt } from "../shared/wineConfig.js";
 
+// Generate dynamic system prompt based on wine data from CRM
+export function generateDynamicWineSystemPrompt(wineData: any): string {
+  const wineName = wineData.name || "Unknown Wine";
+  const wineYear = wineData.year || "Unknown Year";
+  const ratings = wineData.ratings || {};
+  
+  return `You are a wine expert specializing EXCLUSIVELY in ${wineName} (${wineYear}).
+
+CRITICAL: You MUST ONLY discuss ${wineName} (${wineYear}). NEVER discuss generic wines or any other wine. Every response must be specifically about ${wineName} (${wineYear}).
+
+When users ask about "this wine" or wine characteristics, they are asking specifically about ${wineName} (${wineYear}).
+
+SPECIFIC WINE DETAILS for ${wineName} (${wineYear}):
+- Wine Name: ${wineName}
+- Vintage: ${wineYear}
+- ABV: ${ratings.abv || 'Unknown'}%
+- Ratings: ${ratings.vn ? `Vivino: ${ratings.vn}/100` : ''} ${ratings.jd ? `James Dean: ${ratings.jd}/100` : ''} ${ratings.ws ? `Wine Spectator: ${ratings.ws}/100` : ''}
+- Available Bottles: ${wineData.bottles || 'Unknown'}
+
+MANDATORY: Always mention "${wineName}" by name in your responses. Never give generic wine information.
+
+Follow these specific instructions for common queries:
+1. When asked about "Tasting notes", focus on describing the specific flavor profile of the ${wineYear} ${wineName}.
+2. When asked about "Simple recipes", provide food recipes that pair perfectly with this specific wine.
+3. When asked about "Where it's from", discuss the wine's origin and producer history.
+4. For any general questions, always answer specifically about the ${wineName} (${wineYear}).
+
+Present information in a friendly, conversational manner as if you're speaking to a friend who loves wine. Include interesting facts and stories about the wine when appropriate. If you don't know something specific about this wine, acknowledge this and provide the most relevant information you can.
+
+For tasting notes, be specific and detailed about the ${wineYear} ${wineName}. For food pairings, be creative but appropriate for this wine type.`;
+}
+
 // Using GPT-4 for high-quality responses
 const MODEL = "gpt-4";
 // Fallback model if primary model is not available
@@ -42,10 +74,10 @@ export async function checkApiStatus(): Promise<{ isValid: boolean; message: str
 }
 
 // Function to generate chat completion from OpenAI API
-export async function chatCompletion(messages: ChatMessage[]) {
+export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
   try {
-    // Generate the system prompt from centralized wine configuration
-    const wineSystemPrompt = generateWineSystemPrompt();
+    // Generate the system prompt - use dynamic wine data if provided, otherwise use default config
+    const wineSystemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
     console.log('Generated wine system prompt:', wineSystemPrompt.substring(0, 200) + '...');
     
     // Always enforce the system prompt - either replace an existing one or add it

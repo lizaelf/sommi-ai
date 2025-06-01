@@ -60,33 +60,37 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 }) => {
   const [currentWine, setCurrentWine] = useState<any>(null);
 
-  // Load current wine data from CRM
+  // Load current wine data from CRM or use selectedWine prop
   useEffect(() => {
-    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-    const wine = crmWines.find((w: any) => w.id === 1) || crmWines[0];
-    if (wine) {
-      setCurrentWine(wine);
+    if (selectedWine) {
+      setCurrentWine(selectedWine);
+    } else {
+      const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+      const wine = crmWines.find((w: any) => w.id === 1) || crmWines[0];
+      if (wine) {
+        setCurrentWine(wine);
+      }
     }
-  }, []);
-  // Get wine-specific content based on selected wine
+  }, [selectedWine]);
+  // Get wine-specific content based on current wine
   const getWineHistory = () => {
-    if (selectedWine && selectedWine.id === 2) {
+    if (currentWine && currentWine.id === 2) {
       return 'Ridge Vineyards\' Monte Bello, first produced in 1962, represents the pinnacle of California Cabernet Sauvignon craftsmanship. Located in the Santa Cruz Mountains at elevations up to 2600 feet, this historic vineyard was acquired by Ridge in 1959. The vineyard\'s unique terroir, with its limestone soils and cool mountain climate, produces Cabernet Sauvignon of exceptional complexity and aging potential. Ridge\'s traditional winemaking approach, emphasizing natural fermentation and minimal intervention, allows the true character of this legendary mountain vineyard to shine through.';
     }
     return WINE_CONFIG.history;
   };
 
   const getWineName = () => {
-    if (selectedWine && selectedWine.id === 2) {
-      return selectedWine.name;
+    if (currentWine) {
+      return currentWine.name;
     }
     return getWineDisplayName();
   };
 
   const getFoodPairingContent = () => {
-    if (selectedWine && selectedWine.id === 2) {
+    if (currentWine && currentWine.id === 2) {
       return {
-        description: `${selectedWine.name}'s bold structure and powerful tannins make it perfect for hearty meat dishes`,
+        description: `${currentWine.name}'s bold structure and powerful tannins make it perfect for hearty meat dishes`,
         dishes: [
           "Grilled ribeye steak with herbs",
           "Braised beef brisket",
