@@ -531,6 +531,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             { role: "user", content },
           ],
           conversationId: currentConversationId,
+          wineData: currentWine, // Include wine data from CRM
           optimize_for_speed: true, // Additional flag to optimize for speed
         }),
       });

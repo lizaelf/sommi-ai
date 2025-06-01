@@ -58,6 +58,18 @@ export const chatCompletionRequestSchema = z.object({
     })
   ),
   conversationId: z.number().optional(),
+  wineData: z.object({
+    id: z.number(),
+    name: z.string(),
+    year: z.number().optional(),
+    bottles: z.number().optional(),
+    ratings: z.object({
+      vn: z.number().optional(),
+      jd: z.number().optional(),
+      ws: z.number().optional(),
+      abv: z.number().optional(),
+    }).optional(),
+  }).optional(),
 });
 
 export type ChatCompletionRequest = z.infer<typeof chatCompletionRequestSchema>;

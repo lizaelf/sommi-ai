@@ -157,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       validatedData = chatCompletionRequestSchema.parse(req.body);
       
       // Get messages from request
-      const { messages, conversationId } = validatedData;
+      const { messages, conversationId, wineData } = validatedData;
       
       // Check if conversation exists
       if (conversationId) {
@@ -195,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Call OpenAI API
-      const response = await chatCompletion(allMessages);
+      const response = await chatCompletion(allMessages, wineData);
       
       // Save message to storage if conversation exists
       if (conversationId) {
