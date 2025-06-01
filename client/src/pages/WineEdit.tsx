@@ -416,7 +416,7 @@ export default function WineEdit() {
               htmlFor="image-upload"
               style={{
                 width: "100%",
-                height: "200px",
+                height: "150px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -505,7 +505,7 @@ export default function WineEdit() {
               />
             </label>
             
-            {/* Reupload button - only show when image exists */}
+            {/* Replace button - only show when image exists */}
             {wine.image && (
               <div
                 onClick={() => document.getElementById('image-upload')?.click()}
@@ -526,7 +526,7 @@ export default function WineEdit() {
                 }}
                 className="hover:bg-white/8 transition-colors"
               >
-                Reupload
+                Replace
               </div>
             )}
           </div>
