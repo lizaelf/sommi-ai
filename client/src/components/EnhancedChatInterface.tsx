@@ -249,6 +249,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         localStorage.setItem("hasSharedContact", "true");
         setHasSharedContact(true);
         handleCloseContactSheet();
+        
+        // Save the scanned wine data and navigate to review page
+        if (currentWine) {
+          localStorage.setItem('selectedWine', JSON.stringify(currentWine));
+          setLocation('/');
+        }
 
         // Show success toast notification
         toast({
