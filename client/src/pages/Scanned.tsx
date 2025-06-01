@@ -57,7 +57,9 @@ export default function Scanned() {
   
   // Load wine data when component mounts or location changes
   useEffect(() => {
+    console.log('Scanned page location changed:', location);
     const wine = loadSelectedWine();
+    console.log('Loaded wine in Scanned page:', wine);
     setSelectedWine(wine);
   }, [location]);
   
