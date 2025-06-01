@@ -98,7 +98,10 @@ export default function WineDetails() {
               textDecoration: 'none !important',
               outline: 'none !important',
               boxShadow: 'none !important',
-              backgroundImage: 'none !important'
+              backgroundImage: 'none !important',
+              borderStyle: 'none !important',
+              borderWidth: '0 !important',
+              borderColor: 'transparent !important'
             }}
           >
             {wine ? `${wine.year} ${wine.name}` : getWineDisplayName()}
