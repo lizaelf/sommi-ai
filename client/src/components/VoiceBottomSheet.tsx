@@ -325,7 +325,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     ) : (
                       <>
                         <span style={{ fontSize: '18px' }}>🎧</span>
-                        Listen Response
+                        Unmute
                       </>
                     )}
                   </button>
