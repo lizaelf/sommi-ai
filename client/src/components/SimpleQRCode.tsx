@@ -9,7 +9,7 @@ interface SimpleQRCodeProps {
 export function SimpleQRCode({ value, size = 80 }: SimpleQRCodeProps) {
   return (
     <div style={{
-      background: 'white',
+      background: 'black',
       padding: '8px',
       borderRadius: '8px',
       display: 'inline-block'
@@ -19,6 +19,8 @@ export function SimpleQRCode({ value, size = 80 }: SimpleQRCodeProps) {
         size={size}
         level="M"
         includeMargin={false}
+        fgColor="#FFFFFF"
+        bgColor="#000000"
       />
     </div>
   );
