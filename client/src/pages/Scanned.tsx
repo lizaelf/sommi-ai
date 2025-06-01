@@ -22,6 +22,7 @@ interface SelectedWine {
 
 export default function Scanned() {
   const [scrolled, setScrolled] = useState(false);
+  const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
   const [location] = useLocation();
   
   // Load selected wine data from URL parameter or localStorage
@@ -54,7 +55,11 @@ export default function Scanned() {
     }
   };
   
-  const selectedWine = loadSelectedWine();
+  // Load wine data when component mounts or location changes
+  useEffect(() => {
+    const wine = loadSelectedWine();
+    setSelectedWine(wine);
+  }, [location]);
   
   // Add scroll listener
   useEffect(() => {
