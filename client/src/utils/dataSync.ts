@@ -54,12 +54,28 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     buyAgainLink: "https://ridge.com/product/monte-bello",
     qrCode: "QR_002",
     qrLink: "https://ridge.com/wines/monte-bello"
+  },
+  {
+    id: 3,
+    name: "Geyserville Zinfandel Blend",
+    year: 2020,
+    bottles: 4,
+    image: wineBottleImage,
+    ratings: {
+      vn: 92,
+      jd: 90,
+      ws: 91,
+      abv: 14.1
+    },
+    buyAgainLink: "https://www.ridgewine.com/wines/2020-geyserville/",
+    qrCode: "QR_003",
+    qrLink: "https://ridgewine.com/qr/003"
   }
 ];
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.2.0';
+const CURRENT_VERSION = '1.3.0';
 
 export class DataSyncManager {
   
