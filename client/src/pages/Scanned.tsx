@@ -29,19 +29,12 @@ export default function Scanned() {
   const loadSelectedWine = () => {
     try {
       // Check for wine ID in URL parameters
-      console.log('Current location:', location);
-      console.log('Window location:', window.location.href);
       const urlParams = new URLSearchParams(window.location.search);
       const wineId = urlParams.get('wine');
-      console.log('Parsed wine ID from URL:', wineId);
       
       if (wineId) {
-        console.log('URL contains wine ID:', wineId);
-        console.log('Wine ID requested:', wineId);
-        console.log('All wines in DataSyncManager:', DataSyncManager.getUnifiedWineData());
         // Get wine data from DataSyncManager using the ID from URL
         const wine = DataSyncManager.getWineById(parseInt(wineId));
-        console.log('DataSyncManager returned wine:', wine);
         if (wine) {
           return wine;
         }
@@ -64,9 +57,7 @@ export default function Scanned() {
   
   // Load wine data when component mounts or location changes
   useEffect(() => {
-    console.log('Scanned page location changed:', location);
     const wine = loadSelectedWine();
-    console.log('Loaded wine in Scanned page:', wine);
     setSelectedWine(wine);
   }, [location]);
   

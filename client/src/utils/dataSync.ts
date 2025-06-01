@@ -19,6 +19,18 @@ export interface UnifiedWineData {
   buyAgainLink: string;
   qrCode: string;
   qrLink: string;
+  location?: string;
+  description?: string;
+  foodPairing?: string[];
+  conversationHistory?: Array<{
+    id: string;
+    timestamp: number;
+    messages: Array<{
+      role: 'user' | 'assistant';
+      content: string;
+      timestamp: number;
+    }>;
+  }>;
 }
 
 // Master wine data - this is the canonical source of truth
@@ -37,7 +49,11 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     },
     buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
     qrCode: "QR_001",
-    qrLink: "/scanned?wine=1"
+    qrLink: "/scanned?wine=1",
+    location: "Dry Creek Valley, Sonoma County, California",
+    description: "A bold and complex Zinfandel blend that showcases the distinctive terroir of Lytton Springs vineyard. Known for its rich berry flavors, spice complexity, and structured tannins.",
+    foodPairing: ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"],
+    conversationHistory: []
   },
   {
     id: 2,
@@ -53,7 +69,11 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     },
     buyAgainLink: "https://ridge.com/product/monte-bello",
     qrCode: "QR_002",
-    qrLink: "/scanned?wine=2"
+    qrLink: "/scanned?wine=2",
+    location: "Santa Cruz Mountains, California",
+    description: "An iconic Bordeaux-style blend from Ridge's flagship Monte Bello vineyard. This wine represents the pinnacle of California Cabernet Sauvignon with exceptional aging potential.",
+    foodPairing: ["Prime rib", "Filet mignon", "Roasted duck", "Mushroom risotto"],
+    conversationHistory: []
   },
   {
     id: 3,
@@ -69,13 +89,17 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     },
     buyAgainLink: "https://www.ridgewine.com/wines/2020-geyserville/",
     qrCode: "QR_003",
-    qrLink: "/scanned?wine=3"
+    qrLink: "/scanned?wine=3",
+    location: "Geyserville, Sonoma County, California",
+    description: "A sophisticated blend of Zinfandel, Carignane, and Petite Sirah from historic vineyards. This wine embodies the character of Geyserville's unique microclimate and volcanic soils.",
+    foodPairing: ["Braised short ribs", "Wild boar", "Grilled portobello", "Sharp blue cheese"],
+    conversationHistory: []
   }
 ];
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.4.0';
+const CURRENT_VERSION = '1.5.0';
 
 export class DataSyncManager {
   
@@ -177,6 +201,58 @@ export class DataSyncManager {
     
     this.saveUnifiedWineData(filteredWines);
     console.log(`DataSyncManager: Wine ${wineId} removal completed`);
+  }
+  
+  // Update wine-specific metadata
+  static updateWineMetadata(wineId: number, metadata: {
+    location?: string;
+    description?: string;
+    foodPairing?: string[];
+  }): void {
+    const wines = this.getUnifiedWineData();
+    const wine = wines.find(w => w.id === wineId);
+    
+    if (wine) {
+      if (metadata.location) wine.location = metadata.location;
+      if (metadata.description) wine.description = metadata.description;
+      if (metadata.foodPairing) wine.foodPairing = metadata.foodPairing;
+      
+      this.saveUnifiedWineData(wines);
+      console.log(`Updated metadata for wine ID ${wineId}`);
+    }
+  }
+  
+  // Add conversation to wine history
+  static addConversationToWine(wineId: number, conversation: {
+    id: string;
+    messages: Array<{
+      role: 'user' | 'assistant';
+      content: string;
+      timestamp: number;
+    }>;
+  }): void {
+    const wines = this.getUnifiedWineData();
+    const wine = wines.find(w => w.id === wineId);
+    
+    if (wine) {
+      if (!wine.conversationHistory) {
+        wine.conversationHistory = [];
+      }
+      
+      wine.conversationHistory.push({
+        id: conversation.id,
+        timestamp: Date.now(),
+        messages: conversation.messages
+      });
+      
+      // Keep only the last 10 conversations to prevent excessive storage
+      if (wine.conversationHistory.length > 10) {
+        wine.conversationHistory = wine.conversationHistory.slice(-10);
+      }
+      
+      this.saveUnifiedWineData(wines);
+      console.log(`Added conversation to wine ID ${wineId} history`);
+    }
   }
   
 
