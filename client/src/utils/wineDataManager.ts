@@ -1,5 +1,5 @@
 import { WINE_CONFIG } from '@shared/wineConfig';
-import productImagePath from "@assets/Product Image.png";
+// Default images removed - only authentic uploaded images will be displayed
 
 export interface WineData {
   id: number;

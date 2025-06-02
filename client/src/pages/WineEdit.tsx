@@ -7,8 +7,7 @@ import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { WINE_CONFIG } from "@shared/wineConfig";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import { getCurrentWineConfig } from "@/utils/wineDataManager";
-import wineBottlePath1 from "@assets/Product Image.png";
-import wineBottlePath2 from "@assets/image-2.png";
+// Default images removed - only authentic uploaded images will be displayed
 import placeholderImage from "@assets/Placeholder.png";
 
 // Use unified wine data interface

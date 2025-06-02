@@ -6,8 +6,7 @@ import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { DataSyncManager } from '@/utils/dataSync';
-import wineBottlePath1 from "@assets/Product Image.png";
-import wineBottlePath2 from "@assets/image-2.png";
+// Default images removed - only authentic uploaded images will be displayed
 
 interface Wine {
   id: number;

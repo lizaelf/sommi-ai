@@ -1,8 +1,7 @@
 // Unified Wine Data Synchronization System
 // Ensures all users see identical wine inventory across all environments
 
-// Import wine bottle image that works in both environments
-import wineBottleImage from "@assets/Product Image.png";
+// No default images - only authentic uploaded images will be displayed
 
 export interface UnifiedWineData {
   id: number;

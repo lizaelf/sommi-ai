@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/use-toast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import backgroundImage from "@assets/Background.png";
-import wineBottleImage from "@assets/Product Image.png";
+// Default wine image removed - only authentic uploaded images will be displayed
 import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@assets/Logo.png";
 import lineImage from "@assets/line.png";

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import wineryLogoPath from "@assets/winary-logo.png";
-import wineBottlePath1 from "@assets/Product Image.png";
-import wineBottlePath2 from "@assets/image-2.png";
+// Default images removed - only authentic uploaded images will be displayed
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
