@@ -167,6 +167,11 @@ export default function Scanned() {
                 height: "170px",
                 width: "auto",
               }}
+              onLoad={() => console.log(`Scanned page: Wine image loaded successfully for wine ${selectedWine.id}:`, selectedWine.image?.substring(0, 50) + '...')}
+              onError={(e) => {
+                console.error(`Scanned page: Wine image failed to load for wine ${selectedWine.id}:`, selectedWine.image?.substring(0, 50) + '...');
+                console.error('Image error event:', e);
+              }}
             />
           </div>
         )}
