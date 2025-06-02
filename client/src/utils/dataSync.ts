@@ -100,7 +100,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
 const CUSTOM_IMAGES_KEY = 'custom-wine-images';
-const CURRENT_VERSION = '1.7.0';
+const CURRENT_VERSION = '1.8.0';
 
 export class DataSyncManager {
   
@@ -124,7 +124,8 @@ export class DataSyncManager {
         id: w.id, 
         name: w.name, 
         hasCustomImage: w.image?.startsWith('data:'),
-        imagePrefix: w.image?.substring(0, 30) + '...'
+        imagePrefix: w.image?.substring(0, 30) + '...',
+        imageSize: w.image?.length || 0
       })));
       
       // Check if we have any corrupted image data and fix it
