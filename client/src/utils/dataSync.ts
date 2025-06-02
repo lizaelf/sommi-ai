@@ -186,8 +186,17 @@ export class DataSyncManager {
 
   // Reset to master data
   static resetToMasterData(): void {
-    this.saveUnifiedWineData([...MASTER_WINE_DATA]);
-    console.log('Reset to master wine data');
+    const currentWines = this.getUnifiedWineData();
+    const masterWithImages = MASTER_WINE_DATA.map(masterWine => {
+      const existingWine = currentWines.find(w => w.id === masterWine.id);
+      return {
+        ...masterWine,
+        // Preserve the existing image if it exists
+        image: existingWine?.image || masterWine.image
+      };
+    });
+    this.saveUnifiedWineData(masterWithImages);
+    console.log('Reset to master wine data while preserving images');
   }
   
   // Add or update a wine
