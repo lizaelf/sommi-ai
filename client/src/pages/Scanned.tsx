@@ -34,10 +34,16 @@ export default function Scanned() {
       // Check for wine ID in URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const wineId = urlParams.get('wine');
+      console.log('URL parsing debug:', { 
+        fullURL: window.location.href, 
+        search: window.location.search, 
+        wineId: wineId 
+      });
       
       if (wineId) {
         // Get wine data from DataSyncManager using the ID from URL
         const wine = DataSyncManager.getWineById(parseInt(wineId));
+        console.log('Wine lookup result:', wine ? { id: wine.id, name: wine.name } : 'not found');
         if (wine) {
           return wine;
         }
