@@ -110,13 +110,22 @@ export class DataSyncManager {
       const stored = localStorage.getItem(STORAGE_KEY);
       const version = localStorage.getItem(SYNC_VERSION_KEY);
       
+      console.log('DataSyncManager: Loading data - stored exists:', !!stored, 'version match:', version === CURRENT_VERSION);
+      
       // If no data or version mismatch, use master data
       if (!stored || version !== CURRENT_VERSION) {
+        console.log('DataSyncManager: Resetting to master data due to version mismatch or missing data');
         this.resetToMasterData();
         return [...MASTER_WINE_DATA];
       }
       
       const wines = JSON.parse(stored) as UnifiedWineData[];
+      console.log('DataSyncManager: Loaded from storage:', wines.map(w => ({ 
+        id: w.id, 
+        name: w.name, 
+        hasCustomImage: w.image?.startsWith('data:') 
+      })));
+      
       return wines.length > 0 ? wines : [...MASTER_WINE_DATA];
     } catch (error) {
       console.error('Error loading unified wine data:', error);
