@@ -167,13 +167,17 @@ export default function Scanned() {
               style={{
                 height: "170px",
                 width: "auto",
+                display: "block"
               }}
-              onLoad={() => console.log(`Scanned page: Wine image loaded successfully for wine ${selectedWine.id}:`, selectedWine.image?.substring(0, 50) + '...')}
+              onLoad={() => {
+                console.log(`Scanned page: Image displayed for wine ${selectedWine.id} (${selectedWine.name})`);
+                console.log(`Image data hash: ${selectedWine.image?.substring(22, 50)}...`);
+              }}
               onError={(e) => {
                 console.error(`Scanned page: Wine image failed to load for wine ${selectedWine.id}:`, selectedWine.image?.substring(0, 50) + '...');
                 console.error('Image error event:', e);
               }}
-              key={`wine-image-${selectedWine.id}-${selectedWine.image?.substring(0, 20)}`}
+              key={`unique-wine-${selectedWine.id}-${selectedWine.image?.substring(22, 40)}`}
             />
           </div>
         )}
