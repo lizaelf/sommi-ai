@@ -131,7 +131,14 @@ export default function WineEdit() {
   }, [showDropdown]);
 
   const updateWine = (field: keyof WineCardData, value: any) => {
-    setWine((prev) => ({ ...prev, [field]: value }));
+    const updatedWine = { ...wine, [field]: value };
+    setWine(updatedWine);
+    
+    // Auto-save to unified system when image is updated to ensure sync
+    if (field === 'image') {
+      console.log('Auto-saving wine image to unified system:', updatedWine.id);
+      DataSyncManager.addOrUpdateWine(updatedWine);
+    }
   };
 
   const updateWineRating = (ratingType: string, value: number) => {
