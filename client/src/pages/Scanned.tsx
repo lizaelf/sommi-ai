@@ -158,8 +158,8 @@ export default function Scanned() {
           </h1>
         </div>
 
-        {/* Wine Image - only show if selectedWine exists */}
-        {selectedWine && (
+        {/* Wine Image - only show authentic uploaded images */}
+        {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') && (
           <div className="flex justify-center items-center px-4 pb-4">
             <img
               src={selectedWine.image}

@@ -455,16 +455,38 @@ export default function AdminCRM() {
                           flexShrink: 0,
                         }}
                       >
-                        <img
-                          src={card.image && card.image.trim() !== "" ? card.image : placeholderImage}
-                          alt={card.name || "Wine placeholder"}
-                          style={{
-                            maxHeight: "90px",
-                            maxWidth: "70px",
-                            width: "auto",
-                            height: "auto",
-                          }}
-                        />
+                        {card.image && card.image.trim() !== "" && card.image.startsWith('data:') ? (
+                          <img
+                            src={card.image}
+                            alt={card.name}
+                            style={{
+                              maxHeight: "90px",
+                              maxWidth: "70px",
+                              width: "auto",
+                              height: "auto",
+                            }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              maxHeight: "90px",
+                              maxWidth: "70px",
+                              width: "70px",
+                              height: "90px",
+                              backgroundColor: "rgba(255, 255, 255, 0.1)",
+                              border: "2px dashed rgba(255, 255, 255, 0.3)",
+                              borderRadius: "8px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "rgba(255, 255, 255, 0.5)",
+                              fontSize: "12px",
+                              textAlign: "center"
+                            }}
+                          >
+                            No Image
+                          </div>
+                        )}
                       </div>
 
                       {/* Essential Info */}
