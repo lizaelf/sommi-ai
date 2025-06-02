@@ -58,7 +58,7 @@ const getDefaultWines = (): WineData[] => {
       name: wineName,
       year: config.vintage,
       bottles: 6,
-      image: productImagePath,
+      image: "", // No default image - will show "No Image" until user uploads authentic image
       ratings: {
         vn: 95,
         jd: 93,
@@ -74,7 +74,7 @@ const getDefaultWines = (): WineData[] => {
       name: "Monte Bello Cabernet Sauvignon",
       year: 2021,
       bottles: 2,
-      image: productImagePath,
+      image: "", // No default image - will show "No Image" until user uploads authentic image
       ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
       buyAgainLink: "https://ridge.com/product/monte-bello",
       qrCode: "QR_002",

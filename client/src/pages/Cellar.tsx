@@ -1123,12 +1123,12 @@ const Cellar = () => {
                 className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
                 onClick={() => handleWineClick(1)}
               >
-                <img
-                  src={wineBottleImage}
-                  alt="Wine bottle"
-                  className="object-contain"
-                  style={{ height: "186px" }}
-                />
+                <div 
+                  className="bg-gray-600 rounded flex items-center justify-center text-white text-sm"
+                  style={{ height: "186px", width: "60px" }}
+                >
+                  No Image
+                </div>
               </div>
               <div
                 className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
