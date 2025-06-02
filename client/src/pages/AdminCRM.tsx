@@ -226,6 +226,7 @@ export default function AdminCRM() {
             <Button 
               onClick={() => {
                 // Save all wine data to unified system
+                console.log('AdminCRM: Saving wine data:', wineCards.map(w => ({ id: w.id, name: w.name, hasCustomImage: w.image?.startsWith('data:') })));
                 DataSyncManager.saveUnifiedWineData(wineCards);
                 setIsEditMode(false);
                 toast({

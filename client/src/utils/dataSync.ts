@@ -99,6 +99,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
+const CUSTOM_IMAGES_KEY = 'custom-wine-images';
 const CURRENT_VERSION = '1.6.0';
 
 export class DataSyncManager {
