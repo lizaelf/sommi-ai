@@ -182,7 +182,7 @@ export default function Scanned() {
               }}
               onError={(e) => {
                 console.error(`Scanned page: Wine image failed to load for wine ${selectedWine.id}:`, selectedWine.image?.substring(0, 50) + '...');
-                console.error('Image error event:', e);
+                e.currentTarget.style.display = 'none';
               }}
               key={`unique-wine-${selectedWine.id}-${selectedWine.image?.substring(22, 40)}`}
             />
