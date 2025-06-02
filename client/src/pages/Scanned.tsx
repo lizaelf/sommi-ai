@@ -61,6 +61,7 @@ export default function Scanned() {
   // Load wine data when component mounts or location changes
   useEffect(() => {
     const wine = loadSelectedWine();
+    console.log('Scanned page: Loading wine data:', wine ? { id: wine.id, name: wine.name, imageType: wine.image?.substring(0, 20) } : 'null');
     setSelectedWine(wine);
   }, [location]);
   
@@ -172,6 +173,7 @@ export default function Scanned() {
                 console.error(`Scanned page: Wine image failed to load for wine ${selectedWine.id}:`, selectedWine.image?.substring(0, 50) + '...');
                 console.error('Image error event:', e);
               }}
+              key={`wine-image-${selectedWine.id}-${selectedWine.image?.substring(0, 20)}`}
             />
           </div>
         )}
