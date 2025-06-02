@@ -123,10 +123,21 @@ export class DataSyncManager {
       console.log('DataSyncManager: Loaded from storage:', wines.map(w => ({ 
         id: w.id, 
         name: w.name, 
-        hasCustomImage: w.image?.startsWith('data:') 
+        hasCustomImage: w.image?.startsWith('data:'),
+        imagePrefix: w.image?.substring(0, 30) + '...'
       })));
       
-      return wines.length > 0 ? wines : [...MASTER_WINE_DATA];
+      // Check if we have any corrupted image data and fix it
+      const cleanedWines = wines.map(wine => {
+        if (wine.image && !wine.image.startsWith('data:') && !wine.image.startsWith('/@fs') && !wine.image.startsWith('/')) {
+          console.log(`DataSyncManager: Found corrupted image data for wine ${wine.id}, reverting to master`);
+          const masterWine = MASTER_WINE_DATA.find(m => m.id === wine.id);
+          return { ...wine, image: masterWine?.image || wine.image };
+        }
+        return wine;
+      });
+      
+      return cleanedWines.length > 0 ? cleanedWines : [...MASTER_WINE_DATA];
     } catch (error) {
       console.error('Error loading unified wine data:', error);
       this.resetToMasterData();
