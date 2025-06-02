@@ -290,50 +290,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               width: '100%'
             }}>
               
-              {/* Listen Response Button */}
-              {showListenButton && onListenResponse && (
-                <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
-                  <button
-                    className="voice-bottom-sheet-button"
-                    onClick={onListenResponse}
-                    disabled={isLoadingAudio}
-                    style={{
-                      width: '100%',
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      borderRadius: '0px',
-                      height: '56px',
-                      padding: '0 16px',
-                      margin: 0,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      gap: '8px',
-                      color: 'white',
-                      border: 'none',
-                      cursor: isLoadingAudio ? 'default' : 'pointer',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '16px',
-                      fontWeight: 500,
-                      outline: 'none',
-                      transition: 'none',
-                      boxSizing: 'border-box',
-                      opacity: isLoadingAudio ? 0.7 : 1
-                    }}
-                  >
-                    {isLoadingAudio ? (
-                      <ShiningText text="Loading..." />
-                    ) : (
-                      <>
-                        <span style={{ fontSize: '18px' }}>🎧</span>
-                        Unmute
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
-              
-              {/* Suggestions Section - Hidden */}
-              {false && showSuggestions && onSuggestionClick && (
+              {/* Suggestions Section */}
+              {showSuggestions && onSuggestionClick && (
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
