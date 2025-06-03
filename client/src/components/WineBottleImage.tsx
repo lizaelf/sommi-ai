@@ -1,6 +1,4 @@
 import React from 'react';
-// Import the image using a relative path
-import wineBottleImage from '../assets/wine-bottle.png';
 
 const WineBottleImage: React.FC = () => {
   return (
@@ -8,7 +6,7 @@ const WineBottleImage: React.FC = () => {
       position: 'relative',
       zIndex: 2,
       marginBottom: '16px',
-      marginTop: '20px', // Added top margin to push content down
+      marginTop: '20px',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center'
@@ -19,29 +17,37 @@ const WineBottleImage: React.FC = () => {
         width: '180px',
         height: '180px',
         borderRadius: '50%',
-        backgroundColor: '#8E8E8E', // Gray color
+        backgroundColor: '#8E8E8E',
         filter: 'blur(60px)',
         opacity: 0.7,
         zIndex: 1,
-        top: '0px', // At the very top
+        top: '0px',
         left: '50%',
         transform: 'translateX(-50%)'
       }} />
       
-      {/* Wine bottle image */}
-      <img 
-        src={wineBottleImage} 
-        alt="Ridge Lytton Springs 2021" 
+      {/* No Image placeholder */}
+      <div 
         style={{ 
           height: '240px', 
-          width: 'auto',
-          objectFit: 'contain',
+          width: '120px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '8px',
+          color: 'white',
+          fontSize: '14px',
+          fontWeight: '500',
           position: 'relative',
           zIndex: 3,
           marginTop: '12px',
-          marginBottom: '16px'
+          marginBottom: '16px',
+          border: '2px dashed rgba(255, 255, 255, 0.3)'
         }}
-      />
+      >
+        No Image
+      </div>
     </div>
   );
 };

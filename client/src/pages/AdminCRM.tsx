@@ -8,8 +8,7 @@ import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import { Search, X, Download, Upload, RefreshCw } from "lucide-react";
 import placeholderImage from "@assets/Placeholder.png";
-import wineBottlePath1 from "@assets/Product Image.png";
-import wineBottlePath2 from "@assets/image-2.png";
+// Default images removed - only authentic uploaded images will be displayed
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;
