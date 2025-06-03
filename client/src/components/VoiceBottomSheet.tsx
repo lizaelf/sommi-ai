@@ -14,9 +14,11 @@ interface VoiceBottomSheetProps {
   showSuggestions?: boolean;
   showListenButton?: boolean;
   showAskButton?: boolean;
+  showUnmuteButton?: boolean;
   isLoadingAudio?: boolean;
   onSuggestionClick?: (suggestion: string) => void;
   onListenResponse?: () => void;
+  onUnmute?: () => void;
 }
 
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
@@ -30,9 +32,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   showSuggestions = false,
   showListenButton = false,
   showAskButton = false,
+  showUnmuteButton = false,
   isLoadingAudio = false,
   onSuggestionClick,
-  onListenResponse
+  onListenResponse,
+  onUnmute
 }) => {
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const suggestions = ["Food pairing", "Tasting notes", "Serving"];
@@ -378,6 +382,43 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     }}
                   >
                     Ask
+                  </button>
+                </div>
+              )}
+
+              {/* Unmute Button */}
+              {showUnmuteButton && onUnmute && (
+                <div style={{
+                  width: '100%',
+                  paddingLeft: '16px',
+                  paddingRight: '16px'
+                }}>
+                  <button
+                    className="voice-bottom-sheet-button-white"
+                    onClick={onUnmute}
+                    style={{
+                      width: '100%',
+                      backgroundColor: 'white',
+                      borderRadius: '32px',
+                      height: '56px',
+                      padding: '0 16px',
+                      margin: 0,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: 'black',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      outline: 'none',
+                      transition: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    Unmute
                   </button>
                 </div>
               )}
