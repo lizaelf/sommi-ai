@@ -8,8 +8,7 @@ import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import { Search, X, Download, Upload, RefreshCw } from "lucide-react";
 import placeholderImage from "@assets/Placeholder.png";
-import wineBottlePath1 from "@assets/Product Image.png";
-import wineBottlePath2 from "@assets/image-2.png";
+// Default images removed - only authentic uploaded images will be displayed
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;
@@ -28,15 +27,22 @@ export default function AdminCRM() {
 
   // Function to load wine data
   const loadWineData = () => {
-    // Initialize unified data system
-    DataSyncManager.initialize();
-    
-    // Get wines from unified data source
-    const allWines = DataSyncManager.getUnifiedWineData();
-    
-    console.log("Loaded CRM wines:", allWines);
-    console.log("Placeholder image path:", placeholderImage);
-    setWineCards(allWines);
+    try {
+      console.log("AdminCRM: Starting to load wine data...");
+      
+      // Initialize unified data system
+      DataSyncManager.initialize();
+      
+      // Get wines from unified data source
+      const allWines = DataSyncManager.getUnifiedWineData();
+      
+      console.log("AdminCRM: Loaded wines:", allWines.length, "wines");
+      console.log("AdminCRM: Wine data:", allWines.map(w => ({ id: w.id, name: w.name, hasImage: !!w.image })));
+      setWineCards(allWines);
+    } catch (error) {
+      console.error("AdminCRM: Error loading wine data:", error);
+      setWineCards([]);
+    }
   };
 
   // Load wines from unified data system on component mount
