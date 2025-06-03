@@ -7,6 +7,11 @@ import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { WINE_CONFIG } from "@shared/wineConfig";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import { getCurrentWineConfig } from "@/utils/wineDataManager";
+import { 
+  wineImageDeduplication, 
+  validateImageFile, 
+  generateUniqueFilename 
+} from "@/utils/imageDeduplication";
 // Default images removed - only authentic uploaded images will be displayed
 import placeholderImage from "@assets/Placeholder.png";
 
