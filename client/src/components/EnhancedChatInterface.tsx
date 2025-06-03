@@ -595,6 +595,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     try {
       console.log("Auto-playing voice response with OpenAI TTS");
       
+      // Dispatch thinking state until audio starts
+      window.dispatchEvent(new CustomEvent('audioStatusChange', {
+        detail: { status: 'thinking' }
+      }));
+      
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -608,25 +613,52 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         
         (window as any).currentOpenAIAudio = audio;
         
+        audio.onplay = () => {
+          // Audio started playing - stop thinking animation
+          window.dispatchEvent(new CustomEvent('audioStatusChange', {
+            detail: { status: 'playing' }
+          }));
+        };
+        
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
           (window as any).currentOpenAIAudio = null;
           console.log("Auto-played voice response completed");
+          
+          // Audio ended - stop playing animation
+          window.dispatchEvent(new CustomEvent('audioStatusChange', {
+            detail: { status: 'stopped' }
+          }));
         };
         
         audio.onerror = () => {
           URL.revokeObjectURL(audioUrl);
           (window as any).currentOpenAIAudio = null;
           console.error("Auto-play voice response failed");
+          
+          // Audio error - stop all animations
+          window.dispatchEvent(new CustomEvent('audioStatusChange', {
+            detail: { status: 'stopped' }
+          }));
         };
         
         await audio.play();
         console.log("Auto-play voice response started");
       } else {
         console.error("Failed to generate auto-play text-to-speech");
+        
+        // Failed to generate audio - stop thinking animation
+        window.dispatchEvent(new CustomEvent('audioStatusChange', {
+          detail: { status: 'stopped' }
+        }));
       }
     } catch (error) {
       console.error("Error in auto-play voice response:", error);
+      
+      // Error occurred - stop thinking animation
+      window.dispatchEvent(new CustomEvent('audioStatusChange', {
+        detail: { status: 'stopped' }
+      }));
     }
   };
 
