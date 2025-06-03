@@ -511,6 +511,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     
     try {
       console.log("Playing stored response with OpenAI TTS");
+      console.log("Generating audio...");
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',

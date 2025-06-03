@@ -497,6 +497,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [showFullConversation, setShowFullConversation] = useState(false);
   const [isVoiceResponding, setIsVoiceResponding] = useState(false);
   const [showStopButton, setShowStopButton] = useState(false);
+  const [isProcessingAI, setIsProcessingAI] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -625,6 +626,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       setHideSuggestions(true);
       setIsVoiceResponding(true);
       
+      // Show thinking state while generating audio
+      window.dispatchEvent(new CustomEvent('audioStatusChange', {
+        detail: { status: 'thinking' }
+      }));
+      
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -729,9 +735,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const handleSendMessage = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
 
-    // Hide suggestions after sending a message
+    // Hide suggestions after sending a message and show processing state
     setHideSuggestions(true);
     setIsTyping(true);
+    setIsProcessingAI(true);
 
     try {
       // Add user message to UI immediately
@@ -811,6 +818,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       });
     } finally {
       setIsTyping(false);
+      setIsProcessingAI(false);
     }
   };
 
