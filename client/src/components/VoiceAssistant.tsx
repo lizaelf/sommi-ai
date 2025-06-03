@@ -18,6 +18,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
+  const [showAskButton, setShowAskButton] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
@@ -304,8 +305,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("OpenAI TTS audio stopped successfully");
     }
     
+    // Stop autoplay audio as well
+    if ((window as any).currentAutoplayAudio) {
+      console.log("Stop button clicked - stopping autoplay TTS audio");
+      (window as any).currentAutoplayAudio.pause();
+      (window as any).currentAutoplayAudio.currentTime = 0;
+      (window as any).currentAutoplayAudio = null;
+      console.log("Autoplay TTS audio stopped successfully");
+    }
+    
     setIsResponding(false);
     setShowUnmuteButton(true);
+    setShowAskButton(true);
   };
 
   const handleUnmute = async () => {
@@ -377,6 +388,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   const handleAsk = () => {
     setShowUnmuteButton(false);
+    setShowAskButton(false);
     handleCloseBottomSheet();
     startListening();
   };
@@ -425,6 +437,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isThinking={isProcessing}
         showSuggestions={false}
         showUnmuteButton={showUnmuteButton && !isListening && !isResponding && !isProcessing}
+        showAskButton={showAskButton && !isListening && !isResponding && !isProcessing}
         onSuggestionClick={handleSuggestionClick}
       />
     </div>
