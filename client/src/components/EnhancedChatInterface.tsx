@@ -651,6 +651,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
+        // Trigger unmute button to show after response is ready
+        window.dispatchEvent(new CustomEvent('showUnmuteButton'));
+
         // Auto-speak the assistant's response is disabled - use Listen Response button instead
         console.log("speakResponse disabled - use Listen Response button instead");
       }
