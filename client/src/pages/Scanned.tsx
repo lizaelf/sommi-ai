@@ -208,41 +208,34 @@ export default function Scanned() {
         <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px" }}>
           {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
             <div style={{ textAlign: "center" }}>
-              {/* Test with a fresh Image object */}
-              {(() => {
-                const testImg = new Image();
-                testImg.onload = () => console.log("Image object loaded successfully");
-                testImg.onerror = (e) => console.error("Image object failed to load:", e);
-                testImg.src = selectedWine.image;
-                
-                return (
-                  <img 
-                    src={selectedWine.image}
-                    alt={selectedWine.name}
-                    style={{
-                      height: "170px",
-                      width: "auto",
-                      display: "block",
-                      borderRadius: "8px",
-                      maxWidth: "100%",
-                      objectFit: "contain"
-                    }}
-                    onLoad={() => console.log("React img onLoad triggered")}
-                    onError={(e) => console.error("React img onError triggered:", e)}
-                  />
-                );
-              })()}
-              
-              {/* Fallback: Show first 100 chars of base64 */}
-              <div style={{ 
-                color: "white", 
-                fontSize: "10px", 
-                marginTop: "10px",
-                wordBreak: "break-all",
-                maxWidth: "300px"
-              }}>
-                Data check: {selectedWine.image.substring(0, 50)}...
-              </div>
+              <canvas
+                ref={(canvas) => {
+                  if (canvas && selectedWine.image) {
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    img.onload = () => {
+                      const maxHeight = 170;
+                      const aspectRatio = img.width / img.height;
+                      const width = maxHeight * aspectRatio;
+                      
+                      canvas.width = width;
+                      canvas.height = maxHeight;
+                      
+                      ctx?.clearRect(0, 0, width, maxHeight);
+                      ctx?.drawImage(img, 0, 0, width, maxHeight);
+                      
+                      console.log(`Canvas rendered wine image: ${width}x${maxHeight}`);
+                    };
+                    img.onerror = (e) => console.error("Canvas image load failed:", e);
+                    img.src = selectedWine.image;
+                  }
+                }}
+                style={{
+                  maxHeight: "170px",
+                  borderRadius: "8px",
+                  backgroundColor: "rgba(255, 255, 255, 0.05)"
+                }}
+              />
             </div>
           ) : (
             <div 

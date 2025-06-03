@@ -346,6 +346,78 @@ export default function AdminCRM() {
                 Sync wine inventory data between Replit development and deployed environments
               </div>
               
+              {/* Image Pre-insertion Tool */}
+              <div style={{
+                padding: "12px",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "8px",
+                marginBottom: "16px"
+              }}>
+                <div style={{
+                  ...typography.body1R,
+                  color: "white",
+                  marginBottom: "8px",
+                  fontSize: "14px",
+                  fontWeight: "600"
+                }}>
+                  Image Management
+                </div>
+                <div style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.7)",
+                  marginBottom: "12px",
+                  fontSize: "12px"
+                }}>
+                  Process and validate all wine images for optimal display
+                </div>
+                <button
+                  onClick={async () => {
+                    console.log("Processing all wine images...");
+                    const wines = DataSyncManager.getUnifiedWineData();
+                    let processedCount = 0;
+                    
+                    for (const wine of wines) {
+                      if (wine.image && wine.image.startsWith('data:')) {
+                        try {
+                          // Test image validity by creating an Image object
+                          const testImg = new Image();
+                          await new Promise((resolve, reject) => {
+                            testImg.onload = () => {
+                              console.log(`✓ Wine ${wine.id} image validated (${Math.round(wine.image.length / 1024)}KB)`);
+                              processedCount++;
+                              resolve(true);
+                            };
+                            testImg.onerror = () => {
+                              console.error(`✗ Wine ${wine.id} image invalid`);
+                              reject(new Error(`Invalid image for wine ${wine.id}`));
+                            };
+                            testImg.src = wine.image;
+                          });
+                        } catch (error) {
+                          console.error(`Error processing wine ${wine.id}:`, error);
+                        }
+                      }
+                    }
+                    
+                    toast({
+                      title: "Image Processing Complete",
+                      description: `Validated ${processedCount} wine images`
+                    });
+                  }}
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "6px",
+                    color: "white",
+                    fontSize: "12px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Process All Images
+                </button>
+              </div>
+              
               <div style={{
                 display: "flex",
                 flexDirection: "column",
