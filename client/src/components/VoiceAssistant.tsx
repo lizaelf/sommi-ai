@@ -438,10 +438,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     console.log("Listen Response button clicked");
     setIsLoadingAudio(true);
     setShowListenButton(false);
+    setShowAskButton(false);
+    
+    // Set responding state immediately to hide suggestions
+    setIsResponding(true);
     
     try {
       console.log("Playing stored response with OpenAI TTS");
-      setIsResponding(true);
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
@@ -458,12 +461,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         
         audio.onplay = () => {
           setIsLoadingAudio(false);
+          console.log("Manual audio playback started - suggestions already hidden");
         };
         
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
           setIsResponding(false);
           setShowListenButton(true);
+          setShowAskButton(true);
           (window as any).currentOpenAIAudio = null;
         };
         
@@ -472,6 +477,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           setIsResponding(false);
           setIsLoadingAudio(false);
           setShowListenButton(true);
+          setShowAskButton(true);
           (window as any).currentOpenAIAudio = null;
         };
         

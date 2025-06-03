@@ -621,7 +621,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     try {
       console.log("Auto-playing voice response with OpenAI TTS");
       
-      // Hide suggestions and show voice response state
+      // Hide suggestions and show voice response state immediately
       setHideSuggestions(true);
       setIsVoiceResponding(true);
       
@@ -638,13 +638,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         
         (window as any).currentOpenAIAudio = audio;
         
+        // Set responding state immediately before play
+        window.dispatchEvent(new CustomEvent('audioStatusChange', {
+          detail: { status: 'playing' }
+        }));
+        
         audio.onplay = () => {
-          console.log("Auto-play audio started - hiding suggestions");
-          // Audio started playing - show stop button
-          setShowStopButton(true);
-          window.dispatchEvent(new CustomEvent('audioStatusChange', {
-            detail: { status: 'playing' }
-          }));
+          console.log("Auto-play audio started - suggestions already hidden");
         };
         
         audio.onended = () => {
@@ -654,7 +654,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           
           // Audio ended - reset UI state
           setIsVoiceResponding(false);
-          setShowStopButton(false);
           setHideSuggestions(false);
           
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
@@ -669,7 +668,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           
           // Audio error - reset UI state
           setIsVoiceResponding(false);
-          setShowStopButton(false);
           setHideSuggestions(false);
           
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
