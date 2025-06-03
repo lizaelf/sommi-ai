@@ -50,7 +50,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrCode: "QR_001",
     qrLink: "/scanned?wine=1",
     location: "Dry Creek Valley, Sonoma County, California",
-    description: "A bold and complex Zinfandel blend that showcases the distinctive terroir of Lytton Springs vineyard. Known for its rich berry flavors, spice complexity, and structured tannins.",
+    description: "The 2021 Ridge Lytton Springs Dry Creek Zinfandel showcases the exceptional terroir of this historic vineyard with concentrated dark berry flavors, distinctive spice complexity, and well-integrated tannins. This field blend from old vines delivers remarkable depth and the signature earthy minerality that defines Dry Creek Valley Zinfandel.",
     foodPairing: ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"],
     conversationHistory: []
   },
@@ -70,35 +70,55 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrCode: "QR_002",
     qrLink: "/scanned?wine=2",
     location: "Santa Cruz Mountains, California",
-    description: "An iconic Bordeaux-style blend from Ridge's flagship Monte Bello vineyard. This wine represents the pinnacle of California Cabernet Sauvignon with exceptional aging potential.",
+    description: "The 2021 Ridge Monte Bello Cabernet Sauvignon represents the pinnacle of Santa Cruz Mountains winemaking from this legendary vineyard. This Bordeaux-style blend delivers profound complexity with cassis, dark chocolate, and mineral notes, supported by refined tannins and remarkable aging potential that will develop beautifully over decades.",
     foodPairing: ["Prime rib", "Filet mignon", "Roasted duck", "Mushroom risotto"],
     conversationHistory: []
   },
   {
     id: 3,
-    name: "Geyserville Zinfandel Blend",
-    year: 2020,
-    bottles: 4,
+    name: "regin",
+    year: 2022,
+    bottles: 0,
     image: "",
     ratings: {
-      vn: 92,
-      jd: 90,
-      ws: 91,
-      abv: 14.1
+      vn: 0,
+      jd: 0,
+      ws: 0,
+      abv: 0
     },
-    buyAgainLink: "https://www.ridgewine.com/wines/2020-geyserville/",
+    buyAgainLink: "",
     qrCode: "QR_003",
     qrLink: "/scanned?wine=3",
-    location: "Geyserville, Sonoma County, California",
-    description: "A sophisticated blend of Zinfandel, Carignane, and Petite Sirah from historic vineyards. This wine embodies the character of Geyserville's unique microclimate and volcanic soils.",
-    foodPairing: ["Braised short ribs", "Wild boar", "Grilled portobello", "Sharp blue cheese"],
+    location: "",
+    description: "The 2022 regin wine showcases unique characteristics with distinctive flavor profiles. This wine represents a contemporary approach to winemaking with carefully selected vineyard sources and artisanal production methods.",
+    foodPairing: ["Grilled vegetables", "Pasta dishes", "Light cheeses", "Mediterranean cuisine"],
+    conversationHistory: []
+  },
+  {
+    id: 4,
+    name: "cabernet",
+    year: 2021,
+    bottles: 0,
+    image: "",
+    ratings: {
+      vn: 0,
+      jd: 0,
+      ws: 0,
+      abv: 0
+    },
+    buyAgainLink: "",
+    qrCode: "QR_004",
+    qrLink: "/scanned?wine=4",
+    location: "",
+    description: "The 2021 cabernet demonstrates classic varietal characteristics with structured tannins and dark fruit flavors. This wine showcases the distinctive qualities of Cabernet Sauvignon with modern winemaking techniques.",
+    foodPairing: ["Red meat", "Grilled steak", "Aged cheeses", "Dark chocolate"],
     conversationHistory: []
   }
 ];
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.9.0';
+const CURRENT_VERSION = '1.9.1';
 
 export class DataSyncManager {
   
