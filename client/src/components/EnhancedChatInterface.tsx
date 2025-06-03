@@ -2003,31 +2003,33 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               ) : (
                 // Show suggestions and input for Home page
                 <>
-                  {/* Suggestion chips - always visible above input */}
-                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                    <button
-                      onClick={() => handleSendMessage("Tasting notes")}
-                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                    >
-                      Tasting notes
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleSendMessage("Simple recipes for this wine")
-                      }
-                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                    >
-                      Simple recipes
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleSendMessage("Where is this wine from?")
-                      }
-                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                    >
-                      Where it's from
-                    </button>
-                  </div>
+                  {/* Suggestion chips - hidden during voice responses */}
+                  {!hideSuggestions && (
+                    <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                      <button
+                        onClick={() => handleSendMessage("Tasting notes")}
+                        className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                      >
+                        Tasting notes
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleSendMessage("Simple recipes for this wine")
+                        }
+                        className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                      >
+                        Simple recipes
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleSendMessage("Where is this wine from?")
+                        }
+                        className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                      >
+                        Where it's from
+                      </button>
+                    </div>
+                  )}
 
                   <div className="relative flex items-center">
                     <ChatInput
