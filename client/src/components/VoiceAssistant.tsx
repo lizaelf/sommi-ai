@@ -49,6 +49,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   }, [isProcessing, isListening, isResponding, hasAutoPlayPermission, isFirstResponse, showBottomSheet, showAskButton]);
 
+  // Track when new assistant messages arrive for auto-play
+  useEffect(() => {
+    const handleNewAssistantMessage = (event: CustomEvent) => {
+      if (hasAutoPlayPermission && showBottomSheet && !isFirstResponse) {
+        // Auto-play is handled by the other effect
+        console.log("New assistant message detected, auto-play will trigger");
+      }
+    };
+
+    window.addEventListener('assistant-message-ready', handleNewAssistantMessage as EventListener);
+    
+    return () => {
+      window.removeEventListener('assistant-message-ready', handleNewAssistantMessage as EventListener);
+    };
+  }, [hasAutoPlayPermission, showBottomSheet, isFirstResponse]);
+
   // Handle audio status changes and page visibility
   useEffect(() => {
     const handleAudioStatusChange = (event: CustomEvent) => {
@@ -58,42 +74,127 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         setIsResponding(true);
         setShowListenButton(false);
         setShowAskButton(false);
-        setShowUnmuteButton(false);
       } else if (status === 'stopped' || status === 'paused' || status === 'muted') {
         setIsResponding(false);
-        setShowListenButton(false);
-        setIsLoadingAudio(false);
-        setShowAskButton(true);
-        setShowUnmuteButton(false);
       }
     };
 
-    const handlePageVisibility = () => {
-      if (document.hidden && isListening) {
-        console.log('Page hidden - stopping microphone access');
+    // Stop microphone when user leaves the page/tab
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("Page hidden - stopping microphone access");
         stopListening();
         setShowBottomSheet(false);
+        
+        // Stop any ongoing audio playback
+        if ((window as any).currentOpenAIAudio) {
+          (window as any).currentOpenAIAudio.pause();
+          (window as any).currentOpenAIAudio = null;
+        }
+        
+        // Cancel speech synthesis
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        
+        setIsResponding(false);
+        setIsLoadingAudio(false);
+      }
+    };
+
+    // Stop microphone when user navigates away
+    const handleBeforeUnload = () => {
+      console.log("Page unloading - stopping microphone access");
+      stopListening();
+    };
+
+    // Handle unmute button display events
+    const handleShowUnmuteButton = (event: CustomEvent) => {
+      if (event.detail?.show) {
+        setShowUnmuteButton(true);
+        setShowListenButton(false);
+        setShowBottomSheet(true);
       }
     };
 
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
-    document.addEventListener('visibilitychange', handlePageVisibility);
-
+    window.addEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
-      document.removeEventListener('visibilitychange', handlePageVisibility);
+      window.removeEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {
+          console.error("Error cleaning up speech recognition:", e);
+        }
+      }
     };
-  }, [isListening]);
+  }, []);
 
-  const startListening = async () => {
-    // Ensure audio context is available and ready before starting microphone
+  // Always show unmute button - never hide it regardless of audio states
+  useEffect(() => {
+    // Always show unmute button regardless of any state
+    setShowUnmuteButton(true);
+    setShowListenButton(false);
+  }, [isProcessing, isListening, isResponding, showAskButton]);
+
+  const toggleListening = async () => {
     if (!isAudioContextInitialized()) {
-      console.log('Initializing audio context before microphone access');
-      await initAudioContext();
-      await unlockAudioForSession();
+      try {
+        await initAudioContext();
+        console.log("Audio context initialized on microphone click");
+      } catch (error) {
+        console.error('Failed to initialize audio context:', error);
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Failed to initialize audio system
+            </span>
+          ),
+          duration: 2000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+        return;
+      }
     }
 
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  const startListening = async () => {
+    console.log('startListening called');
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      console.log('Speech recognition not supported');
       toast({
         description: (
           <span
@@ -200,7 +301,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         const transcript = event.results[0][0].transcript;
         console.log("Final transcript:", transcript);
         
+        // Unlock audio for session when user speaks (first interaction)
+        unlockAudioForSession();
+        
         setIsListening(false);
+        setIsLoadingAudio(true); // Show loading state while processing speech
         
         // Dispatch processing event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
@@ -208,6 +313,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         }));
         
         onSendMessage(transcript);
+        
+        // Mark that user has interacted (no longer first response)
+        if (isFirstResponse) {
+          setIsFirstResponse(false);
+        }
       };
       
       recognition.onerror = (event: any) => {
@@ -219,7 +329,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           detail: { status: 'stopped' }
         }));
         
-        if (event.error === 'not-allowed') {
+        if (event.error !== 'aborted') {
+          // Show "Ask" button for retry when there's an error
+          setShowAskButton(true);
+          
           toast({
             description: (
               <span
@@ -230,10 +343,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   whiteSpace: "nowrap",
                 }}
               >
-                Microphone permission denied
+                Please try again
               </span>
             ),
-            duration: 3000,
+            duration: 2000,
             className: "bg-white text-black border-none",
             style: {
               position: "fixed",
@@ -244,7 +357,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               maxWidth: "none",
               padding: "8px 24px",
               borderRadius: "32px",
-              boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+              boxShadow: "0px 4px 16px rgba (0, 0, 0, 0.1)",
               zIndex: 9999,
             },
           });
@@ -253,7 +366,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       recognition.onend = () => {
         setIsListening(false);
-        console.log("Voice recognition ended");
         
         // Dispatch stopped event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
@@ -262,12 +374,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       };
       
       recognitionRef.current = recognition;
+      console.log('Starting speech recognition...');
       recognition.start();
-      
     } catch (error) {
-      console.error('Failed to start speech recognition:', error);
-      setIsListening(false);
-      
+      console.error('Error starting speech recognition:', error);
       toast({
         description: (
           <span
@@ -301,41 +411,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   const stopListening = () => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      recognitionRef.current.abort();
       recognitionRef.current = null;
     }
     setIsListening(false);
   };
 
-  const toggleListening = () => {
-    if (isProcessing) return;
-    
-    if (isListening) {
-      stopListening();
-      setShowBottomSheet(false);
-    } else {
-      startListening();
-    }
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    console.log("Suggestion clicked:", suggestion);
-    onSendMessage(suggestion);
-    setShowBottomSheet(false);
-  };
-
   const handleCloseBottomSheet = () => {
-    console.log("Closing bottom sheet - stopping OpenAI TTS audio playback");
+    // Stop any playing audio when closing
     if ((window as any).currentOpenAIAudio) {
+      console.log("Closing bottom sheet - stopping OpenAI TTS audio playback");
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
     }
+    
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    
+    // Reset all states
+    setIsResponding(false);
+    setShowListenButton(false);
+    setShowUnmuteButton(false);
+    setIsLoadingAudio(false);
+    setShowAskButton(false);
     setShowBottomSheet(false);
     stopListening();
   };
 
   const handleMute = () => {
+    // Unlock audio for session when user clicks mute (first interaction)
+    unlockAudioForSession();
+    
     if ((window as any).currentOpenAIAudio) {
       console.log("Stop button clicked - stopping OpenAI TTS audio playback");
       (window as any).currentOpenAIAudio.pause();
@@ -353,125 +461,116 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setShowListenButton(false); // Hide listen button after stop
     setIsLoadingAudio(false);
     setShowAskButton(true); // Show ask button after stopping audio
-    setShowUnmuteButton(true); // Show unmute button after stopping
-  };
-
-  const handleUnmute = () => {
-    console.log("Unmute button clicked - attempting to play last response");
-    setShowUnmuteButton(false);
-    setShowAskButton(false);
-    handleListenResponse();
+    
+    // Dispatch stop event to notify other components
+    window.dispatchEvent(new CustomEvent('audioStatusChange', {
+      detail: { status: 'stopped' }
+    }));
   };
 
   const handleAsk = () => {
     setShowAskButton(false); // Hide ask button when starting new question
-    setShowUnmuteButton(false); // Hide unmute button when starting new question
     handleCloseBottomSheet();
     startListening();
+  };
+
+  const handleUnmute = async () => {
+    // Grant auto-play permission
+    setHasAutoPlayPermission(true);
+    setIsFirstResponse(false);
+    localStorage.setItem('voiceAutoPlayPermission', 'granted');
+    
+    // Hide unmute button and show processing state
+    setShowUnmuteButton(false);
+    
+    // Play the response
+    await handleListenResponse();
   };
 
   const handleListenResponse = async () => {
     console.log("Listen Response button clicked - checking for assistant message");
     const lastAssistantMessage = (window as any).lastAssistantMessageText;
     
+    console.log("Last assistant message found:", lastAssistantMessage ? "Yes" : "No");
+    console.log("Message preview:", lastAssistantMessage ? lastAssistantMessage.substring(0, 100) + "..." : "None");
+    
     if (!lastAssistantMessage) {
-      console.warn("No assistant message available to play");
-      setShowAskButton(true);
+      console.log("No assistant message available for TTS");
+      setShowListenButton(true);
       return;
     }
-
-    console.log("Playing audio response for:", lastAssistantMessage.substring(0, 50) + "...");
+    
+    // Unlock audio for session when user clicks listen (first interaction)
+    unlockAudioForSession();
+    
+    console.log("Listen Response button clicked");
     setIsLoadingAudio(true);
     setShowListenButton(false);
-    setShowAskButton(false);
     setShowUnmuteButton(false);
-
+    setShowAskButton(false); // Hide ask button when starting TTS
+    
+    // Set responding state immediately to hide suggestions
+    setIsResponding(true);
+    
     try {
-      // Request auto-play permission on first use
-      if (isFirstResponse && !hasAutoPlayPermission) {
-        const userConfirmed = confirm(
-          "Would you like to enable automatic voice responses? This will allow the AI to speak its answers without clicking a button each time."
-        );
-        
-        if (userConfirmed) {
-          setHasAutoPlayPermission(true);
-          setIsFirstResponse(false);
-          localStorage.setItem('voiceAutoPlayPermission', 'granted');
-          console.log("Auto-play permission granted by user");
-        } else {
-          setIsFirstResponse(false);
-          localStorage.setItem('voiceAutoPlayPermission', 'denied');
-          console.log("Auto-play permission denied by user");
-        }
-      }
-
-      // Generate audio using server TTS
+      console.log("Playing stored response with OpenAI TTS");
       console.log("Generating audio...");
-      const response = await fetch('/api/tts', {
+      
+      const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: lastAssistantMessage })
       });
-
-      if (!response.ok) {
-        throw new Error(`TTS API error: ${response.status}`);
+      
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        (window as any).currentOpenAIAudio = audio;
+        
+        audio.onplay = () => {
+          setIsLoadingAudio(false);
+          console.log("Manual audio playback started - suggestions already hidden");
+        };
+        
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          setIsResponding(false);
+          setShowListenButton(false); // Don't show listen button after audio ends
+          setShowAskButton(true); // Show ask button after audio completes
+          (window as any).currentOpenAIAudio = null;
+        };
+        
+        audio.onerror = () => {
+          URL.revokeObjectURL(audioUrl);
+          setIsResponding(false);
+          setIsLoadingAudio(false);
+          setShowListenButton(false); // Don't show listen button on error
+          setShowAskButton(true); // Show ask button on error
+          (window as any).currentOpenAIAudio = null;
+        };
+        
+        await audio.play();
+      } else {
+        console.error("Failed to generate text-to-speech");
+        setIsResponding(false);
+        setIsLoadingAudio(false);
+        setShowListenButton(false); // Don't show listen button on API error
+        setShowAskButton(true); // Show ask button on API error
       }
-
-      const audioBuffer = await response.arrayBuffer();
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-
-      // Store reference for stop functionality
-      (window as any).currentOpenAIAudio = audio;
-
-      audio.onloadstart = () => {
-        setIsLoadingAudio(true);
-        console.log("Audio loading started");
-      };
-
-      audio.oncanplaythrough = () => {
-        setIsLoadingAudio(false);
-        console.log("Audio ready to play");
-      };
-
-      audio.onplay = () => {
-        setIsResponding(true);
-        setIsLoadingAudio(false);
-        setShowListenButton(false);
-        setShowAskButton(false);
-        setShowUnmuteButton(false);
-        console.log("Manual audio playback started - suggestions already hidden");
-      };
-
-      audio.onended = () => {
-        setIsResponding(false);
-        setShowAskButton(true);
-        setShowUnmuteButton(false);
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentOpenAIAudio = null;
-        console.log("Audio playback completed");
-      };
-
-      audio.onerror = (e) => {
-        console.error("Audio playback error:", e);
-        setIsResponding(false);
-        setIsLoadingAudio(false);
-        setShowAskButton(true);
-        setShowUnmuteButton(true);
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentOpenAIAudio = null;
-      };
-
-      await audio.play();
-
     } catch (error) {
-      console.error("Failed to generate or play TTS audio:", error);
-      setIsLoadingAudio(false);
+      console.error("Error in handleListenResponse:", error);
       setIsResponding(false);
-      setShowAskButton(true);
-      setShowUnmuteButton(true);
+      setIsLoadingAudio(false);
+      setShowListenButton(false); // Don't show listen button on error
+      setShowAskButton(true); // Show ask button on error
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    onSendMessage(suggestion);
+    setShowBottomSheet(false);
   };
 
   return (
@@ -511,18 +610,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isOpen={showBottomSheet} 
         onClose={handleCloseBottomSheet}
         onMute={handleMute}
-        onUnmute={handleUnmute}
         onAsk={handleAsk}
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing}
-        showSuggestions={!isListening && !isResponding && !isProcessing && !showAskButton && !showUnmuteButton}
+        showSuggestions={!isListening && !isResponding && !isProcessing && !isLoadingAudio && showAskButton}
         showListenButton={showListenButton && !isListening && !isResponding}
         showAskButton={showAskButton && !isListening && !isResponding}
         showUnmuteButton={showUnmuteButton && !isListening && !isResponding}
         isLoadingAudio={isLoadingAudio}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
+        onUnmute={handleUnmute}
       />
     </div>
   );
