@@ -41,6 +41,11 @@ export function isAudioContextInitialized(): boolean {
   return audioContextInitialized;
 }
 
+// Function to unlock audio for the session (required for some browsers)
+export function unlockAudioForSession(): Promise<boolean> {
+  return initAudioContext();
+}
+
 // Export a function to add the event listener
 export function setupAudioContextInitialization(): void {
   // Initialize on any user interaction (only once)
