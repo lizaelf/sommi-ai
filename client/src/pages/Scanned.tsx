@@ -205,7 +205,7 @@ export default function Scanned() {
         </div>
 
         {/* Wine Image Section */}
-        <div className="flex justify-center items-center px-4 pb-4">
+        <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px", border: "1px solid rgba(255,255,255,0.2)" }}>
           {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
             <img
               src={selectedWine.image}
@@ -213,7 +213,11 @@ export default function Scanned() {
               style={{
                 height: "170px",
                 width: "auto",
-                display: "block"
+                display: "block",
+                maxWidth: "100%",
+                objectFit: "contain",
+                border: "2px solid green",
+                borderRadius: "8px"
               }}
               onLoad={() => {
                 console.log(`Scanned page: Image displayed for wine ${selectedWine.id} (${selectedWine.name})`);
