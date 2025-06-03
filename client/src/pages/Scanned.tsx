@@ -240,7 +240,15 @@ export default function Scanned() {
             Wine ID: {selectedWine.id} | 
             Has Image: {selectedWine.image ? 'Yes' : 'No'} | 
             Size: {selectedWine.image?.length || 0} chars |
-            Type: {selectedWine.image?.startsWith('data:') ? 'Base64' : 'Other'}
+            Type: {selectedWine.image?.startsWith('data:') ? 'Base64' : 'Other'} |
+            Valid Header: {selectedWine.image?.startsWith('data:image/') ? 'Yes' : 'No'}
+          </div>
+        )}
+        
+        {/* Image validation test */}
+        {selectedWine && selectedWine.image && (
+          <div style={{ color: 'white', fontSize: '10px', textAlign: 'center', padding: '5px', wordBreak: 'break-all' }}>
+            Image start: {selectedWine.image.substring(0, 100)}...
           </div>
         )}
 
