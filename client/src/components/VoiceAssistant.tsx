@@ -391,10 +391,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("Speech synthesis cancelled");
     }
     
+    // Also call the voice assistant mute function
+    if (window.voiceAssistant?.muteAndSavePosition) {
+      window.voiceAssistant.muteAndSavePosition();
+    }
+    
     setIsResponding(false);
     setShowListenButton(false); // Hide listen button after stop
     setIsLoadingAudio(false);
     setShowAskButton(true); // Show ask button after stopping audio
+  };
+
+  const handleUnmute = () => {
+    console.log("Unmute button clicked");
+    if (window.voiceAssistant?.resumeFromMute) {
+      window.voiceAssistant.resumeFromMute();
+    }
+    setIsResponding(true);
+    setShowAskButton(false);
   };
 
   const handleAsk = () => {
