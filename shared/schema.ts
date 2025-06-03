@@ -70,7 +70,9 @@ export const chatCompletionRequestSchema = z.object({
       abv: z.number().optional(),
     }).optional(),
   }).optional(),
-});
+  // Safari compatibility: accept additional fields
+  optimize_for_speed: z.boolean().optional(),
+}).passthrough(); // Allow additional fields for browser compatibility
 
 export type ChatCompletionRequest = z.infer<typeof chatCompletionRequestSchema>;
 

@@ -307,6 +307,13 @@ Format: Return only the description text, no quotes or additional formatting.`;
     let validatedData: ChatCompletionRequest | undefined;
     
     try {
+      // Safari debugging: log the incoming request
+      console.log("=== Chat API Request Debug ===");
+      console.log("Headers:", req.headers);
+      console.log("Body type:", typeof req.body);
+      console.log("Body content:", JSON.stringify(req.body, null, 2));
+      console.log("User-Agent:", req.headers['user-agent']);
+      
       // Validate request
       validatedData = chatCompletionRequestSchema.parse(req.body);
       
@@ -321,7 +328,6 @@ Format: Return only the description text, no quotes or additional formatting.`;
           // Create new conversation in database
           try {
             const newConversation = await storage.createConversation({
-              userId: 1, // Default user
               title: `Wine Conversation ${new Date().toLocaleString()}`,
             });
             actualConversationId = newConversation.id;
@@ -329,7 +335,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
           } catch (createError) {
             console.error(`Failed to create conversation:`, createError);
             // Continue without conversation ID - messages won't be saved but chat will work
-            actualConversationId = null;
+            actualConversationId = undefined;
           }
         }
       }
@@ -389,11 +395,16 @@ Format: Return only the description text, no quotes or additional formatting.`;
       const error = err as any;
       console.error("Error in chat completion:", error);
       
-      // Handle validation errors
+      // Handle validation errors with detailed Safari debugging
       if (error instanceof z.ZodError) {
+        console.log("=== Validation Error Details ===");
+        console.log("Zod errors:", JSON.stringify(error.errors, null, 2));
+        console.log("Failed validation for request body:", JSON.stringify(req.body, null, 2));
+        
         return res.status(400).json({ 
           message: "Invalid request data", 
-          errors: error.errors 
+          errors: error.errors,
+          receivedData: req.body // Safari debugging
         });
       }
       
