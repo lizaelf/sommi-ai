@@ -590,6 +590,46 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [messages.length]);
 
+  // Function to automatically play voice response
+  const playVoiceResponse = async (text: string) => {
+    try {
+      console.log("Auto-playing voice response with OpenAI TTS");
+      
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        (window as any).currentOpenAIAudio = audio;
+        
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
+          console.log("Auto-played voice response completed");
+        };
+        
+        audio.onerror = () => {
+          URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
+          console.error("Auto-play voice response failed");
+        };
+        
+        await audio.play();
+        console.log("Auto-play voice response started");
+      } else {
+        console.error("Failed to generate auto-play text-to-speech");
+      }
+    } catch (error) {
+      console.error("Error in auto-play voice response:", error);
+    }
+  };
+
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
@@ -652,8 +692,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
-        // Auto-speak the assistant's response is disabled - use Listen Response button instead
-        console.log("speakResponse disabled - use Listen Response button instead");
+        // Auto-play voice response if session is unlocked
+        if (isAudioUnlockedForSession()) {
+          console.log("Session unlocked - auto-playing voice response");
+          playVoiceResponse(assistantMessage.content);
+        } else {
+          console.log("Session not unlocked - use Listen Response button instead");
+        }
       }
 
       // Refresh all messages
