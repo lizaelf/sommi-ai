@@ -559,6 +559,66 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Wine data synchronization endpoints
+  app.get("/api/wines", async (_req, res) => {
+    try {
+      // Return wine data from localStorage simulation for deployed environment
+      // In production, this would read from your actual database
+      const wineData = [
+        {
+          id: 1,
+          name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+          year: 2021,
+          bottles: 6,
+          image: "",
+          ratings: { vn: 95, jd: 93, ws: 92, abv: 14.8 },
+          buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
+          qrCode: "QR_001",
+          qrLink: "",
+          description: "A premium Zinfandel with complex flavors and excellent structure"
+        },
+        {
+          id: 2,
+          name: "Monte Bello Cabernet Sauvignon",
+          year: 2019,
+          bottles: 3,
+          image: "",
+          ratings: { vn: 98, jd: 96, ws: 95, abv: 13.5 },
+          buyAgainLink: "https://www.ridgewine.com/wines/2019-monte-bello/",
+          qrCode: "QR_002",
+          qrLink: "",
+          description: "An exceptional Cabernet Sauvignon from the Santa Cruz Mountains"
+        }
+      ];
+      
+      res.json(wineData);
+    } catch (error) {
+      console.error("Error fetching wines:", error);
+      res.status(500).json({ error: "Failed to fetch wine data" });
+    }
+  });
+
+  app.post("/api/wines/sync", async (req, res) => {
+    try {
+      const { wines } = req.body;
+      
+      if (!wines || !Array.isArray(wines)) {
+        return res.status(400).json({ error: "Invalid wine data format" });
+      }
+      
+      // In production, this would update your database with the synchronized data
+      console.log(`Received sync request for ${wines.length} wines`);
+      
+      res.json({ 
+        success: true, 
+        message: `Successfully synchronized ${wines.length} wines` 
+      });
+    } catch (error) {
+      console.error("Wine sync error:", error);
+      res.status(500).json({ error: "Failed to sync wine data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

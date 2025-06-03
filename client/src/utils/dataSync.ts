@@ -336,6 +336,98 @@ export class DataSyncManager {
     }
   }
   
+  // Synchronize with deployed environment
+  static async syncWithDeployedEnvironment(): Promise<{ success: boolean; message: string }> {
+    try {
+      // Get current local data
+      const localWines = this.getUnifiedWineData();
+      
+      // Try to fetch data from deployed environment
+      const deployedUrl = window.location.origin.replace('-00-', '-');
+      const response = await fetch(`${deployedUrl}/api/wines`);
+      
+      if (!response.ok) {
+        return {
+          success: false,
+          message: 'Could not connect to deployed environment. Data may differ between environments.'
+        };
+      }
+      
+      const deployedWines = await response.json();
+      
+      // Compare data
+      if (localWines.length !== deployedWines.length) {
+        return {
+          success: false,
+          message: `Data mismatch: Local has ${localWines.length} wines, deployed has ${deployedWines.length} wines`
+        };
+      }
+      
+      // Check if all wines match
+      const mismatches = [];
+      for (const localWine of localWines) {
+        const deployedWine = deployedWines.find((w: any) => w.id === localWine.id);
+        if (!deployedWine) {
+          mismatches.push(`Wine ID ${localWine.id} exists locally but not in deployed environment`);
+        } else if (localWine.name !== deployedWine.name || localWine.year !== deployedWine.year) {
+          mismatches.push(`Wine ID ${localWine.id} differs: Local "${localWine.name}" vs Deployed "${deployedWine.name}"`);
+        }
+      }
+      
+      if (mismatches.length > 0) {
+        return {
+          success: false,
+          message: `Data inconsistencies found: ${mismatches.join('; ')}`
+        };
+      }
+      
+      return {
+        success: true,
+        message: 'CRM data is synchronized between development and deployed environments'
+      };
+      
+    } catch (error) {
+      return {
+        success: false,
+        message: `Sync check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
+  }
+
+  // Push local data to deployed environment
+  static async pushToDeployedEnvironment(): Promise<{ success: boolean; message: string }> {
+    try {
+      const localWines = this.getUnifiedWineData();
+      const deployedUrl = window.location.origin.replace('-00-', '-');
+      
+      const response = await fetch(`${deployedUrl}/api/wines/sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ wines: localWines })
+      });
+      
+      if (!response.ok) {
+        return {
+          success: false,
+          message: 'Failed to push data to deployed environment'
+        };
+      }
+      
+      return {
+        success: true,
+        message: `Successfully synchronized ${localWines.length} wines to deployed environment`
+      };
+      
+    } catch (error) {
+      return {
+        success: false,
+        message: `Push failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
+  }
+
   // Initialize data on app start
   static initialize(): void {
     // Ensure we have valid data
