@@ -596,11 +596,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   useEffect(() => {
     const handleAudioStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
+      console.log("Audio status change received:", status);
       
       if (status === 'playing') {
+        console.log("Setting hideSuggestions to true - suggestions should disappear");
         setHideSuggestions(true);
         setIsVoiceResponding(true);
       } else if (status === 'stopped' || status === 'paused') {
+        console.log("Setting hideSuggestions to false - suggestions should reappear");
         setIsVoiceResponding(false);
         setHideSuggestions(false);
       }
@@ -636,6 +639,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         (window as any).currentOpenAIAudio = audio;
         
         audio.onplay = () => {
+          console.log("Auto-play audio started - hiding suggestions");
           // Audio started playing - show stop button
           setShowStopButton(true);
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
@@ -2004,6 +2008,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 // Show suggestions and input for Home page
                 <>
                   {/* Suggestion chips - hidden during voice responses */}
+                  {console.log("Rendering suggestions, hideSuggestions:", hideSuggestions)}
                   {!hideSuggestions && (
                     <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                       <button
