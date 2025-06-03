@@ -331,16 +331,12 @@ Format: Return only the description text, no quotes or additional formatting.`;
         const maxHistoryMessages = 8;
         const recentMessages = formattedPreviousMessages.slice(-maxHistoryMessages);
         
-        // Add system message at the beginning if it doesn't exist
-        if (!recentMessages.some(msg => msg.role === 'system')) {
-          recentMessages.unshift({
-            role: 'system',
-            content: 'You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses concise but informative.'
-          });
-        }
+        // System message will be dynamically generated based on wine data in chatCompletion function
+        // Remove any existing system messages to avoid conflicts with dynamic system prompt
+        const messagesWithoutSystem = recentMessages.filter(msg => msg.role !== 'system');
         
         // Combine limited previous messages with current message
-        allMessages = [...recentMessages, ...messages];
+        allMessages = [...messagesWithoutSystem, ...messages];
       }
       
       // Call OpenAI API

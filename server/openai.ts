@@ -76,8 +76,11 @@ export async function checkApiStatus(): Promise<{ isValid: boolean; message: str
 // Function to generate chat completion from OpenAI API
 export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
   try {
+    console.log('Chat completion called with wine data:', wineData ? { id: wineData.id, name: wineData.name, year: wineData.year } : 'No wine data provided');
+    
     // Generate the system prompt - use dynamic wine data if provided, otherwise use default config
     const wineSystemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
+    console.log('Using wine system prompt for:', wineData ? `${wineData.name} (${wineData.year})` : 'Default wine config');
     console.log('Generated wine system prompt:', wineSystemPrompt.substring(0, 200) + '...');
     
     // Always enforce the system prompt - either replace an existing one or add it

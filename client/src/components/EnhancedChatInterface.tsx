@@ -595,15 +595,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       // Add message to the conversation
       await addMessage(tempUserMessage);
 
-      // Create a system message containing the prompt
-      // Optimize the prompt for faster responses by explicitly requesting brevity
-      const systemPrompt =
-        "You are a friendly wine expert specializing in Cabernet Sauvignon. Your responses should be warm, engaging, and informative. Focus on providing interesting facts, food pairings, and tasting notes specific to Cabernet Sauvignon. Keep your responses very concise and to the point. Aim for 2-3 sentences maximum unless specifically asked for more detail.";
-
       // Debug log the wine data being sent
       console.log("Sending wine data to API:", currentWine);
       
-      // Make the API request with optimization flags
+      // Make the API request - system prompt will be dynamically generated based on wine data
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -612,11 +607,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         },
         body: JSON.stringify({
           messages: [
-            { role: "system", content: systemPrompt },
             { role: "user", content },
           ],
           conversationId: currentConversationId,
-          wineData: currentWine, // Include wine data from CRM
+          wineData: currentWine, // Include wine data from CRM - this will generate dynamic system prompt
           optimize_for_speed: true, // Additional flag to optimize for speed
         }),
       });
