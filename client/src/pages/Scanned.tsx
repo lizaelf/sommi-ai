@@ -86,9 +86,22 @@ export default function Scanned() {
       // Verify this wine has the same image data as in CRM
       const crmWines = DataSyncManager.getUnifiedWineData();
       const crmWine = crmWines.find(w => w.id === wine.id);
+      
+      // Debug CRM wine image info
+      console.log('crmWine image info:', {
+        id: crmWine?.id,
+        hasImage: !!crmWine?.image,
+        imagePrefix: crmWine?.image?.substring(0, 30),
+        imageValid: crmWine?.image?.startsWith('data:image/'),
+        imageSize: crmWine?.image?.length || 0
+      });
+      
       if (crmWine && crmWine.image !== wine.image) {
         console.warn(`Image mismatch detected for wine ${wine.id}. Using CRM data.`);
         setSelectedWine({ ...wine, image: crmWine.image });
+      } else if (crmWine && !crmWine.image) {
+        console.warn(`Wine ${wine.id} has no image in CRM. Showing placeholder.`);
+        setSelectedWine(wine);
       } else {
         setSelectedWine(wine);
       }

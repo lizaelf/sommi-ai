@@ -98,12 +98,11 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CUSTOM_IMAGES_KEY = 'custom-wine-images';
-const CURRENT_VERSION = '1.8.0';
+const CURRENT_VERSION = '1.9.0';
 
 export class DataSyncManager {
   
-  // Get unified wine data (same for all users)
+  // Get unified wine data (same for all users) - ALWAYS preserves uploaded images
   static getUnifiedWineData(): UnifiedWineData[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -111,15 +110,37 @@ export class DataSyncManager {
       
       console.log('DataSyncManager: Loading data - stored exists:', !!stored, 'version match:', version === CURRENT_VERSION);
       
-      // If no data or version mismatch, use master data
-      if (!stored || version !== CURRENT_VERSION) {
-        console.log('DataSyncManager: Resetting to master data due to version mismatch or missing data');
-        this.resetToMasterData();
+      if (!stored) {
+        // First time loading - use master data
+        console.log('DataSyncManager: No stored data, using master data');
+        this.saveUnifiedWineData([...MASTER_WINE_DATA]);
         return [...MASTER_WINE_DATA];
       }
       
-      const wines = JSON.parse(stored) as UnifiedWineData[];
-      console.log('DataSyncManager: Loaded from storage:', wines.map(w => ({ 
+      const storedWines = JSON.parse(stored) as UnifiedWineData[];
+      
+      // Version mismatch - preserve images but update other data from master
+      if (version !== CURRENT_VERSION) {
+        console.log('DataSyncManager: Version mismatch - preserving uploaded images while updating structure');
+        
+        const updatedWines = MASTER_WINE_DATA.map(masterWine => {
+          const existingWine = storedWines.find(w => w.id === masterWine.id);
+          return {
+            ...masterWine,
+            // Preserve the uploaded image from existing data
+            image: (existingWine && existingWine.image && existingWine.image.startsWith('data:')) 
+              ? existingWine.image 
+              : masterWine.image
+          };
+        });
+        
+        this.saveUnifiedWineData(updatedWines);
+        localStorage.setItem(SYNC_VERSION_KEY, CURRENT_VERSION);
+        console.log('DataSyncManager: Updated to new version while preserving uploaded images');
+        return updatedWines;
+      }
+      
+      console.log('DataSyncManager: Loaded from storage:', storedWines.map(w => ({ 
         id: w.id, 
         name: w.name, 
         hasCustomImage: w.image?.startsWith('data:'),
@@ -127,20 +148,10 @@ export class DataSyncManager {
         imageSize: w.image?.length || 0
       })));
       
-      // Check if we have any corrupted image data and fix it
-      const cleanedWines = wines.map(wine => {
-        if (wine.image && !wine.image.startsWith('data:') && !wine.image.startsWith('/@fs') && !wine.image.startsWith('/')) {
-          console.log(`DataSyncManager: Found corrupted image data for wine ${wine.id}, reverting to master`);
-          const masterWine = MASTER_WINE_DATA.find(m => m.id === wine.id);
-          return { ...wine, image: masterWine?.image || wine.image };
-        }
-        return wine;
-      });
-      
-      return cleanedWines.length > 0 ? cleanedWines : [...MASTER_WINE_DATA];
+      return storedWines.length > 0 ? storedWines : [...MASTER_WINE_DATA];
     } catch (error) {
       console.error('Error loading unified wine data:', error);
-      this.resetToMasterData();
+      this.saveUnifiedWineData([...MASTER_WINE_DATA]);
       return [...MASTER_WINE_DATA];
     }
   }
@@ -156,6 +167,14 @@ export class DataSyncManager {
       if (dataSize > 4 * 1024 * 1024) { // 4MB warning threshold
         console.warn('Wine data is very large, may exceed localStorage limits');
       }
+      
+      // Debug: Log images before saving
+      console.log('Saving wines with images:', wines.map(w => ({ 
+        id: w.id, 
+        imageLen: w.image?.length || 0, 
+        startsWithData: w.image?.startsWith('data:'),
+        imageValid: w.image?.startsWith('data:image/') 
+      })));
       
       localStorage.setItem(STORAGE_KEY, dataString);
       localStorage.setItem(SYNC_VERSION_KEY, CURRENT_VERSION);
@@ -276,8 +295,6 @@ export class DataSyncManager {
     }
   }
   
-
-  
   // Export data for synchronization
   static exportData(): string {
     const wines = this.getUnifiedWineData();
@@ -315,29 +332,6 @@ export class DataSyncManager {
       return { 
         success: false, 
         message: `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
-      };
-    }
-  }
-  
-  // Sync with deployed environment (placeholder for future API integration)
-  static async syncWithDeployedEnvironment(): Promise<{ success: boolean; message: string }> {
-    // This would connect to your deployed API in the future
-    // For now, it ensures data consistency locally
-    
-    try {
-      const currentData = this.getUnifiedWineData();
-      
-      // Validate data integrity
-      if (currentData.length === 0) {
-        this.resetToMasterData();
-        return { success: true, message: 'Reset to master data for consistency' };
-      }
-      
-      return { success: true, message: 'Data is synchronized' };
-    } catch (error) {
-      return { 
-        success: false, 
-        message: `Sync failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
       };
     }
   }
