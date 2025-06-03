@@ -94,8 +94,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   // Get wine-specific content based on current wine
   const getWineHistory = () => {
     if (currentWine && currentWine.description) {
+      console.log('🍷 Displaying wine description for:', currentWine.name, 'Description length:', currentWine.description.length);
       return currentWine.description;
     }
+    console.log('⚠️ No wine description found, using fallback config');
     return WINE_CONFIG.history;
   };
 
