@@ -251,6 +251,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         const transcript = event.results[0][0].transcript;
         console.log("Final transcript:", transcript);
         
+        // Unlock audio for session when user speaks (first interaction)
+        unlockAudioForSession();
+        
         setIsListening(false);
         
         // Dispatch processing event for animation
