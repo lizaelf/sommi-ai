@@ -119,6 +119,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete image endpoint
+  app.delete("/api/delete-image", async (req, res) => {
+    try {
+      const { imagePath } = req.body;
+      
+      if (!imagePath || !imagePath.startsWith('/@assets/')) {
+        return res.status(400).json({ error: "Invalid image path" });
+      }
+
+      // Extract filename from path
+      const fileName = imagePath.replace('/@assets/', '');
+      const assetsDir = join(__dirname, "..", "attached_assets");
+      const filePath = join(assetsDir, fileName);
+      
+      // Check if file exists and delete it
+      if (existsSync(filePath)) {
+        const { unlinkSync } = await import("fs");
+        unlinkSync(filePath);
+        console.log(`Deleted wine image: ${fileName}`);
+        res.json({ success: true, message: "Image deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Image file not found" });
+      }
+      
+    } catch (error) {
+      console.error("Image deletion error:", error);
+      res.status(500).json({ error: "Failed to delete image" });
+    }
+  });
+
   // Get all conversations
   app.get("/api/conversations", async (_req, res) => {
     try {

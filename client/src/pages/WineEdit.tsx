@@ -229,9 +229,32 @@ export default function WineEdit() {
     }
   };
 
-  const deleteWine = () => {
+  const deleteWine = async () => {
     try {
       console.log("Deleting wine with ID:", wine.id);
+      
+      // Delete associated image file if it exists and is a static file
+      if (wine.image && wine.image.startsWith('/@assets/')) {
+        try {
+          const response = await fetch('/api/delete-image', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              imagePath: wine.image
+            })
+          });
+          
+          if (response.ok) {
+            console.log("Associated wine image deleted from assets folder");
+          } else {
+            console.warn("Failed to delete wine image file:", wine.image);
+          }
+        } catch (imageError) {
+          console.warn("Error deleting wine image:", imageError);
+        }
+      }
       
       // Use DataSyncManager to remove wine from unified system
       DataSyncManager.removeWine(wine.id);
