@@ -61,6 +61,53 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 }) => {
   const [currentWine, setCurrentWine] = useState<any>(null);
 
+  // Auto-play TTS function that works independently from unmute button
+  const autoPlayTTS = async (text: string) => {
+    try {
+      console.log("Autoplay TTS starting for text:", text.substring(0, 50) + "...");
+      
+      // Generate audio using server TTS
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+
+      if (!response.ok) {
+        throw new Error(`TTS API error: ${response.status}`);
+      }
+
+      const audioBuffer = await response.arrayBuffer();
+      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const autoplayAudio = new Audio(audioUrl);
+
+      // Use separate reference for autoplay to avoid conflicts with unmute button
+      (window as any).currentAutoplayAudio = autoplayAudio;
+
+      autoplayAudio.onplay = () => {
+        console.log("Autoplay TTS started");
+      };
+
+      autoplayAudio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        (window as any).currentAutoplayAudio = null;
+        console.log("Autoplay TTS completed");
+      };
+
+      autoplayAudio.onerror = (e) => {
+        console.error("Autoplay TTS error:", e);
+        URL.revokeObjectURL(audioUrl);
+        (window as any).currentAutoplayAudio = null;
+      };
+
+      await autoplayAudio.play();
+
+    } catch (error) {
+      console.error("Failed to generate or play autoplay TTS audio:", error);
+    }
+  };
+
   // Load current wine data from CRM or use selectedWine prop
   useEffect(() => {
     if (selectedWine) {
@@ -654,8 +701,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Trigger unmute button to show after response is ready
         window.dispatchEvent(new CustomEvent('showUnmuteButton'));
 
-        // Auto-speak the assistant's response is disabled - use Listen Response button instead
-        console.log("speakResponse disabled - use Listen Response button instead");
+        // Auto-play TTS immediately after response is ready
+        console.log("Starting autoplay TTS for response:", assistantMessage.content.substring(0, 50) + "...");
+        autoPlayTTS(assistantMessage.content);
       }
 
       // Refresh all messages
