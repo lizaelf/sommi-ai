@@ -71,7 +71,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrLink: "/scanned?wine=2",
     location: "Santa Cruz Mountains, California",
     description: "The 2020 Monte Bello Cabernet Sauvignon offers a complex palate of ripe blackcurrant, tobacco, and mocha, underpinned by a robust tannic structure typical of the varietal. This full-bodied Californian wine showcases the distinctive minerality and cool-climate elegance of the Santa Cruz Mountains terroir.",
-    foodPairing: ["Prime rib", "Filet mignon", "Roasted duck", "Mushroom risotto"],
+    foodPairing: ["Grilled steak", "Lamb chops", "Aged cheeses", "Dark chocolate"],
     conversationHistory: []
   },
   {
@@ -90,8 +90,8 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrCode: "QR_003",
     qrLink: "/scanned?wine=3",
     location: "",
-    description: "The 2022 regin demonstrates elegant structure with bright acidity and mineral-driven complexity. This wine showcases distinctive varietal characteristics with notes of citrus, stone fruit, and subtle herbal undertones that reflect its terroir-specific winemaking approach.",
-    foodPairing: ["Grilled vegetables", "Pasta dishes", "Light cheeses", "Mediterranean cuisine"],
+    description: "The 2022 Regin is a youthful and vibrant wine, showcasing an expressive bouquet of fresh white fruits and delicate floral undertones. The palate is refreshingly crisp, with a harmonious balance of acidity and minerality, indicative of its terroir. This wine exhibits the classic characteristics of a cool-climate white, offering a long, clean finish.",
+    foodPairing: ["Fresh seafood", "Goat cheese salad", "Light pasta", "Asian cuisine"],
     conversationHistory: []
   },
   {
@@ -118,7 +118,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.9.4';
+const CURRENT_VERSION = '1.9.5';
 
 export class DataSyncManager {
   

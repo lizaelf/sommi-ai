@@ -472,6 +472,21 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     refetchMessages,
   } = useConversation(selectedWine ? `wine_${selectedWine.id}` : 'default');
 
+  // Clear old conversation data if wine doesn't match stored messages
+  useEffect(() => {
+    if (currentWine && messages.length > 0) {
+      const hasOldRidgeContent = messages.some(msg => 
+        msg.content.includes("Ridge \"Lytton Springs\"") && 
+        !currentWine.name.includes("Ridge")
+      );
+      
+      if (hasOldRidgeContent) {
+        console.log("Clearing outdated conversation data for wine:", currentWine.name);
+        clearConversation();
+      }
+    }
+  }, [currentWine, messages, clearConversation]);
+
   // Basic states
   const [isTyping, setIsTyping] = useState(false);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
