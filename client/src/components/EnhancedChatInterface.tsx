@@ -470,7 +470,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     createNewConversation,
     clearConversation,
     refetchMessages,
-  } = useConversation(selectedWine ? `wine_${selectedWine.id}` : 'default');
+  } = useConversation(currentWine ? `wine_${currentWine.id}` : 'default');
 
   // Clear old conversation data if wine doesn't match stored messages
   useEffect(() => {

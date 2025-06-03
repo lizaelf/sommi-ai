@@ -13,7 +13,9 @@ import {
 // Key for storing the current conversation ID in localStorage
 const getConversationKey = (wineId?: string | number) => {
   if (wineId) {
-    return `chatgpt_wine_conversation_${wineId}`;
+    // Extract numeric wine ID if it's in format "wine_123"
+    const numericId = typeof wineId === 'string' ? wineId.replace('wine_', '') : wineId;
+    return `chatgpt_wine_conversation_${numericId}`;
   }
   return 'chatgpt_wine_current_conversation_id';
 };

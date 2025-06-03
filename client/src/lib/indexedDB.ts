@@ -231,6 +231,40 @@ class IndexedDBService {
     }
   }
 
+  // Get conversations for a specific wine
+  public async getWineConversations(wineId: string | number): Promise<IDBConversation[]> {
+    try {
+      const allConversations = await this.getAllConversations();
+      const numericWineId = typeof wineId === 'string' ? wineId.replace('wine_', '') : wineId.toString();
+      
+      // Filter conversations that have wine-specific titles or contain wine-specific content
+      const wineConversations = allConversations.filter(conv => {
+        // Check if title contains wine ID or wine-specific naming
+        if (conv.title && conv.title.includes(`wine_${numericWineId}`)) {
+          return true;
+        }
+        
+        // Check if conversation has messages about this specific wine
+        if (conv.messages && conv.messages.length > 0) {
+          const hasWineSpecificContent = conv.messages.some(msg => 
+            msg.content && (
+              msg.content.includes(`wine_${numericWineId}`) ||
+              msg.content.includes(`Wine ID: ${numericWineId}`)
+            )
+          );
+          return hasWineSpecificContent;
+        }
+        
+        return false;
+      });
+      
+      return wineConversations;
+    } catch (error) {
+      console.error('Error getting wine conversations:', error);
+      return [];
+    }
+  }
+
   // Get the most recent conversation
   public async getMostRecentConversation(): Promise<IDBConversation | undefined> {
     try {
