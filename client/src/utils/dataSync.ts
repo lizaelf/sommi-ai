@@ -90,13 +90,13 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrCode: "QR_003",
     qrLink: "/scanned?wine=3",
     location: "",
-    description: "The 2022 regin wine showcases unique characteristics with distinctive flavor profiles. This wine represents a contemporary approach to winemaking with carefully selected vineyard sources and artisanal production methods.",
+    description: "The 2022 regin demonstrates elegant structure with bright acidity and mineral-driven complexity. This wine showcases distinctive varietal characteristics with notes of citrus, stone fruit, and subtle herbal undertones that reflect its terroir-specific winemaking approach.",
     foodPairing: ["Grilled vegetables", "Pasta dishes", "Light cheeses", "Mediterranean cuisine"],
     conversationHistory: []
   },
   {
     id: 4,
-    name: "cabernet",
+    name: "cherdoney",
     year: 2021,
     bottles: 0,
     image: "",
@@ -110,15 +110,15 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrCode: "QR_004",
     qrLink: "/scanned?wine=4",
     location: "",
-    description: "The 2021 cabernet demonstrates classic varietal characteristics with structured tannins and dark fruit flavors. This wine showcases the distinctive qualities of Cabernet Sauvignon with modern winemaking techniques.",
-    foodPairing: ["Red meat", "Grilled steak", "Aged cheeses", "Dark chocolate"],
+    description: "The 2021 cherdoney showcases vibrant acidity balanced by rich, buttery mouthfeel, indicative of its Chardonnay roots. It reveals notes of tart green apple, ripe pear, and hints of vanilla with subtle minerality that speaks to cool-climate terroir.",
+    foodPairing: ["Grilled chicken", "Seafood", "Creamy pasta", "Light cheeses"],
     conversationHistory: []
   }
 ];
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.9.1';
+const CURRENT_VERSION = '1.9.3';
 
 export class DataSyncManager {
   
