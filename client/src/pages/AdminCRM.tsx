@@ -571,25 +571,20 @@ export default function AdminCRM() {
                             }}
                           />
                         ) : (
-                          <div
+                          <img
+                            src={placeholderImage}
+                            alt={`${card.name} placeholder`}
                             style={{
                               maxHeight: "90px",
                               maxWidth: "70px",
                               width: "70px",
                               height: "90px",
-                              backgroundColor: "rgba(255, 255, 255, 0.1)",
-                              border: "2px dashed rgba(255, 255, 255, 0.3)",
                               borderRadius: "8px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              color: "rgba(255, 255, 255, 0.5)",
-                              fontSize: "12px",
-                              textAlign: "center"
+                              objectFit: "cover",
+                              opacity: 0.7
                             }}
-                          >
-                            No Image
-                          </div>
+                            onLoad={() => console.log(`CRM placeholder loaded for: ${card.name}`)}
+                          />
                         )}
                       </div>
 
