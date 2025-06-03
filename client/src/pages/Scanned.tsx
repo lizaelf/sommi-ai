@@ -221,10 +221,16 @@ export default function Scanned() {
                       canvas.width = width;
                       canvas.height = maxHeight;
                       
+                      // Set canvas display size
+                      canvas.style.width = width + 'px';
+                      canvas.style.height = maxHeight + 'px';
+                      canvas.style.display = 'block';
+                      canvas.style.visibility = 'visible';
+                      
                       ctx?.clearRect(0, 0, width, maxHeight);
                       ctx?.drawImage(img, 0, 0, width, maxHeight);
                       
-                      console.log(`Canvas rendered wine image: ${width}x${maxHeight}`);
+                      console.log(`Canvas rendered and styled: ${width}x${maxHeight}`);
                     };
                     img.onerror = (e) => console.error("Canvas image load failed:", e);
                     img.src = selectedWine.image;
@@ -233,7 +239,10 @@ export default function Scanned() {
                 style={{
                   maxHeight: "170px",
                   borderRadius: "8px",
-                  backgroundColor: "rgba(255, 255, 255, 0.05)"
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  border: "2px solid red",
+                  display: "block",
+                  visibility: "visible"
                 }}
               />
             </div>
