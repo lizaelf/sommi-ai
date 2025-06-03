@@ -325,15 +325,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     
     if (!lastAssistantMessage) {
       console.warn("No assistant message available to play");
+      setShowUnmuteButton(true);
       return;
     }
 
     console.log("Playing audio response for:", lastAssistantMessage.substring(0, 50) + "...");
-    setShowUnmuteButton(false);
+    
+    // Don't hide unmute button immediately - wait for successful audio start
+    setIsResponding(true);
 
     try {
+      // Stop any existing audio first
+      if ((window as any).currentOpenAIAudio) {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio = null;
+      }
+      if ((window as any).currentAutoplayAudio) {
+        (window as any).currentAutoplayAudio.pause();
+        (window as any).currentAutoplayAudio = null;
+      }
+
       // Generate audio using server TTS
-      console.log("Generating audio...");
+      console.log("Generating unmute TTS audio...");
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -355,12 +368,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       audio.onplay = () => {
         setIsResponding(true);
         setShowUnmuteButton(false);
-        console.log("Manual unmute TTS playback started");
+        setShowAskButton(false);
+        console.log("Manual unmute TTS playback started successfully");
       };
 
       audio.onended = () => {
         setIsResponding(false);
         setShowUnmuteButton(true);
+        setShowAskButton(true);
         URL.revokeObjectURL(audioUrl);
         (window as any).currentOpenAIAudio = null;
         console.log("Manual unmute TTS playback completed");
@@ -370,6 +385,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.error("Manual unmute TTS playback error:", e);
         setIsResponding(false);
         setShowUnmuteButton(true);
+        setShowAskButton(true);
         URL.revokeObjectURL(audioUrl);
         (window as any).currentOpenAIAudio = null;
       };
@@ -380,9 +396,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("Manual unmute TTS playback initiated successfully");
 
     } catch (error) {
-      console.error("Failed to generate or play TTS audio:", error);
+      console.error("Failed to generate or play unmute TTS audio:", error);
       setIsResponding(false);
       setShowUnmuteButton(true);
+      setShowAskButton(true);
+      
+      toast({
+        description: (
+          <span
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Failed to play audio
+          </span>
+        ),
+        duration: 2000,
+        className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
+      });
     }
   };
 
