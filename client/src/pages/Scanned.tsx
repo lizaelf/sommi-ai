@@ -205,30 +205,23 @@ export default function Scanned() {
         </div>
 
         {/* Wine Image Section */}
-        <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px", border: "1px solid rgba(255,255,255,0.2)" }}>
+        <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px" }}>
           {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
-            <img
-              src={selectedWine.image}
-              alt={selectedWine.name}
+            <div
               style={{
                 height: "170px",
                 width: "auto",
-                display: "block",
-                maxWidth: "100%",
-                objectFit: "contain",
-                border: "2px solid green",
-                borderRadius: "8px"
+                minWidth: "120px",
+                backgroundImage: `url(${selectedWine.image})`,
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                borderRadius: "8px",
+                display: "block"
               }}
               onLoad={() => {
-                console.log(`Scanned page: Image displayed for wine ${selectedWine.id} (${selectedWine.name})`);
-                console.log(`Image data hash: ${selectedWine.image?.substring(22, 50)}...`);
-                console.log(`Full image size: ${selectedWine.image?.length} characters`);
+                console.log(`Scanned page: Background image displayed for wine ${selectedWine.id} (${selectedWine.name})`);
               }}
-              onError={(e) => {
-                console.error(`Scanned page: Wine image failed to load for wine ${selectedWine.id}:`, selectedWine.image?.substring(0, 50) + '...');
-                console.error('Image error event:', e);
-              }}
-              key={`unique-wine-${selectedWine.id}-${selectedWine.image?.substring(22, 40)}`}
             />
           ) : (
             <div 
