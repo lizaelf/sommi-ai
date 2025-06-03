@@ -99,7 +99,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
 const CUSTOM_IMAGES_KEY = 'custom-wine-images';
-const CURRENT_VERSION = '1.7.0';
+const CURRENT_VERSION = '1.8.0';
 
 export class DataSyncManager {
   
@@ -186,17 +186,8 @@ export class DataSyncManager {
 
   // Reset to master data
   static resetToMasterData(): void {
-    const currentWines = this.getUnifiedWineData();
-    const masterWithImages = MASTER_WINE_DATA.map(masterWine => {
-      const existingWine = currentWines.find(w => w.id === masterWine.id);
-      return {
-        ...masterWine,
-        // Preserve the existing image if it exists
-        image: existingWine?.image || masterWine.image
-      };
-    });
-    this.saveUnifiedWineData(masterWithImages);
-    console.log('Reset to master wine data while preserving images');
+    this.saveUnifiedWineData([...MASTER_WINE_DATA]);
+    console.log('Reset to master wine data');
   }
   
   // Add or update a wine
