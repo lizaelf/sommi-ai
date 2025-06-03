@@ -8,8 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Serve static assets from both attached_assets and public/attached_assets folders
 // This ensures compatibility between development and deployed environments
