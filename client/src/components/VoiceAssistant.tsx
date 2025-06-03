@@ -108,12 +108,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       stopListening();
     };
 
+    // Handle unmute button display events
+    const handleShowUnmuteButton = (event: CustomEvent) => {
+      if (event.detail?.show) {
+        setShowUnmuteButton(true);
+        setShowListenButton(false);
+        setShowBottomSheet(true);
+      }
+    };
+
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
+    window.addEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
     
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
+      window.removeEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       

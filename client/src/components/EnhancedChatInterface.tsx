@@ -794,12 +794,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
-        // Auto-play voice response if session is unlocked
+        // Auto-play voice response if session is unlocked, but also show unmute button
         if (isAudioUnlockedForSession()) {
-          console.log("Session unlocked - auto-playing voice response");
+          console.log("Session unlocked - auto-playing voice response with unmute button visible");
           // Immediately show thinking animation
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
             detail: { status: 'thinking' }
+          }));
+          // Show unmute button during auto-play for user control
+          window.dispatchEvent(new CustomEvent('showUnmuteButton', {
+            detail: { show: true }
           }));
           playVoiceResponse(assistantMessage.content);
         } else {
