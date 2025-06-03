@@ -50,12 +50,20 @@ export function useConversation(wineId?: string | number): UseConversationReturn
   const queryClient = useQueryClient();
 
   /**
-   * Load the most recent conversation
+   * Load the most recent conversation for the specific wine
    */
   const loadMostRecentConversation = useCallback(async (): Promise<void> => {
     try {
-      // Get all conversations
-      const conversations = await indexedDBService.getAllConversations();
+      let conversations: any[] = [];
+      
+      if (wineId && wineId !== 'default') {
+        // Get wine-specific conversations
+        conversations = await indexedDBService.getWineConversations(wineId);
+        console.log(`Found ${conversations.length} conversations for wine ${wineId}`);
+      } else {
+        // Get all conversations for default case
+        conversations = await indexedDBService.getAllConversations();
+      }
       
       if (conversations && conversations.length > 0) {
         // Sort by last activity (desc)
@@ -76,7 +84,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
           // Load messages
           if (mostRecent.messages && mostRecent.messages.length > 0) {
             setMessages(adaptIDBMessagesToMessages(mostRecent.messages));
-            console.log(`Loaded ${mostRecent.messages.length} messages from most recent conversation`);
+            console.log(`Loaded ${mostRecent.messages.length} messages from wine-specific conversation`);
           } else {
             setMessages([]);
           }
@@ -84,13 +92,14 @@ export function useConversation(wineId?: string | number): UseConversationReturn
           await createNewConversation();
         }
       } else {
+        console.log(`No conversations found for wine ${wineId}, creating new one`);
         await createNewConversation();
       }
     } catch (error) {
-      console.error("Error loading most recent conversation:", error);
+      console.error("Error loading wine-specific conversation:", error);
       await createNewConversation();
     }
-  }, []);
+  }, [wineId]);
 
   // Initialization code that loads saved conversation from localStorage or IndexedDB
   useEffect(() => {
@@ -209,12 +218,19 @@ export function useConversation(wineId?: string | number): UseConversationReturn
   // Create a new conversation
   const createNewConversation = useCallback(async (): Promise<number | null> => {
     try {
+      // Create wine-specific conversation title and metadata
+      const wineTitle = wineId && wineId !== 'default' 
+        ? `Wine ${wineId.replace('wine_', '')} Conversation` 
+        : `New Conversation`;
+      
       const newConversation = {
         userId: 1, // Default user ID
-        title: `New Conversation ${new Date().toLocaleString()}`,
+        title: `${wineTitle} ${new Date().toLocaleString()}`,
         createdAt: new Date(),
         lastActivity: new Date(),
-        messages: []
+        messages: [],
+        // Add wine metadata for filtering
+        metadata: wineId && wineId !== 'default' ? { wineId } : undefined
       };
       
       const id = await indexedDBService.createConversation(newConversation);
@@ -227,16 +243,22 @@ export function useConversation(wineId?: string | number): UseConversationReturn
         setCurrentConversationIdState(id);
         setMessages([]);
         
-        // Refresh conversations list
-        const allConversations = await indexedDBService.getAllConversations();
-        setLocalConversations(adaptIDBConversationsToConversations(allConversations));
+        // Refresh conversations list (wine-specific)
+        let conversations: any[] = [];
+        if (wineId && wineId !== 'default') {
+          conversations = await indexedDBService.getWineConversations(wineId);
+        } else {
+          conversations = await indexedDBService.getAllConversations();
+        }
+        setLocalConversations(adaptIDBConversationsToConversations(conversations));
         
+        console.log(`Created new conversation for wine ${wineId}: ${id}`);
         return id;
       }
       
       return null;
     } catch (error) {
-      console.error("Error creating new conversation", error);
+      console.error("Error creating new wine-specific conversation", error);
       return null;
     }
   }, [wineId]);
