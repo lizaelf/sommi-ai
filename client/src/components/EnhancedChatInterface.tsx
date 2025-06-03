@@ -670,21 +670,61 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         audio.onerror = () => {
           URL.revokeObjectURL(audioUrl);
           (window as any).currentOpenAIAudio = null;
-          console.error("Auto-play voice response failed");
+          console.error("Auto-play voice response failed - showing unmute button");
           
-          // Audio error - reset UI state
+          // Audio error - reset UI state and show unmute button
           setIsVoiceResponding(false);
           setHideSuggestions(false);
+          
+          // Show unmute button when autoplay fails
+          window.dispatchEvent(new CustomEvent('showUnmuteButton', {
+            detail: { show: true }
+          }));
           
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
             detail: { status: 'stopped' }
           }));
         };
         
-        await audio.play();
+        try {
+          await audio.play();
+          console.log("Auto-play voice response started successfully");
+        } catch (error) {
+          console.error("Auto-play blocked by browser - showing unmute button:", error);
+          
+          // Clean up audio resources
+          URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
+          
+          // Reset UI state and show unmute button when autoplay is blocked
+          setIsVoiceResponding(false);
+          setHideSuggestions(false);
+          
+          // Show unmute button when autoplay is blocked
+          window.dispatchEvent(new CustomEvent('showUnmuteButton', {
+            detail: { show: true }
+          }));
+          
+          window.dispatchEvent(new CustomEvent('audioStatusChange', {
+            detail: { status: 'stopped' }
+          }));
+        }
         console.log("Auto-play voice response started");
       } else {
-        console.error("Failed to generate auto-play text-to-speech");
+        console.error("Failed to generate auto-play text-to-speech - showing unmute button");
+        
+        // TTS generation failed - reset UI state and show unmute button
+        setIsVoiceResponding(false);
+        setHideSuggestions(false);
+        
+        // Show unmute button when TTS generation fails
+        window.dispatchEvent(new CustomEvent('showUnmuteButton', {
+          detail: { show: true }
+        }));
+        
+        window.dispatchEvent(new CustomEvent('audioStatusChange', {
+          detail: { status: 'stopped' }
+        }));
         
         // Failed to generate audio - reset UI state
         setIsVoiceResponding(false);
@@ -696,12 +736,17 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         }));
       }
     } catch (error) {
-      console.error("Error in auto-play voice response:", error);
+      console.error("Error in auto-play voice response - showing unmute button:", error);
       
-      // Error occurred - reset UI state
+      // Error occurred - reset UI state and show unmute button
       setIsVoiceResponding(false);
       setShowStopButton(false);
       setHideSuggestions(false);
+      
+      // Show unmute button when any autoplay error occurs
+      window.dispatchEvent(new CustomEvent('showUnmuteButton', {
+        detail: { show: true }
+      }));
       
       window.dispatchEvent(new CustomEvent('audioStatusChange', {
         detail: { status: 'stopped' }
