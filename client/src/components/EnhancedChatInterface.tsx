@@ -595,11 +595,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     try {
       console.log("Auto-playing voice response with OpenAI TTS");
       
-      // Dispatch thinking state until audio starts
-      window.dispatchEvent(new CustomEvent('audioStatusChange', {
-        detail: { status: 'thinking' }
-      }));
-      
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -727,6 +722,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Auto-play voice response if session is unlocked
         if (isAudioUnlockedForSession()) {
           console.log("Session unlocked - auto-playing voice response");
+          // Immediately show thinking animation
+          window.dispatchEvent(new CustomEvent('audioStatusChange', {
+            detail: { status: 'thinking' }
+          }));
           playVoiceResponse(assistantMessage.content);
         } else {
           console.log("Session not unlocked - use Listen Response button instead");
