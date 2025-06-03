@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
@@ -207,11 +207,43 @@ export default function Scanned() {
         {/* Wine Image Section */}
         <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px" }}>
           {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
-            <div 
-              dangerouslySetInnerHTML={{
-                __html: `<img src="${selectedWine.image}" style="height: 170px; width: auto; display: block; border-radius: 8px; max-width: 100%; object-fit: contain;" alt="${selectedWine.name}" />`
-              }}
-            />
+            <div style={{ textAlign: "center" }}>
+              {/* Test with a fresh Image object */}
+              {(() => {
+                const testImg = new Image();
+                testImg.onload = () => console.log("Image object loaded successfully");
+                testImg.onerror = (e) => console.error("Image object failed to load:", e);
+                testImg.src = selectedWine.image;
+                
+                return (
+                  <img 
+                    src={selectedWine.image}
+                    alt={selectedWine.name}
+                    style={{
+                      height: "170px",
+                      width: "auto",
+                      display: "block",
+                      borderRadius: "8px",
+                      maxWidth: "100%",
+                      objectFit: "contain"
+                    }}
+                    onLoad={() => console.log("React img onLoad triggered")}
+                    onError={(e) => console.error("React img onError triggered:", e)}
+                  />
+                );
+              })()}
+              
+              {/* Fallback: Show first 100 chars of base64 */}
+              <div style={{ 
+                color: "white", 
+                fontSize: "10px", 
+                marginTop: "10px",
+                wordBreak: "break-all",
+                maxWidth: "300px"
+              }}>
+                Data check: {selectedWine.image.substring(0, 50)}...
+              </div>
+            </div>
           ) : (
             <div 
               style={{
