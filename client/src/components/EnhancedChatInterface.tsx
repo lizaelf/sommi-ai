@@ -74,8 +74,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   }, [selectedWine]);
   // Get wine-specific content based on current wine
   const getWineHistory = () => {
-    if (currentWine && currentWine.id === 2) {
-      return 'Ridge Vineyards\' Monte Bello, first produced in 1962, represents the pinnacle of California Cabernet Sauvignon craftsmanship. Located in the Santa Cruz Mountains at elevations up to 2600 feet, this historic vineyard was acquired by Ridge in 1959. The vineyard\'s unique terroir, with its limestone soils and cool mountain climate, produces Cabernet Sauvignon of exceptional complexity and aging potential. Ridge\'s traditional winemaking approach, emphasizing natural fermentation and minimal intervention, allows the true character of this legendary mountain vineyard to shine through.';
+    if (currentWine && currentWine.description) {
+      return currentWine.description;
     }
     return WINE_CONFIG.history;
   };
