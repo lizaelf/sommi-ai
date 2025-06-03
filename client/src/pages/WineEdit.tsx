@@ -147,7 +147,7 @@ export default function WineEdit() {
     }));
   };
 
-  const saveWine = () => {
+  const saveWine = async () => {
     try {
       console.log('Starting wine save process for:', wine);
       
@@ -160,8 +160,38 @@ export default function WineEdit() {
         throw new Error('Invalid wine ID');
       }
       
+      let wineToSave = { ...wine };
+      
+      // Auto-generate description for new wines if description is empty or default
+      if (isNewWine && (!wine.description || wine.description.trim() === '' || wine.description === 'Description will be added here')) {
+        try {
+          console.log(`Generating AI description for new wine: ${wine.name} ${wine.year || ''}`);
+          const response = await fetch('/api/generate-wine-description', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              wineName: wine.name,
+              year: wine.year
+            })
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            wineToSave.description = result.description;
+            setWine(wineToSave);
+            console.log('Generated description:', result.description);
+          } else {
+            console.warn('Failed to generate wine description, keeping existing');
+          }
+        } catch (error) {
+          console.warn('Error generating wine description:', error);
+        }
+      }
+      
       // Save to unified data system
-      DataSyncManager.addOrUpdateWine(wine);
+      DataSyncManager.addOrUpdateWine(wineToSave);
       console.log('Successfully saved to unified data system');
 
       toast({

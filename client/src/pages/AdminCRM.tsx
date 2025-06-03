@@ -69,6 +69,33 @@ export default function AdminCRM() {
     wine.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Function to generate wine description using AI
+  const generateWineDescription = async (wineName: string, year?: number): Promise<string> => {
+    try {
+      const response = await fetch('/api/generate-wine-description', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wineName,
+          year
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        return result.description;
+      } else {
+        console.warn('Failed to generate wine description, using default');
+        return `A ${year || 'classic'} wine with distinctive character and elegant profile.`;
+      }
+    } catch (error) {
+      console.warn('Error generating wine description:', error);
+      return `A ${year || 'classic'} wine with distinctive character and elegant profile.`;
+    }
+  };
+
   const handleAddWine = async () => {
     // Navigate to edit wine page with new wine ID
     const existingWines = DataSyncManager.getUnifiedWineData();

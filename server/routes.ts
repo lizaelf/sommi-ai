@@ -195,7 +195,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
         }
       ]);
 
-      const description = response?.content?.trim();
+      const description = response.content.trim();
       
       if (!description) {
         throw new Error("No description generated");
