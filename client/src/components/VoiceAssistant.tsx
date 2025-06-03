@@ -33,6 +33,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       if (status === 'playing') {
         setIsResponding(true);
+        setShowListenButton(false);
+        setShowAskButton(false);
       } else if (status === 'stopped' || status === 'paused' || status === 'muted') {
         setIsResponding(false);
       }
