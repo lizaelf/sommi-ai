@@ -440,11 +440,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setShowListenButton(false);
     setShowAskButton(false); // Hide ask button when starting TTS
     
-    // Set responding state immediately to hide suggestions
-    setIsResponding(true);
-    
     try {
       console.log("Playing stored response with OpenAI TTS");
+      setIsResponding(true);
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
@@ -461,7 +459,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         
         audio.onplay = () => {
           setIsLoadingAudio(false);
-          console.log("Manual audio playback started - suggestions already hidden");
         };
         
         audio.onended = () => {
