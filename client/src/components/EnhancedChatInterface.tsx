@@ -4,7 +4,6 @@ import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
-import { isAudioUnlockedForSession } from "@/lib/audioContext";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceAssistant from "./VoiceAssistant";
@@ -495,10 +494,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
-  const [isVoiceResponding, setIsVoiceResponding] = useState(false);
-  const [showStopButton, setShowStopButton] = useState(false);
-  const [isProcessingAI, setIsProcessingAI] = useState(false);
-  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -594,202 +589,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [messages.length]);
 
-  // Listen for audio status changes to coordinate UI state
-  useEffect(() => {
-    const handleAudioStatusChange = (event: CustomEvent) => {
-      const status = event.detail?.status;
-      console.log("Audio status change received:", status);
-      
-      if (status === 'playing') {
-        console.log("Setting hideSuggestions to true - suggestions should disappear");
-        setHideSuggestions(true);
-        setIsVoiceResponding(true);
-      } else if (status === 'stopped' || status === 'paused') {
-        console.log("Setting hideSuggestions to false - suggestions should reappear");
-        setIsVoiceResponding(false);
-        setHideSuggestions(false);
-      }
-    };
-
-    window.addEventListener('audioStatusChange', handleAudioStatusChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('audioStatusChange', handleAudioStatusChange as EventListener);
-    };
-  }, []);
-
-  // Function to automatically play voice response - independent of session state
-  const playVoiceResponse = async (text: string) => {
-    try {
-      console.log("Attempting autoplay - independent of session unlock state");
-      
-      // Hide suggestions and show voice response state immediately
-      setHideSuggestions(true);
-      setIsVoiceResponding(true);
-      
-      // Show thinking state while generating audio
-      window.dispatchEvent(new CustomEvent('audioStatusChange', {
-        detail: { status: 'thinking' }
-      }));
-      
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
-      
-      if (response.ok) {
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        
-        (window as any).currentOpenAIAudio = audio;
-        
-        // Set responding state immediately before play
-        window.dispatchEvent(new CustomEvent('audioStatusChange', {
-          detail: { status: 'playing' }
-        }));
-        
-        audio.onplay = () => {
-          console.log("Auto-play audio started - suggestions already hidden");
-        };
-        
-        audio.onended = () => {
-          URL.revokeObjectURL(audioUrl);
-          (window as any).currentOpenAIAudio = null;
-          console.log("Auto-played voice response completed");
-          
-          // Audio ended - reset UI state
-          setIsVoiceResponding(false);
-          setHideSuggestions(false);
-          
-          window.dispatchEvent(new CustomEvent('audioStatusChange', {
-            detail: { status: 'stopped' }
-          }));
-        };
-        
-        audio.onerror = () => {
-          URL.revokeObjectURL(audioUrl);
-          (window as any).currentOpenAIAudio = null;
-          console.error("Auto-play voice response failed - showing unmute button");
-          
-          // Audio error - reset UI state and show unmute button
-          setIsVoiceResponding(false);
-          setHideSuggestions(false);
-          
-          // Show unmute button when autoplay fails
-          window.dispatchEvent(new CustomEvent('showUnmuteButton', {
-            detail: { show: true }
-          }));
-          
-          window.dispatchEvent(new CustomEvent('audioStatusChange', {
-            detail: { status: 'stopped' }
-          }));
-        };
-        
-        try {
-          await audio.play();
-          console.log("Auto-play voice response started successfully");
-        } catch (error) {
-          console.error("Auto-play blocked by browser - showing unmute button:", error);
-          
-          // Clean up audio resources
-          URL.revokeObjectURL(audioUrl);
-          (window as any).currentOpenAIAudio = null;
-          
-          // Reset UI state and show unmute button when autoplay is blocked
-          setIsVoiceResponding(false);
-          setHideSuggestions(false);
-          
-          // Show unmute button when autoplay is blocked
-          window.dispatchEvent(new CustomEvent('showUnmuteButton', {
-            detail: { show: true }
-          }));
-          
-          window.dispatchEvent(new CustomEvent('audioStatusChange', {
-            detail: { status: 'stopped' }
-          }));
-        }
-        console.log("Auto-play voice response started");
-      } else {
-        console.error("Failed to generate auto-play text-to-speech - showing unmute button");
-        
-        // TTS generation failed - reset UI state and show unmute button
-        setIsVoiceResponding(false);
-        setHideSuggestions(false);
-        
-        // Show unmute button when TTS generation fails
-        window.dispatchEvent(new CustomEvent('showUnmuteButton', {
-          detail: { show: true }
-        }));
-        
-        window.dispatchEvent(new CustomEvent('audioStatusChange', {
-          detail: { status: 'stopped' }
-        }));
-        
-        // Failed to generate audio - reset UI state
-        setIsVoiceResponding(false);
-        setShowStopButton(false);
-        setHideSuggestions(false);
-        
-        window.dispatchEvent(new CustomEvent('audioStatusChange', {
-          detail: { status: 'stopped' }
-        }));
-      }
-    } catch (error) {
-      console.error("Error in auto-play voice response - showing unmute button:", error);
-      
-      // Error occurred - reset UI state and show unmute button
-      setIsVoiceResponding(false);
-      setShowStopButton(false);
-      setHideSuggestions(false);
-      
-      // Show unmute button when any autoplay error occurs
-      window.dispatchEvent(new CustomEvent('showUnmuteButton', {
-        detail: { show: true }
-      }));
-      
-      window.dispatchEvent(new CustomEvent('audioStatusChange', {
-        detail: { status: 'stopped' }
-      }));
-    }
-  };
-
-  // Function to stop voice response
-  const handleStopVoiceResponse = () => {
-    console.log("Stop voice response button clicked");
-    
-    // Stop audio playback
-    if ((window as any).currentOpenAIAudio) {
-      (window as any).currentOpenAIAudio.pause();
-      (window as any).currentOpenAIAudio.currentTime = 0;
-      (window as any).currentOpenAIAudio = null;
-    }
-    
-    // Reset UI state - show suggestions again after stopping
-    setIsVoiceResponding(false);
-    setShowStopButton(false);
-    setHideSuggestions(false);
-    
-    // Dispatch stop event
-    window.dispatchEvent(new CustomEvent('audioStatusChange', {
-      detail: { status: 'stopped' }
-    }));
-  };
-
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
 
-    // Hide suggestions after sending a message and show processing state
+    // Hide suggestions after sending a message
     setHideSuggestions(true);
     setIsTyping(true);
-    setIsProcessingAI(true);
-
-    // Show unmute button immediately after question is asked
-    window.dispatchEvent(new CustomEvent('showUnmuteButton', {
-      detail: { show: true }
-    }));
 
     try {
       // Add user message to UI immediately
@@ -845,34 +651,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
-        // Always show unmute button as independent control - not related to autoplay
-        console.log("Showing unmute button as independent voice control");
-        window.dispatchEvent(new CustomEvent('showUnmuteButton', {
-          detail: { show: true }
-        }));
-        
-        // Always attempt autoplay when response is ready - independent of unmute button
-        console.log("Attempting autoplay - independent of unmute button state");
-        window.dispatchEvent(new CustomEvent('audioStatusChange', {
-          detail: { status: 'thinking' }
-        }));
-        
-        // Try autoplay - if it fails, unmute button will be available as fallback
-        // Prevent duplicate audio generation
-        if (!isGeneratingAudio) {
-          try {
-            setIsGeneratingAudio(true);
-            await playVoiceResponse(assistantMessage.content);
-            console.log("Autoplay successful");
-          } catch (error) {
-            console.log("Autoplay failed - unmute button available as fallback:", error);
-            // Autoplay failed, but unmute button is already available as fallback
-          } finally {
-            setIsGeneratingAudio(false);
-          }
-        } else {
-          console.log("Audio generation already in progress, skipping duplicate");
-        }
+        // Auto-speak the assistant's response is disabled - use Listen Response button instead
+        console.log("speakResponse disabled - use Listen Response button instead");
       }
 
       // Refresh all messages
@@ -886,7 +666,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       });
     } finally {
       setIsTyping(false);
-      setIsProcessingAI(false);
     }
   };
 
@@ -1625,43 +1404,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         </div>
                       </div>
                     ))}
-                    
-                    {/* AI Processing Loading Indicator */}
-                    {isProcessingAI && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          width: "100%",
-                        }}
-                      >
-                        <div
-                          style={{
-                            backgroundColor: "transparent",
-                            borderRadius: "16px",
-                            padding: "12px 0",
-                            maxWidth: "100%",
-                            ...typography.body,
-                          }}
-                        >
-                          <div
-                            style={{
-                              color: "#DBDBDB",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            <div className="typing-indicator">
-                              <span></span>
-                              <span></span>
-                              <span></span>
-                            </div>
-                            <span>AI is thinking...</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
@@ -2118,38 +1860,31 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               ) : (
                 // Show suggestions and input for Home page
                 <>
-                  {/* Suggestion chips - hidden during voice responses */}
-                  {console.log("Rendering suggestions check - hideSuggestions:", hideSuggestions, "should render:", !hideSuggestions)}
-                  {!hideSuggestions ? (
-                    <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                      <button
-                        onClick={() => handleSendMessage("Tasting notes")}
-                        className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                      >
-                        Tasting notes
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleSendMessage("Simple recipes for this wine")
-                        }
-                        className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                      >
-                        Simple recipes
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleSendMessage("Where is this wine from?")
-                        }
-                        className="whitespace-nowrap text-white rounded text-sm suggestion-button"
-                      >
-                        Where it's from
-                      </button>
-                    </div>
-                  ) : (
-                    <div style={{ height: '0px', marginBottom: '8px' }}>
-                      {/* Hidden suggestions placeholder */}
-                    </div>
-                  )}
+                  {/* Suggestion chips - always visible above input */}
+                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                    <button
+                      onClick={() => handleSendMessage("Tasting notes")}
+                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                    >
+                      Tasting notes
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleSendMessage("Simple recipes for this wine")
+                      }
+                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                    >
+                      Simple recipes
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleSendMessage("Where is this wine from?")
+                      }
+                      className="whitespace-nowrap text-white rounded text-sm suggestion-button"
+                    >
+                      Where it's from
+                    </button>
+                  </div>
 
                   <div className="relative flex items-center">
                     <ChatInput

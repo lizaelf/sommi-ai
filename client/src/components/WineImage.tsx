@@ -33,7 +33,6 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isThinking, setIsThinking] = useState(false);
   const [showTestAnimation, setShowTestAnimation] = useState(false);
   const [frequencyData, setFrequencyData] = useState<number[]>([]);
   const animationRef = useRef<number>(0);
@@ -106,7 +105,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     setOpacity(0.8);
     
     // Continue animation if in any active state
-    if (isListening || isProcessing || isPlaying || isThinking || showTestAnimation) {
+    if (isListening || isProcessing || isPlaying || showTestAnimation) {
       animationRef.current = requestAnimationFrame(animate);
     } else {
       // In silence, stop animation and return to base size
@@ -226,16 +225,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     // Function to handle audio playback status change
     const handleAudioStatusChange = (event: CustomEvent) => {
       console.log('WineImage: Audio status changed:', event.detail?.status);
-      if (event.detail?.status === 'thinking') {
-        setIsThinking(true);
-        setIsProcessing(false);
-        setIsPlaying(false);
-        
-        // Reset frame counter for smooth animation start
-        frameCount.current = 0;
-      } else if (event.detail?.status === 'playing') {
-        setIsThinking(false);
-        setIsProcessing(false);
+      if (event.detail?.status === 'playing') {
         setIsPlaying(true);
         
         // Connect to audio element for frequency analysis
@@ -257,8 +247,6 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
         // Reset frame counter for smooth animation start
         frameCount.current = 0;
       } else if (event.detail?.status === 'stopped') {
-        setIsThinking(false);
-        setIsProcessing(false);
         setIsPlaying(false);
         
         // Disconnect source when audio stops
@@ -375,7 +363,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
 
   // Start/stop animation when listening, processing, or playing changes
   useEffect(() => {
-    console.log('WineImage: Animation state changed - listening:', isListening, 'processing:', isProcessing, 'playing:', isPlaying, 'thinking:', isThinking, 'test:', showTestAnimation);
+    console.log('WineImage: Animation state changed - listening:', isListening, 'processing:', isProcessing, 'playing:', isPlaying, 'test:', showTestAnimation);
     if (isListening || isProcessing || isPlaying || showTestAnimation) {
       console.log('WineImage: Starting animation');
       // Only start a new animation if there isn't one already running

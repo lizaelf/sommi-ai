@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { initAudioContext, isAudioContextInitialized, unlockAudioForSession } from '@/lib/audioContext';
+import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
 import VoiceBottomSheet from './VoiceBottomSheet';
 import { 
   getMicrophonePermission, 
@@ -21,49 +21,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [showListenButton, setShowListenButton] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
-  const [hasAutoPlayPermission, setHasAutoPlayPermission] = useState(false);
-  const [showUnmuteButton, setShowUnmuteButton] = useState(false);
-  const [isFirstResponse, setIsFirstResponse] = useState(true);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
-  // Check if user has already given auto-play permission
-  useEffect(() => {
-    const permission = localStorage.getItem('voiceAutoPlayPermission');
-    if (permission === 'granted') {
-      setHasAutoPlayPermission(true);
-      setIsFirstResponse(false);
-    }
-  }, []);
-
-  // Auto-play response when ready if user has given permission
-  useEffect(() => {
-    if (!isProcessing && !isListening && !isResponding && hasAutoPlayPermission && !isFirstResponse) {
-      const lastAssistantMessage = (window as any).lastAssistantMessageText;
-      if (lastAssistantMessage && showBottomSheet && !showAskButton) {
-        // Small delay to ensure UI is ready
-        setTimeout(() => {
-          handleListenResponse();
-        }, 500);
-      }
-    }
-  }, [isProcessing, isListening, isResponding, hasAutoPlayPermission, isFirstResponse, showBottomSheet, showAskButton]);
-
-  // Track when new assistant messages arrive for auto-play
-  useEffect(() => {
-    const handleNewAssistantMessage = (event: CustomEvent) => {
-      if (hasAutoPlayPermission && showBottomSheet && !isFirstResponse) {
-        // Auto-play is handled by the other effect
-        console.log("New assistant message detected, auto-play will trigger");
-      }
-    };
-
-    window.addEventListener('assistant-message-ready', handleNewAssistantMessage as EventListener);
-    
-    return () => {
-      window.removeEventListener('assistant-message-ready', handleNewAssistantMessage as EventListener);
-    };
-  }, [hasAutoPlayPermission, showBottomSheet, isFirstResponse]);
+  // Don't request mic permission on mount - only when user clicks mic button
 
   // Handle audio status changes and page visibility
   useEffect(() => {
@@ -72,8 +33,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       if (status === 'playing') {
         setIsResponding(true);
-        setShowListenButton(false);
-        setShowAskButton(false);
       } else if (status === 'stopped' || status === 'paused' || status === 'muted') {
         setIsResponding(false);
       }
@@ -108,23 +67,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       stopListening();
     };
 
-    // Handle unmute button display events
-    const handleShowUnmuteButton = (event: CustomEvent) => {
-      if (event.detail?.show) {
-        setShowUnmuteButton(true);
-        setShowListenButton(false);
-        setShowBottomSheet(true);
-      }
-    };
-
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
-    window.addEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
     
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
-      window.removeEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       
@@ -138,12 +86,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     };
   }, []);
 
-  // Always show unmute button - never hide it regardless of audio states
+  // Show listen button when AI responds
   useEffect(() => {
-    // Always show unmute button regardless of any state
-    setShowUnmuteButton(true);
-    setShowListenButton(false);
-  }, [isProcessing, isListening, isResponding, showAskButton]);
+    if (!isProcessing && !isListening && !isResponding) {
+      setShowListenButton(true);
+    } else {
+      setShowListenButton(false);
+    }
+  }, [isProcessing, isListening, isResponding]);
 
   const toggleListening = async () => {
     if (!isAudioContextInitialized()) {
@@ -301,11 +251,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         const transcript = event.results[0][0].transcript;
         console.log("Final transcript:", transcript);
         
-        // Unlock audio for session when user speaks (first interaction)
-        unlockAudioForSession();
-        
         setIsListening(false);
-        setIsLoadingAudio(true); // Show loading state while processing speech
         
         // Dispatch processing event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
@@ -313,11 +259,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         }));
         
         onSendMessage(transcript);
-        
-        // Mark that user has interacted (no longer first response)
-        if (isFirstResponse) {
-          setIsFirstResponse(false);
-        }
       };
       
       recognition.onerror = (event: any) => {
@@ -330,9 +271,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         }));
         
         if (event.error !== 'aborted') {
-          // Show "Ask" button for retry when there's an error
-          setShowAskButton(true);
-          
           toast({
             description: (
               <span
@@ -357,7 +295,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               maxWidth: "none",
               padding: "8px 24px",
               borderRadius: "32px",
-              boxShadow: "0px 4px 16px rgba (0, 0, 0, 0.1)",
+              boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
               zIndex: 9999,
             },
           });
@@ -433,7 +371,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     // Reset all states
     setIsResponding(false);
     setShowListenButton(false);
-    setShowUnmuteButton(false);
     setIsLoadingAudio(false);
     setShowAskButton(false);
     setShowBottomSheet(false);
@@ -441,9 +378,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleMute = () => {
-    // Unlock audio for session when user clicks mute (first interaction)
-    unlockAudioForSession();
-    
     if ((window as any).currentOpenAIAudio) {
       console.log("Stop button clicked - stopping OpenAI TTS audio playback");
       (window as any).currentOpenAIAudio.pause();
@@ -461,30 +395,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setShowListenButton(false); // Hide listen button after stop
     setIsLoadingAudio(false);
     setShowAskButton(true); // Show ask button after stopping audio
-    
-    // Dispatch stop event to notify other components
-    window.dispatchEvent(new CustomEvent('audioStatusChange', {
-      detail: { status: 'stopped' }
-    }));
   };
 
   const handleAsk = () => {
     setShowAskButton(false); // Hide ask button when starting new question
     handleCloseBottomSheet();
     startListening();
-  };
-
-  const handleUnmute = async () => {
-    // Grant auto-play permission
-    setHasAutoPlayPermission(true);
-    setIsFirstResponse(false);
-    localStorage.setItem('voiceAutoPlayPermission', 'granted');
-    
-    // Hide unmute button and show processing state
-    setShowUnmuteButton(false);
-    
-    // Play the response
-    await handleListenResponse();
   };
 
   const handleListenResponse = async () => {
@@ -500,21 +416,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
     
-    // Unlock audio for session when user clicks listen (first interaction)
-    unlockAudioForSession();
-    
     console.log("Listen Response button clicked");
     setIsLoadingAudio(true);
     setShowListenButton(false);
-    setShowUnmuteButton(false);
-    setShowAskButton(false); // Hide ask button when starting TTS
-    
-    // Set responding state immediately to hide suggestions
-    setIsResponding(true);
     
     try {
       console.log("Playing stored response with OpenAI TTS");
-      console.log("Generating audio...");
+      setIsResponding(true);
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
@@ -531,14 +439,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         
         audio.onplay = () => {
           setIsLoadingAudio(false);
-          console.log("Manual audio playback started - suggestions already hidden");
         };
         
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
           setIsResponding(false);
-          setShowListenButton(false); // Don't show listen button after audio ends
-          setShowAskButton(true); // Show ask button after audio completes
+          setShowListenButton(true);
           (window as any).currentOpenAIAudio = null;
         };
         
@@ -546,8 +452,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           URL.revokeObjectURL(audioUrl);
           setIsResponding(false);
           setIsLoadingAudio(false);
-          setShowListenButton(false); // Don't show listen button on error
-          setShowAskButton(true); // Show ask button on error
+          setShowListenButton(true);
           (window as any).currentOpenAIAudio = null;
         };
         
@@ -556,15 +461,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.error("Failed to generate text-to-speech");
         setIsResponding(false);
         setIsLoadingAudio(false);
-        setShowListenButton(false); // Don't show listen button on API error
-        setShowAskButton(true); // Show ask button on API error
+        setShowListenButton(true);
       }
     } catch (error) {
       console.error("Error in handleListenResponse:", error);
       setIsResponding(false);
       setIsLoadingAudio(false);
-      setShowListenButton(false); // Don't show listen button on error
-      setShowAskButton(true); // Show ask button on error
+      setShowListenButton(true);
     }
   };
 
@@ -614,14 +517,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing}
-        showSuggestions={!isListening && !isResponding && !isProcessing && !isLoadingAudio && showAskButton}
+        showSuggestions={!isListening && !isResponding && !isProcessing}
         showListenButton={showListenButton && !isListening && !isResponding}
         showAskButton={showAskButton && !isListening && !isResponding}
-        showUnmuteButton={showUnmuteButton && !isListening && !isResponding}
         isLoadingAudio={isLoadingAudio}
         onSuggestionClick={handleSuggestionClick}
         onListenResponse={handleListenResponse}
-        onUnmute={handleUnmute}
       />
     </div>
   );
