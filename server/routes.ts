@@ -314,8 +314,57 @@ Format: Return only the description text, no quotes or additional formatting.`;
       console.log("Body content:", JSON.stringify(req.body, null, 2));
       console.log("User-Agent:", req.headers['user-agent']);
       
-      // Validate request
-      validatedData = chatCompletionRequestSchema.parse(req.body);
+      // Safari compatibility: detect Safari and use relaxed validation
+      const userAgent = req.headers['user-agent'] || '';
+      const isSafari = userAgent.includes('Safari') && !userAgent.includes('Chrome');
+      
+      if (isSafari) {
+        console.log("Safari detected - using relaxed validation");
+        
+        // Safari compatibility: handle malformed or different request structure
+        let requestBody = req.body;
+        
+        // Handle potential Safari request body issues
+        if (typeof requestBody === 'string') {
+          try {
+            requestBody = JSON.parse(requestBody);
+          } catch (parseError) {
+            console.log("Safari JSON parse error:", parseError);
+            throw new Error("Invalid JSON format");
+          }
+        }
+        
+        // Manual validation for Safari with flexible field handling
+        if (!requestBody.messages || !Array.isArray(requestBody.messages)) {
+          console.log("Safari: Missing or invalid messages array");
+          throw new Error("Messages array is required");
+        }
+        
+        // Validate message structure for Safari
+        for (const msg of requestBody.messages) {
+          if (!msg.role || !msg.content) {
+            console.log("Safari: Invalid message structure:", msg);
+            throw new Error("Each message must have role and content");
+          }
+        }
+        
+        // Create Safari-compatible validated data with type coercion
+        validatedData = {
+          messages: requestBody.messages,
+          conversationId: requestBody.conversationId ? Number(requestBody.conversationId) : undefined,
+          wineData: requestBody.wineData || undefined,
+          optimize_for_speed: Boolean(requestBody.optimize_for_speed)
+        };
+        
+        console.log("Safari validation successful:", {
+          messageCount: validatedData.messages.length,
+          hasConversationId: !!validatedData.conversationId,
+          hasWineData: !!validatedData.wineData
+        });
+      } else {
+        // Validate request normally for other browsers
+        validatedData = chatCompletionRequestSchema.parse(req.body);
+      }
       
       // Get messages from request
       const { messages, conversationId, wineData } = validatedData;
