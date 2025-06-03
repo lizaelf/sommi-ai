@@ -2008,8 +2008,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 // Show suggestions and input for Home page
                 <>
                   {/* Suggestion chips - hidden during voice responses */}
-                  {console.log("Rendering suggestions, hideSuggestions:", hideSuggestions)}
-                  {!hideSuggestions && (
+                  {console.log("Rendering suggestions check - hideSuggestions:", hideSuggestions, "should render:", !hideSuggestions)}
+                  {!hideSuggestions ? (
                     <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                       <button
                         onClick={() => handleSendMessage("Tasting notes")}
@@ -2033,6 +2033,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       >
                         Where it's from
                       </button>
+                    </div>
+                  ) : (
+                    <div style={{ height: '0px', marginBottom: '8px' }}>
+                      {/* Hidden suggestions placeholder */}
                     </div>
                   )}
 
