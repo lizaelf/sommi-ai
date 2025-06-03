@@ -39,7 +39,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
     year: 2021,
     bottles: 6,
-    image: "",
+    image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg",
     ratings: {
       vn: 95,
       jd: 93,
@@ -59,7 +59,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     name: "Monte Bello Cabernet Sauvignon",
     year: 2021,
     bottles: 2,
-    image: "",
+    image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1748949892850.jpeg",
     ratings: {
       vn: 95,
       jd: 93,
@@ -118,7 +118,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.9.6';
+const CURRENT_VERSION = '1.9.7';
 
 export class DataSyncManager {
   
