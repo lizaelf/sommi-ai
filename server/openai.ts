@@ -7,6 +7,24 @@ export function generateDynamicWineSystemPrompt(wineData: any): string {
   const wineYear = wineData.year || "Unknown Year";
   const ratings = wineData.ratings || {};
   
+  // Check if this is a description generation request (temporary ID 0)
+  if (wineData.id === 0) {
+    return `You are a professional sommelier and wine expert. Generate authentic, concise wine descriptions based on wine names and vintages.
+
+TASK: Create a professional wine description for ${wineName} (${wineYear}).
+
+REQUIREMENTS:
+- Focus EXCLUSIVELY on ${wineName} (${wineYear})
+- 2-3 sentences maximum
+- Authentic tasting notes and characteristics
+- Include varietal-specific traits when identifiable
+- Mention terroir or region if apparent from the name
+- Professional wine industry language
+- No marketing fluff or superlatives
+
+Return only the description text, no quotes or additional formatting.`;
+  }
+  
   return `You are a wine expert specializing EXCLUSIVELY in ${wineName} (${wineYear}).
 
 CRITICAL: You MUST ONLY discuss ${wineName} (${wineYear}). NEVER discuss generic wines or any other wine. Every response must be specifically about ${wineName} (${wineYear}).

@@ -184,16 +184,21 @@ Requirements:
 
 Format: Return only the description text, no quotes or additional formatting.`;
 
+      // Create wine data object for dynamic system prompt
+      const wineData = {
+        id: 0, // Temporary ID for description generation
+        name: wineName,
+        year: year || new Date().getFullYear(),
+        bottles: 0,
+        ratings: { vn: 0, jd: 0, ws: 0, abv: 0 }
+      };
+
       const response = await chatCompletion([
-        {
-          role: "system",
-          content: "You are a professional sommelier and wine expert. Generate authentic, concise wine descriptions based on wine names and vintages."
-        },
         {
           role: "user",
           content: prompt
         }
-      ]);
+      ], wineData);
 
       const description = response.content.trim();
       
