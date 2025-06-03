@@ -16,6 +16,8 @@ type WineCardData = UnifiedWineData;
 export default function AdminCRM() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -29,6 +31,8 @@ export default function AdminCRM() {
   const loadWineData = () => {
     try {
       console.log("AdminCRM: Starting to load wine data...");
+      setIsLoading(true);
+      setError(null);
       
       // Initialize unified data system
       DataSyncManager.initialize();
@@ -39,9 +43,12 @@ export default function AdminCRM() {
       console.log("AdminCRM: Loaded wines:", allWines.length, "wines");
       console.log("AdminCRM: Wine data:", allWines.map(w => ({ id: w.id, name: w.name, hasImage: !!w.image })));
       setWineCards(allWines);
+      setIsLoading(false);
     } catch (error) {
       console.error("AdminCRM: Error loading wine data:", error);
+      setError(error instanceof Error ? error.message : 'Unknown error occurred');
       setWineCards([]);
+      setIsLoading(false);
     }
   };
 
@@ -218,6 +225,34 @@ export default function AdminCRM() {
   };
 
 
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background text-white flex items-center justify-center" style={{
+        backgroundColor: "#0A0A0A !important"
+      }}>
+        <div className="text-center">
+          <h2 className="text-xl mb-4">Error Loading Admin CRM</h2>
+          <p className="text-red-400 mb-4">{error}</p>
+          <Button onClick={loadWineData}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background text-white flex items-center justify-center" style={{
+        backgroundColor: "#0A0A0A !important"
+      }}>
+        <div className="text-center">
+          <h2 className="text-xl">Loading Wine Collection...</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-white" style={{
@@ -431,115 +466,103 @@ export default function AdminCRM() {
 
           {/* Wine Cards Preview */}
           <div>
-            <div>
-              {filteredWines.map((card, index) => (
-                <div key={card.id}>
-                  <div
+            <div style={{ padding: "16px" }}>
+              <h3 style={{ color: "white", marginBottom: "16px" }}>
+                {filteredWines.length} wines found
+              </h3>
+              
+              {filteredWines.length === 0 ? (
+                <div style={{ 
+                  color: "rgba(255, 255, 255, 0.6)", 
+                  textAlign: "center", 
+                  padding: "32px" 
+                }}>
+                  No wines in collection. Click "Add Wine" to get started.
+                </div>
+              ) : (
+                filteredWines.map((card) => (
+                  <div 
+                    key={card.id}
                     style={{
-                      padding: "0",
-                      position: "relative",
+                      backgroundColor: "rgba(255, 255, 255, 0.05)",
+                      borderRadius: "8px",
+                      padding: "16px",
+                      marginBottom: "12px",
                       cursor: "pointer",
+                      border: "1px solid rgba(255, 255, 255, 0.1)"
                     }}
                     onClick={() => setLocation(`/wine-edit/${card.id}`)}
                   >
-                    <div
-                      style={{
+                    <div style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "16px" 
+                    }}>
+                      {/* Image */}
+                      <div style={{ 
+                        width: "60px", 
+                        height: "80px", 
+                        flexShrink: 0,
                         display: "flex",
-                        gap: "20px",
-                        alignItems: "flex-start",
-                        padding: "16px",
-                      }}
-                    >
-                      {/* Wine Image */}
-                      <div
-                        style={{
-                          width: "80px",
-                          height: "100px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {card.image && card.image.trim() !== "" && card.image.startsWith('data:') ? (
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        {card.image && card.image.startsWith('data:') ? (
                           <img
                             src={card.image}
                             alt={card.name}
                             style={{
-                              maxHeight: "90px",
-                              maxWidth: "70px",
-                              width: "auto",
-                              height: "auto",
+                              maxWidth: "100%",
+                              maxHeight: "100%",
+                              objectFit: "contain"
+                            }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
                             }}
                           />
                         ) : (
-                          <div
-                            style={{
-                              maxHeight: "90px",
-                              maxWidth: "70px",
-                              width: "70px",
-                              height: "90px",
-                              backgroundColor: "rgba(255, 255, 255, 0.1)",
-                              border: "2px dashed rgba(255, 255, 255, 0.3)",
-                              borderRadius: "8px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              color: "rgba(255, 255, 255, 0.5)",
-                              fontSize: "12px",
-                              textAlign: "center"
-                            }}
-                          >
+                          <div style={{
+                            width: "100%",
+                            height: "100%",
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            border: "2px dashed rgba(255, 255, 255, 0.3)",
+                            borderRadius: "4px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "10px",
+                            color: "rgba(255, 255, 255, 0.5)"
+                          }}>
                             No Image
                           </div>
                         )}
                       </div>
-
-                      {/* Essential Info */}
+                      
+                      {/* Wine Info */}
                       <div style={{ flex: 1 }}>
-                        <div style={{ 
-                          ...typography.body, 
+                        <h4 style={{ 
                           color: "white", 
-                          marginBottom: "4px",
-                          border: "none !important",
-                          borderBottom: "none !important",
-                          borderTop: "none !important",
-                          borderLeft: "none !important",
-                          borderRight: "none !important",
-                          borderStyle: "none !important",
-                          borderWidth: "0 !important",
-                          borderColor: "transparent !important",
-                          textDecoration: "none !important",
-                          outline: "none !important",
-                          boxShadow: "none !important",
-                          backgroundImage: "none !important"
+                          margin: "0 0 8px 0",
+                          fontSize: "16px",
+                          fontWeight: "500"
                         }}>
-                          {card.year} {card.name}
-                        </div>
-                        <div style={{ ...typography.body1R, color: "rgba(255, 255, 255, 0.60)" }}>
-                          ID: {card.id}
+                          {card.name}
+                        </h4>
+                        <div style={{ 
+                          color: "rgba(255, 255, 255, 0.7)",
+                          fontSize: "14px"
+                        }}>
+                          {card.year} • {card.bottles} bottles
                         </div>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Divider between cards */}
-                  {index < filteredWines.length - 1 && (
-                    <div
-                      style={{
-                        height: "1px",
-                        backgroundColor: "#373737",
-                      }}
-                    />
-                  )}
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
       </div>
-
-
     </div>
   );
 }
