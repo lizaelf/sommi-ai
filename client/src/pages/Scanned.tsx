@@ -249,6 +249,20 @@ export default function Scanned() {
               No Image
             </div>
           )}
+          
+          {/* Test: Direct HTML image rendering */}
+          {selectedWine && selectedWine.image && (
+            <div style={{ margin: "10px", border: "2px solid red", padding: "10px" }}>
+              <div style={{ color: "white", fontSize: "12px", marginBottom: "10px" }}>
+                Direct HTML Test (should show wine image):
+              </div>
+              <div 
+                dangerouslySetInnerHTML={{
+                  __html: `<img src="${selectedWine.image}" style="width: 100px; height: auto; border: 1px solid blue;" onload="console.log('Direct HTML image loaded')" onerror="console.log('Direct HTML image failed')" />`
+                }}
+              />
+            </div>
+          )}
         </div>
         
         {/* Debug Info */}
@@ -266,6 +280,17 @@ export default function Scanned() {
         {selectedWine && selectedWine.image && (
           <div style={{ color: 'white', fontSize: '10px', textAlign: 'center', padding: '5px', wordBreak: 'break-all' }}>
             Image start: {selectedWine.image.substring(0, 100)}...
+            <br />
+            Base64 valid: {(() => {
+              try {
+                const base64Part = selectedWine.image.split(',')[1];
+                if (!base64Part) return 'No comma separator found';
+                atob(base64Part.substring(0, 100));
+                return 'Yes - decodable';
+              } catch (e) {
+                return `No - ${e instanceof Error ? e.message : 'Unknown error'}`;
+              }
+            })()}
           </div>
         )}
 
