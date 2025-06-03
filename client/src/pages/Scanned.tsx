@@ -208,43 +208,38 @@ export default function Scanned() {
         <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px" }}>
           {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
             <div style={{ textAlign: "center" }}>
-              <canvas
-                ref={(canvas) => {
-                  if (canvas && selectedWine.image) {
-                    const ctx = canvas.getContext('2d');
-                    const img = new Image();
-                    img.onload = () => {
-                      const maxHeight = 170;
-                      const aspectRatio = img.width / img.height;
-                      const width = maxHeight * aspectRatio;
-                      
-                      canvas.width = width;
-                      canvas.height = maxHeight;
-                      
-                      // Set canvas display size
-                      canvas.style.width = width + 'px';
-                      canvas.style.height = maxHeight + 'px';
-                      canvas.style.display = 'block';
-                      canvas.style.visibility = 'visible';
-                      
-                      ctx?.clearRect(0, 0, width, maxHeight);
-                      ctx?.drawImage(img, 0, 0, width, maxHeight);
-                      
-                      console.log(`Canvas rendered and styled: ${width}x${maxHeight}`);
-                    };
-                    img.onerror = (e) => console.error("Canvas image load failed:", e);
-                    img.src = selectedWine.image;
-                  }
-                }}
+              <svg
+                width="136"
+                height="170"
+                viewBox="0 0 136 170"
                 style={{
-                  maxHeight: "170px",
                   borderRadius: "8px",
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  border: "2px solid red",
-                  display: "block",
-                  visibility: "visible"
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  border: "2px solid yellow"
                 }}
-              />
+              >
+                <foreignObject x="0" y="0" width="136" height="170">
+                  <div
+                    style={{
+                      width: "136px",
+                      height: "170px",
+                      backgroundImage: `url("${selectedWine.image}")`,
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center"
+                    }}
+                  />
+                </foreignObject>
+              </svg>
+              
+              {/* Text indicator that image should be visible */}
+              <div style={{ 
+                color: "white", 
+                fontSize: "12px", 
+                marginTop: "8px" 
+              }}>
+                Wine Image (26KB loaded)
+              </div>
             </div>
           ) : (
             <div 
