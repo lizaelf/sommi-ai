@@ -138,21 +138,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     };
   }, []);
 
-  // Show listen/unmute button when AI responds
+  // Always show unmute button for consistent voice control access
   useEffect(() => {
     if (!isProcessing && !isListening && !isResponding && !showAskButton) {
-      if (isFirstResponse && !hasAutoPlayPermission) {
-        setShowUnmuteButton(true);
-        setShowListenButton(false);
-      } else if (!isFirstResponse || hasAutoPlayPermission) {
-        setShowListenButton(true);
-        setShowUnmuteButton(false);
-      }
+      // Always show unmute button regardless of session state
+      setShowUnmuteButton(true);
+      setShowListenButton(false);
     } else {
       setShowListenButton(false);
-      setShowUnmuteButton(false);
+      // Keep unmute button visible even during processing states
+      if (!isListening && !isResponding) {
+        setShowUnmuteButton(true);
+      } else {
+        setShowUnmuteButton(false);
+      }
     }
-  }, [isProcessing, isListening, isResponding, showAskButton, isFirstResponse, hasAutoPlayPermission]);
+  }, [isProcessing, isListening, isResponding, showAskButton]);
 
   const toggleListening = async () => {
     if (!isAudioContextInitialized()) {
