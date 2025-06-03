@@ -592,6 +592,27 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [messages.length]);
 
+  // Listen for audio status changes to coordinate UI state
+  useEffect(() => {
+    const handleAudioStatusChange = (event: CustomEvent) => {
+      const status = event.detail?.status;
+      
+      if (status === 'playing') {
+        setHideSuggestions(true);
+        setIsVoiceResponding(true);
+      } else if (status === 'stopped' || status === 'paused') {
+        setIsVoiceResponding(false);
+        setHideSuggestions(false);
+      }
+    };
+
+    window.addEventListener('audioStatusChange', handleAudioStatusChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('audioStatusChange', handleAudioStatusChange as EventListener);
+    };
+  }, []);
+
   // Function to automatically play voice response
   const playVoiceResponse = async (text: string) => {
     try {
@@ -691,7 +712,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       (window as any).currentOpenAIAudio = null;
     }
     
-    // Reset UI state
+    // Reset UI state - show suggestions again after stopping
     setIsVoiceResponding(false);
     setShowStopButton(false);
     setHideSuggestions(false);

@@ -401,6 +401,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setShowListenButton(false); // Hide listen button after stop
     setIsLoadingAudio(false);
     setShowAskButton(true); // Show ask button after stopping audio
+    
+    // Dispatch stop event to notify other components
+    window.dispatchEvent(new CustomEvent('audioStatusChange', {
+      detail: { status: 'stopped' }
+    }));
   };
 
   const handleAsk = () => {
