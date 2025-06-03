@@ -274,6 +274,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         }));
         
         if (event.error !== 'aborted') {
+          // Show "Ask" button for retry when there's an error
+          setShowAskButton(true);
+          
           toast({
             description: (
               <span
@@ -298,7 +301,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               maxWidth: "none",
               padding: "8px 24px",
               borderRadius: "32px",
-              boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+              boxShadow: "0px 4px 16px rgba (0, 0, 0, 0.1)",
               zIndex: 9999,
             },
           });
