@@ -313,18 +313,31 @@ Format: Return only the description text, no quotes or additional formatting.`;
       // Get messages from request
       const { messages, conversationId, wineData } = validatedData;
       
-      // Check if conversation exists
+      // Handle conversation existence - create if needed
+      let actualConversationId = conversationId;
       if (conversationId) {
         const conversation = await storage.getConversation(conversationId);
         if (!conversation) {
-          return res.status(404).json({ message: "Conversation not found" });
+          // Create new conversation in database
+          try {
+            const newConversation = await storage.createConversation({
+              userId: 1, // Default user
+              title: `Wine Conversation ${new Date().toLocaleString()}`,
+            });
+            actualConversationId = newConversation.id;
+            console.log(`Created new conversation ${actualConversationId} in database`);
+          } catch (createError) {
+            console.error(`Failed to create conversation:`, createError);
+            // Continue without conversation ID - messages won't be saved but chat will work
+            actualConversationId = null;
+          }
         }
       }
       
       // Fetch previous messages for context if conversationId is provided
       let allMessages = messages;
-      if (conversationId) {
-        const previousMessages = await storage.getMessagesByConversation(conversationId);
+      if (actualConversationId) {
+        const previousMessages = await storage.getMessagesByConversation(actualConversationId);
         // Format previous messages for OpenAI API format
         const formattedPreviousMessages = previousMessages.map(msg => ({
           role: msg.role as any,
@@ -348,19 +361,19 @@ Format: Return only the description text, no quotes or additional formatting.`;
       const response = await chatCompletion(allMessages, wineData);
       
       // Save message to storage if conversation exists
-      if (conversationId) {
+      if (actualConversationId) {
         // Save user message
         await storage.createMessage({
           content: messages[messages.length - 1].content,
           role: 'user',
-          conversationId
+          conversationId: actualConversationId
         });
         
         // Save assistant response
         await storage.createMessage({
           content: response.content,
           role: 'assistant',
-          conversationId
+          conversationId: actualConversationId
         });
       }
       
@@ -370,7 +383,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
           role: 'assistant',
           content: response.content
         },
-        conversationId
+        conversationId: actualConversationId
       });
     } catch (err) {
       const error = err as any;
