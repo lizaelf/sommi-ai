@@ -18,6 +18,7 @@ import {
   getWineVintage,
   WINE_CONFIG,
 } from "@shared/wineConfig";
+import { DataSyncManager } from "@/utils/dataSync";
 import { ShiningText } from "@/components/ShiningText";
 import { TextGenerateEffect } from "./ui/text-generate-effect";
 // Import typography styles
@@ -996,7 +997,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       className="pl-[0px] pr-[0px]"
                     >
                       <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        {getFoodPairingContent().dishes.map((dish, index) => (
+                        {getFoodPairingContent().dishes.map((dish: string, index: number) => (
                           <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
                             <span style={{ fontSize: "16px" }}>🥩</span>
                             <span>{dish}</span>
@@ -1082,7 +1083,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                     >
                       <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        {getCheesePairingContent().cheeses.map((cheese, index) => (
+                        {getCheesePairingContent().cheeses.map((cheese: string, index: number) => (
                           <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
                             <span style={{ fontSize: "16px" }}>🧀</span>
                             <span>{cheese}</span>
