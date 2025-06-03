@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
+import { isAudioUnlockedForSession } from "@/lib/audioContext";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceAssistant from "./VoiceAssistant";

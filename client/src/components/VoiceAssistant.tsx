@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { initAudioContext, isAudioContextInitialized } from '@/lib/audioContext';
+import { initAudioContext, isAudioContextInitialized, unlockAudioForSession } from '@/lib/audioContext';
 import VoiceBottomSheet from './VoiceBottomSheet';
 import { 
   getMicrophonePermission, 
@@ -378,6 +378,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleMute = () => {
+    // Unlock audio for session when user clicks mute (first interaction)
+    unlockAudioForSession();
+    
     if ((window as any).currentOpenAIAudio) {
       console.log("Stop button clicked - stopping OpenAI TTS audio playback");
       (window as any).currentOpenAIAudio.pause();
@@ -415,6 +418,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       setShowListenButton(true);
       return;
     }
+    
+    // Unlock audio for session when user clicks listen (first interaction)
+    unlockAudioForSession();
     
     console.log("Listen Response button clicked");
     setIsLoadingAudio(true);

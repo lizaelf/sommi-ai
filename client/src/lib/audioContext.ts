@@ -4,6 +4,9 @@
 // Track if audio context has been initialized
 let audioContextInitialized = false;
 
+// Track if user has unlocked audio for the session
+let audioUnlockedForSession = false;
+
 /**
  * Initialize the audio context on first user interaction
  * This is important because browsers require user interaction before allowing audio playback
@@ -34,6 +37,22 @@ export function initAudioContext(): Promise<boolean> {
   }
   
   return Promise.resolve(audioContextInitialized);
+}
+
+/**
+ * Unlock audio for the session - allows subsequent voice responses to autoplay
+ * Call this when user performs any intentional audio interaction (unmute, speak, etc)
+ */
+export function unlockAudioForSession(): void {
+  audioUnlockedForSession = true;
+  console.log('Audio unlocked for session - voice responses can now autoplay');
+}
+
+/**
+ * Check if audio is unlocked for the current session
+ */
+export function isAudioUnlockedForSession(): boolean {
+  return audioUnlockedForSession;
 }
 
 // Function to check if audio context is initialized
