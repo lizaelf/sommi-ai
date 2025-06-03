@@ -404,9 +404,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   const handleUnmute = () => {
     console.log("Unmute button clicked");
+    
+    // First try to resume from mute if there's paused content
     if (window.voiceAssistant?.resumeFromMute) {
       window.voiceAssistant.resumeFromMute();
+    } else if (window.voiceAssistant?.speakLastAssistantMessage) {
+      // If no paused content, speak the last assistant message
+      window.voiceAssistant.speakLastAssistantMessage();
     }
+    
     setIsResponding(true);
     setShowAskButton(false);
   };
