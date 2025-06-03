@@ -785,6 +785,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     setIsTyping(true);
     setIsProcessingAI(true);
 
+    // Show unmute button immediately after question is asked
+    window.dispatchEvent(new CustomEvent('showUnmuteButton', {
+      detail: { show: true }
+    }));
+
     try {
       // Add user message to UI immediately
       const tempUserMessage: ClientMessage = {
