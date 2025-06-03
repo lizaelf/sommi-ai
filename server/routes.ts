@@ -162,6 +162,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate wine description endpoint
+  app.post("/api/generate-wine-description", async (req, res) => {
+    try {
+      const { wineName, year } = req.body;
+      
+      if (!wineName) {
+        return res.status(400).json({ error: "Wine name is required" });
+      }
+
+      // Create a focused prompt for wine description generation
+      const prompt = `Generate a concise, professional wine description for "${wineName}" ${year ? `(${year} vintage)` : ''}. 
+
+Requirements:
+- 2-3 sentences maximum
+- Focus on authentic tasting notes and characteristics
+- Include varietal-specific traits if identifiable from the name
+- Mention terroir or region if apparent from the name
+- Professional wine industry language
+- No marketing fluff or superlatives
+
+Format: Return only the description text, no quotes or additional formatting.`;
+
+      const response = await chatCompletion([
+        {
+          role: "system",
+          content: "You are a professional sommelier and wine expert. Generate authentic, concise wine descriptions based on wine names and vintages."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ]);
+
+      const description = response?.content?.trim();
+      
+      if (!description) {
+        throw new Error("No description generated");
+      }
+
+      console.log(`Generated description for ${wineName} ${year || ''}: ${description.substring(0, 50)}...`);
+      
+      res.json({ 
+        success: true, 
+        description: description,
+        wineName,
+        year
+      });
+      
+    } catch (error) {
+      console.error("Description generation error:", error);
+      res.status(500).json({ error: "Failed to generate wine description" });
+    }
+  });
+
   // Get all conversations
   app.get("/api/conversations", async (_req, res) => {
     try {
