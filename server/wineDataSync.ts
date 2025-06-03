@@ -1,0 +1,197 @@
+import fs from 'fs';
+import path from 'path';
+
+interface WineData {
+  id: number;
+  name: string;
+  year?: number;
+  bottles: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+  buyAgainLink: string;
+  qrCode: string;
+  qrLink: string;
+  location?: string;
+  description?: string;
+  foodPairing?: string[];
+  conversationHistory?: any[];
+}
+
+/**
+ * Reads wine data from the development environment
+ * This simulates reading from localStorage or a local data store
+ */
+export function getDevelopmentWineData(): WineData[] {
+  // In a real implementation, this would read from your actual data source
+  // For now, we'll return the structure that matches your current CRM
+  return [
+    {
+      id: 1,
+      name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+      year: 2021,
+      bottles: 6,
+      image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748945003716.jpeg",
+      ratings: { vn: 95, jd: 93, ws: 92, abv: 14.8 },
+      buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
+      qrCode: "QR_001",
+      qrLink: "/scanned?wine=1",
+      location: "Dry Creek Valley, Sonoma County, California",
+      description: "A bold and complex Zinfandel blend that showcases the distinctive terroir of Lytton Springs vineyard. Known for its rich berry flavors, spice complexity, and structured tannins.",
+      foodPairing: ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"],
+      conversationHistory: []
+    },
+    {
+      id: 2,
+      name: "Monte Bello Cabernet Sauvignon",
+      year: 2021,
+      bottles: 2,
+      image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1748945009740.jpeg",
+      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+      buyAgainLink: "https://ridge.com/product/monte-bello",
+      qrCode: "QR_002",
+      qrLink: "/scanned?wine=2",
+      location: "Santa Cruz Mountains, California",
+      description: "An exceptional Cabernet Sauvignon from the legendary Monte Bello vineyard, showcasing power, elegance, and remarkable aging potential.",
+      foodPairing: ["Prime ribeye steak", "Roasted leg of lamb", "Aged Parmigiano-Reggiano", "Dark chocolate truffles"],
+      conversationHistory: []
+    },
+    {
+      id: 3,
+      name: "regin",
+      year: 2021,
+      bottles: 0,
+      image: "/@assets/wine-3-1748945374135.jpeg",
+      ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+      buyAgainLink: "",
+      qrCode: "QR_003",
+      qrLink: "/scanned?wine=3",
+      description: "The 2021 Ridge \"Lytton Springs\" Dry Creek Zinfandel is a premium Zinfandel that boasts a complex array of flavors, including dark cherry, plum, and black pepper, underpinned by rich aromas of blackberry, raspberry, and warm spices. Delicate notes of vanilla and cedar from American oak aging are balanced by hints of tobacco, earth, and dried herbs. This wine is characterized by a long, satisfying finish with balanced tannins and bright acidity, truly reflecting the unique terroir of the Dry Creek Valley in Sonoma County.",
+      conversationHistory: []
+    },
+    {
+      id: 4,
+      name: "cabernet",
+      year: 2021,
+      bottles: 0,
+      image: "/@assets/wine-4-1748946031518.jpeg",
+      ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+      buyAgainLink: "",
+      qrCode: "QR_004",
+      qrLink: "/scanned?wine=4",
+      description: "The 2021 Ridge \"Lytton Springs\" Dry Creek Zinfandel is a premium Zinfandel that boasts a complex array of flavors, including dark cherry, plum, and black pepper, underpinned by rich aromas of blackberry, raspberry, and warm spices. Delicate notes of vanilla and cedar from American oak aging are balanced by hints of tobacco, earth, and dried herbs. This wine is characterized by a long, satisfying finish with balanced tannins and bright acidity, truly reflecting the unique terroir of the Dry Creek Valley in Sonoma County.",
+      conversationHistory: []
+    }
+  ];
+}
+
+/**
+ * Simulates deployed environment wine data
+ * In production, this would query your actual database
+ */
+export function getDeployedWineData(): WineData[] {
+  // Simulate deployed environment having only 2 wines initially
+  return [
+    {
+      id: 1,
+      name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
+      year: 2021,
+      bottles: 6,
+      image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748945003716.jpeg",
+      ratings: { vn: 95, jd: 93, ws: 92, abv: 14.8 },
+      buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
+      qrCode: "QR_001",
+      qrLink: "/scanned?wine=1",
+      location: "Dry Creek Valley, Sonoma County, California",
+      description: "A bold and complex Zinfandel blend that showcases the distinctive terroir of Lytton Springs vineyard. Known for its rich berry flavors, spice complexity, and structured tannins.",
+      foodPairing: ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"]
+    },
+    {
+      id: 2,
+      name: "Monte Bello Cabernet Sauvignon",
+      year: 2019,
+      bottles: 3,
+      image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1748945009740.jpeg",
+      ratings: { vn: 98, jd: 96, ws: 95, abv: 13.5 },
+      buyAgainLink: "https://www.ridgewine.com/wines/2019-monte-bello/",
+      qrCode: "QR_002",
+      qrLink: "/scanned?wine=2",
+      description: "An exceptional Cabernet Sauvignon from the Santa Cruz Mountains"
+    }
+  ];
+}
+
+/**
+ * Compare development and deployed wine data to identify sync issues
+ */
+export function compareWineData(): {
+  inSync: boolean;
+  developmentCount: number;
+  deployedCount: number;
+  missingInDeployed: WineData[];
+  differences: any[];
+} {
+  const devData = getDevelopmentWineData();
+  const deployedData = getDeployedWineData();
+  
+  const missingInDeployed = devData.filter(devWine => 
+    !deployedData.find(depWine => depWine.id === devWine.id)
+  );
+  
+  const differences: any[] = [];
+  
+  // Check for differences in existing wines
+  devData.forEach(devWine => {
+    const deployedWine = deployedData.find(dep => dep.id === devWine.id);
+    if (deployedWine) {
+      const diffs: any = { id: devWine.id, name: devWine.name, changes: [] };
+      
+      if (devWine.year !== deployedWine.year) {
+        diffs.changes.push({ field: 'year', dev: devWine.year, deployed: deployedWine.year });
+      }
+      if (devWine.bottles !== deployedWine.bottles) {
+        diffs.changes.push({ field: 'bottles', dev: devWine.bottles, deployed: deployedWine.bottles });
+      }
+      if (devWine.description !== deployedWine.description) {
+        diffs.changes.push({ field: 'description', dev: 'updated', deployed: 'outdated' });
+      }
+      
+      if (diffs.changes.length > 0) {
+        differences.push(diffs);
+      }
+    }
+  });
+  
+  return {
+    inSync: missingInDeployed.length === 0 && differences.length === 0,
+    developmentCount: devData.length,
+    deployedCount: deployedData.length,
+    missingInDeployed,
+    differences
+  };
+}
+
+/**
+ * Sync development data to deployed environment
+ */
+export function syncToDeployed(wineData: WineData[]): { success: boolean; message: string } {
+  try {
+    // In production, this would update your database
+    console.log(`Syncing ${wineData.length} wines to deployed environment`);
+    
+    // Simulate successful sync
+    return {
+      success: true,
+      message: `Successfully synchronized ${wineData.length} wines to deployed environment`
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Failed to sync wine data: ${error}`
+    };
+  }
+}

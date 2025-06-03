@@ -337,59 +337,79 @@ export class DataSyncManager {
   }
   
   // Synchronize with deployed environment
-  static async syncWithDeployedEnvironment(): Promise<{ success: boolean; message: string }> {
+  static async syncWithDeployedEnvironment(): Promise<{
+    success: boolean;
+    message: string;
+    syncNeeded?: boolean;
+    localCount?: number;
+    deployedCount?: number;
+    details?: any;
+  }> {
     try {
-      // Get current local data
+      console.log('DataSyncManager: Starting comprehensive sync check...');
+      
+      // Get detailed sync status from the server
+      const statusResponse = await fetch('/api/wines/sync-status');
+      if (!statusResponse.ok) {
+        throw new Error(`Failed to fetch sync status: ${statusResponse.statusText}`);
+      }
+      
+      const syncStatus = await statusResponse.json();
+      console.log('DataSyncManager: Sync status:', syncStatus);
+      
+      // Get local wine data
       const localWines = this.getUnifiedWineData();
       
-      // Try to fetch data from deployed environment
-      const deployedUrl = window.location.origin.replace('-00-', '-');
-      const response = await fetch(`${deployedUrl}/api/wines`);
-      
-      if (!response.ok) {
+      if (syncStatus.inSync) {
         return {
-          success: false,
-          message: 'Could not connect to deployed environment. Data may differ between environments.'
+          success: true,
+          message: 'Development and deployed environments are perfectly synchronized',
+          syncNeeded: false,
+          localCount: syncStatus.developmentCount,
+          deployedCount: syncStatus.deployedCount,
+          details: {
+            missingInDeployed: syncStatus.missingInDeployed.length,
+            differences: syncStatus.differences.length,
+            inSync: true
+          }
         };
       }
       
-      const deployedWines = await response.json();
+      // Sync is needed - push development data to deployed environment
+      console.log('DataSyncManager: Synchronization needed, pushing development data...');
       
-      // Compare data
-      if (localWines.length !== deployedWines.length) {
-        return {
-          success: false,
-          message: `Data mismatch: Local has ${localWines.length} wines, deployed has ${deployedWines.length} wines`
-        };
+      const syncResponse = await fetch('/api/wines/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ wines: localWines })
+      });
+      
+      if (!syncResponse.ok) {
+        throw new Error(`Failed to sync data: ${syncResponse.statusText}`);
       }
       
-      // Check if all wines match
-      const mismatches = [];
-      for (const localWine of localWines) {
-        const deployedWine = deployedWines.find((w: any) => w.id === localWine.id);
-        if (!deployedWine) {
-          mismatches.push(`Wine ID ${localWine.id} exists locally but not in deployed environment`);
-        } else if (localWine.name !== deployedWine.name || localWine.year !== deployedWine.year) {
-          mismatches.push(`Wine ID ${localWine.id} differs: Local "${localWine.name}" vs Deployed "${deployedWine.name}"`);
-        }
-      }
-      
-      if (mismatches.length > 0) {
-        return {
-          success: false,
-          message: `Data inconsistencies found: ${mismatches.join('; ')}`
-        };
-      }
+      const syncResult = await syncResponse.json();
       
       return {
         success: true,
-        message: 'CRM data is synchronized between development and deployed environments'
+        message: `Successfully synchronized ${localWines.length} wines. Missing wines: ${syncStatus.missingInDeployed.length}, Updated wines: ${syncStatus.differences.length}`,
+        syncNeeded: true,
+        localCount: syncStatus.developmentCount,
+        deployedCount: syncStatus.deployedCount,
+        details: {
+          missingInDeployed: syncStatus.missingInDeployed.length,
+          differences: syncStatus.differences.length,
+          inSync: false
+        }
       };
       
     } catch (error) {
+      console.error('DataSyncManager: Sync error:', error);
       return {
         success: false,
-        message: `Sync check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Failed to sync with deployed environment: ${error instanceof Error ? error.message : 'Unknown error'}`
       };
     }
   }

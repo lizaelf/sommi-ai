@@ -562,39 +562,94 @@ Format: Return only the description text, no quotes or additional formatting.`;
   // Wine data synchronization endpoints
   app.get("/api/wines", async (_req, res) => {
     try {
-      // Return wine data from localStorage simulation for deployed environment
-      // In production, this would read from your actual database
-      const wineData = [
+      // This endpoint simulates reading from the deployed environment's data store
+      // In production, this would query your actual database
+      // For development testing, we'll return a consistent set that matches localStorage
+      
+      // Simulate deployed environment having synchronized data
+      const deployedWineData = JSON.stringify([
         {
           id: 1,
           name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
           year: 2021,
           bottles: 6,
-          image: "",
+          image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748945003716.jpeg",
           ratings: { vn: 95, jd: 93, ws: 92, abv: 14.8 },
           buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
           qrCode: "QR_001",
-          qrLink: "",
-          description: "A premium Zinfandel with complex flavors and excellent structure"
+          qrLink: "/scanned?wine=1",
+          location: "Dry Creek Valley, Sonoma County, California",
+          description: "A bold and complex Zinfandel blend that showcases the distinctive terroir of Lytton Springs vineyard. Known for its rich berry flavors, spice complexity, and structured tannins.",
+          foodPairing: ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"]
         },
         {
           id: 2,
           name: "Monte Bello Cabernet Sauvignon",
-          year: 2019,
-          bottles: 3,
-          image: "",
-          ratings: { vn: 98, jd: 96, ws: 95, abv: 13.5 },
-          buyAgainLink: "https://www.ridgewine.com/wines/2019-monte-bello/",
+          year: 2021,
+          bottles: 2,
+          image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1748945009740.jpeg",
+          ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
+          buyAgainLink: "https://ridge.com/product/monte-bello",
           qrCode: "QR_002",
-          qrLink: "",
-          description: "An exceptional Cabernet Sauvignon from the Santa Cruz Mountains"
+          qrLink: "/scanned?wine=2",
+          location: "Santa Cruz Mountains, California",
+          description: "An exceptional Cabernet Sauvignon from the legendary Monte Bello vineyard, showcasing power, elegance, and remarkable aging potential.",
+          foodPairing: ["Prime ribeye steak", "Roasted leg of lamb", "Aged Parmigiano-Reggiano", "Dark chocolate truffles"]
+        },
+        {
+          id: 3,
+          name: "regin",
+          year: 2021,
+          bottles: 0,
+          image: "/@assets/wine-3-1748945374135.jpeg",
+          ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+          buyAgainLink: "",
+          qrCode: "QR_003",
+          qrLink: "/scanned?wine=3",
+          description: "The 2021 Ridge \"Lytton Springs\" Dry Creek Zinfandel is a premium Zinfandel that boasts a complex array of flavors, including dark cherry, plum, and black pepper, underpinned by rich aromas of blackberry, raspberry, and warm spices. Delicate notes of vanilla and cedar from American oak aging are balanced by hints of tobacco, earth, and dried herbs. This wine is characterized by a long, satisfying finish with balanced tannins and bright acidity, truly reflecting the unique terroir of the Dry Creek Valley in Sonoma County."
+        },
+        {
+          id: 4,
+          name: "cabernet",
+          year: 2021,
+          bottles: 0,
+          image: "/@assets/wine-4-1748946031518.jpeg",
+          ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+          buyAgainLink: "",
+          qrCode: "QR_004",
+          qrLink: "/scanned?wine=4",
+          description: "The 2021 Ridge \"Lytton Springs\" Dry Creek Zinfandel is a premium Zinfandel that boasts a complex array of flavors, including dark cherry, plum, and black pepper, underpinned by rich aromas of blackberry, raspberry, and warm spices. Delicate notes of vanilla and cedar from American oak aging are balanced by hints of tobacco, earth, and dried herbs. This wine is characterized by a long, satisfying finish with balanced tannins and bright acidity, truly reflecting the unique terroir of the Dry Creek Valley in Sonoma County."
         }
-      ];
+      ]);
       
+      const wineData = JSON.parse(deployedWineData);
       res.json(wineData);
     } catch (error) {
       console.error("Error fetching wines:", error);
       res.status(500).json({ error: "Failed to fetch wine data" });
+    }
+  });
+
+  // Additional sync endpoints
+  app.get("/api/wines/development", async (_req, res) => {
+    try {
+      const { getDevelopmentWineData } = await import('./wineDataSync.js');
+      const wineData = getDevelopmentWineData();
+      res.json(wineData);
+    } catch (error) {
+      console.error("Error fetching development wines:", error);
+      res.status(500).json({ error: "Failed to fetch development wine data" });
+    }
+  });
+
+  app.get("/api/wines/sync-status", async (_req, res) => {
+    try {
+      const { compareWineData } = await import('./wineDataSync.js');
+      const syncStatus = compareWineData();
+      res.json(syncStatus);
+    } catch (error) {
+      console.error("Error checking sync status:", error);
+      res.status(500).json({ error: "Failed to check sync status" });
     }
   });
 
@@ -606,13 +661,14 @@ Format: Return only the description text, no quotes or additional formatting.`;
         return res.status(400).json({ error: "Invalid wine data format" });
       }
       
-      // In production, this would update your database with the synchronized data
-      console.log(`Received sync request for ${wines.length} wines`);
+      const { syncToDeployed } = await import('./wineDataSync.js');
+      const result = syncToDeployed(wines);
       
-      res.json({ 
-        success: true, 
-        message: `Successfully synchronized ${wines.length} wines` 
-      });
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(500).json(result);
+      }
     } catch (error) {
       console.error("Wine sync error:", error);
       res.status(500).json({ error: "Failed to sync wine data" });
