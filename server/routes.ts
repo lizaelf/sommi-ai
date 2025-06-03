@@ -5,6 +5,12 @@ import { chatCompletion, checkApiStatus, textToSpeech } from "./openai";
 import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
 import { z } from "zod";
 import { google } from "googleapis";
+import { writeFileSync, existsSync, mkdirSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Google Sheets integration function
 async function saveToGoogleSheets(contactData: any) {
@@ -64,6 +70,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         openai: "error",
         message: error?.message || "Failed to check API status" 
       });
+    }
+  });
+
+  // Upload image endpoint
+  app.post("/api/upload-image", async (req, res) => {
+    try {
+      const { imageData, wineId, fileName } = req.body;
+      
+      if (!imageData || !wineId) {
+        return res.status(400).json({ error: "Missing image data or wine ID" });
+      }
+
+      // Create assets directory if it doesn't exist
+      const assetsDir = join(__dirname, "..", "attached_assets");
+      if (!existsSync(assetsDir)) {
+        mkdirSync(assetsDir, { recursive: true });
+      }
+
+      // Extract base64 data and convert to buffer
+      const base64Data = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
+      const buffer = Buffer.from(base64Data, 'base64');
+      
+      // Generate unique filename
+      const timestamp = Date.now();
+      const extension = imageData.match(/^data:image\/([a-z]+);base64,/)?.[1] || 'jpg';
+      const uniqueFileName = fileName || `wine-${wineId}-${timestamp}.${extension}`;
+      
+      // Save file to assets directory
+      const filePath = join(assetsDir, uniqueFileName);
+      writeFileSync(filePath, buffer);
+      
+      // Return the relative path for use in the frontend
+      const relativePath = `/@assets/${uniqueFileName}`;
+      
+      console.log(`Saved wine image: ${uniqueFileName} (${Math.round(buffer.length / 1024)}KB)`);
+      
+      res.json({ 
+        success: true, 
+        imagePath: relativePath,
+        fileName: uniqueFileName,
+        size: buffer.length
+      });
+      
+    } catch (error) {
+      console.error("Image upload error:", error);
+      res.status(500).json({ error: "Failed to save image" });
     }
   });
 

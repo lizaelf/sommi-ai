@@ -206,63 +206,77 @@ export default function Scanned() {
 
         {/* Wine Image Section */}
         <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px" }}>
-          {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
+          {selectedWine && selectedWine.image ? (
             <div style={{ textAlign: "center" }}>
-              {(() => {
-                try {
-                  // Convert base64 to blob URL for better browser compatibility
-                  const base64Data = selectedWine.image.split(',')[1];
-                  const mimeType = selectedWine.image.split(';')[0].split(':')[1];
-                  const byteCharacters = atob(base64Data);
-                  const byteNumbers = new Array(byteCharacters.length);
+              {selectedWine.image.startsWith('/@assets/') ? (
+                // Display static file from assets folder
+                <img
+                  src={selectedWine.image}
+                  alt={selectedWine.name}
+                  style={{
+                    width: "160px",
+                    height: "160px",
+                    borderRadius: "12px",
+                    objectFit: "cover",
+                    border: "3px solid #4F46E5"
+                  }}
+                  onLoad={() => console.log('Static file image loaded successfully')}
+                  onError={(e) => {
+                    console.error('Failed to load static file image:', selectedWine.image);
+                    // Hide broken image
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              ) : selectedWine.image.startsWith('data:') ? (
+                // Handle base64 data with blob URL conversion
+                (() => {
+                  try {
+                    // Convert base64 to blob URL for better browser compatibility
+                    const base64Data = selectedWine.image.split(',')[1];
+                    const mimeType = selectedWine.image.split(';')[0].split(':')[1];
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
                   
-                  for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                      byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: mimeType });
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    console.log(`Created blob URL for wine image: ${blobUrl}`);
+                    
+                    return (
+                      <img
+                        src={blobUrl}
+                        alt={selectedWine.name}
+                        style={{
+                          width: "160px",
+                          height: "160px",
+                          borderRadius: "12px",
+                          objectFit: "cover",
+                          border: "3px solid #4F46E5"
+                        }}
+                        onLoad={() => console.log("Blob URL image loaded successfully")}
+                        onError={(e) => console.error("Blob URL image failed:", e)}
+                      />
+                    );
+                  } catch (error) {
+                    console.error("Error creating blob URL:", error);
+                    return (
+                      <div style={{ 
+                        color: "red", 
+                        fontSize: "14px",
+                        padding: "20px",
+                        border: "2px solid red"
+                      }}>
+                        Image conversion failed
+                      </div>
+                    );
                   }
-                  
-                  const byteArray = new Uint8Array(byteNumbers);
-                  const blob = new Blob([byteArray], { type: mimeType });
-                  const blobUrl = URL.createObjectURL(blob);
-                  
-                  console.log(`Created blob URL for wine image: ${blobUrl}`);
-                  
-                  return (
-                    <img
-                      src={blobUrl}
-                      alt={selectedWine.name}
-                      style={{
-                        height: "170px",
-                        width: "auto",
-                        borderRadius: "8px",
-                        border: "2px solid blue",
-                        backgroundColor: "rgba(255, 255, 255, 0.05)"
-                      }}
-                      onLoad={() => console.log("Blob URL image loaded successfully")}
-                      onError={(e) => console.error("Blob URL image failed:", e)}
-                    />
-                  );
-                } catch (error) {
-                  console.error("Error creating blob URL:", error);
-                  return (
-                    <div style={{ 
-                      color: "red", 
-                      fontSize: "14px",
-                      padding: "20px",
-                      border: "2px solid red"
-                    }}>
-                      Image conversion failed
-                    </div>
-                  );
-                }
-              })()}
-              
-              <div style={{ 
-                color: "white", 
-                fontSize: "12px", 
-                marginTop: "8px" 
-              }}>
-                Wine Image (26KB blob)
-              </div>
+                })()
+              ) : null}
             </div>
           ) : (
             <div 

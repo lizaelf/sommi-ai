@@ -458,18 +458,18 @@ export default function WineEdit() {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
                     console.log(`Processing image upload: ${file.name} (${Math.round(file.size / 1024)}KB)`);
                     
                     const reader = new FileReader();
-                    reader.onload = (event) => {
+                    reader.onload = async (event) => {
                       const result = event.target?.result as string;
                       
                       // Check image size and compress if needed
                       const img = new Image();
-                      img.onload = () => {
+                      img.onload = async () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
                         
@@ -499,7 +499,37 @@ export default function WineEdit() {
                         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
                         
                         console.log(`Image compressed: ${Math.round(compressedDataUrl.length / 1024)}KB`);
-                        updateWine("image", compressedDataUrl);
+                        
+                        // Upload image to server and save as static file
+                        try {
+                          const response = await fetch('/api/upload-image', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              imageData: compressedDataUrl,
+                              wineId: wine.id,
+                              fileName: `wine-${wine.id}-${Date.now()}.jpg`
+                            })
+                          });
+                          
+                          if (response.ok) {
+                            const result = await response.json();
+                            console.log(`Image saved as static file: ${result.fileName} (${Math.round(result.size / 1024)}KB)`);
+                            
+                            // Update wine with the file path instead of base64
+                            updateWine("image", result.imagePath);
+                          } else {
+                            console.error('Failed to upload image to server');
+                            // Fallback to base64 if server upload fails
+                            updateWine("image", compressedDataUrl);
+                          }
+                        } catch (error) {
+                          console.error('Image upload error:', error);
+                          // Fallback to base64 if server upload fails
+                          updateWine("image", compressedDataUrl);
+                        }
                       };
                       img.src = result;
                     };
