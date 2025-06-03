@@ -523,7 +523,25 @@ export default function WineEdit() {
                         
                         console.log(`Image compressed: ${Math.round(compressedDataUrl.length / 1024)}KB`);
                         
-                        // Upload image to server and save as static file
+                        // Delete old image file if it exists and is a static file
+                        if (wine.image && wine.image.startsWith('/@assets/')) {
+                          try {
+                            await fetch('/api/delete-image', {
+                              method: 'DELETE',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify({
+                                imagePath: wine.image
+                              })
+                            });
+                            console.log("Previous wine image deleted from assets folder");
+                          } catch (deleteError) {
+                            console.warn("Failed to delete previous wine image:", deleteError);
+                          }
+                        }
+
+                        // Upload new image to server and save as static file
                         try {
                           const response = await fetch('/api/upload-image', {
                             method: 'POST',
