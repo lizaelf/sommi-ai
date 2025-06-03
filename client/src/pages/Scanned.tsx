@@ -208,37 +208,60 @@ export default function Scanned() {
         <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px" }}>
           {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
             <div style={{ textAlign: "center" }}>
-              <svg
-                width="136"
-                height="170"
-                viewBox="0 0 136 170"
-                style={{
-                  borderRadius: "8px",
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  border: "2px solid yellow"
-                }}
-              >
-                <foreignObject x="0" y="0" width="136" height="170">
-                  <div
-                    style={{
-                      width: "136px",
-                      height: "170px",
-                      backgroundImage: `url("${selectedWine.image}")`,
-                      backgroundSize: "contain",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "center"
-                    }}
-                  />
-                </foreignObject>
-              </svg>
+              {(() => {
+                try {
+                  // Convert base64 to blob URL for better browser compatibility
+                  const base64Data = selectedWine.image.split(',')[1];
+                  const mimeType = selectedWine.image.split(';')[0].split(':')[1];
+                  const byteCharacters = atob(base64Data);
+                  const byteNumbers = new Array(byteCharacters.length);
+                  
+                  for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                  }
+                  
+                  const byteArray = new Uint8Array(byteNumbers);
+                  const blob = new Blob([byteArray], { type: mimeType });
+                  const blobUrl = URL.createObjectURL(blob);
+                  
+                  console.log(`Created blob URL for wine image: ${blobUrl}`);
+                  
+                  return (
+                    <img
+                      src={blobUrl}
+                      alt={selectedWine.name}
+                      style={{
+                        height: "170px",
+                        width: "auto",
+                        borderRadius: "8px",
+                        border: "2px solid blue",
+                        backgroundColor: "rgba(255, 255, 255, 0.05)"
+                      }}
+                      onLoad={() => console.log("Blob URL image loaded successfully")}
+                      onError={(e) => console.error("Blob URL image failed:", e)}
+                    />
+                  );
+                } catch (error) {
+                  console.error("Error creating blob URL:", error);
+                  return (
+                    <div style={{ 
+                      color: "red", 
+                      fontSize: "14px",
+                      padding: "20px",
+                      border: "2px solid red"
+                    }}>
+                      Image conversion failed
+                    </div>
+                  );
+                }
+              })()}
               
-              {/* Text indicator that image should be visible */}
               <div style={{ 
                 color: "white", 
                 fontSize: "12px", 
                 marginTop: "8px" 
               }}>
-                Wine Image (26KB loaded)
+                Wine Image (26KB blob)
               </div>
             </div>
           ) : (
