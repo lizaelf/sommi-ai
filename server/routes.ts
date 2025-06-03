@@ -76,7 +76,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload image endpoint
   app.post("/api/upload-image", async (req, res) => {
     try {
-      const { imageData, wineId, fileName } = req.body;
+      const { imageData, wineId, fileName, wineName } = req.body;
       
       if (!imageData || !wineId) {
         return res.status(400).json({ error: "Missing image data or wine ID" });
@@ -92,10 +92,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const base64Data = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
       const buffer = Buffer.from(base64Data, 'base64');
       
-      // Generate unique filename
+      // Generate descriptive filename based on wine name
       const timestamp = Date.now();
       const extension = imageData.match(/^data:image\/([a-z]+);base64,/)?.[1] || 'jpg';
-      const uniqueFileName = fileName || `wine-${wineId}-${timestamp}.${extension}`;
+      
+      let uniqueFileName;
+      if (fileName) {
+        uniqueFileName = fileName;
+      } else if (wineName) {
+        // Clean wine name for filename (remove special characters, spaces)
+        const cleanWineName = wineName
+          .replace(/[^a-zA-Z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+          .replace(/\s+/g, '-') // Replace spaces with hyphens
+          .toLowerCase();
+        uniqueFileName = `wine-${wineId}-${cleanWineName}-${timestamp}.${extension}`;
+      } else {
+        uniqueFileName = `wine-${wineId}-${timestamp}.${extension}`;
+      }
       
       // Save file to assets directory
       const filePath = join(assetsDir, uniqueFileName);

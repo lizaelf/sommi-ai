@@ -533,7 +533,7 @@ export default function WineEdit() {
                             body: JSON.stringify({
                               imageData: compressedDataUrl,
                               wineId: wine.id,
-                              fileName: `wine-${wine.id}-${Date.now()}.jpg`
+                              wineName: wine.name
                             })
                           });
                           
