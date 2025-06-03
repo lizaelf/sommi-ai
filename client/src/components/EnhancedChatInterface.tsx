@@ -614,23 +614,39 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       console.log("Sending wine data to API:", currentWine);
       
       // Make the API request - system prompt will be dynamically generated based on wine data
+      // Safari compatibility: ensure proper headers and body formatting
+      const requestBody = {
+        messages: [
+          { role: "user", content },
+        ],
+        conversationId: currentConversationId,
+        wineData: currentWine, // Include wine data from CRM - this will generate dynamic system prompt
+        optimize_for_speed: true, // Additional flag to optimize for speed
+      };
+
+      console.log("Making API request with data:", requestBody);
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
           "X-Priority": "high", // Signal high priority to the server
         },
-        body: JSON.stringify({
-          messages: [
-            { role: "user", content },
-          ],
-          conversationId: currentConversationId,
-          wineData: currentWine, // Include wine data from CRM - this will generate dynamic system prompt
-          optimize_for_speed: true, // Additional flag to optimize for speed
-        }),
+        body: JSON.stringify(requestBody),
+        // Safari compatibility
+        credentials: 'same-origin',
       });
 
+      console.log("API response status:", response.status);
+      console.log("API response headers:", Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
       const responseData = await response.json();
+      console.log("API response data:", responseData);
 
       // Add the assistant's response to the UI immediately
       if (responseData.message && responseData.message.content) {
