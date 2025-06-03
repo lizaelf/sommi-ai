@@ -1557,6 +1557,43 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         </div>
                       </div>
                     ))}
+                    
+                    {/* AI Processing Loading Indicator */}
+                    {isProcessingAI && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          width: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            backgroundColor: "transparent",
+                            borderRadius: "16px",
+                            padding: "12px 0",
+                            maxWidth: "100%",
+                            ...typography.body,
+                          }}
+                        >
+                          <div
+                            style={{
+                              color: "#DBDBDB",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            <div className="typing-indicator">
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                            </div>
+                            <span>AI is thinking...</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

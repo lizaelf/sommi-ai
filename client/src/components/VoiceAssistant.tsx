@@ -303,6 +303,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         unlockAudioForSession();
         
         setIsListening(false);
+        setIsLoadingAudio(true); // Show loading state while processing speech
         
         // Dispatch processing event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
