@@ -11,8 +11,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Serve static assets from attached_assets folder
+// Serve static assets from both attached_assets and public/attached_assets folders
+// This ensures compatibility between development and deployed environments
 app.use('/@assets', express.static(join(__dirname, '..', 'attached_assets')));
+app.use('/@assets', express.static(join(__dirname, '..', 'public', 'attached_assets')));
 
 app.use((req, res, next) => {
   const start = Date.now();
