@@ -65,6 +65,24 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     if (selectedWine) {
       setCurrentWine(selectedWine);
     } else {
+      // Get wine ID from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const wineId = urlParams.get('wine');
+      
+      if (wineId) {
+        // Load wine from unified data system
+        const unifiedWines = DataSyncManager.getUnifiedWineData();
+        const wine = unifiedWines.find((w: any) => w.id === parseInt(wineId));
+        if (wine) {
+          // Get full wine data from CRM
+          const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+          const fullWine = crmWines.find((w: any) => w.id === parseInt(wineId));
+          setCurrentWine(fullWine || wine);
+          return;
+        }
+      }
+      
+      // Fallback to first wine in CRM
       const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
       const wine = crmWines.find((w: any) => w.id === 1) || crmWines[0];
       if (wine) {
