@@ -625,7 +625,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               }}
             >
               {/* Wine bottle image */}
-              <WineBottleImage />
+              <WineBottleImage 
+                image={selectedWine?.image || currentWine?.image} 
+                wineName={selectedWine?.name || currentWine?.name} 
+              />
 
               {/* Wine name with typography styling */}
               <div
