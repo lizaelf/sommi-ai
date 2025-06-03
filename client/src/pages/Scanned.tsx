@@ -31,16 +31,29 @@ export default function Scanned() {
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
     try {
+      // Debug URL parsing
+      console.log('URL parsing debug:', {
+        fullURL: window.location.href,
+        search: window.location.search,
+        wineId: new URLSearchParams(window.location.search).get('wine')
+      });
+      
       // Check for wine ID in URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const wineId = urlParams.get('wine');
       
       if (wineId) {
+        console.log(`Looking for wine ID: ${wineId}`);
         // Get wine data from DataSyncManager using the ID from URL
         const wine = DataSyncManager.getWineById(parseInt(wineId));
         if (wine) {
+          console.log(`Found wine:`, wine);
           return wine;
+        } else {
+          console.log(`Wine ID ${wineId} not found in DataSyncManager`);
         }
+      } else {
+        console.log('No wine ID found in URL parameters');
       }
       
       // Fallback to localStorage for backwards compatibility
