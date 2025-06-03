@@ -495,6 +495,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
+  const [isVoiceResponding, setIsVoiceResponding] = useState(false);
+  const [showStopButton, setShowStopButton] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -595,6 +597,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     try {
       console.log("Auto-playing voice response with OpenAI TTS");
       
+      // Hide suggestions and show voice response state
+      setHideSuggestions(true);
+      setIsVoiceResponding(true);
+      
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -609,7 +615,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         (window as any).currentOpenAIAudio = audio;
         
         audio.onplay = () => {
-          // Audio started playing - stop thinking animation
+          // Audio started playing - show stop button
+          setShowStopButton(true);
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
             detail: { status: 'playing' }
           }));
@@ -620,7 +627,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           (window as any).currentOpenAIAudio = null;
           console.log("Auto-played voice response completed");
           
-          // Audio ended - stop playing animation
+          // Audio ended - reset UI state
+          setIsVoiceResponding(false);
+          setShowStopButton(false);
+          setHideSuggestions(false);
+          
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
             detail: { status: 'stopped' }
           }));
@@ -631,7 +642,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           (window as any).currentOpenAIAudio = null;
           console.error("Auto-play voice response failed");
           
-          // Audio error - stop all animations
+          // Audio error - reset UI state
+          setIsVoiceResponding(false);
+          setShowStopButton(false);
+          setHideSuggestions(false);
+          
           window.dispatchEvent(new CustomEvent('audioStatusChange', {
             detail: { status: 'stopped' }
           }));
@@ -642,7 +657,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       } else {
         console.error("Failed to generate auto-play text-to-speech");
         
-        // Failed to generate audio - stop thinking animation
+        // Failed to generate audio - reset UI state
+        setIsVoiceResponding(false);
+        setShowStopButton(false);
+        setHideSuggestions(false);
+        
         window.dispatchEvent(new CustomEvent('audioStatusChange', {
           detail: { status: 'stopped' }
         }));
@@ -650,11 +669,37 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     } catch (error) {
       console.error("Error in auto-play voice response:", error);
       
-      // Error occurred - stop thinking animation
+      // Error occurred - reset UI state
+      setIsVoiceResponding(false);
+      setShowStopButton(false);
+      setHideSuggestions(false);
+      
       window.dispatchEvent(new CustomEvent('audioStatusChange', {
         detail: { status: 'stopped' }
       }));
     }
+  };
+
+  // Function to stop voice response
+  const handleStopVoiceResponse = () => {
+    console.log("Stop voice response button clicked");
+    
+    // Stop audio playback
+    if ((window as any).currentOpenAIAudio) {
+      (window as any).currentOpenAIAudio.pause();
+      (window as any).currentOpenAIAudio.currentTime = 0;
+      (window as any).currentOpenAIAudio = null;
+    }
+    
+    // Reset UI state
+    setIsVoiceResponding(false);
+    setShowStopButton(false);
+    setHideSuggestions(false);
+    
+    // Dispatch stop event
+    window.dispatchEvent(new CustomEvent('audioStatusChange', {
+      detail: { status: 'stopped' }
+    }));
   };
 
   // Handle sending a message
