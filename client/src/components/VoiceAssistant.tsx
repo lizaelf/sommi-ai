@@ -423,7 +423,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isListening={isListening}
         isResponding={isResponding}
         isThinking={isProcessing}
-        showSuggestions={!isListening && !isResponding && !isProcessing && !showUnmuteButton}
+        showSuggestions={false}
         showUnmuteButton={showUnmuteButton && !isListening && !isResponding && !isProcessing}
         onSuggestionClick={handleSuggestionClick}
       />
