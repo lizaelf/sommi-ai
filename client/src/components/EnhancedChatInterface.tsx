@@ -617,10 +617,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     };
   }, []);
 
-  // Function to automatically play voice response
+  // Function to automatically play voice response - independent of session state
   const playVoiceResponse = async (text: string) => {
     try {
-      console.log("Auto-playing voice response with OpenAI TTS");
+      console.log("Attempting autoplay - independent of session unlock state");
       
       // Hide suggestions and show voice response state immediately
       setHideSuggestions(true);
@@ -844,22 +844,25 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
-        // Always show unmute button and auto-play if session is unlocked
-        console.log("Always showing unmute button for consistent voice control");
-        // Always show unmute button for user control
+        // Always show unmute button as independent control - not related to autoplay
+        console.log("Showing unmute button as independent voice control");
         window.dispatchEvent(new CustomEvent('showUnmuteButton', {
           detail: { show: true }
         }));
         
-        if (isAudioUnlockedForSession()) {
-          console.log("Session unlocked - auto-playing voice response");
-          // Immediately show thinking animation
-          window.dispatchEvent(new CustomEvent('audioStatusChange', {
-            detail: { status: 'thinking' }
-          }));
-          playVoiceResponse(assistantMessage.content);
-        } else {
-          console.log("Session not unlocked - unmute button available for manual play");
+        // Always attempt autoplay when response is ready - independent of unmute button
+        console.log("Attempting autoplay - independent of unmute button state");
+        window.dispatchEvent(new CustomEvent('audioStatusChange', {
+          detail: { status: 'thinking' }
+        }));
+        
+        // Try autoplay - if it fails, unmute button will be available as fallback
+        try {
+          await playVoiceResponse(assistantMessage.content);
+          console.log("Autoplay successful");
+        } catch (error) {
+          console.log("Autoplay failed - unmute button available as fallback:", error);
+          // Autoplay failed, but unmute button is already available as fallback
         }
       }
 
