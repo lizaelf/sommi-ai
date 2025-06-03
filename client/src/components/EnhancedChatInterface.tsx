@@ -498,6 +498,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [isVoiceResponding, setIsVoiceResponding] = useState(false);
   const [showStopButton, setShowStopButton] = useState(false);
   const [isProcessingAI, setIsProcessingAI] = useState(false);
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -857,12 +858,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         }));
         
         // Try autoplay - if it fails, unmute button will be available as fallback
-        try {
-          await playVoiceResponse(assistantMessage.content);
-          console.log("Autoplay successful");
-        } catch (error) {
-          console.log("Autoplay failed - unmute button available as fallback:", error);
-          // Autoplay failed, but unmute button is already available as fallback
+        // Prevent duplicate audio generation
+        if (!isGeneratingAudio) {
+          try {
+            setIsGeneratingAudio(true);
+            await playVoiceResponse(assistantMessage.content);
+            console.log("Autoplay successful");
+          } catch (error) {
+            console.log("Autoplay failed - unmute button available as fallback:", error);
+            // Autoplay failed, but unmute button is already available as fallback
+          } finally {
+            setIsGeneratingAudio(false);
+          }
+        } else {
+          console.log("Audio generation already in progress, skipping duplicate");
         }
       }
 
