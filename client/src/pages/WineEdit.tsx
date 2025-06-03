@@ -521,6 +521,28 @@ export default function WineEdit() {
                   if (file) {
                     console.log(`Processing image upload: ${file.name} (${Math.round(file.size / 1024)}KB)`);
                     
+                    // Validate image file
+                    const validation = validateImageFile(file);
+                    if (!validation.valid) {
+                      toast({
+                        description: validation.error,
+                        duration: 3000,
+                        className: "bg-red-500 text-white border-none"
+                      });
+                      return;
+                    }
+                    
+                    // Check for duplicates
+                    const duplicateCheck = await wineImageDeduplication.checkDuplicate(wineId, file);
+                    if (duplicateCheck.isDuplicate) {
+                      toast({
+                        description: "This image already exists for this wine",
+                        duration: 3000,
+                        className: "bg-yellow-500 text-white border-none"
+                      });
+                      return;
+                    }
+                    
                     const reader = new FileReader();
                     reader.onload = async (event) => {
                       const result = event.target?.result as string;
@@ -593,6 +615,10 @@ export default function WineEdit() {
                           if (response.ok) {
                             const result = await response.json();
                             console.log(`Image saved as static file: ${result.fileName} (${Math.round(result.size / 1024)}KB)`);
+                            
+                            // Add image to deduplication tracking
+                            const uniqueFilename = generateUniqueFilename(file.name, wineId);
+                            await wineImageDeduplication.addImageHash(wineId, file, uniqueFilename);
                             
                             // Update wine with the file path instead of base64
                             updateWine("image", result.imagePath);
