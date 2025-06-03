@@ -178,9 +178,9 @@ export default function Scanned() {
           </h1>
         </div>
 
-        {/* Wine Image - only show authentic uploaded images */}
-        {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') && (
-          <div className="flex justify-center items-center px-4 pb-4">
+        {/* Wine Image Section */}
+        <div className="flex justify-center items-center px-4 pb-4">
+          {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
             <img
               src={selectedWine.image}
               alt={selectedWine.name}
@@ -200,6 +200,34 @@ export default function Scanned() {
               }}
               key={`unique-wine-${selectedWine.id}-${selectedWine.image?.substring(22, 40)}`}
             />
+          ) : (
+            <div 
+              style={{
+                height: "170px",
+                width: "120px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "8px",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "500",
+                border: "2px dashed rgba(255, 255, 255, 0.3)"
+              }}
+            >
+              No Image
+            </div>
+          )}
+        </div>
+        
+        {/* Debug Info */}
+        {selectedWine && (
+          <div style={{ color: 'white', fontSize: '12px', textAlign: 'center', padding: '10px' }}>
+            Wine ID: {selectedWine.id} | 
+            Has Image: {selectedWine.image ? 'Yes' : 'No'} | 
+            Size: {selectedWine.image?.length || 0} chars |
+            Type: {selectedWine.image?.startsWith('data:') ? 'Base64' : 'Other'}
           </div>
         )}
 
