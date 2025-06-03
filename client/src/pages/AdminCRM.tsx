@@ -526,7 +526,7 @@ export default function AdminCRM() {
                           flexShrink: 0,
                         }}
                       >
-                        {card.image && card.image.trim() !== "" && card.image.startsWith('data:') ? (
+                        {card.image && card.image.trim() !== "" && (card.image.startsWith('data:') || card.image.startsWith('/@assets/')) ? (
                           <img
                             src={card.image}
                             alt={card.name}
@@ -535,6 +535,12 @@ export default function AdminCRM() {
                               maxWidth: "70px",
                               width: "auto",
                               height: "auto",
+                            }}
+                            onLoad={() => console.log(`CRM image loaded: ${card.name}`)}
+                            onError={(e) => {
+                              console.error(`CRM image failed to load: ${card.name}, path: ${card.image}`);
+                              // Hide broken image and show fallback
+                              (e.target as HTMLImageElement).style.display = 'none';
                             }}
                           />
                         ) : (
