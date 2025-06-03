@@ -164,6 +164,55 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       conclusion: "The wine's elegant mineral backbone and structured tannins create perfect harmony with aged cheeses."
     };
   };
+
+  const getVegetarianPairingContent = () => {
+    if (currentWine) {
+      return {
+        description: `${currentWine.name} pairs wonderfully with these vegetarian options`,
+        dishes: [
+          "Hearty bean and vegetable stew",
+          "Grilled portobello with herbs and olive oil",
+          "Pasta with truffle and aged cheese",
+          "Roasted eggplant parmigiana"
+        ]
+      };
+    }
+    return {
+      description: `${getWineDisplayName()} pairs wonderfully with these vegetarian options`,
+      dishes: [
+        "Hearty bean and vegetable stew",
+        "Grilled portobello with herbs and olive oil", 
+        "Pasta with truffle and aged cheese",
+        "Roasted eggplant parmigiana"
+      ]
+    };
+  };
+
+  const getAvoidPairingContent = () => {
+    if (currentWine) {
+      return {
+        description: `To fully appreciate ${currentWine.name}, avoid pairing with these items`,
+        items: [
+          "Delicate fish preparations like sole or sea bass",
+          "Fresh shellfish or raw oysters",
+          "Very spicy Asian curries or hot dishes",
+          "Light salads with acidic vinaigrettes",
+          "Sweet desserts or milk chocolate"
+        ]
+      };
+    }
+    return {
+      description: `To fully appreciate ${getWineDisplayName()}, avoid pairing with these items`,
+      items: [
+        "Delicate fish preparations like sole or sea bass",
+        "Fresh shellfish or raw oysters",
+        "Very spicy Asian curries or hot dishes", 
+        "Light salads with acidic vinaigrettes",
+        "Sweet desserts or milk chocolate"
+      ]
+    };
+  };
+
   // Check if user has shared contact information
   const [hasSharedContact, setHasSharedContact] = useState(() => {
     return localStorage.getItem("hasSharedContact") === "true";
@@ -1169,22 +1218,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                     >
                       <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px" }}>🥗</span>
-                          <span>Hearty bean and vegetable stew</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px" }}>🥗</span>
-                          <span>Grilled portobello with herbs and olive oil</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px" }}>🥗</span>
-                          <span>Pasta with truffle and aged cheese</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px" }}>🥗</span>
-                          <span>Roasted eggplant parmigiana</span>
-                        </div>
+                        {getVegetarianPairingContent().dishes.map((dish: string, index: number) => (
+                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                            <span style={{ fontSize: "16px" }}>🥗</span>
+                            <span>{dish}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -1263,26 +1302,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }}
                     >
                       <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
-                          <span>Delicate fish preparations like sole or sea bass</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
-                          <span>Fresh shellfish or raw oysters</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
-                          <span>Very spicy Asian curries or hot dishes</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
-                          <span>Light salads with acidic vinaigrettes</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "16px", color: "red" }}>❌</span>
-                          <span>Sweet desserts or milk chocolate</span>
-                        </div>
+                        {getAvoidPairingContent().items.map((item: string, index: number) => (
+                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                            <span style={{ fontSize: "16px", color: "red" }}>❌</span>
+                            <span>{item}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
