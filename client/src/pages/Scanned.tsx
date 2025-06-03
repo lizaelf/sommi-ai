@@ -61,8 +61,28 @@ export default function Scanned() {
   // Load wine data when component mounts or location changes
   useEffect(() => {
     const wine = loadSelectedWine();
-    console.log('Scanned page: Loading wine data:', wine ? { id: wine.id, name: wine.name, imageType: wine.image?.substring(0, 20) } : 'null');
-    setSelectedWine(wine);
+    if (wine) {
+      console.log('Scanned page: Loading wine data:', { 
+        id: wine.id, 
+        name: wine.name, 
+        imageType: wine.image?.substring(0, 20),
+        imageSize: wine.image?.length || 0,
+        hasAuthenticImage: wine.image?.startsWith('data:') || false
+      });
+      
+      // Verify this wine has the same image data as in CRM
+      const crmWines = DataSyncManager.getUnifiedWineData();
+      const crmWine = crmWines.find(w => w.id === wine.id);
+      if (crmWine && crmWine.image !== wine.image) {
+        console.warn(`Image mismatch detected for wine ${wine.id}. Using CRM data.`);
+        setSelectedWine({ ...wine, image: crmWine.image });
+      } else {
+        setSelectedWine(wine);
+      }
+    } else {
+      console.log('Scanned page: Loading wine data: null');
+      setSelectedWine(null);
+    }
   }, [location]);
   
   // Add scroll listener
