@@ -88,18 +88,27 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   };
 
   const getFoodPairingContent = () => {
-    if (currentWine && currentWine.id === 2) {
+    if (currentWine && currentWine.foodPairing && currentWine.foodPairing.length > 0) {
       return {
-        description: `${currentWine.name}'s bold structure and powerful tannins make it perfect for hearty meat dishes`,
-        dishes: [
-          "Grilled ribeye steak with herbs",
-          "Braised beef brisket",
-          "Roasted leg of lamb with rosemary", 
-          "Prime rib with mushroom sauce"
-        ],
-        conclusion: "The wine's robust tannins and mountain character complement rich, flavorful meats perfectly."
+        description: `${currentWine.name}'s unique character makes it perfect for these carefully selected dishes`,
+        dishes: currentWine.foodPairing,
+        conclusion: `The wine's distinctive profile complements these food pairings beautifully.`
       };
     }
+    
+    if (currentWine) {
+      return {
+        description: `${currentWine.name}'s elegant structure and complex flavor profile makes it perfect for premium red meat preparations`,
+        dishes: [
+          "Grilled ribeye steak with herbs",
+          "Braised short ribs with rich sauce",
+          "Roasted rack of lamb with Mediterranean herbs",
+          "Aged beef tenderloin with mushrooms"
+        ],
+        conclusion: "The wine's refined tannins and mineral complexity complement sophisticated meat dishes beautifully."
+      };
+    }
+    
     return {
       description: `${getWineDisplayName()}'s elegant structure and complex flavor profile makes it perfect for premium red meat preparations`,
       dishes: [
@@ -113,16 +122,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   };
 
   const getCheesePairingContent = () => {
-    if (selectedWine && selectedWine.id === 2) {
+    if (currentWine) {
       return {
-        description: `${selectedWine.name}'s bold tannin structure and complex flavors pair beautifully with these robust cheeses`,
+        description: `${currentWine.name}'s sophisticated profile pairs beautifully with these artisanal cheeses`,
         cheeses: [
-          "Aged Cheddar (7+ years)",
-          "Roquefort or Stilton blue cheese",
+          "Aged Cheddar (5+ years)",
+          "Roquefort or Stilton blue cheese", 
           "Aged Gouda or aged Gruyère",
           "Pecorino Romano or aged Manchego"
         ],
-        conclusion: "The wine's powerful structure and mountain fruit create excellent harmony with bold, aged cheeses."
+        conclusion: "The wine's structure and complexity create excellent harmony with bold, aged cheeses."
       };
     }
     return {
