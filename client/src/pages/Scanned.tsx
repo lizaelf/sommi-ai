@@ -207,20 +207,9 @@ export default function Scanned() {
         {/* Wine Image Section */}
         <div className="flex justify-center items-center px-4 pb-4" style={{ minHeight: "180px" }}>
           {selectedWine && selectedWine.image && selectedWine.image.startsWith('data:') ? (
-            <div
-              style={{
-                height: "170px",
-                width: "auto",
-                minWidth: "120px",
-                backgroundImage: `url(${selectedWine.image})`,
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-                borderRadius: "8px",
-                display: "block"
-              }}
-              onLoad={() => {
-                console.log(`Scanned page: Background image displayed for wine ${selectedWine.id} (${selectedWine.name})`);
+            <div 
+              dangerouslySetInnerHTML={{
+                __html: `<img src="${selectedWine.image}" style="height: 170px; width: auto; display: block; border-radius: 8px; max-width: 100%; object-fit: contain;" alt="${selectedWine.name}" />`
               }}
             />
           ) : (
@@ -242,50 +231,9 @@ export default function Scanned() {
               No Image
             </div>
           )}
-          
-          {/* Test: Direct HTML image rendering */}
-          {selectedWine && selectedWine.image && (
-            <div style={{ margin: "10px", border: "2px solid red", padding: "10px" }}>
-              <div style={{ color: "white", fontSize: "12px", marginBottom: "10px" }}>
-                Direct HTML Test (should show wine image):
-              </div>
-              <div 
-                dangerouslySetInnerHTML={{
-                  __html: `<img src="${selectedWine.image}" style="width: 100px; height: auto; border: 1px solid blue;" onload="console.log('Direct HTML image loaded')" onerror="console.log('Direct HTML image failed')" />`
-                }}
-              />
-            </div>
-          )}
         </div>
         
-        {/* Debug Info */}
-        {selectedWine && (
-          <div style={{ color: 'white', fontSize: '12px', textAlign: 'center', padding: '10px' }}>
-            Wine ID: {selectedWine.id} | 
-            Has Image: {selectedWine.image ? 'Yes' : 'No'} | 
-            Size: {selectedWine.image?.length || 0} chars |
-            Type: {selectedWine.image?.startsWith('data:') ? 'Base64' : 'Other'} |
-            Valid Header: {selectedWine.image?.startsWith('data:image/') ? 'Yes' : 'No'}
-          </div>
-        )}
-        
-        {/* Image validation test */}
-        {selectedWine && selectedWine.image && (
-          <div style={{ color: 'white', fontSize: '10px', textAlign: 'center', padding: '5px', wordBreak: 'break-all' }}>
-            Image start: {selectedWine.image.substring(0, 100)}...
-            <br />
-            Base64 valid: {(() => {
-              try {
-                const base64Part = selectedWine.image.split(',')[1];
-                if (!base64Part) return 'No comma separator found';
-                atob(base64Part.substring(0, 100));
-                return 'Yes - decodable';
-              } catch (e) {
-                return `No - ${e instanceof Error ? e.message : 'Unknown error'}`;
-              }
-            })()}
-          </div>
-        )}
+
 
         {/* Wine Details - only show if selectedWine exists */}
         {selectedWine && (
