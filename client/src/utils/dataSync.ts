@@ -50,7 +50,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrCode: "QR_001",
     qrLink: "/scanned?wine=1",
     location: "Dry Creek Valley, Sonoma County, California",
-    description: "The 2021 Ridge Lytton Springs Dry Creek Zinfandel showcases the exceptional terroir of this historic vineyard with concentrated dark berry flavors, distinctive spice complexity, and well-integrated tannins. This field blend from old vines delivers remarkable depth and the signature earthy minerality that defines Dry Creek Valley Zinfandel.",
+    description: "The 2021 Ridge \"Lytton Springs\" Dry Creek Zinfandel exhibits a rich tapestry of blackberry and raspberry notes, underscored by a peppery spice typical of the varietal. Matured in American oak, it possesses a well-structured tannin profile and a finish that resonates with the minerality of its Dry Creek Valley terroir.",
     foodPairing: ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"],
     conversationHistory: []
   },
@@ -70,7 +70,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     qrCode: "QR_002",
     qrLink: "/scanned?wine=2",
     location: "Santa Cruz Mountains, California",
-    description: "The 2021 Ridge Monte Bello Cabernet Sauvignon represents the pinnacle of Santa Cruz Mountains winemaking from this legendary vineyard. This Bordeaux-style blend delivers profound complexity with cassis, dark chocolate, and mineral notes, supported by refined tannins and remarkable aging potential that will develop beautifully over decades.",
+    description: "The 2020 Monte Bello Cabernet Sauvignon offers a complex palate of ripe blackcurrant, tobacco, and mocha, underpinned by a robust tannic structure typical of the varietal. This full-bodied Californian wine showcases the distinctive minerality and cool-climate elegance of the Santa Cruz Mountains terroir.",
     foodPairing: ["Prime rib", "Filet mignon", "Roasted duck", "Mushroom risotto"],
     conversationHistory: []
   },
@@ -118,7 +118,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.9.3';
+const CURRENT_VERSION = '1.9.4';
 
 export class DataSyncManager {
   
