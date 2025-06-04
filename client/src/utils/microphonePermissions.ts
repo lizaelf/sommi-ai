@@ -106,12 +106,27 @@ export async function syncMicrophonePermissionWithBrowser(): Promise<boolean> {
 // Request microphone permission and save to cookie
 export async function requestMicrophonePermission(): Promise<boolean> {
   try {
+    // Mobile-specific audio constraints for better compatibility
+    let audioConstraints: MediaTrackConstraints = {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false
+    };
+    
+    // Detect mobile browsers and use simplified constraints
+    if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      console.log('Mobile device detected - using mobile-optimized audio constraints');
+      audioConstraints = {
+        echoCancellation: true,  // Enable on mobile for better speech recognition
+        noiseSuppression: true,  // Enable on mobile
+        autoGainControl: true,   // Enable on mobile
+        sampleRate: 16000,       // Lower sample rate for mobile
+        channelCount: 1          // Mono audio for mobile
+      };
+    }
+    
     const stream = await navigator.mediaDevices.getUserMedia({ 
-      audio: {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false
-      } 
+      audio: audioConstraints
     });
     
     // Permission granted
@@ -120,7 +135,7 @@ export async function requestMicrophonePermission(): Promise<boolean> {
     // Return the stream for immediate use
     (window as any).currentMicrophoneStream = stream;
     
-    console.log('Microphone permission granted and saved');
+    console.log('Microphone permission granted and saved with mobile-optimized settings');
     return true;
   } catch (error) {
     console.error('Microphone permission denied:', error);
