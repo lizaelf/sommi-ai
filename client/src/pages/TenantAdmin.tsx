@@ -270,7 +270,7 @@ const TenantAdmin: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="p-8">
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className="space-y-6">
