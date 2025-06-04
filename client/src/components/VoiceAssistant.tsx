@@ -575,11 +575,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
 
+    // Get the last assistant message
+    const lastMessage = (window as any).lastAssistantMessageText;
+    
     // Mobile-specific: Try direct TTS playback within user gesture first
-    const lastAssistantMessage = (window as any).lastAssistantMessageText;
-    if (lastAssistantMessage && isMobileDevice) {
+    if (lastMessage && isMobileDevice) {
       console.log("Attempting direct TTS playback within user gesture on mobile");
-      const success = await mobileAudioManager.playTTSWithinGesture(lastAssistantMessage);
+      const success = await mobileAudioManager.playTTSWithinGesture(lastMessage);
       if (success) {
         setIsResponding(true);
         setShowUnmuteButton(false);
@@ -632,9 +634,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
 
     // Fallback: generate new audio if no pending audio or it failed
-    const lastAssistantMessage = (window as any).lastAssistantMessageText;
-
-    if (!lastAssistantMessage) {
+    if (!lastMessage) {
       console.warn("No assistant message available to play");
       setShowUnmuteButton(true);
       return;
@@ -642,7 +642,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     console.log(
       "Generating new TTS audio for:",
-      lastAssistantMessage.substring(0, 50) + "...",
+      lastMessage.substring(0, 50) + "...",
     );
 
     setIsResponding(true);
@@ -663,7 +663,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       const response = await fetch("/api/text-to-speech", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: lastAssistantMessage }),
+        body: JSON.stringify({ text: lastMessage }),
       });
 
       if (!response.ok) {
