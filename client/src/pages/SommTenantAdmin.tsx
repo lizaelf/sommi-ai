@@ -179,7 +179,6 @@ const SommTenantAdmin: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-4">Sommelier Tenant Administration</h1>
-          <p className="text-gray-600">Manage all winery tenants and their configurations</p>
         </div>
 
         {/* Controls */}
