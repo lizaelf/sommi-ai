@@ -19,9 +19,24 @@ export function initAudioContext(): Promise<boolean> {
       }
       
       const audioCtx = new AudioContext();
+      
+      // Also create a dummy audio element to unlock audio on iOS/Safari
+      const dummyAudio = new Audio();
+      dummyAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA==";
+      dummyAudio.volume = 0;
+      
       return audioCtx.resume().then(() => {
         console.log('Audio context started successfully');
         audioContextInitialized = true;
+        
+        // Try to play and immediately pause the dummy audio to unlock
+        dummyAudio.play().then(() => {
+          dummyAudio.pause();
+          console.log('Audio unlocked successfully');
+        }).catch(() => {
+          console.log('Audio unlock not needed or failed silently');
+        });
+        
         return true;
       }).catch(error => {
         console.error('Failed to start audio context:', error);

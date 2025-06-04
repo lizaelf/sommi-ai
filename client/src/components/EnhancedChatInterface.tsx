@@ -673,20 +673,38 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Auto-play TTS immediately after response is ready
         console.log("Starting autoplay TTS for response:", assistantMessage.content.substring(0, 50) + "...");
         
-        // Generate and play autoplay TTS independently
+        // Generate and play autoplay TTS independently with enhanced error handling
         (async () => {
           try {
+            console.log("Starting TTS audio generation...");
+            
+            // Ensure audio context is initialized before attempting playback
+            const audioContextInitialized = await (window as any).initAudioContext?.() || true;
+            if (!audioContextInitialized) {
+              console.warn("Audio context not initialized, attempting manual initialization");
+            }
+
             const response = await fetch('/api/text-to-speech', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'audio/mpeg, audio/*'
+              },
               body: JSON.stringify({ text: assistantMessage.content })
             });
 
             if (!response.ok) {
-              throw new Error(`TTS API error: ${response.status}`);
+              const errorText = await response.text();
+              throw new Error(`TTS API error: ${response.status} - ${errorText}`);
             }
 
+            console.log("TTS response received, processing audio...");
             const audioBuffer = await response.arrayBuffer();
+            
+            if (audioBuffer.byteLength === 0) {
+              throw new Error("Received empty audio buffer");
+            }
+
             const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const autoplayAudio = new Audio(audioUrl);
@@ -694,26 +712,70 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             // Use separate reference for autoplay to avoid conflicts with unmute button
             (window as any).currentAutoplayAudio = autoplayAudio;
 
+            // Enhanced audio event handlers
+            autoplayAudio.onloadstart = () => {
+              console.log("Audio loading started");
+            };
+
+            autoplayAudio.oncanplay = () => {
+              console.log("Audio can start playing");
+            };
+
             autoplayAudio.onplay = () => {
-              console.log("Autoplay TTS started");
+              console.log("Autoplay TTS started successfully");
+              window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'playing' } }));
             };
 
             autoplayAudio.onended = () => {
               URL.revokeObjectURL(audioUrl);
               (window as any).currentAutoplayAudio = null;
-              console.log("Autoplay TTS completed");
+              console.log("Autoplay TTS completed successfully");
+              window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'stopped' } }));
             };
 
             autoplayAudio.onerror = (e) => {
-              console.error("Autoplay TTS error:", e);
+              console.error("Autoplay TTS playback error:", e);
+              console.error("Audio error details:", {
+                error: autoplayAudio.error?.message,
+                code: autoplayAudio.error?.code,
+                networkState: autoplayAudio.networkState,
+                readyState: autoplayAudio.readyState
+              });
+              URL.revokeObjectURL(audioUrl);
+              (window as any).currentAutoplayAudio = null;
+              window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'error' } }));
+            };
+
+            autoplayAudio.onabort = () => {
+              console.log("Audio playback aborted");
               URL.revokeObjectURL(audioUrl);
               (window as any).currentAutoplayAudio = null;
             };
 
-            await autoplayAudio.play();
+            // Set audio properties for better compatibility
+            autoplayAudio.preload = 'auto';
+            autoplayAudio.volume = 0.8;
 
-          } catch (error) {
+            console.log("Attempting to play audio...");
+            const playPromise = autoplayAudio.play();
+            
+            if (playPromise !== undefined) {
+              await playPromise;
+              console.log("Audio play promise resolved successfully");
+            }
+
+          } catch (err) {
+            const error = err as Error;
             console.error("Failed to generate or play autoplay TTS audio:", error);
+            
+            // Provide user feedback for audio failures
+            if (error.message.includes('play')) {
+              console.error("Audio playback blocked by browser - user interaction may be required");
+            } else if (error.message.includes('TTS API')) {
+              console.error("TTS service error - check server connection");
+            }
+            
+            window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'error', error: error.message } }));
           }
         })();
       }

@@ -378,6 +378,69 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         setShowAskButton(true);
         URL.revokeObjectURL(audioUrl);
         (window as any).currentOpenAIAudio = null;
+        console.log("Manual unmute TTS playback completed successfully");
+      };
+
+      audio.onerror = (e) => {
+        console.error("Manual unmute TTS playback error:", e);
+        console.error("Audio error details:", {
+          error: audio.error?.message,
+          code: audio.error?.code,
+          networkState: audio.networkState,
+          readyState: audio.readyState
+        });
+        setIsResponding(false);
+        setShowUnmuteButton(true);
+        setShowAskButton(true);
+        URL.revokeObjectURL(audioUrl);
+        (window as any).currentOpenAIAudio = null;
+        
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Failed to play audio - please try again
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+      };
+
+      audio.onabort = () => {
+        console.log("Manual unmute audio playback aborted");
+        URL.revokeObjectURL(audioUrl);
+        (window as any).currentOpenAIAudio = null;
+      };
+
+      // Set audio properties for better compatibility
+      audio.preload = 'auto';
+      audio.volume = 0.8;
+
+      console.log("Attempting to play manual unmute audio...");
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        await playPromise;
+        console.log("Manual unmute audio play promise resolved successfully");
         console.log("Manual unmute TTS playback completed");
       };
 
