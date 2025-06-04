@@ -525,13 +525,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       audio.volume = 0.8;
 
       console.log("Attempting to play manual unmute audio...");
+      
+      // Ensure audio context is ready for user-initiated playback
+      if (typeof (window as any).initAudioContext === 'function') {
+        await (window as any).initAudioContext();
+      }
+      
       const playPromise = audio.play();
       
       if (playPromise !== undefined) {
-        await playPromise;
-        console.log("Manual unmute audio play promise resolved successfully");
-        console.log("Manual unmute TTS playback completed");
-      };
+        try {
+          await playPromise;
+          console.log("Manual unmute audio play promise resolved successfully");
+        } catch (playError: any) {
+          console.error("Manual unmute audio play failed:", playError);
+          
+          if (playError.name === 'NotAllowedError') {
+            console.error("Manual audio playback blocked by browser");
+            throw new Error("Audio playback blocked - please check browser settings");
+          } else {
+            throw playError;
+          }
+        }
+      }
 
       audio.onerror = (e) => {
         console.error("Manual unmute TTS playback error:", e);

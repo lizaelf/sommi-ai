@@ -3,6 +3,27 @@
 
 // Track if audio context has been initialized
 let audioContextInitialized = false;
+let userHasInteracted = false;
+
+// Track user interactions to enable audio playback
+function trackUserInteraction() {
+  if (!userHasInteracted) {
+    userHasInteracted = true;
+    console.log('User interaction detected - audio playback now allowed');
+    
+    // Initialize audio context immediately on first interaction
+    initAudioContext();
+  }
+}
+
+// Set up interaction listeners
+export function setupUserInteractionTracking() {
+  const events = ['click', 'touchstart', 'keydown', 'mousedown'];
+  
+  events.forEach(eventType => {
+    document.addEventListener(eventType, trackUserInteraction, { once: true, passive: true });
+  });
+}
 
 /**
  * Initialize the audio context on first user interaction
@@ -56,6 +77,11 @@ export function isAudioContextInitialized(): boolean {
   return audioContextInitialized;
 }
 
+// Function to check if user has interacted
+export function hasUserInteracted(): boolean {
+  return userHasInteracted;
+}
+
 // Function to unlock audio for the session (required for some browsers)
 export function unlockAudioForSession(): Promise<boolean> {
   return initAudioContext();
@@ -63,6 +89,11 @@ export function unlockAudioForSession(): Promise<boolean> {
 
 // Export a function to add the event listener
 export function setupAudioContextInitialization(): void {
+  // Expose functions globally for components
+  (window as any).initAudioContext = initAudioContext;
+  (window as any).hasUserInteracted = hasUserInteracted;
+  (window as any).isAudioContextInitialized = isAudioContextInitialized;
+  
   // Initialize on any user interaction (only once)
   document.addEventListener('click', () => {
     initAudioContext().then(success => {

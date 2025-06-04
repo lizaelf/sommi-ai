@@ -757,11 +757,44 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             autoplayAudio.volume = 0.8;
 
             console.log("Attempting to play audio...");
+            
+            // Check if audio context is ready and user has interacted
+            if (typeof (window as any).initAudioContext === 'function') {
+              const audioReady = await (window as any).initAudioContext();
+              if (!audioReady) {
+                console.warn("Audio context not ready - deferring autoplay");
+                return;
+              }
+            }
+            
+            // Check if user has interacted (required for autoplay)
+            if (typeof (window as any).hasUserInteracted === 'function') {
+              const userInteracted = (window as any).hasUserInteracted();
+              if (!userInteracted) {
+                console.log("User has not interacted yet - autoplay will be deferred");
+                // Store the audio for later playback when user interacts
+                (window as any).pendingAutoplayAudio = autoplayAudio;
+                return;
+              }
+            }
+            
             const playPromise = autoplayAudio.play();
             
             if (playPromise !== undefined) {
-              await playPromise;
-              console.log("Audio play promise resolved successfully");
+              try {
+                await playPromise;
+                console.log("Audio play promise resolved successfully");
+              } catch (playError: any) {
+                console.error("Audio play promise rejected:", playError);
+                
+                if (playError.name === 'NotAllowedError') {
+                  console.log("Audio autoplay blocked - user interaction required");
+                  // Don't throw error for autoplay blocking, just log it
+                  return;
+                } else {
+                  throw playError;
+                }
+              }
             }
 
           } catch (err) {
