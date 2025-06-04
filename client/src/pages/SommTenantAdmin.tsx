@@ -203,12 +203,16 @@ const SommTenantAdmin: React.FC = () => {
             style={{
               width: "100%",
               padding: "12px 16px",
-              background: "rgba(255, 255, 255, 0.04)",
+              background: "transparent !important",
+              backgroundColor: "transparent !important",
               border: "1px solid #494949",
               borderRadius: "12px",
               color: "white",
               fontSize: "16px",
-              outline: "none"
+              outline: "none",
+              boxShadow: "none !important",
+              WebkitAppearance: "none",
+              appearance: "none"
             }}
             className="placeholder-white/60"
           />
