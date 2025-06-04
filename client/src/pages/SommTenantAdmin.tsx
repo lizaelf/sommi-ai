@@ -226,18 +226,7 @@ const SommTenantAdmin: React.FC = () => {
       </div>
       <div className="pt-20 px-6 max-w-7xl mx-auto">
 
-        {/* Search Controls */}
-        <div className="mb-6">
-          <div className="max-w-md">
-            <input
-              type="text"
-              placeholder="Search tenants..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/10 text-white placeholder-gray-400 border-gray-600"
-            />
-          </div>
-        </div>
+
 
 
 
