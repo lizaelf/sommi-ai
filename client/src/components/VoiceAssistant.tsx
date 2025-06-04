@@ -35,6 +35,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         (window as any).currentOpenAIAudio.onended = null;
         (window as any).currentOpenAIAudio.onerror = null;
         (window as any).currentOpenAIAudio.onplay = null;
+        // Force remove the audio element from DOM if it exists
+        if ((window as any).currentOpenAIAudio.remove) {
+          (window as any).currentOpenAIAudio.remove();
+        }
         (window as any).currentOpenAIAudio = null;
         audioStopped = true;
         console.log("✅ OpenAI TTS audio stopped");
@@ -52,6 +56,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         (window as any).currentAutoplayAudio.onended = null;
         (window as any).currentAutoplayAudio.onerror = null;
         (window as any).currentAutoplayAudio.onplay = null;
+        // Force remove the audio element from DOM if it exists
+        if ((window as any).currentAutoplayAudio.remove) {
+          (window as any).currentAutoplayAudio.remove();
+        }
         (window as any).currentAutoplayAudio = null;
         audioStopped = true;
         console.log("✅ Autoplay TTS audio stopped");
@@ -61,18 +69,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
     }
     
-    // Stop any DOM audio elements
+    // Stop any DOM audio elements aggressively
     const audioElements = document.querySelectorAll('audio');
     audioElements.forEach((audio, index) => {
-      if (!audio.paused) {
-        try {
+      try {
+        if (!audio.paused) {
           audio.pause();
-          audio.currentTime = 0;
           audioStopped = true;
-          console.log(`✅ DOM audio element ${index} stopped`);
-        } catch (error) {
-          console.warn(`⚠️ Error stopping DOM audio element ${index}:`, error);
+          console.log(`✅ DOM audio element ${index} paused`);
         }
+        audio.currentTime = 0;
+        audio.volume = 0; // Mute immediately
+        // Remove from DOM if possible
+        if (audio.parentNode) {
+          audio.parentNode.removeChild(audio);
+          console.log(`✅ DOM audio element ${index} removed`);
+        }
+      } catch (error) {
+        console.warn(`⚠️ Error stopping DOM audio element ${index}:`, error);
       }
     });
     
@@ -750,15 +764,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleAsk = () => {
-    // Use centralized stop function
+    // Force stop all audio immediately
     stopAllAudio("Ask button");
     
-    // Update UI state and start listening
-    setShowUnmuteButton(false);
-    setShowAskButton(false);
-    
-    // Start listening
-    startListening();
+    // Add a small delay to ensure audio stops before starting listening
+    setTimeout(() => {
+      // Update UI state and start listening
+      setShowUnmuteButton(false);
+      setShowAskButton(false);
+      
+      // Start listening
+      startListening();
+    }, 100); // 100ms delay to ensure audio stops
   };
 
   return (
