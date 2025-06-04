@@ -214,9 +214,7 @@ const SommTenantAdmin: React.FC = () => {
             transform: "translateX(-50%)",
             color: "white"
           }}
-        >
-          Tenant Admin
-        </h1>
+        >Somm tenant admin</h1>
         <div className="flex items-center gap-3">
           <div className="cursor-pointer text-white/80 hover:text-white transition-all duration-200">
             <svg
@@ -246,7 +244,6 @@ const SommTenantAdmin: React.FC = () => {
           </div>
         </div>
       </div>
-
       <div className="pt-20 px-6 max-w-7xl mx-auto">
 
         {/* Controls */}
