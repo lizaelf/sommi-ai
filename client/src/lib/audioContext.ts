@@ -4,12 +4,40 @@
 // Track if audio context has been initialized
 let audioContextInitialized = false;
 let userHasInteracted = false;
+let audioUnlocked = false;
+
+// Silent audio data - very short empty MP3
+const silentAudioData = "data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAACQAAAA=";
+
+// Unlock audio on first user interaction
+function unlockAudio() {
+  if (audioUnlocked) return;
+  
+  try {
+    console.log('Unlocking audio with silent audio object');
+    const silentAudio = new Audio();
+    silentAudio.src = silentAudioData;
+    silentAudio.volume = 0;
+    silentAudio.play().then(() => {
+      audioUnlocked = true;
+      console.log('Audio unlocked successfully');
+    }).catch((error) => {
+      console.log('Silent audio play failed, but this is expected on some browsers:', error);
+      audioUnlocked = true; // Still mark as unlocked since we tried
+    });
+  } catch (error) {
+    console.error('Error creating silent audio for unlock:', error);
+  }
+}
 
 // Track user interactions to enable audio playback
 function trackUserInteraction() {
   if (!userHasInteracted) {
     userHasInteracted = true;
     console.log('User interaction detected - audio playback now allowed');
+    
+    // Unlock audio immediately
+    unlockAudio();
     
     // Initialize audio context immediately on first interaction
     initAudioContext();
@@ -28,6 +56,8 @@ function trackUserInteraction() {
     }
   }
 }
+
+
 
 // Set up interaction listeners
 export function setupUserInteractionTracking() {
@@ -54,25 +84,15 @@ export function initAudioContext(): Promise<boolean> {
       
       const audioCtx = new AudioContext();
       
-      // Also create a dummy audio element to unlock audio on iOS/Safari
-      const dummyAudio = new Audio();
-      dummyAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA==";
-      dummyAudio.volume = 0;
-      
       return audioCtx.resume().then(() => {
         console.log('Audio context started successfully');
         audioContextInitialized = true;
         
-        // Try to play and immediately pause the dummy audio to unlock
-        dummyAudio.play().then(() => {
-          dummyAudio.pause();
-          console.log('Audio unlocked successfully');
-        }).catch(() => {
-          console.log('Audio unlock not needed or failed silently');
-        });
+        // Unlock audio with silent audio on context initialization
+        unlockAudio();
         
         return true;
-      }).catch(error => {
+      }).catch((error) => {
         console.error('Failed to start audio context:', error);
         return false;
       });
