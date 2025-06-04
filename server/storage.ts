@@ -1,7 +1,8 @@
 import { 
   users, type User, type InsertUser,
   messages, type Message, type InsertMessage,
-  conversations, type Conversation, type InsertConversation
+  conversations, type Conversation, type InsertConversation,
+  tenants, type Tenant, type InsertTenant
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -25,6 +26,14 @@ export interface IStorage {
   createConversation(conversation: InsertConversation): Promise<Conversation>;
   updateConversation(id: number, conversation: Partial<InsertConversation>): Promise<Conversation | undefined>;
   deleteConversation(id: number): Promise<void>;
+  
+  // Tenant operations
+  getTenant(id: number): Promise<Tenant | undefined>;
+  getTenantBySlug(slug: string): Promise<Tenant | undefined>;
+  getAllTenants(): Promise<Tenant[]>;
+  createTenant(tenant: InsertTenant): Promise<Tenant>;
+  updateTenant(id: number, tenant: Partial<InsertTenant>): Promise<Tenant | undefined>;
+  deleteTenant(id: number): Promise<void>;
 }
 
 // Database storage implementation
@@ -123,6 +132,47 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(conversations)
       .where(eq(conversations.id, id));
+  }
+
+  // Tenant operations
+  async getTenant(id: number): Promise<Tenant | undefined> {
+    const results = await db.select().from(tenants).where(eq(tenants.id, id));
+    return results.length > 0 ? results[0] : undefined;
+  }
+
+  async getTenantBySlug(slug: string): Promise<Tenant | undefined> {
+    const results = await db.select().from(tenants).where(eq(tenants.slug, slug));
+    return results.length > 0 ? results[0] : undefined;
+  }
+
+  async getAllTenants(): Promise<Tenant[]> {
+    return await db.select().from(tenants).orderBy(desc(tenants.createdAt));
+  }
+
+  async createTenant(insertTenant: InsertTenant): Promise<Tenant> {
+    const result = await db
+      .insert(tenants)
+      .values({
+        ...insertTenant,
+        createdAt: new Date()
+      })
+      .returning();
+    return result[0];
+  }
+
+  async updateTenant(id: number, data: Partial<InsertTenant>): Promise<Tenant | undefined> {
+    const result = await db
+      .update(tenants)
+      .set(data)
+      .where(eq(tenants.id, id))
+      .returning();
+    return result.length > 0 ? result[0] : undefined;
+  }
+
+  async deleteTenant(id: number): Promise<void> {
+    await db
+      .delete(tenants)
+      .where(eq(tenants.id, id));
   }
 }
 

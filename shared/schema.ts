@@ -85,3 +85,25 @@ export const chatCompletionResponseSchema = z.object({
 });
 
 export type ChatCompletionResponse = z.infer<typeof chatCompletionResponseSchema>;
+
+// Model for tenants (wineries)
+export const tenants = pgTable("tenants", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(), // URL-friendly identifier
+  logo: text("logo"), // Logo URL or base64
+  description: text("description"),
+  aiTone: text("ai_tone"), // AI personality/tone for this winery
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertTenantSchema = createInsertSchema(tenants).pick({
+  name: true,
+  slug: true,
+  logo: true,
+  description: true,
+  aiTone: true,
+});
+
+export type InsertTenant = z.infer<typeof insertTenantSchema>;
+export type Tenant = typeof tenants.$inferSelect;
