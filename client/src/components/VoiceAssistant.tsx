@@ -149,13 +149,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         setShowBottomSheet(true);
         console.log("Voice recognition started");
         
-        // Start autoplay TTS when voice bottom sheet opens
-        const lastAssistantMessage = (window as any).lastAssistantMessageText;
-        if (lastAssistantMessage) {
-          console.log("Voice bottom sheet opened - starting autoplay TTS for latest response");
-          startAutoplayTTS(lastAssistantMessage);
-        }
-        
         // Dispatch mic-status event for animation
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('mic-status', {
@@ -273,95 +266,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       recognitionRef.current = null;
     }
     setIsListening(false);
-  };
-
-  const startAutoplayTTS = async (text: string) => {
-    try {
-      console.log("Starting autoplay TTS for voice bottom sheet...");
-      
-      // Ensure audio context is initialized before attempting playback
-      const audioContextInitialized = await (window as any).initAudioContext?.() || true;
-      if (!audioContextInitialized) {
-        console.warn("Audio context not initialized for autoplay");
-      }
-
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'audio/mpeg, audio/*'
-        },
-        body: JSON.stringify({ text })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`TTS API error: ${response.status} - ${errorText}`);
-      }
-
-      console.log("TTS response received for autoplay, processing audio...");
-      const audioBuffer = await response.arrayBuffer();
-      
-      if (audioBuffer.byteLength === 0) {
-        throw new Error("Received empty audio buffer for autoplay");
-      }
-
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const autoplayAudio = new Audio(audioUrl);
-
-      // Use separate reference for autoplay
-      (window as any).currentAutoplayAudio = autoplayAudio;
-
-      autoplayAudio.onplay = () => {
-        console.log("Autoplay TTS started for voice bottom sheet");
-        setIsResponding(true);
-        setShowUnmuteButton(false);
-        setShowAskButton(false);
-      };
-
-      autoplayAudio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentAutoplayAudio = null;
-        console.log("Autoplay TTS completed for voice bottom sheet");
-        setIsResponding(false);
-        setShowUnmuteButton(true);
-        setShowAskButton(true);
-      };
-
-      autoplayAudio.onerror = (e) => {
-        console.error("Autoplay TTS playback error for voice bottom sheet:", e);
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentAutoplayAudio = null;
-        setIsResponding(false);
-        setShowUnmuteButton(true);
-        setShowAskButton(true);
-      };
-
-      autoplayAudio.onabort = () => {
-        console.log("Autoplay TTS aborted for voice bottom sheet");
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentAutoplayAudio = null;
-      };
-
-      // Set audio properties for better compatibility
-      autoplayAudio.preload = 'auto';
-      autoplayAudio.volume = 0.8;
-
-      console.log("Attempting to play autoplay audio for voice bottom sheet...");
-      const playPromise = autoplayAudio.play();
-      
-      if (playPromise !== undefined) {
-        await playPromise;
-        console.log("Autoplay audio started successfully for voice bottom sheet");
-      }
-
-    } catch (error) {
-      console.error("Failed to generate or play autoplay TTS for voice bottom sheet:", error);
-      setIsResponding(false);
-      setShowUnmuteButton(true);
-      setShowAskButton(true);
-    }
   };
 
   const toggleListening = () => {
