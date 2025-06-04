@@ -137,11 +137,30 @@ const TenantAdmin: React.FC = () => {
   };
 
   const handleInputChange = (section: keyof TenantData, field: string, value: string) => {
+    setFormData(prev => {
+      const sectionData = prev[section];
+      if (typeof sectionData === 'object' && sectionData !== null) {
+        return {
+          ...prev,
+          [section]: {
+            ...sectionData,
+            [field]: value,
+          },
+        };
+      }
+      return prev;
+    });
+  };
+
+  const handleWineClubChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value,
+      cms: {
+        ...prev.cms,
+        wineClub: {
+          ...prev.cms.wineClub,
+          [field]: value,
+        },
       },
     }));
   };
@@ -520,7 +539,7 @@ const TenantAdmin: React.FC = () => {
                     <input
                       type="text"
                       value={formData.cms.wineClub.clubName}
-                      onChange={(e) => handleInputChange('cms', 'wineClub', { ...formData.cms.wineClub, clubName: e.target.value })}
+                      onChange={(e) => handleWineClubChange('clubName', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Elite Wine Club"
                     />
@@ -530,7 +549,7 @@ const TenantAdmin: React.FC = () => {
                     <input
                       type="text"
                       value={formData.cms.wineClub.membershipTiers}
-                      onChange={(e) => handleInputChange('cms', 'wineClub', { ...formData.cms.wineClub, membershipTiers: e.target.value })}
+                      onChange={(e) => handleWineClubChange('membershipTiers', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Silver, Gold, Platinum"
                     />
@@ -539,7 +558,7 @@ const TenantAdmin: React.FC = () => {
                     <label className="block text-sm font-medium mb-2">Description</label>
                     <textarea
                       value={formData.cms.wineClub.description}
-                      onChange={(e) => handleInputChange('cms', 'wineClub', { ...formData.cms.wineClub, description: e.target.value })}
+                      onChange={(e) => handleWineClubChange('description', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Describe the wine club..."
                       rows={3}
@@ -550,7 +569,7 @@ const TenantAdmin: React.FC = () => {
                     <input
                       type="text"
                       value={formData.cms.wineClub.pricing}
-                      onChange={(e) => handleInputChange('cms', 'wineClub', { ...formData.cms.wineClub, pricing: e.target.value })}
+                      onChange={(e) => handleWineClubChange('pricing', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="$99/quarter"
                     />
@@ -559,7 +578,7 @@ const TenantAdmin: React.FC = () => {
                     <label className="block text-sm font-medium mb-2">Club Benefits</label>
                     <textarea
                       value={formData.cms.wineClub.clubBenefits}
-                      onChange={(e) => handleInputChange('cms', 'wineClub', { ...formData.cms.wineClub, clubBenefits: e.target.value })}
+                      onChange={(e) => handleWineClubChange('clubBenefits', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Exclusive wines, discounts, events..."
                       rows={3}
