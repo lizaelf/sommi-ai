@@ -22,6 +22,67 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
+  // Centralized function to stop all audio playback
+  const stopAllAudio = (source = "unknown") => {
+    console.log(`🔇 Stopping all audio from: ${source}`);
+    let audioStopped = false;
+    
+    // Stop OpenAI TTS audio
+    if ((window as any).currentOpenAIAudio) {
+      try {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio.currentTime = 0;
+        (window as any).currentOpenAIAudio.onended = null;
+        (window as any).currentOpenAIAudio.onerror = null;
+        (window as any).currentOpenAIAudio.onplay = null;
+        (window as any).currentOpenAIAudio = null;
+        audioStopped = true;
+        console.log("✅ OpenAI TTS audio stopped");
+      } catch (error) {
+        console.warn("⚠️ Error stopping OpenAI audio:", error);
+        (window as any).currentOpenAIAudio = null;
+      }
+    }
+    
+    // Stop autoplay TTS audio
+    if ((window as any).currentAutoplayAudio) {
+      try {
+        (window as any).currentAutoplayAudio.pause();
+        (window as any).currentAutoplayAudio.currentTime = 0;
+        (window as any).currentAutoplayAudio.onended = null;
+        (window as any).currentAutoplayAudio.onerror = null;
+        (window as any).currentAutoplayAudio.onplay = null;
+        (window as any).currentAutoplayAudio = null;
+        audioStopped = true;
+        console.log("✅ Autoplay TTS audio stopped");
+      } catch (error) {
+        console.warn("⚠️ Error stopping autoplay audio:", error);
+        (window as any).currentAutoplayAudio = null;
+      }
+    }
+    
+    // Stop any DOM audio elements
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach((audio, index) => {
+      if (!audio.paused) {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+          audioStopped = true;
+          console.log(`✅ DOM audio element ${index} stopped`);
+        } catch (error) {
+          console.warn(`⚠️ Error stopping DOM audio element ${index}:`, error);
+        }
+      }
+    });
+    
+    // Force UI state reset
+    setIsResponding(false);
+    
+    console.log(`🔇 Audio stop complete from: ${source}, stopped: ${audioStopped}`);
+    return audioStopped;
+  };
+
   // Handle audio status changes and page visibility
   useEffect(() => {
     const handleAudioStatusChange = (event: CustomEvent) => {
@@ -461,24 +522,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleMute = () => {
-    if ((window as any).currentOpenAIAudio) {
-      console.log("Stop button clicked - stopping OpenAI TTS audio playback");
-      (window as any).currentOpenAIAudio.pause();
-      (window as any).currentOpenAIAudio.currentTime = 0;
-      (window as any).currentOpenAIAudio = null;
-      console.log("OpenAI TTS audio stopped successfully");
-    }
+    // Use centralized stop function
+    stopAllAudio("Stop button");
     
-    // Stop autoplay audio as well
-    if ((window as any).currentAutoplayAudio) {
-      console.log("Stop button clicked - stopping autoplay TTS audio");
-      (window as any).currentAutoplayAudio.pause();
-      (window as any).currentAutoplayAudio.currentTime = 0;
-      (window as any).currentAutoplayAudio = null;
-      console.log("Autoplay TTS audio stopped successfully");
-    }
-    
-    setIsResponding(false);
+    // Update UI state
     setShowUnmuteButton(true);
     setShowAskButton(true);
   };
@@ -705,27 +752,65 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const handleAsk = () => {
     console.log("Ask button clicked - stopping TTS and starting listening");
     
-    // Stop any ongoing TTS audio playback
+    // Use the same comprehensive stop logic as handleMute
+    // Stop OpenAI manual unmute audio
     if ((window as any).currentOpenAIAudio) {
-      console.log("Stopping manual unmute TTS audio");
-      (window as any).currentOpenAIAudio.pause();
-      (window as any).currentOpenAIAudio.currentTime = 0;
-      (window as any).currentOpenAIAudio = null;
+      console.log("Stopping OpenAI TTS audio from Ask button");
+      try {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio.currentTime = 0;
+        // Force cleanup of event listeners
+        (window as any).currentOpenAIAudio.onended = null;
+        (window as any).currentOpenAIAudio.onerror = null;
+        (window as any).currentOpenAIAudio.onplay = null;
+        (window as any).currentOpenAIAudio = null;
+        console.log("OpenAI TTS audio stopped and cleaned up from Ask button");
+      } catch (error) {
+        console.warn("Error stopping OpenAI audio from Ask button:", error);
+        (window as any).currentOpenAIAudio = null;
+      }
     }
     
+    // Stop autoplay audio
     if ((window as any).currentAutoplayAudio) {
-      console.log("Stopping autoplay TTS audio");
-      (window as any).currentAutoplayAudio.pause();
-      (window as any).currentAutoplayAudio.currentTime = 0;
-      (window as any).currentAutoplayAudio = null;
+      console.log("Stopping autoplay TTS audio from Ask button");
+      try {
+        (window as any).currentAutoplayAudio.pause();
+        (window as any).currentAutoplayAudio.currentTime = 0;
+        // Force cleanup of event listeners
+        (window as any).currentAutoplayAudio.onended = null;
+        (window as any).currentAutoplayAudio.onerror = null;
+        (window as any).currentAutoplayAudio.onplay = null;
+        (window as any).currentAutoplayAudio = null;
+        console.log("Autoplay TTS audio stopped and cleaned up from Ask button");
+      } catch (error) {
+        console.warn("Error stopping autoplay audio from Ask button:", error);
+        (window as any).currentAutoplayAudio = null;
+      }
     }
     
-    // Reset states and immediately start listening
-    setIsResponding(false);
+    // Stop any other audio elements that might be playing
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach((audio) => {
+      if (!audio.paused) {
+        console.log("Stopping additional audio element found in DOM from Ask button");
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+        } catch (error) {
+          console.warn("Error stopping DOM audio element from Ask button:", error);
+        }
+      }
+    });
+    
+    // Use centralized stop function
+    stopAllAudio("Ask button");
+    
+    // Update UI state and start listening
     setShowUnmuteButton(false);
     setShowAskButton(false);
     
-    // Don't close the bottom sheet - keep it open and start listening
+    // Start listening
     startListening();
   };
 
