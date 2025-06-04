@@ -189,6 +189,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         return;
       }
 
+      // Mobile-specific: Pre-set listening state immediately
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        console.log("Mobile device detected - pre-setting listening state");
+        setIsListening(true);
+        setShowBottomSheet(true);
+      }
+
       const recognition = new SpeechRecognition();
       
       // Mobile-optimized settings
@@ -196,6 +204,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       recognition.interimResults = false;
       recognition.lang = 'en-US';
       recognition.maxAlternatives = 1;
+      
+      // Mobile-specific: Additional settings for mobile browsers
+      if (isMobile) {
+        // Force immediate state update for mobile
+        recognition.grammars = new (window as any).SpeechGrammarList();
+      }
       
       // Mobile-specific timeout settings
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
@@ -210,9 +224,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
       
       recognition.onstart = () => {
+        console.log("Voice recognition onstart event triggered");
         setIsListening(true);
         setShowBottomSheet(true);
-        console.log("Voice recognition started");
+        console.log("Voice recognition started - state updated");
+        
+        // Mobile-specific: Force state update
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          console.log("Mobile device - forcing listening state update");
+          // Multiple attempts to ensure state is set on mobile
+          setTimeout(() => {
+            setIsListening(true);
+            setShowBottomSheet(true);
+          }, 50);
+          
+          setTimeout(() => {
+            setIsListening(true);
+            setShowBottomSheet(true);
+          }, 150);
+        }
         
         // Dispatch mic-status event for animation
         setTimeout(() => {
@@ -239,6 +269,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       recognition.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
+        
+        // Mobile-specific: Ensure state is properly reset on mobile
+        if (isMobile) {
+          console.log("Mobile device - forcing error state reset");
+          setTimeout(() => {
+            setIsListening(false);
+            setShowBottomSheet(false);
+          }, 100);
+        }
         
         // Dispatch stopped event for animation on error
         window.dispatchEvent(new CustomEvent('mic-status', {
@@ -302,8 +341,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       };
       
       recognition.onend = () => {
-        setIsListening(false);
         console.log("Voice recognition ended");
+        setIsListening(false);
+        
+        // Mobile-specific: Ensure state is properly reset on mobile
+        if (isMobile) {
+          console.log("Mobile device - forcing end state reset");
+          setTimeout(() => {
+            setIsListening(false);
+            setShowBottomSheet(false);
+          }, 100);
+        }
         
         // Dispatch stopped event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
