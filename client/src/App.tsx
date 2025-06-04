@@ -9,11 +9,9 @@ import WineDetails from "@/pages/WineDetails";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
 import HomeGlobal from "@/pages/HomeGlobal";
-import AdminCRM from "@/pages/AdminCRM";
+import WineryTenantAdmin from "@/pages/WineryTenantAdmin";
 import WineScan from "@/pages/WineScan";
 import WineEdit from "@/pages/WineEdit";
-import TenantsSimple from "@/pages/TenantsSimple";
-
 import TenantAdmin from "@/pages/TenantAdmin";
 import SommTenantAdmin from "@/pages/SommTenantAdmin";
 
@@ -27,8 +25,7 @@ function Router() {
       <Route path="/home-global" component={HomeGlobal} />
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={WineDetails} />
-      <Route path="/admin-crm" component={AdminCRM} />
-      <Route path="/tenants" component={TenantsSimple} />
+      <Route path="/admin-crm" component={WineryTenantAdmin} />
       <Route path="/tenants/:tenantSlug/admin" component={TenantAdmin} />
       <Route path="/tenant-admin-1" component={TenantAdmin} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />

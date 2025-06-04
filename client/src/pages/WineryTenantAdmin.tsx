@@ -13,7 +13,7 @@ import placeholderImage from "@assets/Placeholder.png";
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;
 
-export default function AdminCRM() {
+export default function WineryTenantAdmin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
