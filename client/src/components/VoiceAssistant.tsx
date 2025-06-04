@@ -128,10 +128,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
     // Handle autoplay requests independent of button state
     const handleAutoplayRequest = (event: CustomEvent) => {
-      const text = event.detail?.text;
-      if (text && showBottomSheet) {
-        console.log("Autoplay TTS requested via event:", text.substring(0, 50) + "...");
-        startAutoplayTTS(text);
+      try {
+        const text = event.detail?.text;
+        if (text && showBottomSheet) {
+          console.log("Autoplay TTS requested via event:", text.substring(0, 50) + "...");
+          startAutoplayTTS(text);
+        }
+      } catch (error) {
+        console.error("Error handling autoplay request:", error);
       }
     };
 
@@ -367,6 +371,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const startAutoplayTTS = async (text: string) => {
     try {
       console.log("Starting autoplay TTS for voice bottom sheet...");
+      
+      // Prevent multiple simultaneous autoplay requests
+      if ((window as any).currentAutoplayAudio) {
+        console.log("Autoplay already in progress, skipping");
+        return;
+      }
       
       // Ensure audio context is initialized before attempting playback
       const audioContextInitialized = await (window as any).initAudioContext?.() || true;
