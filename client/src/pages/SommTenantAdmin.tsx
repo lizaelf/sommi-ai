@@ -30,7 +30,7 @@ const SommTenantAdmin: React.FC = () => {
     description: '',
     status: 'active'
   });
-  const [searchTerm, setSearchTerm] = useState('');
+  
 
   // Load tenants from localStorage
   useEffect(() => {
@@ -149,12 +149,8 @@ const SommTenantAdmin: React.FC = () => {
     setFormData({ name: '', slug: '', description: '', status: 'active' });
   };
 
-  // Filter tenants based on search term
-  const filteredTenants = tenants.filter(tenant =>
-    tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tenant.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tenant.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Return all tenants without filtering
+  const filteredTenants = tenants;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#3a3a3a' }}>
@@ -193,30 +189,7 @@ const SommTenantAdmin: React.FC = () => {
         </div>
       </div>
       <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px" }}>
-        {/* Search Input */}
-        <div style={{ marginBottom: "24px" }}>
-          <input
-            type="text"
-            placeholder="Search tenants..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              background: "transparent !important",
-              backgroundColor: "transparent !important",
-              border: "1px solid #494949",
-              borderRadius: "12px",
-              color: "white",
-              fontSize: "16px",
-              outline: "none",
-              boxShadow: "none !important",
-              WebkitAppearance: "none",
-              appearance: "none"
-            }}
-            className="placeholder-white/60"
-          />
-        </div>
+        
 
 
 
@@ -224,7 +197,7 @@ const SommTenantAdmin: React.FC = () => {
 
         {/* Tenants Cards */}
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {filteredTenants.map((tenant) => (
+          {tenants.map((tenant) => (
             <Link key={tenant.id} href={`/tenants/${tenant.slug}/admin`}>
               <div
                 className="rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5"
@@ -254,17 +227,15 @@ const SommTenantAdmin: React.FC = () => {
         {filteredTenants.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
-              {searchTerm ? 'No tenants found matching your search.' : 'No tenants available.'}
+              No tenants available.
             </div>
-            {!searchTerm && (
-              <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Tenant
-              </button>
-            )}
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Your First Tenant
+            </button>
           </div>
         )}
 
