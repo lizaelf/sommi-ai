@@ -750,59 +750,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleAsk = () => {
-    console.log("Ask button clicked - stopping TTS and starting listening");
-    
-    // Use the same comprehensive stop logic as handleMute
-    // Stop OpenAI manual unmute audio
-    if ((window as any).currentOpenAIAudio) {
-      console.log("Stopping OpenAI TTS audio from Ask button");
-      try {
-        (window as any).currentOpenAIAudio.pause();
-        (window as any).currentOpenAIAudio.currentTime = 0;
-        // Force cleanup of event listeners
-        (window as any).currentOpenAIAudio.onended = null;
-        (window as any).currentOpenAIAudio.onerror = null;
-        (window as any).currentOpenAIAudio.onplay = null;
-        (window as any).currentOpenAIAudio = null;
-        console.log("OpenAI TTS audio stopped and cleaned up from Ask button");
-      } catch (error) {
-        console.warn("Error stopping OpenAI audio from Ask button:", error);
-        (window as any).currentOpenAIAudio = null;
-      }
-    }
-    
-    // Stop autoplay audio
-    if ((window as any).currentAutoplayAudio) {
-      console.log("Stopping autoplay TTS audio from Ask button");
-      try {
-        (window as any).currentAutoplayAudio.pause();
-        (window as any).currentAutoplayAudio.currentTime = 0;
-        // Force cleanup of event listeners
-        (window as any).currentAutoplayAudio.onended = null;
-        (window as any).currentAutoplayAudio.onerror = null;
-        (window as any).currentAutoplayAudio.onplay = null;
-        (window as any).currentAutoplayAudio = null;
-        console.log("Autoplay TTS audio stopped and cleaned up from Ask button");
-      } catch (error) {
-        console.warn("Error stopping autoplay audio from Ask button:", error);
-        (window as any).currentAutoplayAudio = null;
-      }
-    }
-    
-    // Stop any other audio elements that might be playing
-    const audioElements = document.querySelectorAll('audio');
-    audioElements.forEach((audio) => {
-      if (!audio.paused) {
-        console.log("Stopping additional audio element found in DOM from Ask button");
-        try {
-          audio.pause();
-          audio.currentTime = 0;
-        } catch (error) {
-          console.warn("Error stopping DOM audio element from Ask button:", error);
-        }
-      }
-    });
-    
     // Use centralized stop function
     stopAllAudio("Ask button");
     
