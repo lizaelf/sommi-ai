@@ -25,7 +25,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const { toast } = useToast();
 
-  // Mobile-specific: Force listening state persistence
+  // Mobile-specific: Force listening state persistence and prevent premature closing
   useEffect(() => {
     if (isMobileDevice && isListening) {
       // Force state persistence every 500ms on mobile to prevent state loss
@@ -39,6 +39,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return () => clearInterval(interval);
     }
   }, [isListening, isMobileDevice]);
+
+  // Keep bottom sheet open during processing
+  useEffect(() => {
+    if (isProcessing) {
+      setShowBottomSheet(true);
+      console.log("Keeping bottom sheet open during processing");
+    }
+  }, [isProcessing]);
 
   // Handle audio status changes and page visibility
   useEffect(() => {
@@ -288,6 +296,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("Final transcript:", transcript);
         
         setIsListening(false);
+        // Keep bottom sheet open during processing
+        setShowBottomSheet(true);
         
         // Dispatch processing event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
@@ -375,14 +385,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("Voice recognition ended");
         setIsListening(false);
         
-        // Mobile-specific: Ensure state is properly reset on mobile
-        if (isMobile) {
-          console.log("Mobile device - forcing end state reset");
-          setTimeout(() => {
-            setIsListening(false);
-            setShowBottomSheet(false);
-          }, 100);
-        }
+        // Don't close bottom sheet immediately - keep it open for processing state
+        // The bottom sheet will be handled by the processing flow
         
         // Dispatch stopped event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
