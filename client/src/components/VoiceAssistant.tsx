@@ -143,6 +143,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
       window.removeEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
+      window.removeEventListener('requestAutoplayTTS', handleAutoplayRequest as EventListener);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);

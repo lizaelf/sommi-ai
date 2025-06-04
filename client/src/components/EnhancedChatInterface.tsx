@@ -670,6 +670,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Trigger unmute button to show after response is ready
         window.dispatchEvent(new CustomEvent('showUnmuteButton'));
 
+        // Always trigger autoplay TTS regardless of unmute button state
+        window.dispatchEvent(new CustomEvent('requestAutoplayTTS', {
+          detail: { text: assistantMessage.content }
+        }));
+
         // Store the assistant message content for later autoplay when voice bottom sheet opens
         console.log("Storing response for voice bottom sheet autoplay:", assistantMessage.content.substring(0, 50) + "...");
       }
