@@ -206,10 +206,10 @@ const SommTenantAdmin: React.FC = () => {
         {/* Tenants Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTenants.map((tenant) => (
-            <div key={tenant.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+            <div key={tenant.id} className="rounded-lg border border-gray-300 hover:border-gray-400 transition-colors duration-200">
               {/* Clickable Card Content */}
               <Link href={`/tenants/${tenant.slug}/admin`}>
-                <div className="p-6 cursor-pointer hover:bg-gray-50 rounded-t-lg">
+                <div className="p-6 cursor-pointer hover:bg-gray-100 rounded-t-lg">
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="text-lg font-semibold text-gray-900 truncate">{tenant.name}</h3>
                     <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
@@ -236,7 +236,7 @@ const SommTenantAdmin: React.FC = () => {
               </Link>
               
               {/* Action Buttons */}
-              <div className="px-6 py-3 bg-gray-50 rounded-b-lg flex justify-end space-x-2">
+              <div className="px-6 py-3 rounded-b-lg flex justify-end space-x-2">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
