@@ -7,6 +7,7 @@ import {
   shouldSkipPermissionPrompt,
   syncMicrophonePermissionWithBrowser,
 } from "@/utils/microphonePermissions";
+import { mobileAudioManager } from "@/utils/mobileAudioManager";
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -119,6 +120,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const startListening = async () => {
     // Mobile-specific: Ensure this is triggered by user interaction
     console.log("Starting voice recognition - user interaction detected");
+    
+    // Unlock audio immediately within user gesture for mobile
+    if (isMobileDevice) {
+      try {
+        const silentAudio = new Audio();
+        silentAudio.src = "data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAACQAAAA=";
+        silentAudio.volume = 0;
+        await silentAudio.play();
+        console.log("Mobile audio unlocked within user gesture");
+      } catch (error) {
+        console.log("Mobile audio unlock attempt:", error);
+      }
+    }
 
     // Check speech recognition support with mobile-specific detection
     const SpeechRecognition =
@@ -560,6 +574,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
+
+    // Mobile-specific: Try direct TTS playback within user gesture first
+    const lastAssistantMessage = (window as any).lastAssistantMessageText;
+    if (lastAssistantMessage && isMobileDevice) {
+      console.log("Attempting direct TTS playback within user gesture on mobile");
+      const success = await mobileAudioManager.playTTSWithinGesture(lastAssistantMessage);
+      if (success) {
+        setIsResponding(true);
+        setShowUnmuteButton(false);
+        setShowAskButton(false);
+        return;
+      }
+    }
 
     // Check if there's pending autoplay audio from mobile autoplay blocking
     const pendingAudio = (window as any).pendingAutoplayAudio;
