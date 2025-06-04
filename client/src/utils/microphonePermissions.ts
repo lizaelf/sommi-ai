@@ -106,24 +106,70 @@ export async function syncMicrophonePermissionWithBrowser(): Promise<boolean> {
 // Request microphone permission and save to cookie
 export async function requestMicrophonePermission(): Promise<boolean> {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ 
-      audio: {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false
-      } 
-    });
+    console.log('Requesting microphone permission...');
+    
+    // Mobile-specific permission request with fallback options
+    let audioConstraints;
+    
+    // Check if it's a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      console.log('Mobile device detected - using mobile-optimized audio constraints');
+      // Simplified constraints for mobile compatibility
+      audioConstraints = { 
+        audio: true 
+      };
+    } else {
+      // Desktop constraints with advanced options
+      audioConstraints = { 
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        } 
+      };
+    }
+    
+    const stream = await navigator.mediaDevices.getUserMedia(audioConstraints);
     
     // Permission granted
     saveMicrophonePermission(true);
     
-    // Return the stream for immediate use
+    // Store stream for immediate use
     (window as any).currentMicrophoneStream = stream;
     
     console.log('Microphone permission granted and saved');
     return true;
-  } catch (error) {
-    console.error('Microphone permission denied:', error);
+    
+  } catch (error: any) {
+    console.error('Microphone permission error:', error);
+    
+    // Enhanced error handling for mobile devices
+    if (error.name === 'NotAllowedError') {
+      console.error('User denied microphone permission');
+    } else if (error.name === 'NotFoundError') {
+      console.error('No microphone found on device');
+    } else if (error.name === 'NotReadableError') {
+      console.error('Microphone is already in use');
+    } else if (error.name === 'OverconstrainedError') {
+      console.error('Microphone constraints not supported');
+      
+      // Fallback: try with basic audio constraints on mobile
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        try {
+          console.log('Retrying with basic audio constraints...');
+          const fallbackStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          saveMicrophonePermission(true);
+          (window as any).currentMicrophoneStream = fallbackStream;
+          console.log('Microphone permission granted with fallback constraints');
+          return true;
+        } catch (fallbackError) {
+          console.error('Fallback microphone request also failed:', fallbackError);
+        }
+      }
+    }
+    
     saveMicrophonePermission(false);
     return false;
   }

@@ -69,7 +69,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   }, []);
 
   const startListening = async () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    // Mobile-specific: Ensure this is triggered by user interaction
+    console.log('Starting voice recognition - user interaction detected');
+    
+    // Check speech recognition support with mobile-specific detection
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.error('Speech recognition not supported on this device/browser');
       toast({
         description: (
           <span
@@ -80,10 +86,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
               whiteSpace: "nowrap",
             }}
           >
-            Speech recognition not supported
+            Voice input not supported on this device
           </span>
         ),
-        duration: 2000,
+        duration: 3000,
         className: "bg-white text-black border-none",
         style: {
           position: "fixed",
@@ -101,8 +107,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
 
-    // Request microphone permission
-    console.log('Requesting fresh microphone permission');
+    // Initialize audio context for mobile compatibility
+    try {
+      if (typeof (window as any).initAudioContext === 'function') {
+        const audioInitialized = await (window as any).initAudioContext();
+        console.log('Audio context initialized for mobile:', audioInitialized);
+      }
+    } catch (audioError) {
+      console.warn('Audio context initialization failed:', audioError);
+    }
+
+    // Request microphone permission with mobile-specific handling
+    console.log('Requesting microphone permission for voice recognition');
     const hasPermission = await requestMicrophonePermission();
     if (!hasPermission) {
       toast({
@@ -137,12 +153,61 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
 
     try {
+      // Mobile-specific speech recognition setup
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      
+      if (!SpeechRecognition) {
+        console.error("Speech recognition not supported on this device");
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Voice input not supported on this device
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+        return;
+      }
+
       const recognition = new SpeechRecognition();
       
+      // Mobile-optimized settings
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'en-US';
+      recognition.maxAlternatives = 1;
+      
+      // Mobile-specific timeout settings
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        console.log("Mobile device detected - applying mobile-specific settings");
+        // Shorter timeout for mobile devices
+        setTimeout(() => {
+          if (recognitionRef.current && isListening) {
+            console.log("Mobile timeout - stopping recognition");
+            recognition.stop();
+          }
+        }, 8000); // 8 seconds instead of default
+      }
       
       recognition.onstart = () => {
         setIsListening(true);
@@ -180,7 +245,31 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           detail: { status: 'stopped' }
         }));
         
-        if (event.error === 'not-allowed') {
+        // Enhanced mobile error handling
+        let errorMessage = "Voice recognition failed";
+        
+        switch (event.error) {
+          case 'not-allowed':
+            errorMessage = "Microphone permission denied";
+            break;
+          case 'no-speech':
+            errorMessage = "No speech detected - please try again";
+            break;
+          case 'network':
+            errorMessage = "Network error - check your connection";
+            break;
+          case 'audio-capture':
+            errorMessage = "Microphone not accessible";
+            break;
+          case 'aborted':
+            console.log("Voice recognition was stopped by user");
+            return; // Don't show error toast for user-initiated stops
+          default:
+            console.error('Unhandled speech recognition error:', event.error);
+        }
+        
+        // Only show error toast for actual errors (not user-initiated stops)
+        if (event.error !== 'aborted') {
           toast({
             description: (
               <span
@@ -191,7 +280,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
                   whiteSpace: "nowrap",
                 }}
               >
-                Microphone permission denied
+                {errorMessage}
               </span>
             ),
             duration: 3000,
