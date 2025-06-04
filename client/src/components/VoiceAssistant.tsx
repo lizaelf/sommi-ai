@@ -410,6 +410,51 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
+    
+    // Check if there's pending autoplay audio from mobile autoplay blocking
+    const pendingAudio = (window as any).pendingAutoplayAudio;
+    if (pendingAudio) {
+      console.log("Playing pending autoplay audio that was blocked");
+      
+      // Use the already generated audio
+      (window as any).currentOpenAIAudio = pendingAudio;
+      (window as any).pendingAutoplayAudio = null;
+      
+      setIsResponding(true);
+      
+      // Set up event handlers for the pending audio
+      pendingAudio.onplay = () => {
+        setIsResponding(true);
+        setShowUnmuteButton(false);
+        setShowAskButton(false);
+        console.log("Pending audio playback started successfully");
+      };
+
+      pendingAudio.onended = () => {
+        setIsResponding(false);
+        setShowUnmuteButton(true);
+        setShowAskButton(true);
+        console.log("Pending audio playback completed successfully");
+      };
+
+      pendingAudio.onerror = (e: any) => {
+        console.error("Pending audio playback error:", e);
+        setIsResponding(false);
+        setShowUnmuteButton(true);
+        setShowAskButton(true);
+      };
+
+      try {
+        await pendingAudio.play();
+        console.log("Pending audio started playing successfully");
+        return;
+      } catch (error) {
+        console.error("Failed to play pending audio:", error);
+        // Fall through to generate new audio
+      }
+    }
+    
+    // Fallback: generate new audio if no pending audio or it failed
     const lastAssistantMessage = (window as any).lastAssistantMessageText;
     
     if (!lastAssistantMessage) {
@@ -418,9 +463,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       return;
     }
 
-    console.log("Playing audio response for:", lastAssistantMessage.substring(0, 50) + "...");
+    console.log("Generating new TTS audio for:", lastAssistantMessage.substring(0, 50) + "...");
     
-    // Don't hide unmute button immediately - wait for successful audio start
     setIsResponding(true);
 
     try {

@@ -767,13 +767,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               }
             }
             
-            // Check if user has interacted (required for autoplay)
+            // Mobile-specific: Check if user has interacted (required for autoplay)
             if (typeof (window as any).hasUserInteracted === 'function') {
               const userInteracted = (window as any).hasUserInteracted();
               if (!userInteracted) {
                 console.log("User has not interacted yet - autoplay will be deferred");
                 // Store the audio for later playback when user interacts
                 (window as any).pendingAutoplayAudio = autoplayAudio;
+                
+                // Show unmute button immediately since autoplay is blocked
+                window.dispatchEvent(new CustomEvent('showUnmuteButton'));
                 return;
               }
             }
@@ -788,8 +791,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 console.error("Audio play promise rejected:", playError);
                 
                 if (playError.name === 'NotAllowedError') {
-                  console.log("Audio autoplay blocked - user interaction required");
-                  // Don't throw error for autoplay blocking, just log it
+                  console.log("Audio autoplay blocked by browser - showing manual controls");
+                  
+                  // Store the audio for manual playback
+                  (window as any).pendingAutoplayAudio = autoplayAudio;
+                  
+                  // Show unmute button immediately for manual control
+                  window.dispatchEvent(new CustomEvent('showUnmuteButton'));
+                  
+                  // Don't throw error for autoplay blocking, just provide manual controls
                   return;
                 } else {
                   throw playError;

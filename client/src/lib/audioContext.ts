@@ -13,6 +13,19 @@ function trackUserInteraction() {
     
     // Initialize audio context immediately on first interaction
     initAudioContext();
+    
+    // Try to play any pending autoplay audio
+    if ((window as any).pendingAutoplayAudio) {
+      console.log('Playing previously blocked autoplay audio after user interaction');
+      const pendingAudio = (window as any).pendingAutoplayAudio;
+      (window as any).pendingAutoplayAudio = null;
+      
+      pendingAudio.play().then(() => {
+        console.log('Pending autoplay audio started after user interaction');
+      }).catch((error: any) => {
+        console.error('Failed to play pending autoplay audio:', error);
+      });
+    }
   }
 }
 
