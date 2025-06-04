@@ -667,21 +667,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
-        // Trigger unmute button to show after response is ready
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('showUnmuteButton'));
-        }, 50);
-
-        // Always trigger autoplay TTS regardless of unmute button state
-        setTimeout(() => {
-          try {
-            window.dispatchEvent(new CustomEvent('requestAutoplayTTS', {
-              detail: { text: assistantMessage.content }
-            }));
-          } catch (error) {
-            console.error("Error dispatching autoplay TTS event:", error);
-          }
-        }, 200);
+        // Store the response and let voice controls handle it naturally
+        // Remove problematic event dispatching that causes white screens
 
         // Store the assistant message content for later autoplay when voice bottom sheet opens
         console.log("Storing response for voice bottom sheet autoplay:", assistantMessage.content.substring(0, 50) + "...");

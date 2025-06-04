@@ -125,37 +125,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
     };
 
-    const handleShowUnmuteButton = () => {
-      setShowUnmuteButton(true);
-    };
-
-    // Handle autoplay requests independent of button state
-    const handleAutoplayRequest = (event: CustomEvent) => {
-      try {
-        const text = event.detail?.text;
-        if (text) {
-          console.log("Autoplay TTS requested via event:", text.substring(0, 50) + "...");
-          // Temporarily disable autoplay to prevent UI crashes
-          console.log("Autoplay disabled to prevent UI crashes - showing voice controls instead");
-          setShowBottomSheet(true);
-          setShowUnmuteButton(true);
-          setShowAskButton(true);
-        }
-      } catch (error) {
-        console.error("Error handling autoplay request:", error);
+    // Show voice controls when responses arrive
+    const showVoiceControlsOnResponse = () => {
+      const lastMessage = (window as any).lastAssistantMessageText;
+      if (lastMessage && !showBottomSheet) {
+        console.log("New response detected, showing voice controls");
+        showVoiceControls();
       }
     };
 
+    // Check for new responses periodically
+    const responseCheckInterval = setInterval(showVoiceControlsOnResponse, 1000);
+
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
-    window.addEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
-    window.addEventListener('requestAutoplayTTS', handleAutoplayRequest as EventListener);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
-      window.removeEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
-      window.removeEventListener('requestAutoplayTTS', handleAutoplayRequest as EventListener);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(responseCheckInterval);
     };
   }, [showBottomSheet]);
 
@@ -244,17 +232,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         // Check if this is from Ask button by checking if audio was recently stopped
         const isFromAskButton = (window as any).lastAudioStopSource === "Ask button";
         
-        if (!isFromAskButton) {
-          const lastAssistantMessage = (window as any).lastAssistantMessageText;
-          if (lastAssistantMessage) {
-            console.log("Voice bottom sheet opened via wine glass - starting autoplay TTS");
-            startAutoplayTTS(lastAssistantMessage);
-          }
-        } else {
-          console.log("Voice bottom sheet opened via Ask button - skipping autoplay TTS");
-          // Clear the flag
-          (window as any).lastAudioStopSource = null;
-        }
+        // Voice controls are now available - autoplay removed to prevent crashes
+        console.log("Voice bottom sheet opened - controls available");
         
         // Dispatch mic-status event for animation
         setTimeout(() => {
@@ -375,176 +354,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     setIsListening(false);
   };
 
-  const startAutoplayTTS = async (text: string) => {
-    try {
-      console.log("Starting autoplay TTS for voice bottom sheet...");
-      
-      // Prevent multiple simultaneous autoplay requests
-      if ((window as any).currentAutoplayAudio) {
-        console.log("Autoplay already in progress, skipping");
-        return;
-      }
-      
-      // Ensure audio context is initialized before attempting playback
-      const audioContextInitialized = await (window as any).initAudioContext?.() || true;
-      if (!audioContextInitialized) {
-        console.warn("Audio context not initialized for autoplay");
-      }
-
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'audio/mpeg, audio/*'
-        },
-        body: JSON.stringify({ text })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`TTS API error: ${response.status} - ${errorText}`);
-      }
-
-      console.log("TTS response received for autoplay, processing audio...");
-      const audioBuffer = await response.arrayBuffer();
-      
-      if (audioBuffer.byteLength === 0) {
-        throw new Error("Received empty audio buffer for autoplay");
-      }
-
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const autoplayAudio = new Audio(audioUrl);
-
-      // Use separate reference for autoplay
-      (window as any).currentAutoplayAudio = autoplayAudio;
-
-      autoplayAudio.onplay = () => {
-        console.log("Autoplay TTS started");
-        try {
-          setIsResponding(true);
-          // Auto-open voice bottom sheet when autoplay starts
-          setShowBottomSheet(true);
-          // Keep buttons available during autoplay - don't hide them
-        } catch (error) {
-          console.error("Error in autoplay onplay handler:", error);
-        }
-      };
-
-      autoplayAudio.onended = () => {
-        try {
-          URL.revokeObjectURL(audioUrl);
-          (window as any).currentAutoplayAudio = null;
-          console.log("Autoplay TTS completed");
-          setIsResponding(false);
-          // Always show both buttons after autoplay completes
-          setShowUnmuteButton(true);
-          setShowAskButton(true);
-          // Auto-open voice bottom sheet after autoplay completes
-          if (!showBottomSheet) {
-            setShowBottomSheet(true);
-          }
-        } catch (error) {
-          console.error("Error in autoplay onended handler:", error);
-        }
-      };
-
-      autoplayAudio.onerror = (e) => {
-        console.error("Autoplay TTS playback error for voice bottom sheet:", e);
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentAutoplayAudio = null;
-        setIsResponding(false);
-        // Always show both buttons even after autoplay error
-        setShowUnmuteButton(true);
-        setShowAskButton(true);
-        
-        // Show user-friendly error message
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Audio playback failed - please try again
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
-      };
-
-      autoplayAudio.onabort = () => {
-        console.log("Autoplay TTS aborted for voice bottom sheet");
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentAutoplayAudio = null;
-      };
-
-      // Set audio properties for better compatibility
-      autoplayAudio.preload = 'auto';
-      autoplayAudio.volume = 0.8;
-
-      console.log("Attempting to play autoplay audio for voice bottom sheet...");
-      
-      // Add timeout for audio loading
-      autoplayAudio.addEventListener('loadeddata', () => {
-        console.log("Audio data loaded successfully");
-      });
-      
-      autoplayAudio.addEventListener('canplaythrough', () => {
-        console.log("Audio can play through without buffering");
-      });
-      
-      // Wait for audio to be ready before playing
-      await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error("Audio loading timeout"));
-        }, 10000); // 10 second timeout
-        
-        autoplayAudio.oncanplay = () => {
-          clearTimeout(timeout);
-          resolve(true);
-        };
-        
-        autoplayAudio.onerror = () => {
-          clearTimeout(timeout);
-          reject(new Error("Audio loading failed"));
-        };
-        
-        // Start loading the audio
-        autoplayAudio.load();
-      });
-      
-      console.log("Audio ready, attempting to play...");
-      const playPromise = autoplayAudio.play();
-      
-      if (playPromise !== undefined) {
-        await playPromise;
-        console.log("Autoplay audio started successfully for voice bottom sheet");
-      }
-
-    } catch (error) {
-      console.error("Failed to generate or play autoplay TTS for voice bottom sheet:", error);
-      setIsResponding(false);
-      // Always show both buttons even when autoplay fails
-      setShowUnmuteButton(true);
-      setShowAskButton(true);
-    }
+  // Simple voice controls without autoplay to prevent crashes
+  const showVoiceControls = () => {
+    setShowBottomSheet(true);
+    setShowUnmuteButton(true);
+    setShowAskButton(true);
   };
 
   const toggleListening = () => {
