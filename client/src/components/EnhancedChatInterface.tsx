@@ -667,8 +667,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Add assistant message to the conversation
         await addMessage(assistantMessage);
 
-        // Store the response and let voice controls handle it naturally
-        // Remove problematic event dispatching that causes white screens
+        // Trigger unmute button to show after response is ready
+        window.dispatchEvent(new CustomEvent('showUnmuteButton'));
 
         // Store the assistant message content for later autoplay when voice bottom sheet opens
         console.log("Storing response for voice bottom sheet autoplay:", assistantMessage.content.substring(0, 50) + "...");

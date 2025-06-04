@@ -94,10 +94,7 @@ export async function checkApiStatus(): Promise<{ isValid: boolean; message: str
 // Function to generate chat completion from OpenAI API
 export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
   try {
-    console.log('=== OpenAI Chat Completion Started ===');
     console.log('Chat completion called with wine data:', wineData ? { id: wineData.id, name: wineData.name, year: wineData.year } : 'No wine data provided');
-    console.log('Input messages count:', messages.length);
-    console.log('API Key present:', !!(process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY));
     
     // Generate the system prompt - use dynamic wine data if provided, otherwise use default config
     const wineSystemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
@@ -110,21 +107,10 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       { role: 'system' as const, content: wineSystemPrompt },
       ...filteredMessages
     ];
-    
-    console.log('Final message array for OpenAI:', newMessages.map(m => ({ role: m.role, content: m.content.substring(0, 50) + '...' })));
 
     // Call OpenAI API
     let response;
     try {
-      console.log(`Attempting OpenAI API call with model: ${MODEL}`);
-      console.log('Request parameters:', {
-        model: MODEL,
-        messagesCount: newMessages.length,
-        temperature: 0.5,
-        presence_penalty: -0.1,
-        frequency_penalty: 0.2
-      });
-      
       // First try with the primary model - optimized for speed
       response = await openai.chat.completions.create({
         model: MODEL,
@@ -134,8 +120,6 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
         presence_penalty: -0.1, // Slight negative presence penalty for concise responses
         frequency_penalty: 0.2  // Slight frequency penalty to avoid repetition
       });
-      
-      console.log('OpenAI API call successful with primary model');
     } catch (err) {
       const primaryModelError = err as any;
       console.warn(`Error with primary model ${MODEL}, falling back to ${FALLBACK_MODEL}:`, primaryModelError);
@@ -157,64 +141,31 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
     }
 
     // Return the assistant's response
-    console.log('OpenAI response received:', {
-      choices: response.choices?.length || 0,
-      content: response.choices[0]?.message?.content?.substring(0, 100) + '...' || 'No content',
-      usage: response.usage
-    });
-    
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      console.error('OpenAI returned empty response content');
-      throw new Error('OpenAI returned empty response');
-    }
-    
-    console.log('=== OpenAI Chat Completion Successful ===');
     return {
-      content: content,
+      content: response.choices[0].message.content || "I don't know how to respond to that.",
       usage: response.usage
     };
   } catch (err) {
     const error = err as any;
-    console.error("=== OpenAI API Error ===");
     console.error("Error calling OpenAI API:", error);
-    console.error("Error details:", {
-      message: error?.message,
-      status: error?.status,
-      code: error?.code,
-      type: error?.type,
-      param: error?.param,
-      response: error?.response?.data,
-      stack: error?.stack?.substring(0, 500)
-    });
     
     // Check if it's an API key error
     if (error?.message?.includes('API key') || error?.status === 401) {
-      console.error("API key authentication error detected");
       throw new Error("Invalid OpenAI API key. Please add a valid API key in the environment variables.");
     }
     
     // Handle rate limiting
     if (error?.status === 429) {
-      console.error("Rate limit or quota exceeded error detected");
       throw new Error("OpenAI API rate limit or quota exceeded. Please check your billing details or try again later.");
     }
 
     // Handle model not found
     if (error?.status === 404) {
-      console.error("Model not found error detected");
       throw new Error(`The requested AI model is not available for your API key.`);
     }
     
-    // Handle network errors
-    if (error?.code === 'ECONNREFUSED' || error?.code === 'ENOTFOUND') {
-      console.error("Network connection error detected");
-      throw new Error("Network connection error - unable to reach OpenAI API");
-    }
-    
-    // Generic error with more details
-    console.error("Throwing generic OpenAI error");
-    throw new Error(`OpenAI API error: ${error?.message || "Unknown error"} (Status: ${error?.status || 'N/A'})`);
+    // Generic error
+    throw new Error(`OpenAI API error: ${error?.message || "Unknown error"}`);
   }
 }
 
