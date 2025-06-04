@@ -592,9 +592,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleAsk = () => {
+    console.log("Ask button clicked - stopping TTS and starting listening");
+    
+    // Stop any ongoing TTS audio playback
+    if ((window as any).currentOpenAIAudio) {
+      console.log("Stopping manual unmute TTS audio");
+      (window as any).currentOpenAIAudio.pause();
+      (window as any).currentOpenAIAudio.currentTime = 0;
+      (window as any).currentOpenAIAudio = null;
+    }
+    
+    if ((window as any).currentAutoplayAudio) {
+      console.log("Stopping autoplay TTS audio");
+      (window as any).currentAutoplayAudio.pause();
+      (window as any).currentAutoplayAudio.currentTime = 0;
+      (window as any).currentAutoplayAudio = null;
+    }
+    
+    // Reset states and immediately start listening
+    setIsResponding(false);
     setShowUnmuteButton(false);
     setShowAskButton(false);
-    handleCloseBottomSheet();
+    
+    // Don't close the bottom sheet - keep it open and start listening
     startListening();
   };
 
