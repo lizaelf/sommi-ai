@@ -213,6 +213,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("Mobile device detected - pre-setting listening state");
         setIsListening(true);
         setShowBottomSheet(true);
+        
+        // Force update with multiple attempts for mobile browsers
+        setTimeout(() => {
+          setIsListening(true);
+          setShowBottomSheet(true);
+        }, 50);
+        
+        setTimeout(() => {
+          setIsListening(true);
+          setShowBottomSheet(true);
+        }, 100);
       }
 
       const recognition = new SpeechRecognition();
@@ -225,8 +236,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       // Mobile-specific: Additional settings for mobile browsers
       if (isMobile) {
-        // Force immediate state update for mobile
-        recognition.grammars = new (window as any).SpeechGrammarList();
+        // Only set grammars if SpeechGrammarList is available
+        if ((window as any).SpeechGrammarList) {
+          recognition.grammars = new (window as any).SpeechGrammarList();
+        }
       }
       
       // Mobile-specific timeout settings
@@ -378,7 +391,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       };
       
       recognitionRef.current = recognition;
+      
+      // Mobile-specific: Additional state setting before start
+      if (isMobile) {
+        console.log("Mobile device - setting final listening state before start");
+        setIsListening(true);
+        setShowBottomSheet(true);
+      }
+      
       recognition.start();
+      console.log("Voice recognition setup complete and started");
+      
+      // Mobile-specific: Force state after start
+      if (isMobile) {
+        setTimeout(() => {
+          if (recognitionRef.current) {
+            setIsListening(true);
+            setShowBottomSheet(true);
+            console.log("Mobile device - forced listening state after start");
+          }
+        }, 200);
+        
+        setTimeout(() => {
+          if (recognitionRef.current) {
+            setIsListening(true);
+            setShowBottomSheet(true);
+            console.log("Mobile device - second forced listening state after start");
+          }
+        }, 500);
+      }
       
     } catch (error) {
       console.error('Failed to start speech recognition:', error);
