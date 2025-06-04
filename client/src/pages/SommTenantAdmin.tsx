@@ -239,24 +239,17 @@ const SommTenantAdmin: React.FC = () => {
       </div>
       <div className="pt-20 px-6 max-w-7xl mx-auto">
 
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex-1 max-w-md">
+        {/* Search Controls */}
+        <div className="mb-6">
+          <div className="max-w-md">
             <input
               type="text"
               placeholder="Search tenants..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/10 text-white placeholder-gray-400 border-gray-600"
             />
           </div>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Tenant
-          </button>
         </div>
 
 
