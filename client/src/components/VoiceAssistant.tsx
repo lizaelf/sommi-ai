@@ -24,7 +24,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   // Centralized function to stop all audio playback
   const stopAllAudio = (source = "unknown") => {
-    console.log(`🔇 Stopping all audio from: ${source}`);
+    console.log(`Audio stop requested from: ${source}`);
     
     // Set flag to track source of audio stop for Ask button logic
     (window as any).lastAudioStopSource = source;
@@ -39,15 +39,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         (window as any).currentOpenAIAudio.onended = null;
         (window as any).currentOpenAIAudio.onerror = null;
         (window as any).currentOpenAIAudio.onplay = null;
-        // Force remove the audio element from DOM if it exists
-        if ((window as any).currentOpenAIAudio.remove) {
-          (window as any).currentOpenAIAudio.remove();
-        }
         (window as any).currentOpenAIAudio = null;
         audioStopped = true;
-        console.log("✅ OpenAI TTS audio stopped");
       } catch (error) {
-        console.warn("⚠️ Error stopping OpenAI audio:", error);
+        console.warn("Error stopping OpenAI audio:", error);
         (window as any).currentOpenAIAudio = null;
       }
     }
@@ -60,44 +55,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         (window as any).currentAutoplayAudio.onended = null;
         (window as any).currentAutoplayAudio.onerror = null;
         (window as any).currentAutoplayAudio.onplay = null;
-        // Force remove the audio element from DOM if it exists
-        if ((window as any).currentAutoplayAudio.remove) {
-          (window as any).currentAutoplayAudio.remove();
-        }
         (window as any).currentAutoplayAudio = null;
         audioStopped = true;
-        console.log("✅ Autoplay TTS audio stopped");
       } catch (error) {
-        console.warn("⚠️ Error stopping autoplay audio:", error);
+        console.warn("Error stopping autoplay audio:", error);
         (window as any).currentAutoplayAudio = null;
       }
     }
     
-    // Stop any DOM audio elements aggressively
+    // Stop any DOM audio elements
     const audioElements = document.querySelectorAll('audio');
     audioElements.forEach((audio, index) => {
       try {
         if (!audio.paused) {
           audio.pause();
           audioStopped = true;
-          console.log(`✅ DOM audio element ${index} paused`);
         }
         audio.currentTime = 0;
-        audio.volume = 0; // Mute immediately
+        audio.volume = 0;
         // Remove from DOM if possible
         if (audio.parentNode) {
           audio.parentNode.removeChild(audio);
-          console.log(`✅ DOM audio element ${index} removed`);
         }
       } catch (error) {
-        console.warn(`⚠️ Error stopping DOM audio element ${index}:`, error);
+        console.warn(`Error stopping DOM audio element ${index}:`, error);
       }
     });
     
     // Force UI state reset
     setIsResponding(false);
     
-    console.log(`🔇 Audio stop complete from: ${source}, stopped: ${audioStopped}`);
+    if (audioStopped) {
+      console.log(`Audio stopped successfully from: ${source}`);
+    }
     return audioStopped;
   };
 
@@ -776,22 +766,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
-  // Separate listening function for Ask button that doesn't trigger autoplay
+  // Listening function for Ask button that bypasses autoplay
   const startListeningFromAskButton = async () => {
-    console.log("🎯 Starting listening from Ask button - no autoplay");
-    
-    // Check for microphone permissions
     const hasPermission = await getMicrophonePermission();
     if (!hasPermission) {
       const shouldRequest = !shouldSkipPermissionPrompt();
       if (shouldRequest) {
         const granted = await requestMicrophonePermission();
-        if (!granted) {
-          console.log("Microphone permission denied");
-          return;
-        }
+        if (!granted) return;
       } else {
-        console.log("Microphone permission required");
         return;
       }
     }
@@ -807,9 +790,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       recognition.onstart = () => {
         setIsListening(true);
         setShowBottomSheet(true);
-        console.log("Ask button voice recognition started - NO AUTOPLAY");
         
-        // Dispatch mic-status event for animation
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('mic-status', {
             detail: { status: 'listening' }
@@ -819,11 +800,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
-        console.log("Final transcript from Ask button:", transcript);
-        
         setIsListening(false);
         
-        // Dispatch processing event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
           detail: { status: 'processing' }
         }));
@@ -832,20 +810,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       };
       
       recognition.onerror = (event: any) => {
-        console.error('Ask button speech recognition error:', event.error);
         setIsListening(false);
-        
-        // Dispatch stopped event for animation on error
         window.dispatchEvent(new CustomEvent('mic-status', {
           detail: { status: 'stopped' }
         }));
       };
       
       recognition.onend = () => {
-        console.log('Ask button speech recognition ended');
         setIsListening(false);
-        
-        // Dispatch stopped event for animation
         window.dispatchEvent(new CustomEvent('mic-status', {
           detail: { status: 'stopped' }
         }));
@@ -855,22 +827,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       recognition.start();
       
     } catch (error) {
-      console.error('Ask button speech recognition not supported:', error);
+      console.error('Speech recognition not supported:', error);
     }
   };
 
   const handleAsk = () => {
-    console.log("🎯 Ask button clicked - stopping audio and starting listening");
-    
     // Force stop all audio immediately
     stopAllAudio("Ask button");
     
-    // Immediately update UI state
+    // Update UI state
     setShowUnmuteButton(false);
     setShowAskButton(false);
     setIsResponding(false);
     
-    // Use dedicated function that doesn't trigger autoplay
+    // Start listening without autoplay
     setTimeout(() => {
       startListeningFromAskButton();
     }, 100);
