@@ -149,8 +149,7 @@ const SommTenantAdmin: React.FC = () => {
     setFormData({ name: '', slug: '', description: '', status: 'active' });
   };
 
-  // Return all tenants without filtering
-  const filteredTenants = tenants;
+
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#3a3a3a' }}>
@@ -224,7 +223,7 @@ const SommTenantAdmin: React.FC = () => {
         </div>
 
         {/* Empty State */}
-        {filteredTenants.length === 0 && (
+        {tenants.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               No tenants available.
