@@ -225,7 +225,7 @@ const TenantAdmin: React.FC = () => {
                 <span className="text-blue-600 font-semibold">T</span>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">TENANT ADMIN SCREEN</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Tenant Admin</h1>
                 <p className="text-gray-600">Comprehensive tenant management</p>
               </div>
             </div>
