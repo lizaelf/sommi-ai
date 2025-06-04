@@ -776,33 +776,104 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     }
   };
 
+  // Separate listening function for Ask button that doesn't trigger autoplay
+  const startListeningFromAskButton = async () => {
+    console.log("🎯 Starting listening from Ask button - no autoplay");
+    
+    // Check for microphone permissions
+    const hasPermission = await getMicrophonePermission();
+    if (!hasPermission) {
+      const shouldRequest = !shouldSkipPermissionPrompt();
+      if (shouldRequest) {
+        const granted = await requestMicrophonePermission();
+        if (!granted) {
+          console.log("Microphone permission denied");
+          return;
+        }
+      } else {
+        console.log("Microphone permission required");
+        return;
+      }
+    }
+
+    try {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+      
+      recognition.onstart = () => {
+        setIsListening(true);
+        setShowBottomSheet(true);
+        console.log("Ask button voice recognition started - NO AUTOPLAY");
+        
+        // Dispatch mic-status event for animation
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('mic-status', {
+            detail: { status: 'listening' }
+          }));
+        }, 100);
+      };
+      
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        console.log("Final transcript from Ask button:", transcript);
+        
+        setIsListening(false);
+        
+        // Dispatch processing event for animation
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'processing' }
+        }));
+        
+        onSendMessage(transcript);
+      };
+      
+      recognition.onerror = (event: any) => {
+        console.error('Ask button speech recognition error:', event.error);
+        setIsListening(false);
+        
+        // Dispatch stopped event for animation on error
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'stopped' }
+        }));
+      };
+      
+      recognition.onend = () => {
+        console.log('Ask button speech recognition ended');
+        setIsListening(false);
+        
+        // Dispatch stopped event for animation
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'stopped' }
+        }));
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+      
+    } catch (error) {
+      console.error('Ask button speech recognition not supported:', error);
+    }
+  };
+
   const handleAsk = () => {
-    console.log("🎯 Ask button clicked - DEBUG START");
-    console.log("Current state:", {
-      isListening,
-      isResponding,
-      isProcessing,
-      showUnmuteButton,
-      showAskButton,
-      showBottomSheet
-    });
+    console.log("🎯 Ask button clicked - stopping audio and starting listening");
     
     // Force stop all audio immediately
-    const audioWasStopped = stopAllAudio("Ask button");
-    console.log("Audio stopped:", audioWasStopped);
+    stopAllAudio("Ask button");
     
     // Immediately update UI state
     setShowUnmuteButton(false);
     setShowAskButton(false);
     setIsResponding(false);
     
-    console.log("UI state updated, starting listening in 100ms...");
-    
-    // Add a small delay to ensure audio stops before starting listening
+    // Use dedicated function that doesn't trigger autoplay
     setTimeout(() => {
-      console.log("Starting listening mode now...");
-      startListening();
-    }, 100); // 100ms delay to ensure audio stops
+      startListeningFromAskButton();
+    }, 100);
   };
 
   return (
