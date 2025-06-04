@@ -112,10 +112,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         stopListening();
         setShowBottomSheet(false);
         
-        // Stop any ongoing audio playback
+        // Stop any ongoing audio playback without clearing global references
         if ((window as any).currentOpenAIAudio) {
-          (window as any).currentOpenAIAudio.pause();
-          (window as any).currentOpenAIAudio = null;
+          try {
+            (window as any).currentOpenAIAudio.pause();
+          } catch (error) {
+            console.warn("Error pausing audio on page hide:", error);
+          }
         }
         
         setIsResponding(false);
@@ -130,8 +133,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     const handleAutoplayRequest = (event: CustomEvent) => {
       try {
         const text = event.detail?.text;
-        if (text && showBottomSheet) {
+        if (text) {
           console.log("Autoplay TTS requested via event:", text.substring(0, 50) + "...");
+          // Always trigger autoplay regardless of bottom sheet state
           startAutoplayTTS(text);
         }
       } catch (error) {
@@ -150,7 +154,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       window.removeEventListener('requestAutoplayTTS', handleAutoplayRequest as EventListener);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [showBottomSheet]);
 
   const startListening = async () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -413,19 +417,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       (window as any).currentAutoplayAudio = autoplayAudio;
 
       autoplayAudio.onplay = () => {
-        console.log("Autoplay TTS started for voice bottom sheet");
+        console.log("Autoplay TTS started");
         setIsResponding(true);
+        // Auto-open voice bottom sheet when autoplay starts
+        setShowBottomSheet(true);
         // Keep buttons available during autoplay - don't hide them
       };
 
       autoplayAudio.onended = () => {
         URL.revokeObjectURL(audioUrl);
         (window as any).currentAutoplayAudio = null;
-        console.log("Autoplay TTS completed for voice bottom sheet");
+        console.log("Autoplay TTS completed");
         setIsResponding(false);
         // Always show both buttons after autoplay completes
         setShowUnmuteButton(true);
         setShowAskButton(true);
+        // Auto-open voice bottom sheet after autoplay completes
+        if (!showBottomSheet) {
+          setShowBottomSheet(true);
+        }
       };
 
       autoplayAudio.onerror = (e) => {
