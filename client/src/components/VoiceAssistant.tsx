@@ -20,7 +20,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
   const recognitionRef = useRef<any>(null);
+  
+  // Mobile-specific state management
+  const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const { toast } = useToast();
+
+  // Mobile-specific: Force listening state persistence
+  useEffect(() => {
+    if (isMobileDevice && isListening) {
+      // Force state persistence every 500ms on mobile to prevent state loss
+      const interval = setInterval(() => {
+        if (recognitionRef.current && recognitionRef.current.readyState !== undefined) {
+          setIsListening(true);
+          setShowBottomSheet(true);
+        }
+      }, 500);
+      
+      return () => clearInterval(interval);
+    }
+  }, [isListening, isMobileDevice]);
 
   // Handle audio status changes and page visibility
   useEffect(() => {
