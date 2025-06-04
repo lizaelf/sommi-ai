@@ -201,31 +201,7 @@ const SommTenantAdmin: React.FC = () => {
           </button>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Total Tenants</h3>
-            <p className="text-2xl font-bold text-gray-900">{tenants.length}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Active Tenants</h3>
-            <p className="text-2xl font-bold text-green-600">
-              {tenants.filter(t => t.status === 'active').length}
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Inactive Tenants</h3>
-            <p className="text-2xl font-bold text-red-600">
-              {tenants.filter(t => t.status === 'inactive').length}
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Total Wines</h3>
-            <p className="text-2xl font-bold text-gray-900">
-              {tenants.reduce((sum, t) => sum + t.wineCount, 0)}
-            </p>
-          </div>
-        </div>
+
 
         {/* Tenants Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
