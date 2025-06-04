@@ -25,6 +25,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   // Centralized function to stop all audio playback
   const stopAllAudio = (source = "unknown") => {
     console.log(`🔇 Stopping all audio from: ${source}`);
+    
+    // Set flag to track source of audio stop for Ask button logic
+    (window as any).lastAudioStopSource = source;
+    
     let audioStopped = false;
     
     // Stop OpenAI TTS audio
@@ -224,11 +228,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         setShowBottomSheet(true);
         console.log("Voice recognition started");
         
-        // Start autoplay TTS when voice bottom sheet opens
-        const lastAssistantMessage = (window as any).lastAssistantMessageText;
-        if (lastAssistantMessage) {
-          console.log("Voice bottom sheet opened - starting autoplay TTS for latest response");
-          startAutoplayTTS(lastAssistantMessage);
+        // Only start autoplay TTS when opening bottom sheet via wine glass click, NOT via Ask button
+        // Check if this is from Ask button by checking if audio was recently stopped
+        const isFromAskButton = (window as any).lastAudioStopSource === "Ask button";
+        
+        if (!isFromAskButton) {
+          const lastAssistantMessage = (window as any).lastAssistantMessageText;
+          if (lastAssistantMessage) {
+            console.log("Voice bottom sheet opened via wine glass - starting autoplay TTS");
+            startAutoplayTTS(lastAssistantMessage);
+          }
+        } else {
+          console.log("Voice bottom sheet opened via Ask button - skipping autoplay TTS");
+          // Clear the flag
+          (window as any).lastAudioStopSource = null;
         }
         
         // Dispatch mic-status event for animation
@@ -764,16 +777,30 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   const handleAsk = () => {
+    console.log("🎯 Ask button clicked - DEBUG START");
+    console.log("Current state:", {
+      isListening,
+      isResponding,
+      isProcessing,
+      showUnmuteButton,
+      showAskButton,
+      showBottomSheet
+    });
+    
     // Force stop all audio immediately
-    stopAllAudio("Ask button");
+    const audioWasStopped = stopAllAudio("Ask button");
+    console.log("Audio stopped:", audioWasStopped);
+    
+    // Immediately update UI state
+    setShowUnmuteButton(false);
+    setShowAskButton(false);
+    setIsResponding(false);
+    
+    console.log("UI state updated, starting listening in 100ms...");
     
     // Add a small delay to ensure audio stops before starting listening
     setTimeout(() => {
-      // Update UI state and start listening
-      setShowUnmuteButton(false);
-      setShowAskButton(false);
-      
-      // Start listening
+      console.log("Starting listening mode now...");
       startListening();
     }, 100); // 100ms delay to ensure audio stops
   };
