@@ -231,31 +231,8 @@ const TenantAdmin: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Link href="/tenants">
-              <button className="flex items-center px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </button>
-            </Link>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-semibold">T</span>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Tenant Admin</h1>
-                <p className="text-gray-600">Comprehensive tenant management</p>
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={handleSave}
-            disabled={saveTenantMutation.isPending}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {saveTenantMutation.isPending ? 'Saving...' : 'Save Changes'}
-          </button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Tenant Admin</h1>
         </div>
 
         {/* Tabs */}
