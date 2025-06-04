@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Save, X, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, MoreVertical } from 'lucide-react';
 import { Link } from 'wouter';
 
 interface Tenant {
@@ -31,6 +31,7 @@ const SommTenantAdmin: React.FC = () => {
     status: 'active'
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
 
   // Load tenants from localStorage
   useEffect(() => {
@@ -72,6 +73,20 @@ const SommTenantAdmin: React.FC = () => {
       localStorage.setItem('sommelier-tenants', JSON.stringify(sampleTenants));
     }
   }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openDropdown !== null) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [openDropdown]);
 
   // Save tenants to localStorage
   const saveTenants = (updatedTenants: Tenant[]) => {
@@ -206,57 +221,58 @@ const SommTenantAdmin: React.FC = () => {
         {/* Tenants Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTenants.map((tenant) => (
-            <div key={tenant.id} className="rounded-lg border border-gray-300 hover:border-gray-400 transition-colors duration-200">
+            <div key={tenant.id} className="relative rounded-lg border border-gray-300 hover:border-gray-400 transition-colors duration-200">
               {/* Clickable Card Content */}
               <Link href={`/tenants/${tenant.slug}/admin`}>
-                <div className="p-6 cursor-pointer hover:bg-gray-100 rounded-t-lg">
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 truncate">{tenant.name}</h3>
-                    <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
-                  </div>
-                  
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{tenant.description}</p>
-                  
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      tenant.status === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {tenant.status}
-                    </span>
-                    <span className="text-sm text-gray-500">{tenant.wineCount} wines</span>
-                  </div>
-                  
-                  <div className="text-xs text-gray-400">
-                    <div>Slug: {tenant.slug}</div>
-                    <div>Created: {tenant.createdAt}</div>
+                <div className="p-6 cursor-pointer hover:bg-gray-100 rounded-lg">
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-lg font-semibold text-white truncate pr-8">{tenant.name}</h3>
                   </div>
                 </div>
               </Link>
               
-              {/* Action Buttons */}
-              <div className="px-6 py-3 rounded-b-lg flex justify-end space-x-2">
+              {/* Three Dot Menu */}
+              <div className="absolute top-4 right-4">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    handleEditTenant(tenant);
+                    e.stopPropagation();
+                    setOpenDropdown(openDropdown === tenant.id ? null : tenant.id);
                   }}
-                  className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-md transition-colors"
-                  title="Edit tenant"
+                  className="p-1 text-gray-400 hover:text-gray-600 rounded-md transition-colors"
                 >
-                  <Edit className="w-4 h-4" />
+                  <MoreVertical className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDeleteTenant(tenant.id);
-                  }}
-                  className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-md transition-colors"
-                  title="Delete tenant"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                
+                {/* Dropdown Menu */}
+                {openDropdown === tenant.id && (
+                  <div className="absolute right-0 top-8 mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 z-10">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleEditTenant(tenant);
+                        setOpenDropdown(null);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md"
+                    >
+                      <Edit className="w-3 h-3 mr-2" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDeleteTenant(tenant.id);
+                        setOpenDropdown(null);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-md"
+                    >
+                      <Trash2 className="w-3 h-3 mr-2" />
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
