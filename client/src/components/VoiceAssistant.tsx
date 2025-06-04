@@ -1,13 +1,98 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import VoiceBottomSheet from "./VoiceBottomSheet";
-import {
-  getMicrophonePermission,
-  requestMicrophonePermission,
-  shouldSkipPermissionPrompt,
-  syncMicrophonePermissionWithBrowser,
-} from "@/utils/microphonePermissions";
-import { mobileAudioManager } from "@/utils/mobileAudioManager";
+
+/**
+ * MOBILE AUDIO MANAGER
+ * Handles all browser quirks and provides consistent API
+ */
+class MobileAudioManager {
+  private static instance: MobileAudioManager;
+  private hasUserInteracted = false;
+  private audioUnlocked = false;
+  private currentAudio: HTMLAudioElement | null = null;
+  
+  static getInstance(): MobileAudioManager {
+    if (!this.instance) {
+      this.instance = new MobileAudioManager();
+    }
+    return this.instance;
+  }
+  
+  // Mark that user has interacted with page
+  markUserInteraction() {
+    this.hasUserInteracted = true;
+  }
+  
+  // Try to unlock audio (call on any user interaction)
+  async unlockAudio(): Promise<boolean> {
+    if (this.audioUnlocked) return true;
+    
+    try {
+      // Play silent audio to unlock
+      const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAAA=');
+      silentAudio.volume = 0.1;
+      await silentAudio.play();
+      silentAudio.pause();
+      
+      this.audioUnlocked = true;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  // Play audio with all necessary fallbacks
+  async playAudio(url: string): Promise<{ success: boolean; needsInteraction: boolean }> {
+    try {
+      // Clean up previous audio
+      if (this.currentAudio) {
+        this.currentAudio.pause();
+        this.currentAudio = null;
+      }
+      
+      // Create new audio element
+      const audio = new Audio(url);
+      this.currentAudio = audio;
+      
+      // Add all necessary attributes for mobile
+      audio.setAttribute('playsinline', 'true');
+      audio.setAttribute('webkit-playsinline', 'true');
+      audio.preload = 'auto';
+      
+      // Try to play
+      await audio.play();
+      
+      return { success: true, needsInteraction: false };
+      
+    } catch (error: any) {
+      console.log('Playback error:', error.name);
+      
+      // Check if it's a permission error
+      if (error.name === 'NotAllowedError') {
+        // Need user interaction
+        return { success: false, needsInteraction: true };
+      }
+      
+      // Other error
+      return { success: false, needsInteraction: false };
+    }
+  }
+  
+  // Stop current audio
+  stopAudio() {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio.currentTime = 0;
+      this.currentAudio = null;
+    }
+  }
+  
+  // Get current audio element
+  getCurrentAudio(): HTMLAudioElement | null {
+    return this.currentAudio;
+  }
+}
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;

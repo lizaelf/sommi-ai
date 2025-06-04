@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import VoiceAssistant from "./VoiceAssistant";
+import VoiceAssistant from "./VoiceAssistantNew";
 import WineBottleImage from "./WineBottleImage";
 import USFlagImage from "./USFlagImage";
 import { useConversation } from "@/hooks/useConversation";
