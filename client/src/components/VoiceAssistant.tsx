@@ -135,8 +135,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         const text = event.detail?.text;
         if (text) {
           console.log("Autoplay TTS requested via event:", text.substring(0, 50) + "...");
-          // Always trigger autoplay regardless of bottom sheet state
-          startAutoplayTTS(text);
+          // Temporarily disable autoplay to prevent UI crashes
+          console.log("Autoplay disabled to prevent UI crashes - showing voice controls instead");
+          setShowBottomSheet(true);
+          setShowUnmuteButton(true);
+          setShowAskButton(true);
         }
       } catch (error) {
         console.error("Error handling autoplay request:", error);
@@ -418,23 +421,31 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
       autoplayAudio.onplay = () => {
         console.log("Autoplay TTS started");
-        setIsResponding(true);
-        // Auto-open voice bottom sheet when autoplay starts
-        setShowBottomSheet(true);
-        // Keep buttons available during autoplay - don't hide them
+        try {
+          setIsResponding(true);
+          // Auto-open voice bottom sheet when autoplay starts
+          setShowBottomSheet(true);
+          // Keep buttons available during autoplay - don't hide them
+        } catch (error) {
+          console.error("Error in autoplay onplay handler:", error);
+        }
       };
 
       autoplayAudio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentAutoplayAudio = null;
-        console.log("Autoplay TTS completed");
-        setIsResponding(false);
-        // Always show both buttons after autoplay completes
-        setShowUnmuteButton(true);
-        setShowAskButton(true);
-        // Auto-open voice bottom sheet after autoplay completes
-        if (!showBottomSheet) {
-          setShowBottomSheet(true);
+        try {
+          URL.revokeObjectURL(audioUrl);
+          (window as any).currentAutoplayAudio = null;
+          console.log("Autoplay TTS completed");
+          setIsResponding(false);
+          // Always show both buttons after autoplay completes
+          setShowUnmuteButton(true);
+          setShowAskButton(true);
+          // Auto-open voice bottom sheet after autoplay completes
+          if (!showBottomSheet) {
+            setShowBottomSheet(true);
+          }
+        } catch (error) {
+          console.error("Error in autoplay onended handler:", error);
         }
       };
 
