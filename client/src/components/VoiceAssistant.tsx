@@ -1,26 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import VoiceBottomSheet from './VoiceBottomSheet';
-import { 
-  getMicrophonePermission, 
-  requestMicrophonePermission, 
+import React, { useState, useRef, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import VoiceBottomSheet from "./VoiceBottomSheet";
+import {
+  getMicrophonePermission,
+  requestMicrophonePermission,
   shouldSkipPermissionPrompt,
-  syncMicrophonePermissionWithBrowser 
-} from '@/utils/microphonePermissions';
+  syncMicrophonePermissionWithBrowser,
+} from "@/utils/microphonePermissions";
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
   isProcessing: boolean;
 }
 
-const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProcessing }) => {
+const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
+  onSendMessage,
+  isProcessing,
+}) => {
   const [isListening, setIsListening] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
   const recognitionRef = useRef<any>(null);
-  
+
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const { toast } = useToast();
@@ -30,12 +33,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     if (isMobileDevice && isListening) {
       // Force state persistence every 500ms on mobile to prevent state loss
       const interval = setInterval(() => {
-        if (recognitionRef.current && recognitionRef.current.readyState !== undefined) {
+        if (
+          recognitionRef.current &&
+          recognitionRef.current.readyState !== undefined
+        ) {
           setIsListening(true);
           setShowBottomSheet(true);
         }
       }, 500);
-      
+
       return () => clearInterval(interval);
     }
   }, [isListening, isMobileDevice]);
@@ -52,11 +58,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   useEffect(() => {
     const handleAudioStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
-      
-      if (status === 'playing') {
+
+      if (status === "playing") {
         setIsResponding(true);
         setShowUnmuteButton(false);
-      } else if (status === 'stopped' || status === 'paused' || status === 'muted') {
+      } else if (
+        status === "stopped" ||
+        status === "paused" ||
+        status === "muted"
+      ) {
         setIsResponding(false);
         setShowUnmuteButton(true);
       }
@@ -68,13 +78,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("Page hidden - stopping microphone access");
         stopListening();
         setShowBottomSheet(false);
-        
+
         // Stop any ongoing audio playback
         if ((window as any).currentOpenAIAudio) {
           (window as any).currentOpenAIAudio.pause();
           (window as any).currentOpenAIAudio = null;
         }
-        
+
         setIsResponding(false);
       }
     };
@@ -83,25 +93,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       setShowUnmuteButton(true);
     };
 
-    window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
-    window.addEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener(
+      "audio-status",
+      handleAudioStatusChange as EventListener,
+    );
+    window.addEventListener(
+      "showUnmuteButton",
+      handleShowUnmuteButton as EventListener,
+    );
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
-      window.removeEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener(
+        "audio-status",
+        handleAudioStatusChange as EventListener,
+      );
+      window.removeEventListener(
+        "showUnmuteButton",
+        handleShowUnmuteButton as EventListener,
+      );
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
   const startListening = async () => {
     // Mobile-specific: Ensure this is triggered by user interaction
-    console.log('Starting voice recognition - user interaction detected');
-    
+    console.log("Starting voice recognition - user interaction detected");
+
     // Check speech recognition support with mobile-specific detection
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.error('Speech recognition not supported on this device/browser');
+      console.error("Speech recognition not supported on this device/browser");
       toast({
         description: (
           <span
@@ -135,16 +159,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
     // Initialize audio context for mobile compatibility
     try {
-      if (typeof (window as any).initAudioContext === 'function') {
+      if (typeof (window as any).initAudioContext === "function") {
         const audioInitialized = await (window as any).initAudioContext();
-        console.log('Audio context initialized for mobile:', audioInitialized);
+        console.log("Audio context initialized for mobile:", audioInitialized);
       }
     } catch (audioError) {
-      console.warn('Audio context initialization failed:', audioError);
+      console.warn("Audio context initialization failed:", audioError);
     }
 
     // Request microphone permission with mobile-specific handling
-    console.log('Requesting microphone permission for voice recognition');
+    console.log("Requesting microphone permission for voice recognition");
     const hasPermission = await requestMicrophonePermission();
     if (!hasPermission) {
       toast({
@@ -180,8 +204,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
     try {
       // Mobile-specific speech recognition setup
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      
+      const SpeechRecognition =
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
+
       if (!SpeechRecognition) {
         console.error("Speech recognition not supported on this device");
         toast({
@@ -221,13 +247,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         console.log("Mobile device detected - pre-setting listening state");
         setIsListening(true);
         setShowBottomSheet(true);
-        
+
         // Force update with multiple attempts for mobile browsers
         setTimeout(() => {
           setIsListening(true);
           setShowBottomSheet(true);
         }, 50);
-        
+
         setTimeout(() => {
           setIsListening(true);
           setShowBottomSheet(true);
@@ -235,13 +261,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
 
       const recognition = new SpeechRecognition();
-      
+
       // Mobile-optimized settings
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.lang = 'en-US';
+      recognition.lang = "en-US";
       recognition.maxAlternatives = 1;
-      
+
       // Mobile-specific: Additional settings for mobile browsers
       if (isMobile) {
         // Only set grammars if SpeechGrammarList is available
@@ -249,10 +275,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           recognition.grammars = new (window as any).SpeechGrammarList();
         }
       }
-      
+
       // Mobile-specific timeout settings
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        console.log("Mobile device detected - applying mobile-specific settings");
+        console.log(
+          "Mobile device detected - applying mobile-specific settings",
+        );
         // Shorter timeout for mobile devices
         setTimeout(() => {
           if (recognitionRef.current && isListening) {
@@ -261,13 +289,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           }
         }, 8000); // 8 seconds instead of default
       }
-      
+
       recognition.onstart = () => {
         console.log("Voice recognition onstart event triggered");
         setIsListening(true);
         setShowBottomSheet(true);
         console.log("Voice recognition started - state updated");
-        
+
         // Mobile-specific: Force state update
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
           console.log("Mobile device - forcing listening state update");
@@ -276,41 +304,45 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             setIsListening(true);
             setShowBottomSheet(true);
           }, 50);
-          
+
           setTimeout(() => {
             setIsListening(true);
             setShowBottomSheet(true);
           }, 150);
         }
-        
+
         // Dispatch mic-status event for animation
         setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('mic-status', {
-            detail: { status: 'listening' }
-          }));
+          window.dispatchEvent(
+            new CustomEvent("mic-status", {
+              detail: { status: "listening" },
+            }),
+          );
         }, 100);
       };
-      
+
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         console.log("Final transcript:", transcript);
-        
+
         setIsListening(false);
         // Keep bottom sheet open during processing
         setShowBottomSheet(true);
-        
+
         // Dispatch processing event for animation
-        window.dispatchEvent(new CustomEvent('mic-status', {
-          detail: { status: 'processing' }
-        }));
-        
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "processing" },
+          }),
+        );
+
         onSendMessage(transcript);
       };
-      
+
       recognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
+        console.error("Speech recognition error:", event.error);
         setIsListening(false);
-        
+
         // Mobile-specific: Ensure state is properly reset on mobile
         if (isMobile) {
           console.log("Mobile device - forcing error state reset");
@@ -319,37 +351,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             setShowBottomSheet(false);
           }, 100);
         }
-        
+
         // Dispatch stopped event for animation on error
-        window.dispatchEvent(new CustomEvent('mic-status', {
-          detail: { status: 'stopped' }
-        }));
-        
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "stopped" },
+          }),
+        );
+
         // Enhanced mobile error handling
         let errorMessage = "Voice recognition failed";
-        
+
         switch (event.error) {
-          case 'not-allowed':
+          case "not-allowed":
             errorMessage = "Microphone permission denied";
             break;
-          case 'no-speech':
+          case "no-speech":
             errorMessage = "No speech detected - please try again";
             break;
-          case 'network':
+          case "network":
             errorMessage = "Network error - check your connection";
             break;
-          case 'audio-capture':
+          case "audio-capture":
             errorMessage = "Microphone not accessible";
             break;
-          case 'aborted':
+          case "aborted":
             console.log("Voice recognition was stopped by user");
             return; // Don't show error toast for user-initiated stops
           default:
-            console.error('Unhandled speech recognition error:', event.error);
+            console.error("Unhandled speech recognition error:", event.error);
         }
-        
+
         // Only show error toast for actual errors (not user-initiated stops)
-        if (event.error !== 'aborted') {
+        if (event.error !== "aborted") {
           toast({
             description: (
               <span
@@ -380,32 +414,36 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           });
         }
       };
-      
+
       recognition.onend = () => {
         console.log("Voice recognition ended");
         setIsListening(false);
-        
+
         // Don't close bottom sheet immediately - keep it open for processing state
         // The bottom sheet will be handled by the processing flow
-        
+
         // Dispatch stopped event for animation
-        window.dispatchEvent(new CustomEvent('mic-status', {
-          detail: { status: 'stopped' }
-        }));
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "stopped" },
+          }),
+        );
       };
-      
+
       recognitionRef.current = recognition;
-      
+
       // Mobile-specific: Additional state setting before start
       if (isMobile) {
-        console.log("Mobile device - setting final listening state before start");
+        console.log(
+          "Mobile device - setting final listening state before start",
+        );
         setIsListening(true);
         setShowBottomSheet(true);
       }
-      
+
       recognition.start();
       console.log("Voice recognition setup complete and started");
-      
+
       // Mobile-specific: Force state after start
       if (isMobile) {
         setTimeout(() => {
@@ -415,20 +453,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
             console.log("Mobile device - forced listening state after start");
           }
         }, 200);
-        
+
         setTimeout(() => {
           if (recognitionRef.current) {
             setIsListening(true);
             setShowBottomSheet(true);
-            console.log("Mobile device - second forced listening state after start");
+            console.log(
+              "Mobile device - second forced listening state after start",
+            );
           }
         }, 500);
       }
-      
     } catch (error) {
-      console.error('Failed to start speech recognition:', error);
+      console.error("Failed to start speech recognition:", error);
       setIsListening(false);
-      
+
       toast({
         description: (
           <span
@@ -470,7 +509,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   const toggleListening = () => {
     if (isProcessing) return;
-    
+
     if (isListening) {
       stopListening();
       setShowBottomSheet(false);
@@ -504,7 +543,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       (window as any).currentOpenAIAudio = null;
       console.log("OpenAI TTS audio stopped successfully");
     }
-    
+
     // Stop autoplay audio as well
     if ((window as any).currentAutoplayAudio) {
       console.log("Stop button clicked - stopping autoplay TTS audio");
@@ -513,7 +552,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       (window as any).currentAutoplayAudio = null;
       console.log("Autoplay TTS audio stopped successfully");
     }
-    
+
     setIsResponding(false);
     setShowUnmuteButton(true);
     setShowAskButton(true);
@@ -521,18 +560,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
-    
+
     // Check if there's pending autoplay audio from mobile autoplay blocking
     const pendingAudio = (window as any).pendingAutoplayAudio;
     if (pendingAudio) {
       console.log("Playing pending autoplay audio that was blocked");
-      
+
       // Use the already generated audio
       (window as any).currentOpenAIAudio = pendingAudio;
       (window as any).pendingAutoplayAudio = null;
-      
+
       setIsResponding(true);
-      
+
       // Set up event handlers for the pending audio
       pendingAudio.onplay = () => {
         setIsResponding(true);
@@ -564,18 +603,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         // Fall through to generate new audio
       }
     }
-    
+
     // Fallback: generate new audio if no pending audio or it failed
     const lastAssistantMessage = (window as any).lastAssistantMessageText;
-    
+
     if (!lastAssistantMessage) {
       console.warn("No assistant message available to play");
       setShowUnmuteButton(true);
       return;
     }
 
-    console.log("Generating new TTS audio for:", lastAssistantMessage.substring(0, 50) + "...");
-    
+    console.log(
+      "Generating new TTS audio for:",
+      lastAssistantMessage.substring(0, 50) + "...",
+    );
+
     setIsResponding(true);
 
     try {
@@ -591,10 +633,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
       // Generate audio using server TTS
       console.log("Generating unmute TTS audio...");
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: lastAssistantMessage })
+      const response = await fetch("/api/text-to-speech", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: lastAssistantMessage }),
       });
 
       if (!response.ok) {
@@ -602,7 +644,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       }
 
       const audioBuffer = await response.arrayBuffer();
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+      const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
 
@@ -631,14 +673,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
           error: audio.error?.message,
           code: audio.error?.code,
           networkState: audio.networkState,
-          readyState: audio.readyState
+          readyState: audio.readyState,
         });
         setIsResponding(false);
         setShowUnmuteButton(true);
         setShowAskButton(true);
         URL.revokeObjectURL(audioUrl);
         (window as any).currentOpenAIAudio = null;
-        
+
         toast({
           description: (
             <span
@@ -676,28 +718,30 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       };
 
       // Set audio properties for better compatibility
-      audio.preload = 'auto';
+      audio.preload = "auto";
       audio.volume = 0.8;
 
       console.log("Attempting to play manual unmute audio...");
-      
+
       // Ensure audio context is ready for user-initiated playback
-      if (typeof (window as any).initAudioContext === 'function') {
+      if (typeof (window as any).initAudioContext === "function") {
         await (window as any).initAudioContext();
       }
-      
+
       const playPromise = audio.play();
-      
+
       if (playPromise !== undefined) {
         try {
           await playPromise;
           console.log("Manual unmute audio play promise resolved successfully");
         } catch (playError: any) {
           console.error("Manual unmute audio play failed:", playError);
-          
-          if (playError.name === 'NotAllowedError') {
+
+          if (playError.name === "NotAllowedError") {
             console.error("Manual audio playback blocked by browser");
-            throw new Error("Audio playback blocked - please check browser settings");
+            throw new Error(
+              "Audio playback blocked - please check browser settings",
+            );
           } else {
             throw playError;
           }
@@ -717,13 +761,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       console.log("Starting manual unmute TTS playback...");
       await audio.play();
       console.log("Manual unmute TTS playback initiated successfully");
-
     } catch (error) {
       console.error("Failed to generate or play unmute TTS audio:", error);
       setIsResponding(false);
       setShowUnmuteButton(true);
       setShowAskButton(true);
-      
+
       toast({
         description: (
           <span
@@ -763,40 +806,45 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: "relative" }}>
       {!showBottomSheet && (
         <div
           onClick={toggleListening}
           style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(255, 255, 255, 0.12)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            cursor: isProcessing ? 'default' : 'pointer',
-            border: 'none',
-            outline: 'none',
-            transition: 'background-color 0.2s ease',
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(255, 255, 255, 0.12)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: isProcessing ? "default" : "pointer",
+            border: "none",
+            outline: "none",
+            transition: "background-color 0.2s ease",
           }}
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
             viewBox="0 0 20 20"
             style={{
-              color: isProcessing ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 1)'
+              color: isProcessing
+                ? "rgba(255, 255, 255, 0.5)"
+                : "rgba(255, 255, 255, 1)",
             }}
           >
-            <path fill="currentColor" d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
+            <path
+              fill="currentColor"
+              d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"
+            />
           </svg>
         </div>
       )}
-      
-      <VoiceBottomSheet 
-        isOpen={showBottomSheet} 
+
+      <VoiceBottomSheet
+        isOpen={showBottomSheet}
         onClose={handleCloseBottomSheet}
         onMute={handleMute}
         onUnmute={handleUnmute}
@@ -805,8 +853,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         isResponding={isResponding}
         isThinking={isProcessing}
         showSuggestions={false}
-        showUnmuteButton={showUnmuteButton && !isListening && !isResponding && !isProcessing}
-        showAskButton={showAskButton && !isListening && !isResponding && !isProcessing}
+        showUnmuteButton={
+          showUnmuteButton && !isListening && !isResponding && !isProcessing
+        }
+        showAskButton={
+          showAskButton && !isListening && !isResponding && !isProcessing
+        }
         onSuggestionClick={handleSuggestionClick}
       />
     </div>
