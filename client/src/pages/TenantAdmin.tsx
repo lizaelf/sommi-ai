@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Upload, Download } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowLeft, Upload, Download, Search, X, RefreshCw } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import Button from "@/components/ui/Button";
+import typography from "@/styles/typography";
+import { generateWineQRData } from "@/utils/cellarManager";
+import { SimpleQRCode } from "@/components/SimpleQRCode";
+import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
+import placeholderImage from "@assets/Placeholder.png";
+
+// Use unified wine data interface
+type WineCardData = UnifiedWineData;
 
 interface TenantData {
   id: number;
@@ -63,6 +73,17 @@ const TenantAdmin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"profile" | "cms" | "ai-model">(
     "profile",
   );
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  
+  // Wine management state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [wineCards, setWineCards] = useState<WineCardData[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSearch, setShowSearch] = useState(true);
+  const [showDataSync, setShowDataSync] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [formData, setFormData] = useState<TenantData>({
     id: 1,
     name: "Sample Winery",
@@ -143,6 +164,33 @@ const TenantAdmin: React.FC = () => {
 
   const handleSave = () => {
     saveTenantMutation.mutate(formData);
+  };
+
+  // Load wine data on mount
+  useEffect(() => {
+    loadWineData();
+  }, []);
+
+  // Refresh wine data when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadWineData();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  // Function to load wine data
+  const loadWineData = () => {
+    DataSyncManager.initialize();
+    const allWines = DataSyncManager.getUnifiedWineData();
+    console.log("Loaded CMS wines:", allWines);
+    setWineCards(allWines);
   };
 
   const handleInputChange = (
