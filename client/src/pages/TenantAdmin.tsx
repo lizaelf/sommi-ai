@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Upload, Download } from 'lucide-react';
-import { Link } from 'wouter';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Upload, Download } from "lucide-react";
+import { Link } from "wouter";
 
 interface TenantData {
   id: number;
@@ -46,8 +46,13 @@ interface TenantData {
     };
   };
   aiModel: {
-    knowledgeScope: 'winery-only' | 'winery-plus-global';
-    personalityStyle: 'educator' | 'sommelier' | 'tasting-room-host' | 'luxury-concierge' | 'casual-friendly';
+    knowledgeScope: "winery-only" | "winery-plus-global";
+    personalityStyle:
+      | "educator"
+      | "sommelier"
+      | "tasting-room-host"
+      | "luxury-concierge"
+      | "casual-friendly";
     brandGuide: string;
     tonePreferences: string;
     knowledgeDocuments: string;
@@ -55,52 +60,56 @@ interface TenantData {
 }
 
 const TenantAdmin: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'cms' | 'ai-model'>('profile');
+  const [activeTab, setActiveTab] = useState<"profile" | "cms" | "ai-model">(
+    "profile",
+  );
   const [formData, setFormData] = useState<TenantData>({
     id: 1,
-    name: 'Sample Winery',
-    slug: 'sample-winery',
+    name: "Sample Winery",
+    slug: "sample-winery",
     profile: {
-      wineryName: '',
-      wineryDescription: '',
-      yearEstablished: '',
-      wineryLogo: '',
-      contactEmail: '',
-      contactPhone: '',
-      websiteURL: '',
-      address: '',
-      hoursOfOperation: '',
-      socialMediaLinks: '',
+      wineryName: "",
+      wineryDescription: "",
+      yearEstablished: "",
+      wineryLogo: "",
+      contactEmail: "",
+      contactPhone: "",
+      websiteURL: "",
+      address: "",
+      hoursOfOperation: "",
+      socialMediaLinks: "",
     },
     cms: {
-      wineEntries: [{
-        wineName: '',
-        vintageYear: '',
-        sku: '',
-        varietal: '',
-        tastingNotes: '',
-        foodPairings: '',
-        productionNotes: '',
-        imageUpload: '',
-        criticReviews: '',
-        releaseDate: '',
-        price: '',
-        inventoryCount: '',
-      }],
+      wineEntries: [
+        {
+          wineName: "",
+          vintageYear: "",
+          sku: "",
+          varietal: "",
+          tastingNotes: "",
+          foodPairings: "",
+          productionNotes: "",
+          imageUpload: "",
+          criticReviews: "",
+          releaseDate: "",
+          price: "",
+          inventoryCount: "",
+        },
+      ],
       wineClub: {
-        clubName: '',
-        description: '',
-        membershipTiers: '',
-        pricing: '',
-        clubBenefits: '',
+        clubName: "",
+        description: "",
+        membershipTiers: "",
+        pricing: "",
+        clubBenefits: "",
       },
     },
     aiModel: {
-      knowledgeScope: 'winery-only',
-      personalityStyle: 'educator',
-      brandGuide: '',
-      tonePreferences: '',
-      knowledgeDocuments: '',
+      knowledgeScope: "winery-only",
+      personalityStyle: "educator",
+      brandGuide: "",
+      tonePreferences: "",
+      knowledgeDocuments: "",
     },
   });
 
@@ -108,9 +117,9 @@ const TenantAdmin: React.FC = () => {
 
   // Load tenant data
   const { data: tenantData, isLoading } = useQuery({
-    queryKey: ['tenant-admin', 1],
+    queryKey: ["tenant-admin", 1],
     queryFn: () => {
-      const stored = localStorage.getItem('tenant-admin-1');
+      const stored = localStorage.getItem("tenant-admin-1");
       if (stored) {
         const data = JSON.parse(stored);
         setFormData(data);
@@ -123,12 +132,12 @@ const TenantAdmin: React.FC = () => {
   // Save tenant data mutation
   const saveTenantMutation = useMutation({
     mutationFn: async (data: TenantData) => {
-      localStorage.setItem('tenant-admin-1', JSON.stringify(data));
+      localStorage.setItem("tenant-admin-1", JSON.stringify(data));
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenant-admin', 1] });
-      alert('Data saved successfully');
+      queryClient.invalidateQueries({ queryKey: ["tenant-admin", 1] });
+      alert("Data saved successfully");
     },
   });
 
@@ -136,10 +145,14 @@ const TenantAdmin: React.FC = () => {
     saveTenantMutation.mutate(formData);
   };
 
-  const handleInputChange = (section: keyof TenantData, field: string, value: string) => {
-    setFormData(prev => {
+  const handleInputChange = (
+    section: keyof TenantData,
+    field: string,
+    value: string,
+  ) => {
+    setFormData((prev) => {
       const sectionData = prev[section];
-      if (typeof sectionData === 'object' && sectionData !== null) {
+      if (typeof sectionData === "object" && sectionData !== null) {
         return {
           ...prev,
           [section]: {
@@ -153,7 +166,7 @@ const TenantAdmin: React.FC = () => {
   };
 
   const handleWineClubChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       cms: {
         ...prev.cms,
@@ -165,54 +178,62 @@ const TenantAdmin: React.FC = () => {
     }));
   };
 
-  const handleWineEntryChange = (index: number, field: string, value: string) => {
-    setFormData(prev => ({
+  const handleWineEntryChange = (
+    index: number,
+    field: string,
+    value: string,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
       cms: {
         ...prev.cms,
         wineEntries: prev.cms.wineEntries.map((entry, i) =>
-          i === index ? { ...entry, [field]: value } : entry
+          i === index ? { ...entry, [field]: value } : entry,
         ),
       },
     }));
   };
 
   const addWineEntry = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       cms: {
         ...prev.cms,
         wineEntries: [
           ...prev.cms.wineEntries,
           {
-            wineName: '',
-            vintageYear: '',
-            sku: '',
-            varietal: '',
-            tastingNotes: '',
-            foodPairings: '',
-            productionNotes: '',
-            imageUpload: '',
-            criticReviews: '',
-            releaseDate: '',
-            price: '',
-            inventoryCount: '',
+            wineName: "",
+            vintageYear: "",
+            sku: "",
+            varietal: "",
+            tastingNotes: "",
+            foodPairings: "",
+            productionNotes: "",
+            imageUpload: "",
+            criticReviews: "",
+            releaseDate: "",
+            price: "",
+            inventoryCount: "",
           },
         ],
       },
     }));
   };
 
-  const handleFileUpload = (section: string, field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (
+    section: string,
+    field: string,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
-        if (section === 'profile') {
-          handleInputChange('profile' as keyof TenantData, field, result);
-        } else if (section === 'aiModel') {
-          handleInputChange('aiModel' as keyof TenantData, field, result);
+        if (section === "profile") {
+          handleInputChange("profile" as keyof TenantData, field, result);
+        } else if (section === "aiModel") {
+          handleInputChange("aiModel" as keyof TenantData, field, result);
         }
       };
       reader.readAsDataURL(file);
@@ -238,31 +259,31 @@ const TenantAdmin: React.FC = () => {
         {/* Tabs */}
         <div className="flex space-x-2 mb-8">
           <button
-            onClick={() => setActiveTab('profile')}
+            onClick={() => setActiveTab("profile")}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-              activeTab === 'profile'
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+              activeTab === "profile"
+                ? "bg-green-500 text-white"
+                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
             }`}
           >
             Profile
           </button>
           <button
-            onClick={() => setActiveTab('cms')}
+            onClick={() => setActiveTab("cms")}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-              activeTab === 'cms'
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+              activeTab === "cms"
+                ? "bg-green-500 text-white"
+                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
             }`}
           >
             CMS
           </button>
           <button
-            onClick={() => setActiveTab('ai-model')}
+            onClick={() => setActiveTab("ai-model")}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-              activeTab === 'ai-model'
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+              activeTab === "ai-model"
+                ? "bg-green-500 text-white"
+                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
             }`}
           >
             AI Model
@@ -272,104 +293,170 @@ const TenantAdmin: React.FC = () => {
         {/* Content */}
         <div className="p-8">
           {/* Profile Tab */}
-          {activeTab === 'profile' && (
+          {activeTab === "profile" && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Profile Information
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Winery Name</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Winery Name
+                  </label>
                   <input
                     type="text"
                     value={formData.profile.wineryName}
-                    onChange={(e) => handleInputChange('profile', 'wineryName', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("profile", "wineryName", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter winery name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Year Established</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Year Established
+                  </label>
                   <input
                     type="text"
                     value={formData.profile.yearEstablished}
-                    onChange={(e) => handleInputChange('profile', 'yearEstablished', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "profile",
+                        "yearEstablished",
+                        e.target.value,
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., 1885"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Winery Description</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Winery Description
+                  </label>
                   <textarea
                     value={formData.profile.wineryDescription}
-                    onChange={(e) => handleInputChange('profile', 'wineryDescription', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "profile",
+                        "wineryDescription",
+                        e.target.value,
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Describe the winery..."
                     rows={4}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Winery Logo (Upload)</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Winery Logo (Upload)
+                  </label>
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleFileUpload('profile', 'wineryLogo', e)}
+                    onChange={(e) =>
+                      handleFileUpload("profile", "wineryLogo", e)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Contact Email</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Contact Email
+                  </label>
                   <input
                     type="email"
                     value={formData.profile.contactEmail}
-                    onChange={(e) => handleInputChange('profile', 'contactEmail', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "profile",
+                        "contactEmail",
+                        e.target.value,
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="contact@winery.com"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Contact Phone</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Contact Phone
+                  </label>
                   <input
                     type="tel"
                     value={formData.profile.contactPhone}
-                    onChange={(e) => handleInputChange('profile', 'contactPhone', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "profile",
+                        "contactPhone",
+                        e.target.value,
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Website URL</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Website URL
+                  </label>
                   <input
                     type="url"
                     value={formData.profile.websiteURL}
-                    onChange={(e) => handleInputChange('profile', 'websiteURL', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("profile", "websiteURL", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="https://winery.com"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Address (Street, City, State, Zip, Country)</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Address (Street, City, State, Zip, Country)
+                  </label>
                   <textarea
                     value={formData.profile.address}
-                    onChange={(e) => handleInputChange('profile', 'address', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("profile", "address", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="123 Vineyard Lane, Napa, CA 94558, USA"
                     rows={2}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Hours of Operation</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Hours of Operation
+                  </label>
                   <input
                     type="text"
                     value={formData.profile.hoursOfOperation}
-                    onChange={(e) => handleInputChange('profile', 'hoursOfOperation', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "profile",
+                        "hoursOfOperation",
+                        e.target.value,
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Mon-Sun: 10AM-6PM"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Social Media Links (Instagram, Facebook, X, etc.)</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Social Media Links (Instagram, Facebook, X, etc.)
+                  </label>
                   <textarea
                     value={formData.profile.socialMediaLinks}
-                    onChange={(e) => handleInputChange('profile', 'socialMediaLinks', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "profile",
+                        "socialMediaLinks",
+                        e.target.value,
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Instagram: @winery, Facebook: /winery"
                     rows={2}
@@ -380,7 +467,7 @@ const TenantAdmin: React.FC = () => {
           )}
 
           {/* CMS Tab */}
-          {activeTab === 'cms' && (
+          {activeTab === "cms" && (
             <div className="space-y-8">
               {/* Wine Catalog Section */}
               <div>
@@ -398,106 +485,187 @@ const TenantAdmin: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 {formData.cms.wineEntries.map((wine, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-6 mb-4">
-                    <h3 className="text-lg font-medium mb-4">Wine Entry #{index + 1}</h3>
+                  <div
+                    key={index}
+                    className="border border-gray-200 rounded-lg p-6 mb-4"
+                  >
+                    <h3 className="text-lg font-medium mb-4">
+                      Wine Entry #{index + 1}
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium mb-1">Wine Name</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Wine Name
+                        </label>
                         <input
                           type="text"
                           value={wine.wineName}
-                          onChange={(e) => handleWineEntryChange(index, 'wineName', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "wineName",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="Wine name"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1">Vintage Year</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Vintage Year
+                        </label>
                         <input
                           type="text"
                           value={wine.vintageYear}
-                          onChange={(e) => handleWineEntryChange(index, 'vintageYear', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "vintageYear",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="2021"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1">SKU</label>
+                        <label className="block text-sm font-medium mb-1">
+                          SKU
+                        </label>
                         <input
                           type="text"
                           value={wine.sku}
-                          onChange={(e) => handleWineEntryChange(index, 'sku', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(index, "sku", e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="SKU-001"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1">Varietal / Blend</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Varietal / Blend
+                        </label>
                         <input
                           type="text"
                           value={wine.varietal}
-                          onChange={(e) => handleWineEntryChange(index, 'varietal', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "varietal",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="Cabernet Sauvignon"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1">Release Date</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Release Date
+                        </label>
                         <input
                           type="date"
                           value={wine.releaseDate}
-                          onChange={(e) => handleWineEntryChange(index, 'releaseDate', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "releaseDate",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1">Price</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Price
+                        </label>
                         <input
                           type="text"
                           value={wine.price}
-                          onChange={(e) => handleWineEntryChange(index, 'price', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "price",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="$50.00"
                         />
                       </div>
                       <div className="md:col-span-2 lg:col-span-3">
-                        <label className="block text-sm font-medium mb-1">Tasting Notes</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Tasting Notes
+                        </label>
                         <textarea
                           value={wine.tastingNotes}
-                          onChange={(e) => handleWineEntryChange(index, 'tastingNotes', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "tastingNotes",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="Describe the wine's characteristics..."
                           rows={3}
                         />
                       </div>
                       <div className="md:col-span-2 lg:col-span-3">
-                        <label className="block text-sm font-medium mb-1">Food Pairings</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Food Pairings
+                        </label>
                         <input
                           type="text"
                           value={wine.foodPairings}
-                          onChange={(e) => handleWineEntryChange(index, 'foodPairings', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "foodPairings",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="Grilled meats, aged cheeses, dark chocolate"
                         />
                       </div>
                       <div className="md:col-span-2 lg:col-span-3">
-                        <label className="block text-sm font-medium mb-1">Production Notes</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Production Notes
+                        </label>
                         <textarea
                           value={wine.productionNotes}
-                          onChange={(e) => handleWineEntryChange(index, 'productionNotes', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "productionNotes",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="Production methods, aging, etc."
                           rows={2}
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1">Inventory Count (Optional)</label>
+                        <label className="block text-sm font-medium mb-1">
+                          Inventory Count (Optional)
+                        </label>
                         <input
                           type="number"
                           value={wine.inventoryCount}
-                          onChange={(e) => handleWineEntryChange(index, 'inventoryCount', e.target.value)}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "inventoryCount",
+                              e.target.value,
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="100"
                         />
@@ -512,50 +680,70 @@ const TenantAdmin: React.FC = () => {
                 <h2 className="text-xl font-semibold mb-4">Wine Club Info</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Club Name</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Club Name
+                    </label>
                     <input
                       type="text"
                       value={formData.cms.wineClub.clubName}
-                      onChange={(e) => handleWineClubChange('clubName', e.target.value)}
+                      onChange={(e) =>
+                        handleWineClubChange("clubName", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Elite Wine Club"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Membership Tiers</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Membership Tiers
+                    </label>
                     <input
                       type="text"
                       value={formData.cms.wineClub.membershipTiers}
-                      onChange={(e) => handleWineClubChange('membershipTiers', e.target.value)}
+                      onChange={(e) =>
+                        handleWineClubChange("membershipTiers", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Silver, Gold, Platinum"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2">Description</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Description
+                    </label>
                     <textarea
                       value={formData.cms.wineClub.description}
-                      onChange={(e) => handleWineClubChange('description', e.target.value)}
+                      onChange={(e) =>
+                        handleWineClubChange("description", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Describe the wine club..."
                       rows={3}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Pricing</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Pricing
+                    </label>
                     <input
                       type="text"
                       value={formData.cms.wineClub.pricing}
-                      onChange={(e) => handleWineClubChange('pricing', e.target.value)}
+                      onChange={(e) =>
+                        handleWineClubChange("pricing", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="$99/quarter"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Club Benefits</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Club Benefits
+                    </label>
                     <textarea
                       value={formData.cms.wineClub.clubBenefits}
-                      onChange={(e) => handleWineClubChange('clubBenefits', e.target.value)}
+                      onChange={(e) =>
+                        handleWineClubChange("clubBenefits", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Exclusive wines, discounts, events..."
                       rows={3}
@@ -567,22 +755,32 @@ const TenantAdmin: React.FC = () => {
           )}
 
           {/* AI Model Tab */}
-          {activeTab === 'ai-model' && (
+          {activeTab === "ai-model" && (
             <div className="space-y-8">
               {/* Knowledge Scope */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">Knowledge Scope</h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Knowledge Scope Toggle:</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Knowledge Scope Toggle:
+                    </label>
                     <div className="space-y-2">
                       <label className="flex items-center">
                         <input
                           type="radio"
                           name="knowledgeScope"
                           value="winery-only"
-                          checked={formData.aiModel.knowledgeScope === 'winery-only'}
-                          onChange={(e) => handleInputChange('aiModel', 'knowledgeScope', e.target.value)}
+                          checked={
+                            formData.aiModel.knowledgeScope === "winery-only"
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              "aiModel",
+                              "knowledgeScope",
+                              e.target.value,
+                            )
+                          }
                           className="mr-2"
                         />
                         Winery-Only Mode (Default)
@@ -592,8 +790,17 @@ const TenantAdmin: React.FC = () => {
                           type="radio"
                           name="knowledgeScope"
                           value="winery-plus-global"
-                          checked={formData.aiModel.knowledgeScope === 'winery-plus-global'}
-                          onChange={(e) => handleInputChange('aiModel', 'knowledgeScope', e.target.value)}
+                          checked={
+                            formData.aiModel.knowledgeScope ===
+                            "winery-plus-global"
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              "aiModel",
+                              "knowledgeScope",
+                              e.target.value,
+                            )
+                          }
                           className="mr-2"
                         />
                         Winery plus Global Wine and Food Knowledge
@@ -605,12 +812,22 @@ const TenantAdmin: React.FC = () => {
 
               {/* Personality Selection */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">Personality Selection (Basic)</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  Personality Selection (Basic)
+                </h2>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Select Personality Style (Dropdown):</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Select Personality Style (Dropdown):
+                  </label>
                   <select
                     value={formData.aiModel.personalityStyle}
-                    onChange={(e) => handleInputChange('aiModel', 'personalityStyle', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "aiModel",
+                        "personalityStyle",
+                        e.target.value,
+                      )
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="educator">Educator</option>
@@ -624,33 +841,51 @@ const TenantAdmin: React.FC = () => {
 
               {/* Advanced Personality Upload */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">Advanced Personality Upload</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  Advanced Personality Upload
+                </h2>
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Upload Brand Guide (PDF / DOC)</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Upload Brand Guide (PDF / DOC)
+                    </label>
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleFileUpload('aiModel', 'brandGuide', e)}
+                      onChange={(e) =>
+                        handleFileUpload("aiModel", "brandGuide", e)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Upload Tone Preferences (Text Input)</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Upload Tone Preferences (Text Input)
+                    </label>
                     <textarea
                       value={formData.aiModel.tonePreferences}
-                      onChange={(e) => handleInputChange('aiModel', 'tonePreferences', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "aiModel",
+                          "tonePreferences",
+                          e.target.value,
+                        )
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Describe the desired tone and personality for AI responses..."
                       rows={4}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Upload FAQ or Knowledge Documents (DOC / CSV / PDF)</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Upload FAQ or Knowledge Documents (DOC / CSV / PDF)
+                    </label>
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx,.csv"
-                      onChange={(e) => handleFileUpload('aiModel', 'knowledgeDocuments', e)}
+                      onChange={(e) =>
+                        handleFileUpload("aiModel", "knowledgeDocuments", e)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>

@@ -192,25 +192,57 @@ const SommTenantAdmin: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="pt-20 px-6 max-w-7xl mx-auto">
+      <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px" }}>
+        {/* Search Input */}
+        <div style={{ marginBottom: "24px" }}>
+          <input
+            type="text"
+            placeholder="Search tenants..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "12px 16px",
+              background: "rgba(255, 255, 255, 0.04)",
+              border: "1px solid #494949",
+              borderRadius: "12px",
+              color: "white",
+              fontSize: "16px",
+              outline: "none"
+            }}
+            className="placeholder-white/60"
+          />
+        </div>
 
 
 
 
 
         {/* Tenants Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {filteredTenants.map((tenant) => (
-            <div key={tenant.id} className="rounded-lg border border-gray-300 hover:border-gray-400 transition-colors duration-200">
-              {/* Clickable Card Content */}
-              <Link href={`/tenants/${tenant.slug}/admin`}>
-                <div className="p-6 cursor-pointer hover:bg-gray-100 rounded-lg">
-                  <div className="flex items-start justify-between">
-                    <h3 className="text-lg font-semibold text-white truncate">{tenant.name}</h3>
-                  </div>
+            <Link key={tenant.id} href={`/tenants/${tenant.slug}/admin`}>
+              <div
+                className="rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5"
+                style={{
+                  border: "1px solid #494949",
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <h3
+                    style={{
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "20px",
+                      lineHeight: "28px",
+                      fontWeight: 500,
+                      color: "white"
+                    }}
+                  >
+                    {tenant.name}
+                  </h3>
                 </div>
-              </Link>
-            </div>
+              </div>
+            </Link>
           ))}
         </div>
 
