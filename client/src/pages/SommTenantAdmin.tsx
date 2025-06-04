@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ExternalLink } from 'lucide-react';
+import { Link } from 'wouter';
 
 interface Tenant {
   id: number;
@@ -203,79 +204,82 @@ const SommTenantAdmin: React.FC = () => {
 
 
 
-        {/* Tenants Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tenant
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Wines
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredTenants.map((tenant) => (
-                  <tr key={tenant.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{tenant.name}</div>
-                        <div className="text-sm text-gray-500">{tenant.description}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {tenant.slug}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        tenant.status === 'active'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {tenant.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {tenant.wineCount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {tenant.createdAt}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleEditTenant(tenant)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteTenant(tenant.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {/* Tenants Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredTenants.map((tenant) => (
+            <div key={tenant.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+              {/* Clickable Card Content */}
+              <Link href={`/tenants/${tenant.slug}/admin`}>
+                <div className="p-6 cursor-pointer hover:bg-gray-50 rounded-t-lg">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 truncate">{tenant.name}</h3>
+                    <ExternalLink className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
+                  </div>
+                  
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{tenant.description}</p>
+                  
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      tenant.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {tenant.status}
+                    </span>
+                    <span className="text-sm text-gray-500">{tenant.wineCount} wines</span>
+                  </div>
+                  
+                  <div className="text-xs text-gray-400">
+                    <div>Slug: {tenant.slug}</div>
+                    <div>Created: {tenant.createdAt}</div>
+                  </div>
+                </div>
+              </Link>
+              
+              {/* Action Buttons */}
+              <div className="px-6 py-3 bg-gray-50 rounded-b-lg flex justify-end space-x-2">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleEditTenant(tenant);
+                  }}
+                  className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-md transition-colors"
+                  title="Edit tenant"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteTenant(tenant.id);
+                  }}
+                  className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-md transition-colors"
+                  title="Delete tenant"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* Empty State */}
+        {filteredTenants.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-500 mb-4">
+              {searchTerm ? 'No tenants found matching your search.' : 'No tenants available.'}
+            </div>
+            {!searchTerm && (
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Your First Tenant
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Create/Edit Modal */}
         {(isCreateModalOpen || editingTenant) && (
