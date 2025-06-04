@@ -246,7 +246,15 @@ export default function AdminCRM() {
     }}>
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
-        <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">Admin</h1>
+        <div className="flex items-center gap-4 flex-1">
+          <h1 className="text-lg font-medium text-white text-left truncate overflow-hidden whitespace-nowrap">Admin</h1>
+          <button
+            onClick={() => setLocation('/tenants')}
+            className="px-3 py-1.5 text-sm text-white border border-white/20 rounded hover:bg-white/10 transition-colors"
+          >
+            Manage Wineries
+          </button>
+        </div>
         <div className="flex gap-3">
           {isEditMode && (
             <Button 
