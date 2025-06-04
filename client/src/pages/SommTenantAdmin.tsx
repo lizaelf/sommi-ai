@@ -178,7 +178,7 @@ const SommTenantAdmin: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-4">Sommelier Tenant Administration</h1>
+          <h1 className="text-3xl font-bold text-white mb-4">Somm Tenant Admin</h1>
         </div>
 
         {/* Controls */}
