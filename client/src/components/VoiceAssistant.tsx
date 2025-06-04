@@ -7,7 +7,6 @@ import {
   shouldSkipPermissionPrompt,
   syncMicrophonePermissionWithBrowser,
 } from "@/utils/microphonePermissions";
-import { mobileAudioManager } from "@/utils/mobileAudioManager";
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
@@ -120,19 +119,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const startListening = async () => {
     // Mobile-specific: Ensure this is triggered by user interaction
     console.log("Starting voice recognition - user interaction detected");
-    
-    // Unlock audio immediately within user gesture for mobile
-    if (isMobileDevice) {
-      try {
-        const silentAudio = new Audio();
-        silentAudio.src = "data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAACQAAAA=";
-        silentAudio.volume = 0;
-        await silentAudio.play();
-        console.log("Mobile audio unlocked within user gesture");
-      } catch (error) {
-        console.log("Mobile audio unlock attempt:", error);
-      }
-    }
 
     // Check speech recognition support with mobile-specific detection
     const SpeechRecognition =
@@ -575,21 +561,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
 
-    // Get the last assistant message
-    const lastMessage = (window as any).lastAssistantMessageText;
-    
-    // Mobile-specific: Try direct TTS playback within user gesture first
-    if (lastMessage && isMobileDevice) {
-      console.log("Attempting direct TTS playback within user gesture on mobile");
-      const success = await mobileAudioManager.playTTSWithinGesture(lastMessage);
-      if (success) {
-        setIsResponding(true);
-        setShowUnmuteButton(false);
-        setShowAskButton(false);
-        return;
-      }
-    }
-
     // Check if there's pending autoplay audio from mobile autoplay blocking
     const pendingAudio = (window as any).pendingAutoplayAudio;
     if (pendingAudio) {
@@ -634,7 +605,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
 
     // Fallback: generate new audio if no pending audio or it failed
-    if (!lastMessage) {
+    const lastAssistantMessage = (window as any).lastAssistantMessageText;
+
+    if (!lastAssistantMessage) {
       console.warn("No assistant message available to play");
       setShowUnmuteButton(true);
       return;
@@ -642,7 +615,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     console.log(
       "Generating new TTS audio for:",
-      lastMessage.substring(0, 50) + "...",
+      lastAssistantMessage.substring(0, 50) + "...",
     );
 
     setIsResponding(true);
@@ -663,7 +636,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       const response = await fetch("/api/text-to-speech", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: lastMessage }),
+        body: JSON.stringify({ text: lastAssistantMessage }),
       });
 
       if (!response.ok) {
