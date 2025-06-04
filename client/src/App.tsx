@@ -13,7 +13,7 @@ import AdminCRM from "@/pages/AdminCRM";
 import WineScan from "@/pages/WineScan";
 import WineEdit from "@/pages/WineEdit";
 import TenantsSimple from "@/pages/TenantsSimple";
-import TenantAdminCRM from "@/pages/TenantAdminCRM";
+
 import TenantAdmin from "@/pages/TenantAdmin";
 import SommTenantAdmin from "@/pages/SommTenantAdmin";
 
@@ -29,7 +29,7 @@ function Router() {
       <Route path="/wine-details/:id" component={WineDetails} />
       <Route path="/admin-crm" component={AdminCRM} />
       <Route path="/tenants" component={TenantsSimple} />
-      <Route path="/tenants/:tenantSlug/admin" component={TenantAdminCRM} />
+      <Route path="/tenants/:tenantSlug/admin" component={TenantAdmin} />
       <Route path="/tenant-admin-1" component={TenantAdmin} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
 
