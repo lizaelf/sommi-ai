@@ -15,6 +15,7 @@ import WineEdit from "@/pages/WineEdit";
 import TenantsSimple from "@/pages/TenantsSimple";
 import TenantAdminCRM from "@/pages/TenantAdminCRM";
 import TenantAdmin from "@/pages/TenantAdmin";
+import SommTenantAdmin from "@/pages/SommTenantAdmin";
 
 
 function Router() {
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/tenants" component={TenantsSimple} />
       <Route path="/tenants/:tenantSlug/admin" component={TenantAdminCRM} />
       <Route path="/tenant-admin-1" component={TenantAdmin} />
+      <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
 
       <Route path="/wine-edit/:id" component={WineEdit} />
       <Route path="/scan-wine/:id" component={WineScan} />

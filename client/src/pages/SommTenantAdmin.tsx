@@ -1,0 +1,391 @@
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+
+interface Tenant {
+  id: number;
+  name: string;
+  slug: string;
+  logo?: string;
+  description?: string;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  wineCount: number;
+}
+
+interface TenantFormData {
+  name: string;
+  slug: string;
+  description: string;
+  status: 'active' | 'inactive';
+}
+
+const SommTenantAdmin: React.FC = () => {
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
+  const [formData, setFormData] = useState<TenantFormData>({
+    name: '',
+    slug: '',
+    description: '',
+    status: 'active'
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Load tenants from localStorage
+  useEffect(() => {
+    const storedTenants = localStorage.getItem('sommelier-tenants');
+    if (storedTenants) {
+      setTenants(JSON.parse(storedTenants));
+    } else {
+      // Initialize with sample data
+      const sampleTenants: Tenant[] = [
+        {
+          id: 1,
+          name: 'Napa Valley Vineyards',
+          slug: 'napa-valley-vineyards',
+          description: 'Premium Napa Valley wine collection specializing in Cabernet Sauvignon',
+          status: 'active',
+          createdAt: '2024-01-15',
+          wineCount: 12
+        },
+        {
+          id: 2,
+          name: 'Sonoma Coast Wines',
+          slug: 'sonoma-coast-wines',
+          description: 'Boutique winery focusing on Pinot Noir and Chardonnay',
+          status: 'active',
+          createdAt: '2024-02-20',
+          wineCount: 8
+        },
+        {
+          id: 3,
+          name: 'Ridge Vineyards',
+          slug: 'ridge-vineyards',
+          description: 'Historic winery known for exceptional Zinfandel and Cabernet blends',
+          status: 'inactive',
+          createdAt: '2024-03-10',
+          wineCount: 15
+        }
+      ];
+      setTenants(sampleTenants);
+      localStorage.setItem('sommelier-tenants', JSON.stringify(sampleTenants));
+    }
+  }, []);
+
+  // Save tenants to localStorage
+  const saveTenants = (updatedTenants: Tenant[]) => {
+    setTenants(updatedTenants);
+    localStorage.setItem('sommelier-tenants', JSON.stringify(updatedTenants));
+  };
+
+  // Generate slug from name
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  };
+
+  // Handle form input changes
+  const handleInputChange = (field: keyof TenantFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value,
+      ...(field === 'name' && { slug: generateSlug(value) })
+    }));
+  };
+
+  // Create new tenant
+  const handleCreateTenant = () => {
+    if (!formData.name.trim()) return;
+
+    const newTenant: Tenant = {
+      id: Date.now(),
+      name: formData.name,
+      slug: formData.slug || generateSlug(formData.name),
+      description: formData.description,
+      status: formData.status,
+      createdAt: new Date().toISOString().split('T')[0],
+      wineCount: 0
+    };
+
+    const updatedTenants = [...tenants, newTenant];
+    saveTenants(updatedTenants);
+    
+    setIsCreateModalOpen(false);
+    setFormData({ name: '', slug: '', description: '', status: 'active' });
+  };
+
+  // Edit tenant
+  const handleEditTenant = (tenant: Tenant) => {
+    setEditingTenant(tenant);
+    setFormData({
+      name: tenant.name,
+      slug: tenant.slug,
+      description: tenant.description || '',
+      status: tenant.status
+    });
+  };
+
+  // Update tenant
+  const handleUpdateTenant = () => {
+    if (!editingTenant || !formData.name.trim()) return;
+
+    const updatedTenants = tenants.map(tenant =>
+      tenant.id === editingTenant.id
+        ? {
+            ...tenant,
+            name: formData.name,
+            slug: formData.slug || generateSlug(formData.name),
+            description: formData.description,
+            status: formData.status
+          }
+        : tenant
+    );
+
+    saveTenants(updatedTenants);
+    setEditingTenant(null);
+    setFormData({ name: '', slug: '', description: '', status: 'active' });
+  };
+
+  // Delete tenant
+  const handleDeleteTenant = (tenantId: number) => {
+    if (window.confirm('Are you sure you want to delete this tenant? This action cannot be undone.')) {
+      const updatedTenants = tenants.filter(tenant => tenant.id !== tenantId);
+      saveTenants(updatedTenants);
+    }
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingTenant(null);
+    setIsCreateModalOpen(false);
+    setFormData({ name: '', slug: '', description: '', status: 'active' });
+  };
+
+  // Filter tenants based on search term
+  const filteredTenants = tenants.filter(tenant =>
+    tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tenant.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tenant.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-4">Sommelier Tenant Administration</h1>
+          <p className="text-gray-600">Manage all winery tenants and their configurations</p>
+        </div>
+
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex-1 max-w-md">
+            <input
+              type="text"
+              placeholder="Search tenants..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Tenant
+          </button>
+        </div>
+
+        {/* Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Total Tenants</h3>
+            <p className="text-2xl font-bold text-gray-900">{tenants.length}</p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Active Tenants</h3>
+            <p className="text-2xl font-bold text-green-600">
+              {tenants.filter(t => t.status === 'active').length}
+            </p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Inactive Tenants</h3>
+            <p className="text-2xl font-bold text-red-600">
+              {tenants.filter(t => t.status === 'inactive').length}
+            </p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Total Wines</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {tenants.reduce((sum, t) => sum + t.wineCount, 0)}
+            </p>
+          </div>
+        </div>
+
+        {/* Tenants Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tenant
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Slug
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Wines
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredTenants.map((tenant) => (
+                  <tr key={tenant.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{tenant.name}</div>
+                        <div className="text-sm text-gray-500">{tenant.description}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {tenant.slug}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        tenant.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {tenant.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {tenant.wineCount}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {tenant.createdAt}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => handleEditTenant(tenant)}
+                        className="text-blue-600 hover:text-blue-900 mr-3"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTenant(tenant.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Create/Edit Modal */}
+        {(isCreateModalOpen || editingTenant) && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <h2 className="text-lg font-semibold mb-4">
+                {editingTenant ? 'Edit Tenant' : 'Create New Tenant'}
+              </h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tenant Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter tenant name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Slug
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => handleInputChange('slug', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="tenant-slug"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Describe the tenant..."
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => handleInputChange('status', e.target.value as 'active' | 'inactive')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={handleCancelEdit}
+                  className="flex items-center px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
+                </button>
+                <button
+                  onClick={editingTenant ? handleUpdateTenant : handleCreateTenant}
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {editingTenant ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SommTenantAdmin;
