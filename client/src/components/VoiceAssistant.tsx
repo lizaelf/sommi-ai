@@ -331,11 +331,48 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
 
       autoplayAudio.onerror = (e) => {
         console.error("Autoplay TTS playback error for voice bottom sheet:", e);
+        console.error("Audio error details:", {
+          error: autoplayAudio.error?.message,
+          code: autoplayAudio.error?.code,
+          networkState: autoplayAudio.networkState,
+          readyState: autoplayAudio.readyState,
+          src: autoplayAudio.src
+        });
         URL.revokeObjectURL(audioUrl);
         (window as any).currentAutoplayAudio = null;
         setIsResponding(false);
         setShowUnmuteButton(true);
         setShowAskButton(true);
+        
+        // Show user-friendly error message
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Audio playback failed - please try again
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
       };
 
       autoplayAudio.onabort = () => {
@@ -349,6 +386,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       autoplayAudio.volume = 0.8;
 
       console.log("Attempting to play autoplay audio for voice bottom sheet...");
+      
+      // Add timeout for audio loading
+      autoplayAudio.addEventListener('loadeddata', () => {
+        console.log("Audio data loaded successfully");
+      });
+      
+      autoplayAudio.addEventListener('canplaythrough', () => {
+        console.log("Audio can play through without buffering");
+      });
+      
+      // Wait for audio to be ready before playing
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Audio loading timeout"));
+        }, 10000); // 10 second timeout
+        
+        autoplayAudio.oncanplay = () => {
+          clearTimeout(timeout);
+          resolve(true);
+        };
+        
+        autoplayAudio.onerror = () => {
+          clearTimeout(timeout);
+          reject(new Error("Audio loading failed"));
+        };
+        
+        // Start loading the audio
+        autoplayAudio.load();
+      });
+      
+      console.log("Audio ready, attempting to play...");
       const playPromise = autoplayAudio.play();
       
       if (playPromise !== undefined) {
@@ -530,8 +598,51 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       // Set audio properties for better compatibility
       audio.preload = 'auto';
       audio.volume = 0.8;
+      audio.crossOrigin = 'anonymous';
 
       console.log("Attempting to play manual unmute audio...");
+      
+      // Add loading events for debugging
+      audio.addEventListener('loadstart', () => {
+        console.log("Manual unmute audio loading started");
+      });
+      
+      audio.addEventListener('loadeddata', () => {
+        console.log("Manual unmute audio data loaded");
+      });
+      
+      audio.addEventListener('canplaythrough', () => {
+        console.log("Manual unmute audio can play through");
+      });
+      
+      // Wait for audio to be ready before playing
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Manual unmute audio loading timeout"));
+        }, 8000); // 8 second timeout
+        
+        const onCanPlay = () => {
+          clearTimeout(timeout);
+          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('error', onError);
+          resolve(true);
+        };
+        
+        const onError = () => {
+          clearTimeout(timeout);
+          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('error', onError);
+          reject(new Error("Manual unmute audio loading failed"));
+        };
+        
+        audio.addEventListener('canplay', onCanPlay);
+        audio.addEventListener('error', onError);
+        
+        // Start loading the audio
+        audio.load();
+      });
+      
+      console.log("Manual unmute audio ready, attempting to play...");
       const playPromise = audio.play();
       
       if (playPromise !== undefined) {
