@@ -126,8 +126,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       setShowUnmuteButton(true);
     };
 
+    // Handle autoplay requests independent of button state
+    const handleAutoplayRequest = (event: CustomEvent) => {
+      const text = event.detail?.text;
+      if (text && showBottomSheet) {
+        console.log("Autoplay TTS requested via event:", text.substring(0, 50) + "...");
+        startAutoplayTTS(text);
+      }
+    };
+
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
     window.addEventListener('showUnmuteButton', handleShowUnmuteButton as EventListener);
+    window.addEventListener('requestAutoplayTTS', handleAutoplayRequest as EventListener);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
@@ -394,8 +404,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
       autoplayAudio.onplay = () => {
         console.log("Autoplay TTS started for voice bottom sheet");
         setIsResponding(true);
-        setShowUnmuteButton(false);
-        setShowAskButton(false);
+        // Keep buttons available during autoplay - don't hide them
       };
 
       autoplayAudio.onended = () => {
@@ -403,22 +412,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
         (window as any).currentAutoplayAudio = null;
         console.log("Autoplay TTS completed for voice bottom sheet");
         setIsResponding(false);
+        // Always show both buttons after autoplay completes
         setShowUnmuteButton(true);
         setShowAskButton(true);
       };
 
       autoplayAudio.onerror = (e) => {
         console.error("Autoplay TTS playback error for voice bottom sheet:", e);
-        console.error("Audio error details:", {
-          error: autoplayAudio.error?.message,
-          code: autoplayAudio.error?.code,
-          networkState: autoplayAudio.networkState,
-          readyState: autoplayAudio.readyState,
-          src: autoplayAudio.src
-        });
         URL.revokeObjectURL(audioUrl);
         (window as any).currentAutoplayAudio = null;
         setIsResponding(false);
+        // Always show both buttons even after autoplay error
         setShowUnmuteButton(true);
         setShowAskButton(true);
         
@@ -505,6 +509,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onSendMessage, isProces
     } catch (error) {
       console.error("Failed to generate or play autoplay TTS for voice bottom sheet:", error);
       setIsResponding(false);
+      // Always show both buttons even when autoplay fails
       setShowUnmuteButton(true);
       setShowAskButton(true);
     }
