@@ -153,28 +153,11 @@ const SommTenantAdmin: React.FC = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#3a3a3a' }}>
-      {/* Fixed Header with same design as cellar page */}
+      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
-        <Link href="/">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="text-white"
-          >
-            <path
-              fill="currentColor"
-              d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
-            />
-          </svg>
-        </Link>
         <h1 
           className="text-lg font-medium"
           style={{
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
             color: "white"
           }}
         >Somm tenant admin</h1>
