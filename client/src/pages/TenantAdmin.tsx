@@ -531,38 +531,88 @@ const TenantAdmin: React.FC = () => {
 
           {/* CMS Tab - Wine Management */}
           {activeTab === "cms" && (
-            <div className="min-h-screen bg-black text-white">
+            <div style={{ backgroundColor: "black", minHeight: "100vh", padding: "24px" }}>
               {/* Header Section */}
-              <div className="flex items-center justify-between mb-6">
-                <h1 className={`${typography.h1} text-white mb-0`}>Wine Collection Management</h1>
-                <div className="flex items-center gap-4">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <Link to="/home-global">
+                    <div
+                      style={{
+                        padding: "8px",
+                        borderRadius: "50%",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        cursor: "pointer",
+                        transition: "background-color 0.2s",
+                      }}
+                    >
+                      <ArrowLeft size={20} color="white" />
+                    </div>
+                  </Link>
+                  <h1 className={`${typography.h1} text-white`} style={{ margin: 0 }}>
+                    Wine Collection Management
+                  </h1>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   {showSearch && (
-                    <div className="relative flex items-center">
-                      <Search className="absolute left-3 w-4 h-4 text-gray-400" />
+                    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                      <Search
+                        style={{
+                          position: "absolute",
+                          left: "12px",
+                          width: "16px",
+                          height: "16px",
+                          color: "rgba(156, 163, 175, 1)",
+                        }}
+                      />
                       <input
                         type="text"
                         placeholder="Search wines..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-10 py-2 bg-transparent border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-500 focus:outline-none"
+                        style={{
+                          paddingLeft: "40px",
+                          paddingRight: "40px",
+                          paddingTop: "8px",
+                          paddingBottom: "8px",
+                          backgroundColor: "transparent",
+                          border: "1px solid rgba(75, 85, 99, 1)",
+                          borderRadius: "8px",
+                          color: "white",
+                          outline: "none",
+                        }}
                       />
                       {searchTerm && (
                         <button
                           onClick={() => setSearchTerm("")}
-                          className="absolute right-3 w-4 h-4 text-gray-400 hover:text-white"
+                          style={{
+                            position: "absolute",
+                            right: "12px",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "rgba(156, 163, 175, 1)",
+                          }}
                         >
-                          <X className="w-4 h-4" />
+                          <X style={{ width: "16px", height: "16px" }} />
                         </button>
                       )}
                     </div>
                   )}
+
                   <Button
                     onClick={() => setIsEditMode(!isEditMode)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isEditMode
-                        ? "bg-red-600 hover:bg-red-700 text-white"
-                        : "bg-green-600 hover:bg-green-700 text-white"
-                    }`}
+                    style={{
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      transition: "background-color 0.2s",
+                      backgroundColor: isEditMode ? "#dc2626" : "#16a34a",
+                      color: "white",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
                   >
                     {isEditMode ? "Exit Edit" : "Edit Mode"}
                   </Button>
@@ -570,7 +620,13 @@ const TenantAdmin: React.FC = () => {
               </div>
 
               {/* Wine Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                  gap: "24px",
+                }}
+              >
                 {wineCards
                   .filter((wine) =>
                     wine.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -578,47 +634,118 @@ const TenantAdmin: React.FC = () => {
                   .map((wine) => (
                     <div
                       key={wine.id}
-                      className="relative bg-transparent border border-white/20 rounded-lg p-4 hover:border-green-500 transition-colors group"
+                      style={{
+                        position: "relative",
+                        backgroundColor: "transparent",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                        borderRadius: "12px",
+                        padding: "16px",
+                        transition: "border-color 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#10b981";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                      }}
                     >
                       {/* Wine Image */}
-                      <div className="relative mb-4">
+                      <div style={{ position: "relative", marginBottom: "16px" }}>
                         <img
                           src={wine.image || placeholderImage}
                           alt={wine.name}
-                          className="w-full h-48 object-cover rounded-lg"
+                          style={{
+                            width: "100%",
+                            height: "192px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                          }}
                           onLoad={() => console.log(`CMS image loaded: ${wine.name}`)}
                           onError={() => console.log(`CMS placeholder loaded for: ${wine.name}`)}
                         />
                       </div>
 
                       {/* Wine Info */}
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-semibold text-white group-hover:text-green-400 transition-colors">
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <h3
+                          style={{
+                            fontSize: "18px",
+                            fontWeight: "600",
+                            color: "white",
+                            margin: 0,
+                            transition: "color 0.2s",
+                          }}
+                        >
                           {wine.name}
                         </h3>
-                        <p className="text-gray-400 text-sm">
+                        <p style={{ color: "#9ca3af", fontSize: "14px", margin: 0 }}>
                           {wine.bottles} bottles available
                         </p>
-                        
+
                         {/* Ratings */}
-                        <div className="flex items-center space-x-2 text-xs">
-                          <span className="bg-purple-600 px-2 py-1 rounded">VN: {wine.ratings?.vn || 'N/A'}</span>
-                          <span className="bg-blue-600 px-2 py-1 rounded">JD: {wine.ratings?.jd || 'N/A'}</span>
-                          <span className="bg-orange-600 px-2 py-1 rounded">WS: {wine.ratings?.ws || 'N/A'}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
+                          <span
+                            style={{
+                              backgroundColor: "#7c3aed",
+                              padding: "4px 8px",
+                              borderRadius: "4px",
+                              color: "white",
+                            }}
+                          >
+                            VN: {wine.ratings?.vn || "N/A"}
+                          </span>
+                          <span
+                            style={{
+                              backgroundColor: "#2563eb",
+                              padding: "4px 8px",
+                              borderRadius: "4px",
+                              color: "white",
+                            }}
+                          >
+                            JD: {wine.ratings?.jd || "N/A"}
+                          </span>
+                          <span
+                            style={{
+                              backgroundColor: "#ea580c",
+                              padding: "4px 8px",
+                              borderRadius: "4px",
+                              color: "white",
+                            }}
+                          >
+                            WS: {wine.ratings?.ws || "N/A"}
+                          </span>
                         </div>
 
-                        {/* QR Code */}
-                        <div className="flex items-center justify-between mt-4">
-                          <SimpleQRCode 
-                            value={generateWineQRData(wine.id)} 
-                            size={60}
-                            wineId={wine.id}
-                          />
-                          
+                        {/* QR Code and Edit Button */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginTop: "16px",
+                          }}
+                        >
+                          <SimpleQRCode value={generateWineQRData(wine.id)} size={60} wineId={wine.id} />
+
                           {isEditMode && (
                             <Button
                               onClick={() => setLocation(`/wine-edit/${wine.id}`)}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm rounded"
+                              style={{
+                                backgroundColor: "#2563eb",
+                                color: "white",
+                                padding: "4px 12px",
+                                fontSize: "14px",
+                                borderRadius: "4px",
+                                border: "none",
+                                cursor: "pointer",
+                                transition: "background-color 0.2s",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = "#1d4ed8";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = "#2563eb";
+                              }}
                             >
                               Edit
                             </Button>
