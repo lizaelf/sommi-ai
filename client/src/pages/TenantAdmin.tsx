@@ -313,7 +313,7 @@ const TenantAdmin: React.FC = () => {
             { value: "ai-model", label: "AI Model" }
           ]}
           value={activeTab}
-          onChange={setActiveTab}
+          onChange={(value) => setActiveTab(value as "profile" | "cms" | "ai-model")}
           className="mb-8"
         />
 
