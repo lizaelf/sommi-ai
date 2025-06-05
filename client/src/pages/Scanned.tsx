@@ -217,8 +217,9 @@ export default function Scanned() {
                     width: "160px",
                     height: "160px",
                     borderRadius: "12px",
-                    objectFit: "cover",
-                    border: "3px solid #4F46E5"
+                    objectFit: "contain",
+                    border: "3px solid #4F46E5",
+                    backgroundColor: "transparent"
                   }}
                   onLoad={() => console.log('Static file image loaded successfully')}
                   onError={(e) => {
@@ -228,54 +229,21 @@ export default function Scanned() {
                   }}
                 />
               ) : selectedWine.image.startsWith('data:') ? (
-                // Handle base64 data with blob URL conversion
-                (() => {
-                  try {
-                    // Convert base64 to blob URL for better browser compatibility
-                    const base64Data = selectedWine.image.split(',')[1];
-                    const mimeType = selectedWine.image.split(';')[0].split(':')[1];
-                    const byteCharacters = atob(base64Data);
-                    const byteNumbers = new Array(byteCharacters.length);
-                  
-                    for (let i = 0; i < byteCharacters.length; i++) {
-                      byteNumbers[i] = byteCharacters.charCodeAt(i);
-                    }
-                    
-                    const byteArray = new Uint8Array(byteNumbers);
-                    const blob = new Blob([byteArray], { type: mimeType });
-                    const blobUrl = URL.createObjectURL(blob);
-                    
-                    console.log(`Created blob URL for wine image: ${blobUrl}`);
-                    
-                    return (
-                      <img
-                        src={blobUrl}
-                        alt={selectedWine.name}
-                        style={{
-                          width: "160px",
-                          height: "160px",
-                          borderRadius: "12px",
-                          objectFit: "cover",
-                          border: "3px solid #4F46E5"
-                        }}
-                        onLoad={() => console.log("Blob URL image loaded successfully")}
-                        onError={(e) => console.error("Blob URL image failed:", e)}
-                      />
-                    );
-                  } catch (error) {
-                    console.error("Error creating blob URL:", error);
-                    return (
-                      <div style={{ 
-                        color: "red", 
-                        fontSize: "14px",
-                        padding: "20px",
-                        border: "2px solid red"
-                      }}>
-                        Image conversion failed
-                      </div>
-                    );
-                  }
-                })()
+                // Handle base64 data directly without blob conversion
+                <img
+                  src={selectedWine.image}
+                  alt={selectedWine.name}
+                  style={{
+                    width: "160px",
+                    height: "160px",
+                    borderRadius: "12px",
+                    objectFit: "contain",
+                    border: "3px solid #4F46E5",
+                    backgroundColor: "transparent"
+                  }}
+                  onLoad={() => console.log("Base64 image loaded successfully")}
+                  onError={(e) => console.error("Base64 image failed:", e)}
+                />
               ) : null}
             </div>
           ) : (
