@@ -385,15 +385,20 @@ export default function WineEdit() {
             // If we came from the same site, try to go back there
             if (referrer && referrer.startsWith(currentOrigin)) {
               const referrerPath = new URL(referrer).pathname;
-              // Don't navigate to the same page
-              if (referrerPath !== window.location.pathname) {
+              // Don't navigate to the same page and ensure it's a valid route
+              if (referrerPath !== window.location.pathname && 
+                  (referrerPath.includes('/tenants/') || 
+                   referrerPath === '/winery-tenant-admin' ||
+                   referrerPath === '/somm-tenant-admin' ||
+                   referrerPath === '/cellar' ||
+                   referrerPath === '/scanned')) {
                 setLocation(referrerPath);
                 return;
               }
             }
             
-            // Default fallback to admin panel
-            setLocation("/admin-crm");
+            // Default fallback to winery admin panel
+            setLocation("/winery-tenant-admin");
           }}
           className="header-button"
         >
