@@ -96,6 +96,25 @@ button:active {
   border: none !important;
 }
 
+/* Specific class for tertiary buttons */
+.tertiary-button {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+.tertiary-button:focus,
+.tertiary-button:active,
+.tertiary-button:hover {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
