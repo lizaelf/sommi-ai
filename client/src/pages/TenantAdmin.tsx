@@ -304,34 +304,34 @@ const TenantAdmin: React.FC = () => {
           <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
         </div>
 
-        {/* Tabs */}
-        <div className="flex space-x-2 mb-8">
+        {/* Segmented Picker */}
+        <div className="inline-flex bg-white/10 rounded-lg p-1 mb-8">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeTab === "profile"
-                ? "bg-white text-black"
-                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                ? "bg-white text-black shadow-sm"
+                : "text-white hover:bg-white/10"
             }`}
           >
             Profile
           </button>
           <button
             onClick={() => setActiveTab("cms")}
-            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeTab === "cms"
-                ? "bg-white text-black"
-                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                ? "bg-white text-black shadow-sm"
+                : "text-white hover:bg-white/10"
             }`}
           >
             CMS
           </button>
           <button
             onClick={() => setActiveTab("ai-model")}
-            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeTab === "ai-model"
-                ? "bg-white text-black"
-                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                ? "bg-white text-black shadow-sm"
+                : "text-white hover:bg-white/10"
             }`}
           >
             AI Model
