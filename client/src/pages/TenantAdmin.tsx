@@ -137,6 +137,7 @@ const TenantAdmin: React.FC = () => {
   const [showSearch, setShowSearch] = useState(true);
   const [showDataSync, setShowDataSync] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
@@ -458,263 +459,309 @@ const TenantAdmin: React.FC = () => {
                 </h2>
                 <button
                   onClick={() => {
-                    // Save profile data functionality
-                    console.log('Saving profile data:', formData.profile);
+                    if (isEditingProfile) {
+                      // Save profile data functionality
+                      console.log('Saving profile data:', formData.profile);
+                      setIsEditingProfile(false);
+                    } else {
+                      setIsEditingProfile(true);
+                    }
                   }}
                   className="primary-button px-4 py-2 text-white rounded-lg transition-colors"
                 >
-                  Save Changes
+                  {isEditingProfile ? 'Save Changes' : 'Edit Profile'}
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Winery Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.profile.wineryName}
-                    onChange={(e) =>
-                      handleInputChange("profile", "wineryName", e.target.value)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                    placeholder="Enter winery name"
-                  />
+{isEditingProfile ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Winery Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.profile.wineryName}
+                      onChange={(e) =>
+                        handleInputChange("profile", "wineryName", e.target.value)
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "56px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 16px",
+                      }}
+                      placeholder="Enter winery name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Year Established
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.profile.yearEstablished}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "profile",
+                          "yearEstablished",
+                          e.target.value,
+                        )
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "56px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 16px",
+                      }}
+                      placeholder="e.g., 1885"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Winery Description
+                    </label>
+                    <textarea
+                      value={formData.profile.wineryDescription}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "profile",
+                          "wineryDescription",
+                          e.target.value,
+                        )
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        minHeight: "120px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "16px",
+                        resize: "vertical",
+                      }}
+                      placeholder="Describe the winery..."
+                      rows={4}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Winery Logo (Upload)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        handleFileUpload("profile", "wineryLogo", e)
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "56px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 16px",
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Contact Email
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.profile.contactEmail}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "profile",
+                          "contactEmail",
+                          e.target.value,
+                        )
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "56px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 16px",
+                      }}
+                      placeholder="contact@winery.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Contact Phone
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.profile.contactPhone}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "profile",
+                          "contactPhone",
+                          e.target.value,
+                        )
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "56px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 16px",
+                      }}
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Website URL
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.profile.websiteURL}
+                      onChange={(e) =>
+                        handleInputChange("profile", "websiteURL", e.target.value)
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "56px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 16px",
+                      }}
+                      placeholder="https://www.winery.com"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Address
+                    </label>
+                    <textarea
+                      value={formData.profile.address}
+                      onChange={(e) =>
+                        handleInputChange("profile", "address", e.target.value)
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        minHeight: "96px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "16px",
+                        resize: "vertical",
+                      }}
+                      placeholder="123 Wine Street, Napa Valley, CA 94558"
+                      rows={2}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Hours of Operation
+                    </label>
+                    <textarea
+                      value={formData.profile.hoursOfOperation}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "profile",
+                          "hoursOfOperation",
+                          e.target.value,
+                        )
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        minHeight: "96px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "16px",
+                        resize: "vertical",
+                      }}
+                      placeholder="Mon-Sat: 10am-6pm, Sun: 11am-5pm"
+                      rows={2}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">
+                      Social Media Links
+                    </label>
+                    <textarea
+                      value={formData.profile.socialMediaLinks}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "profile",
+                          "socialMediaLinks",
+                          e.target.value,
+                        )
+                      }
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        minHeight: "96px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "16px",
+                        resize: "vertical",
+                      }}
+                      placeholder="Instagram: @winery, Facebook: /winery"
+                      rows={2}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Year Established
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.profile.yearEstablished}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "profile",
-                        "yearEstablished",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                    placeholder="e.g., 1885"
-                  />
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Winery Name</h3>
+                    <p className="text-white text-base">{formData.profile.wineryName || "Not set"}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Year Established</h3>
+                    <p className="text-white text-base">{formData.profile.yearEstablished || "Not set"}</p>
+                  </div>
+                  <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Winery Description</h3>
+                    <p className="text-white text-base">{formData.profile.wineryDescription || "Not set"}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Contact Email</h3>
+                    <p className="text-white text-base">{formData.profile.contactEmail || "Not set"}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Contact Phone</h3>
+                    <p className="text-white text-base">{formData.profile.contactPhone || "Not set"}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Website URL</h3>
+                    <p className="text-white text-base">{formData.profile.websiteURL || "Not set"}</p>
+                  </div>
+                  <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Address</h3>
+                    <p className="text-white text-base">{formData.profile.address || "Not set"}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Hours of Operation</h3>
+                    <p className="text-white text-base">{formData.profile.hoursOfOperation || "Not set"}</p>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h3 className="text-sm font-medium text-white/60 mb-2">Social Media Links</h3>
+                    <p className="text-white text-base">{formData.profile.socialMediaLinks || "Not set"}</p>
+                  </div>
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Winery Description
-                  </label>
-                  <textarea
-                    value={formData.profile.wineryDescription}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "profile",
-                        "wineryDescription",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      minHeight: "120px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "16px",
-                      resize: "vertical",
-                    }}
-                    placeholder="Describe the winery..."
-                    rows={4}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Winery Logo (Upload)
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleFileUpload("profile", "wineryLogo", e)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Contact Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.profile.contactEmail}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "profile",
-                        "contactEmail",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                    placeholder="contact@winery.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Contact Phone
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.profile.contactPhone}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "profile",
-                        "contactPhone",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Website URL
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.profile.websiteURL}
-                    onChange={(e) =>
-                      handleInputChange("profile", "websiteURL", e.target.value)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                    placeholder="https://www.winery.com"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Address
-                  </label>
-                  <textarea
-                    value={formData.profile.address}
-                    onChange={(e) =>
-                      handleInputChange("profile", "address", e.target.value)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      minHeight: "96px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "16px",
-                      resize: "vertical",
-                    }}
-                    placeholder="123 Wine Street, Napa Valley, CA 94558"
-                    rows={2}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Hours of Operation
-                  </label>
-                  <textarea
-                    value={formData.profile.hoursOfOperation}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "profile",
-                        "hoursOfOperation",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      minHeight: "96px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "16px",
-                      resize: "vertical",
-                    }}
-                    placeholder="Mon-Sat: 10am-6pm, Sun: 11am-5pm"
-                    rows={2}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Social Media Links
-                  </label>
-                  <textarea
-                    value={formData.profile.socialMediaLinks}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "profile",
-                        "socialMediaLinks",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      minHeight: "96px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "16px",
-                      resize: "vertical",
-                    }}
-                    placeholder="Instagram: @winery, Facebook: /winery"
-                    rows={2}
-                  />
-                </div>
-              </div>
+              )}
             </div>
           )}
 
