@@ -726,39 +726,39 @@ const TenantAdmin: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Winery Name</h3>
-                    <p className="text-white text-base">{formData.profile.wineryName || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.wineryName || "-"}</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Year Established</h3>
-                    <p className="text-white text-base">{formData.profile.yearEstablished || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.yearEstablished || "-"}</p>
                   </div>
                   <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Winery Description</h3>
-                    <p className="text-white text-base">{formData.profile.wineryDescription || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.wineryDescription || "-"}</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Contact Email</h3>
-                    <p className="text-white text-base">{formData.profile.contactEmail || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.contactEmail || "-"}</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Contact Phone</h3>
-                    <p className="text-white text-base">{formData.profile.contactPhone || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.contactPhone || "-"}</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Website URL</h3>
-                    <p className="text-white text-base">{formData.profile.websiteURL || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.websiteURL || "-"}</p>
                   </div>
                   <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Address</h3>
-                    <p className="text-white text-base">{formData.profile.address || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.address || "-"}</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Hours of Operation</h3>
-                    <p className="text-white text-base">{formData.profile.hoursOfOperation || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.hoursOfOperation || "-"}</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                     <h3 className="text-sm font-medium text-white/60 mb-2">Social Media Links</h3>
-                    <p className="text-white text-base">{formData.profile.socialMediaLinks || "Not set"}</p>
+                    <p className="text-white text-base">{formData.profile.socialMediaLinks || "-"}</p>
                   </div>
                 </div>
               )}
