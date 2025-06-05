@@ -376,15 +376,7 @@ const TenantAdmin: React.FC = () => {
             >{currentTenant?.name || formData.profile.wineryName || "Winery Name"}</h1>
             
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  const newId = wineCards.length > 0 ? Math.max(...wineCards.map(w => w.id)) + 1 : 1;
-                  setLocation(`/wine-edit/${newId}?new=true`);
-                }}
-                className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
-              >
-                <Plus className="w-6 h-6 text-white" />
-              </button>
+              {/* Removed add button */}
             </div>
           </div>
 
