@@ -305,27 +305,76 @@ const TenantAdmin: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 bg-black z-50 border-b border-white/10">
+        <div className="max-w-6xl mx-auto p-6">
+          {/* Title */}
+          <div className="mb-3">
+            <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
+          </div>
+
+          {/* iOS-style Segmented Picker */}
+          <div className="mb-3">
+            <SegmentedPicker
+              options={[
+                { value: "profile", label: "Profile" },
+                { value: "cms", label: "CMS" },
+                { value: "ai-model", label: "AI Model" }
+              ]}
+              value={activeTab}
+              onChange={(value) => setActiveTab(value as "profile" | "cms" | "ai-model")}
+            />
+          </div>
+
+          {/* Search - Only show when on CMS tab */}
+          {activeTab === "cms" && (
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search wines..."
+                  className="contact-form-input"
+                  style={{
+                    color: "white !important",
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    paddingLeft: "40px",
+                    paddingRight: "40px",
+                  }}
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  const newId = wineCards.length > 0 ? Math.max(...wineCards.map(w => w.id)) + 1 : 1;
+                  setLocation(`/wine-edit/${newId}?new=true`);
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium whitespace-nowrap"
+              >
+                Add Wine
+              </button>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* iOS-style Segmented Picker */}
-        <SegmentedPicker
-          options={[
-            { value: "profile", label: "Profile" },
-            { value: "cms", label: "CMS" },
-            { value: "ai-model", label: "AI Model" }
-          ]}
-          value={activeTab}
-          onChange={(value) => setActiveTab(value as "profile" | "cms" | "ai-model")}
-          className="mb-8"
-        />
-
-        {/* Content */}
-        <div>
+      {/* Content with top padding to account for fixed header */}
+      <div style={{ paddingTop: activeTab === "cms" ? "200px" : "144px" }}>
+        <div className="max-w-6xl mx-auto p-6">
+          {/* Content */}
           {/* Profile Tab */}
           {activeTab === "profile" && (
             <div className="space-y-6">
@@ -503,53 +552,6 @@ const TenantAdmin: React.FC = () => {
           {/* CMS Tab - Wine Management */}
           {activeTab === "cms" && (
             <div style={{ backgroundColor: "#000000", minHeight: "100vh" }}>
-              {/* Search and Controls */}
-              <div className="sticky top-0 z-10 backdrop-blur-md" style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}>
-                <div>
-                  {showSearch && (
-                    <div className="flex gap-3 mb-4">
-                      <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
-                        <input
-                          type="text"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          placeholder="Search wines..."
-                          className="contact-form-input"
-                          style={{
-                            color: "white !important",
-                            height: "56px",
-                            width: "100%",
-                            fontSize: "16px",
-                            fontWeight: "400",
-                            paddingLeft: "40px",
-                            paddingRight: "40px",
-                          }}
-                        />
-                        {searchTerm && (
-                          <button
-                            onClick={() => setSearchTerm("")}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => {
-                          const newId = wineCards.length > 0 ? Math.max(...wineCards.map(w => w.id)) + 1 : 1;
-                          setLocation(`/wine-edit/${newId}?new=true`);
-                        }}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium whitespace-nowrap"
-                      >
-                        Add Wine
-                      </button>
-                    </div>
-                  )}
-
-
-                </div>
-              </div>
 
               {/* Wine Cards List */}
               <div>
@@ -760,7 +762,6 @@ const TenantAdmin: React.FC = () => {
               </div>
             </div>
           )}
-
 
         </div>
       </div>
