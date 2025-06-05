@@ -377,7 +377,7 @@ export default function WineEdit() {
         }`}
       >
         <button
-          onClick={() => setLocation("/admin-crm")}
+          onClick={() => window.history.back()}
           className="header-button"
         >
           <svg
