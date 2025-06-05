@@ -346,7 +346,14 @@ const TenantAdmin: React.FC = () => {
             <button className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors">
               <Menu className="w-5 h-5 text-white" />
             </button>
-            <h1 className="text-white text-[18px] font-medium">{formData.profile.wineryName || "Winery Admin"}</h1>
+            <h1 
+              className="text-white text-[18px] font-medium"
+              style={{
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)"
+              }}
+            >{formData.profile.wineryName || "Winery Admin"}</h1>
             
             {/* User Profile Dropdown - Hidden for now */}
             {false && (
@@ -378,6 +385,9 @@ const TenantAdmin: React.FC = () => {
                 )}
               </div>
             )}
+            
+            {/* Invisible spacer to balance the layout */}
+            <div className="w-10 h-10"></div>
           </div>
 
           {/* iOS-style Segmented Picker */}
