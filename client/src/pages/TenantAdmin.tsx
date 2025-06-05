@@ -519,7 +519,7 @@ const TenantAdmin: React.FC = () => {
             <div style={{ backgroundColor: "#000000", minHeight: "100vh" }}>
               {/* Search and Controls */}
               <div className="sticky top-0 z-10 backdrop-blur-md" style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}>
-                <div className="p-4">
+                <div>
                   {showSearch && (
                     <div className="flex gap-3 mb-4">
                       <div className="relative flex-1">
