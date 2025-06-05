@@ -388,11 +388,22 @@ const TenantAdmin: React.FC = () => {
             </div>
           </div>
 
-
+          {/* SegmentedPicker */}
+          <div className="border-b border-white/10 pb-3">
+            <SegmentedPicker
+              options={[
+                { value: "profile", label: "Profile" },
+                { value: "cms", label: "CMS" },
+                { value: "ai-model", label: "AI Model" }
+              ]}
+              value={activeTab}
+              onChange={(value) => setActiveTab(value as "profile" | "cms" | "ai-model")}
+            />
+          </div>
 
           {/* Search - Only show when on CMS tab */}
           {activeTab === "cms" && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 mt-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
                 <input
@@ -420,30 +431,12 @@ const TenantAdmin: React.FC = () => {
                   </button>
                 )}
               </div>
-
             </div>
           )}
         </div>
       </div>
 
-      {/* SegmentedPicker under header */}
-      <div className="fixed top-0 left-0 right-0 z-50" style={{ top: activeTab === "cms" ? "124px" : "68px" }}>
-        <div className="bg-black border-b border-white/10">
-          <div className="max-w-6xl mx-auto p-4">
-            <SegmentedPicker
-              options={[
-                { value: "profile", label: "Profile" },
-                { value: "cms", label: "CMS" },
-                { value: "ai-model", label: "AI Model" }
-              ]}
-              value={activeTab}
-              onChange={(value) => setActiveTab(value as "profile" | "cms" | "ai-model")}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Content with top and bottom padding to account for fixed header and tabs */}
+      {/* Content with top and bottom padding to account for fixed header */}
       <div style={{ 
         paddingTop: activeTab === "cms" ? "188px" : "132px",
         paddingBottom: "40px"
