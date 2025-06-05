@@ -360,7 +360,7 @@ const TenantAdmin: React.FC = () => {
           {/* Title */}
           <div className="mb-3 flex items-center justify-between">
             <button 
-              onClick={() => window.history.back()}
+              onClick={() => setLocation('/somm-tenant-admin')}
               className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
