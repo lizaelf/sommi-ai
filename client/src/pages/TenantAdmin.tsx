@@ -564,11 +564,21 @@ const TenantAdmin: React.FC = () => {
                     .map((wine) => (
                     <div
                       key={wine.id}
-                      className="relative bg-white/5 border border-white/20 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-sm"
+                      className="relative bg-white/5 border border-white/20 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-sm flex items-center gap-4"
                       onClick={() => !isEditMode && setLocation(`/wine-details/${wine.id}`)}
                     >
-                      {/* Wine Image */}
-                      <div className="aspect-[3/4] mb-3 rounded-lg overflow-hidden bg-white/5">
+                      {/* Wine Details - Left Side */}
+                      <div className="flex-1">
+                        <h3 className="text-white font-medium text-lg leading-tight mb-1">
+                          {wine.name}
+                        </h3>
+                        <p className="text-white/50 text-sm">
+                          ID: {wine.id}
+                        </p>
+                      </div>
+
+                      {/* Wine Image - Right Side */}
+                      <div className="w-[100px] h-[150px] rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
                         <img
                           src={wine.image || placeholderImage}
                           alt={wine.name}
@@ -579,53 +589,6 @@ const TenantAdmin: React.FC = () => {
                             (e.target as HTMLImageElement).src = placeholderImage;
                           }}
                         />
-                      </div>
-
-                      {/* Wine Details */}
-                      <div className="space-y-2">
-                        <h3 className="text-white font-medium text-sm leading-tight line-clamp-2">
-                          {wine.name}
-                        </h3>
-                        
-                        {wine.year && (
-                          <p className="text-white/70 text-xs">
-                            {wine.year}
-                          </p>
-                        )}
-
-                        <p className="text-white/70 text-xs">
-                          {wine.bottles} bottles
-                        </p>
-
-                        {/* Ratings */}
-                        {wine.ratings && (
-                          <div className="flex flex-wrap gap-1 text-xs">
-                            {wine.ratings.vn && (
-                              <span className="bg-red-600/20 text-red-400 px-2 py-1 rounded">
-                                VN {wine.ratings.vn}
-                              </span>
-                            )}
-                            {wine.ratings.jd && (
-                              <span className="bg-blue-600/20 text-blue-400 px-2 py-1 rounded">
-                                JD {wine.ratings.jd}
-                              </span>
-                            )}
-                            {wine.ratings.ws && (
-                              <span className="bg-green-600/20 text-green-400 px-2 py-1 rounded">
-                                WS {wine.ratings.ws}
-                              </span>
-                            )}
-                          </div>
-                        )}
-
-                        {/* QR Code */}
-                        <div className="flex justify-center mt-3">
-                          <SimpleQRCode 
-                            value={generateWineQRData(wine.id)} 
-                            size={60}
-                            wineId={wine.id}
-                          />
-                        </div>
                       </div>
 
                       {/* Edit Mode Controls */}
