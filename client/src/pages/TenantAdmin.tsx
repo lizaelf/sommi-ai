@@ -71,11 +71,18 @@ interface TenantData {
 }
 
 const TenantAdmin: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"profile" | "cms" | "ai-model">(
-    "profile",
-  );
+  const [activeTab, setActiveTab] = useState<"profile" | "cms" | "ai-model">(() => {
+    // Restore tab from localStorage if available
+    const savedTab = localStorage.getItem('tenantAdminActiveTab');
+    return (savedTab as "profile" | "cms" | "ai-model") || "profile";
+  });
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+
+  // Save active tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('tenantAdminActiveTab', activeTab);
+  }, [activeTab]);
   
   // Wine management state
   const [isEditMode, setIsEditMode] = useState(false);
