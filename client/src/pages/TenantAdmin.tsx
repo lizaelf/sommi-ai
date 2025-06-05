@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings } from "lucide-react";
+import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings, Menu } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { SegmentedPicker } from "@/components/SegmentedPicker";
@@ -343,6 +343,9 @@ const TenantAdmin: React.FC = () => {
         <div className="max-w-6xl mx-auto p-6">
           {/* Title */}
           <div className="mb-3 flex items-center justify-between">
+            <button className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors">
+              <Menu className="w-5 h-5 text-white" />
+            </button>
             <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
             
             {/* User Profile Dropdown */}
