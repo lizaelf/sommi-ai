@@ -378,13 +378,22 @@ export default function WineEdit() {
       >
         <button
           onClick={() => {
-            // Try browser back first
-            if (window.history.length > 1) {
-              window.history.back();
-            } else {
-              // Fallback to admin panel if no history
-              setLocation("/admin-crm");
+            // Get the referrer or use a sensible default
+            const referrer = document.referrer;
+            const currentOrigin = window.location.origin;
+            
+            // If we came from the same site, try to go back there
+            if (referrer && referrer.startsWith(currentOrigin)) {
+              const referrerPath = new URL(referrer).pathname;
+              // Don't navigate to the same page
+              if (referrerPath !== window.location.pathname) {
+                setLocation(referrerPath);
+                return;
+              }
             }
+            
+            // Default fallback to admin panel
+            setLocation("/admin-crm");
           }}
           className="header-button"
         >
