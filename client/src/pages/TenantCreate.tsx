@@ -233,20 +233,22 @@ export default function TenantCreate() {
       {/* Bottom Action Buttons */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
         <div className="flex gap-3">
-          <button
+          <Button
             onClick={handleCancel}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-white/20 rounded-lg text-white hover:bg-white/5 transition-colors"
+            variant="secondary"
+            className="flex-1 flex items-center justify-center gap-2"
           >
             <X className="w-4 h-4" />
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSave}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-black rounded-lg hover:bg-white/90 transition-colors font-medium"
+            variant="primary"
+            className="flex-1 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />
             Create Tenant
-          </button>
+          </Button>
         </div>
       </div>
     </div>
