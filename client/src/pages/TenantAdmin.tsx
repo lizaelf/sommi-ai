@@ -521,23 +521,34 @@ const TenantAdmin: React.FC = () => {
               <div className="sticky top-0 z-10 backdrop-blur-md" style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}>
                 <div className="p-4">
                   {showSearch && (
-                    <div className="relative mb-4">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search wines..."
-                        className="w-full pl-10 pr-10 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                      />
-                      {searchTerm && (
-                        <button
-                          onClick={() => setSearchTerm("")}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
+                    <div className="flex gap-3 mb-4">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+                        <input
+                          type="text"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          placeholder="Search wines..."
+                          className="w-full pl-10 pr-10 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                        />
+                        {searchTerm && (
+                          <button
+                            onClick={() => setSearchTerm("")}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newId = wineCards.length > 0 ? Math.max(...wineCards.map(w => w.id)) + 1 : 1;
+                          setLocation(`/wine-edit/${newId}?new=true`);
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium whitespace-nowrap"
+                      >
+                        Add Wine
+                      </button>
                     </div>
                   )}
 
