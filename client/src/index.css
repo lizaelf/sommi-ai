@@ -44,6 +44,33 @@
     background: #ffffff !important;
     color: #000000 !important;
   }
+  
+  /* Wine bottle image transparency fixes */
+  .wine-bottle-image {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    mix-blend-mode: normal !important;
+  }
+  
+  .wine-bottle-image img {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    mix-blend-mode: normal !important;
+    filter: none !important;
+  }
+  
+  /* Force transparency for all wine images globally */
+  img[alt*="wine" i],
+  img[alt*="bottle" i],
+  img[src*="wine" i] {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    mix-blend-mode: normal !important;
+    image-rendering: auto !important;
+  }
 }
 
 /* Force English locale for all form controls */

@@ -8,7 +8,7 @@ interface WineBottleImageProps {
 
 const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) => {
   return (
-    <div style={{ 
+    <div className="wine-bottle-image" style={{ 
       position: 'relative',
       zIndex: 2,
       marginBottom: '16px',
