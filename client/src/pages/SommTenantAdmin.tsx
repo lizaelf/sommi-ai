@@ -13,24 +13,11 @@ interface Tenant {
   wineCount: number;
 }
 
-interface TenantFormData {
-  name: string;
-  slug: string;
-  description: string;
-  status: 'active' | 'inactive';
-}
+
 
 const SommTenantAdmin: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
   const [showMenuDropdown, setShowMenuDropdown] = useState(false);
-  const [formData, setFormData] = useState<TenantFormData>({
-    name: '',
-    slug: '',
-    description: '',
-    status: 'active'
-  });
   
   const menuDropdownRef = useRef<HTMLDivElement>(null);
   
@@ -216,7 +203,7 @@ const SommTenantAdmin: React.FC = () => {
         >Somm tenant admin</h1>
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={() => window.location.href = '/tenant-create'}
             className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
           >
             <Plus className="w-6 h-6 text-white" />
@@ -265,7 +252,7 @@ const SommTenantAdmin: React.FC = () => {
               No tenants available.
             </div>
             <button
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => window.location.href = '/tenant-create'}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
