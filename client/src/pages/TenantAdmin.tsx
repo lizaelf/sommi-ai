@@ -346,7 +346,7 @@ const TenantAdmin: React.FC = () => {
             <button className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors">
               <Menu className="w-5 h-5 text-white" />
             </button>
-            <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
+            <h1 className="text-white text-[18px] font-medium">{formData.profile.wineryName || "Winery Admin"}</h1>
             
             {/* User Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>
