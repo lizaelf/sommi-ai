@@ -425,10 +425,27 @@ const TenantAdmin: React.FC = () => {
         </div>
       </div>
 
+      {/* SegmentedPicker under header */}
+      <div className="fixed top-0 left-0 right-0 z-40" style={{ top: activeTab === "cms" ? "156px" : "100px" }}>
+        <div className="bg-black/90 backdrop-blur-sm border-b border-white/10 p-4">
+          <div className="max-w-6xl mx-auto">
+            <SegmentedPicker
+              options={[
+                { value: "profile", label: "Profile" },
+                { value: "cms", label: "CMS" },
+                { value: "ai-model", label: "AI Model" }
+              ]}
+              value={activeTab}
+              onChange={(value) => setActiveTab(value as "profile" | "cms" | "ai-model")}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Content with top and bottom padding to account for fixed header and tabs */}
       <div style={{ 
-        paddingTop: activeTab === "cms" ? "156px" : "100px",
-        paddingBottom: "100px"
+        paddingTop: activeTab === "cms" ? "220px" : "164px",
+        paddingBottom: "40px"
       }}>
         <div className="max-w-6xl mx-auto p-6">
           {/* Content */}
@@ -820,21 +837,6 @@ const TenantAdmin: React.FC = () => {
             </div>
           )}
 
-        </div>
-      </div>
-
-      {/* Fixed Bottom Tabs */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-white/10 z-50">
-        <div className="max-w-6xl mx-auto p-4">
-          <SegmentedPicker
-            options={[
-              { value: "profile", label: "Profile" },
-              { value: "cms", label: "CMS" },
-              { value: "ai-model", label: "AI Model" }
-            ]}
-            value={activeTab}
-            onChange={(value) => setActiveTab(value as "profile" | "cms" | "ai-model")}
-          />
         </div>
       </div>
     </div>
