@@ -446,11 +446,6 @@ const TenantAdmin: React.FC = () => {
           {/* Profile Tab */}
           {activeTab === "profile" && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white">
-                  Profile Information
-                </h2>
-              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Winery Name */}
                 <div className="bg-white/5 rounded-lg p-4 border border-white/10">

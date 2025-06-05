@@ -21,14 +21,16 @@ export function SegmentedPicker({ options, value, onChange, className = "" }: Se
             backgroundColor: '#ffffff !important', 
             color: '#000000 !important',
             border: 'none !important',
-            outline: 'none !important'
+            outline: 'none !important',
+            backgroundImage: 'none !important'
           } : {
             border: 'none !important',
-            outline: 'none !important'
+            outline: 'none !important',
+            backgroundColor: 'transparent !important'
           }}
           className={`flex-1 relative px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-out border-none text-center ${
             value === option.value
-              ? "shadow-lg"
+              ? "shadow-lg segmented-picker-active"
               : "text-white/80 hover:text-white hover:bg-white/5"
           }`}
         >
