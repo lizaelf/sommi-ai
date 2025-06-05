@@ -427,8 +427,8 @@ const TenantAdmin: React.FC = () => {
 
       {/* SegmentedPicker under header */}
       <div className="fixed top-0 left-0 right-0 z-40" style={{ top: activeTab === "cms" ? "156px" : "100px" }}>
-        <div className="bg-black/90 backdrop-blur-sm border-b border-white/10 p-4">
-          <div className="max-w-6xl mx-auto">
+        <div className="bg-black/90 backdrop-blur-sm border-b border-white/10">
+          <div className="max-w-6xl mx-auto p-4">
             <SegmentedPicker
               options={[
                 { value: "profile", label: "Profile" },
