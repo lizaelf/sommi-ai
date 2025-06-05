@@ -165,12 +165,12 @@ const SommTenantAdmin: React.FC = () => {
           }}
         >Somm tenant admin</h1>
         <div className="flex items-center gap-3">
-          <div 
+          <button 
             onClick={() => setIsCreateModalOpen(true)}
-            className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
+            className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
           >
-            <Plus className="w-6 h-6" />
-          </div>
+            <Plus className="w-6 h-6 text-white" />
+          </button>
         </div>
       </div>
       <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px" }}>
