@@ -134,7 +134,7 @@ export default function WineEdit() {
     };
   }, [showDropdown]);
 
-  const updateWine = (field: keyof WineCardData, value: any) => {
+  const updateWine = (field: string, value: any) => {
     const updatedWine = { ...wine, [field]: value };
     setWine(updatedWine);
     

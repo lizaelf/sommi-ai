@@ -30,6 +30,19 @@ export interface UnifiedWineData {
       timestamp: number;
     }>;
   }>;
+  // New comprehensive wine catalog fields
+  sku?: string;
+  varietal?: string;
+  tastingNotes?: string;
+  productionNotes?: string;
+  criticReviews?: string;
+  releaseDate?: string;
+  price?: number;
+  // Wine Club Info
+  clubName?: string;
+  membershipTiers?: string;
+  clubPricing?: string;
+  clubBenefits?: string;
 }
 
 // Master wine data - this is the canonical source of truth

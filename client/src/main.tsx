@@ -5,6 +5,21 @@ import { setupAudioContextInitialization, setupUserInteractionTracking } from ".
 import { enableDarkMode } from "./utils/darkMode";
 import "@fontsource/lora"; // Import Lora font
 
+// Force English language for the entire application
+document.documentElement.lang = 'en';
+if (navigator.language) {
+  Object.defineProperty(navigator, 'language', {
+    writable: true,
+    value: 'en-US'
+  });
+}
+if (navigator.languages) {
+  Object.defineProperty(navigator, 'languages', {
+    writable: true,
+    value: ['en-US', 'en']
+  });
+}
+
 // Initialize audio context on page load
 setupAudioContextInitialization();
 
