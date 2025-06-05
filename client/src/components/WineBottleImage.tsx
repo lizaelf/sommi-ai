@@ -42,12 +42,13 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) =>
             width: 'auto',
             maxWidth: '120px',
             borderRadius: '8px',
-            objectFit: 'cover',
+            objectFit: 'contain',
             position: 'relative',
             zIndex: 3,
             marginTop: '12px',
             marginBottom: '16px',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+            backgroundColor: 'transparent'
           }}
           onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
           onError={(e) => {
@@ -66,13 +67,14 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) =>
             width: 'auto',
             maxWidth: '120px',
             borderRadius: '8px',
-            objectFit: 'cover',
+            objectFit: 'contain',
             position: 'relative',
             zIndex: 3,
             marginTop: '12px',
             marginBottom: '16px',
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-            opacity: 0.7
+            opacity: 0.7,
+            backgroundColor: 'transparent'
           }}
           onLoad={() => console.log(`Using placeholder image for wine: ${wineName}`)}
         />
