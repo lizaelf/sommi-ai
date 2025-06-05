@@ -353,7 +353,236 @@ const TenantAdmin: React.FC = () => {
           </button>
         </div>
 
-        {/* Content */}
+        {/* CMS Tab - Wine Management - Full Screen Layout */}
+        {activeTab === "cms" && (
+          <div style={{ backgroundColor: "black", minHeight: "100vh", padding: "24px", position: "absolute", top: 0, left: 0, right: 0, zIndex: 10 }}>
+            {/* Header Section */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <Link to="/somm-tenant-admin">
+                  <div
+                    style={{
+                      padding: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      cursor: "pointer",
+                      transition: "background-color 0.2s",
+                    }}
+                  >
+                    <ArrowLeft size={20} color="white" />
+                  </div>
+                </Link>
+                <h1 className={`${typography.h1} text-white`} style={{ margin: 0 }}>
+                  Wine Collection Management
+                </h1>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                {showSearch && (
+                  <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                    <Search
+                      style={{
+                        position: "absolute",
+                        left: "12px",
+                        width: "16px",
+                        height: "16px",
+                        color: "rgba(156, 163, 175, 1)",
+                      }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search wines..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{
+                        paddingLeft: "40px",
+                        paddingRight: "40px",
+                        paddingTop: "8px",
+                        paddingBottom: "8px",
+                        backgroundColor: "transparent",
+                        border: "1px solid rgba(75, 85, 99, 1)",
+                        borderRadius: "8px",
+                        color: "white",
+                        outline: "none",
+                      }}
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        style={{
+                          position: "absolute",
+                          right: "12px",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "rgba(156, 163, 175, 1)",
+                        }}
+                      >
+                        <X style={{ width: "16px", height: "16px" }} />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <Button
+                  onClick={() => setIsEditMode(!isEditMode)}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    transition: "background-color 0.2s",
+                    backgroundColor: isEditMode ? "#dc2626" : "#16a34a",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  {isEditMode ? "Exit Edit" : "Edit Mode"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Wine Cards Grid */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                gap: "24px",
+              }}
+            >
+              {wineCards
+                .filter((wine) =>
+                  wine.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((wine) => (
+                  <div
+                    key={wine.id}
+                    style={{
+                      position: "relative",
+                      backgroundColor: "transparent",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "12px",
+                      padding: "16px",
+                      transition: "border-color 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#10b981";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                    }}
+                  >
+                    {/* Wine Image */}
+                    <div style={{ position: "relative", marginBottom: "16px" }}>
+                      <img
+                        src={wine.image || placeholderImage}
+                        alt={wine.name}
+                        style={{
+                          width: "100%",
+                          height: "192px",
+                          objectFit: "cover",
+                          borderRadius: "8px",
+                        }}
+                        onLoad={() => console.log(`CMS image loaded: ${wine.name}`)}
+                        onError={() => console.log(`CMS placeholder loaded for: ${wine.name}`)}
+                      />
+                    </div>
+
+                    {/* Wine Info */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: "600",
+                          color: "white",
+                          margin: 0,
+                          transition: "color 0.2s",
+                        }}
+                      >
+                        {wine.name}
+                      </h3>
+                      <p style={{ color: "#9ca3af", fontSize: "14px", margin: 0 }}>
+                        {wine.bottles} bottles available
+                      </p>
+
+                      {/* Ratings */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
+                        <span
+                          style={{
+                            backgroundColor: "#7c3aed",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            color: "white",
+                          }}
+                        >
+                          VN: {wine.ratings?.vn || "N/A"}
+                        </span>
+                        <span
+                          style={{
+                            backgroundColor: "#2563eb",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            color: "white",
+                          }}
+                        >
+                          JD: {wine.ratings?.jd || "N/A"}
+                        </span>
+                        <span
+                          style={{
+                            backgroundColor: "#ea580c",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            color: "white",
+                          }}
+                        >
+                          WS: {wine.ratings?.ws || "N/A"}
+                        </span>
+                      </div>
+
+                      {/* QR Code and Edit Button */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginTop: "16px",
+                        }}
+                      >
+                        <SimpleQRCode value={generateWineQRData(wine.id)} size={60} wineId={wine.id} />
+
+                        {isEditMode && (
+                          <button
+                            onClick={() => setLocation(`/wine-edit/${wine.id}`)}
+                            style={{
+                              backgroundColor: "#2563eb",
+                              color: "white",
+                              padding: "4px 12px",
+                              fontSize: "14px",
+                              borderRadius: "4px",
+                              border: "none",
+                              cursor: "pointer",
+                              transition: "background-color 0.2s",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = "#1d4ed8";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = "#2563eb";
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* Content - Other Tabs */}
         <div className="p-8">
           {/* Profile Tab */}
           {activeTab === "profile" && (
@@ -529,234 +758,7 @@ const TenantAdmin: React.FC = () => {
             </div>
           )}
 
-          {/* CMS Tab - Wine Management */}
-          {activeTab === "cms" && (
-            <div style={{ backgroundColor: "black", minHeight: "100vh", padding: "24px" }}>
-              {/* Header Section */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                  <Link to="/home-global">
-                    <div
-                      style={{
-                        padding: "8px",
-                        borderRadius: "50%",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        cursor: "pointer",
-                        transition: "background-color 0.2s",
-                      }}
-                    >
-                      <ArrowLeft size={20} color="white" />
-                    </div>
-                  </Link>
-                  <h1 className={`${typography.h1} text-white`} style={{ margin: 0 }}>
-                    Wine Collection Management
-                  </h1>
-                </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                  {showSearch && (
-                    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                      <Search
-                        style={{
-                          position: "absolute",
-                          left: "12px",
-                          width: "16px",
-                          height: "16px",
-                          color: "rgba(156, 163, 175, 1)",
-                        }}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Search wines..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{
-                          paddingLeft: "40px",
-                          paddingRight: "40px",
-                          paddingTop: "8px",
-                          paddingBottom: "8px",
-                          backgroundColor: "transparent",
-                          border: "1px solid rgba(75, 85, 99, 1)",
-                          borderRadius: "8px",
-                          color: "white",
-                          outline: "none",
-                        }}
-                      />
-                      {searchTerm && (
-                        <button
-                          onClick={() => setSearchTerm("")}
-                          style={{
-                            position: "absolute",
-                            right: "12px",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            color: "rgba(156, 163, 175, 1)",
-                          }}
-                        >
-                          <X style={{ width: "16px", height: "16px" }} />
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  <Button
-                    onClick={() => setIsEditMode(!isEditMode)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "background-color 0.2s",
-                      backgroundColor: isEditMode ? "#dc2626" : "#16a34a",
-                      color: "white",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {isEditMode ? "Exit Edit" : "Edit Mode"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Wine Cards Grid */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                  gap: "24px",
-                }}
-              >
-                {wineCards
-                  .filter((wine) =>
-                    wine.name.toLowerCase().includes(searchTerm.toLowerCase())
-                  )
-                  .map((wine) => (
-                    <div
-                      key={wine.id}
-                      style={{
-                        position: "relative",
-                        backgroundColor: "transparent",
-                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                        borderRadius: "12px",
-                        padding: "16px",
-                        transition: "border-color 0.2s",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#10b981";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                      }}
-                    >
-                      {/* Wine Image */}
-                      <div style={{ position: "relative", marginBottom: "16px" }}>
-                        <img
-                          src={wine.image || placeholderImage}
-                          alt={wine.name}
-                          style={{
-                            width: "100%",
-                            height: "192px",
-                            objectFit: "cover",
-                            borderRadius: "8px",
-                          }}
-                          onLoad={() => console.log(`CMS image loaded: ${wine.name}`)}
-                          onError={() => console.log(`CMS placeholder loaded for: ${wine.name}`)}
-                        />
-                      </div>
-
-                      {/* Wine Info */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <h3
-                          style={{
-                            fontSize: "18px",
-                            fontWeight: "600",
-                            color: "white",
-                            margin: 0,
-                            transition: "color 0.2s",
-                          }}
-                        >
-                          {wine.name}
-                        </h3>
-                        <p style={{ color: "#9ca3af", fontSize: "14px", margin: 0 }}>
-                          {wine.bottles} bottles available
-                        </p>
-
-                        {/* Ratings */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
-                          <span
-                            style={{
-                              backgroundColor: "#7c3aed",
-                              padding: "4px 8px",
-                              borderRadius: "4px",
-                              color: "white",
-                            }}
-                          >
-                            VN: {wine.ratings?.vn || "N/A"}
-                          </span>
-                          <span
-                            style={{
-                              backgroundColor: "#2563eb",
-                              padding: "4px 8px",
-                              borderRadius: "4px",
-                              color: "white",
-                            }}
-                          >
-                            JD: {wine.ratings?.jd || "N/A"}
-                          </span>
-                          <span
-                            style={{
-                              backgroundColor: "#ea580c",
-                              padding: "4px 8px",
-                              borderRadius: "4px",
-                              color: "white",
-                            }}
-                          >
-                            WS: {wine.ratings?.ws || "N/A"}
-                          </span>
-                        </div>
-
-                        {/* QR Code and Edit Button */}
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginTop: "16px",
-                          }}
-                        >
-                          <SimpleQRCode value={generateWineQRData(wine.id)} size={60} wineId={wine.id} />
-
-                          {isEditMode && (
-                            <Button
-                              onClick={() => setLocation(`/wine-edit/${wine.id}`)}
-                              style={{
-                                backgroundColor: "#2563eb",
-                                color: "white",
-                                padding: "4px 12px",
-                                fontSize: "14px",
-                                borderRadius: "4px",
-                                border: "none",
-                                cursor: "pointer",
-                                transition: "background-color 0.2s",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = "#1d4ed8";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = "#2563eb";
-                              }}
-                            >
-                              Edit
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
 
           {/* AI Model Tab */}
           {activeTab === "ai-model" && (
