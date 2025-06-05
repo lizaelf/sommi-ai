@@ -466,7 +466,15 @@ const TenantAdmin: React.FC = () => {
                     onChange={(e) =>
                       handleInputChange("profile", "wineryName", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                     placeholder="Enter winery name"
                   />
                 </div>
@@ -484,7 +492,15 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                     placeholder="e.g., 1885"
                   />
                 </div>
@@ -501,7 +517,16 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      minHeight: "120px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "16px",
+                      resize: "vertical",
+                    }}
                     placeholder="Describe the winery..."
                     rows={4}
                   />
@@ -516,7 +541,15 @@ const TenantAdmin: React.FC = () => {
                     onChange={(e) =>
                       handleFileUpload("profile", "wineryLogo", e)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                   />
                 </div>
                 <div>
@@ -533,7 +566,15 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                     placeholder="contact@winery.com"
                   />
                 </div>
@@ -551,7 +592,15 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
@@ -565,7 +614,15 @@ const TenantAdmin: React.FC = () => {
                     onChange={(e) =>
                       handleInputChange("profile", "websiteURL", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                     placeholder="https://www.winery.com"
                   />
                 </div>
@@ -578,7 +635,16 @@ const TenantAdmin: React.FC = () => {
                     onChange={(e) =>
                       handleInputChange("profile", "address", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      minHeight: "96px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "16px",
+                      resize: "vertical",
+                    }}
                     placeholder="123 Wine Street, Napa Valley, CA 94558"
                     rows={2}
                   />
