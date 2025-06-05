@@ -377,7 +377,15 @@ export default function WineEdit() {
         }`}
       >
         <button
-          onClick={() => window.history.back()}
+          onClick={() => {
+            // Try browser back first
+            if (window.history.length > 1) {
+              window.history.back();
+            } else {
+              // Fallback to admin panel if no history
+              setLocation("/admin-crm");
+            }
+          }}
           className="header-button"
         >
           <svg
