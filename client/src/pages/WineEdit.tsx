@@ -815,7 +815,7 @@ export default function WineEdit() {
                 marginBottom: "8px",
               }}
             >
-              Wine Year
+              Vintage Year
             </label>
             <input
               type="number"
@@ -833,6 +833,432 @@ export default function WineEdit() {
               }}
               placeholder="Set"
             />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              SKU
+            </label>
+            <input
+              type="text"
+              value={wine.sku || ""}
+              onChange={(e) => updateWine("sku", e.target.value)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px",
+              }}
+              placeholder="Set"
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Varietal / Blend
+            </label>
+            <input
+              type="text"
+              value={wine.varietal || ""}
+              onChange={(e) => updateWine("varietal", e.target.value)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px",
+              }}
+              placeholder="Set"
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Tasting Notes
+            </label>
+            <textarea
+              value={wine.tastingNotes || ""}
+              onChange={(e) => updateWine("tastingNotes", e.target.value)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                minHeight: "96px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "16px",
+                resize: "vertical",
+              }}
+              placeholder="Set"
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Food Pairings
+            </label>
+            <textarea
+              value={Array.isArray(wine.foodPairing) ? wine.foodPairing.join(", ") : wine.foodPairing || ""}
+              onChange={(e) => {
+                const pairings = e.target.value.split(",").map(p => p.trim()).filter(p => p);
+                updateWine("foodPairing", pairings);
+              }}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                minHeight: "96px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "16px",
+                resize: "vertical",
+              }}
+              placeholder="Separate multiple pairings with commas"
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Production Notes
+            </label>
+            <textarea
+              value={wine.productionNotes || ""}
+              onChange={(e) => updateWine("productionNotes", e.target.value)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                minHeight: "96px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "16px",
+                resize: "vertical",
+              }}
+              placeholder="Set"
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Wine Critic Reviews
+            </label>
+            <textarea
+              value={wine.criticReviews || ""}
+              onChange={(e) => updateWine("criticReviews", e.target.value)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                minHeight: "96px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "16px",
+                resize: "vertical",
+              }}
+              placeholder="Set"
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Release Date
+            </label>
+            <input
+              type="date"
+              value={wine.releaseDate || ""}
+              onChange={(e) => updateWine("releaseDate", e.target.value)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px",
+              }}
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Price
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={wine.price || ""}
+              onChange={(e) => updateWine("price", parseFloat(e.target.value) || 0)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px",
+              }}
+              placeholder="Set"
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Inventory Count (Optional)
+            </label>
+            <input
+              type="number"
+              value={wine.bottles === 0 && isNewWine ? "" : wine.bottles || ""}
+              onChange={(e) => updateWine("bottles", parseInt(e.target.value) || 0)}
+              className="contact-form-input"
+              style={{
+                ...typography.body,
+                color: "white !important",
+                height: "56px",
+                width: "100%",
+                fontSize: "16px",
+                fontWeight: "400",
+                padding: "0 16px",
+              }}
+              placeholder="Set"
+            />
+          </div>
+        </div>
+
+        {/* Wine Club Info Section */}
+        <div style={{ marginBottom: "24px" }}>
+          <h3
+            style={{
+              ...typography.body1R,
+              color: "white",
+              fontSize: "18px",
+              fontWeight: "500",
+              marginBottom: "16px",
+            }}
+          >
+            Wine Club Info
+          </h3>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Club Name
+              </label>
+              <input
+                type="text"
+                value={wine.clubName || ""}
+                onChange={(e) => updateWine("clubName", e.target.value)}
+                className="contact-form-input"
+                style={{
+                  ...typography.body,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+                placeholder="Set"
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Description
+              </label>
+              <textarea
+                value={wine.description || ""}
+                onChange={(e) => updateWine("description", e.target.value)}
+                className="contact-form-input"
+                style={{
+                  ...typography.body,
+                  color: "white !important",
+                  minHeight: "96px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "16px",
+                  resize: "vertical",
+                }}
+                placeholder="Set"
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Membership Tiers
+              </label>
+              <textarea
+                value={wine.membershipTiers || ""}
+                onChange={(e) => updateWine("membershipTiers", e.target.value)}
+                className="contact-form-input"
+                style={{
+                  ...typography.body,
+                  color: "white !important",
+                  minHeight: "96px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "16px",
+                  resize: "vertical",
+                }}
+                placeholder="Set"
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Pricing
+              </label>
+              <textarea
+                value={wine.clubPricing || ""}
+                onChange={(e) => updateWine("clubPricing", e.target.value)}
+                className="contact-form-input"
+                style={{
+                  ...typography.body,
+                  color: "white !important",
+                  minHeight: "96px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "16px",
+                  resize: "vertical",
+                }}
+                placeholder="Set"
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Club Benefits
+              </label>
+              <textarea
+                value={wine.clubBenefits || ""}
+                onChange={(e) => updateWine("clubBenefits", e.target.value)}
+                className="contact-form-input"
+                style={{
+                  ...typography.body,
+                  color: "white !important",
+                  minHeight: "96px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "16px",
+                  resize: "vertical",
+                }}
+                placeholder="Set"
+              />
+            </div>
           </div>
         </div>
 
