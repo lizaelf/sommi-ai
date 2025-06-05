@@ -349,7 +349,7 @@ const TenantAdmin: React.FC = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center justify-center w-10 h-10 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
               >
                 <User className="w-5 h-5 text-white" />
               </button>
