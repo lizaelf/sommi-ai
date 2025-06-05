@@ -567,7 +567,21 @@ const TenantAdmin: React.FC = () => {
                       className="relative bg-white/5 border border-white/20 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-sm flex items-center gap-4"
                       onClick={() => !isEditMode && setLocation(`/wine-details/${wine.id}`)}
                     >
-                      {/* Wine Details - Left Side */}
+                      {/* Wine Image - Left Side */}
+                      <div className="w-[112px] h-[150px] rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
+                        <img
+                          src={wine.image || placeholderImage}
+                          alt={wine.name}
+                          className="w-full h-full object-contain"
+                          onLoad={() => console.log(`CMS image loaded: ${wine.name}`)}
+                          onError={(e) => {
+                            console.log(`CMS placeholder loaded for: ${wine.name}`);
+                            (e.target as HTMLImageElement).src = placeholderImage;
+                          }}
+                        />
+                      </div>
+
+                      {/* Wine Details - Right Side */}
                       <div className="flex-1">
                         <h3 className="text-white font-medium text-lg leading-tight mb-1">
                           {wine.name}
@@ -575,20 +589,6 @@ const TenantAdmin: React.FC = () => {
                         <p className="text-white/50 text-sm">
                           ID: {wine.id}
                         </p>
-                      </div>
-
-                      {/* Wine Image - Right Side */}
-                      <div className="w-[100px] h-[150px] rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
-                        <img
-                          src={wine.image || placeholderImage}
-                          alt={wine.name}
-                          className="w-full h-full object-cover"
-                          onLoad={() => console.log(`CMS image loaded: ${wine.name}`)}
-                          onError={(e) => {
-                            console.log(`CMS placeholder loaded for: ${wine.name}`);
-                            (e.target as HTMLImageElement).src = placeholderImage;
-                          }}
-                        />
                       </div>
 
                       {/* Edit Mode Controls */}
