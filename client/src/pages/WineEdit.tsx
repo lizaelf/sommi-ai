@@ -1028,6 +1028,7 @@ export default function WineEdit() {
               value={wine.releaseDate || ""}
               onChange={(e) => updateWine("releaseDate", e.target.value)}
               className="contact-form-input"
+              lang="en-US"
               style={{
                 ...typography.body,
                 color: "white !important",

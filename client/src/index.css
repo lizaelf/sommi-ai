@@ -24,6 +24,25 @@
   }
 }
 
+/* Force English locale for all form controls */
+html {
+  lang: en-US !important;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"] {
+  -webkit-locale: "en-US" !important;
+  locale: "en-US" !important;
+}
+
+/* Force English date picker styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
