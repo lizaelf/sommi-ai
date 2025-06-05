@@ -834,6 +834,150 @@ export default function WineEdit() {
               placeholder="Set"
             />
           </div>
+        </div>
+
+        {/* Ratings - moved after Vintage Year */}
+        <div style={{ marginBottom: "24px" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "16px",
+            }}
+          >
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Vivino (VN)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={wine.ratings.vn || ""}
+                onChange={(e) =>
+                  updateWineRating("vn", parseInt(e.target.value) || 0)
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+                placeholder="Set"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                James Halliday (JD)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={wine.ratings.jd || ""}
+                onChange={(e) =>
+                  updateWineRating("jd", parseInt(e.target.value) || 0)
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+                placeholder="Set"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                Wine Spectator (WS)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={wine.ratings.ws || ""}
+                onChange={(e) =>
+                  updateWineRating("ws", parseInt(e.target.value) || 0)
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+                placeholder="Set"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                ABV (%)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="20"
+                step="0.1"
+                value={wine.ratings.abv || ""}
+                onChange={(e) =>
+                  updateWineRating("abv", parseFloat(e.target.value) || 0)
+                }
+                className="contact-form-input"
+                style={{
+                  ...typography.num,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+                placeholder="Set"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
           <div>
             <label
@@ -1263,146 +1407,7 @@ export default function WineEdit() {
           </div>
         </div>
 
-        {/* Ratings */}
-        <div style={{ marginBottom: "24px" }}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "16px",
-            }}
-          >
-            <div>
-              <label
-                style={{
-                  ...typography.body1R,
-                  color: "rgba(255, 255, 255, 0.60)",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                Vivino (VN)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={wine.ratings.vn || ""}
-                onChange={(e) =>
-                  updateWineRating("vn", parseInt(e.target.value) || 0)
-                }
-                className="contact-form-input"
-                style={{
-                  ...typography.num,
-                  color: "white !important",
-                  height: "56px",
-                  width: "100%",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  padding: "0 16px",
-                }}
-                placeholder="Set"
-              />
-            </div>
-            <div>
-              <label
-                style={{
-                  ...typography.body1R,
-                  color: "rgba(255, 255, 255, 0.60)",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                James Halliday (JD)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={wine.ratings.jd || ""}
-                onChange={(e) =>
-                  updateWineRating("jd", parseInt(e.target.value) || 0)
-                }
-                className="contact-form-input"
-                style={{
-                  ...typography.num,
-                  color: "white !important",
-                  height: "56px",
-                  width: "100%",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  padding: "0 16px",
-                }}
-                placeholder="Set"
-              />
-            </div>
-            <div>
-              <label
-                style={{
-                  ...typography.body1R,
-                  color: "rgba(255, 255, 255, 0.60)",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                Wine Spectator (WS)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={wine.ratings.ws || ""}
-                onChange={(e) =>
-                  updateWineRating("ws", parseInt(e.target.value) || 0)
-                }
-                className="contact-form-input"
-                style={{
-                  ...typography.num,
-                  color: "white !important",
-                  height: "56px",
-                  width: "100%",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  padding: "0 16px",
-                }}
-                placeholder="Set"
-              />
-            </div>
-            <div>
-              <label
-                style={{
-                  ...typography.body1R,
-                  color: "rgba(255, 255, 255, 0.60)",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                ABV (%)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="20"
-                step="0.1"
-                value={wine.ratings.abv || ""}
-                onChange={(e) =>
-                  updateWineRating("abv", parseFloat(e.target.value) || 0)
-                }
-                className="contact-form-input"
-                style={{
-                  ...typography.num,
-                  color: "white !important",
-                  height: "56px",
-                  width: "100%",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  padding: "0 16px",
-                }}
-                placeholder="Set"
-              />
-            </div>
-          </div>
-        </div>
+
 
         {/* Buy Again */}
         <div style={{ marginBottom: "24px" }}>
