@@ -107,8 +107,8 @@ const SommTenantAdmin: React.FC = () => {
           {showMenuDropdown && (
             <div
               style={{
-                position: "absolute",
-                top: "48px",
+                position: "fixed",
+                top: "80px",
                 left: "0",
                 right: "0",
                 backgroundColor: "#2A2A29",
