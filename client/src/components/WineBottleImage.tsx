@@ -15,7 +15,8 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) =>
       marginTop: '20px',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      backgroundColor: 'transparent'
     }}>
       {/* Blurred circle background - positioned at the top */}
       <div style={{
