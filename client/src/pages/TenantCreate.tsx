@@ -230,16 +230,14 @@ export default function TenantCreate() {
         <div className="flex gap-3">
           <button
             onClick={handleCancel}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-white/20 rounded-lg text-white hover:bg-white/5 transition-colors"
+            className="flex-1 flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg text-white hover:bg-white/5 transition-colors"
           >
-            <X className="w-4 h-4" />
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-black rounded-lg hover:bg-white/90 transition-colors font-medium"
+            className="flex-1 flex items-center justify-center px-4 py-3 bg-white text-black rounded-lg hover:bg-white/90 transition-colors font-medium"
           >
-            <Save className="w-4 h-4" />
             Create Tenant
           </button>
         </div>
