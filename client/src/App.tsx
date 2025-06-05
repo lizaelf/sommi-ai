@@ -25,7 +25,7 @@ function Router() {
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={WineDetails} />
       <Route path="/tenants/:tenantSlug/admin" component={TenantAdmin} />
-      <Route path="/tenant-admin-1" component={TenantAdmin} />
+      <Route path="/winery-tenant-admin" component={TenantAdmin} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
 
       <Route path="/wine-edit/:id" component={WineEdit} />
