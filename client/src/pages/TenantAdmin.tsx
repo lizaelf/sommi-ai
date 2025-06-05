@@ -356,7 +356,7 @@ const TenantAdmin: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 bg-black z-50 border-b border-white/10">
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-6xl mx-auto p-4">
           {/* Title */}
           <div className="mb-3 flex items-center justify-between">
             <button 
@@ -426,7 +426,7 @@ const TenantAdmin: React.FC = () => {
       </div>
 
       {/* SegmentedPicker under header */}
-      <div className="fixed top-0 left-0 right-0 z-40" style={{ top: activeTab === "cms" ? "156px" : "100px" }}>
+      <div className="fixed top-0 left-0 right-0 z-40" style={{ top: activeTab === "cms" ? "124px" : "68px" }}>
         <div className="bg-black/90 backdrop-blur-sm border-b border-white/10">
           <div className="max-w-6xl mx-auto p-4">
             <SegmentedPicker
@@ -444,7 +444,7 @@ const TenantAdmin: React.FC = () => {
 
       {/* Content with top and bottom padding to account for fixed header and tabs */}
       <div style={{ 
-        paddingTop: activeTab === "cms" ? "220px" : "164px",
+        paddingTop: activeTab === "cms" ? "188px" : "132px",
         paddingBottom: "40px"
       }}>
         <div className="max-w-6xl mx-auto p-6">
