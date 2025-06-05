@@ -557,7 +557,7 @@ const TenantAdmin: React.FC = () => {
               </div>
 
               {/* Wine Cards Grid */}
-              <div className="p-4">
+              <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {wineCards
                     .filter(wine => wine.name.toLowerCase().includes(searchTerm.toLowerCase()))
