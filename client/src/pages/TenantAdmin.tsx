@@ -662,7 +662,16 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      minHeight: "96px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "16px",
+                      resize: "vertical",
+                    }}
                     placeholder="Mon-Sat: 10am-6pm, Sun: 11am-5pm"
                     rows={2}
                   />
@@ -680,7 +689,16 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      minHeight: "96px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "16px",
+                      resize: "vertical",
+                    }}
                     placeholder="Instagram: @winery, Facebook: /winery"
                     rows={2}
                   />
