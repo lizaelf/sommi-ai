@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload, Download, Search, X, RefreshCw } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { SegmentedPicker } from "@/components/SegmentedPicker";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
@@ -304,39 +305,17 @@ const TenantAdmin: React.FC = () => {
           <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
         </div>
 
-        {/* Segmented Picker */}
-        <div className="inline-flex bg-white/10 rounded-lg p-1 mb-8">
-          <button
-            onClick={() => setActiveTab("profile")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              activeTab === "profile"
-                ? "bg-white text-black shadow-sm"
-                : "text-white hover:bg-white/10"
-            }`}
-          >
-            Profile
-          </button>
-          <button
-            onClick={() => setActiveTab("cms")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              activeTab === "cms"
-                ? "bg-white text-black shadow-sm"
-                : "text-white hover:bg-white/10"
-            }`}
-          >
-            CMS
-          </button>
-          <button
-            onClick={() => setActiveTab("ai-model")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              activeTab === "ai-model"
-                ? "bg-white text-black shadow-sm"
-                : "text-white hover:bg-white/10"
-            }`}
-          >
-            AI Model
-          </button>
-        </div>
+        {/* iOS-style Segmented Picker */}
+        <SegmentedPicker
+          options={[
+            { value: "profile", label: "Profile" },
+            { value: "cms", label: "CMS" },
+            { value: "ai-model", label: "AI Model" }
+          ]}
+          value={activeTab}
+          onChange={setActiveTab}
+          className="mb-8"
+        />
 
         {/* Content */}
         <div>
