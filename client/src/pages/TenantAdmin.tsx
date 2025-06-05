@@ -815,138 +815,174 @@ const TenantAdmin: React.FC = () => {
           {/* AI Model Tab */}
           {activeTab === "ai-model" && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4 text-white">AI Model Settings</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Knowledge Scope
-                  </label>
-                  <select
-                    value={formData.aiModel.knowledgeScope}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "aiModel",
-                        "knowledgeScope",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                  >
-                    <option value="winery-only">Winery Only</option>
-                    <option value="winery-plus-global">
-                      Winery + Global Wine Knowledge
-                    </option>
-                  </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Knowledge Scope */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Knowledge Scope</h3>
+                  {editingField === "knowledgeScope" ? (
+                    <select
+                      value={formData.aiModel.knowledgeScope}
+                      onChange={(e) => handleInputChange("aiModel", "knowledgeScope", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "40px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 12px",
+                      }}
+                      autoFocus
+                    >
+                      <option value="winery-only">Winery Only</option>
+                      <option value="winery-plus-global">Winery + Global Wine Knowledge</option>
+                    </select>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("knowledgeScope")}
+                    >
+                      {formData.aiModel.knowledgeScope === "winery-only" ? "Winery Only" : "Winery + Global Wine Knowledge"}
+                    </p>
+                  )}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Personality Style
-                  </label>
-                  <select
-                    value={formData.aiModel.personalityStyle}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "aiModel",
-                        "personalityStyle",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                  >
-                    <option value="educator">Educator</option>
-                    <option value="sommelier">Sommelier</option>
-                    <option value="tasting-room-host">Tasting Room Host</option>
-                    <option value="luxury-concierge">Luxury Concierge</option>
-                    <option value="casual-friendly">Casual Friendly</option>
-                  </select>
+
+                {/* Personality Style */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Personality Style</h3>
+                  {editingField === "personalityStyle" ? (
+                    <select
+                      value={formData.aiModel.personalityStyle}
+                      onChange={(e) => handleInputChange("aiModel", "personalityStyle", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "40px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 12px",
+                      }}
+                      autoFocus
+                    >
+                      <option value="educator">Educator</option>
+                      <option value="sommelier">Sommelier</option>
+                      <option value="tasting-room-host">Tasting Room Host</option>
+                      <option value="luxury-concierge">Luxury Concierge</option>
+                      <option value="casual-friendly">Casual Friendly</option>
+                    </select>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("personalityStyle")}
+                    >
+                      {formData.aiModel.personalityStyle === "educator" ? "Educator" :
+                       formData.aiModel.personalityStyle === "sommelier" ? "Sommelier" :
+                       formData.aiModel.personalityStyle === "tasting-room-host" ? "Tasting Room Host" :
+                       formData.aiModel.personalityStyle === "luxury-concierge" ? "Luxury Concierge" :
+                       formData.aiModel.personalityStyle === "casual-friendly" ? "Casual Friendly" : "-"}
+                    </p>
+                  )}
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Brand Guide
-                  </label>
-                  <textarea
-                    value={formData.aiModel.brandGuide}
-                    onChange={(e) =>
-                      handleInputChange("aiModel", "brandGuide", e.target.value)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      minHeight: "120px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "16px",
-                      resize: "vertical",
-                    }}
-                    placeholder="Define the brand voice and messaging guidelines..."
-                    rows={4}
-                  />
+
+                {/* Brand Guide */}
+                <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Brand Guide</h3>
+                  {editingField === "brandGuide" ? (
+                    <textarea
+                      value={formData.aiModel.brandGuide}
+                      onChange={(e) => handleInputChange("aiModel", "brandGuide", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        minHeight: "100px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "12px",
+                        resize: "vertical",
+                      }}
+                      placeholder="Define the brand voice and messaging guidelines..."
+                      rows={3}
+                      autoFocus
+                    />
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded min-h-[60px]"
+                      onClick={() => setEditingField("brandGuide")}
+                    >
+                      {formData.aiModel.brandGuide || "-"}
+                    </p>
+                  )}
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Tone Preferences
-                  </label>
-                  <textarea
-                    value={formData.aiModel.tonePreferences}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "aiModel",
-                        "tonePreferences",
-                        e.target.value,
-                      )
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      minHeight: "96px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "16px",
-                      resize: "vertical",
-                    }}
-                    placeholder="Professional, friendly, conversational..."
-                    rows={3}
-                  />
+
+                {/* Tone Preferences */}
+                <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Tone Preferences</h3>
+                  {editingField === "tonePreferences" ? (
+                    <textarea
+                      value={formData.aiModel.tonePreferences}
+                      onChange={(e) => handleInputChange("aiModel", "tonePreferences", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        minHeight: "80px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "12px",
+                        resize: "vertical",
+                      }}
+                      placeholder="Professional, friendly, conversational..."
+                      rows={2}
+                      autoFocus
+                    />
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded min-h-[50px]"
+                      onClick={() => setEditingField("tonePreferences")}
+                    >
+                      {formData.aiModel.tonePreferences || "-"}
+                    </p>
+                  )}
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2 text-white">
-                    Knowledge Documents (Upload)
-                  </label>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.txt"
-                    multiple
-                    onChange={(e) =>
-                      handleFileUpload("aiModel", "knowledgeDocuments", e)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      color: "white !important",
-                      height: "56px",
-                      width: "100%",
-                      fontSize: "16px",
-                      fontWeight: "400",
-                      padding: "0 16px",
-                    }}
-                  />
+
+                {/* Knowledge Documents */}
+                <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Knowledge Documents</h3>
+                  {editingField === "knowledgeDocuments" ? (
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt"
+                      multiple
+                      onChange={(e) => {
+                        handleFileUpload("aiModel", "knowledgeDocuments", e);
+                        setEditingField(null);
+                      }}
+                      onBlur={() => setEditingField(null)}
+                      className="contact-form-input"
+                      style={{
+                        color: "white !important",
+                        height: "40px",
+                        width: "100%",
+                        fontSize: "16px",
+                        fontWeight: "400",
+                        padding: "0 12px",
+                      }}
+                      autoFocus
+                    />
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("knowledgeDocuments")}
+                    >
+                      {formData.aiModel.knowledgeDocuments || "Click to upload documents"}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
