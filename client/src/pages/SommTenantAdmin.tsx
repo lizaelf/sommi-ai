@@ -105,78 +105,21 @@ const SommTenantAdmin: React.FC = () => {
           </button>
           
           {showMenuDropdown && (
-            <div
-              style={{
-                position: "fixed",
-                top: "80px",
-                left: "0",
-                right: "0",
-                backgroundColor: "#2A2A29",
-                borderRadius: "16px",
-                border: "none",
-                padding: "0",
-                margin: "0 16px",
-                zIndex: 1000,
-                backdropFilter: "blur(20px)",
-              }}
-            >
-              <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-                <button
-                  onClick={handleGlobalSearch}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "20px 24px",
-                    backgroundColor: "transparent",
-                    border: "none",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    width: "100%",
-                    textAlign: "left",
-                    borderBottom: "1px solid #373737",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  <Search className="w-5 h-5" />
-                  Global Search
-                </button>
-                <button
-                  onClick={handleProfileManagement}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "20px 24px",
-                    backgroundColor: "transparent",
-                    border: "none",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    width: "100%",
-                    textAlign: "left",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  <User className="w-5 h-5" />
-                  Profile Management
-                </button>
-              </div>
+            <div className="absolute left-0 top-12 w-56 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg py-2 z-50">
+              <button
+                onClick={handleGlobalSearch}
+                className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-colors text-left"
+              >
+                <Search className="w-4 h-4" />
+                Global Search
+              </button>
+              <button
+                onClick={handleProfileManagement}
+                className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-colors text-left"
+              >
+                <User className="w-4 h-4" />
+                Profile Management
+              </button>
             </div>
           )}
         </div>
