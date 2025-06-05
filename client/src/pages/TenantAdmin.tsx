@@ -564,11 +564,11 @@ const TenantAdmin: React.FC = () => {
                     .map((wine) => (
                     <div
                       key={wine.id}
-                      className="relative bg-white/5 border border-white/20 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-sm flex items-center gap-4"
+                      className="relative p-4 hover:bg-white/5 transition-all cursor-pointer flex items-start gap-4"
                       onClick={() => !isEditMode && setLocation(`/wine-details/${wine.id}`)}
                     >
                       {/* Wine Image - Left Side */}
-                      <div className="w-[112px] h-[150px] rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
+                      <div className="w-[112px] h-[150px] rounded-lg overflow-hidden flex-shrink-0">
                         <img
                           src={wine.image || placeholderImage}
                           alt={wine.name}
@@ -582,7 +582,7 @@ const TenantAdmin: React.FC = () => {
                       </div>
 
                       {/* Wine Details - Right Side */}
-                      <div className="flex-1">
+                      <div className="flex-1 pt-2">
                         <h3 className="text-white font-medium text-lg leading-tight mb-1">
                           {wine.name}
                         </h3>
