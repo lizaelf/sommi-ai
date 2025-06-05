@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings, Menu, Plus } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { SegmentedPicker } from "@/components/SegmentedPicker";
 import Button from "@/components/ui/Button";
@@ -78,6 +78,22 @@ const TenantAdmin: React.FC = () => {
   });
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const params = useParams();
+  
+  // Get tenant information
+  const [currentTenant, setCurrentTenant] = useState<{name: string, slug: string} | null>(null);
+  
+  useEffect(() => {
+    // Extract tenant from URL or get stored tenants
+    const storedTenants = localStorage.getItem('sommelier-tenants');
+    if (storedTenants && params.tenantSlug) {
+      const tenants = JSON.parse(storedTenants);
+      const tenant = tenants.find((t: any) => t.slug === params.tenantSlug);
+      if (tenant) {
+        setCurrentTenant({ name: tenant.name, slug: tenant.slug });
+      }
+    }
+  }, [params.tenantSlug]);
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {
@@ -356,7 +372,7 @@ const TenantAdmin: React.FC = () => {
                 left: "50%",
                 transform: "translateX(-50%)"
               }}
-            >{formData.profile.wineryName || "Enter Winery Name"}</h1>
+            >{currentTenant?.name || formData.profile.wineryName || "Enter Winery Name"}</h1>
             
             <div className="flex items-center gap-3">
               <button
