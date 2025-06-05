@@ -127,7 +127,7 @@ const TenantAdmin: React.FC = () => {
     },
     aiModel: {
       knowledgeScope: "winery-only",
-      personalityStyle: "educator",
+      personalityStyle: "sommelier",
       brandGuide: "",
       tonePreferences: "",
       knowledgeDocuments: "",
@@ -136,8 +136,8 @@ const TenantAdmin: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  // Load tenant data
-  const { data: tenantData, isLoading } = useQuery({
+  // Load tenant data from localStorage
+  const { data: tenant, isLoading } = useQuery({
     queryKey: ["tenant-admin", 1],
     queryFn: () => {
       const stored = localStorage.getItem("tenant-admin-1");
@@ -343,12 +343,12 @@ const TenantAdmin: React.FC = () => {
           {/* Profile Tab */}
           {activeTab === "profile" && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4">
+              <h2 className="text-xl font-semibold mb-4 text-white">
                 Profile Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Winery Name
                   </label>
                   <input
@@ -362,7 +362,7 @@ const TenantAdmin: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Year Established
                   </label>
                   <input
@@ -380,7 +380,7 @@ const TenantAdmin: React.FC = () => {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Winery Description
                   </label>
                   <textarea
@@ -398,7 +398,7 @@ const TenantAdmin: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Winery Logo (Upload)
                   </label>
                   <input
@@ -411,7 +411,7 @@ const TenantAdmin: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Contact Email
                   </label>
                   <input
@@ -429,7 +429,7 @@ const TenantAdmin: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Contact Phone
                   </label>
                   <input
@@ -447,7 +447,7 @@ const TenantAdmin: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Website URL
                   </label>
                   <input
@@ -457,12 +457,12 @@ const TenantAdmin: React.FC = () => {
                       handleInputChange("profile", "websiteURL", e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://winery.com"
+                    placeholder="https://www.winery.com"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">
-                    Address (Street, City, State, Zip, Country)
+                  <label className="block text-sm font-medium mb-2 text-white">
+                    Address
                   </label>
                   <textarea
                     value={formData.profile.address}
@@ -470,16 +470,15 @@ const TenantAdmin: React.FC = () => {
                       handleInputChange("profile", "address", e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="123 Vineyard Lane, Napa, CA 94558, USA"
+                    placeholder="123 Wine Street, Napa Valley, CA 94558"
                     rows={2}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
                     Hours of Operation
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={formData.profile.hoursOfOperation}
                     onChange={(e) =>
                       handleInputChange(
@@ -489,12 +488,13 @@ const TenantAdmin: React.FC = () => {
                       )
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Mon-Sun: 10AM-6PM"
+                    placeholder="Mon-Sat: 10am-6pm, Sun: 11am-5pm"
+                    rows={2}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Social Media Links (Instagram, Facebook, X, etc.)
+                  <label className="block text-sm font-medium mb-2 text-white">
+                    Social Media Links
                   </label>
                   <textarea
                     value={formData.profile.socialMediaLinks}
@@ -715,7 +715,6 @@ const TenantAdmin: React.FC = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               if (confirm(`Delete ${wine.name}?`)) {
-                                // Delete wine logic would go here
                                 toast({
                                   title: "Wine deleted",
                                   description: `${wine.name} has been removed`,
@@ -734,335 +733,36 @@ const TenantAdmin: React.FC = () => {
               </div>
             </div>
           )}
-                    className="border border-gray-200 rounded-lg p-6 mb-4"
-                  >
-                    <h3 className="text-lg font-medium mb-4">
-                      Wine Entry #{index + 1}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Wine Name
-                        </label>
-                        <input
-                          type="text"
-                          value={wine.wineName}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "wineName",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Wine name"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Vintage Year
-                        </label>
-                        <input
-                          type="text"
-                          value={wine.vintageYear}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "vintageYear",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="2021"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          SKU
-                        </label>
-                        <input
-                          type="text"
-                          value={wine.sku}
-                          onChange={(e) =>
-                            handleWineEntryChange(index, "sku", e.target.value)
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="SKU-001"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Varietal / Blend
-                        </label>
-                        <input
-                          type="text"
-                          value={wine.varietal}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "varietal",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Cabernet Sauvignon"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Release Date
-                        </label>
-                        <input
-                          type="date"
-                          value={wine.releaseDate}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "releaseDate",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Price
-                        </label>
-                        <input
-                          type="text"
-                          value={wine.price}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "price",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="$50.00"
-                        />
-                      </div>
-                      <div className="md:col-span-2 lg:col-span-3">
-                        <label className="block text-sm font-medium mb-1">
-                          Tasting Notes
-                        </label>
-                        <textarea
-                          value={wine.tastingNotes}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "tastingNotes",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Describe the wine's characteristics..."
-                          rows={3}
-                        />
-                      </div>
-                      <div className="md:col-span-2 lg:col-span-3">
-                        <label className="block text-sm font-medium mb-1">
-                          Food Pairings
-                        </label>
-                        <input
-                          type="text"
-                          value={wine.foodPairings}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "foodPairings",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Grilled meats, aged cheeses, dark chocolate"
-                        />
-                      </div>
-                      <div className="md:col-span-2 lg:col-span-3">
-                        <label className="block text-sm font-medium mb-1">
-                          Production Notes
-                        </label>
-                        <textarea
-                          value={wine.productionNotes}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "productionNotes",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Production methods, aging, etc."
-                          rows={2}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Inventory Count (Optional)
-                        </label>
-                        <input
-                          type="number"
-                          value={wine.inventoryCount}
-                          onChange={(e) =>
-                            handleWineEntryChange(
-                              index,
-                              "inventoryCount",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="100"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Wine Club Info Section */}
-              <div>
-                <h2 className="text-xl font-semibold mb-4">Wine Club Info</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Club Name
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.cms.wineClub.clubName}
-                      onChange={(e) =>
-                        handleWineClubChange("clubName", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Elite Wine Club"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Membership Tiers
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.cms.wineClub.membershipTiers}
-                      onChange={(e) =>
-                        handleWineClubChange("membershipTiers", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Silver, Gold, Platinum"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      value={formData.cms.wineClub.description}
-                      onChange={(e) =>
-                        handleWineClubChange("description", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Describe the wine club..."
-                      rows={3}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Pricing
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.cms.wineClub.pricing}
-                      onChange={(e) =>
-                        handleWineClubChange("pricing", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="$99/quarter"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Club Benefits
-                    </label>
-                    <textarea
-                      value={formData.cms.wineClub.clubBenefits}
-                      onChange={(e) =>
-                        handleWineClubChange("clubBenefits", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Exclusive wines, discounts, events..."
-                      rows={3}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* AI Model Tab */}
           {activeTab === "ai-model" && (
-            <div className="space-y-8">
-              {/* Knowledge Scope */}
-              <div>
-                <h2 className="text-xl font-semibold mb-4">Knowledge Scope</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Knowledge Scope Toggle:
-                    </label>
-                    <div className="space-y-2">
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          name="knowledgeScope"
-                          value="winery-only"
-                          checked={
-                            formData.aiModel.knowledgeScope === "winery-only"
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              "aiModel",
-                              "knowledgeScope",
-                              e.target.value,
-                            )
-                          }
-                          className="mr-2"
-                        />
-                        Winery-Only Mode (Default)
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          name="knowledgeScope"
-                          value="winery-plus-global"
-                          checked={
-                            formData.aiModel.knowledgeScope ===
-                            "winery-plus-global"
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              "aiModel",
-                              "knowledgeScope",
-                              e.target.value,
-                            )
-                          }
-                          className="mr-2"
-                        />
-                        Winery plus Global Wine and Food Knowledge
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Personality Selection */}
-              <div>
-                <h2 className="text-xl font-semibold mb-4">
-                  Personality Selection (Basic)
-                </h2>
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold mb-4 text-white">AI Model Settings</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Select Personality Style (Dropdown):
+                  <label className="block text-sm font-medium mb-2 text-white">
+                    Knowledge Scope
+                  </label>
+                  <select
+                    value={formData.aiModel.knowledgeScope}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "aiModel",
+                        "knowledgeScope",
+                        e.target.value,
+                      )
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="winery-only">Winery Only</option>
+                    <option value="winery-plus-global">
+                      Winery + Global Wine Knowledge
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-white">
+                    Personality Style
                   </label>
                   <select
                     value={formData.aiModel.personalityStyle}
@@ -1082,62 +782,66 @@ const TenantAdmin: React.FC = () => {
                     <option value="casual-friendly">Casual Friendly</option>
                   </select>
                 </div>
-              </div>
-
-              {/* Advanced Personality Upload */}
-              <div>
-                <h2 className="text-xl font-semibold mb-4">
-                  Advanced Personality Upload
-                </h2>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Upload Brand Guide (PDF / DOC)
-                    </label>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) =>
-                        handleFileUpload("aiModel", "brandGuide", e)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Upload Tone Preferences (Text Input)
-                    </label>
-                    <textarea
-                      value={formData.aiModel.tonePreferences}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "aiModel",
-                          "tonePreferences",
-                          e.target.value,
-                        )
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Describe the desired tone and personality for AI responses..."
-                      rows={4}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Upload FAQ or Knowledge Documents (DOC / CSV / PDF)
-                    </label>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.csv"
-                      onChange={(e) =>
-                        handleFileUpload("aiModel", "knowledgeDocuments", e)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
+                    Brand Guide
+                  </label>
+                  <textarea
+                    value={formData.aiModel.brandGuide}
+                    onChange={(e) =>
+                      handleInputChange("aiModel", "brandGuide", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Define the brand voice and messaging guidelines..."
+                    rows={4}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
+                    Tone Preferences
+                  </label>
+                  <textarea
+                    value={formData.aiModel.tonePreferences}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "aiModel",
+                        "tonePreferences",
+                        e.target.value,
+                      )
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Professional, friendly, conversational..."
+                    rows={3}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2 text-white">
+                    Knowledge Documents (Upload)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.txt"
+                    multiple
+                    onChange={(e) =>
+                      handleFileUpload("aiModel", "knowledgeDocuments", e)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
               </div>
             </div>
           )}
+
+          {/* Save Button */}
+          <div className="flex justify-end mt-8">
+            <button
+              onClick={handleSave}
+              disabled={saveTenantMutation.isPending}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {saveTenantMutation.isPending ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
