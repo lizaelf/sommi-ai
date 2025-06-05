@@ -43,6 +43,40 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
+/* Force dark theme and override browser appearance settings */
+html,
+body {
+  color-scheme: dark !important;
+  -webkit-color-scheme: dark !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Override any browser default styling */
+* {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Force dark scrollbars */
+::-webkit-scrollbar {
+  background-color: #000000 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Override system preferences */
+@media (prefers-color-scheme: light) {
+  html,
+  body {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
