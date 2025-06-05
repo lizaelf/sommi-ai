@@ -137,7 +137,7 @@ const TenantAdmin: React.FC = () => {
   const [showSearch, setShowSearch] = useState(true);
   const [showDataSync, setShowDataSync] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
@@ -450,311 +450,296 @@ const TenantAdmin: React.FC = () => {
                 <h2 className="text-xl font-semibold text-white">
                   Profile Information
                 </h2>
-                <button
-                  onClick={() => {
-                    if (isEditingProfile) {
-                      // Save profile data functionality
-                      console.log('Saving profile data:', formData.profile);
-                      setIsEditingProfile(false);
-                    } else {
-                      setIsEditingProfile(true);
-                    }
-                  }}
-                  className="primary-button px-4 py-2 text-white rounded-lg transition-colors"
-                >
-                  {isEditingProfile ? 'Save Changes' : 'Edit Profile'}
-                </button>
               </div>
-{isEditingProfile ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Winery Name
-                    </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Winery Name */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Winery Name</h3>
+                  {editingField === "wineryName" ? (
                     <input
                       type="text"
                       value={formData.profile.wineryName}
-                      onChange={(e) =>
-                        handleInputChange("profile", "wineryName", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("profile", "wineryName", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        height: "56px",
+                        height: "40px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "0 16px",
+                        padding: "0 12px",
                       }}
                       placeholder="Enter winery name"
+                      autoFocus
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Year Established
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("wineryName")}
+                    >
+                      {formData.profile.wineryName || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Year Established */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Year Established</h3>
+                  {editingField === "yearEstablished" ? (
                     <input
                       type="text"
                       value={formData.profile.yearEstablished}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "profile",
-                          "yearEstablished",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handleInputChange("profile", "yearEstablished", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        height: "56px",
+                        height: "40px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "0 16px",
+                        padding: "0 12px",
                       }}
                       placeholder="e.g., 1885"
+                      autoFocus
                     />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Winery Description
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("yearEstablished")}
+                    >
+                      {formData.profile.yearEstablished || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Winery Description */}
+                <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Winery Description</h3>
+                  {editingField === "wineryDescription" ? (
                     <textarea
                       value={formData.profile.wineryDescription}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "profile",
-                          "wineryDescription",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handleInputChange("profile", "wineryDescription", e.target.value)}
+                      onBlur={() => setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        minHeight: "120px",
+                        minHeight: "100px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "16px",
+                        padding: "12px",
                         resize: "vertical",
                       }}
                       placeholder="Describe the winery..."
-                      rows={4}
+                      rows={3}
+                      autoFocus
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Winery Logo (Upload)
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        handleFileUpload("profile", "wineryLogo", e)
-                      }
-                      className="contact-form-input"
-                      style={{
-                        color: "white !important",
-                        height: "56px",
-                        width: "100%",
-                        fontSize: "16px",
-                        fontWeight: "400",
-                        padding: "0 16px",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Contact Email
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded min-h-[60px]"
+                      onClick={() => setEditingField("wineryDescription")}
+                    >
+                      {formData.profile.wineryDescription || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Contact Email */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Contact Email</h3>
+                  {editingField === "contactEmail" ? (
                     <input
                       type="email"
                       value={formData.profile.contactEmail}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "profile",
-                          "contactEmail",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handleInputChange("profile", "contactEmail", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        height: "56px",
+                        height: "40px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "0 16px",
+                        padding: "0 12px",
                       }}
                       placeholder="contact@winery.com"
+                      autoFocus
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Contact Phone
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("contactEmail")}
+                    >
+                      {formData.profile.contactEmail || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Contact Phone */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Contact Phone</h3>
+                  {editingField === "contactPhone" ? (
                     <input
                       type="tel"
                       value={formData.profile.contactPhone}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "profile",
-                          "contactPhone",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handleInputChange("profile", "contactPhone", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        height: "56px",
+                        height: "40px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "0 16px",
+                        padding: "0 12px",
                       }}
                       placeholder="+1 (555) 123-4567"
+                      autoFocus
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Website URL
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("contactPhone")}
+                    >
+                      {formData.profile.contactPhone || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Website URL */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Website URL</h3>
+                  {editingField === "websiteURL" ? (
                     <input
                       type="url"
                       value={formData.profile.websiteURL}
-                      onChange={(e) =>
-                        handleInputChange("profile", "websiteURL", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("profile", "websiteURL", e.target.value)}
+                      onBlur={() => setEditingField(null)}
+                      onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        height: "56px",
+                        height: "40px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "0 16px",
+                        padding: "0 12px",
                       }}
                       placeholder="https://www.winery.com"
+                      autoFocus
                     />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Address
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded"
+                      onClick={() => setEditingField("websiteURL")}
+                    >
+                      {formData.profile.websiteURL || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Address */}
+                <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Address</h3>
+                  {editingField === "address" ? (
                     <textarea
                       value={formData.profile.address}
-                      onChange={(e) =>
-                        handleInputChange("profile", "address", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("profile", "address", e.target.value)}
+                      onBlur={() => setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        minHeight: "96px",
+                        minHeight: "80px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "16px",
+                        padding: "12px",
                         resize: "vertical",
                       }}
                       placeholder="123 Wine Street, Napa Valley, CA 94558"
                       rows={2}
+                      autoFocus
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Hours of Operation
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded min-h-[50px]"
+                      onClick={() => setEditingField("address")}
+                    >
+                      {formData.profile.address || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Hours of Operation */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Hours of Operation</h3>
+                  {editingField === "hoursOfOperation" ? (
                     <textarea
                       value={formData.profile.hoursOfOperation}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "profile",
-                          "hoursOfOperation",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handleInputChange("profile", "hoursOfOperation", e.target.value)}
+                      onBlur={() => setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        minHeight: "96px",
+                        minHeight: "80px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "16px",
+                        padding: "12px",
                         resize: "vertical",
                       }}
                       placeholder="Mon-Sat: 10am-6pm, Sun: 11am-5pm"
                       rows={2}
+                      autoFocus
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-white">
-                      Social Media Links
-                    </label>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded min-h-[50px]"
+                      onClick={() => setEditingField("hoursOfOperation")}
+                    >
+                      {formData.profile.hoursOfOperation || "-"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Social Media Links */}
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <h3 className="text-sm font-medium text-white/60 mb-2">Social Media Links</h3>
+                  {editingField === "socialMediaLinks" ? (
                     <textarea
                       value={formData.profile.socialMediaLinks}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "profile",
-                          "socialMediaLinks",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handleInputChange("profile", "socialMediaLinks", e.target.value)}
+                      onBlur={() => setEditingField(null)}
                       className="contact-form-input"
                       style={{
                         color: "white !important",
-                        minHeight: "96px",
+                        minHeight: "80px",
                         width: "100%",
                         fontSize: "16px",
                         fontWeight: "400",
-                        padding: "16px",
+                        padding: "12px",
                         resize: "vertical",
                       }}
                       placeholder="Instagram: @winery, Facebook: /winery"
                       rows={2}
+                      autoFocus
                     />
-                  </div>
+                  ) : (
+                    <p 
+                      className="text-white text-base cursor-pointer hover:bg-white/10 p-2 rounded min-h-[50px]"
+                      onClick={() => setEditingField("socialMediaLinks")}
+                    >
+                      {formData.profile.socialMediaLinks || "-"}
+                    </p>
+                  )}
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Winery Name</h3>
-                    <p className="text-white text-base">{formData.profile.wineryName || "-"}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Year Established</h3>
-                    <p className="text-white text-base">{formData.profile.yearEstablished || "-"}</p>
-                  </div>
-                  <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Winery Description</h3>
-                    <p className="text-white text-base">{formData.profile.wineryDescription || "-"}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Contact Email</h3>
-                    <p className="text-white text-base">{formData.profile.contactEmail || "-"}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Contact Phone</h3>
-                    <p className="text-white text-base">{formData.profile.contactPhone || "-"}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Website URL</h3>
-                    <p className="text-white text-base">{formData.profile.websiteURL || "-"}</p>
-                  </div>
-                  <div className="md:col-span-2 bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Address</h3>
-                    <p className="text-white text-base">{formData.profile.address || "-"}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Hours of Operation</h3>
-                    <p className="text-white text-base">{formData.profile.hoursOfOperation || "-"}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h3 className="text-sm font-medium text-white/60 mb-2">Social Media Links</h3>
-                    <p className="text-white text-base">{formData.profile.socialMediaLinks || "-"}</p>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           )}
 
