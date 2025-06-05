@@ -515,7 +515,16 @@ const TenantAdmin: React.FC = () => {
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                           placeholder="Search wines..."
-                          className="w-full pl-10 pr-10 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                          className="contact-form-input"
+                          style={{
+                            color: "white !important",
+                            height: "56px",
+                            width: "100%",
+                            fontSize: "16px",
+                            fontWeight: "400",
+                            paddingLeft: "40px",
+                            paddingRight: "40px",
+                          }}
                         />
                         {searchTerm && (
                           <button
@@ -630,7 +639,15 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                   >
                     <option value="winery-only">Winery Only</option>
                     <option value="winery-plus-global">
@@ -651,7 +668,15 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                   >
                     <option value="educator">Educator</option>
                     <option value="sommelier">Sommelier</option>
@@ -669,7 +694,16 @@ const TenantAdmin: React.FC = () => {
                     onChange={(e) =>
                       handleInputChange("aiModel", "brandGuide", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      minHeight: "120px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "16px",
+                      resize: "vertical",
+                    }}
                     placeholder="Define the brand voice and messaging guidelines..."
                     rows={4}
                   />
@@ -687,7 +721,16 @@ const TenantAdmin: React.FC = () => {
                         e.target.value,
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      minHeight: "96px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "16px",
+                      resize: "vertical",
+                    }}
                     placeholder="Professional, friendly, conversational..."
                     rows={3}
                   />
@@ -703,7 +746,15 @@ const TenantAdmin: React.FC = () => {
                     onChange={(e) =>
                       handleFileUpload("aiModel", "knowledgeDocuments", e)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="contact-form-input"
+                    style={{
+                      color: "white !important",
+                      height: "56px",
+                      width: "100%",
+                      fontSize: "16px",
+                      fontWeight: "400",
+                      padding: "0 16px",
+                    }}
                   />
                 </div>
               </div>
