@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Upload, Download, Search, X, RefreshCw } from "lucide-react";
+import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { SegmentedPicker } from "@/components/SegmentedPicker";
@@ -83,6 +83,36 @@ const TenantAdmin: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('tenantAdminActiveTab', activeTab);
   }, [activeTab]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowUserDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Handle logout
+  const handleLogout = () => {
+    // Clear any stored user data
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('tenantAdminActiveTab');
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+    // Navigate to login page or home
+    setLocation('/');
+  };
+
+  // Handle edit profile
+  const handleEditProfile = () => {
+    setActiveTab('profile');
+    setShowUserDropdown(false);
+  };
   
   // Wine management state
   const [isEditMode, setIsEditMode] = useState(false);
@@ -90,7 +120,9 @@ const TenantAdmin: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(true);
   const [showDataSync, setShowDataSync] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState<TenantData>({
     id: 1,
@@ -310,8 +342,37 @@ const TenantAdmin: React.FC = () => {
       <div className="fixed top-0 left-0 right-0 bg-black z-50 border-b border-white/10">
         <div className="max-w-6xl mx-auto p-6">
           {/* Title */}
-          <div className="mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
+            
+            {/* User Profile Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                className="flex items-center justify-center w-10 h-10 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+              >
+                <User className="w-5 h-5 text-white" />
+              </button>
+              
+              {showUserDropdown && (
+                <div className="absolute right-0 top-12 w-48 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg py-2 z-50">
+                  <button
+                    onClick={handleEditProfile}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-white hover:bg-white/10 transition-colors text-left"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Edit Profile
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-white hover:bg-white/10 transition-colors text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* iOS-style Segmented Picker */}
