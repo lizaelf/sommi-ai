@@ -373,7 +373,7 @@ const TenantAdmin: React.FC = () => {
                 left: "50%",
                 transform: "translateX(-50%)"
               }}
-            >{currentTenant?.name || formData.profile.wineryName || "Enter Winery Name"}</h1>
+            >{currentTenant?.name || formData.profile.wineryName || "Winery Name"}</h1>
             
             <div className="flex items-center gap-3">
               <button
@@ -428,7 +428,7 @@ const TenantAdmin: React.FC = () => {
 
       {/* SegmentedPicker under header */}
       <div className="fixed top-0 left-0 right-0 z-40" style={{ top: activeTab === "cms" ? "124px" : "68px" }}>
-        <div className="bg-black/90 backdrop-blur-sm border-b border-white/10">
+        <div className="bg-black/95 backdrop-blur-md border-b border-white/10">
           <div className="max-w-6xl mx-auto p-4">
             <SegmentedPicker
               options={[
