@@ -127,7 +127,7 @@ const TenantAdmin: React.FC = () => {
     },
     aiModel: {
       knowledgeScope: "winery-only",
-      personalityStyle: "sommelier",
+      personalityStyle: "educator",
       brandGuide: "",
       tonePreferences: "",
       knowledgeDocuments: "",
@@ -136,8 +136,8 @@ const TenantAdmin: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  // Load tenant data query
-  const { data: tenant, isLoading } = useQuery({
+  // Load tenant data
+  const { data: tenantData, isLoading } = useQuery({
     queryKey: ["tenant-admin", 1],
     queryFn: () => {
       const stored = localStorage.getItem("tenant-admin-1");
@@ -235,26 +235,11 @@ const TenantAdmin: React.FC = () => {
       ...prev,
       cms: {
         ...prev.cms,
-        wineEntries: prev.cms.wineEntries.map((wine, i) =>
-          i === index ? { ...wine, [field]: value } : wine,
+        wineEntries: prev.cms.wineEntries.map((entry, i) =>
+          i === index ? { ...entry, [field]: value } : entry,
         ),
       },
     }));
-  };
-
-  const handleWineImageUpload = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        handleWineEntryChange(index, "imageUpload", result);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const addWineEntry = () => {
@@ -353,236 +338,7 @@ const TenantAdmin: React.FC = () => {
           </button>
         </div>
 
-        {/* CMS Tab - Wine Management - Full Screen Layout */}
-        {activeTab === "cms" && (
-          <div style={{ backgroundColor: "black", minHeight: "100vh", padding: "24px", position: "absolute", top: 0, left: 0, right: 0, zIndex: 10 }}>
-            {/* Header Section */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "32px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                <Link to="/somm-tenant-admin">
-                  <div
-                    style={{
-                      padding: "8px",
-                      borderRadius: "50%",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      cursor: "pointer",
-                      transition: "background-color 0.2s",
-                    }}
-                  >
-                    <ArrowLeft size={20} color="white" />
-                  </div>
-                </Link>
-                <h1 className={`${typography.h1} text-white`} style={{ margin: 0 }}>
-                  Wine Collection Management
-                </h1>
-              </div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                {showSearch && (
-                  <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                    <Search
-                      style={{
-                        position: "absolute",
-                        left: "12px",
-                        width: "16px",
-                        height: "16px",
-                        color: "rgba(156, 163, 175, 1)",
-                      }}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Search wines..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{
-                        paddingLeft: "40px",
-                        paddingRight: "40px",
-                        paddingTop: "8px",
-                        paddingBottom: "8px",
-                        backgroundColor: "transparent",
-                        border: "1px solid rgba(75, 85, 99, 1)",
-                        borderRadius: "8px",
-                        color: "white",
-                        outline: "none",
-                      }}
-                    />
-                    {searchTerm && (
-                      <button
-                        onClick={() => setSearchTerm("")}
-                        style={{
-                          position: "absolute",
-                          right: "12px",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "rgba(156, 163, 175, 1)",
-                        }}
-                      >
-                        <X style={{ width: "16px", height: "16px" }} />
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                <Button
-                  onClick={() => setIsEditMode(!isEditMode)}
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    transition: "background-color 0.2s",
-                    backgroundColor: isEditMode ? "#dc2626" : "#16a34a",
-                    color: "white",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  {isEditMode ? "Exit Edit" : "Edit Mode"}
-                </Button>
-              </div>
-            </div>
-
-            {/* Wine Cards Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                gap: "24px",
-              }}
-            >
-              {wineCards
-                .filter((wine) =>
-                  wine.name.toLowerCase().includes(searchTerm.toLowerCase())
-                )
-                .map((wine) => (
-                  <div
-                    key={wine.id}
-                    style={{
-                      position: "relative",
-                      backgroundColor: "transparent",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      borderRadius: "12px",
-                      padding: "16px",
-                      transition: "border-color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "#10b981";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                    }}
-                  >
-                    {/* Wine Image */}
-                    <div style={{ position: "relative", marginBottom: "16px" }}>
-                      <img
-                        src={wine.image || placeholderImage}
-                        alt={wine.name}
-                        style={{
-                          width: "100%",
-                          height: "192px",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                        }}
-                        onLoad={() => console.log(`CMS image loaded: ${wine.name}`)}
-                        onError={() => console.log(`CMS placeholder loaded for: ${wine.name}`)}
-                      />
-                    </div>
-
-                    {/* Wine Info */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                      <h3
-                        style={{
-                          fontSize: "18px",
-                          fontWeight: "600",
-                          color: "white",
-                          margin: 0,
-                          transition: "color 0.2s",
-                        }}
-                      >
-                        {wine.name}
-                      </h3>
-                      <p style={{ color: "#9ca3af", fontSize: "14px", margin: 0 }}>
-                        {wine.bottles} bottles available
-                      </p>
-
-                      {/* Ratings */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
-                        <span
-                          style={{
-                            backgroundColor: "#7c3aed",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            color: "white",
-                          }}
-                        >
-                          VN: {wine.ratings?.vn || "N/A"}
-                        </span>
-                        <span
-                          style={{
-                            backgroundColor: "#2563eb",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            color: "white",
-                          }}
-                        >
-                          JD: {wine.ratings?.jd || "N/A"}
-                        </span>
-                        <span
-                          style={{
-                            backgroundColor: "#ea580c",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            color: "white",
-                          }}
-                        >
-                          WS: {wine.ratings?.ws || "N/A"}
-                        </span>
-                      </div>
-
-                      {/* QR Code and Edit Button */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          marginTop: "16px",
-                        }}
-                      >
-                        <SimpleQRCode value={generateWineQRData(wine.id)} size={60} wineId={wine.id} />
-
-                        {isEditMode && (
-                          <button
-                            onClick={() => setLocation(`/wine-edit/${wine.id}`)}
-                            style={{
-                              backgroundColor: "#2563eb",
-                              color: "white",
-                              padding: "4px 12px",
-                              fontSize: "14px",
-                              borderRadius: "4px",
-                              border: "none",
-                              cursor: "pointer",
-                              transition: "background-color 0.2s",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = "#1d4ed8";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = "#2563eb";
-                            }}
-                          >
-                            Edit
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-
-        {/* Content - Other Tabs */}
+        {/* Content */}
         <div className="p-8">
           {/* Profile Tab */}
           {activeTab === "profile" && (
@@ -701,12 +457,12 @@ const TenantAdmin: React.FC = () => {
                       handleInputChange("profile", "websiteURL", e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://www.winery.com"
+                    placeholder="https://winery.com"
                   />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">
-                    Address
+                    Address (Street, City, State, Zip, Country)
                   </label>
                   <textarea
                     value={formData.profile.address}
@@ -714,7 +470,7 @@ const TenantAdmin: React.FC = () => {
                       handleInputChange("profile", "address", e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="123 Wine Street, Napa Valley, CA 94558"
+                    placeholder="123 Vineyard Lane, Napa, CA 94558, USA"
                     rows={2}
                   />
                 </div>
@@ -738,7 +494,7 @@ const TenantAdmin: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Social Media Links
+                    Social Media Links (Instagram, Facebook, X, etc.)
                   </label>
                   <textarea
                     value={formData.profile.socialMediaLinks}
@@ -758,36 +514,367 @@ const TenantAdmin: React.FC = () => {
             </div>
           )}
 
+          {/* CMS Tab */}
+          {activeTab === "cms" && (
+            <div className="space-y-8">
+              {/* Wine Catalog Section */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold">Wine Catalog</h2>
+                  <div className="flex space-x-2">
+                    <button className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
+                      Connect API
+                    </button>
+                    <button
+                      onClick={addWineEntry}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Add Wine
+                    </button>
+                  </div>
+                </div>
 
+                {formData.cms.wineEntries.map((wine, index) => (
+                  <div
+                    key={index}
+                    className="border border-gray-200 rounded-lg p-6 mb-4"
+                  >
+                    <h3 className="text-lg font-medium mb-4">
+                      Wine Entry #{index + 1}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Wine Name
+                        </label>
+                        <input
+                          type="text"
+                          value={wine.wineName}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "wineName",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Wine name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Vintage Year
+                        </label>
+                        <input
+                          type="text"
+                          value={wine.vintageYear}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "vintageYear",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="2021"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          SKU
+                        </label>
+                        <input
+                          type="text"
+                          value={wine.sku}
+                          onChange={(e) =>
+                            handleWineEntryChange(index, "sku", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="SKU-001"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Varietal / Blend
+                        </label>
+                        <input
+                          type="text"
+                          value={wine.varietal}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "varietal",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Cabernet Sauvignon"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Release Date
+                        </label>
+                        <input
+                          type="date"
+                          value={wine.releaseDate}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "releaseDate",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Price
+                        </label>
+                        <input
+                          type="text"
+                          value={wine.price}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "price",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="$50.00"
+                        />
+                      </div>
+                      <div className="md:col-span-2 lg:col-span-3">
+                        <label className="block text-sm font-medium mb-1">
+                          Tasting Notes
+                        </label>
+                        <textarea
+                          value={wine.tastingNotes}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "tastingNotes",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Describe the wine's characteristics..."
+                          rows={3}
+                        />
+                      </div>
+                      <div className="md:col-span-2 lg:col-span-3">
+                        <label className="block text-sm font-medium mb-1">
+                          Food Pairings
+                        </label>
+                        <input
+                          type="text"
+                          value={wine.foodPairings}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "foodPairings",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Grilled meats, aged cheeses, dark chocolate"
+                        />
+                      </div>
+                      <div className="md:col-span-2 lg:col-span-3">
+                        <label className="block text-sm font-medium mb-1">
+                          Production Notes
+                        </label>
+                        <textarea
+                          value={wine.productionNotes}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "productionNotes",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Production methods, aging, etc."
+                          rows={2}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Inventory Count (Optional)
+                        </label>
+                        <input
+                          type="number"
+                          value={wine.inventoryCount}
+                          onChange={(e) =>
+                            handleWineEntryChange(
+                              index,
+                              "inventoryCount",
+                              e.target.value,
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="100"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Wine Club Info Section */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Wine Club Info</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Club Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.cms.wineClub.clubName}
+                      onChange={(e) =>
+                        handleWineClubChange("clubName", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Elite Wine Club"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Membership Tiers
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.cms.wineClub.membershipTiers}
+                      onChange={(e) =>
+                        handleWineClubChange("membershipTiers", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Silver, Gold, Platinum"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={formData.cms.wineClub.description}
+                      onChange={(e) =>
+                        handleWineClubChange("description", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Describe the wine club..."
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Pricing
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.cms.wineClub.pricing}
+                      onChange={(e) =>
+                        handleWineClubChange("pricing", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="$99/quarter"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Club Benefits
+                    </label>
+                    <textarea
+                      value={formData.cms.wineClub.clubBenefits}
+                      onChange={(e) =>
+                        handleWineClubChange("clubBenefits", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Exclusive wines, discounts, events..."
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* AI Model Tab */}
           {activeTab === "ai-model" && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4">AI Model Configuration</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Knowledge Scope
-                  </label>
-                  <select
-                    value={formData.aiModel.knowledgeScope}
-                    onChange={(e) =>
-                      handleInputChange("aiModel", "knowledgeScope", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="winery-only">Winery Only</option>
-                    <option value="winery-plus-global">Winery + Global Wine Knowledge</option>
-                  </select>
+            <div className="space-y-8">
+              {/* Knowledge Scope */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Knowledge Scope</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Knowledge Scope Toggle:
+                    </label>
+                    <div className="space-y-2">
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="knowledgeScope"
+                          value="winery-only"
+                          checked={
+                            formData.aiModel.knowledgeScope === "winery-only"
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              "aiModel",
+                              "knowledgeScope",
+                              e.target.value,
+                            )
+                          }
+                          className="mr-2"
+                        />
+                        Winery-Only Mode (Default)
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="knowledgeScope"
+                          value="winery-plus-global"
+                          checked={
+                            formData.aiModel.knowledgeScope ===
+                            "winery-plus-global"
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              "aiModel",
+                              "knowledgeScope",
+                              e.target.value,
+                            )
+                          }
+                          className="mr-2"
+                        />
+                        Winery plus Global Wine and Food Knowledge
+                      </label>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              {/* Personality Selection */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4">
+                  Personality Selection (Basic)
+                </h2>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Personality Style
+                    Select Personality Style (Dropdown):
                   </label>
                   <select
                     value={formData.aiModel.personalityStyle}
                     onChange={(e) =>
-                      handleInputChange("aiModel", "personalityStyle", e.target.value)
+                      handleInputChange(
+                        "aiModel",
+                        "personalityStyle",
+                        e.target.value,
+                      )
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
@@ -798,65 +885,62 @@ const TenantAdmin: React.FC = () => {
                     <option value="casual-friendly">Casual Friendly</option>
                   </select>
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">
-                    Brand Guide
-                  </label>
-                  <textarea
-                    value={formData.aiModel.brandGuide}
-                    onChange={(e) =>
-                      handleInputChange("aiModel", "brandGuide", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Define your winery's brand personality and values..."
-                    rows={4}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">
-                    Tone Preferences
-                  </label>
-                  <textarea
-                    value={formData.aiModel.tonePreferences}
-                    onChange={(e) =>
-                      handleInputChange("aiModel", "tonePreferences", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Formal, casual, enthusiastic, educational..."
-                    rows={3}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">
-                    Knowledge Documents (Upload)
-                  </label>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.txt"
-                    multiple
-                    onChange={(e) =>
-                      handleFileUpload("aiModel", "knowledgeDocuments", e)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Upload additional documents to enhance AI knowledge base
-                  </p>
+              </div>
+
+              {/* Advanced Personality Upload */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4">
+                  Advanced Personality Upload
+                </h2>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Upload Brand Guide (PDF / DOC)
+                    </label>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) =>
+                        handleFileUpload("aiModel", "brandGuide", e)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Upload Tone Preferences (Text Input)
+                    </label>
+                    <textarea
+                      value={formData.aiModel.tonePreferences}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "aiModel",
+                          "tonePreferences",
+                          e.target.value,
+                        )
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Describe the desired tone and personality for AI responses..."
+                      rows={4}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Upload FAQ or Knowledge Documents (DOC / CSV / PDF)
+                    </label>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.csv"
+                      onChange={(e) =>
+                        handleFileUpload("aiModel", "knowledgeDocuments", e)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
-
-          {/* Save Button */}
-          <div className="flex justify-end mt-8">
-            <button
-              onClick={handleSave}
-              disabled={saveTenantMutation.isPending}
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-            >
-              {saveTenantMutation.isPending ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
         </div>
       </div>
     </div>
