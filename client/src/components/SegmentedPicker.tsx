@@ -17,9 +17,10 @@ export function SegmentedPicker({ options, value, onChange, className = "" }: Se
         <button
           key={option.value}
           onClick={() => onChange(option.value)}
+          style={value === option.value ? { backgroundColor: '#ffffff', color: '#000000' } : {}}
           className={`relative px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-out ${
             value === option.value
-              ? "!bg-white !text-black shadow-lg"
+              ? "shadow-lg"
               : "text-white/80 hover:text-white hover:bg-white/5"
           }`}
         >
