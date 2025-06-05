@@ -353,7 +353,7 @@ const TenantAdmin: React.FC = () => {
                 left: "50%",
                 transform: "translateX(-50%)"
               }}
-            >{formData.profile.wineryName || "Winery Admin"}</h1>
+            >{formData.profile.wineryName || "Enter Winery Name"}</h1>
             
             {/* User Profile Dropdown - Hidden for now */}
             {false && (
