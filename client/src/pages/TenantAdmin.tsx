@@ -301,7 +301,7 @@ const TenantAdmin: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Tenant Admin</h1>
+          <h1 className="text-white text-[18px] font-medium">Winery tenant admin</h1>
         </div>
 
         {/* Tabs */}
