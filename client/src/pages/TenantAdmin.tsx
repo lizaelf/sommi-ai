@@ -544,7 +544,7 @@ const TenantAdmin: React.FC = () => {
                     <div
                       key={wine.id}
                       className="relative p-4 hover:bg-white/5 transition-all cursor-pointer flex items-start gap-4"
-                      onClick={() => !isEditMode && setLocation(`/wine-details/${wine.id}`)}
+                      onClick={() => setLocation(`/wine-edit/${wine.id}`)}
                     >
                       {/* Wine Image - Left Side */}
                       <div className="w-[112px] h-[150px] rounded-lg overflow-hidden flex-shrink-0">
