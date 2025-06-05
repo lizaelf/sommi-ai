@@ -34,7 +34,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) =>
       }} />
       
       {/* Wine Image or Placeholder */}
-      {image && image.trim() && (image.startsWith('data:') || image.startsWith('/@assets/')) ? (
+      {image && image.trim() && image.startsWith('/@assets/') ? (
         <img
           src={image}
           alt={wineName || 'Wine'}
