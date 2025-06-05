@@ -339,7 +339,7 @@ const TenantAdmin: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="p-8">
+        <div>
           {/* Profile Tab */}
           {activeTab === "profile" && (
             <div className="space-y-6">
