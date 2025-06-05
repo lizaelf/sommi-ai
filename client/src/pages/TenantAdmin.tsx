@@ -310,7 +310,7 @@ const TenantAdmin: React.FC = () => {
             onClick={() => setActiveTab("profile")}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
               activeTab === "profile"
-                ? "bg-green-500 text-white"
+                ? "bg-white text-black"
                 : "bg-gray-300 text-gray-700 hover:bg-gray-400"
             }`}
           >
@@ -320,7 +320,7 @@ const TenantAdmin: React.FC = () => {
             onClick={() => setActiveTab("cms")}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
               activeTab === "cms"
-                ? "bg-green-500 text-white"
+                ? "bg-white text-black"
                 : "bg-gray-300 text-gray-700 hover:bg-gray-400"
             }`}
           >
@@ -330,7 +330,7 @@ const TenantAdmin: React.FC = () => {
             onClick={() => setActiveTab("ai-model")}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
               activeTab === "ai-model"
-                ? "bg-green-500 text-white"
+                ? "bg-white text-black"
                 : "bg-gray-300 text-gray-700 hover:bg-gray-400"
             }`}
           >
