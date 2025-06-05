@@ -558,7 +558,7 @@ const TenantAdmin: React.FC = () => {
 
               {/* Wine Cards List */}
               <div>
-                <div className="divide-y divide-white/10">
+                <div className="divide-y divide-white/20">
                   {wineCards
                     .filter(wine => wine.name.toLowerCase().includes(searchTerm.toLowerCase()))
                     .map((wine) => (
