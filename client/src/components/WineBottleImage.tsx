@@ -24,11 +24,28 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
         backgroundColor: "transparent",
       }}
     >
+        {/* Blurred circle background - positioned at the top */}
+        <div
+          style={{
+            position: "absolute",
+            width: "180px",
+            height: "180px",
+            borderRadius: "50%",
+            backgroundColor: "#8E8E8E",
+            filter: "blur(60px)",
+            opacity: 0.7,
+            zIndex: 1,
+            top: "0px",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        />
       <img
         src={ridgeWineImage}
         alt={wineName || "Ridge Lytton Springs Dry Creek Zinfandel"}
         style={{
           height: "280px",
+          zIndex: 2,
           // Add a subtle drop shadow instead of blur
           filter: "drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2))",
         }}

@@ -1123,12 +1123,16 @@ const Cellar = () => {
                 className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
                 onClick={() => handleWineClick(1)}
               >
-                <div 
-                  className="bg-gray-600 rounded flex items-center justify-center text-white text-sm"
-                  style={{ height: "186px", width: "60px" }}
-                >
-                  No Image
-                </div>
+                <img
+                  src="/src/assets/2021-Ridge-Vineyards-Lytton-Springs-Dry-Creek-Zinfandel.png"
+                  alt="Ridge Lytton Springs Dry Creek Zinfandel"
+                  style={{ 
+                    height: "186px", 
+                    width: "60px",
+                    objectFit: "cover",
+                    borderRadius: "4px"
+                  }}
+                />
               </div>
               <div
                 className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
