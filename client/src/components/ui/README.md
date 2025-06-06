@@ -12,12 +12,18 @@ Modal component that slides up from the bottom of the screen.
 </BottomSheet>
 ```
 
-### GradientButton
-Styled button with gradient backgrounds and hover effects.
+### Button
+Comprehensive button component with gradient backgrounds, multiple variants, and hover effects.
 ```tsx
-<GradientButton onClick={() => {}} variant="default" size="md">
+<Button onClick={() => {}} variant="default" size="md">
   Click me
-</GradientButton>
+</Button>
+<Button onClick={() => {}} variant="secondary" size="lg">
+  Secondary Button
+</Button>
+<Button onClick={() => {}} variant="danger" size="sm">
+  Delete
+</Button>
 ```
 
 ### FormInput
@@ -138,9 +144,9 @@ Replace styled button implementations:
 </div>
 
 // After
-<GradientButton onClick={onClick} variant="default">
+<Button onClick={onClick} variant="default">
   Button Text
-</GradientButton>
+</Button>
 ```
 
 ### Replacing Form Inputs
@@ -167,7 +173,7 @@ All components follow the established design patterns:
 ```tsx
 import { 
   BottomSheet, 
-  GradientButton, 
+  Button, 
   FormInput,
   WineCard,
   ConfirmationDialog 

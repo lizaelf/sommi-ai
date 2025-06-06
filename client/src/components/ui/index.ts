@@ -1,6 +1,5 @@
 // Core UI Components
 export { BottomSheet } from './BottomSheet';
-export { GradientButton } from './GradientButton';
 export { FormInput } from './FormInput';
 export { LoadingSpinner } from './LoadingSpinner';
 export { DropdownMenu } from './DropdownMenu';
