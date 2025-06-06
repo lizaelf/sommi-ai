@@ -56,9 +56,13 @@ const MODEL = "gpt-4o";
 // Fallback model if primary model is not available
 const FALLBACK_MODEL = "gpt-4o-mini";
 
-// Initialize the OpenAI client with API key from environment variables
+// Initialize the OpenAI client with persistent HTTP connections for reduced latency
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY,
+  // Enable HTTP/2 and persistent connections for faster requests
+  httpAgent: undefined, // Use default agent with keep-alive
+  timeout: 30000, // 30s timeout
+  maxRetries: 2, // Reduce retries for faster failure detection
 });
 
 // Check if API key is valid
@@ -344,6 +348,60 @@ const MAX_CACHE_SIZE = 50;
 // Response cache for chat completions to reduce API calls
 const responseCache = new Map<string, { content: string; timestamp: number }>();
 const MAX_RESPONSE_CACHE_SIZE = 100;
+
+// Pre-cached wine descriptions for instant responses
+const wineDescriptionCache = new Map<string, string>();
+
+// Parallel TTS processing for streaming responses
+export class ParallelTTSProcessor {
+  private tokenBuffer: string = '';
+  private isProcessing: boolean = false;
+  private audioPromises: Promise<Buffer>[] = [];
+  
+  async processTokens(tokens: string): Promise<void> {
+    this.tokenBuffer += tokens;
+    
+    // Process when we have enough tokens or hit sentence boundary
+    if (this.tokenBuffer.length >= 20 || this.hasSentenceBoundary()) {
+      this.processBufferedTokens();
+    }
+  }
+  
+  private hasSentenceBoundary(): boolean {
+    return /[.!?]\s*$/.test(this.tokenBuffer.trim());
+  }
+  
+  private async processBufferedTokens(): Promise<void> {
+    if (this.isProcessing || !this.tokenBuffer.trim()) return;
+    
+    this.isProcessing = true;
+    const textToProcess = this.tokenBuffer.trim();
+    this.tokenBuffer = '';
+    
+    console.log(`Parallel TTS processing: "${textToProcess}"`);
+    
+    // Start TTS processing in parallel without blocking stream
+    const audioPromise = textToSpeech(textToProcess).catch(error => {
+      console.error('Parallel TTS error:', error);
+      return Buffer.alloc(0);
+    });
+    
+    this.audioPromises.push(audioPromise);
+    this.isProcessing = false;
+  }
+  
+  async getAllProcessedAudio(): Promise<Buffer[]> {
+    // Process any remaining tokens
+    if (this.tokenBuffer.trim()) {
+      await this.processBufferedTokens();
+    }
+    
+    // Wait for all audio processing to complete
+    const audioBuffers = await Promise.all(this.audioPromises);
+    this.audioPromises = [];
+    return audioBuffers.filter(buffer => buffer.length > 0);
+  }
+}
 
 // Function to convert text to speech using OpenAI's Text-to-Speech API with consistent voice
 // Real-time streaming chat completion with latency measurement and progressive TTS

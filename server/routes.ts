@@ -722,16 +722,18 @@ Format: Return only the description text, no quotes or additional formatting.`;
         'Access-Control-Allow-Headers': 'Cache-Control'
       });
       
-      // Start streaming response from OpenAI with latency tracking
+      // Start streaming response with parallel TTS processing
       const streamStartTime = performance.now();
       const stream = await chatCompletionStream(parsedMessages, parsedWineData);
       let fullContent = '';
       let firstTokenReceived = false;
-      let tokenBuffer = '';
       let tokenCount = 0;
-      const CHUNK_SIZE = 10; // Process TTS in chunks of 10 tokens for progressive audio
       
-      console.log("📡 Server-Sent Events streaming initiated");
+      // Initialize parallel TTS processor for background audio generation
+      const openaiModule = await import('./openai.js');
+      const ttsProcessor = new openaiModule.ParallelTTSProcessor();
+      
+      console.log("Server-Sent Events streaming with parallel TTS initiated");
       
       for await (const chunk of stream) {
         const chunkReceiveTime = performance.now();
@@ -739,14 +741,16 @@ Format: Return only the description text, no quotes or additional formatting.`;
         
         if (delta) {
           fullContent += delta;
-          tokenBuffer += delta;
           tokenCount++;
           
-          // Send first token immediately for TTS to start
+          // Process tokens in parallel for TTS without blocking stream
+          ttsProcessor.processTokens(delta);
+          
+          // Send first token immediately for instant TTS trigger
           if (!firstTokenReceived) {
             firstTokenReceived = true;
             const firstTokenLatency = chunkReceiveTime - streamStartTime;
-            console.log(`🎯 First token sent to client in ${firstTokenLatency.toFixed(2)}ms:`, delta);
+            console.log(`First token latency: ${firstTokenLatency.toFixed(2)}ms`);
             
             res.write(`data: ${JSON.stringify({ 
               type: 'first_token', 
@@ -754,36 +758,42 @@ Format: Return only the description text, no quotes or additional formatting.`;
               start_tts: true,
               latency: firstTokenLatency
             })}\n\n`);
+            
+            // Start immediate TTS with first token
+            try {
+              const { textToSpeech } = await import('./openai.js');
+              const firstAudio = await textToSpeech(delta);
+              res.write(`data: ${JSON.stringify({ 
+                type: 'audio_ready', 
+                audio_size: firstAudio.length,
+                is_first: true
+              })}\n\n`);
+            } catch (audioError) {
+              console.error('First token TTS error:', audioError);
+            }
           } else {
-            // Stream tokens and send progressive TTS chunks
+            // Stream subsequent tokens
             res.write(`data: ${JSON.stringify({ 
               type: 'token', 
               content: delta,
               token_count: tokenCount
             })}\n\n`);
-            
-            // Send progressive TTS chunk when buffer reaches threshold
-            if (tokenBuffer.length >= CHUNK_SIZE || tokenBuffer.includes('.') || tokenBuffer.includes('!') || tokenBuffer.includes('?')) {
-              res.write(`data: ${JSON.stringify({ 
-                type: 'tts_chunk', 
-                content: tokenBuffer.trim(),
-                chunk_size: tokenBuffer.length
-              })}\n\n`);
-              
-              console.log(`🔊 Progressive TTS chunk sent: "${tokenBuffer.trim()}" (${tokenBuffer.length} chars)`);
-              tokenBuffer = '';
-            }
           }
         }
       }
       
-      // Send final TTS chunk if remaining
-      if (tokenBuffer.trim()) {
-        res.write(`data: ${JSON.stringify({ 
-          type: 'tts_chunk', 
-          content: tokenBuffer.trim(),
-          final: true
-        })}\n\n`);
+      // Get all processed audio from parallel TTS
+      try {
+        const audioBuffers = await ttsProcessor.getAllProcessedAudio();
+        if (audioBuffers.length > 0) {
+          res.write(`data: ${JSON.stringify({ 
+            type: 'parallel_audio_ready', 
+            audio_chunks: audioBuffers.length,
+            total_size: audioBuffers.reduce((sum: number, buf: Buffer) => sum + buf.length, 0)
+          })}\n\n`);
+        }
+      } catch (parallelAudioError) {
+        console.error('Parallel TTS processing error:', parallelAudioError);
       }
       
       // Save messages to storage
