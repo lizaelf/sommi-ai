@@ -17,7 +17,6 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
       className="wine-bottle-image"
       style={{
         position: "relative",
-        zIndex: 2,
         marginBottom: "40px",
         marginTop: "20px",
         display: "flex",
@@ -26,57 +25,20 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
         backgroundColor: "transparent",
       }}
     >
-      {/* Blurred circle background - positioned at the top */}
-      <div
+      <img
+        src={image && image.trim() && image.startsWith("/@assets/") ? image : placeholderImage}
+        alt={wineName || "Wine"}
         style={{
-          position: "absolute",
-          width: "180px",
-          height: "180px",
-          borderRadius: "50%",
-          backgroundColor: "#8E8E8E",
-          filter: "blur(60px)",
-          opacity: 0.7,
-          zIndex: 1,
-          top: "0px",
-          left: "50%",
-          transform: "translateX(-50%)",
+          height: "280px",
+          // Add a subtle drop shadow instead of blur
+          filter: "drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2))",
+        }}
+        onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
+        onError={(e) => {
+          console.error(`Wine bottle image failed to load: ${wineName}`);
+          (e.target as HTMLImageElement).src = placeholderImage;
         }}
       />
-      {/* Wine Image or Placeholder */}
-      {image && image.trim() && image.startsWith("/@assets/") ? (
-        <img
-          src={image}
-          alt={wineName || "Wine"}
-          style={{
-            height: "280px !important",
-            zIndex: "2",
-          }}
-          onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
-          onError={(e) => {
-            console.error(
-              `Wine bottle image failed to load: ${wineName}, path: ${image}`,
-            );
-            // Replace with placeholder on error
-            (e.target as HTMLImageElement).src = placeholderImage;
-          }}
-        />
-      ) : (
-        <img
-          src={placeholderImage}
-          alt={`${wineName || "Wine"} placeholder`}
-          style={{
-            height: "280px !important",
-            zIndex: "2 !important",
-            position: "relative !important",
-            maxWidth: "none !important",
-            width: "auto !important",
-            objectFit: "contain !important",
-          }}
-          onLoad={() =>
-            console.log(`Using placeholder image for wine: ${wineName}`)
-          }
-        />
-      )}
     </div>
   );
 };
