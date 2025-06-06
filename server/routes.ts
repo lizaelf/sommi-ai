@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech } from "./openai";
+import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech, generateConversationSummary } from "./openai";
 import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
 import { z } from "zod";
 import { google } from "googleapis";
@@ -460,17 +460,35 @@ Format: Return only the description text, no quotes or additional formatting.`;
           content: msg.content
         }));
         
-        // Limit conversation history to prevent token limit issues
-        // Keep only the last 8 messages (4 exchanges) plus system message
-        const maxHistoryMessages = 8;
-        const recentMessages = formattedPreviousMessages.slice(-maxHistoryMessages);
+        // Use conversation summarization instead of message cropping
+        const messagesWithoutSystem = formattedPreviousMessages.filter(msg => msg.role !== 'system');
         
-        // System message will be dynamically generated based on wine data in chatCompletion function
-        // Remove any existing system messages to avoid conflicts with dynamic system prompt
-        const messagesWithoutSystem = recentMessages.filter(msg => msg.role !== 'system');
-        
-        // Combine limited previous messages with current message
-        allMessages = [...messagesWithoutSystem, ...messages];
+        if (messagesWithoutSystem.length > 10) {
+          // Generate summary of older messages to preserve context
+          const olderMessages = messagesWithoutSystem.slice(0, -6); // Keep last 6 messages
+          const recentMessages = messagesWithoutSystem.slice(-6);
+          
+          if (olderMessages.length > 0) {
+            console.log(`Summarizing ${olderMessages.length} older messages for context preservation`);
+            
+            // Create conversation summary
+            const conversationSummary = await generateConversationSummary(olderMessages, wineData);
+            
+            // Create summary message
+            const summaryMessage = {
+              role: 'assistant' as const,
+              content: `[Previous conversation summary: ${conversationSummary}]`
+            };
+            
+            // Combine summary with recent messages and current message
+            allMessages = [summaryMessage, ...recentMessages, ...messages];
+          } else {
+            allMessages = [...recentMessages, ...messages];
+          }
+        } else {
+          // If conversation is short enough, use all messages
+          allMessages = [...messagesWithoutSystem, ...messages];
+        }
       }
       
       // Check if streaming is requested

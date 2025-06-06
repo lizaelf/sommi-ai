@@ -288,6 +288,50 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
 }
 
 // Function to generate a title for a conversation based on content
+// Generate conversation summary to preserve context without token overflow
+export async function generateConversationSummary(messages: ChatMessage[], wineData?: any): Promise<string> {
+  try {
+    console.log(`Generating summary for ${messages.length} messages`);
+    
+    // Create conversation text from messages
+    const conversationText = messages.map(msg => 
+      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+    ).join('\n');
+    
+    const wineName = wineData ? `${wineData.name} (${wineData.year || 'Unknown year'})` : 'the wine';
+    
+    const summaryPrompt = `Please create a concise summary of this wine conversation about ${wineName}. Focus on:
+- Key wine characteristics discussed
+- User preferences mentioned
+- Important tasting notes or recommendations given
+- Any specific questions answered
+
+Keep the summary under 100 words and preserve the most relevant context for future conversation.
+
+Conversation:
+${conversationText}
+
+Summary:`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Use faster model for summaries
+      messages: [{ role: "user", content: summaryPrompt }],
+      temperature: 0.3,
+      max_tokens: 150,
+      presence_penalty: 0,
+      frequency_penalty: 0
+    });
+
+    const summary = response.choices[0]?.message?.content || "Previous wine discussion covered various aspects of the wine.";
+    console.log(`Generated conversation summary: ${summary.substring(0, 100)}...`);
+    
+    return summary;
+  } catch (error) {
+    console.error('Error generating conversation summary:', error);
+    return "Previous wine conversation covered tasting notes, characteristics, and recommendations.";
+  }
+}
+
 export async function generateConversationTitle(firstMessage: string) {
   try {
     // Define a constant system message for titles
