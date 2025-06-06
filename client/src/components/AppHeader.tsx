@@ -38,7 +38,7 @@ export function AppHeader({
         borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
       }}
     >
-      <div className="max-w-6xl mx-auto" style={{ height: "75px", paddingLeft: "0px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
+      <div className="max-w-6xl mx-auto" style={{ height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
           {/* Left side - Back button or Logo + Title */}
           <div className="flex items-center gap-3">
