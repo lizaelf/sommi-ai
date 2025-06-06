@@ -1091,31 +1091,35 @@ const Cellar = () => {
               height: "228px",
             }}
           >
-            {/* Empty divs above the image */}
+            {/* Wine bottles display */}
             <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
-                onClick={() => handleWineClick(1)}
-              >
-                <img
-                  src="/src/assets/2021-Ridge-Vineyards-Lytton-Springs-Dry-Creek-Zinfandel.png"
-                  alt="Ridge Lytton Springs Dry Creek Zinfandel"
-                  style={{ 
-                    height: "186px", 
-                    width: "60px",
-                    objectFit: "cover",
-                    borderRadius: "4px"
-                  }}
-                />
-              </div>
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(2)}
-              />
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(3)}
-              />
+              {[0, 1, 2].map((index) => {
+                const wine = cellarWines[index];
+                return (
+                  <div
+                    key={index}
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
+                    onClick={() => wine && handleWineClick(wine.id)}
+                  >
+                    {wine && wine.image && (
+                      <img
+                        src={wine.image}
+                        alt={wine.name}
+                        style={{ 
+                          height: "186px", 
+                          width: "60px",
+                          objectFit: "cover",
+                          borderRadius: "4px"
+                        }}
+                        onError={(e) => {
+                          // Hide image if it fails to load
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -1128,20 +1132,34 @@ const Cellar = () => {
               height: "228px",
             }}
           >
-            {/* Empty divs above the image */}
+            {/* Wine bottles display */}
             <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(4)}
-              />
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(5)}
-              />
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(6)}
-              />
+              {[3, 4, 5].map((index) => {
+                const wine = cellarWines[index];
+                return (
+                  <div
+                    key={index}
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
+                    onClick={() => wine && handleWineClick(wine.id)}
+                  >
+                    {wine && wine.image && (
+                      <img
+                        src={wine.image}
+                        alt={wine.name}
+                        style={{ 
+                          height: "186px", 
+                          width: "60px",
+                          objectFit: "cover",
+                          borderRadius: "4px"
+                        }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -1154,20 +1172,34 @@ const Cellar = () => {
               height: "228px",
             }}
           >
-            {/* Empty divs above the image */}
+            {/* Wine bottles display */}
             <div className="absolute inset-0 grid grid-cols-3 gap-1 h-full">
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(7)}
-              />
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(8)}
-              />
-              <div
-                className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors"
-                onClick={() => handleWineClick(9)}
-              />
+              {[6, 7, 8].map((index) => {
+                const wine = cellarWines[index];
+                return (
+                  <div
+                    key={index}
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
+                    onClick={() => wine && handleWineClick(wine.id)}
+                  >
+                    {wine && wine.image && (
+                      <img
+                        src={wine.image}
+                        alt={wine.name}
+                        style={{ 
+                          height: "186px", 
+                          width: "60px",
+                          objectFit: "cover",
+                          borderRadius: "4px"
+                        }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
