@@ -9,6 +9,7 @@ import ChatInput from "./ChatInput";
 import VoiceAssistant from "./VoiceAssistant";
 import WineBottleImage from "./WineBottleImage";
 import USFlagImage from "./USFlagImage";
+import Button from "./ui/Button";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import typography from "@/styles/typography";
@@ -1820,37 +1821,18 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         >
                           Chat history
                         </h1>
-                        <button
+                        <Button
                           onClick={() => {
                             setShowContactSheet(true);
                             setAnimationState("opening");
                             setTimeout(() => setAnimationState("open"), 50);
                           }}
-                          style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.08)",
-                            borderRadius: "32px",
-                            height: "56px",
-                            minHeight: "56px",
-                            maxHeight: "56px",
-                            padding: "0 16px",
-                            margin: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            border: "none",
-                            color: "white",
-                            fontFamily: "Inter, sans-serif",
-                            fontSize: "16px",
-                            fontWeight: 500,
-                            cursor: "pointer",
-                            outline: "none",
-                            width: "100%",
-                            boxSizing: "border-box",
-                            lineHeight: "1",
-                          }}
+                          variant="secondary"
+                          size="lg"
+                          fullWidth
                         >
                           View wine history
-                        </button>
+                        </Button>
                       </div>)
                     )}
                   </>
