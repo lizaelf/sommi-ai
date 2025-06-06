@@ -1510,7 +1510,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             marginBottom: "24px",
                             textAlign: "left",
                           }}
-                        >Chat summary</h1>
+                        >
+                          Summary
+                        </h1>
 
                         {/* Discussion Summary */}
                         {messages.length > 0 && (
@@ -1909,7 +1911,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             <div className="max-w-3xl mx-auto">
               {showBuyButton && !showChatInput ? (
                 // Show Buy Again Button for WineDetails page
-                (<button
+                <button
                   onClick={() => {
                     if (currentWine?.buyAgainLink) {
                       window.open(currentWine.buyAgainLink, '_blank');
@@ -1939,8 +1941,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     boxSizing: "border-box",
                     lineHeight: "1",
                   }}
-                >Buy again
-                                  </button>)
+                >
+                  Buy again
+                </button>
               ) : (
                 // Show suggestions and input for Home page
                 (<>
