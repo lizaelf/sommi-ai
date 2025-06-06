@@ -561,15 +561,18 @@ button:active {
   animation-delay: 4s;
 }
 
-/* Remove circular background from wine bottle image */
-.wine-bottle-image::before,
-.wine-bottle-image::after {
-  display: none !important;
-  content: none !important;
-}
-
-.wine-bottle-image {
-  background: transparent !important;
-  background-image: none !important;
-  background-color: transparent !important;
+/* Add blurred circular background behind wine bottle image */
+.wine-bottle-image::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(139, 0, 0, 0.6) 0%, rgba(86, 0, 0, 0.4) 30%, rgba(77, 0, 0, 0.2) 60%, transparent 100%);
+  border-radius: 50%;
+  filter: blur(20px);
+  z-index: -1;
+  opacity: 0.8;
 }
