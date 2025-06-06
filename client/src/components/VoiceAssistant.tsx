@@ -23,20 +23,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [isThinking, setIsThinking] = useState(false);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const streamRef = useRef<MediaStream | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const { toast } = useToast();
 
-  // Cleanup audio resources when component unmounts
+  // Mobile-specific: Force listening state persistence and prevent premature closing
   useEffect(() => {
-    return () => {
-      stopListening();
-    };
-  }, []);
+    if (isMobileDevice && isListening) {
+      // Force state persistence every 500ms on mobile to prevent state loss
+      const interval = setInterval(() => {
+        if (
+          recognitionRef.current &&
+          recognitionRef.current.readyState !== undefined
+        ) {
+          setIsListening(true);
+          setShowBottomSheet(true);
+        }
+      }, 500);
+
+      return () => clearInterval(interval);
+    }
+  }, [isListening, isMobileDevice]);
 
   // Keep bottom sheet open during processing and manage thinking state
   useEffect(() => {
@@ -112,10 +121,58 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   }, []);
 
   const startListening = async () => {
-    console.log("Starting audio recording for Whisper transcription");
+    // Mobile-specific: Ensure this is triggered by user interaction
+    console.log("Starting voice recognition - user interaction detected");
 
-    // Request microphone permission
-    console.log("Requesting microphone permission for voice recording");
+    // Check speech recognition support with mobile-specific detection
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.error("Speech recognition not supported on this device/browser");
+      toast({
+        description: (
+          <span
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Voice input not supported on this device
+          </span>
+        ),
+        duration: 3000,
+        className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
+      });
+      return;
+    }
+
+    // Initialize audio context for mobile compatibility
+    try {
+      if (typeof (window as any).initAudioContext === "function") {
+        const audioInitialized = await (window as any).initAudioContext();
+        console.log("Audio context initialized for mobile:", audioInitialized);
+      }
+    } catch (audioError) {
+      console.warn("Audio context initialization failed:", audioError);
+    }
+
+    // Request microphone permission with mobile-specific handling
+    console.log("Requesting microphone permission for voice recognition");
     const hasPermission = await requestMicrophonePermission();
     if (!hasPermission) {
       toast({
@@ -150,97 +207,187 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
 
     try {
-      // Get user media for audio recording
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 16000, // Optimal for Whisper
-        } 
-      });
-      
-      streamRef.current = stream;
+      // Mobile-specific speech recognition setup
+      const SpeechRecognition =
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
 
-      // Initialize MediaRecorder with optimal settings for Whisper
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus', // Opus codec for better compression
-      });
-      
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      // Set up MediaRecorder event handlers
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-      
-      mediaRecorder.onstop = async () => {
-        console.log("Audio recording stopped, processing...");
-        setIsListening(false);
-        setIsThinking(true);
-        
-        // Create audio blob from recorded chunks
-        const audioBlob = new Blob(audioChunksRef.current, { 
-          type: 'audio/webm;codecs=opus' 
+      if (!SpeechRecognition) {
+        console.error("Speech recognition not supported on this device");
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Voice input not supported on this device
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
         });
-        
-        console.log(`Audio blob created: ${Math.round(audioBlob.size / 1024)}KB`);
-        
-        try {
-          // Send audio to Whisper transcription endpoint
-          const formData = new FormData();
-          formData.append('audio', audioBlob, 'recording.webm');
-          
-          const response = await fetch('/api/transcribe', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (!response.ok) {
-            throw new Error(`Transcription failed: ${response.statusText}`);
+        return;
+      }
+
+      // Mobile-specific: Pre-set listening state immediately
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        console.log("Mobile device detected - pre-setting listening state");
+        setIsListening(true);
+        setShowBottomSheet(true);
+
+        // Force update with multiple attempts for mobile browsers
+        setTimeout(() => {
+          setIsListening(true);
+          setShowBottomSheet(true);
+        }, 50);
+
+        setTimeout(() => {
+          setIsListening(true);
+          setShowBottomSheet(true);
+        }, 100);
+      }
+
+      const recognition = new SpeechRecognition();
+
+      // Mobile-optimized settings
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+      recognition.maxAlternatives = 1;
+
+      // Mobile-specific: Additional settings for mobile browsers
+      if (isMobile) {
+        // Only set grammars if SpeechGrammarList is available
+        if ((window as any).SpeechGrammarList) {
+          recognition.grammars = new (window as any).SpeechGrammarList();
+        }
+      }
+
+      // Mobile-specific timeout settings
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        console.log(
+          "Mobile device detected - applying mobile-specific settings",
+        );
+        // Shorter timeout for mobile devices
+        setTimeout(() => {
+          if (recognitionRef.current && isListening) {
+            console.log("Mobile timeout - stopping recognition");
+            recognition.stop();
           }
-          
-          const result = await response.json();
-          console.log("Whisper transcription result:", result.text);
-          
-          if (result.text && result.text.trim()) {
-            onSendMessage(result.text.trim());
-          } else {
-            console.warn("No transcription text received");
-            toast({
-              description: (
-                <span
-                  style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Could not understand audio. Please try again.
-                </span>
-              ),
-              duration: 3000,
-              className: "bg-white text-black border-none",
-              style: {
-                position: "fixed",
-                top: "74px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "auto",
-                maxWidth: "none",
-                padding: "8px 24px",
-                borderRadius: "32px",
-                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                zIndex: 9999,
-              },
-            });
-          }
-        } catch (error) {
-          console.error("Transcription error:", error);
+        }, 8000); // 8 seconds instead of default
+      }
+
+      recognition.onstart = () => {
+        console.log("Voice recognition onstart event triggered");
+        setIsListening(true);
+        setShowBottomSheet(true);
+        console.log("Voice recognition started - state updated");
+
+        // Mobile-specific: Force state update
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          console.log("Mobile device - forcing listening state update");
+          // Multiple attempts to ensure state is set on mobile
+          setTimeout(() => {
+            setIsListening(true);
+            setShowBottomSheet(true);
+          }, 50);
+
+          setTimeout(() => {
+            setIsListening(true);
+            setShowBottomSheet(true);
+          }, 150);
+        }
+
+        // Dispatch mic-status event for animation
+        setTimeout(() => {
+          window.dispatchEvent(
+            new CustomEvent("mic-status", {
+              detail: { status: "listening" },
+            }),
+          );
+        }, 100);
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        console.log("Final transcript:", transcript);
+
+        setIsListening(false);
+        // Keep bottom sheet open during processing
+        setShowBottomSheet(true);
+
+        // Dispatch processing event for animation
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "processing" },
+          }),
+        );
+
+        onSendMessage(transcript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+
+        // Mobile-specific: Ensure state is properly reset on mobile
+        if (isMobile) {
+          console.log("Mobile device - forcing error state reset");
+          setTimeout(() => {
+            setIsListening(false);
+            setShowBottomSheet(false);
+          }, 100);
+        }
+
+        // Dispatch stopped event for animation on error
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "stopped" },
+          }),
+        );
+
+        // Enhanced mobile error handling
+        let errorMessage = "Voice recognition failed";
+
+        switch (event.error) {
+          case "not-allowed":
+            errorMessage = "Microphone permission denied";
+            break;
+          case "no-speech":
+            errorMessage = "No speech detected - please try again";
+            break;
+          case "network":
+            errorMessage = "Network error - check your connection";
+            break;
+          case "audio-capture":
+            errorMessage = "Microphone not accessible";
+            break;
+          case "aborted":
+            console.log("Voice recognition was stopped by user");
+            return; // Don't show error toast for user-initiated stops
+          default:
+            console.error("Unhandled speech recognition error:", event.error);
+        }
+
+        // Only show error toast for actual errors (not user-initiated stops)
+        if (event.error !== "aborted") {
           toast({
             description: (
               <span
@@ -251,7 +398,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                   whiteSpace: "nowrap",
                 }}
               >
-                Failed to process audio. Please try again.
+                {errorMessage}
               </span>
             ),
             duration: 3000,
@@ -269,114 +416,97 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               zIndex: 9999,
             },
           });
-        } finally {
-          setIsThinking(false);
-          if (!isProcessing) {
-            setShowBottomSheet(false);
-          }
-          // Emit microphone status event for wine bottle animation
-          window.dispatchEvent(
-            new CustomEvent("mic-status", {
-              detail: { status: "stopped" },
-            }),
-          );
         }
       };
-      
-      // Start recording
-      setIsListening(true);
-      setShowBottomSheet(true);
-      mediaRecorder.start();
-      console.log("Audio recording started");
-      
-      // Emit microphone status event for wine bottle animation
-      window.dispatchEvent(
-        new CustomEvent("mic-status", {
-          detail: { status: "listening" },
-        }),
-      );
-      
-      // Auto-stop recording after 10 seconds
-      setTimeout(() => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          console.log("Auto-stopping recording after 10 seconds");
-          mediaRecorderRef.current.stop();
-        }
-      }, 10000);
-    } catch (error) {
-      console.error("Error starting audio recording:", error);
-      setIsListening(false);
-      setShowBottomSheet(false);
-      
-      if (error instanceof Error && error.name === "NotAllowedError") {
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Microphone access denied
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
-      } else {
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Failed to start voice recording
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
+
+      recognition.onend = () => {
+        console.log("Voice recognition ended");
+        setIsListening(false);
+
+        // Don't close bottom sheet immediately - keep it open for processing state
+        // The bottom sheet will be handled by the processing flow
+
+        // Dispatch stopped event for animation
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "stopped" },
+          }),
+        );
+      };
+
+      recognitionRef.current = recognition;
+
+      // Mobile-specific: Additional state setting before start
+      if (isMobile) {
+        console.log(
+          "Mobile device - setting final listening state before start",
+        );
+        setIsListening(true);
+        setShowBottomSheet(true);
       }
+
+      recognition.start();
+      console.log("Voice recognition setup complete and started");
+
+      // Mobile-specific: Force state after start
+      if (isMobile) {
+        setTimeout(() => {
+          if (recognitionRef.current) {
+            setIsListening(true);
+            setShowBottomSheet(true);
+            console.log("Mobile device - forced listening state after start");
+          }
+        }, 200);
+
+        setTimeout(() => {
+          if (recognitionRef.current) {
+            setIsListening(true);
+            setShowBottomSheet(true);
+            console.log(
+              "Mobile device - second forced listening state after start",
+            );
+          }
+        }, 500);
+      }
+    } catch (error) {
+      console.error("Failed to start speech recognition:", error);
+      setIsListening(false);
+
+      toast({
+        description: (
+          <span
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Failed to start voice recognition
+          </span>
+        ),
+        duration: 2000,
+        className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
+      });
     }
   };
 
   const stopListening = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-      mediaRecorderRef.current.stop();
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
     }
     setIsListening(false);
   };
