@@ -625,7 +625,10 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Text-to-speech endpoint
+  // TTS request deduplication map
+  const activeRequests = new Map<string, Promise<Buffer>>();
+
+  // Text-to-speech endpoint with deduplication
   app.post("/api/text-to-speech", async (req, res) => {
     try {
       console.log("Received text-to-speech request");
@@ -652,19 +655,49 @@ Format: Return only the description text, no quotes or additional formatting.`;
       const { text } = validationResult.data;
       console.log("Received TTS request for text:", text.substring(0, 50) + "...");
       
-      // Convert text to speech
-      const audioBuffer = await textToSpeech(text);
+      // Create a unique request key for deduplication
+      const requestKey = `${text.trim()}`;
       
-      // Set proper headers
-      res.set({
-        'Content-Type': 'audio/mpeg',
-        'Content-Length': audioBuffer.length.toString(),
-        'Cache-Control': 'no-cache'
-      });
+      // Check if there's already an active request for this text
+      if (activeRequests.has(requestKey)) {
+        console.log("Deduplicating TTS request - using existing request");
+        const audioBuffer = await activeRequests.get(requestKey)!;
+        
+        // Set proper headers
+        res.set({
+          'Content-Type': 'audio/mpeg',
+          'Content-Length': audioBuffer.length.toString(),
+          'Cache-Control': 'no-cache'
+        });
+        
+        // Send the audio file
+        res.send(audioBuffer);
+        console.log("Sent deduplicated audio response, size:", audioBuffer.length);
+        return;
+      }
       
-      // Send the audio file
-      res.send(audioBuffer);
-      console.log("Sent audio response, size:", audioBuffer.length);
+      // Create new TTS request
+      const requestPromise = textToSpeech(text);
+      activeRequests.set(requestKey, requestPromise);
+      
+      try {
+        // Convert text to speech
+        const audioBuffer = await requestPromise;
+        
+        // Set proper headers
+        res.set({
+          'Content-Type': 'audio/mpeg',
+          'Content-Length': audioBuffer.length.toString(),
+          'Cache-Control': 'no-cache'
+        });
+        
+        // Send the audio file
+        res.send(audioBuffer);
+        console.log("Sent audio response, size:", audioBuffer.length);
+      } finally {
+        // Clean up the active request
+        activeRequests.delete(requestKey);
+      }
     } catch (err) {
       const error = err as any;
       console.error("Error in text-to-speech endpoint:", error);
