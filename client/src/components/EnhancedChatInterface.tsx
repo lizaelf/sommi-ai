@@ -498,6 +498,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [, setLocation] = useLocation();
   const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
   const [hasTriggeredAutoQuestion, setHasTriggeredAutoQuestion] = useState(false);
+  const [currentEventSource, setCurrentEventSource] = useState<EventSource | null>(null);
   const { toast } = useToast();
 
   // Create a ref for the chat container to allow scrolling
@@ -691,6 +692,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           optimize_for_speed: 'true'
         })}`);
         
+        // Store the current event source for abort functionality
+        setCurrentEventSource(eventSource);
+        
         let streamingContent = '';
         let firstTokenReceived = false;
         let assistantMessageId = Date.now() + 1;
@@ -754,23 +758,27 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 window.dispatchEvent(new CustomEvent('showUnmuteButton'));
                 
                 eventSource.close();
+                setCurrentEventSource(null);
                 refetchMessages();
                 break;
                 
               case 'error':
                 console.error("Streaming error:", data.message);
                 eventSource.close();
+                setCurrentEventSource(null);
                 throw new Error(data.message || 'Streaming failed');
             }
           } catch (parseError) {
             console.error('Error parsing streaming event:', parseError);
             eventSource.close();
+            setCurrentEventSource(null);
           }
         };
         
         eventSource.onerror = (error) => {
           console.error('EventSource error:', error);
           eventSource.close();
+          setCurrentEventSource(null);
           // Fallback to regular request
           throw new Error('Streaming connection failed');
         };
