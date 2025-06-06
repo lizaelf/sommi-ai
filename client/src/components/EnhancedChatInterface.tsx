@@ -835,8 +835,40 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       });
     } finally {
       setIsTyping(false);
+      setCurrentEventSource(null);
     }
   };
+
+  // Abort ongoing conversation when component unmounts or conversation changes
+  useEffect(() => {
+    return () => {
+      if (currentEventSource) {
+        console.log("Aborting ongoing conversation due to component cleanup");
+        currentEventSource.close();
+        setCurrentEventSource(null);
+      }
+    };
+  }, [currentEventSource]);
+
+  // Global function to abort conversation when bottom sheet closes
+  useEffect(() => {
+    const abortConversation = () => {
+      if (currentEventSource) {
+        console.log("Aborting conversation due to bottom sheet close");
+        currentEventSource.close();
+        setCurrentEventSource(null);
+        setIsTyping(false);
+      }
+    };
+
+    // Listen for bottom sheet close events
+    window.addEventListener('abortConversation', abortConversation);
+    
+    return () => {
+      window.removeEventListener('abortConversation', abortConversation);
+      abortConversation(); // Clean up on unmount
+    };
+  }, [currentEventSource]);
 
   // Display loading state if no currentConversationId
   if (!currentConversationId) {

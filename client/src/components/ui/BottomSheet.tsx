@@ -48,6 +48,10 @@ export function BottomSheet({
 
   const handleClose = () => {
     setAnimationState("closing");
+    
+    // Dispatch event to abort any ongoing conversations
+    window.dispatchEvent(new CustomEvent('abortConversation'));
+    
     setTimeout(() => {
       setAnimationState("closed");
       onClose();
