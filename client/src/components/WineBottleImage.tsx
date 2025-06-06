@@ -1,6 +1,6 @@
 import React from "react";
 import placeholderImage from "@assets/Placeholder.png";
-import ridgeWineImage from "@assets/2021-Ridge-Vineyards-Lytton-Springs-Dry-Creek-Zinfandel.png";
+import ridgeWineImage from "@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg";
 
 interface WineBottleImageProps {
   image?: string;
@@ -31,7 +31,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
             width: "180px",
             height: "180px",
             borderRadius: "50%",
-            backgroundColor: "#8E8E8E",
+            backgroundColor: "transparent",
             filter: "blur(60px)",
             opacity: 0.7,
             zIndex: 1,
