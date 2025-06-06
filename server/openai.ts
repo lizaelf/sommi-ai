@@ -278,3 +278,28 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     throw new Error(`Failed to convert text to speech: ${(error as any)?.message || "Unknown error"}`);
   }
 }
+
+// Function to transcribe audio using OpenAI Whisper
+export async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
+  try {
+    console.log("Transcribing audio with OpenAI Whisper...");
+    console.log("Audio buffer size:", audioBuffer.length);
+    
+    // Create a file-like object from the buffer
+    const audioFile = new File([audioBuffer], "audio.webm", { type: "audio/webm" });
+    
+    // Use OpenAI's Whisper API for transcription
+    const response = await openai.audio.transcriptions.create({
+      file: audioFile,
+      model: "whisper-1",
+      language: "en", // Specify English for better accuracy
+      response_format: "text"
+    });
+    
+    console.log("Whisper transcription successful:", response);
+    return response.trim();
+  } catch (error) {
+    console.error("Error in audio transcription:", error);
+    throw new Error(`Failed to transcribe audio: ${(error as any)?.message || "Unknown error"}`);
+  }
+}
