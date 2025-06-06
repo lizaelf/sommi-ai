@@ -54,12 +54,10 @@ export function AppHeader({
               </div>
             ) : (
               <>
-                {hideLogo ? (
-                  title && (
-                    <h1 className="text-white text-[18px] font-medium truncate whitespace-nowrap flex-1 mr-4 text-left">
-                      {title}
-                    </h1>
-                  )
+                {hideLogo && title ? (
+                  <h1 className="text-white text-[18px] font-medium truncate whitespace-nowrap flex-1 mr-4 text-left">
+                    {title}
+                  </h1>
                 ) : (
                   <Logo />
                 )}
