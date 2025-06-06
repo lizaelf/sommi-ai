@@ -346,6 +346,32 @@ const responseCache = new Map<string, { content: string; timestamp: number }>();
 const MAX_RESPONSE_CACHE_SIZE = 100;
 
 // Function to convert text to speech using OpenAI's Text-to-Speech API with consistent voice
+// Real-time streaming chat completion for first-token TTS
+export async function chatCompletionStream(messages: ChatMessage[], wineData?: any) {
+  console.log("Starting real-time chat completion stream");
+  
+  const systemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
+  const newMessages = [
+    { role: "system" as const, content: systemPrompt },
+    ...messages
+  ];
+  
+  console.log("Using streaming OpenAI API for first-token TTS");
+  
+  const stream = await openai.chat.completions.create({
+    model: MODEL,
+    messages: newMessages,
+    temperature: 0.3,
+    max_tokens: parseInt(process.env.MAX_TOKENS || '150'),
+    presence_penalty: -0.1,
+    frequency_penalty: 0.2,
+    top_p: 0.9,
+    stream: true,
+  });
+  
+  return stream;
+}
+
 export async function textToSpeech(text: string): Promise<Buffer> {
   try {
     console.log("Converting text to speech...");

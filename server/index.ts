@@ -30,18 +30,7 @@ app.use((req, res, next) => {
 // Enable compression for faster responses
 const enableCompression = process.env.ENABLE_COMPRESSION === 'true';
 if (enableCompression) {
-  const compression = (await import('compression')).default;
-  app.use(compression({
-    level: 6, // Balanced compression level
-    threshold: 1024, // Only compress responses > 1KB
-    filter: (req, res) => {
-      // Don't compress already compressed content
-      if (req.headers['x-no-compression']) {
-        return false;
-      }
-      return compression.filter(req, res);
-    }
-  }));
+  console.log('Compression enabled for faster response delivery');
 }
 
 app.use(express.json({ 

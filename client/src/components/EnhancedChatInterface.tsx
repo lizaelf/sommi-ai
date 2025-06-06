@@ -21,6 +21,7 @@ import {
 import { DataSyncManager } from "@/utils/dataSync";
 import { ShiningText } from "@/components/ShiningText";
 import { TextGenerateEffect } from "./ui/text-generate-effect";
+import { createStreamingClient, isStreamingSupported } from "@/lib/streamingClient";
 // Import typography styles
 
 // Extend Window interface to include voiceAssistant

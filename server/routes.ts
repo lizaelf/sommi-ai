@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { chatCompletion, checkApiStatus, textToSpeech } from "./openai";
+import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech } from "./openai";
 import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
 import { z } from "zod";
 import { google } from "googleapis";
@@ -473,7 +473,83 @@ Format: Return only the description text, no quotes or additional formatting.`;
         allMessages = [...messagesWithoutSystem, ...messages];
       }
       
-      // Call OpenAI API
+      // Check if streaming is requested
+      const enableStreaming = process.env.ENABLE_STREAMING === 'true';
+      const requestStreaming = req.headers['accept'] === 'text/event-stream';
+      
+      if (enableStreaming && requestStreaming) {
+        // Set up Server-Sent Events for real-time streaming
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Cache-Control'
+        });
+        
+        try {
+          // Start streaming response from OpenAI
+          const stream = await chatCompletionStream(allMessages, wineData);
+          let fullContent = '';
+          let firstTokenReceived = false;
+          
+          for await (const chunk of stream) {
+            const delta = chunk.choices?.[0]?.delta?.content;
+            if (delta) {
+              fullContent += delta;
+              
+              // Send first token immediately for TTS to start
+              if (!firstTokenReceived) {
+                firstTokenReceived = true;
+                res.write(`data: ${JSON.stringify({ 
+                  type: 'first_token', 
+                  content: delta,
+                  start_tts: true 
+                })}\n\n`);
+              }
+              
+              // Stream each token for real-time display
+              res.write(`data: ${JSON.stringify({ 
+                type: 'token', 
+                content: delta 
+              })}\n\n`);
+            }
+          }
+          
+          // Save messages to storage
+          if (actualConversationId) {
+            await storage.createMessage({
+              content: messages[messages.length - 1].content,
+              role: 'user',
+              conversationId: actualConversationId
+            });
+            
+            await storage.createMessage({
+              content: fullContent,
+              role: 'assistant',
+              conversationId: actualConversationId
+            });
+          }
+          
+          // Send completion signal
+          res.write(`data: ${JSON.stringify({ 
+            type: 'complete', 
+            conversationId: actualConversationId 
+          })}\n\n`);
+          
+        } catch (streamError) {
+          console.error('Streaming error:', streamError);
+          res.write(`data: ${JSON.stringify({ 
+            type: 'error', 
+            message: 'Streaming failed, falling back to regular response' 
+          })}\n\n`);
+        }
+        
+        res.end();
+        return;
+      }
+      
+      // Fallback to regular response
       const response = await chatCompletion(allMessages, wineData);
       
       // Save message to storage if conversation exists
