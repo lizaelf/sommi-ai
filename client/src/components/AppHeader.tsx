@@ -45,7 +45,15 @@ export function AppHeader({
             {showBackButton && onBack ? (
               <button 
                 onClick={onBack}
-                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
+                className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
+                style={{
+                  background: 'transparent !important',
+                  border: 'none !important',
+                  outline: 'none !important',
+                  boxShadow: 'none !important',
+                  padding: '0 !important',
+                  margin: '0 !important'
+                }}
               >
                 <ArrowLeft className="w-5 h-5 text-white" />
               </button>
