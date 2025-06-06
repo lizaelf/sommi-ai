@@ -32,16 +32,37 @@ export default function WineDetails() {
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
+  // Determine if this is a scanned page (root/scanned routes) or wine details page
+  const isScannedPage = location === '/' || location === '/scanned' || location.includes('/scanned?');
+  
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
     try {
-      // Get wine data from DataSyncManager using the ID from URL params
-      const wine = DataSyncManager.getWineById(wineId);
-      if (wine) {
-        console.log(`WineDetails: Found wine:`, wine);
-        return wine;
+      // For scanned page, check URL parameters first
+      if (isScannedPage) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const wineId = urlParams.get('wine');
+        
+        if (wineId) {
+          console.log(`Scanned page: Loading wine data for ID ${wineId}`);
+          const wine = DataSyncManager.getWineById(parseInt(wineId));
+          if (wine) {
+            console.log(`Scanned page: Found wine:`, wine);
+            return wine;
+          }
+        } else {
+          console.log('No wine ID found in URL parameters');
+          return null;
+        }
       } else {
-        console.log(`Wine ID ${wineId} not found in DataSyncManager`);
+        // For wine details page, use the route parameter
+        const wine = DataSyncManager.getWineById(wineId);
+        if (wine) {
+          console.log(`WineDetails: Found wine:`, wine);
+          return wine;
+        } else {
+          console.log(`Wine ID ${wineId} not found in DataSyncManager`);
+        }
       }
       
       // Fallback to localStorage for backwards compatibility
@@ -83,41 +104,43 @@ export default function WineDetails() {
     <div className="min-h-screen bg-background">
       <div className="relative">
         
-        {/* AppHeader with ProfileIcon */}
+        {/* AppHeader - Different behavior for scanned vs wine details */}
         <AppHeader 
-          title={wine ? `${wine.year} ${wine.name}` : getWineDisplayName()}
-          showBackButton={true}
-          onBack={() => window.history.back()}
+          title={isScannedPage ? undefined : (wine ? `${wine.year} ${wine.name}` : getWineDisplayName())}
+          showBackButton={!isScannedPage}
+          onBack={!isScannedPage ? () => window.history.back() : undefined}
           rightContent={
             <>
-              <Link to="/cellar">
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: 'white',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontFamily: 'Inter, sans-serif',
-                    fontWeight: '400',
-                    lineHeight: 'normal',
-                    padding: '0',
-                    margin: '0'
-                  }}>
+              {isScannedPage && (
+                <Link to="/cellar">
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: 'white',
+                      textDecoration: 'none',
+                      fontSize: '14px',
+                      fontFamily: 'Inter, sans-serif',
+                      fontWeight: '400',
+                      lineHeight: 'normal',
+                      padding: '0',
+                      margin: '0'
+                    }}>
                     <span style={{
-                    color: 'white',
-                    fontSize: '14px',
-                    fontFamily: 'Inter, sans-serif',
-                    fontWeight: '400',
-                    lineHeight: 'normal',
-                    display: 'inline-block',
-                    padding: '0',
-                    margin: '0'
-                  }}>
-                    My cellar
-                  </span>
-                </div>
-              </Link>
+                      color: 'white',
+                      fontSize: '14px',
+                      fontFamily: 'Inter, sans-serif',
+                      fontWeight: '400',
+                      lineHeight: 'normal',
+                      display: 'inline-block',
+                      padding: '0',
+                      margin: '0'
+                    }}>
+                      My cellar
+                    </span>
+                  </div>
+                </Link>
+              )}
               <ProfileIcon 
                 onEditContact={() => console.log('Edit contact clicked')}
                 onManageNotifications={() => console.log('Manage notifications clicked')}
