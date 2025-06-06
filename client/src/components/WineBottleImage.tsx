@@ -1,6 +1,8 @@
 import React from 'react';
 import placeholderImage from '@assets/Placeholder.png';
 
+import _2021_Ridge_Vineyards_Lytton_Springs_Dry_Creek_Zinfandel from "@assets/2021-Ridge-Vineyards-Lytton-Springs-Dry-Creek-Zinfandel.png";
+
 interface WineBottleImageProps {
   image?: string;
   wineName?: string;
@@ -32,11 +34,10 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) =>
         left: '50%',
         transform: 'translateX(-50%)'
       }} />
-      
       {/* Wine Image or Placeholder */}
       {image && image.trim() && image.startsWith('/@assets/') ? (
         <img
-          src={image}
+          src={_2021_Ridge_Vineyards_Lytton_Springs_Dry_Creek_Zinfandel}
           alt={wineName || 'Wine'}
           style={{
             height: '240px',
