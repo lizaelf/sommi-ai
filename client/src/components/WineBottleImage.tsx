@@ -1,6 +1,6 @@
 import React from "react";
 import placeholderImage from "@assets/Placeholder.png";
-import ridgeWineImage from "@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg";
+import ridgeWineImage from "@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.png";
 
 interface WineBottleImageProps {
   image?: string;
