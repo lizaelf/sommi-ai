@@ -40,8 +40,8 @@ export function AppHeader({
     >
       <div className="max-w-6xl mx-auto" style={{ height: "75px", paddingLeft: "0px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
-          {/* Left side - Back button or Logo */}
-          <div className="flex items-center justify-start" style={{ minWidth: "80px" }}>
+          {/* Left side - Back button or Logo + Title */}
+          <div className="flex items-center gap-3">
             {showBackButton && onBack ? (
               <div
                 onClick={onBack}
@@ -52,16 +52,14 @@ export function AppHeader({
             ) : (
               <Logo />
             )}
+            {title && (
+              <h1 
+                className="text-white text-[18px] font-medium truncate whitespace-nowrap max-w-[200px]"
+              >
+                {title}
+              </h1>
+            )}
           </div>
-          
-          {/* Center - Title */}
-          {title && (
-            <h1 
-              className="text-white text-[18px] font-medium absolute left-1/2 transform -translate-x-1/2 truncate whitespace-nowrap max-w-[200px]"
-            >
-              {title}
-            </h1>
-          )}
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
