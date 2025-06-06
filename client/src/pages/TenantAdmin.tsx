@@ -10,6 +10,7 @@ import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import placeholderImage from "@assets/Placeholder.png";
+import AppHeader from "@/components/AppHeader";
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;
@@ -355,31 +356,15 @@ const TenantAdmin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 bg-black z-[60] border-b border-white/10">
+      <AppHeader 
+        title={currentTenant?.name || formData.profile.wineryName || "Winery Name"}
+        showBackButton={true}
+        onBack={() => setLocation('/somm-tenant-admin')}
+        className="z-[60]"
+      />
+      
+      <div className="fixed top-[75px] left-0 right-0 bg-black z-[59] border-b border-white/10">
         <div className="max-w-6xl mx-auto p-4">
-          {/* Title */}
-          <div className="mb-3 flex items-center justify-between">
-            <button 
-              onClick={() => setLocation('/somm-tenant-admin')}
-              className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-white" />
-            </button>
-            <h1 
-              className="text-white text-[18px] font-medium"
-              style={{
-                position: "absolute",
-                left: "50%",
-                transform: "translateX(-50%)"
-              }}
-            >{currentTenant?.name || formData.profile.wineryName || "Winery Name"}</h1>
-            
-            <div className="flex items-center gap-3">
-              {/* Removed add button */}
-            </div>
-          </div>
-
           {/* SegmentedPicker */}
           <div className="border-b border-white/10 pb-3">
             <SegmentedPicker
@@ -442,7 +427,7 @@ const TenantAdmin: React.FC = () => {
 
       {/* Content with top and bottom padding to account for fixed header */}
       <div style={{ 
-        paddingTop: activeTab === "cms" ? "188px" : "132px",
+        paddingTop: activeTab === "cms" ? "163px" : "107px",
         paddingBottom: "40px"
       }}>
         <div className="max-w-6xl mx-auto p-6">

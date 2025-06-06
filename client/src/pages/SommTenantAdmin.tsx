@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Plus, Save, X, Menu, Search, User, Settings } from "lucide-react";
 import { Link } from "wouter";
+import AppHeader from "@/components/AppHeader";
 
 interface Tenant {
   id: number;
@@ -90,28 +91,20 @@ const SommTenantAdmin: React.FC = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#3a3a3a" }}>
-      {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
-        <h1
-          className="text-lg font-medium"
-          style={{
-            color: "white",
-          }}
-        >
-          Somm tenant admin
-        </h1>
-        <div className="absolute right-4 flex items-center gap-3">
+      <AppHeader 
+        title="Somm tenant admin"
+        rightContent={
           <button
             onClick={() => (window.location.href = "/tenant-create")}
             className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
           >
             <Plus className="w-6 h-6 text-white" />
           </button>
-        </div>
-      </div>
+        }
+      />
       <div
         style={{
-          paddingTop: "100px",
+          paddingTop: "75px",
           paddingLeft: "24px",
           paddingRight: "24px",
         }}
