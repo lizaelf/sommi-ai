@@ -1,6 +1,6 @@
 # UI Component Library
 
-A comprehensive collection of reusable components for the wine application, designed to maintain consistency and reduce code duplication across the application.
+A streamlined collection of reusable components for the wine application, designed to maintain consistency and eliminate code duplication. All duplicate components have been consolidated into single, comprehensive implementations.
 
 ## Core Components
 
