@@ -509,6 +509,30 @@ const Cellar = () => {
         hasImage: !!w.image, 
         imageType: w.image?.substring(0, 20) + '...' 
       })));
+      
+      // Always ensure wine ID 1 is at the top of the cellar if it exists in admin data
+      const adminWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+      const wine1 = adminWines.find((w: any) => w.id === 1);
+      
+      if (wine1) {
+        // Check if wine 1 is already in cellar
+        const hasWine1 = wines.some(w => w.id === 1);
+        
+        if (!hasWine1) {
+          // Add wine 1 to cellar automatically
+          const wine1ForCellar = {
+            id: wine1.id,
+            name: wine1.name,
+            year: wine1.year || 2021,
+            image: wine1.image,
+            addedAt: Date.now(),
+            scannedCount: 0
+          };
+          wines.unshift(wine1ForCellar);
+          console.log('Auto-added wine ID 1 to cellar:', wine1ForCellar);
+        }
+      }
+      
       setCellarWines(wines);
     };
 
