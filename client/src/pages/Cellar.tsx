@@ -707,6 +707,31 @@ const Cellar = () => {
         onBack={() => setLocation("/")}
         rightContent={
           <>
+            {/* Search Icon */}
+            <div
+              onClick={() => {
+                setShowWineSearch(!showWineSearch);
+                setIsSearchActive(!showWineSearch);
+              }}
+              className={`cursor-pointer transition-all duration-200 ${
+                showWineSearch ? "text-white scale-110" : "text-white/80 hover:text-white"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                className="transition-all duration-200"
+              >
+                <path
+                  fill="currentColor"
+                  d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"
+                ></path>
+              </svg>
+            </div>
+
+            {/* Profile Icon */}
             <div
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
@@ -724,30 +749,6 @@ const Cellar = () => {
                 />
               </svg>
             </div>
-            <div
-            onClick={() => {
-              setShowWineSearch(!showWineSearch);
-              setIsSearchActive(!showWineSearch);
-            }}
-            className={`cursor-pointer transition-all duration-200 ${
-              showWineSearch
-                ? "text-white scale-110"
-                : "text-white/80 hover:text-white"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              className="transition-all duration-200"
-            >
-              <path
-                fill="currentColor"
-                d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"
-              ></path>
-            </svg>
-          </div>
           </>
         }
       />
