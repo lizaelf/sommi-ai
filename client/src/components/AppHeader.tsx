@@ -38,21 +38,25 @@ export function AppHeader({
         borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
       }}
     >
-      <div className="max-w-6xl mx-auto p-4" style={{ height: "75px" }}>
+      <div className="max-w-6xl mx-auto" style={{ height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
           {/* Left side - Back button or Logo */}
           <div className="flex items-center justify-start" style={{ minWidth: "80px" }}>
             {showBackButton && onBack ? (
               <button 
                 onClick={onBack}
-                className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200 ease-in-out"
                 style={{
-                  background: 'transparent !important',
-                  border: 'none !important',
-                  outline: 'none !important',
-                  boxShadow: 'none !important',
-                  padding: '0 !important',
-                  margin: '0 !important'
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: 'none',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                 }}
               >
                 <ArrowLeft className="w-5 h-5 text-white" />
