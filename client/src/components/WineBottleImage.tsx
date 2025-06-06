@@ -50,10 +50,6 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
           style={{
             height: "280px !important",
             zIndex: "2 !important",
-            position: "relative !important",
-            maxWidth: "none !important",
-            width: "auto !important",
-            objectFit: "contain !important",
           }}
           onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
           onError={(e) => {
