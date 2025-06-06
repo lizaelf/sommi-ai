@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import backgroundImage from "@assets/Background.png";
 // Default wine image removed - only authentic uploaded images will be displayed

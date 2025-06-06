@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/UseToast";
 
 interface ProfileIconProps {
   onEditContact?: () => void;

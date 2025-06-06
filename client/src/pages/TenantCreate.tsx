@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/UseToast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { ArrowLeft, Save, X } from "lucide-react";

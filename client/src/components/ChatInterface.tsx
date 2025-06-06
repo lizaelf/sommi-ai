@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/UseToast';
+import { useIsMobile } from '@/hooks/UseMobile';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import Sidebar from './Sidebar';
-import { useConversation } from '@/hooks/useConversation';
+import { useConversation } from '@/hooks/UseConversation';
 import { Message, Conversation } from '@shared/schema';
 
 const ChatInterface: React.FC = () => {

@@ -2,14 +2,14 @@ import React, { useRef, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/UseToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceAssistant from "./VoiceAssistant";
 import WineBottleImage from "./WineBottleImage";
 import USFlagImage from "./USFlagImage";
-import { useConversation } from "@/hooks/useConversation";
+import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import typography from "@/styles/typography";
 import {
