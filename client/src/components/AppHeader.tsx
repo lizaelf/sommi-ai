@@ -54,7 +54,7 @@ export function AppHeader({
             )}
             {title && (
               <h1 
-                className="text-white text-[18px] font-medium truncate whitespace-nowrap max-w-[200px]"
+                className="text-white text-[18px] font-medium truncate whitespace-nowrap flex-1"
               >
                 {title}
               </h1>
