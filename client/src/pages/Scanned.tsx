@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { DataSyncManager } from '@/utils/dataSync';
+import AppHeader from '@/components/AppHeader';
 
 interface SelectedWine {
   id: number;
@@ -134,23 +135,8 @@ export default function Scanned() {
     <div className="min-h-screen bg-background">
       <div className="relative">
         
-        {/* App Header - Fully transparent by default, filled with blur when scrolled */}
-        <div 
-          style={{
-            backgroundColor: scrolled ? 'rgba(23, 23, 23, 0.5)' : 'rgba(10, 10, 10, 0)',
-            backdropFilter: scrolled ? 'blur(20px)' : 'none',
-            WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-            borderBottom: 'none',
-            height: '75px',
-            paddingLeft: '24px',
-            paddingRight: '24px'
-          }}
-          className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
-        >
-          <Link to="/home-global">
-            <Logo />
-          </Link>
-          <div className="flex items-center space-x-3">
+        <AppHeader 
+          rightContent={
             <Link to="/cellar">
               <div style={{
                 width: 'auto',
@@ -182,11 +168,11 @@ export default function Scanned() {
                 </span>
               </div>
             </Link>
-          </div>
-        </div>
+          }
+        />
         
         {/* Empty space to account for the fixed header */}
-        <div className="h-14"></div>
+        <div style={{ height: "75px" }}></div>
         
         {/* Wine Title */}
         <div className="px-4 pt-4 pb-2">

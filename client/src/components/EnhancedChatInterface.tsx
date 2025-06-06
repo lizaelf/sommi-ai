@@ -350,7 +350,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           className: "bg-white text-black border-none",
           style: {
             position: "fixed",
-            top: "74px",
+            top: "91px",
             left: "50%",
             transform: "translateX(-50%)",
             width: "auto",

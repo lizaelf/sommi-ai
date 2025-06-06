@@ -102,7 +102,7 @@ const HomeGlobal = () => {
       />
 
       {/* Content */}
-      <div className="px-4" style={{ paddingTop: "96px" }}>
+      <div className="px-4" style={{ paddingTop: "91px" }}>
         {/* Ridge Vineyards Logo */}
         <div className="text-center" style={{ marginBottom: "32px" }}>
           <img
