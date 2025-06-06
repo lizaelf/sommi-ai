@@ -43,8 +43,8 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
         }}
       />
       <img
-        src={_2021_Monte_Bello_Cabernet_Sauvignon}
-        alt={wineName || "Ridge Lytton Springs Dry Creek Zinfandel"}
+        src={image || ridgeWineImage}
+        alt={wineName || "Wine bottle"}
         style={{
           height: "280px",
           zIndex: 2,
