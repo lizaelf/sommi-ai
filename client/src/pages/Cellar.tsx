@@ -503,6 +503,12 @@ const Cellar = () => {
   useEffect(() => {
     const loadCellarWines = () => {
       const wines = CellarManager.getCellarWines();
+      console.log('Cellar wines loaded:', wines.map(w => ({ 
+        id: w.id, 
+        name: w.name, 
+        hasImage: !!w.image, 
+        imageType: w.image?.substring(0, 20) + '...' 
+      })));
       setCellarWines(wines);
     };
 

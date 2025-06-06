@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRoute } from 'wouter';
 import { CellarManager } from '@/utils/cellarManager';
-import { getAllWines } from '@/utils/wineDataManager';
+import { DataSyncManager } from '@/utils/dataSync';
 import { useToast } from '@/hooks/use-toast';
 import typography from '@/styles/typography';
 import { ChevronLeft } from 'lucide-react';
@@ -14,8 +14,8 @@ export default function WineScan() {
 
   const wineId = params?.id ? parseInt(params.id, 10) : null;
   
-  // Get wine data from the real wine data manager
-  const allWines = getAllWines();
+  // Get wine data from the unified data system
+  const allWines = DataSyncManager.getUnifiedWineData();
   const wine = wineId ? allWines.find(w => w.id === wineId) : null;
 
   useEffect(() => {
