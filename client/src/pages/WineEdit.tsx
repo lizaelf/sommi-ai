@@ -228,7 +228,7 @@ export default function WineEdit() {
         },
       });
 
-      setLocation("/admin-crm");
+      setLocation("/winery-tenant-admin");
     } catch (error) {
       console.error('Wine save failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -332,7 +332,7 @@ export default function WineEdit() {
         },
       });
 
-      setLocation("/admin-crm");
+      setLocation("/winery-tenant-admin");
     } catch (error) {
       console.error("Delete error:", error);
       toast({
