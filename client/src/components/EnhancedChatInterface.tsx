@@ -2092,20 +2092,18 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       Where it's from
                     </button>
                   </div>
-                  <div className="relative flex items-center">
-                    <ChatInput
-                      onSendMessage={handleSendMessage}
-                      isProcessing={isTyping}
-                      onFocus={() => setIsKeyboardFocused(true)}
-                      onBlur={() => setIsKeyboardFocused(false)}
-                      voiceButtonComponent={
-                        <VoiceAssistant
-                          onSendMessage={handleSendMessage}
-                          isProcessing={isTyping}
-                        />
-                      }
-                    />
-                  </div>
+                  <ChatInput
+                    onSendMessage={handleSendMessage}
+                    isProcessing={isTyping}
+                    onFocus={() => setIsKeyboardFocused(true)}
+                    onBlur={() => setIsKeyboardFocused(false)}
+                    voiceButtonComponent={
+                      <VoiceAssistant
+                        onSendMessage={handleSendMessage}
+                        isProcessing={isTyping}
+                      />
+                    }
+                  />
                 </>)
               )}
             </div>
