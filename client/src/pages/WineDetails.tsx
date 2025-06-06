@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'wouter';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { DataSyncManager } from '@/utils/dataSync';
-// Default images removed - only authentic uploaded images will be displayed
+import AppHeader from '@/components/AppHeader';
+import { ProfileIcon } from '@/components/ProfileIcon';
 
-interface Wine {
+interface SelectedWine {
   id: number;
   name: string;
-  year: number;
-  bottles: number;
   image: string;
+  bottles: number;
   ratings: {
     vn: number;
     jd: number;
     ws: number;
     abv: number;
   };
-  buyAgainLink?: string;
-  qrCode?: string;
-  qrLink?: string;
   location?: string;
   description?: string;
   foodPairing?: string[];
@@ -30,23 +27,39 @@ interface Wine {
 
 export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
+  const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
+  const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
-  // Load wine data using unified DataSyncManager to ensure consistency
-  const loadWineData = () => {
+  // Load selected wine data from URL parameter or localStorage
+  const loadSelectedWine = () => {
     try {
-      console.log(`WineDetails: Loading wine data for ID ${wineId}`);
+      // Get wine data from DataSyncManager using the ID from URL params
       const wine = DataSyncManager.getWineById(wineId);
-      console.log(`WineDetails: Found wine:`, wine);
-      return wine || null;
+      if (wine) {
+        console.log(`WineDetails: Found wine:`, wine);
+        return wine;
+      } else {
+        console.log(`Wine ID ${wineId} not found in DataSyncManager`);
+      }
+      
+      // Fallback to localStorage for backwards compatibility
+      const storedWine = localStorage.getItem('selectedWine');
+      if (storedWine) {
+        const wine = JSON.parse(storedWine);
+        // Clear the stored data after use
+        localStorage.removeItem('selectedWine');
+        return wine;
+      }
+      return null;
     } catch (error) {
-      console.error('Error loading wine data:', error);
+      console.error('Error loading selected wine:', error);
       return null;
     }
   };
   
-  const wine = loadWineData();
+  const wine = loadSelectedWine();
   
   // Add scroll listener to detect when page is scrolled
   useEffect(() => {
@@ -70,49 +83,49 @@ export default function WineDetails() {
     <div className="min-h-screen bg-background">
       <div className="relative">
         
-        {/* Fixed Header with back button navigation */}
-        <div
-          className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
-            scrolled
-              ? "bg-black/90 backdrop-blur-sm"
-              : "bg-transparent"
-          }`}
-        >
-          <Link to="/cellar">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              className="text-white"
-            >
-              <path
-                fill="currentColor"
-                d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
+        {/* AppHeader with ProfileIcon */}
+        <AppHeader 
+          title={wine ? `${wine.year} ${wine.name}` : getWineDisplayName()}
+          showBackButton={true}
+          onBack={() => window.history.back()}
+          rightContent={
+            <>
+              <Link to="/cellar">
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '400',
+                    lineHeight: 'normal',
+                    padding: '0',
+                    margin: '0'
+                  }}>
+                    <span style={{
+                    color: 'white',
+                    fontSize: '14px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '400',
+                    lineHeight: 'normal',
+                    display: 'inline-block',
+                    padding: '0',
+                    margin: '0'
+                  }}>
+                    My cellar
+                  </span>
+                </div>
+              </Link>
+              <ProfileIcon 
+                onEditContact={() => console.log('Edit contact clicked')}
+                onManageNotifications={() => console.log('Manage notifications clicked')}
+                onDeleteAccount={() => console.log('Delete account clicked')}
               />
-            </svg>
-          </Link>
-          <h1 
-            className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap"
-            style={{
-              border: 'none !important',
-              borderBottom: 'none !important',
-              borderTop: 'none !important',
-              borderLeft: 'none !important',
-              borderRight: 'none !important',
-              textDecoration: 'none !important',
-              outline: 'none !important',
-              boxShadow: 'none !important',
-              backgroundImage: 'none !important',
-              borderStyle: 'none !important',
-              borderWidth: '0 !important',
-              borderColor: 'transparent !important'
-            }}
-          >
-            {wine ? `${wine.year} ${wine.name}` : getWineDisplayName()}
-          </h1>
-          <div></div>
-        </div>
+            </>
+          }
+        />
 
         {/* Wine Image Section */}
         <div className="pt-[75px] pb-4">
