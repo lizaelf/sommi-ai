@@ -540,12 +540,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleMute = () => {
+    // Stop OpenAI TTS audio (mobile)
     if ((window as any).currentOpenAIAudio) {
       console.log("Stop button clicked - stopping OpenAI TTS audio playback");
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
       console.log("OpenAI TTS audio stopped successfully");
+    }
+
+    // Stop browser TTS (desktop)
+    if ((window as any).currentBrowserTTS || window.speechSynthesis?.speaking) {
+      console.log("Stop button clicked - stopping browser TTS");
+      window.speechSynthesis.cancel();
+      (window as any).currentBrowserTTS = null;
+      console.log("Browser TTS stopped successfully");
     }
 
     // Stop autoplay audio as well
@@ -635,25 +644,81 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).currentAutoplayAudio = null;
       }
 
-      // Generate audio using server TTS
-      console.log("Generating unmute TTS audio...");
-      const response = await fetch("/api/text-to-speech", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: lastAssistantMessage }),
-      });
+      // Detect mobile devices for TTS routing
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        console.log("Mobile device detected - using OpenAI TTS API for unmute");
+        const response = await fetch("/api/text-to-speech", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: lastAssistantMessage }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`TTS API error: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`TTS API error: ${response.status}`);
+        }
+
+        const audioBuffer = await response.arrayBuffer();
+        const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+
+        // Store reference for stop functionality
+        (window as any).currentOpenAIAudio = audio;
+      } else {
+        console.log("Desktop device - using browser speech synthesis for unmute");
+        // Use browser speech synthesis for desktop
+        if ('speechSynthesis' in window) {
+          // Cancel any ongoing speech
+          window.speechSynthesis.cancel();
+          
+          const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
+          utterance.lang = 'en-US';
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          
+          // Try to use a male voice if available
+          const voices = window.speechSynthesis.getVoices();
+          const maleVoice = voices.find(voice => 
+            voice.name.includes('Male') || 
+            voice.name.includes('Google') && voice.name.includes('Male')
+          );
+          if (maleVoice) {
+            utterance.voice = maleVoice;
+          }
+          
+          utterance.onstart = () => {
+            setIsResponding(true);
+            setShowUnmuteButton(false);
+            setShowAskButton(false);
+            console.log("Browser TTS unmute started");
+          };
+          
+          utterance.onend = () => {
+            setIsResponding(false);
+            setShowUnmuteButton(true);
+            setShowAskButton(true);
+            console.log("Browser TTS unmute completed");
+          };
+          
+          utterance.onerror = (e) => {
+            console.error("Browser TTS unmute error:", e);
+            setIsResponding(false);
+            setShowUnmuteButton(true);
+            setShowAskButton(true);
+          };
+          
+          window.speechSynthesis.speak(utterance);
+          (window as any).currentBrowserTTS = utterance;
+          return; // Exit early for desktop browser TTS
+        } else {
+          throw new Error("Browser speech synthesis not available");
+        }
       }
 
-      const audioBuffer = await response.arrayBuffer();
-      const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-
-      // Store reference for stop functionality
-      (window as any).currentOpenAIAudio = audio;
+      // Mobile-specific audio setup continues here
+      const audio = (window as any).currentOpenAIAudio;
 
       audio.onplay = () => {
         setIsResponding(true);
