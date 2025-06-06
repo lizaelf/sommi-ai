@@ -5,6 +5,7 @@ import wineryLogoPath from "@assets/winary-logo.png";
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
+import AppHeader from "@/components/AppHeader";
 
 interface Wine {
   id: number;
@@ -59,25 +60,8 @@ const HomeGlobal = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* App Header - Same as Scanned page */}
-      <div
-        style={{
-          backgroundColor: isScrolled
-            ? "rgba(23, 23, 23, 0.5)"
-            : "rgba(10, 10, 10, 0)",
-          backdropFilter: isScrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: isScrolled ? "blur(20px)" : "none",
-          borderBottom: "none",
-          height: "75px",
-          paddingLeft: "24px",
-          paddingRight: "24px",
-        }}
-        className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center transition-all duration-300`}
-      >
-        <Link to="/home-global">
-          <Logo />
-        </Link>
-        <div className="flex items-center space-x-3">
+      <AppHeader 
+        rightContent={
           <Link to="/cellar">
             <div
               style={{
@@ -114,8 +98,8 @@ const HomeGlobal = () => {
               </span>
             </div>
           </Link>
-        </div>
-      </div>
+        }
+      />
 
       {/* Content */}
       <div className="px-4" style={{ paddingTop: "96px" }}>

@@ -727,7 +727,7 @@ const Cellar = () => {
         <div
           style={{
             position: "fixed",
-            top: "80px",
+            top: "91px",
             left: "16px",
             right: "16px",
             backgroundColor: "#2A2A29",
@@ -843,7 +843,7 @@ const Cellar = () => {
         <div
           style={{
             position: "fixed",
-            top: "80px",
+            top: "91px",
             left: "0",
             right: "0",
             backgroundColor: "#2A2A29",
@@ -997,7 +997,7 @@ const Cellar = () => {
       )}
 
       {/* Content with top padding to account for fixed header */}
-      <div style={{ paddingTop: '100px' }}>
+      <div style={{ paddingTop: '91px' }}>
         {/* Scanned Wines Section */}
         {cellarWines.length > 0 && (
           <div style={{ margin: "0 16px 24px 16px" }}>
