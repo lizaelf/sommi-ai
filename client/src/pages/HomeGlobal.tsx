@@ -100,7 +100,11 @@ const HomeGlobal = () => {
                 </span>
               </div>
             </Link>
-            <ProfileIcon />
+            <ProfileIcon 
+              onEditContact={() => console.log('Edit contact clicked')}
+              onManageNotifications={() => console.log('Manage notifications clicked')}
+              onDeleteAccount={() => console.log('Delete account clicked')}
+            />
           </>
         }
       />
