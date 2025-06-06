@@ -138,31 +138,94 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
     console.log('Response template:', responseTemplate);
     console.log('Combined rules:', combinedRules);
 
-    // Call OpenAI API
-    let response;
+    // Check response cache first for faster responses
+    const enableResponseCache = process.env.ENABLE_RESPONSE_CACHE === 'true';
+    const cacheTTL = parseInt(process.env.CACHE_TTL_SECONDS || '300') * 1000; // Convert to milliseconds
+    
+    if (enableResponseCache) {
+      // Create cache key from last user message and wine data
+      const userMessage = messages[messages.length - 1]?.content || '';
+      const wineId = wineData?.id || 'none';
+      const cacheKey = `${userMessage}_${wineId}_${responseTemplate}_${maxTokens}`;
+      
+      const cached = responseCache.get(cacheKey);
+      if (cached && (Date.now() - cached.timestamp) < cacheTTL) {
+        console.log('Using cached response for faster TTFB');
+        return {
+          content: cached.content,
+          usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+        };
+      }
+    }
+
+    // Enable streaming for faster TTFB
+    const enableStreaming = process.env.ENABLE_STREAMING !== 'false';
+    
+    // Call OpenAI API with optimizations for speed
+    let finalResponse;
     try {
-      // First try with the primary model - optimized for speed
-      response = await openai.chat.completions.create({
+      // Optimized completion parameters for faster responses
+      const baseParams = {
         model: MODEL,
         messages: newMessages,
-        temperature: 0.5, // Lower temperature for more focused responses
+        temperature: 0.3, // Lower temperature for faster, more deterministic responses
         max_tokens: maxTokens, // Dynamic max_tokens from environment
         presence_penalty: -0.1, // Slight negative presence penalty for concise responses
-        frequency_penalty: 0.2  // Slight frequency penalty to avoid repetition
-      });
+        frequency_penalty: 0.2, // Slight frequency penalty to avoid repetition
+        top_p: 0.9, // Reduce top_p for faster generation
+      };
+      
+      if (enableStreaming) {
+        console.log('Using streaming mode for faster TTFB');
+        const stream = await openai.chat.completions.create({
+          ...baseParams,
+          stream: true,
+        }) as any;
+        
+        // Collect streaming response for faster perceived performance
+        let content = '';
+        try {
+          for await (const chunk of stream) {
+            const delta = chunk.choices?.[0]?.delta?.content;
+            if (delta) {
+              content += delta;
+            }
+          }
+        } catch (streamError) {
+          console.error('Streaming error:', streamError);
+          throw streamError;
+        }
+        
+        finalResponse = {
+          choices: [{
+            message: {
+              role: 'assistant' as const,
+              content: content
+            }
+          }],
+          usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+        };
+      } else {
+        console.log('Using non-streaming mode');
+        finalResponse = await openai.chat.completions.create({
+          ...baseParams,
+          stream: false,
+        });
+      }
     } catch (err) {
       const primaryModelError = err as any;
       console.warn(`Error with primary model ${MODEL}, falling back to ${FALLBACK_MODEL}:`, primaryModelError);
       
       // If the primary model fails, try with the fallback model
       if (primaryModelError?.status === 404) {
-        response = await openai.chat.completions.create({
+        finalResponse = await openai.chat.completions.create({
           model: FALLBACK_MODEL,
           messages: newMessages,
-          temperature: 0.5, // Lower temperature for focused responses
+          temperature: 0.3, // Lower temperature for focused responses
           max_tokens: maxTokens, // Dynamic max_tokens from environment
           presence_penalty: -0.1, // Encourage concise responses
-          frequency_penalty: 0.2  // Avoid repetition
+          frequency_penalty: 0.2, // Avoid repetition
+          stream: false // Use non-streaming for fallback
         });
       } else {
         // If it's not a model availability issue, rethrow the error
@@ -170,10 +233,31 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       }
     }
 
+    // Cache the response for faster future requests
+    if (enableResponseCache && finalResponse.choices[0]?.message?.content) {
+      const userMessage = messages[messages.length - 1]?.content || '';
+      const wineId = wineData?.id || 'none';
+      const cacheKey = `${userMessage}_${wineId}_${responseTemplate}_${maxTokens}`;
+      
+      // Manage cache size
+      if (responseCache.size >= MAX_RESPONSE_CACHE_SIZE) {
+        const firstKey = responseCache.keys().next().value;
+        if (firstKey) {
+          responseCache.delete(firstKey);
+        }
+      }
+      
+      responseCache.set(cacheKey, {
+        content: finalResponse.choices[0].message.content,
+        timestamp: Date.now()
+      });
+      console.log('Response cached for future requests');
+    }
+
     // Return the assistant's response
     return {
-      content: response.choices[0].message.content || "I don't know how to respond to that.",
-      usage: response.usage
+      content: finalResponse.choices[0].message.content || "I don't know how to respond to that.",
+      usage: finalResponse.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
     };
   } catch (err) {
     const error = err as any;
@@ -256,6 +340,10 @@ class VoiceConfig {
 // Voice cache to store recently generated audio for consistency
 const voiceCache = new Map<string, Buffer>();
 const MAX_CACHE_SIZE = 50;
+
+// Response cache for chat completions to reduce API calls
+const responseCache = new Map<string, { content: string; timestamp: number }>();
+const MAX_RESPONSE_CACHE_SIZE = 100;
 
 // Function to convert text to speech using OpenAI's Text-to-Speech API with consistent voice
 export async function textToSpeech(text: string): Promise<Buffer> {
