@@ -55,7 +55,7 @@ class OpenAITTSService {
         // Handle quota exceeded - fallback to browser TTS
         if (response.status === 429 && errorData.fallback) {
           console.warn("OpenAI TTS quota exceeded, falling back to browser speech synthesis");
-          this.fallbackTobrowserTTS(text);
+          this.fallbackTorowserTTS(text);
           return;
         }
         

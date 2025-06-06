@@ -6,8 +6,9 @@ import { useToast } from "@/hooks/UseToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import VoiceAssistant from "./VoiceAssistant";
+import OpenAIVoiceAssistant from "./OpenAIVoiceAssistant";
 import WineBottleImage from "./WineBottleImage";
+import { openaiTTS } from "@/lib/openaiTTS";
 import USFlagImage from "./USFlagImage";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
@@ -23,7 +24,7 @@ import { ShiningText } from "@/components/ShiningText";
 import { TextGenerateEffect } from "./ui/text-generate-effect";
 // Import typography styles
 
-// Extend Window interface to include voiceAssistant
+// Extend Window interface to include OpenAI voice services
 declare global {
   interface Window {
     voiceAssistant?: {
@@ -32,6 +33,18 @@ declare global {
       speakLastAssistantMessage: () => void;
       muteAndSavePosition: () => void;
       resumeFromMute: () => void;
+    };
+    openaiVoiceAssistant?: {
+      startListening: () => Promise<void>;
+      stopListening: () => void;
+      isListening: boolean;
+      isTranscribing: boolean;
+    };
+    openaiTTS?: {
+      speakText: (text: string) => Promise<void>;
+      stopCurrentAudio: () => void;
+      playLastResponse: () => void;
+      isPlaying: () => boolean;
     };
   }
 }
@@ -2103,7 +2116,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
                     voiceButtonComponent={
-                      <VoiceAssistant
+                      <OpenAIVoiceAssistant
                         onSendMessage={handleSendMessage}
                         isProcessing={isTyping}
                       />
