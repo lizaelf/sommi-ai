@@ -117,11 +117,10 @@ const Button: React.FC<ButtonProps> = ({
       onMouseLeave={handleMouseLeave}
       disabled={disabled}
       className={className}
-      style={{
+      style={style && Object.keys(style).length > 0 ? style : {
         ...baseStyles,
         ...sizeStyles[size],
         ...variantStyles[variant],
-        ...style
       }}
     >
       <div style={{
