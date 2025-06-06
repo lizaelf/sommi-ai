@@ -39,30 +39,32 @@ export function AppHeader({
       }}
     >
       <div className="max-w-6xl mx-auto" style={{ height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
-        <div className="flex items-center justify-start gap-3 h-full">
-          {/* Back button or Logo */}
-          {showBackButton && onBack ? (
-            <div
-              onClick={onBack}
-              className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </div>
-          ) : (
-            <Logo />
-          )}
-          
-          {/* Title */}
-          {title && (
-            <h1 
-              className="text-white text-[18px] font-medium truncate whitespace-nowrap max-w-[200px]"
-            >
-              {title}
-            </h1>
-          )}
+        <div className="flex items-center justify-between h-full">
+          {/* Left side - Back button or Logo + Title */}
+          <div className="flex items-center gap-3">
+            {showBackButton && onBack ? (
+              <div
+                onClick={onBack}
+                className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
+              >
+                <ArrowLeft className="w-6 h-6" />
+              </div>
+            ) : (
+              <Logo />
+            )}
+            {title && (
+              <h1 
+                className="text-white text-[18px] font-medium truncate whitespace-nowrap max-w-[200px]"
+              >
+                {title}
+              </h1>
+            )}
+          </div>
           
           {/* Right side - Custom content */}
-          {rightContent}
+          <div className="flex items-center gap-3">
+            {rightContent}
+          </div>
         </div>
       </div>
     </div>
