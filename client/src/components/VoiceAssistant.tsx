@@ -23,29 +23,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [isThinking, setIsThinking] = useState(false);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const { toast } = useToast();
 
-  // Mobile-specific: Force listening state persistence and prevent premature closing
+  // Cleanup audio resources when component unmounts
   useEffect(() => {
-    if (isMobileDevice && isListening) {
-      // Force state persistence every 500ms on mobile to prevent state loss
-      const interval = setInterval(() => {
-        if (
-          recognitionRef.current &&
-          recognitionRef.current.readyState !== undefined
-        ) {
-          setIsListening(true);
-          setShowBottomSheet(true);
-        }
-      }, 500);
-
-      return () => clearInterval(interval);
-    }
-  }, [isListening, isMobileDevice]);
+    return () => {
+      stopListening();
+    };
+  }, []);
 
   // Keep bottom sheet open during processing and manage thinking state
   useEffect(() => {

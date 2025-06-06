@@ -8,9 +8,32 @@ import { google } from "googleapis";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import multer from "multer";
+import OpenAI from "openai";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Configure multer for audio file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB limit (Whisper's max)
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept audio files
+    if (file.mimetype.startsWith('audio/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only audio files are allowed'));
+    }
+  },
+});
 
 // Google Sheets integration function
 async function saveToGoogleSheets(contactData: any) {
@@ -218,6 +241,44 @@ Format: Return only the description text, no quotes or additional formatting.`;
     } catch (error) {
       console.error("Description generation error:", error);
       res.status(500).json({ error: "Failed to generate wine description" });
+    }
+  });
+
+  // Whisper transcription endpoint
+  app.post("/api/transcribe", upload.single('audio'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No audio file provided" });
+      }
+
+      // Create a File object from the buffer for Whisper API
+      const audioFile = new File([req.file.buffer], req.file.originalname || 'audio.webm', {
+        type: req.file.mimetype,
+      });
+
+      console.log(`Transcribing audio file: ${audioFile.name} (${Math.round(audioFile.size / 1024)}KB)`);
+
+      // Call OpenAI Whisper API
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioFile,
+        model: "whisper-1",
+        language: "en", // Specify English for better accuracy
+        response_format: "text",
+      });
+
+      console.log(`Transcription result: ${transcription.substring(0, 100)}...`);
+
+      res.json({ 
+        text: transcription,
+        success: true 
+      });
+
+    } catch (error) {
+      console.error("Transcription error:", error);
+      res.status(500).json({ 
+        error: "Failed to transcribe audio",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 
