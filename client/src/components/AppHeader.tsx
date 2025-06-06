@@ -54,10 +54,10 @@ export function AppHeader({
             )}
           </div>
           
-          {/* Center - Title */}
+          {/* Left-aligned Title */}
           {title && (
             <h1 
-              className="text-white text-[18px] font-medium absolute left-1/2 transform -translate-x-1/2 truncate whitespace-nowrap max-w-[200px]"
+              className="text-white text-[18px] font-medium truncate whitespace-nowrap max-w-[200px] flex-1 text-left ml-4"
             >
               {title}
             </h1>
