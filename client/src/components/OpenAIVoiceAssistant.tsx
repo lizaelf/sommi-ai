@@ -325,19 +325,20 @@ export function OpenAIVoiceAssistant({ onSendMessage, isProcessing = false }: Op
   return (
     <>
       {/* Microphone Button */}
-      <button
+      <div
         onClick={isListening ? stopListening : startListening}
-        className={`suggestion-button ${isListening ? '!bg-red-500/20' : ''}`}
         style={{
           width: '40px',
           height: '40px',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
           borderRadius: '50%',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           cursor: 'pointer',
-          padding: '0'
+          transition: 'all 0.2s ease'
         }}
+        className={`${isListening ? 'bg-red-500/20' : 'hover:bg-white/15'}`}
       >
         {isListening ? (
           // Stop/Recording icon
@@ -368,7 +369,7 @@ export function OpenAIVoiceAssistant({ onSendMessage, isProcessing = false }: Op
             />
           </svg>
         )}
-      </button>
+      </div>
 
       <VoiceBottomSheet
         isVisible={showBottomSheet}
