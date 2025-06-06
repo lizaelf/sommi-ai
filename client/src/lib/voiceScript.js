@@ -269,12 +269,13 @@ async function useOpenAITTS(text) {
 
 // Browser TTS function for desktop devices
 async function useBrowserTTS(text) {
-  console.log("Using browser speech synthesis");
-  
-  // Force reload voices to get fresh list
-  const voices = window.speechSynthesis.getVoices();
-  console.log("Available voices:", voices.length);
+  try {
+    console.log("Using browser speech synthesis");
     
+    // Force reload voices to get fresh list
+    const voices = window.speechSynthesis.getVoices();
+    console.log("Available voices:", voices.length);
+      
     // Look for male voices - log them for debugging
     const maleVoices = voices.filter(voice => 
       voice.name.includes('Male') || 
