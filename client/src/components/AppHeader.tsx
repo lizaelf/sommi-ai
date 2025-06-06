@@ -57,7 +57,7 @@ export function AppHeader({
           {/* Left-aligned Title */}
           {title && (
             <h1 
-              className="text-white text-[18px] font-medium truncate whitespace-nowrap max-w-[200px] flex-1 text-left ml-4"
+              className="text-white text-[18px] font-medium truncate whitespace-nowrap max-w-[200px] flex-1 text-left ml-2"
             >
               {title}
             </h1>
