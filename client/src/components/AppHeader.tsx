@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 import Logo from "@/components/Logo";
 import { ProfileIcon } from "@/components/ProfileIcon";
 
@@ -64,7 +64,14 @@ export function AppHeader({
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
-            {rightContent || <ProfileIcon />}
+            {rightContent || (
+              <>
+                <div className="cursor-pointer text-white/80 hover:text-white transition-all duration-200">
+                  <Search className="w-6 h-6" />
+                </div>
+                <ProfileIcon />
+              </>
+            )}
           </div>
         </div>
       </div>
