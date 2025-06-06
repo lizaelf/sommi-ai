@@ -596,9 +596,13 @@ export default function WineEdit() {
                         canvas.width = width;
                         canvas.height = height;
                         
-                        // Draw and compress
+                        // Draw and compress while preserving original format
                         ctx?.drawImage(img, 0, 0, width, height);
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        
+                        // Determine original format from file type
+                        const originalFormat = file.type || 'image/png';
+                        const quality = originalFormat === 'image/jpeg' ? 0.8 : undefined;
+                        const compressedDataUrl = canvas.toDataURL(originalFormat, quality);
                         
                         console.log(`Image compressed: ${Math.round(compressedDataUrl.length / 1024)}KB`);
                         
