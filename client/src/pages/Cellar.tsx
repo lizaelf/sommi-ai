@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/use-toast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
-import { DataSyncManager } from "@/utils/dataSync";
 import backgroundImage from "@assets/Background.png";
 // Default wine image removed - only authentic uploaded images will be displayed
 import usFlagImage from "@assets/US-flag.png";
@@ -510,49 +509,6 @@ const Cellar = () => {
         hasImage: !!w.image, 
         imageType: w.image?.substring(0, 20) + '...' 
       })));
-      
-      // Debug: Check what wines are available in admin panel
-      try {
-        const adminWines = DataSyncManager.getUnifiedWineData();
-        console.log('Admin wines available:', adminWines.map(w => ({ 
-          id: w.id, 
-          name: w.name, 
-          hasImage: !!w.image,
-          imageType: w.image?.substring(0, 20) + '...'
-        })));
-        
-        // If cellar is empty, add wines with images to demonstrate functionality
-        if (wines.length === 0 && adminWines.length > 0) {
-          const winesWithImages = adminWines.filter(w => w.image && w.image.trim() !== '');
-          console.log('Found wines with images:', winesWithImages.length);
-          
-          if (winesWithImages.length > 0) {
-            // Add the first two wines that have images
-            winesWithImages.slice(0, 2).forEach(wine => {
-              console.log('Adding wine to cellar:', wine.name, 'Image:', wine.image?.substring(0, 30));
-              CellarManager.addWineToCellar({
-                id: wine.id,
-                name: wine.name,
-                year: wine.year,
-                image: wine.image
-              });
-            });
-            
-            // Reload wines after adding
-            const updatedWines = CellarManager.getCellarWines();
-            console.log('Updated cellar wines:', updatedWines.map(w => ({ 
-              id: w.id, 
-              name: w.name, 
-              hasImage: !!w.image 
-            })));
-            setCellarWines(updatedWines);
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Error loading admin wines:', error);
-      }
-      
       setCellarWines(wines);
     };
 
