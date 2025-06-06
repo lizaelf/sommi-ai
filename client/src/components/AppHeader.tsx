@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import Logo from "@/components/Logo";
 
@@ -17,8 +17,27 @@ export function AppHeader({
   className = "",
   showBackButton = false 
 }: AppHeaderProps) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-white/10 ${className}`}>
+    <div 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${className}`}
+      style={{
+        backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
+        backdropFilter: scrolled ? 'blur(8px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(8px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+      }}
+    >
       <div className="max-w-6xl mx-auto p-4" style={{ height: "75px" }}>
         <div className="flex items-center justify-between h-full">
           {/* Left side - Back button or Logo */}
