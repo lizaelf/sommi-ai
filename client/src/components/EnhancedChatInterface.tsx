@@ -499,10 +499,38 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
   const [hasTriggeredAutoQuestion, setHasTriggeredAutoQuestion] = useState(false);
   const [currentEventSource, setCurrentEventSource] = useState<EventSource | null>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const { toast } = useToast();
 
   // Create a ref for the chat container to allow scrolling
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll detection for showing/hiding scroll to bottom button
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollToBottom(!isNearBottom && messages.length > 3);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial state
+
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [messages.length]);
+
+  // Function to scroll to bottom
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // API status check
   const { data: apiStatus } = useQuery({
@@ -2147,6 +2175,57 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </div>
           </div>
         </main>
+
+        {/* Scroll to Bottom Floating Button */}
+        {showScrollToBottom && (
+          <button
+            onClick={scrollToBottom}
+            style={{
+              position: 'fixed',
+              bottom: '100px',
+              right: '20px',
+              width: '48px',
+              height: '48px',
+              borderRadius: '24px',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              border: 'none',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              transition: 'all 0.3s ease',
+              backdropFilter: 'blur(8px)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 16l-4-4h8l-4 4z"
+                fill="#333"
+              />
+              <path
+                d="M12 20l-4-4h8l-4 4z"
+                fill="#333"
+                opacity="0.6"
+              />
+            </svg>
+          </button>
+        )}
       </div>
       {/* Contact Bottom Sheet */}
       {animationState !== "closed" &&
