@@ -395,7 +395,7 @@ const TenantAdmin: React.FC = () => {
 
           {/* Search and Add Wine - Only show when on CMS tab */}
           {activeTab === "cms" && (
-            <div className="flex gap-3 mt-3">
+            <div className="flex items-center gap-3 mt-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
                 <input
@@ -429,7 +429,7 @@ const TenantAdmin: React.FC = () => {
                   const nextId = Math.max(...wineCards.map(w => w.id), 0) + 1;
                   setLocation(`/wine-edit/${nextId}?new=true`);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg transition-colors flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
                 style={{ height: "56px" }}
               >
                 <Plus className="w-4 h-4" />

@@ -12,7 +12,7 @@ interface SegmentedPickerProps {
 
 export function SegmentedPicker({ options, value, onChange, className = "" }: SegmentedPickerProps) {
   return (
-    <div className={`flex w-full bg-white/10 backdrop-blur-sm rounded-xl p-1 ${className}`}>
+    <div className={`flex w-full rounded-xl p-1 ${className}`}>
       {options.map((option) => (
         <button
           key={option.value}
