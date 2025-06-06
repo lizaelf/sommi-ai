@@ -14,16 +14,10 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
 }) => {
   return (
     <div
-      className="wine-bottle-image"
       style={{
-        position: "relative",
-        zIndex: 2,
-        marginBottom: "40px",
-        marginTop: "20px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "transparent",
       }}
     >
 
