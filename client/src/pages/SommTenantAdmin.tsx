@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Save, X, Menu, Search, User, Settings } from 'lucide-react';
-import { Link } from 'wouter';
+import React, { useState, useEffect, useRef } from "react";
+import { Plus, Save, X, Menu, Search, User, Settings } from "lucide-react";
+import { Link } from "wouter";
 
 interface Tenant {
   id: number;
@@ -8,102 +8,98 @@ interface Tenant {
   slug: string;
   logo?: string;
   description?: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt: string;
   wineCount: number;
 }
 
-
-
 const SommTenantAdmin: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [showMenuDropdown, setShowMenuDropdown] = useState(false);
-  
+
   const menuDropdownRef = useRef<HTMLDivElement>(null);
-  
 
   // Load tenants from localStorage
   useEffect(() => {
-    const storedTenants = localStorage.getItem('sommelier-tenants');
-    if (storedTenants) {
+    // Force refresh to ensure only "Test winery" exists
+    const singleTestWinery: Tenant[] = [
+      {
+        id: 1,
+        name: "Test winery",
+        slug: "test-winery",
+        description:
+          "Premium Napa Valley wine collection specializing in Cabernet Sauvignon",
+        status: "active",
+        createdAt: "2024-01-15",
+        wineCount: 12,
+      },
+    ];
+    setTenants(singleTestWinery);
+    localStorage.setItem("sommelier-tenants", JSON.stringify(singleTestWinery));
+    
+    // Legacy code for fallback (not needed now)
+    const storedTenants = localStorage.getItem("sommelier-tenants");
+    if (false && storedTenants) {
       setTenants(JSON.parse(storedTenants));
     } else {
-      // Initialize with sample data
+      // Initialize with single test winery
       const sampleTenants: Tenant[] = [
         {
           id: 1,
-          name: 'Napa Valley Vineyards',
-          slug: 'napa-valley-vineyards',
-          description: 'Premium Napa Valley wine collection specializing in Cabernet Sauvignon',
-          status: 'active',
-          createdAt: '2024-01-15',
-          wineCount: 12
+          name: "Test winery",
+          slug: "test-winery",
+          description:
+            "Premium Napa Valley wine collection specializing in Cabernet Sauvignon",
+          status: "active",
+          createdAt: "2024-01-15",
+          wineCount: 12,
         },
-        {
-          id: 2,
-          name: 'Sonoma Coast Wines',
-          slug: 'sonoma-coast-wines',
-          description: 'Boutique winery focusing on Pinot Noir and Chardonnay',
-          status: 'active',
-          createdAt: '2024-02-20',
-          wineCount: 8
-        },
-        {
-          id: 3,
-          name: 'Ridge Vineyards',
-          slug: 'ridge-vineyards',
-          description: 'Historic winery known for exceptional Zinfandel and Cabernet blends',
-          status: 'inactive',
-          createdAt: '2024-03-10',
-          wineCount: 15
-        }
       ];
       setTenants(sampleTenants);
-      localStorage.setItem('sommelier-tenants', JSON.stringify(sampleTenants));
+      localStorage.setItem("sommelier-tenants", JSON.stringify(sampleTenants));
     }
   }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (menuDropdownRef.current && !menuDropdownRef.current.contains(event.target as Node)) {
+      if (
+        menuDropdownRef.current &&
+        !menuDropdownRef.current.contains(event.target as Node)
+      ) {
         setShowMenuDropdown(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-
 
   // Handle global search
   const handleGlobalSearch = () => {
-    console.log('Opening global search...');
+    console.log("Opening global search...");
     setShowMenuDropdown(false);
     // Add global search functionality here
   };
 
   // Handle profile management
   const handleProfileManagement = () => {
-    console.log('Opening profile management...');
+    console.log("Opening profile management...");
     setShowMenuDropdown(false);
     // Add profile management functionality here
   };
 
-
-
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#3a3a3a' }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#3a3a3a" }}>
       {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
         <div className="relative" ref={menuDropdownRef}>
-          <button 
+          <button
             onClick={() => setShowMenuDropdown(!showMenuDropdown)}
             className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
           >
             <Menu className="w-5 h-5 text-white" />
           </button>
-          
+
           {showMenuDropdown && (
             <div className="absolute left-0 top-12 w-56 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg py-2 z-50">
               <button
@@ -123,28 +119,30 @@ const SommTenantAdmin: React.FC = () => {
             </div>
           )}
         </div>
-        <h1 
+        <h1
           className="text-lg font-medium"
           style={{
-            color: "white"
+            color: "white",
           }}
-        >Somm tenant admin</h1>
+        >
+          Somm tenant admin
+        </h1>
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => window.location.href = '/tenant-create'}
+          <button
+            onClick={() => (window.location.href = "/tenant-create")}
             className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
           >
             <Plus className="w-6 h-6 text-white" />
           </button>
         </div>
       </div>
-      <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px" }}>
-        
-
-
-
-
-
+      <div
+        style={{
+          paddingTop: "100px",
+          paddingLeft: "24px",
+          paddingRight: "24px",
+        }}
+      >
         {/* Tenants Cards */}
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {tenants.map((tenant) => (
@@ -162,7 +160,7 @@ const SommTenantAdmin: React.FC = () => {
                       fontSize: "20px",
                       lineHeight: "28px",
                       fontWeight: 500,
-                      color: "white"
+                      color: "white",
                     }}
                   >
                     {tenant.name}
@@ -176,11 +174,9 @@ const SommTenantAdmin: React.FC = () => {
         {/* Empty State */}
         {tenants.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              No tenants available.
-            </div>
+            <div className="text-gray-400 mb-4">No tenants available.</div>
             <button
-              onClick={() => window.location.href = '/tenant-create'}
+              onClick={() => (window.location.href = "/tenant-create")}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />

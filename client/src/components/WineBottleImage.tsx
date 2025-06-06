@@ -1,6 +1,6 @@
 import React from "react";
 import placeholderImage from "@assets/Placeholder.png";
-import ridgeWineImage from "@assets/2021-Ridge-Vineyards-Lytton-Springs-Dry-Creek-Zinfandel.png";
+import ridgeWineImage from "@assets/Placeholder.png";
 
 import _2021_Monte_Bello_Cabernet_Sauvignon from "@assets/2021-Monte-Bello-Cabernet-Sauvignon.png";
 
