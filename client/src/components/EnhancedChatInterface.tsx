@@ -1495,83 +1495,82 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
               {/* Previous Discussion Section - Only show on Home page, not Wine Details */}
               {messages.length > 0 && !showBuyButton && (
-                <div
-                  style={{
-                    width: "100%",
-                    padding: "0 20px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <h1
-                    style={{
-                      ...typography.h1,
-                      color: "white",
-                      marginBottom: "24px",
-                      textAlign: "left",
-                    }}
-                  >
-                    Previous Discussion
-                  </h1>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "12px",
-                    }}
-                  >
-                    {messages.slice(-6).map((message, index) => (
-                      <div
-                        key={`${message.id}-${index}`}
-                        style={{
-                          display: "flex",
-                          justifyContent:
-                            message.role === "user" ? "flex-end" : "flex-start",
-                          width: "100%",
-                        }}
-                      >
+                <div className="px-6 pb-6 space-y-4">
+                  <div>
+                    <h3 style={{
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "#CECECE",
+                      marginBottom: "16px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px"
+                    }}>
+                      PREVIOUS DISCUSSION
+                    </h3>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px",
+                      }}
+                    >
+                      {messages.slice(-6).map((message, index) => (
                         <div
-                          data-role={message.role}
+                          key={`${message.id}-${index}`}
                           style={{
-                            backgroundColor:
-                              message.role === "user"
-                                ? "#F5F5F5"
-                                : "transparent",
-                            borderRadius: "16px",
-                            padding:
-                              message.role === "user"
-                                ? "12px 16px 4px 16px"
-                                : "12px 0",
-                            maxWidth: message.role === "user" ? "80%" : "100%",
-                            ...typography.body,
+                            display: "flex",
+                            justifyContent:
+                              message.role === "user" ? "flex-end" : "flex-start",
+                            width: "100%",
                           }}
                         >
                           <div
+                            data-role={message.role}
                             style={{
-                              color:
-                                message.role === "user" ? "#000" : "#DBDBDB",
+                              backgroundColor:
+                                message.role === "user"
+                                  ? "#F5F5F5"
+                                  : "transparent",
+                              borderRadius: "16px",
+                              padding:
+                                message.role === "user"
+                                  ? "12px 16px 4px 16px"
+                                  : "12px 0",
+                              maxWidth: message.role === "user" ? "80%" : "100%",
+                              fontFamily: "Lora, serif",
+                              fontSize: "16px",
+                              lineHeight: "24px",
                             }}
                           >
-                            {(() => {
-                              // Store assistant message text for voice playback
-                              if (
-                                message.role === "assistant" &&
-                                message.content
-                              ) {
-                                setTimeout(() => {
-                                  (window as any).lastResponseText =
-                                    message.content;
-                                  console.log(
-                                    "💾 Stored assistant message at render:",
-                                    message.content.substring(0, 50) + "...",
-                                  );
-                                }, 0);
-                              }
-                              return formatContent(message.content);
-                            })()}
+                            <div
+                              style={{
+                                color:
+                                  message.role === "user" ? "#000" : "white",
+                              }}
+                            >
+                              {(() => {
+                                // Store assistant message text for voice playback
+                                if (
+                                  message.role === "assistant" &&
+                                  message.content
+                                ) {
+                                  setTimeout(() => {
+                                    (window as any).lastResponseText =
+                                      message.content;
+                                    console.log(
+                                      "💾 Stored assistant message at render:",
+                                      message.content.substring(0, 50) + "...",
+                                    );
+                                  }, 0);
+                                }
+                                return formatContent(message.content);
+                              })()}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
