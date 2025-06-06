@@ -113,32 +113,9 @@ export default function WineDetails() {
             <>
               {isScannedPage && (
                 <Link to="/cellar">
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      color: 'white',
-                      textDecoration: 'none',
-                      fontSize: '14px',
-                      fontFamily: 'Inter, sans-serif',
-                      fontWeight: '400',
-                      lineHeight: 'normal',
-                      padding: '0',
-                      margin: '0'
-                    }}>
-                    <span style={{
-                      color: 'white',
-                      fontSize: '14px',
-                      fontFamily: 'Inter, sans-serif',
-                      fontWeight: '400',
-                      lineHeight: 'normal',
-                      display: 'inline-block',
-                      padding: '0',
-                      margin: '0'
-                    }}>
-                      My cellar
-                    </span>
-                  </div>
+                  <Button variant="secondary" size="sm">
+                    My cellar
+                  </Button>
                 </Link>
               )}
               <ProfileIcon 
