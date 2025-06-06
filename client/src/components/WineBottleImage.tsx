@@ -1,7 +1,6 @@
 import React from "react";
 import placeholderImage from "@assets/Placeholder.png";
-
-import _2021_Ridge_Vineyards_Lytton_Springs_Dry_Creek_Zinfandel from "@assets/2021-Ridge-Vineyards-Lytton-Springs-Dry-Creek-Zinfandel.png";
+import ridgeWineImage from "@assets/2021-Ridge-Vineyards-Lytton-Springs-Dry-Creek-Zinfandel.png";
 
 interface WineBottleImageProps {
   image?: string;
@@ -26,8 +25,8 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
       }}
     >
       <img
-        src={image && image.trim() && image.startsWith("/@assets/") ? image : placeholderImage}
-        alt={wineName || "Wine"}
+        src={ridgeWineImage}
+        alt={wineName || "Ridge Lytton Springs Dry Creek Zinfandel"}
         style={{
           height: "280px",
           // Add a subtle drop shadow instead of blur
