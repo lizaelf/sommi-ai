@@ -324,6 +324,53 @@ export function OpenAIVoiceAssistant({ onSendMessage, isProcessing = false }: Op
 
   return (
     <>
+      {/* Microphone Button */}
+      <div
+        onClick={isListening ? stopListening : startListening}
+        style={{
+          width: '40px',
+          height: '40px',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '50%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease'
+        }}
+        className={`${isListening ? 'bg-red-500/20' : 'hover:bg-white/15'}`}
+      >
+        {isListening ? (
+          // Stop/Recording icon
+          <div
+            style={{
+              width: '12px',
+              height: '12px',
+              backgroundColor: '#ef4444',
+              borderRadius: '2px'
+            }}
+          />
+        ) : (
+          // Microphone icon
+          <svg 
+            width="20" 
+            height="20" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path 
+              d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15S15 13.66 15 12V4C15 2.34 13.66 1 12 1ZM19.07 10.97C18.68 10.97 18.35 11.3 18.35 11.69V12C18.35 15.52 15.52 18.35 12 18.35S5.65 15.52 5.65 12V11.69C5.65 11.3 5.32 10.97 4.93 10.97S4.21 11.3 4.21 11.69V12C4.21 16.28 7.72 19.79 12 19.79S19.79 16.28 19.79 12V11.69C19.79 11.3 19.46 10.97 19.07 10.97ZM12 21.23C11.61 21.23 11.28 21.56 11.28 21.95S11.61 22.67 12 22.67S12.72 22.34 12.72 21.95S12.39 21.23 12 21.23ZM12 19.79V21.23" 
+              stroke="currentColor" 
+              strokeWidth="1.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              fill="currentColor"
+            />
+          </svg>
+        )}
+      </div>
+
       <VoiceBottomSheet
         isVisible={showBottomSheet}
         isListening={isListening}
