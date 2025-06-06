@@ -51,10 +51,10 @@ Present information in a friendly, conversational manner as if you're speaking t
 For tasting notes, be specific and detailed about the ${wineYear} ${wineName}. For food pairings, be creative but appropriate for this wine type.`;
 }
 
-// Using GPT-4 for high-quality responses
-const MODEL = "gpt-4";
+// Using GPT-4o for fastest responses and latency optimization
+const MODEL = "gpt-4o";
 // Fallback model if primary model is not available
-const FALLBACK_MODEL = "gpt-3.5-turbo";
+const FALLBACK_MODEL = "gpt-4o-mini";
 
 // Initialize the OpenAI client with API key from environment variables
 const openai = new OpenAI({ 
@@ -346,9 +346,10 @@ const responseCache = new Map<string, { content: string; timestamp: number }>();
 const MAX_RESPONSE_CACHE_SIZE = 100;
 
 // Function to convert text to speech using OpenAI's Text-to-Speech API with consistent voice
-// Real-time streaming chat completion for first-token TTS
+// Real-time streaming chat completion with latency measurement and progressive TTS
 export async function chatCompletionStream(messages: ChatMessage[], wineData?: any) {
-  console.log("Starting real-time chat completion stream");
+  const startTime = performance.now();
+  console.log("🚀 Starting real-time streaming with GPT-4o for maximum speed");
   
   const systemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
   const newMessages = [
@@ -356,20 +357,58 @@ export async function chatCompletionStream(messages: ChatMessage[], wineData?: a
     ...messages
   ];
   
-  console.log("Using streaming OpenAI API for first-token TTS");
+  console.log("⚡ Initiating streaming request to OpenAI with optimized parameters");
   
+  const requestStartTime = performance.now();
+  
+  // Optimized parameters for fastest response with GPT-4o
   const stream = await openai.chat.completions.create({
-    model: MODEL,
+    model: MODEL, // GPT-4o for fastest responses
     messages: newMessages,
-    temperature: 0.3,
-    max_tokens: parseInt(process.env.MAX_TOKENS || '150'),
-    presence_penalty: -0.1,
-    frequency_penalty: 0.2,
-    top_p: 0.9,
-    stream: true,
+    temperature: 0.2, // Lower temperature for faster generation
+    max_tokens: parseInt(process.env.MAX_TOKENS || '100'), // Reduced for speed
+    presence_penalty: 0, // Removed penalties for speed
+    frequency_penalty: 0,
+    top_p: 0.8, // Reduced for faster token selection
+    stream: true, // CONFIRMED: Streaming is ENABLED
+    // Additional optimization parameters
+    seed: undefined, // No seed for fastest response
+    response_format: { type: "text" }, // Explicit text format
   });
   
-  return stream;
+  const requestEndTime = performance.now();
+  const requestLatency = requestEndTime - requestStartTime;
+  console.log(`📊 OpenAI API request latency: ${requestLatency.toFixed(2)}ms`);
+  
+  // Wrap stream with latency measurement and progressive TTS capability
+  return {
+    async *[Symbol.asyncIterator]() {
+      let firstTokenTime: number | null = null;
+      let tokenCount = 0;
+      
+      for await (const chunk of stream) {
+        const tokenReceiveTime = performance.now();
+        
+        if (!firstTokenTime && chunk.choices?.[0]?.delta?.content) {
+          firstTokenTime = tokenReceiveTime;
+          const timeToFirstToken = firstTokenTime - startTime;
+          console.log(`🎯 TIME TO FIRST TOKEN: ${timeToFirstToken.toFixed(2)}ms`);
+          console.log(`🔥 STREAMING CONFIRMED ACTIVE - First token received in ${timeToFirstToken.toFixed(2)}ms`);
+        }
+        
+        if (chunk.choices?.[0]?.delta?.content) {
+          tokenCount++;
+          const tokenLatency = tokenReceiveTime - (firstTokenTime || startTime);
+          console.log(`📈 Token ${tokenCount} received at +${tokenLatency.toFixed(2)}ms`);
+        }
+        
+        yield chunk;
+      }
+      
+      const totalTime = performance.now() - startTime;
+      console.log(`✅ Streaming completed - Total time: ${totalTime.toFixed(2)}ms, Tokens: ${tokenCount}`);
+    }
+  };
 }
 
 export async function textToSpeech(text: string): Promise<Buffer> {

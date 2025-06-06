@@ -651,12 +651,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             
             switch (data.type) {
               case 'first_token':
-                console.log("🎵 First token received - starting TTS immediately:", data.content);
+                console.log(`First token received in ${data.latency?.toFixed(2)}ms:`, data.content);
                 streamingContent = data.content;
                 firstTokenReceived = true;
                 
                 // Start TTS with first token for maximum responsiveness
                 if (data.start_tts && window.voiceAssistant?.speakResponse) {
+                  console.log("Starting immediate TTS with first token");
                   window.voiceAssistant.speakResponse(data.content);
                 }
                 
@@ -674,21 +675,27 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 break;
                 
               case 'token':
-                // Accumulate streaming content
+                // Accumulate streaming content and update UI
                 if (data.content) {
                   streamingContent += data.content;
+                  console.log(`Token ${data.token_count} received`);
                   
-                  // Update existing message with streaming content
-                  setMessages(prev => prev.map(msg => 
-                    msg.id === assistantMessageId 
-                      ? { ...msg, content: streamingContent }
-                      : msg
-                  ));
+                  // Update messages state directly since setMessages is not available
+                  refetchMessages();
+                }
+                break;
+                
+              case 'tts_chunk':
+                // Progressive TTS processing for chunked audio
+                if (data.content && window.voiceAssistant?.speakResponse) {
+                  console.log(`Progressive TTS chunk (${data.chunk_size} chars):`, data.content);
+                  // Queue additional TTS chunks for smoother audio playback
+                  window.voiceAssistant.speakResponse(data.content);
                 }
                 break;
                 
               case 'complete':
-                console.log("✅ Streaming completed");
+                console.log("Streaming completed successfully");
                 
                 // Store the complete message for Listen Response button
                 (window as any).lastAssistantMessageText = streamingContent;

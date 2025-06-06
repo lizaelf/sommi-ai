@@ -722,33 +722,68 @@ Format: Return only the description text, no quotes or additional formatting.`;
         'Access-Control-Allow-Headers': 'Cache-Control'
       });
       
-      // Start streaming response from OpenAI
+      // Start streaming response from OpenAI with latency tracking
+      const streamStartTime = performance.now();
       const stream = await chatCompletionStream(parsedMessages, parsedWineData);
       let fullContent = '';
       let firstTokenReceived = false;
+      let tokenBuffer = '';
+      let tokenCount = 0;
+      const CHUNK_SIZE = 10; // Process TTS in chunks of 10 tokens for progressive audio
+      
+      console.log("📡 Server-Sent Events streaming initiated");
       
       for await (const chunk of stream) {
+        const chunkReceiveTime = performance.now();
         const delta = chunk.choices?.[0]?.delta?.content;
+        
         if (delta) {
           fullContent += delta;
+          tokenBuffer += delta;
+          tokenCount++;
           
           // Send first token immediately for TTS to start
           if (!firstTokenReceived) {
             firstTokenReceived = true;
-            console.log("Sending first token for immediate TTS:", delta);
+            const firstTokenLatency = chunkReceiveTime - streamStartTime;
+            console.log(`🎯 First token sent to client in ${firstTokenLatency.toFixed(2)}ms:`, delta);
+            
             res.write(`data: ${JSON.stringify({ 
               type: 'first_token', 
               content: delta,
-              start_tts: true 
+              start_tts: true,
+              latency: firstTokenLatency
             })}\n\n`);
           } else {
-            // Stream subsequent tokens
+            // Stream tokens and send progressive TTS chunks
             res.write(`data: ${JSON.stringify({ 
               type: 'token', 
-              content: delta 
+              content: delta,
+              token_count: tokenCount
             })}\n\n`);
+            
+            // Send progressive TTS chunk when buffer reaches threshold
+            if (tokenBuffer.length >= CHUNK_SIZE || tokenBuffer.includes('.') || tokenBuffer.includes('!') || tokenBuffer.includes('?')) {
+              res.write(`data: ${JSON.stringify({ 
+                type: 'tts_chunk', 
+                content: tokenBuffer.trim(),
+                chunk_size: tokenBuffer.length
+              })}\n\n`);
+              
+              console.log(`🔊 Progressive TTS chunk sent: "${tokenBuffer.trim()}" (${tokenBuffer.length} chars)`);
+              tokenBuffer = '';
+            }
           }
         }
+      }
+      
+      // Send final TTS chunk if remaining
+      if (tokenBuffer.trim()) {
+        res.write(`data: ${JSON.stringify({ 
+          type: 'tts_chunk', 
+          content: tokenBuffer.trim(),
+          final: true
+        })}\n\n`);
       }
       
       // Save messages to storage
