@@ -48,7 +48,12 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
           src={image}
           alt={wineName || "Wine"}
           style={{
-            height: "280px",
+            height: "280px !important",
+            zIndex: "2 !important",
+            position: "relative !important",
+            maxWidth: "none !important",
+            width: "auto !important",
+            objectFit: "contain !important",
           }}
           onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
           onError={(e) => {
@@ -63,7 +68,14 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
         <img
           src={placeholderImage}
           alt={`${wineName || "Wine"} placeholder`}
-          style={{ height: "280px" }}
+          style={{
+            height: "280px !important",
+            zIndex: "2 !important",
+            position: "relative !important",
+            maxWidth: "none !important",
+            width: "auto !important",
+            objectFit: "contain !important",
+          }}
           onLoad={() =>
             console.log(`Using placeholder image for wine: ${wineName}`)
           }
