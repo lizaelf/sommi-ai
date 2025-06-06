@@ -182,100 +182,13 @@ async function speakResponse(text) {
       lastPlayedText = text;
     }
     
-    // Detect mobile devices
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      console.log("Mobile device detected - using OpenAI TTS API");
-      await useOpenAITTS(text);
-    } else {
-      console.log("Desktop device - using browser speech synthesis");
-      await useBrowserTTS(text);
-    }
-    
-  } catch (error) {
-    console.error("TTS error:", error);
-    // Fallback to browser TTS on any error
-    await useBrowserTTS(text);
-  }
-}
-
-// OpenAI TTS function for mobile devices
-async function useOpenAITTS(text) {
-  try {
-    console.log("Using OpenAI TTS for mobile device");
-    
-    // Dispatch audio playing event
-    isAudioPlaying = true;
-    const audioStartEvent = new CustomEvent('audio-status', {
-      detail: { status: 'playing' }
-    });
-    window.dispatchEvent(audioStartEvent);
-    
-    const response = await fetch('/api/text-to-speech', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'audio/mpeg, audio/*'
-      },
-      body: JSON.stringify({ text: text })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI TTS API error: ${response.status}`);
-    }
-
-    const audioBuffer = await response.arrayBuffer();
-    
-    // Create audio from buffer
-    const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
-    
-    // Store reference for cleanup
-    window.currentOpenAIAudio = audio;
-    
-    audio.onended = () => {
-      isAudioPlaying = false;
-      URL.revokeObjectURL(audioUrl);
-      window.currentOpenAIAudio = null;
-      
-      // Dispatch audio stopped event
-      const audioEndEvent = new CustomEvent('audio-status', {
-        detail: { status: 'stopped' }
-      });
-      window.dispatchEvent(audioEndEvent);
-    };
-    
-    audio.onerror = (error) => {
-      console.error("OpenAI audio playback error:", error);
-      isAudioPlaying = false;
-      URL.revokeObjectURL(audioUrl);
-      window.currentOpenAIAudio = null;
-      
-      // Fallback to browser TTS
-      useBrowserTTS(text);
-    };
-    
-    await audio.play();
-    console.log("OpenAI TTS audio playback started");
-    
-  } catch (error) {
-    console.error("OpenAI TTS error:", error);
-    // Fallback to browser TTS
-    await useBrowserTTS(text);
-  }
-}
-
-// Browser TTS function for desktop devices
-async function useBrowserTTS(text) {
-  try {
-    console.log("Using browser speech synthesis");
+    // Log for debugging
+    console.log("Speaking text response using browser synthesis...");
     
     // Force reload voices to get fresh list
     const voices = window.speechSynthesis.getVoices();
     console.log("Available voices:", voices.length);
-      
+    
     // Look for male voices - log them for debugging
     const maleVoices = voices.filter(voice => 
       voice.name.includes('Male') || 

@@ -684,85 +684,33 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               console.warn("Audio context not initialized, attempting manual initialization");
             }
 
-            // Detect mobile devices for TTS routing
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            
-            if (isMobile) {
-              console.log("Mobile device detected - using OpenAI TTS API");
-              const response = await fetch('/api/text-to-speech', {
-                method: 'POST',
-                headers: { 
-                  'Content-Type': 'application/json',
-                  'Accept': 'audio/mpeg, audio/*'
-                },
-                body: JSON.stringify({ text: assistantMessage.content })
-              });
+            const response = await fetch('/api/text-to-speech', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'audio/mpeg, audio/*'
+              },
+              body: JSON.stringify({ text: assistantMessage.content })
+            });
 
-              if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`TTS API error: ${response.status} - ${errorText}`);
-              }
-
-              console.log("TTS response received, processing audio...");
-              const audioBuffer = await response.arrayBuffer();
-              
-              if (audioBuffer.byteLength === 0) {
-                throw new Error("Received empty audio buffer");
-              }
-
-              const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-              const audioUrl = URL.createObjectURL(audioBlob);
-              const autoplayAudio = new Audio(audioUrl);
-
-              // Use separate reference for autoplay to avoid conflicts with unmute button
-              (window as any).currentAutoplayAudio = autoplayAudio;
-            } else {
-              console.log("Desktop device - using browser speech synthesis");
-              // Use browser speech synthesis for desktop
-              if ('speechSynthesis' in window) {
-                // Cancel any ongoing speech
-                window.speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(assistantMessage.content);
-                utterance.lang = 'en-US';
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                
-                // Try to use a male voice if available
-                const voices = window.speechSynthesis.getVoices();
-                const maleVoice = voices.find(voice => 
-                  voice.name.includes('Male') || 
-                  voice.name.includes('Google') && voice.name.includes('Male')
-                );
-                if (maleVoice) {
-                  utterance.voice = maleVoice;
-                }
-                
-                utterance.onstart = () => {
-                  console.log("Browser TTS autoplay started");
-                  window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'playing' } }));
-                };
-                
-                utterance.onend = () => {
-                  console.log("Browser TTS autoplay completed");
-                  window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'stopped' } }));
-                };
-                
-                utterance.onerror = (e) => {
-                  console.error("Browser TTS error:", e);
-                  window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'error' } }));
-                };
-                
-                window.speechSynthesis.speak(utterance);
-                (window as any).currentBrowserTTS = utterance;
-                return; // Exit early for desktop browser TTS
-              } else {
-                throw new Error("Browser speech synthesis not available");
-              }
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`TTS API error: ${response.status} - ${errorText}`);
             }
 
-            // Mobile-specific audio setup continues here
-            const autoplayAudio = (window as any).currentAutoplayAudio;
+            console.log("TTS response received, processing audio...");
+            const audioBuffer = await response.arrayBuffer();
+            
+            if (audioBuffer.byteLength === 0) {
+              throw new Error("Received empty audio buffer");
+            }
+
+            const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const autoplayAudio = new Audio(audioUrl);
+
+            // Use separate reference for autoplay to avoid conflicts with unmute button
+            (window as any).currentAutoplayAudio = autoplayAudio;
 
             // Enhanced audio event handlers
             autoplayAudio.onloadstart = () => {
