@@ -496,6 +496,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
   const [, setLocation] = useLocation();
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
+  const [hasTriggeredAutoQuestion, setHasTriggeredAutoQuestion] = useState(false);
   const { toast } = useToast();
 
   // Create a ref for the chat container to allow scrolling
@@ -589,6 +591,54 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       setHideSuggestions(false);
     }
   }, [messages.length]);
+
+  // Auto-conversation starter after 2 seconds of inactivity
+  useEffect(() => {
+    // Clear existing timer
+    if (inactivityTimer) {
+      clearTimeout(inactivityTimer);
+    }
+
+    // Only trigger if no messages exist and user hasn't been auto-prompted yet
+    if (messages.length === 0 && !hasTriggeredAutoQuestion && !isTyping) {
+      const timer = setTimeout(() => {
+        if (messages.length === 0 && !hasTriggeredAutoQuestion) {
+          console.log("Triggering automatic conversation starter after 2 seconds of inactivity");
+          setHasTriggeredAutoQuestion(true);
+          
+          const autoQuestions = [
+            "Tell me about this wine's flavor profile",
+            "What food pairs well with this wine?",
+            "What makes this wine special?",
+            "How should I serve this wine?",
+            "What's the story behind this wine?"
+          ];
+          
+          const randomQuestion = autoQuestions[Math.floor(Math.random() * autoQuestions.length)];
+          handleSendMessage(randomQuestion);
+        }
+      }, 2000); // 2 seconds
+      
+      setInactivityTimer(timer);
+    }
+
+    // Cleanup timer on unmount
+    return () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+      }
+    };
+  }, [messages.length, hasTriggeredAutoQuestion, isTyping]);
+
+  // Reset auto-question trigger when user manually sends a message
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'user') {
+        setHasTriggeredAutoQuestion(false);
+      }
+    }
+  }, [messages]);
 
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
