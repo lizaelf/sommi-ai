@@ -39,7 +39,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) =>
         <img
           src={image}
           alt={wineName || 'Wine'}
-          style={{ height: '200px' }}
+          style={{ height: '280px' }}
           onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
           onError={(e) => {
             console.error(`Wine bottle image failed to load: ${wineName}, path: ${image}`);
@@ -52,7 +52,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({ image, wineName }) =>
         <img
           src={placeholderImage}
           alt={`${wineName || 'Wine'} placeholder`}
-          style={{ height: '200px' }}
+          style={{ height: '280px' }}
           onLoad={() => console.log(`Using placeholder image for wine: ${wineName}`)}
         />
       )}
