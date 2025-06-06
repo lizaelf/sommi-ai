@@ -1,14 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { chatCompletion, checkApiStatus, textToSpeech, transcribeAudio } from "./openai";
+import { chatCompletion, checkApiStatus, textToSpeech } from "./openai";
 import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
 import { z } from "zod";
 import { google } from "googleapis";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -688,89 +687,6 @@ Format: Return only the description text, no quotes or additional formatting.`;
     } catch (error) {
       console.error("Wine sync error:", error);
       res.status(500).json({ error: "Failed to sync wine data" });
-    }
-  });
-
-  // Configure multer for in-memory audio uploads
-  const audioUpload = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-      fileSize: 25 * 1024 * 1024, // 25MB limit for audio files
-    },
-    fileFilter: (req, file, cb) => {
-      // Accept common audio formats
-      const allowedMimes = [
-        'audio/webm',
-        'audio/wav',
-        'audio/mp3',
-        'audio/mpeg',
-        'audio/mp4',
-        'audio/m4a',
-        'audio/ogg'
-      ];
-      
-      if (allowedMimes.includes(file.mimetype)) {
-        cb(null, true);
-      } else {
-        cb(new Error('Invalid audio format'), false);
-      }
-    }
-  });
-
-  // Audio transcription endpoint using OpenAI Whisper
-  app.post("/api/transcribe", audioUpload.single('audio'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No audio file provided" });
-      }
-
-      console.log("Received audio file for transcription:", {
-        originalName: req.file.originalname,
-        mimeType: req.file.mimetype,
-        size: req.file.size
-      });
-
-      // Transcribe using OpenAI Whisper
-      const transcript = await transcribeAudio(req.file.buffer);
-      
-      if (!transcript || transcript.trim().length === 0) {
-        return res.status(400).json({ 
-          error: "No speech detected in audio",
-          transcript: ""
-        });
-      }
-
-      console.log("Transcription successful:", transcript.substring(0, 100) + "...");
-      
-      res.json({
-        transcript: transcript.trim(),
-        success: true
-      });
-      
-    } catch (err) {
-      const error = err as any;
-      console.error("Error in audio transcription endpoint:", error);
-      
-      // Check if this is a quota exceeded error
-      const isQuotaError = error.message && (
-        error.message.includes("quota") || 
-        error.message.includes("rate limit") ||
-        error.message.includes("insufficient_quota")
-      );
-      
-      if (isQuotaError) {
-        return res.status(429).json({
-          message: "API quota exceeded for speech recognition",
-          error: "QUOTA_EXCEEDED",
-          fallback: true
-        });
-      }
-      
-      // For other errors
-      res.status(500).json({
-        message: "Failed to transcribe audio",
-        error: error?.message || "Unknown error"
-      });
     }
   });
 
