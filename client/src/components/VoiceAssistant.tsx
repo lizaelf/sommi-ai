@@ -20,6 +20,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [isListening, setIsListening] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -46,11 +47,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
   }, [isListening, isMobileDevice]);
 
-  // Keep bottom sheet open during processing
+  // Keep bottom sheet open during processing and manage thinking state
   useEffect(() => {
     if (isProcessing) {
       setShowBottomSheet(true);
+      setIsThinking(true);
       console.log("Keeping bottom sheet open during processing");
+    } else {
+      setIsThinking(false);
     }
   }, [isProcessing]);
 
@@ -851,13 +855,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         onAsk={handleAsk}
         isListening={isListening}
         isResponding={isResponding}
-        isThinking={isProcessing}
+        isThinking={isThinking}
         showSuggestions={false}
         showUnmuteButton={
-          showUnmuteButton && !isListening && !isResponding && !isProcessing
+          showUnmuteButton && !isListening && !isResponding && !isThinking
         }
         showAskButton={
-          showAskButton && !isListening && !isResponding && !isProcessing
+          showAskButton && !isListening && !isResponding && !isThinking
         }
         onSuggestionClick={handleSuggestionClick}
       />
