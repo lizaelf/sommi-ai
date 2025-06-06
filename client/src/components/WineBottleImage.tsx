@@ -49,7 +49,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
           alt={wineName || "Wine"}
           style={{
             height: "280px !important",
-            zIndex: "2 !important",
+            zIndex: "2",
           }}
           onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
           onError={(e) => {
