@@ -91,34 +91,7 @@ const SommTenantAdmin: React.FC = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#3a3a3a" }}>
       {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
-        <div className="relative" ref={menuDropdownRef}>
-          <button
-            onClick={() => setShowMenuDropdown(!showMenuDropdown)}
-            className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
-          >
-            <Menu className="w-5 h-5 text-white" />
-          </button>
-
-          {showMenuDropdown && (
-            <div className="absolute left-0 top-12 w-56 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg py-2 z-50">
-              <button
-                onClick={handleGlobalSearch}
-                className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-colors text-left"
-              >
-                <Search className="w-4 h-4" />
-                Global Search
-              </button>
-              <button
-                onClick={handleProfileManagement}
-                className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-colors text-left"
-              >
-                <User className="w-4 h-4" />
-                Profile Management
-              </button>
-            </div>
-          )}
-        </div>
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm border-b border-white/10">
         <h1
           className="text-lg font-medium"
           style={{
@@ -127,7 +100,7 @@ const SommTenantAdmin: React.FC = () => {
         >
           Somm tenant admin
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="absolute right-4 flex items-center gap-3">
           <button
             onClick={() => (window.location.href = "/tenant-create")}
             className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
