@@ -560,3 +560,16 @@ button:active {
   animation: slide-lr-slow 6s ease-in-out infinite;
   animation-delay: 4s;
 }
+
+/* Remove circular background from wine bottle image */
+.wine-bottle-image::before,
+.wine-bottle-image::after {
+  display: none !important;
+  content: none !important;
+}
+
+.wine-bottle-image {
+  background: transparent !important;
+  background-image: none !important;
+  background-color: transparent !important;
+}
