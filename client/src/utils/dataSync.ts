@@ -52,7 +52,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
     year: 2021,
     bottles: 6,
-    image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.png",
+    image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg",
     ratings: {
       vn: 95,
       jd: 93,
