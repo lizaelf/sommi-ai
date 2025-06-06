@@ -9,6 +9,7 @@ interface AppHeaderProps {
   rightContent?: React.ReactNode;
   className?: string;
   showBackButton?: boolean;
+  hideLogo?: boolean;
 }
 
 export function AppHeader({ 
@@ -16,7 +17,8 @@ export function AppHeader({
   onBack, 
   rightContent, 
   className = "",
-  showBackButton = false 
+  showBackButton = false,
+  hideLogo = false 
 }: AppHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
 
@@ -51,11 +53,11 @@ export function AppHeader({
                 <ArrowLeft className="w-6 h-6" />
               </div>
             ) : (
-              <Logo />
+              !hideLogo && <Logo />
             )}
             {title && (
               <h1 
-                className="text-white text-[18px] font-medium truncate whitespace-nowrap flex-1 mr-4 text-center"
+                className={`text-white text-[18px] font-medium truncate whitespace-nowrap flex-1 mr-4 ${hideLogo ? 'text-left' : 'text-center'}`}
               >
                 {title}
               </h1>
