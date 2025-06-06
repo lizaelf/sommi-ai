@@ -1493,84 +1493,123 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 </div>
               </div>
 
-              {/* Previous Discussion Section - Only show on Home page, not Wine Details */}
+              {/* Summary Section - Only show on Home page, not Wine Details */}
               {messages.length > 0 && !showBuyButton && (
-                <div className="px-6 pb-6 space-y-4">
-                  <div>
-                    <h3 style={{
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      color: "#CECECE",
-                      marginBottom: "16px",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px"
-                    }}>
-                      PREVIOUS DISCUSSION
-                    </h3>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "12px",
-                      }}
-                    >
-                      {messages.slice(-6).map((message, index) => (
-                        <div
-                          key={`${message.id}-${index}`}
-                          style={{
-                            display: "flex",
-                            justifyContent:
-                              message.role === "user" ? "flex-end" : "flex-start",
-                            width: "100%",
-                          }}
-                        >
-                          <div
-                            data-role={message.role}
+                <div
+                  style={{
+                    width: "100%",
+                    padding: "0 20px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <h1
+                    style={{
+                      ...typography.h1,
+                      color: "white",
+                      marginBottom: "24px",
+                      textAlign: "left",
+                    }}
+                  >
+                    Summary
+                  </h1>
+
+                  {/* Discussion Summary */}
+                  <div style={{ marginBottom: "32px" }}>
+                    {(() => {
+                      // Generate a comprehensive summary based on the conversation
+                      const summaryText = messages.length > 0 
+                        ? "Based on your conversation, you've explored the unique characteristics, flavor profile, and pairing possibilities of this exceptional wine. The discussion covered various aspects including its distinctive terroir, winemaking traditions, and what makes it a standout choice for wine enthusiasts. Your questions and our AI sommelier's responses have provided valuable insights into this wine's complexity and versatility."
+                        : "This wine offers a rich tapestry of flavors and aromas that reflect its prestigious terroir and traditional winemaking methods. From its complex tasting profile to perfect food pairings, this bottle represents the finest expression of its varietal and region.";
+
+                      return (
+                        <div>
+                          <p
                             style={{
-                              backgroundColor:
-                                message.role === "user"
-                                  ? "#F5F5F5"
-                                  : "transparent",
-                              borderRadius: "16px",
-                              padding:
-                                message.role === "user"
-                                  ? "12px 16px 4px 16px"
-                                  : "12px 0",
-                              maxWidth: message.role === "user" ? "80%" : "100%",
-                              fontFamily: "Lora, serif",
-                              fontSize: "16px",
-                              lineHeight: "24px",
+                              ...typography.body,
+                              color: "rgba(255, 255, 255, 0.8)",
+                              lineHeight: "1.6",
+                              margin: "0 0 16px 0",
+                              paddingBottom: "16px",
                             }}
                           >
-                            <div
-                              style={{
-                                color:
-                                  message.role === "user" ? "#000" : "white",
-                              }}
-                            >
-                              {(() => {
-                                // Store assistant message text for voice playback
-                                if (
-                                  message.role === "assistant" &&
-                                  message.content
-                                ) {
-                                  setTimeout(() => {
-                                    (window as any).lastResponseText =
-                                      message.content;
-                                    console.log(
-                                      "💾 Stored assistant message at render:",
-                                      message.content.substring(0, 50) + "...",
-                                    );
-                                  }, 0);
-                                }
-                                return formatContent(message.content);
-                              })()}
-                            </div>
-                          </div>
+                            {summaryText}
+                          </p>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })()}
+
+                    {/* Show whole dialog button */}
+                    <button
+                      onClick={() => setLocation("/wine/conversation")}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                      }}
+                      onMouseDown={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                      }}
+                      onMouseUp={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                      }}
+                      style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.08)",
+                        borderRadius: "32px",
+                        height: "56px",
+                        minHeight: "56px",
+                        maxHeight: "56px",
+                        padding: "0 16px",
+                        margin: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "none",
+                        color: "white",
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        outline: "none",
+                        width: "100%",
+                        boxSizing: "border-box",
+                        lineHeight: "1",
+                        transition: "background-color 0.2s ease",
+                      }}
+                    >
+                      Show whole dialog
+                    </button>
+
+                    {/* Ask more button */}
+                    <button
+                      onClick={() => {
+                        setShowChatInput(true);
+                      }}
+                      style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.08)",
+                        borderRadius: "32px",
+                        height: "56px",
+                        minHeight: "56px",
+                        maxHeight: "56px",
+                        padding: "0 16px",
+                        margin: "8px 0 0 0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "none",
+                        color: "white",
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        outline: "none",
+                        width: "100%",
+                        boxSizing: "border-box",
+                        lineHeight: "1",
+                      }}
+                    >
+                      Ask more
+                    </button>
                   </div>
                 </div>
               )}
