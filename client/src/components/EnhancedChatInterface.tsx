@@ -221,7 +221,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   });
 
   // State to control showing chat input interface instead of contact form
-  const [showChatInput, setShowChatInput] = useState(false);
+  const [showChatInput, setShowChatInput] = useState(true);
 
   // State for contact bottom sheet - using same structure as Cellar page
   const [showContactSheet, setShowContactSheet] = useState(false);
@@ -2032,7 +2032,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             <div className="max-w-3xl mx-auto">
               {showBuyButton && !showChatInput ? (
                 // Show Buy Again Button for WineDetails page
-                (<button
+                <button
                   onClick={() => {
                     if (currentWine?.buyAgainLink) {
                       window.open(currentWine.buyAgainLink, '_blank');
@@ -2062,8 +2062,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     boxSizing: "border-box",
                     lineHeight: "1",
                   }}
-                >Buy again
-                                  </button>)
+                >
+                  Buy again
+                </button>
               ) : (
                 // Show suggestions and input for Home page
                 (<>
