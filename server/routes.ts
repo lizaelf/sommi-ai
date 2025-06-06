@@ -701,6 +701,90 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Real-time streaming chat endpoint for first-token TTS
+  app.get("/api/chat-stream", async (req, res) => {
+    try {
+      const { messages, conversationId, wineData, optimize_for_speed } = req.query;
+      
+      // Parse query parameters
+      const parsedMessages = messages ? JSON.parse(messages as string) : [];
+      const parsedWineData = wineData ? JSON.parse(wineData as string) : null;
+      const actualConversationId = conversationId ? parseInt(conversationId as string) : null;
+      
+      console.log("Starting streaming response for first-token TTS");
+      
+      // Set up Server-Sent Events
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Cache-Control'
+      });
+      
+      // Start streaming response from OpenAI
+      const stream = await chatCompletionStream(parsedMessages, parsedWineData);
+      let fullContent = '';
+      let firstTokenReceived = false;
+      
+      for await (const chunk of stream) {
+        const delta = chunk.choices?.[0]?.delta?.content;
+        if (delta) {
+          fullContent += delta;
+          
+          // Send first token immediately for TTS to start
+          if (!firstTokenReceived) {
+            firstTokenReceived = true;
+            console.log("Sending first token for immediate TTS:", delta);
+            res.write(`data: ${JSON.stringify({ 
+              type: 'first_token', 
+              content: delta,
+              start_tts: true 
+            })}\n\n`);
+          } else {
+            // Stream subsequent tokens
+            res.write(`data: ${JSON.stringify({ 
+              type: 'token', 
+              content: delta 
+            })}\n\n`);
+          }
+        }
+      }
+      
+      // Save messages to storage
+      if (actualConversationId) {
+        await storage.createMessage({
+          content: parsedMessages[parsedMessages.length - 1].content,
+          role: 'user',
+          conversationId: actualConversationId
+        });
+        
+        await storage.createMessage({
+          content: fullContent,
+          role: 'assistant',
+          conversationId: actualConversationId
+        });
+      }
+      
+      // Send completion signal
+      res.write(`data: ${JSON.stringify({ 
+        type: 'complete', 
+        conversationId: actualConversationId 
+      })}\n\n`);
+      
+      console.log("Streaming completed successfully");
+      res.end();
+      
+    } catch (error) {
+      console.error('Streaming error:', error);
+      res.write(`data: ${JSON.stringify({ 
+        type: 'error', 
+        message: 'Streaming failed' 
+      })}\n\n`);
+      res.end();
+    }
+  });
+
   // TTS request deduplication map
   const activeRequests = new Map<string, Promise<Buffer>>();
 

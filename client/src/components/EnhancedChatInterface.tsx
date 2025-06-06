@@ -20,7 +20,7 @@ import {
 } from "@shared/wineConfig";
 import { DataSyncManager } from "@/utils/dataSync";
 import { ShiningText } from "@/components/ShiningText";
-import { TextGenerateEffect } from "./ui/text-generate-effect";
+
 import { createStreamingClient, isStreamingSupported } from "@/lib/streamingClient";
 // Import typography styles
 
@@ -627,20 +627,113 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
       console.log("Making API request with data:", requestBody);
 
+      // Check if streaming is enabled for first-token TTS
+      const enableStreaming = process.env.ENABLE_STREAMING === 'true';
+      
+      if (enableStreaming && isStreamingSupported()) {
+        console.log("Starting real-time streaming with first-token TTS");
+        
+        // Create streaming request with Server-Sent Events
+        const eventSource = new EventSource(`/api/chat-stream?${new URLSearchParams({
+          messages: JSON.stringify([{ role: "user", content }]),
+          conversationId: currentConversationId?.toString() || '',
+          wineData: JSON.stringify(currentWine),
+          optimize_for_speed: 'true'
+        })}`);
+        
+        let streamingContent = '';
+        let firstTokenReceived = false;
+        let assistantMessageId = Date.now() + 1;
+        
+        eventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            
+            switch (data.type) {
+              case 'first_token':
+                console.log("🎵 First token received - starting TTS immediately:", data.content);
+                streamingContent = data.content;
+                firstTokenReceived = true;
+                
+                // Start TTS with first token for maximum responsiveness
+                if (data.start_tts && window.voiceAssistant?.speakResponse) {
+                  window.voiceAssistant.speakResponse(data.content);
+                }
+                
+                // Create initial assistant message
+                const initialMessage: ClientMessage = {
+                  id: assistantMessageId,
+                  content: streamingContent,
+                  role: "assistant",
+                  conversationId: currentConversationId,
+                  createdAt: new Date().toISOString(),
+                };
+                
+                addMessage(initialMessage);
+                setLatestMessageId(assistantMessageId);
+                break;
+                
+              case 'token':
+                // Accumulate streaming content
+                if (data.content) {
+                  streamingContent += data.content;
+                  
+                  // Update existing message with streaming content
+                  setMessages(prev => prev.map(msg => 
+                    msg.id === assistantMessageId 
+                      ? { ...msg, content: streamingContent }
+                      : msg
+                  ));
+                }
+                break;
+                
+              case 'complete':
+                console.log("✅ Streaming completed");
+                
+                // Store the complete message for Listen Response button
+                (window as any).lastAssistantMessageText = streamingContent;
+                
+                // Trigger unmute button to show after response is ready
+                window.dispatchEvent(new CustomEvent('showUnmuteButton'));
+                
+                eventSource.close();
+                refetchMessages();
+                break;
+                
+              case 'error':
+                console.error("Streaming error:", data.message);
+                eventSource.close();
+                throw new Error(data.message || 'Streaming failed');
+            }
+          } catch (parseError) {
+            console.error('Error parsing streaming event:', parseError);
+            eventSource.close();
+          }
+        };
+        
+        eventSource.onerror = (error) => {
+          console.error('EventSource error:', error);
+          eventSource.close();
+          // Fallback to regular request
+          throw new Error('Streaming connection failed');
+        };
+        
+        return;
+      }
+      
+      // Fallback to regular non-streaming request
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "X-Priority": "high", // Signal high priority to the server
+          "X-Priority": "high",
         },
         body: JSON.stringify(requestBody),
-        // Safari compatibility
         credentials: 'same-origin',
       });
 
       console.log("API response status:", response.status);
-      console.log("API response headers:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
@@ -649,29 +742,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       const responseData = await response.json();
       console.log("API response data:", responseData);
 
-      // Add the assistant's response to the UI immediately
+      // Add the assistant's response to the UI
       if (responseData.message && responseData.message.content) {
         const assistantMessage: ClientMessage = {
-          id: Date.now() + 1, // Ensure unique ID
+          id: Date.now() + 1,
           content: responseData.message.content,
           role: "assistant",
           conversationId: currentConversationId,
           createdAt: new Date().toISOString(),
         };
 
-        // Mark this as the latest message for animation
         setLatestMessageId(assistantMessage.id);
-
-        // Store the assistant message for Listen Response button
         (window as any).lastAssistantMessageText = assistantMessage.content;
-
-        // Add assistant message to the conversation
         await addMessage(assistantMessage);
-
-        // Trigger unmute button to show after response is ready
         window.dispatchEvent(new CustomEvent('showUnmuteButton'));
-
-        // Autoplay TTS disabled - users must manually click to listen
         console.log("Response received - autoplay disabled, user must click to listen");
       }
 
