@@ -679,7 +679,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             console.log("Starting TTS audio generation...");
             
             // Ensure audio context is initialized before attempting playback
-            const audioContextInitialized = await (window as any).initAudioContext?.() || true;
+            const audioContextInitialized = (await (window as any).initAudioContext?.()) || true;
             if (!audioContextInitialized) {
               console.warn("Audio context not initialized, attempting manual initialization");
             }
@@ -1509,9 +1509,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       marginBottom: "24px",
                       textAlign: "left",
                     }}
-                  >
-                    Summary
-                  </h1>
+                  >Chat summary</h1>
 
                   {/* Discussion Summary */}
                   <div style={{ marginBottom: "32px" }}>
@@ -1744,7 +1742,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       </>
                     ) : (
                       // Show "Chat history" section when user hasn't shared contact info
-                      <div
+                      (<div
                         style={{ textAlign: "center", marginBottom: "32px" }}
                       >
                         <h1
@@ -1788,7 +1786,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         >
                           View wine history
                         </button>
-                      </div>
+                      </div>)
                     )}
                   </>
                 )}
@@ -1798,7 +1796,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   {messages.length > 0 ? (
                     showFullConversation ? (
                       // Show full conversation with date headers
-                      <>
+                      (<>
                         {(() => {
                           // Group messages by date
                           const messagesByDate = messages.reduce((groups: any, message: any, index: number) => {
@@ -1952,10 +1950,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             Back to Summary
                           </button>
                         </div>
-                      </>
+                      </>)
                     ) : (
                       // Show summary
-                      (() => {
+                      ((() => {
                         // Generate summary content for 3 main topics
                         const summaryTopics = [
                           {
@@ -1983,7 +1981,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             }}
                           ></div>
                         );
-                      })()
+                      })())
                     )
                   ) : null}
 
@@ -2034,7 +2032,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             <div className="max-w-3xl mx-auto">
               {showBuyButton && !showChatInput ? (
                 // Show Buy Again Button for WineDetails page
-                <button
+                (<button
                   onClick={() => {
                     if (currentWine?.buyAgainLink) {
                       window.open(currentWine.buyAgainLink, '_blank');
@@ -2064,12 +2062,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     boxSizing: "border-box",
                     lineHeight: "1",
                   }}
-                >
-                  Buy again
-                </button>
+                >Buy again
+                                  </button>)
               ) : (
                 // Show suggestions and input for Home page
-                <>
+                (<>
                   {/* Suggestion chips - always visible above input */}
                   <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                     <button
@@ -2095,7 +2092,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       Where it's from
                     </button>
                   </div>
-
                   <div className="relative flex items-center">
                     <ChatInput
                       onSendMessage={handleSendMessage}
@@ -2110,13 +2106,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       }
                     />
                   </div>
-                </>
+                </>)
               )}
             </div>
           </div>
         </main>
       </div>
-
       {/* Contact Bottom Sheet */}
       {animationState !== "closed" &&
         portalElement &&
