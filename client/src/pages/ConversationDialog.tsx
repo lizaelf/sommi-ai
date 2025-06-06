@@ -5,6 +5,7 @@ import { getWineDisplayName } from '../../../shared/wineConfig';
 import { TextGenerateEffect } from '../components/ui/text-generate-effect';
 import { useState, useEffect } from 'react';
 import typography from '../styles/typography';
+import AppHeader from '@/components/AppHeader';
 
 export default function ConversationDialog() {
   const [, setLocation] = useLocation();
@@ -111,35 +112,16 @@ export default function ConversationDialog() {
     <div className="bg-background text-white" style={{
       minHeight: '100vh'
     }}>
-        {/* Fixed Header with back button navigation */}
-        <div
-          className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
-            scrolled
-              ? "bg-black/90 backdrop-blur-sm border-b border-white/10"
-              : "bg-transparent"
-          }`}
-        >
-          <svg
-            onClick={handleBackClick}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            className="text-white cursor-pointer"
-          >
-            <path
-              fill="currentColor"
-              d="M15.707 4.293a1 1 0 0 1 0 1.414L9.414 12l6.293 6.293a1 1 0 0 1-1.414 1.414l-7-7a1 1 0 0 1 0-1.414l7-7a1 1 0 0 1 1.414 0"
-            />
-          </svg>
-          <h1 className="text-lg font-medium text-white text-left flex-1 truncate overflow-hidden whitespace-nowrap">{getWineDisplayName()}</h1>
-          <div></div>
-        </div>
+        <AppHeader 
+          title={getWineDisplayName()}
+          showBackButton={true}
+          onBack={handleBackClick}
+        />
 
       {/* Conversation Content */}
       <div style={{
         padding: '16px',
-        paddingTop: '64px',
+        paddingTop: '75px',
         paddingBottom: '40px'
       }}>
         <div style={{

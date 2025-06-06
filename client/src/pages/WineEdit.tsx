@@ -14,6 +14,7 @@ import {
 } from "@/utils/imageDeduplication";
 // Default images removed - only authentic uploaded images will be displayed
 import placeholderImage from "@assets/Placeholder.png";
+import AppHeader from "@/components/AppHeader";
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;
@@ -368,63 +369,37 @@ export default function WineEdit() {
 
   return (
     <div className="min-h-screen bg-background text-white">
-      {/* Fixed Header with back button navigation */}
-      <div
-        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-300 ${
-          scrolled
-            ? "bg-black/90 backdrop-blur-sm border-b border-white/10"
-            : "bg-transparent"
-        }`}
-      >
-        <button
-          onClick={() => {
-            // Get the referrer or use a sensible default
-            const referrer = document.referrer;
-            const currentOrigin = window.location.origin;
-            
-            // If we came from the same site, try to go back there
-            if (referrer && referrer.startsWith(currentOrigin)) {
-              const referrerPath = new URL(referrer).pathname;
-              // Don't navigate to the same page and ensure it's a valid route
-              if (referrerPath !== window.location.pathname && 
-                  (referrerPath.includes('/tenants/') || 
-                   referrerPath === '/winery-tenant-admin' ||
-                   referrerPath === '/somm-tenant-admin' ||
-                   referrerPath === '/cellar' ||
-                   referrerPath === '/scanned')) {
-                setLocation(referrerPath);
-                return;
-              }
+      <AppHeader 
+        title={isNewWine ? "Add wine" : "Edit wine"}
+        showBackButton={true}
+        onBack={() => {
+          // Get the referrer or use a sensible default
+          const referrer = document.referrer;
+          const currentOrigin = window.location.origin;
+          
+          // If we came from the same site, try to go back there
+          if (referrer && referrer.startsWith(currentOrigin)) {
+            const referrerPath = new URL(referrer).pathname;
+            // Don't navigate to the same page and ensure it's a valid route
+            if (referrerPath !== window.location.pathname && 
+                (referrerPath.includes('/tenants/') || 
+                 referrerPath === '/winery-tenant-admin' ||
+                 referrerPath === '/somm-tenant-admin' ||
+                 referrerPath === '/cellar' ||
+                 referrerPath === '/scanned')) {
+              setLocation(referrerPath);
+              return;
             }
-            
-            // Default fallback to winery admin panel
-            setLocation("/winery-tenant-admin");
-          }}
-          className="header-button"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-white"
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-        <h1 className="text-lg font-medium text-white text-center flex-1 truncate overflow-hidden whitespace-nowrap">
-          {isNewWine ? "Add wine" : "Edit wine"}
-        </h1>
-        {!isNewWine && (
+          }
+          
+          // Default fallback to winery admin panel
+          setLocation("/winery-tenant-admin");
+        }}
+        rightContent={!isNewWine && (
           <div className="relative dropdown-container">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="header-button"
+              className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
               style={{ padding: "4px" }}
             >
               <svg
@@ -482,11 +457,10 @@ export default function WineEdit() {
             )}
           </div>
         )}
-        {isNewWine && <div style={{ width: "32px" }}></div>}
-      </div>
+      />
 
       {/* Content */}
-      <div className="pt-20 p-6">
+      <div className="pt-[75px] p-6">
         <div style={{ display: "flex", gap: "20px", marginBottom: "24px" }}>
           {/* Wine Image Upload */}
           <div
