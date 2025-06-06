@@ -733,6 +733,20 @@ const TenantAdmin: React.FC = () => {
           {/* CMS Tab - Wine Management */}
           {activeTab === "cms" && (
             <div style={{ backgroundColor: "#000000", minHeight: "100vh" }}>
+              {/* Add Wine Button */}
+              <div className="mb-6">
+                <button
+                  onClick={() => {
+                    // Create new wine with next available ID
+                    const nextId = Math.max(...wineCards.map(w => w.id), 0) + 1;
+                    setLocation(`/wine-edit/${nextId}?new=true`);
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add wine
+                </button>
+              </div>
 
               {/* Wine Cards List */}
               <div>
