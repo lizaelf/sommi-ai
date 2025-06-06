@@ -43,24 +43,12 @@ export function AppHeader({
           {/* Left side - Back button or Logo */}
           <div className="flex items-center justify-start" style={{ minWidth: "80px" }}>
             {showBackButton && onBack ? (
-              <button 
+              <div
                 onClick={onBack}
-                className="flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200 ease-in-out"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: 'none',
-                  outline: 'none',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                }}
+                className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
               >
-                <ArrowLeft className="w-5 h-5 text-white" />
-              </button>
+                <ArrowLeft className="w-6 h-6" />
+              </div>
             ) : (
               <Logo />
             )}
