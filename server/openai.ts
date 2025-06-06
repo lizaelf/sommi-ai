@@ -108,6 +108,18 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       ...filteredMessages
     ];
 
+    // Get configuration from environment variables
+    const maxTokens = parseInt(process.env.MAX_TOKENS || "300");
+    const responseRules = process.env.RESPONSE_RULES || "Keep responses concise and focused.";
+
+    // Append response rules to system prompt
+    if (responseRules) {
+      newMessages[0].content += `\n\nIMPORTANT RESPONSE RULES: ${responseRules}`;
+    }
+
+    console.log('Max tokens configured:', maxTokens);
+    console.log('Response rules:', responseRules);
+
     // Call OpenAI API
     let response;
     try {
@@ -116,7 +128,7 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
         model: MODEL,
         messages: newMessages,
         temperature: 0.5, // Lower temperature for more focused responses
-        // Removed max_tokens limit to allow full-length responses
+        max_tokens: maxTokens, // Dynamic max_tokens from environment
         presence_penalty: -0.1, // Slight negative presence penalty for concise responses
         frequency_penalty: 0.2  // Slight frequency penalty to avoid repetition
       });
@@ -130,7 +142,7 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
           model: FALLBACK_MODEL,
           messages: newMessages,
           temperature: 0.5, // Lower temperature for focused responses
-          // Removed max_tokens limit to allow full-length responses
+          max_tokens: maxTokens, // Dynamic max_tokens from environment
           presence_penalty: -0.1, // Encourage concise responses
           frequency_penalty: 0.2  // Avoid repetition
         });
@@ -205,11 +217,19 @@ export async function generateConversationTitle(firstMessage: string) {
   }
 }
 
-// Fixed voice configuration class - ensures absolutely consistent parameters
+// Dynamic voice configuration class - uses environment variables
 class VoiceConfig {
-  static readonly MODEL = "tts-1" as const; // Standard model for faster response
-  static readonly VOICE = "onyx" as const; // Male voice - never changes
-  static readonly SPEED = 1.1 as const; // Slightly faster speed for quicker delivery
+  static get MODEL() { 
+    return process.env.TTS_MODE === "dev" ? "tts-1" : "tts-1-hd";
+  }
+  
+  static get VOICE() { 
+    return (process.env.VOICE_TYPE as any) || "onyx";
+  }
+  
+  static get SPEED() { 
+    return parseFloat(process.env.TTS_SPEED || "1.1");
+  }
   
   // Prevent instantiation - static class only
   private constructor() {}
@@ -240,7 +260,8 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     }
     
     console.log("Processing TTS request for text:", cleanText.substring(0, 50) + "...");
-    console.log("Using fixed voice settings:", {
+    console.log("TTS Mode:", process.env.TTS_MODE || "dev");
+    console.log("Using dynamic voice settings:", {
       model: VoiceConfig.MODEL,
       voice: VoiceConfig.VOICE,
       speed: VoiceConfig.SPEED
