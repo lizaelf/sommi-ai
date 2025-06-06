@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import Logo from "@/components/Logo";
+import { ProfileIcon } from "@/components/ProfileIcon";
 
 interface AppHeaderProps {
   title?: string;
@@ -63,7 +64,7 @@ export function AppHeader({
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
-            {rightContent}
+            {rightContent || <ProfileIcon />}
           </div>
         </div>
       </div>
