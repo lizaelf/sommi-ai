@@ -66,10 +66,10 @@ export function AppHeader({
           <div className="flex items-center gap-3">
             {rightContent || (
               <>
+                <ProfileIcon />
                 <div className="cursor-pointer text-white/80 hover:text-white transition-all duration-200">
                   <Search className="w-6 h-6" />
                 </div>
-                <ProfileIcon />
               </>
             )}
           </div>
