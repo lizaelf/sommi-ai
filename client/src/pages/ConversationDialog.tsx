@@ -6,6 +6,7 @@ import { TextGenerateEffect } from '../components/ui/text-generate-effect';
 import { useState, useEffect } from 'react';
 import typography from '../styles/typography';
 import AppHeader from '@/components/AppHeader';
+import { ProfileIcon } from '@/components/ProfileIcon';
 
 export default function ConversationDialog() {
   const [, setLocation] = useLocation();
@@ -116,6 +117,7 @@ export default function ConversationDialog() {
           title={getWineDisplayName()}
           showBackButton={true}
           onBack={handleBackClick}
+          rightContent={<ProfileIcon />}
         />
 
       {/* Conversation Content */}
