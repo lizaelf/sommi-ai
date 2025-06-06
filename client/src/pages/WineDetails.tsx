@@ -106,9 +106,10 @@ export default function WineDetails() {
         
         {/* AppHeader - Different behavior for scanned vs wine details */}
         <AppHeader 
-          title={isScannedPage ? undefined : (wine ? `${wine.year} ${wine.name}` : getWineDisplayName())}
+          title={isScannedPage ? (wine ? `${wine.year} ${wine.name}` : getWineDisplayName()) : (wine ? `${wine.year} ${wine.name}` : getWineDisplayName())}
           showBackButton={!isScannedPage}
           onBack={!isScannedPage ? () => window.history.back() : undefined}
+          hideLogo={isScannedPage}
           rightContent={
             <>
               {isScannedPage && (
