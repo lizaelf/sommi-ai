@@ -683,155 +683,17 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         // Trigger unmute button to show after response is ready
         window.dispatchEvent(new CustomEvent('showUnmuteButton'));
 
-        // Auto-play TTS immediately after response is ready
-        console.log("Starting autoplay TTS for response:", assistantMessage.content.substring(0, 50) + "...");
+        // Auto-play TTS using OpenAI TTS service
+        console.log("Starting OpenAI TTS for response:", assistantMessage.content.substring(0, 50) + "...");
         
-        // Generate and play autoplay TTS independently with enhanced error handling
+        // Use the new OpenAI TTS service
         (async () => {
           try {
-            console.log("Starting TTS audio generation...");
-            
-            // Ensure audio context is initialized before attempting playback
-            const audioContextInitialized = (await (window as any).initAudioContext?.()) || true;
-            if (!audioContextInitialized) {
-              console.warn("Audio context not initialized, attempting manual initialization");
-            }
-
-            const response = await fetch('/api/text-to-speech', {
-              method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'audio/mpeg, audio/*'
-              },
-              body: JSON.stringify({ text: assistantMessage.content })
-            });
-
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error(`TTS API error: ${response.status} - ${errorText}`);
-            }
-
-            console.log("TTS response received, processing audio...");
-            const audioBuffer = await response.arrayBuffer();
-            
-            if (audioBuffer.byteLength === 0) {
-              throw new Error("Received empty audio buffer");
-            }
-
-            const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const autoplayAudio = new Audio(audioUrl);
-
-            // Use separate reference for autoplay to avoid conflicts with unmute button
-            (window as any).currentAutoplayAudio = autoplayAudio;
-
-            // Enhanced audio event handlers
-            autoplayAudio.onloadstart = () => {
-              console.log("Audio loading started");
-            };
-
-            autoplayAudio.oncanplay = () => {
-              console.log("Audio can start playing");
-            };
-
-            autoplayAudio.onplay = () => {
-              console.log("Autoplay TTS started successfully");
-              window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'playing' } }));
-            };
-
-            autoplayAudio.onended = () => {
-              URL.revokeObjectURL(audioUrl);
-              (window as any).currentAutoplayAudio = null;
-              console.log("Autoplay TTS completed successfully");
-              window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'stopped' } }));
-            };
-
-            autoplayAudio.onerror = (e) => {
-              console.error("Autoplay TTS playback error:", e);
-              console.error("Audio error details:", {
-                error: autoplayAudio.error?.message,
-                code: autoplayAudio.error?.code,
-                networkState: autoplayAudio.networkState,
-                readyState: autoplayAudio.readyState
-              });
-              URL.revokeObjectURL(audioUrl);
-              (window as any).currentAutoplayAudio = null;
-              window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'error' } }));
-            };
-
-            autoplayAudio.onabort = () => {
-              console.log("Audio playback aborted");
-              URL.revokeObjectURL(audioUrl);
-              (window as any).currentAutoplayAudio = null;
-            };
-
-            // Set audio properties for better compatibility
-            autoplayAudio.preload = 'auto';
-            autoplayAudio.volume = 0.8;
-
-            console.log("Attempting to play audio...");
-            
-            // Check if audio context is ready and user has interacted
-            if (typeof (window as any).initAudioContext === 'function') {
-              const audioReady = await (window as any).initAudioContext();
-              if (!audioReady) {
-                console.warn("Audio context not ready - deferring autoplay");
-                return;
-              }
-            }
-            
-            // Mobile-specific: Check if user has interacted (required for autoplay)
-            if (typeof (window as any).hasUserInteracted === 'function') {
-              const userInteracted = (window as any).hasUserInteracted();
-              if (!userInteracted) {
-                console.log("User has not interacted yet - autoplay will be deferred");
-                // Store the audio for later playback when user interacts
-                (window as any).pendingAutoplayAudio = autoplayAudio;
-                
-                // Show unmute button immediately since autoplay is blocked
-                window.dispatchEvent(new CustomEvent('showUnmuteButton'));
-                return;
-              }
-            }
-            
-            const playPromise = autoplayAudio.play();
-            
-            if (playPromise !== undefined) {
-              try {
-                await playPromise;
-                console.log("Audio play promise resolved successfully");
-              } catch (playError: any) {
-                console.error("Audio play promise rejected:", playError);
-                
-                if (playError.name === 'NotAllowedError') {
-                  console.log("Audio autoplay blocked by browser - showing manual controls");
-                  
-                  // Store the audio for manual playback
-                  (window as any).pendingAutoplayAudio = autoplayAudio;
-                  
-                  // Show unmute button immediately for manual control
-                  window.dispatchEvent(new CustomEvent('showUnmuteButton'));
-                  
-                  // Don't throw error for autoplay blocking, just provide manual controls
-                  return;
-                } else {
-                  throw playError;
-                }
-              }
-            }
-
-          } catch (err) {
-            const error = err as Error;
-            console.error("Failed to generate or play autoplay TTS audio:", error);
-            
-            // Provide user feedback for audio failures
-            if (error.message.includes('play')) {
-              console.error("Audio playback blocked by browser - user interaction may be required");
-            } else if (error.message.includes('TTS API')) {
-              console.error("TTS service error - check server connection");
-            }
-            
-            window.dispatchEvent(new CustomEvent('audioStatus', { detail: { status: 'error', error: error.message } }));
+            await openaiTTS.speakText(assistantMessage.content);
+            console.log("OpenAI TTS autoplay started successfully");
+            // The OpenAI TTS service handles fallback to browser TTS automatically
+          } catch (error) {
+            console.error("OpenAI TTS autoplay failed:", error);
           }
         })();
       }
