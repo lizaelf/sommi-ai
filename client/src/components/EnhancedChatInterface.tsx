@@ -1707,10 +1707,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                               Show whole dialog
                             </button>
 
-                            {/* Ask more button */}
+                            {/* Buy again button */}
                             <button
                               onClick={() => {
-                                setShowChatInput(true);
+                                if (currentWine?.buyAgainLink) {
+                                  window.open(currentWine.buyAgainLink, '_blank');
+                                } else {
+                                  console.log("No buy again link available");
+                                }
                               }}
                               style={{
                                 backgroundColor: "rgba(255, 255, 255, 0.08)",
@@ -1735,7 +1739,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 lineHeight: "1",
                               }}
                             >
-                              Ask more
+                              Buy again
                             </button>
                           </div>
                         )}

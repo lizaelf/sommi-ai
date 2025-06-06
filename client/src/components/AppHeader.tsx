@@ -41,7 +41,7 @@ export function AppHeader({
       <div className="max-w-6xl mx-auto" style={{ height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
           {/* Left side - Back button or Logo */}
-          <div className="flex items-center justify-start" style={{ minWidth: "80px" }}>
+          <div className="flex items-center justify-center" style={{ minWidth: "80px" }}>
             {showBackButton && onBack ? (
               <div
                 onClick={onBack}
