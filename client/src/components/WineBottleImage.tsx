@@ -41,7 +41,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
           }}
         />
       <img
-        src={ridgeWineImage}
+        src={image || ridgeWineImage}
         alt={wineName || "Ridge Lytton Springs Dry Creek Zinfandel"}
         style={{
           height: "280px",
@@ -52,7 +52,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
         onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
         onError={(e) => {
           console.error(`Wine bottle image failed to load: ${wineName}`);
-          (e.target as HTMLImageElement).src = placeholderImage;
+          (e.target as HTMLImageElement).src = ridgeWineImage;
         }}
       />
     </div>
