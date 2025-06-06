@@ -111,14 +111,32 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
     // Get configuration from environment variables
     const maxTokens = parseInt(process.env.MAX_TOKENS || "300");
     const responseRules = process.env.RESPONSE_RULES || "Keep responses concise and focused.";
+    const responseTemplate = process.env.RESPONSE_TEMPLATE || "full";
 
-    // Append response rules to system prompt
-    if (responseRules) {
-      newMessages[0].content += `\n\nIMPORTANT RESPONSE RULES: ${responseRules}`;
+    // Apply response template formatting
+    let templateRules = "";
+    switch (responseTemplate) {
+      case "brief":
+        templateRules = "RESPONSE FORMAT: Provide ultra-brief, single-sentence answers only. Maximum 25 words.";
+        break;
+      case "summary":
+        templateRules = "RESPONSE FORMAT: Provide short summaries only. Maximum 2-3 sentences. Focus on key points.";
+        break;
+      case "full":
+      default:
+        templateRules = "RESPONSE FORMAT: Provide comprehensive, detailed responses.";
+        break;
+    }
+
+    // Append response rules and template to system prompt
+    const combinedRules = `${responseRules}\n\n${templateRules}`;
+    if (combinedRules) {
+      newMessages[0].content += `\n\nIMPORTANT RESPONSE RULES: ${combinedRules}`;
     }
 
     console.log('Max tokens configured:', maxTokens);
-    console.log('Response rules:', responseRules);
+    console.log('Response template:', responseTemplate);
+    console.log('Combined rules:', combinedRules);
 
     // Call OpenAI API
     let response;
@@ -220,7 +238,7 @@ export async function generateConversationTitle(firstMessage: string) {
 // Dynamic voice configuration class - uses environment variables
 class VoiceConfig {
   static get MODEL() { 
-    return process.env.TTS_MODE === "dev" ? "tts-1" : "tts-1-hd";
+    return process.env.TTS_MODE === "prod" ? "tts-1-hd" : "tts-1";
   }
   
   static get VOICE() { 
