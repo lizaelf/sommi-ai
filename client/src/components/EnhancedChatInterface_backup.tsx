@@ -717,7 +717,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       />
                     }
                   />
-                </>
+                </>)
               )}
             </div>
           </div>

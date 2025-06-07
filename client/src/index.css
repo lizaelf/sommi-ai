@@ -2,8 +2,23 @@
 @tailwind utilities;
 
 @layer components {
-  /* Global 1200px max width constraint for main content areas */
-  main {
+  /* Global 1200px max width constraint for all page content */
+  main,
+  .flex.flex-col.h-\[100dvh\],
+  .flex-1.flex.flex-col,
+  .chat-interface,
+  .page-content,
+  .content-wrapper,
+  .app-container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Apply to specific layout containers */
+  .container,
+  .content-container,
+  .layout-container,
+  .page-container {
     max-width: 1200px !important;
     margin: 0 auto !important;
   }
