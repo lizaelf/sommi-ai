@@ -940,8 +940,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 top: 0,
                 left: 0,
                 right: 0,
-                maxWidth: "1200px",
-                margin: "0 auto"
               }}
             >
               {/* Wine bottle image */}
@@ -2210,6 +2208,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </svg>
           </button>
         )}
+            </div>
+          </div>
           </div>
         </main>
       </div>
