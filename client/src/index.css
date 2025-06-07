@@ -3,10 +3,9 @@
 
 @layer components {
   /* Global 1200px max width constraint for main content areas */
-  .main-content-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
+  main {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
   }
   .all-\[unset\] {
     all: unset;

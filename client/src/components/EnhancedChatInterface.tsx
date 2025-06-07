@@ -2208,8 +2208,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </svg>
           </button>
         )}
-            </div>
-          </div>
           </div>
         </main>
       </div>
