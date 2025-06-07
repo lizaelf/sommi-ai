@@ -929,8 +929,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto scrollbar-hide"
           >
-            <div className="mx-auto" style={{ maxWidth: "1200px" }}>
-              {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
+            {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
             <div
               className="w-full flex flex-col items-center justify-center py-8 relative"
               style={{
@@ -2156,7 +2155,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 </>)
               )}
             </div>
-            </div>
           </div>
         </main>
 
@@ -2210,7 +2208,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </svg>
           </button>
         )}
-            </div>
           </div>
         </main>
       </div>
