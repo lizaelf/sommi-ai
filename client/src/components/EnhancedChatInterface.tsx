@@ -87,14 +87,26 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { 
-    currentConversation, 
+    currentConversationId, 
     messages, 
-    sendMessage, 
-    createNewConversation,
-    getCurrentWineData 
+    addMessage, 
+    createNewConversation
   } = useConversation();
 
-  const currentWine = getCurrentWineData();
+  const currentWine = selectedWine || {
+    id: 1,
+    name: getWineDisplayName(),
+    image: "/wine-bottle.png",
+    bottles: 1,
+    ratings: {
+      vn: 92,
+      jd: 93,
+      ws: 91,
+      abv: 14.3
+    }
+  };
+  
+  const wineYear = selectedWine ? 2021 : getWineVintage();
 
   useEffect(() => {
     setPortalElement(document.body);
@@ -118,7 +130,49 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       const newAbortController = new AbortController();
       setAbortController(newAbortController);
 
-      await sendMessage(messageText, newAbortController.signal);
+      // Add user message to conversation
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        content: messageText,
+        role: "user",
+        conversationId: currentConversationId || 0,
+        createdAt: new Date().toISOString(),
+      };
+
+      await addMessage(tempUserMessage);
+
+      // Call API for assistant response
+      const response = await fetch("/api/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            ...messages.map(m => ({ role: m.role, content: m.content })),
+            { role: "user", content: messageText }
+          ],
+          conversationId: currentConversationId,
+        }),
+        signal: newAbortController.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get response");
+      }
+
+      const data = await response.json();
+      
+      // Add assistant response
+      const assistantMessage: ClientMessage = {
+        id: Date.now() + 1,
+        content: data.message.content,
+        role: "assistant",
+        conversationId: currentConversationId || 0,
+        createdAt: new Date().toISOString(),
+      };
+
+      await addMessage(assistantMessage);
     } catch (error: any) {
       if (error.name === 'AbortError') {
         return;
@@ -281,7 +335,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   ...typography.h1,
                 }}
               >
-                {selectedWine ? `2021 ${selectedWine.name}` : currentWine ? `${currentWine.year} ${currentWine.name}` : `${getWineVintage()} ${getWineDisplayName()}`}
+                {selectedWine ? `2021 ${selectedWine.name}` : `${wineYear} ${currentWine.name}`}
               </div>
 
               <div
