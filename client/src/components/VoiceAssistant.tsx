@@ -75,8 +75,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     
     // Calculate average volume for voice detection
     const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-    const voiceThreshold = 40; // Higher threshold for voice activity
-    const silenceThreshold = 30; // Higher threshold for silence detection (ambient noise level)
+    const voiceThreshold = 60; // Much higher threshold for voice activity
+    const silenceThreshold = 45; // Higher threshold for silence detection (ambient noise level)
     
     // Use hysteresis to prevent flapping between voice/silence
     const currentThreshold = isVoiceActive ? silenceThreshold : voiceThreshold;
@@ -106,30 +106,30 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log(`Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(false);
         
-        // Only start silence timer if we've been recording for at least 500ms
+        // Only start silence timer if we've been recording for at least 2 seconds
         const recordingDuration = now - recordingStartTimeRef.current;
-        if (recordingDuration > 500) {
-          console.log("Starting 2-second silence countdown");
+        if (recordingDuration > 2000) {
+          console.log("Starting 3-second silence countdown");
           if (silenceTimerRef.current) {
             clearTimeout(silenceTimerRef.current);
           }
           
           silenceTimerRef.current = setTimeout(() => {
-            console.log("1 second of silence completed - stopping recording now");
+            console.log("3 seconds of silence completed - stopping recording now");
             stopListening();
-          }, 1000);
+          }, 3000);
         } else {
           console.log(`Recording too short (${recordingDuration}ms) - not starting silence timer yet`);
         }
       }
       
-      // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 1 second
+      // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 3 seconds
       if (lastVoiceDetectedRef.current > 0 && 
           recordingStartTimeRef.current > 0 &&
-          now - recordingStartTimeRef.current > 1000 && // Must be recording for at least 1 second
-          now - lastVoiceDetectedRef.current > 3000 && 
-          consecutiveSilenceCountRef.current > 120) { // 120 * 25ms = 3 seconds
-        console.log("Fallback silence detection - forcing stop after 3 seconds of silence");
+          now - recordingStartTimeRef.current > 3000 && // Must be recording for at least 3 seconds
+          now - lastVoiceDetectedRef.current > 5000 && 
+          consecutiveSilenceCountRef.current > 200) { // 200 * 25ms = 5 seconds
+        console.log("Fallback silence detection - forcing stop after 5 seconds of silence");
         stopListening();
       }
     }
