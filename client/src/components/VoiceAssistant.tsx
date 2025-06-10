@@ -138,8 +138,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
     const timeAverage = timeSum / bufferLength;
     
-    const voiceThreshold = 30; // Threshold for voice activity
-    const silenceThreshold = 20; // Lower threshold for silence detection
+    const voiceThreshold = 20; // Lower threshold for more sensitive voice detection
+    const silenceThreshold = 10; // Much lower threshold to maintain voice state longer
     
     // Use hysteresis to prevent flapping between voice/silence
     const currentThreshold = isVoiceActive ? silenceThreshold : voiceThreshold;
@@ -196,8 +196,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log(`🔕 Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(false);
         
-        // Start silence timer immediately after any voice activity
-        console.log(`⏱️ Starting 1.5-second silence countdown (recorded for ${recordingDuration}ms)`);
+        // Start silence timer with extended delay for natural speech patterns
+        console.log(`⏱️ Starting 3-second silence countdown (recorded for ${recordingDuration}ms)`);
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
         }
@@ -205,13 +205,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         silenceTimerRef.current = setTimeout(() => {
           // Check if minimum recording time has passed
           const canStopEarly = (window as any).canStopEarly;
-          if (canStopEarly) {
-            console.log("⏰ 1.5 seconds of silence completed - stopping recording now");
+          const currentRecordingDuration = Date.now() - recordingStartTimeRef.current;
+          
+          if (canStopEarly && currentRecordingDuration > 1500) {
+            console.log("⏰ 3 seconds of silence completed - stopping recording now");
             stopListening();
           } else {
-            console.log("⏰ Silence detected but minimum recording time not reached - continuing...");
+            console.log("⏰ Silence detected but minimum recording time not reached - extending...");
+            // Give more time if minimum duration not met
+            silenceTimerRef.current = setTimeout(() => {
+              console.log("⏰ Final silence timeout - stopping recording");
+              stopListening();
+            }, 2000);
           }
-        }, 1500);
+        }, 3000);
       } else {
         // Log ongoing silence detection
         if (consecutiveSilenceCountRef.current % 40 === 0) { // Every 1 second
