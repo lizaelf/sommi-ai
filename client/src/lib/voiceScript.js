@@ -189,19 +189,27 @@ async function speakResponse(text) {
     const voices = window.speechSynthesis.getVoices();
     console.log("Available voices:", voices.length);
     
-    // Look for male voices - log them for debugging
-    const maleVoices = voices.filter(voice => 
-      voice.name.includes('Male') || 
+    // Look for male voices - prioritize specific high-quality male voices
+    const preferredMaleVoices = voices.filter(voice => 
+      voice.name.includes('Google UK English Male') || 
+      voice.name.includes('Google US English Male') ||
       voice.name.includes('David') || 
-      voice.name.includes('James') || 
-      voice.name.includes('Thomas'));
+      voice.name.includes('James'));
     
-    console.log("Male voices available:", maleVoices.length);
-    if (maleVoices.length > 0) {
-      maleVoices.forEach((v, i) => console.log(`Male voice ${i}:`, v.name));
-      // Force select the LATEST (last) male voice if found
-      window.selectedVoice = maleVoices[maleVoices.length - 1];
-      console.log("Selected latest male voice:", window.selectedVoice.name);
+    const fallbackMaleVoices = voices.filter(voice => 
+      voice.name.includes('Male') && !preferredMaleVoices.includes(voice));
+    
+    console.log("Preferred male voices available:", preferredMaleVoices.length);
+    console.log("Fallback male voices available:", fallbackMaleVoices.length);
+    
+    // Always use the same voice - prefer Google UK English Male for consistency
+    if (preferredMaleVoices.length > 0) {
+      const ukMaleVoice = preferredMaleVoices.find(v => v.name.includes('UK English Male'));
+      window.selectedVoice = ukMaleVoice || preferredMaleVoices[0];
+      console.log("Selected consistent male voice:", window.selectedVoice.name);
+    } else if (fallbackMaleVoices.length > 0) {
+      window.selectedVoice = fallbackMaleVoices[0];
+      console.log("Selected fallback male voice:", window.selectedVoice.name);
     }
     
     // Use browser's built-in speech synthesis
@@ -213,32 +221,39 @@ async function speakResponse(text) {
       currentUtterance = new SpeechSynthesisUtterance(text);
       currentUtterance.lang = 'en-US';
       
-      // Store the selected voice in a global variable to ensure consistency
+      // Always use the same consistent male voice - check if we need to set it
       if (!window.selectedVoice) {
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
-          // Try to find a male voice with good quality
+          // Priority 1: Google UK English Male (most consistent)
           window.selectedVoice = voices.find(voice => 
-            (voice.name.includes('Google') && voice.name.includes('Male')) || 
-            (voice.name.includes('David') || voice.name.includes('James') || 
-             voice.name.includes('Thomas') || voice.name.includes('Daniel')) ||
-            (voice.name.includes('US') && voice.name.includes('Male')));
-            
-          // If no male voice found, try any available male voice (select the latest one)
+            voice.name.includes('Google UK English Male'));
+          
+          // Priority 2: Other Google male voices
           if (!window.selectedVoice) {
-            const allMaleVoices = voices.filter(voice => 
-              voice.name.includes('Male'));
-            if (allMaleVoices.length > 0) {
-              window.selectedVoice = allMaleVoices[allMaleVoices.length - 1];
-            }
+            window.selectedVoice = voices.find(voice => 
+              voice.name.includes('Google') && voice.name.includes('Male'));
           }
-            
-          // If still no preferred voice found, use the first available
+          
+          // Priority 3: Any male voice
+          if (!window.selectedVoice) {
+            window.selectedVoice = voices.find(voice => 
+              voice.name.includes('Male'));
+          }
+          
+          // Priority 4: Named male voices
+          if (!window.selectedVoice) {
+            window.selectedVoice = voices.find(voice => 
+              voice.name.includes('David') || voice.name.includes('James') || 
+              voice.name.includes('Thomas') || voice.name.includes('Daniel'));
+          }
+          
+          // Fallback: use first available voice
           if (!window.selectedVoice && voices.length > 0) {
             window.selectedVoice = voices[0];
           }
           
-          console.log("Selected male voice for consistent playback:", window.selectedVoice?.name || "Default");
+          console.log("Locked to consistent male voice:", window.selectedVoice?.name || "Default");
         }
       }
       
