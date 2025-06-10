@@ -106,18 +106,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log(`Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(false);
         
-        // Only start silence timer if we've been recording for at least 2 seconds
+        // Only start silence timer if we've been recording for at least 1 second
         const recordingDuration = now - recordingStartTimeRef.current;
-        if (recordingDuration > 2000) {
-          console.log("Starting 3-second silence countdown");
+        if (recordingDuration > 1000) {
+          console.log("Starting 1.5-second silence countdown");
           if (silenceTimerRef.current) {
             clearTimeout(silenceTimerRef.current);
           }
           
           silenceTimerRef.current = setTimeout(() => {
-            console.log("3 seconds of silence completed - stopping recording now");
+            console.log("1.5 seconds of silence completed - stopping recording now");
             stopListening();
-          }, 3000);
+          }, 1500);
         } else {
           console.log(`Recording too short (${recordingDuration}ms) - not starting silence timer yet`);
         }
@@ -338,15 +338,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       mediaRecorder.onstop = async () => {
         console.log("Audio recording stopped, processing...");
-        setIsListening(false);
-        setIsThinking(true);
-        
-        // Emit microphone status event for wine bottle animation
-        window.dispatchEvent(
-          new CustomEvent("mic-status", {
-            detail: { status: "processing" },
-          }),
-        );
         
         // Create audio blob from recorded chunks
         const audioBlob = new Blob(audioChunksRef.current, { 
@@ -518,6 +509,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     // Immediately stop voice detection to prevent any further timers
     stopVoiceDetection();
     
+    // Show thinking state immediately
+    setIsListening(false);
+    setIsThinking(true);
+    
+    // Emit microphone status event for wine bottle animation
+    window.dispatchEvent(
+      new CustomEvent("mic-status", {
+        detail: { status: "processing" },
+      }),
+    );
+    
     // Stop media recorder
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.stop();
@@ -529,7 +531,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       streamRef.current = null;
     }
     
-    setIsListening(false);
     console.log("Audio recording stopped immediately");
   };
 
