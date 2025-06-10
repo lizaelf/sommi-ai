@@ -296,7 +296,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   marginBottom: '24px',
                   justifyContent: 'center',
                   width: '100%',
-                  maxWidth: '320px'
+                  maxWidth: '320px',
+                  paddingLeft: '16px'
                 }}>
                   <div style={{
                     display: 'flex',
