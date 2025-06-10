@@ -204,6 +204,27 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 Listening...
               </div>
             </div>
+          ) : isThinking ? (
+            <div style={{ 
+              width: '100%', 
+              maxWidth: '320px', 
+              height: '56px', 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center' 
+            }}>
+              <div style={{
+                color: '#CECECE',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '16px',
+                fontWeight: 'normal',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <ShiningText text="Thinking..." />
+              </div>
+            </div>
           ) : isLoadingAudio ? (
             <div style={{ 
               width: '100%', 
@@ -257,27 +278,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 </svg>
                 Stop
               </button>
-            </div>
-          ) : isThinking && !showListenButton ? (
-            <div style={{ 
-              width: '100%', 
-              maxWidth: '320px', 
-              height: '56px', 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center' 
-            }}>
-              <div style={{
-                color: '#CECECE',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '16px',
-                fontWeight: 'normal',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <ShiningText text="Thinking..." />
-              </div>
             </div>
           ) : (
             <div style={{ 
