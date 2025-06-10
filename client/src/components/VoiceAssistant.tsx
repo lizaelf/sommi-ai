@@ -111,18 +111,32 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     analyserRef.current.getByteFrequencyData(dataArray);
     
     // Calculate multiple audio metrics for debugging
-    const dataArrayValues = Array.from(dataArray);
-    const average = dataArrayValues.reduce((a, b) => a + b) / bufferLength;
-    const max = Math.max(...dataArrayValues);
-    const min = Math.min(...dataArrayValues);
-    const nonZeroValues = dataArrayValues.filter(val => val > 0).length;
+    let sum = 0;
+    let max = 0;
+    let min = 255;
+    let nonZeroValues = 0;
+    
+    for (let i = 0; i < bufferLength; i++) {
+      const value = dataArray[i];
+      sum += value;
+      if (value > max) max = value;
+      if (value < min) min = value;
+      if (value > 0) nonZeroValues++;
+    }
+    const average = sum / bufferLength;
     
     // Try time domain data as well
     const timeDomainArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteTimeDomainData(timeDomainArray);
-    const timeDomainValues = Array.from(timeDomainArray);
-    const timeAverage = timeDomainValues.reduce((a, b) => a + b) / bufferLength;
-    const timeMax = Math.max(...timeDomainValues);
+    
+    let timeSum = 0;
+    let timeMax = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      const value = timeDomainArray[i];
+      timeSum += value;
+      if (value > timeMax) timeMax = value;
+    }
+    const timeAverage = timeSum / bufferLength;
     
     const voiceThreshold = 30; // Threshold for voice activity
     const silenceThreshold = 20; // Lower threshold for silence detection
