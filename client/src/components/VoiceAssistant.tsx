@@ -83,45 +83,49 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const isCurrentlyActive = average > currentThreshold;
     
     const now = Date.now();
+    const recordingDuration = now - recordingStartTimeRef.current;
+    
+    // Debug logging every 500ms
+    if (consecutiveSilenceCountRef.current % 20 === 0) {
+      console.log(`🔊 VOICE DEBUG: Level=${average.toFixed(1)}, Threshold=${currentThreshold}, Active=${isCurrentlyActive}, Duration=${recordingDuration}ms, VoiceState=${isVoiceActive}`);
+    }
     
     if (isCurrentlyActive) {
       lastVoiceDetectedRef.current = now;
       consecutiveSilenceCountRef.current = 0;
       
       if (!isVoiceActive) {
-        console.log(`Voice detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
+        console.log(`🔊 Voice detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(true);
         
         // Clear any existing silence timer
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
           silenceTimerRef.current = null;
-          console.log("Silence timer cleared - voice detected");
+          console.log("🔕 Silence timer cleared - voice detected");
         }
       }
     } else {
       consecutiveSilenceCountRef.current++;
       
       if (isVoiceActive) {
-        console.log(`Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
+        console.log(`🔕 Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(false);
         
         // Start silence timer immediately after any voice activity
-        const recordingDuration = now - recordingStartTimeRef.current;
-        console.log(`Starting 1.5-second silence countdown (recorded for ${recordingDuration}ms)`);
+        console.log(`⏱️ Starting 1.5-second silence countdown (recorded for ${recordingDuration}ms)`);
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
         }
         
         silenceTimerRef.current = setTimeout(() => {
-          console.log("1.5 seconds of silence completed - stopping recording now");
+          console.log("⏰ 1.5 seconds of silence completed - stopping recording now");
           stopListening();
         }, 1500);
       } else {
         // Log ongoing silence detection
         if (consecutiveSilenceCountRef.current % 40 === 0) { // Every 1 second
-          const recordingDuration = now - recordingStartTimeRef.current;
-          console.log(`Ongoing silence - Level: ${average.toFixed(2)}, Duration: ${recordingDuration}ms, Silence count: ${consecutiveSilenceCountRef.current}`);
+          console.log(`🔕 Ongoing silence - Level: ${average.toFixed(2)}, Duration: ${recordingDuration}ms, Count: ${consecutiveSilenceCountRef.current}`);
         }
       }
       
@@ -243,9 +247,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   }, []);
 
   const startListening = async () => {
-    console.log("Starting audio recording for Whisper transcription");
+    console.log("🎤 DEBUG: Starting audio recording for Whisper transcription");
 
     // Immediately show bottom sheet and listening state for instant feedback
+    console.log("🎤 DEBUG: Setting UI states - showBottomSheet: true, isListening: true");
     setShowBottomSheet(true);
     setIsListening(true);
 
