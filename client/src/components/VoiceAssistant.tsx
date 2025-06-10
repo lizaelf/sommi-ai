@@ -1144,6 +1144,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
     } catch (globalError) {
       console.error("Unhandled error in handleUnmute:", globalError);
+      setIsThinking(false);
       setIsResponding(false);
       setShowUnmuteButton(true);
       setShowAskButton(true);
