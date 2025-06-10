@@ -102,7 +102,7 @@ export default function WineDetails() {
   
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative">
+      <div className="relative mx-auto" style={{ maxWidth: "1200px" }}>
         
         {/* AppHeader - Different behavior for scanned vs wine details */}
         <AppHeader 

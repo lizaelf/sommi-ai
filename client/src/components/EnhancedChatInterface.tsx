@@ -916,7 +916,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-[100dvh] max-h-[100dvh]">
+    <div className="flex flex-col h-[100dvh] max-h-[100dvh] mx-auto" style={{ maxWidth: "1200px" }}>
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Chat Area */}
