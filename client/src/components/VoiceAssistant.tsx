@@ -27,17 +27,38 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Add global promise rejection handler on component mount
+  // Add global promise rejection handler and enhanced debugging
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.log("Caught and suppressed unhandled rejection:", event.reason);
+      console.log("🔧 DEBUG: Caught unhandled rejection:", {
+        reason: event.reason,
+        type: typeof event.reason,
+        stack: event.reason?.stack,
+        name: event.reason?.name,
+        message: event.reason?.message
+      });
       event.preventDefault(); // Prevent console error
     };
 
+    const handleError = (event: ErrorEvent) => {
+      console.log("🔧 DEBUG: Caught global error:", {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
+      });
+    };
+
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+    
+    console.log("🔧 DEBUG: Voice Assistant component mounted, error handlers attached");
     
     return () => {
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+      console.log("🔧 DEBUG: Voice Assistant component unmounted, error handlers removed");
     };
   }, []);
   
@@ -687,7 +708,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleUnmute = async () => {
-    console.log("Unmute button clicked - starting TTS playback");
+    console.log("🔧 DEBUG: Unmute button clicked - starting TTS playback");
     
     // Wrap entire function in try-catch to prevent unhandled rejections
     try {
@@ -769,22 +790,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       let timeoutId: NodeJS.Timeout | null = null;
       
       try {
-        // Create a Promise wrapper that prevents unhandled rejections
+        console.log("🔧 DEBUG: Starting TTS fetch with timeout handling");
+        
+        // Create a safer Promise wrapper that prevents unhandled rejections
         const safeTimeout = (ms: number) => {
           return new Promise<never>((_, reject) => {
             timeoutId = setTimeout(() => {
-              console.log("TTS request timeout - aborting");
-              reject(new Error('Timeout'));
+              console.log("🔧 DEBUG: TTS request timeout reached");
+              reject(new Error('TTS_TIMEOUT'));
             }, ms);
           });
         };
 
         const safeFetch = async () => {
+          console.log("🔧 DEBUG: Initiating TTS fetch request");
           const response = await fetch("/api/text-to-speech", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: lastAssistantMessage }),
           });
+          
+          console.log("🔧 DEBUG: TTS fetch completed, status:", response.status);
           
           if (timeoutId) {
             clearTimeout(timeoutId);
@@ -794,14 +820,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           return response;
         };
 
-        // Race between fetch and timeout with proper error handling
+        // Race between fetch and timeout with comprehensive error handling
         let response;
         try {
+          console.log("🔧 DEBUG: Starting Promise.race for TTS");
           response = await Promise.race([
-            safeFetch(),
-            safeTimeout(8000)
+            safeFetch().catch(err => {
+              console.log("🔧 DEBUG: safeFetch rejected:", err);
+              throw err;
+            }),
+            safeTimeout(8000).catch(err => {
+              console.log("🔧 DEBUG: safeTimeout rejected:", err);
+              throw err;
+            })
           ]);
+          console.log("🔧 DEBUG: Promise.race resolved successfully");
         } catch (raceError) {
+          console.log("🔧 DEBUG: Promise.race failed:", raceError);
           if (timeoutId) {
             clearTimeout(timeoutId);
             timeoutId = null;
@@ -819,10 +854,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           throw new Error(`TTS API error: ${response.status}`);
         }
       } catch (serverError) {
-        console.log("Server TTS failed, using browser speech synthesis");
-        console.log("Server error details:", {
+        console.log("🔧 DEBUG: Server TTS failed, using browser speech synthesis");
+        console.log("🔧 DEBUG: Server error details:", {
           name: serverError instanceof Error ? serverError.name : 'Unknown',
-          message: serverError instanceof Error ? serverError.message : String(serverError)
+          message: serverError instanceof Error ? serverError.message : String(serverError),
+          stack: serverError instanceof Error ? serverError.stack : 'No stack',
+          type: typeof serverError
         });
         
         // Clear the timeout to prevent unhandled rejection
