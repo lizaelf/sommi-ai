@@ -26,15 +26,105 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+  
+  // Voice activity detection state
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const voiceDetectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const { toast } = useToast();
 
+  // Voice activity detection functions
+  const startVoiceDetection = (stream: MediaStream) => {
+    try {
+      // Create audio context for voice activity detection
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const source = audioContextRef.current.createMediaStreamSource(stream);
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      
+      // Configure analyser for voice detection
+      analyserRef.current.fftSize = 256;
+      analyserRef.current.smoothingTimeConstant = 0.8;
+      source.connect(analyserRef.current);
+      
+      // Start monitoring voice activity
+      voiceDetectionIntervalRef.current = setInterval(() => {
+        checkVoiceActivity();
+      }, 100); // Check every 100ms
+      
+      console.log("Voice activity detection started");
+    } catch (error) {
+      console.error("Failed to start voice detection:", error);
+    }
+  };
+
+  const checkVoiceActivity = () => {
+    if (!analyserRef.current) return;
+    
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyserRef.current.getByteFrequencyData(dataArray);
+    
+    // Calculate average volume
+    const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+    const threshold = 30; // Voice activity threshold
+    
+    const isCurrentlyActive = average > threshold;
+    
+    if (isCurrentlyActive !== isVoiceActive) {
+      setIsVoiceActive(isCurrentlyActive);
+      
+      if (isCurrentlyActive) {
+        // Voice detected - clear any existing silence timer
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+        }
+        console.log("Voice activity detected");
+      } else {
+        // Voice stopped - start 2-second timer
+        console.log("Voice activity stopped, starting 2-second timer");
+        silenceTimerRef.current = setTimeout(() => {
+          console.log("2 seconds of silence detected, sending question");
+          stopListening();
+        }, 2000);
+      }
+    }
+  };
+
+  const stopVoiceDetection = () => {
+    // Clear voice detection interval
+    if (voiceDetectionIntervalRef.current) {
+      clearInterval(voiceDetectionIntervalRef.current);
+      voiceDetectionIntervalRef.current = null;
+    }
+    
+    // Clear silence timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    
+    // Close audio context
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    
+    analyserRef.current = null;
+    setIsVoiceActive(false);
+    console.log("Voice activity detection stopped");
+  };
+
   // Cleanup audio resources when component unmounts
   useEffect(() => {
     return () => {
       stopListening();
+      stopVoiceDetection();
     };
   }, []);
 
@@ -289,6 +379,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       mediaRecorder.start();
       console.log("Audio recording started");
       
+      // Start voice activity detection
+      startVoiceDetection(stream);
+      
       // Emit microphone status event for wine bottle animation
       window.dispatchEvent(
         new CustomEvent("mic-status", {
@@ -378,6 +471,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
+    
+    // Stop voice detection
+    stopVoiceDetection();
+    
     setIsListening(false);
   };
 
