@@ -748,6 +748,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
+      console.log("Stopped OpenAI TTS audio on close");
     }
     
     // Stop any autoplay audio
@@ -755,11 +756,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
+      console.log("Stopped autoplay audio on close");
+    }
+    
+    // Stop browser speech synthesis
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      console.log("Stopped browser speech synthesis on close");
     }
     
     setShowBottomSheet(false);
     setIsThinking(false);
     setIsResponding(false);
+    setShowUnmuteButton(false);
+    setShowAskButton(false);
     stopListening();
   };
 
@@ -781,8 +791,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       console.log("Autoplay TTS audio stopped successfully");
     }
 
+    // Stop browser speech synthesis
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      console.log("Stop button clicked - stopping browser speech synthesis");
+    }
+
     setIsResponding(false);
-    setShowUnmuteButton(true);
+    setShowUnmuteButton(false);
     setShowAskButton(true);
   };
 
