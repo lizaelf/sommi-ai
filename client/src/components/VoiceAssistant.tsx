@@ -306,6 +306,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         setIsListening(false);
         setIsThinking(true);
         
+        // Emit microphone status event for wine bottle animation
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "processing" },
+          }),
+        );
+        
         // Create audio blob from recorded chunks
         const audioBlob = new Blob(audioChunksRef.current, { 
           type: 'audio/webm;codecs=opus' 
@@ -396,7 +403,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Emit microphone status event for wine bottle animation
       window.dispatchEvent(
         new CustomEvent("mic-status", {
-          detail: { status: "listening" },
+          detail: { status: "listening", stream: stream },
         }),
       );
       
