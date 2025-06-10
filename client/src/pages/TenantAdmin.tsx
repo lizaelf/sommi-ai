@@ -364,7 +364,7 @@ const TenantAdmin: React.FC = () => {
       />
       
       <div className="fixed top-[75px] left-0 right-0 bg-black z-[59] border-b border-white/10">
-        <div className="max-w-6xl mx-auto p-4">
+        <div className="max-w-6xl mx-auto px-4 pb-4">
           {/* SegmentedPicker */}
           <div className="border-b border-white/10 pb-3">
             <SegmentedPicker

@@ -66,9 +66,9 @@ const Button: React.FC<ButtonProps> = ({
       color: "white",
     },
     secondary: {
-      background: "#191919",
-      backgroundColor: "#191919",
-      border: "none",
+      background: "rgba(255, 255, 255, 0.05)",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      border: "1px solid rgba(255, 255, 255, 0.20)",
       color: "white",
     },
     danger: {
@@ -90,7 +90,7 @@ const Button: React.FC<ButtonProps> = ({
       if (variant === "default") {
         e.currentTarget.style.transform = "scale(1.02)";
       } else if (variant === "secondary") {
-        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.10)";
       } else if (variant === "danger") {
         e.currentTarget.style.backgroundColor = "#4A1617";
       }
