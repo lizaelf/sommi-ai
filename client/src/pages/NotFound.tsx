@@ -13,7 +13,9 @@ export default function NotFound() {
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
-        textAlign: "center"
+        textAlign: "center",
+        maxWidth: "1200px",
+        margin: "0 auto"
       }}
     >
       <h1 

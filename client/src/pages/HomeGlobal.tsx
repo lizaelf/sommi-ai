@@ -60,7 +60,7 @@ const HomeGlobal = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
       <AppHeader 
         rightContent={
           <>

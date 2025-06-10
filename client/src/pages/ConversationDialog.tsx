@@ -110,8 +110,9 @@ export default function ConversationDialog() {
   };
 
   return (
-    <div className="bg-background text-white" style={{
-      minHeight: '100vh'
+    <div className="bg-background text-white mx-auto" style={{
+      minHeight: '100vh',
+      maxWidth: '1200px'
     }}>
         <AppHeader 
           title={getWineDisplayName()}
