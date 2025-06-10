@@ -2208,9 +2208,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </svg>
           </button>
         )}
-            </div>
-          </div>
-        </main>
       </div>
       {/* Contact Bottom Sheet */}
       {animationState !== "closed" &&

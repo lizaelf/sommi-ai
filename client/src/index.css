@@ -2,11 +2,6 @@
 @tailwind utilities;
 
 @layer components {
-  /* Global 1200px max width constraint for main content areas */
-  main {
-    max-width: 1200px !important;
-    margin: 0 auto !important;
-  }
   .all-\[unset\] {
     all: unset;
   }
