@@ -112,7 +112,8 @@ export default function WineScan() {
   if (!match || !wine) {
     return (
       <div style={{ 
-        minHeight: '100vh', 
+        minHeight: '100vh',
+        overflowX: 'hidden',
         background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
         color: 'white',
         padding: '20px',
@@ -148,7 +149,8 @@ export default function WineScan() {
 
   return (
     <div style={{ 
-      minHeight: '100vh', 
+      minHeight: '100vh',
+      overflowX: 'hidden',
       background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
       color: 'white',
       maxWidth: '1200px',
@@ -158,8 +160,10 @@ export default function WineScan() {
       <div style={{
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
         padding: '16px 20px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        position: 'relative'
       }}>
         <button
           onClick={handleGoHome}
@@ -171,17 +175,16 @@ export default function WineScan() {
             padding: '8px',
             borderRadius: '8px',
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
+            position: 'absolute',
+            left: '20px'
           }}
         >
           <ChevronLeft size={24} />
         </button>
         <h1 style={{ 
           ...typography.h1, 
-          margin: 0,
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)'
+          margin: 0
         }}>
           Wine Scanned
         </h1>
@@ -214,6 +217,7 @@ export default function WineScan() {
               alt={wine.name}
               style={{
                 width: '100%',
+                maxWidth: '170px',
                 height: '100%',
                 objectFit: 'cover'
               }}
