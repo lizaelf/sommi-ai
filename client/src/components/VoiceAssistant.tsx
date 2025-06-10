@@ -983,9 +983,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         };
 
         utterance.onend = () => {
+          console.log("🔍 DEBUG: Browser TTS playback completed");
           setIsResponding(false);
           setShowUnmuteButton(false);
           setShowAskButton(true);
+          console.log("🔍 DEBUG: State after TTS end - isResponding: false, showUnmuteButton: false, showAskButton: true");
           console.log("Browser TTS playback completed - Ask button enabled");
         };
 
@@ -1012,9 +1014,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       };
 
       audio.onended = () => {
+        console.log("🔍 DEBUG: Server TTS playback completed");
         setIsResponding(false);
         setShowUnmuteButton(false);
         setShowAskButton(true);
+        console.log("🔍 DEBUG: State after server TTS end - isResponding: false, showUnmuteButton: false, showAskButton: true");
         if (audioUrl) {
           URL.revokeObjectURL(audioUrl);
         }
@@ -1174,41 +1178,58 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleAsk = async () => {
-    console.log("Ask button clicked - starting new voice recording");
+    console.log("🔍 DEBUG: Ask button clicked - starting new voice recording");
+    console.log("🔍 DEBUG: Current states before Ask - isListening:", isListening, "isResponding:", isResponding, "isThinking:", isThinking);
+    console.log("🔍 DEBUG: Current button states - showAskButton:", showAskButton, "showUnmuteButton:", showUnmuteButton);
     
     // Stop any existing audio playback
     if ((window as any).currentOpenAIAudio) {
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
+      console.log("🔍 DEBUG: Stopped existing OpenAI audio");
     }
     
     if ((window as any).currentAutoplayAudio) {
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
+      console.log("🔍 DEBUG: Stopped existing autoplay audio");
     }
     
     // Clean up any existing streams to ensure fresh microphone access
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach(track => {
+        console.log("🔍 DEBUG: Stopping track:", track.kind, track.readyState);
+        track.stop();
+      });
       streamRef.current = null;
+      console.log("🔍 DEBUG: Cleaned up existing stream");
     }
     
     // Reset global stream to force fresh access
     (window as any).currentMicrophoneStream = null;
+    console.log("🔍 DEBUG: Reset global microphone stream");
     
     // Reset UI state and start listening without closing bottom sheet
     setShowUnmuteButton(false);
     setShowAskButton(false);
     setIsResponding(false);
     setIsThinking(false);
+    console.log("🔍 DEBUG: Reset UI states");
     
     // Keep bottom sheet open explicitly
     setShowBottomSheet(true);
+    console.log("🔍 DEBUG: Set showBottomSheet to true");
     
     // Start listening directly - this will keep the bottom sheet open
-    await startListening();
+    console.log("🔍 DEBUG: About to call startListening()");
+    try {
+      await startListening();
+      console.log("🔍 DEBUG: startListening() completed successfully");
+    } catch (error) {
+      console.error("🔍 DEBUG: Error in startListening():", error);
+    }
   };
 
   return (
