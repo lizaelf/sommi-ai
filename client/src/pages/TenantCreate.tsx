@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/UseToast";
 import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
 import typography from "@/styles/typography";
 import { ArrowLeft, Save, X } from "lucide-react";
 
@@ -152,7 +153,7 @@ export default function TenantCreate() {
               className="block text-sm font-medium mb-2"
               style={{ color: "white" }}
             >Winery *</label>
-            <input
+            <Input
               type="text"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
@@ -170,7 +171,7 @@ export default function TenantCreate() {
             >
               Slug *
             </label>
-            <input
+            <Input
               type="text"
               value={formData.slug}
               onChange={(e) => handleInputChange('slug', e.target.value)}
