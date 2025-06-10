@@ -41,7 +41,7 @@ const SommTenantAdmin: React.FC = () => {
     // Legacy code for fallback (not needed now)
     const storedTenants = localStorage.getItem("sommelier-tenants");
     if (false && storedTenants) {
-      setTenants(JSON.parse(storedTenants));
+      setTenants(JSON.parse(storedTenants || "[]"));
     } else {
       // Initialize with single test winery
       const sampleTenants: Tenant[] = [
