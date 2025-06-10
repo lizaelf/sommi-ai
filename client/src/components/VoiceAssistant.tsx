@@ -566,8 +566,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       recordingStartTimeRef.current = Date.now(); // Initialize recording start time
       lastVoiceDetectedRef.current = 0; // Reset voice detection
       consecutiveSilenceCountRef.current = 0; // Reset silence counter
-      mediaRecorder.start(100); // Request data every 100ms to ensure we get audio chunks
+      // Ensure stream stays active by preventing browser from terminating it
+      stream.getAudioTracks().forEach((track: MediaStreamTrack) => {
+        track.enabled = true;
+        console.log("🎤 DEPLOY DEBUG: Track enabled:", track.kind, track.readyState, track.label);
+      });
+      
+      mediaRecorder.start(250); // Request data every 250ms for stability
       console.log("Audio recording started");
+      
+      // Verify stream is still active after starting recording
+      setTimeout(() => {
+        const tracks = stream.getAudioTracks();
+        if (tracks.length > 0) {
+          console.log("🎤 DEPLOY DEBUG: Stream status after start:", {
+            trackCount: tracks.length,
+            firstTrackState: tracks[0].readyState,
+            recordingState: mediaRecorderRef.current?.state
+          });
+        }
+      }, 100);
       
       // Start voice activity detection
       startVoiceDetection(stream);
