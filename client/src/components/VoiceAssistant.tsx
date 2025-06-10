@@ -238,10 +238,30 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const startListening = async () => {
     console.log("Starting audio recording for Whisper transcription");
 
+    // Immediately show bottom sheet and listening state for instant feedback
+    setShowBottomSheet(true);
+    setIsListening(true);
+
+    // Check if we already have permission or can skip the prompt
+    if (shouldSkipPermissionPrompt()) {
+      console.log("Using existing microphone permission for voice recording");
+      const hasPermission = await requestMicrophonePermission();
+      if (!hasPermission) {
+        setIsListening(false);
+        setShowBottomSheet(false);
+        console.log("Existing permission invalid, requesting fresh permission");
+      } else {
+        // Permission exists, continue with recording setup
+        return setupRecording();
+      }
+    }
+
     // Request microphone permission
     console.log("Requesting microphone permission for voice recording");
     const hasPermission = await requestMicrophonePermission();
     if (!hasPermission) {
+      setIsListening(false);
+      setShowBottomSheet(false);
       toast({
         description: (
           <span
@@ -273,16 +293,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       return;
     }
 
+    return setupRecording();
+  };
+
+  const setupRecording = async () => {
     try {
-      // Get user media for audio recording
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 16000, // Optimal for Whisper
-        } 
-      });
+      // Use existing stream if available, otherwise get user media for audio recording
+      let stream = (window as any).currentMicrophoneStream;
+      
+      if (!stream) {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            sampleRate: 16000, // Optimal for Whisper
+          } 
+        });
+      }
       
       streamRef.current = stream;
 
@@ -388,9 +416,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       };
       
-      // Start recording
-      setIsListening(true);
-      setShowBottomSheet(true);
+      // Recording state already set in startListening, just update UI
       recordingStartTimeRef.current = Date.now(); // Initialize recording start time
       lastVoiceDetectedRef.current = 0; // Reset voice detection
       consecutiveSilenceCountRef.current = 0; // Reset silence counter
