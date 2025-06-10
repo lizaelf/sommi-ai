@@ -262,9 +262,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     if (isProcessing) {
       setShowBottomSheet(true);
       setIsThinking(true);
+      setShowUnmuteButton(false);
       console.log("Keeping bottom sheet open during processing");
     } else {
       setIsThinking(false);
+      // Show unmute button when response is ready
+      setShowUnmuteButton(true);
+      setShowAskButton(true);
     }
   }, [isProcessing]);
 
