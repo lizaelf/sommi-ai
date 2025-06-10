@@ -26,6 +26,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // Add global promise rejection handler on component mount
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.log("Caught and suppressed unhandled rejection:", event.reason);
+      event.preventDefault(); // Prevent console error
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
   
   // Voice activity detection state
   const [isVoiceActive, setIsVoiceActive] = useState(false);
@@ -755,33 +769,44 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       let timeoutId: NodeJS.Timeout | null = null;
       
       try {
-        const controller = new AbortController();
-        timeoutId = setTimeout(() => {
-          console.log("TTS request timeout - aborting");
-          controller.abort();
-        }, 8000); // 8 second timeout
+        // Create a Promise wrapper that prevents unhandled rejections
+        const safeTimeout = (ms: number) => {
+          return new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(() => {
+              console.log("TTS request timeout - aborting");
+              reject(new Error('Timeout'));
+            }, ms);
+          });
+        };
 
-        let response;
-        try {
-          response = await fetch("/api/text-to-speech", {
+        const safeFetch = async () => {
+          const response = await fetch("/api/text-to-speech", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: lastAssistantMessage }),
-            signal: controller.signal,
           });
-        } catch (fetchError) {
-          // Handle fetch errors including abort
-          if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-            console.log("TTS fetch aborted due to timeout");
-          } else {
-            console.error("TTS fetch error:", fetchError);
+          
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
           }
-          throw fetchError;
-        }
+          
+          return response;
+        };
 
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-          timeoutId = null;
+        // Race between fetch and timeout with proper error handling
+        let response;
+        try {
+          response = await Promise.race([
+            safeFetch(),
+            safeTimeout(8000)
+          ]);
+        } catch (raceError) {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+          throw raceError;
         }
 
         if (response.ok) {
