@@ -861,7 +861,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             safeFetch().catch(err => {
               throw err;
             }),
-            safeTimeout(8000).catch(err => {
+            safeTimeout(15000).catch(err => {
               throw err;
             })
           ]);
@@ -897,9 +897,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         
         // Use browser's built-in speech synthesis as immediate fallback
         const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
-        utterance.rate = 1.0;
+        utterance.rate = 0.9; // Slightly slower for better clarity
         utterance.pitch = 1.0;
         utterance.volume = 0.8;
+        
+        // Log the full text being spoken for debugging
+        console.log("Browser TTS: Full text length:", lastAssistantMessage.length);
+        console.log("Browser TTS: Text content:", lastAssistantMessage);
         
         // Select a good voice if available
         const selectVoice = () => {
