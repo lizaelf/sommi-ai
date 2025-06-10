@@ -210,7 +210,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     }
                   `}
                 </style>
-                {isVoiceActive ? "Speaking..." : "Listening... (2 sec silence to send)"}
+                Listening...
               </div>
             </div>
           ) : isLoadingAudio ? (

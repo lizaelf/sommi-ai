@@ -857,6 +857,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       refetchMessages();
     } catch (error) {
       console.error("Error in chat request:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined
+      });
       toast({
         title: "Error",
         description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,

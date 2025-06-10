@@ -58,18 +58,7 @@ export const chatCompletionRequestSchema = z.object({
     })
   ),
   conversationId: z.number().optional(),
-  wineData: z.object({
-    id: z.number(),
-    name: z.string(),
-    year: z.number().optional(),
-    bottles: z.number().optional(),
-    ratings: z.object({
-      vn: z.number().optional(),
-      jd: z.number().optional(),
-      ws: z.number().optional(),
-      abv: z.number().optional(),
-    }).optional(),
-  }).optional(),
+  wineData: z.any().optional(), // Allow any wine data structure for flexibility
   // Safari compatibility: accept additional fields
   optimize_for_speed: z.boolean().optional(),
 }).passthrough(); // Allow additional fields for browser compatibility
