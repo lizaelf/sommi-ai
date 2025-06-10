@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/UseToast";
 import Button from "@/components/ui/Button";
-import { Input } from "@/components/ui/input";
+import { FormInput } from "@/components/ui/FormInput";
 import typography from "@/styles/typography";
 import { ArrowLeft, Save, X } from "lucide-react";
 
@@ -10,6 +10,7 @@ interface TenantFormData {
   name: string;
   slug: string;
   description: string;
+  website: string;
   status: 'active' | 'inactive';
 }
 
@@ -22,6 +23,7 @@ export default function TenantCreate() {
     name: '',
     slug: '',
     description: '',
+    website: '',
     status: 'active'
   });
 
@@ -148,36 +150,24 @@ export default function TenantCreate() {
       <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px", paddingBottom: "120px" }}>
         <div className="space-y-6">
           {/* Tenant Name */}
-          <div>
-            <label 
-              className="block text-sm font-medium mb-2"
-              style={{ color: "white" }}
-            >Winery *</label>
-            <Input
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
-              placeholder="Enter tenant name"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
-            />
-          </div>
+          <FormInput
+            label="Winery"
+            type="text"
+            value={formData.name}
+            onChange={(value: string) => handleInputChange('name', value)}
+            placeholder="Enter tenant name"
+            required
+          />
 
           {/* Slug */}
           <div>
-            <label 
-              className="block text-sm font-medium mb-2"
-              style={{ color: "white" }}
-            >
-              Slug *
-            </label>
-            <Input
+            <FormInput
+              label="Slug"
               type="text"
               value={formData.slug}
-              onChange={(e) => handleInputChange('slug', e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
+              onChange={(value: string) => handleInputChange('slug', value)}
               placeholder="tenant-slug"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
+              required
             />
             <p className="text-xs text-white/60 mt-1">
               URL-friendly identifier (auto-generated from name)
@@ -194,7 +184,7 @@ export default function TenantCreate() {
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('description', e.target.value)}
               className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 resize-none"
               placeholder="Describe the tenant..."
               rows={4}
