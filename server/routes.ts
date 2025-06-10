@@ -598,6 +598,9 @@ Format: Return only the description text, no quotes or additional formatting.`;
     } catch (err) {
       const error = err as any;
       console.error("Error in chat completion:", error);
+      console.error("Error stack:", error?.stack);
+      console.error("Error type:", typeof error);
+      console.error("Error properties:", Object.keys(error || {}));
       
       // Handle validation errors with detailed Safari debugging
       if (error instanceof z.ZodError) {
