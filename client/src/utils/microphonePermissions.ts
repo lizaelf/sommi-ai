@@ -157,17 +157,23 @@ export async function requestMicrophonePermission(): Promise<boolean> {
     return true;
     
   } catch (error: any) {
-    console.error('Microphone permission error:', error);
+    console.error('🎤 PERMISSION DEBUG: getUserMedia failed:', error);
+    console.error('🎤 PERMISSION DEBUG: Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      type: typeof error
+    });
     
     // Enhanced error handling for mobile devices
     if (error.name === 'NotAllowedError') {
-      console.error('User denied microphone permission');
+      console.error('🎤 PERMISSION DEBUG: User denied microphone permission');
     } else if (error.name === 'NotFoundError') {
-      console.error('No microphone found on device');
+      console.error('🎤 PERMISSION DEBUG: No microphone found on device');
     } else if (error.name === 'NotReadableError') {
-      console.error('Microphone is already in use');
+      console.error('🎤 PERMISSION DEBUG: Microphone is already in use');
     } else if (error.name === 'OverconstrainedError') {
-      console.error('Microphone constraints not supported');
+      console.error('🎤 PERMISSION DEBUG: Microphone constraints not supported');
       
       // Fallback: try with basic audio constraints on mobile
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
