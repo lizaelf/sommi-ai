@@ -203,8 +203,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
         
         silenceTimerRef.current = setTimeout(() => {
-          console.log("⏰ 1.5 seconds of silence completed - stopping recording now");
-          stopListening();
+          // Check if minimum recording time has passed
+          const canStopEarly = (window as any).canStopEarly;
+          if (canStopEarly) {
+            console.log("⏰ 1.5 seconds of silence completed - stopping recording now");
+            stopListening();
+          } else {
+            console.log("⏰ Silence detected but minimum recording time not reached - continuing...");
+          }
         }, 1500);
       } else {
         // Log ongoing silence detection
@@ -498,9 +504,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         if (audioBlob.size < 1000) { // Less than 1KB indicates no meaningful audio
           console.warn("Audio blob too small, skipping transcription");
           setIsThinking(false);
-          if (!isProcessing) {
-            setShowBottomSheet(false);
-          }
+          // Don't close bottom sheet automatically - let user try again
+          setShowAskButton(true);
+          setIsListening(false);
           return;
         }
         
@@ -596,6 +602,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           detail: { status: "listening", stream: stream },
         }),
       );
+      
+      // Minimum recording duration to ensure we capture some audio
+      const minimumRecordingTime = 1500; // 1.5 seconds minimum
+      let canStopEarly = false;
+      
+      setTimeout(() => {
+        canStopEarly = true;
+        console.log("Minimum recording time reached - early stopping now allowed");
+      }, minimumRecordingTime);
+      
+      // Store the canStopEarly flag globally for voice detection
+      (window as any).canStopEarly = false;
+      setTimeout(() => {
+        (window as any).canStopEarly = true;
+      }, minimumRecordingTime);
       
       // Primary backup: stop after 4 seconds regardless of voice detection
       setTimeout(() => {
