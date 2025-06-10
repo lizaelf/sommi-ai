@@ -257,10 +257,12 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
         };
       } else {
         console.log('Using non-streaming mode');
-        finalResponse = await openai.chat.completions.create({
+        const nonStreamPromise = openai.chat.completions.create({
           ...baseParams,
           stream: false,
         });
+        
+        finalResponse = await Promise.race([nonStreamPromise, timeoutPromise]);
       }
     } catch (err) {
       const primaryModelError = err as any;
