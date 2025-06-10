@@ -90,7 +90,7 @@ const SommTenantAdmin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen mx-auto" style={{ backgroundColor: "#3a3a3a", maxWidth: "1200px" }}>
+    <div className="min-h-screen mobile-fullscreen" style={{ backgroundColor: "#3a3a3a" }}>
       <AppHeader 
         title="Somm tenant admin"
         rightContent={

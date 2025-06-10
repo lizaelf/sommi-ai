@@ -89,7 +89,7 @@ export default function TenantCreate() {
   };
 
   return (
-    <div className="min-h-screen mx-auto" style={{ backgroundColor: '#3a3a3a', maxWidth: '1200px' }}>
+    <div className="min-h-screen mobile-fullscreen" style={{ backgroundColor: '#3a3a3a' }}>
       {/* Fixed Header */}
       <div className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-200 ${
         scrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'

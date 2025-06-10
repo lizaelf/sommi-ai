@@ -355,7 +355,7 @@ const TenantAdmin: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 mx-auto" style={{ maxWidth: "1200px" }}>
+    <div className="min-h-screen bg-gray-50 mobile-fullscreen">
       <AppHeader 
         title={currentTenant?.name || formData.profile.wineryName || "Winery Name"}
         showBackButton={true}

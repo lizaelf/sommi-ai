@@ -602,7 +602,7 @@ const Cellar = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white relative mx-auto" style={{ maxWidth: "1200px" }}>
+    <div className="min-h-screen bg-black text-white relative mobile-fullscreen">
       <style>
         {`
           /* Blinking cursor animation for search input */
