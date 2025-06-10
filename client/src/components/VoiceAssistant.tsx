@@ -672,29 +672,89 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).currentAutoplayAudio = null;
       }
 
-      // Generate audio using server TTS with timeout
+      // Try server TTS first with short timeout, fallback to browser TTS
       console.log("Generating unmute TTS audio...");
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+      let audio: HTMLAudioElement | null = null;
+      
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
-      const response = await fetch("/api/text-to-speech", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: lastAssistantMessage }),
-        signal: controller.signal,
-      });
+        const response = await fetch("/api/text-to-speech", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: lastAssistantMessage }),
+          signal: controller.signal,
+        });
 
-      clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`TTS API error: ${response.status} - ${errorText}`);
+        if (response.ok) {
+          const audioBuffer = await response.arrayBuffer();
+          const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          audio = new Audio(audioUrl);
+          console.log("Using server TTS audio");
+        } else {
+          throw new Error(`TTS API error: ${response.status}`);
+        }
+      } catch (serverError) {
+        console.log("Server TTS failed, using browser speech synthesis");
+        
+        // Use browser's built-in speech synthesis as immediate fallback
+        const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.8;
+        
+        // Select a good voice if available
+        const selectVoice = () => {
+          const voices = speechSynthesis.getVoices();
+          const preferredVoice = voices.find(voice => 
+            voice.name.includes('Google') && voice.lang.startsWith('en')
+          ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+          
+          if (preferredVoice) {
+            utterance.voice = preferredVoice;
+            console.log("Selected voice:", preferredVoice.name);
+          }
+        };
+        
+        // Handle voice loading
+        if (speechSynthesis.getVoices().length > 0) {
+          selectVoice();
+        } else {
+          speechSynthesis.onvoiceschanged = () => {
+            selectVoice();
+            speechSynthesis.onvoiceschanged = null;
+          };
+        }
+
+        utterance.onstart = () => {
+          setIsResponding(true);
+          setShowUnmuteButton(false);
+          setShowAskButton(false);
+          console.log("Browser TTS playback started");
+        };
+
+        utterance.onend = () => {
+          setIsResponding(false);
+          setShowUnmuteButton(true);
+          setShowAskButton(true);
+          console.log("Browser TTS playback completed");
+        };
+
+        utterance.onerror = () => {
+          setIsResponding(false);
+          setShowUnmuteButton(true);
+          setShowAskButton(true);
+          console.error("Browser TTS playback error");
+        };
+
+        speechSynthesis.speak(utterance);
+        console.log("Browser TTS initiated successfully");
+        return; // Exit early for browser TTS
       }
-
-      const audioBuffer = await response.arrayBuffer();
-      const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
 
       // Store reference for stop functionality
       (window as any).currentOpenAIAudio = audio;
