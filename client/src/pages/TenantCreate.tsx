@@ -143,7 +143,6 @@ export default function TenantCreate() {
         </h1>
         <div className="w-10"></div>
       </div>
-
       {/* Content */}
       <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px", paddingBottom: "120px" }}>
         <div className="space-y-6">
@@ -152,9 +151,7 @@ export default function TenantCreate() {
             <label 
               className="block text-sm font-medium mb-2"
               style={{ color: "white" }}
-            >
-              Tenant Name *
-            </label>
+            >Winery *</label>
             <input
               type="text"
               value={formData.name}
@@ -224,7 +221,6 @@ export default function TenantCreate() {
           </div>
         </div>
       </div>
-
       {/* Bottom Action Buttons */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
         <div className="flex gap-3">
