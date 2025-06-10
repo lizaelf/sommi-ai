@@ -9,7 +9,7 @@ const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
         src={logoImage} 
         alt="Somm Logo" 
         style={{ 
-          height: '24px', 
+          height: '33px', 
           width: 'auto',
           objectFit: 'contain'
         }} 

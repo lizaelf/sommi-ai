@@ -46,7 +46,7 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
         src={image || ridgeWineImage}
         alt={wineName || "Wine bottle"}
         style={{
-          height: "240px",
+          height: "280px",
           zIndex: 2,
           // Add a subtle drop shadow instead of blur
           filter: "drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2))",
