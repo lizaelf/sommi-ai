@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, MoreHorizontal } from "lucide-react";
 import Logo from "@/components/Logo";
-import { ProfileIcon } from "@/components/ProfileIcon";
 
 interface AppHeaderProps {
   title?: string;
@@ -65,12 +64,9 @@ export function AppHeader({
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
             {rightContent || (
-              <>
-                <div className="cursor-pointer text-white/80 hover:text-white transition-all duration-200">
-                  <Search className="w-6 h-6" />
-                </div>
-                <ProfileIcon />
-              </>
+              <button className="cursor-pointer text-white/80 hover:text-white transition-all duration-200 bg-transparent border-none p-0">
+                <MoreHorizontal className="w-6 h-6" />
+              </button>
             )}
           </div>
 
