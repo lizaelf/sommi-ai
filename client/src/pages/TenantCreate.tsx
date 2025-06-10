@@ -8,8 +8,6 @@ import { ArrowLeft, Save, X } from "lucide-react";
 
 interface TenantFormData {
   name: string;
-  slug: string;
-  description: string;
   website: string;
   status: 'active' | 'inactive';
 }
@@ -21,8 +19,6 @@ export default function TenantCreate() {
   
   const [formData, setFormData] = useState<TenantFormData>({
     name: '',
-    slug: '',
-    description: '',
     website: '',
     status: 'active'
   });
@@ -47,16 +43,7 @@ export default function TenantCreate() {
   };
 
   const handleInputChange = (field: keyof TenantFormData, value: string) => {
-    setFormData(prev => {
-      const updated = { ...prev, [field]: value };
-      
-      // Auto-generate slug when name changes
-      if (field === 'name') {
-        updated.slug = generateSlug(value);
-      }
-      
-      return updated;
-    });
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSave = () => {
@@ -70,28 +57,13 @@ export default function TenantCreate() {
       return;
     }
 
-    if (!formData.slug.trim()) {
-      toast({
-        title: "Error", 
-        description: "Slug is required",
-        variant: "destructive",
-      });
-      return;
-    }
+
 
     try {
       // Get existing tenants
       const existingTenants = JSON.parse(localStorage.getItem('sommelier-tenants') || '[]');
       
-      // Check if slug already exists
-      if (existingTenants.some((t: any) => t.slug === formData.slug)) {
-        toast({
-          title: "Error",
-          description: "A tenant with this slug already exists",
-          variant: "destructive",
-        });
-        return;
-      }
+
 
       // Create new tenant
       const newTenant = {
@@ -159,21 +131,6 @@ export default function TenantCreate() {
             required
           />
 
-          {/* Slug */}
-          <div>
-            <FormInput
-              label="Slug"
-              type="text"
-              value={formData.slug}
-              onChange={(value: string) => handleInputChange('slug', value)}
-              placeholder="tenant-slug"
-              required
-            />
-            <p className="text-xs text-white/60 mt-1">
-              URL-friendly identifier (auto-generated from name)
-            </p>
-          </div>
-
           {/* Website */}
           <FormInput
             label="Website"
@@ -182,24 +139,6 @@ export default function TenantCreate() {
             onChange={(value: string) => handleInputChange('website', value)}
             placeholder="https://example.com"
           />
-
-          {/* Description */}
-          <div>
-            <label 
-              className="block text-sm font-medium mb-2"
-              style={{ color: "white" }}
-            >
-              Description
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('description', e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 resize-none"
-              placeholder="Describe the tenant..."
-              rows={4}
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
-            />
-          </div>
 
 
         </div>
