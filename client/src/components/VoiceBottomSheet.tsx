@@ -303,7 +303,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     display: 'flex',
                     flexDirection: 'row',
                     gap: '8px',
-                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
                     alignItems: 'center'
                   }}>
                     {suggestions.map((suggestion, index) => (
