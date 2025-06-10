@@ -960,7 +960,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             safeFetch().catch(err => {
               throw err;
             }),
-            safeTimeout(15000).catch(err => {
+            safeTimeout(30000).catch(err => {
               throw err;
             })
           ]);

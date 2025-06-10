@@ -592,7 +592,7 @@ export async function textToSpeech(text: string): Promise<Buffer> {
       speed: VoiceConfig.SPEED,
       input: cleanText,
     }, {
-      timeout: 15000 // 15 second timeout
+      timeout: 30000 // 30 second timeout for deployment environments
     });
     
     console.log("OpenAI TTS response received");
