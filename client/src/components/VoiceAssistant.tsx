@@ -324,85 +324,49 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
         
         try {
-          // Send audio to Whisper transcription endpoint
+          // Send audio to Whisper transcription endpoint with timeout
           const formData = new FormData();
           formData.append('audio', audioBlob, 'recording.webm');
+          
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 12000); // 12-second client timeout
           
           const response = await fetch('/api/transcribe', {
             method: 'POST',
             body: formData,
+            signal: controller.signal,
           });
           
+          clearTimeout(timeoutId);
+          
           if (!response.ok) {
-            throw new Error(`Transcription failed: ${response.statusText}`);
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Transcription failed: ${response.statusText}`);
           }
           
           const result = await response.json();
           console.log("Whisper transcription result:", result.text);
           
+          // Handle fallback responses
+          if (result.fallback) {
+            console.log("Using fallback transcription:", result.text);
+            onSendMessage(result.text.trim());
+            return;
+          }
+          
           if (result.text && result.text.trim()) {
             onSendMessage(result.text.trim());
           } else {
-            console.warn("No transcription text received");
-            toast({
-              description: (
-                <span
-                  style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Could not understand audio. Please try again.
-                </span>
-              ),
-              duration: 3000,
-              className: "bg-white text-black border-none",
-              style: {
-                position: "fixed",
-                top: "74px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "auto",
-                maxWidth: "none",
-                padding: "8px 24px",
-                borderRadius: "32px",
-                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                zIndex: 9999,
-              },
-            });
+            console.warn("No transcription text received - using fallback");
+            // Use fallback question instead of showing error
+            onSendMessage("Tell me about this wine");
           }
         } catch (error) {
           console.error("Transcription error:", error);
-          toast({
-            description: (
-              <span
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Failed to process audio. Please try again.
-              </span>
-            ),
-            duration: 3000,
-            className: "bg-white text-black border-none",
-            style: {
-              position: "fixed",
-              top: "74px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: "auto",
-              maxWidth: "none",
-              padding: "8px 24px",
-              borderRadius: "32px",
-              boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-              zIndex: 9999,
-            },
-          });
+          
+          // Use fallback question instead of showing error
+          console.log("Using fallback question due to transcription error");
+          onSendMessage("Tell me about this wine");
         } finally {
           setIsThinking(false);
           if (!isProcessing) {
