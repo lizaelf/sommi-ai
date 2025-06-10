@@ -1717,17 +1717,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
                               return (
                                 <div>
-                                  <p
-                                    style={{
-                                      ...typography.body,
-                                      color: "rgba(255, 255, 255, 0.8)",
-                                      lineHeight: "1.6",
-                                      margin: "0 0 16px 0",
-                                      paddingBottom: "16px",
-                                    }}
-                                  >
-                                    {summaryText}
-                                  </p>
+                                  {/* Hide summary text on scanned page */}
+                                  {!showBuyButton && (
+                                    <p
+                                      style={{
+                                        ...typography.body,
+                                        color: "rgba(255, 255, 255, 0.8)",
+                                        lineHeight: "1.6",
+                                        margin: "0 0 16px 0",
+                                        paddingBottom: "16px",
+                                      }}
+                                    >
+                                      {summaryText}
+                                    </p>
+                                  )}
                                 </div>
                               );
                             })()}
