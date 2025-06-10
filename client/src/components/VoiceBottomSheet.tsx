@@ -288,7 +288,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             }}>
               
               {/* Suggestions Section */}
-              {showSuggestions && onSuggestionClick && (
+              {showSuggestions && onSuggestionClick && (showAskButton || !showAskButton) && (
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 

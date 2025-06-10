@@ -1319,7 +1319,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         isResponding={isResponding}
         isThinking={isThinking}
         isVoiceActive={isVoiceActive}
-        showSuggestions={false}
+        showSuggestions={showAskButton && !isListening && !isResponding && !isThinking}
         showUnmuteButton={
           showUnmuteButton && !isListening && !isResponding && !isThinking
         }
