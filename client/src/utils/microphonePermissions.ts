@@ -105,22 +105,31 @@ export async function syncMicrophonePermissionWithBrowser(): Promise<boolean> {
 
 // Request microphone permission and save to cookie
 export async function requestMicrophonePermission(): Promise<boolean> {
+  console.log('🎤 PERMISSION DEBUG: Starting permission request');
+  console.log('🎤 PERMISSION DEBUG: Environment details', {
+    hostname: window.location.hostname,
+    protocol: window.location.protocol,
+    userAgent: navigator.userAgent,
+    hasMediaDevices: !!navigator.mediaDevices,
+    hasGetUserMedia: !!navigator.mediaDevices?.getUserMedia
+  });
+
   try {
-    console.log('Requesting microphone permission...');
-    
     // Mobile-specific permission request with fallback options
     let audioConstraints;
     
     // Check if it's a mobile device
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    console.log('🎤 PERMISSION DEBUG: Device type', { isMobile });
     
     if (isMobile) {
-      console.log('Mobile device detected - using mobile-optimized audio constraints');
+      console.log('🎤 PERMISSION DEBUG: Using mobile-optimized audio constraints');
       // Simplified constraints for mobile compatibility
       audioConstraints = { 
         audio: true 
       };
     } else {
+      console.log('🎤 PERMISSION DEBUG: Using desktop audio constraints');
       // Desktop constraints with advanced options
       audioConstraints = { 
         audio: {
@@ -131,7 +140,12 @@ export async function requestMicrophonePermission(): Promise<boolean> {
       };
     }
     
+    console.log('🎤 PERMISSION DEBUG: Calling getUserMedia with constraints:', audioConstraints);
     const stream = await navigator.mediaDevices.getUserMedia(audioConstraints);
+    console.log('🎤 PERMISSION DEBUG: getUserMedia successful', {
+      streamId: stream.id,
+      audioTracks: stream.getAudioTracks().length
+    });
     
     // Permission granted
     saveMicrophonePermission(true);
@@ -139,7 +153,7 @@ export async function requestMicrophonePermission(): Promise<boolean> {
     // Store stream for immediate use
     (window as any).currentMicrophoneStream = stream;
     
-    console.log('Microphone permission granted and saved');
+    console.log('🎤 PERMISSION DEBUG: Permission granted and saved successfully');
     return true;
     
   } catch (error: any) {

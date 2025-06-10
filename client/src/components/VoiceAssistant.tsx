@@ -247,33 +247,54 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   }, []);
 
   const startListening = async () => {
-    console.log("🎤 DEBUG: Starting audio recording for Whisper transcription");
+    console.log("🎤 DEPLOY DEBUG: Starting audio recording for Whisper transcription");
 
     // Immediately show bottom sheet and listening state for instant feedback
-    console.log("🎤 DEBUG: Setting UI states - showBottomSheet: true, isListening: true");
+    console.log("🎤 DEPLOY DEBUG: Setting UI states - showBottomSheet: true, isListening: true");
     setShowBottomSheet(true);
     setIsListening(true);
 
+    // Check deployment environment
+    const isDeployment = window.location.hostname.includes('.replit.app') || window.location.hostname.includes('.repl.co');
+    console.log("🎤 DEPLOY DEBUG: Environment check", {
+      hostname: window.location.hostname,
+      isDeployment,
+      protocol: window.location.protocol,
+      isSecure: window.location.protocol === 'https:'
+    });
+
     // Check if we already have permission or can skip the prompt
-    if (shouldSkipPermissionPrompt()) {
-      console.log("Using existing microphone permission for voice recording");
+    const shouldSkip = shouldSkipPermissionPrompt();
+    console.log("🎤 DEPLOY DEBUG: Permission check", { shouldSkip });
+    
+    if (shouldSkip) {
+      console.log("🎤 DEPLOY DEBUG: Using existing microphone permission for voice recording");
       const hasPermission = await requestMicrophonePermission();
+      console.log("🎤 DEPLOY DEBUG: Existing permission result:", hasPermission);
+      
       if (!hasPermission) {
+        console.log("🎤 DEPLOY DEBUG: Existing permission invalid, setting states and returning");
         setIsListening(false);
         setShowBottomSheet(false);
-        console.log("Existing permission invalid, requesting fresh permission");
+        console.log("🎤 DEPLOY DEBUG: States set - requesting fresh permission");
+        // Don't return here, fall through to request fresh permission
       } else {
         // Permission exists, continue with recording setup
+        console.log("🎤 DEPLOY DEBUG: Permission valid, calling setupRecording");
         return setupRecording();
       }
     }
 
     // Request microphone permission
-    console.log("Requesting microphone permission for voice recording");
+    console.log("🎤 DEPLOY DEBUG: Requesting fresh microphone permission for voice recording");
     const hasPermission = await requestMicrophonePermission();
+    console.log("🎤 DEPLOY DEBUG: Fresh permission result:", hasPermission);
+    
     if (!hasPermission) {
+      console.log("🎤 DEPLOY DEBUG: Permission denied - closing bottom sheet and showing toast");
       setIsListening(false);
       setShowBottomSheet(false);
+      
       toast({
         description: (
           <span
@@ -305,15 +326,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       return;
     }
 
+    console.log("🎤 DEPLOY DEBUG: Permission granted - calling setupRecording");
     return setupRecording();
   };
 
   const setupRecording = async () => {
+    console.log("🎤 DEPLOY DEBUG: setupRecording started");
+    
     try {
       // Use existing stream if available, otherwise get user media for audio recording
       let stream = (window as any).currentMicrophoneStream;
+      console.log("🎤 DEPLOY DEBUG: Existing stream check", { hasExistingStream: !!stream });
       
       if (!stream) {
+        console.log("🎤 DEPLOY DEBUG: Requesting new getUserMedia stream");
         stream = await navigator.mediaDevices.getUserMedia({ 
           audio: {
             echoCancellation: true,
@@ -321,6 +347,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             autoGainControl: true,
             sampleRate: 16000, // Optimal for Whisper
           } 
+        });
+        console.log("🎤 DEPLOY DEBUG: getUserMedia successful", { 
+          streamId: stream.id,
+          tracks: stream.getAudioTracks().length 
         });
       }
       
@@ -454,7 +484,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       }, 10000);
     } catch (error) {
-      console.error("Error starting audio recording:", error);
+      console.error("🎤 DEPLOY DEBUG: Error in setupRecording:", error);
+      console.error("🎤 DEPLOY DEBUG: Error details:", {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack',
+        type: typeof error
+      });
+      
       setIsListening(false);
       setShowBottomSheet(false);
       
@@ -549,14 +586,34 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("Audio recording stopped immediately");
   };
 
-  const toggleListening = () => {
-    if (isProcessing) return;
+  const toggleListening = async () => {
+    console.log("🎤 DEPLOY DEBUG: toggleListening called", {
+      isProcessing,
+      isListening,
+      showBottomSheet,
+      userAgent: navigator.userAgent,
+      location: window.location.href
+    });
+
+    if (isProcessing) {
+      console.log("🎤 DEPLOY DEBUG: Blocking - processing in progress");
+      return;
+    }
 
     if (isListening) {
+      console.log("🎤 DEPLOY DEBUG: Stopping listening and closing bottom sheet");
       stopListening();
       setShowBottomSheet(false);
     } else {
-      startListening();
+      console.log("🎤 DEPLOY DEBUG: Starting listening - will show bottom sheet");
+      try {
+        await startListening();
+        console.log("🎤 DEPLOY DEBUG: startListening completed successfully");
+      } catch (error) {
+        console.error("🎤 DEPLOY DEBUG: startListening failed:", error);
+        setShowBottomSheet(false);
+        setIsListening(false);
+      }
     }
   };
 
