@@ -106,21 +106,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log(`Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(false);
         
-        // Only start silence timer if we've been recording for at least 1 second
+        // Start silence timer immediately after any voice activity
         const recordingDuration = now - recordingStartTimeRef.current;
-        if (recordingDuration > 1000) {
-          console.log(`Starting 1.5-second silence countdown (recorded for ${recordingDuration}ms)`);
-          if (silenceTimerRef.current) {
-            clearTimeout(silenceTimerRef.current);
-          }
-          
-          silenceTimerRef.current = setTimeout(() => {
-            console.log("1.5 seconds of silence completed - stopping recording now");
-            stopListening();
-          }, 1500);
-        } else {
-          console.log(`Recording too short (${recordingDuration}ms) - not starting silence timer yet`);
+        console.log(`Starting 1.5-second silence countdown (recorded for ${recordingDuration}ms)`);
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
         }
+        
+        silenceTimerRef.current = setTimeout(() => {
+          console.log("1.5 seconds of silence completed - stopping recording now");
+          stopListening();
+        }, 1500);
       } else {
         // Log ongoing silence detection
         if (consecutiveSilenceCountRef.current % 40 === 0) { // Every 1 second
@@ -437,13 +433,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }),
       );
       
-      // Backup auto-stop recording after 15 seconds (increased to give silence detection priority)
+      // Primary backup: stop after 4 seconds regardless of voice detection
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          console.log("Backup auto-stop after 15 seconds - silence detection may have failed");
+          console.log("Primary backup auto-stop after 4 seconds");
           stopListening();
         }
-      }, 15000);
+      }, 4000);
+      
+      // Secondary backup: stop after 10 seconds if silence detection completely fails
+      setTimeout(() => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+          console.log("Secondary backup auto-stop after 10 seconds - silence detection failed");
+          stopListening();
+        }
+      }, 10000);
     } catch (error) {
       console.error("Error starting audio recording:", error);
       setIsListening(false);
