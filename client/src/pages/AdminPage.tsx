@@ -132,7 +132,7 @@ export function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="mx-auto p-6 space-y-6" style={{ maxWidth: "1200px" }}>
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Wine Management Admin</h1>
         <div className="flex gap-2">

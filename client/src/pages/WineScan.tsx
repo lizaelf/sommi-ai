@@ -119,7 +119,9 @@ export default function WineScan() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        maxWidth: '1200px',
+        margin: '0 auto'
       }}>
         <h1 style={{ ...typography.h1, marginBottom: '16px' }}>Wine Not Found</h1>
         <p style={{ ...typography.body1R, marginBottom: '24px', textAlign: 'center' }}>
@@ -148,7 +150,9 @@ export default function WineScan() {
     <div style={{ 
       minHeight: '100vh', 
       background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-      color: 'white'
+      color: 'white',
+      maxWidth: '1200px',
+      margin: '0 auto'
     }}>
       {/* Header */}
       <div style={{
