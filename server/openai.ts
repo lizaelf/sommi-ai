@@ -142,132 +142,177 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
     console.log('Response template:', responseTemplate);
     console.log('Combined rules:', combinedRules);
 
-    // Check response cache first for faster responses
-    const enableResponseCache = process.env.ENABLE_RESPONSE_CACHE === 'true';
-    const cacheTTL = parseInt(process.env.CACHE_TTL_SECONDS || '300') * 1000; // Convert to milliseconds
+    // Enhanced caching with request deduplication and preemptive responses
+    const enableResponseCache = process.env.ENABLE_RESPONSE_CACHE !== 'false';
+    const cacheTTL = parseInt(process.env.CACHE_TTL_SECONDS || '600') * 1000;
     
     if (enableResponseCache) {
-      // Create cache key from last user message and wine data
       const userMessage = messages[messages.length - 1]?.content || '';
       const wineId = wineData?.id || 'none';
-      const cacheKey = `${userMessage}_${wineId}_${responseTemplate}_${maxTokens}`;
+      const cacheKey = `${userMessage.toLowerCase()}_${wineId}_${responseTemplate}_${maxTokens}`;
       
+      // Check preemptive cache for instant responses to common questions
+      for (const [keyword, response] of preemptiveResponses) {
+        if (userMessage.toLowerCase().includes(keyword)) {
+          console.log(`Using preemptive response for "${keyword}" - instant TTFB`);
+          return {
+            content: response,
+            usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+          };
+        }
+      }
+      
+      // Check response cache
       const cached = responseCache.get(cacheKey);
       if (cached && (Date.now() - cached.timestamp) < cacheTTL) {
         console.log('Using cached response for faster TTFB');
+        cached.accessCount++;
         return {
           content: cached.content,
           usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
         };
+      }
+      
+      // Request deduplication - prevent duplicate API calls for identical requests
+      if (pendingRequests.has(cacheKey)) {
+        console.log('Request deduplication - waiting for pending identical request');
+        return await pendingRequests.get(cacheKey);
       }
     }
 
     // Enable streaming for faster TTFB
     const enableStreaming = process.env.ENABLE_STREAMING !== 'false';
     
-    // Call OpenAI API with optimizations for speed
-    let finalResponse;
-    try {
-      // Ultra-optimized completion parameters for maximum speed
-      const baseParams = {
-        model: MODEL,
-        messages: newMessages,
-        temperature: 0.1, // Minimal temperature for fastest generation
-        max_tokens: maxTokens, // Dynamic max_tokens from environment
-        presence_penalty: 0, // Remove penalties for speed
-        frequency_penalty: 0,
-        top_p: 0.7, // Further reduced for faster token selection
-        // Speed optimizations
-        logit_bias: undefined, // No bias for speed
-        stop: undefined, // No stop sequences for speed
-        user: undefined, // No user tracking for speed
-      };
-      
-      if (enableStreaming) {
-        console.log('Using streaming mode for faster TTFB');
-        const stream = await openai.chat.completions.create({
-          ...baseParams,
-          stream: true,
-        }) as any;
+    // Create promise for request deduplication
+    const userMessage = messages[messages.length - 1]?.content || '';
+    const wineId = wineData?.id || 'none';
+    const cacheKey = `${userMessage.toLowerCase()}_${wineId}_${responseTemplate}_${maxTokens}`;
+    
+    const apiCallPromise = (async () => {
+      // Call OpenAI API with optimizations for speed
+      let finalResponse;
+      try {
+        // Ultra-optimized completion parameters for maximum speed
+        const baseParams = {
+          model: MODEL,
+          messages: newMessages,
+          temperature: 0.1, // Minimal temperature for fastest generation
+          max_tokens: maxTokens, // Dynamic max_tokens from environment
+          presence_penalty: 0, // Remove penalties for speed
+          frequency_penalty: 0,
+          top_p: 0.7, // Further reduced for faster token selection
+          // Speed optimizations
+          logit_bias: undefined, // No bias for speed
+          stop: undefined, // No stop sequences for speed
+          user: undefined, // No user tracking for speed
+        };
         
-        // Collect streaming response for faster perceived performance
-        let content = '';
-        try {
-          for await (const chunk of stream) {
-            const delta = chunk.choices?.[0]?.delta?.content;
-            if (delta) {
-              content += delta;
+        if (enableStreaming) {
+          console.log('Using streaming mode for faster TTFB');
+          const stream = await openai.chat.completions.create({
+            ...baseParams,
+            stream: true,
+          }) as any;
+          
+          // Collect streaming response for faster perceived performance
+          let content = '';
+          try {
+            for await (const chunk of stream) {
+              const delta = chunk.choices?.[0]?.delta?.content;
+              if (delta) {
+                content += delta;
+              }
+            }
+          } catch (streamError) {
+            console.error('Streaming error:', streamError);
+            throw streamError;
+          }
+          
+          finalResponse = {
+            choices: [{
+              message: {
+                role: 'assistant' as const,
+                content: content
+              }
+            }],
+            usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+          };
+        } else {
+          console.log('Using non-streaming mode');
+          finalResponse = await openai.chat.completions.create({
+            ...baseParams,
+            stream: false,
+          });
+        }
+      } catch (err) {
+        const primaryModelError = err as any;
+        console.warn(`Error with primary model ${MODEL}, falling back to ${FALLBACK_MODEL}:`, primaryModelError);
+        
+        // If the primary model fails, try with the fallback model
+        if (primaryModelError?.status === 404) {
+          finalResponse = await openai.chat.completions.create({
+            model: FALLBACK_MODEL,
+            messages: newMessages,
+            temperature: 0.3, // Lower temperature for focused responses
+            max_tokens: maxTokens, // Dynamic max_tokens from environment
+            presence_penalty: -0.1, // Encourage concise responses
+            frequency_penalty: 0.2, // Avoid repetition
+            stream: false // Use non-streaming for fallback
+          });
+        } else {
+          // If it's not a model availability issue, rethrow the error
+          throw primaryModelError;
+        }
+      }
+
+      // Cache the response for faster future requests
+      if (enableResponseCache && finalResponse.choices[0]?.message?.content) {
+          // Manage cache size with LRU eviction
+          if (responseCache.size >= MAX_RESPONSE_CACHE_SIZE) {
+            // Remove least recently accessed items
+            const sortedEntries = Array.from(responseCache.entries())
+              .sort(([,a], [,b]) => a.accessCount - b.accessCount);
+            for (let i = 0; i < 10; i++) { // Remove 10 items at once
+              const keyToDelete = sortedEntries[i]?.[0];
+              if (keyToDelete) responseCache.delete(keyToDelete);
             }
           }
-        } catch (streamError) {
-          console.error('Streaming error:', streamError);
-          throw streamError;
+          
+          responseCache.set(cacheKey, {
+            content: finalResponse.choices[0].message.content,
+            timestamp: Date.now(),
+            accessCount: 1
+          });
+          console.log('Response cached for future requests');
         }
-        
-        finalResponse = {
-          choices: [{
-            message: {
-              role: 'assistant' as const,
-              content: content
-            }
-          }],
-          usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-        };
-      } else {
-        console.log('Using non-streaming mode');
-        finalResponse = await openai.chat.completions.create({
-          ...baseParams,
-          stream: false,
-        });
-      }
-    } catch (err) {
-      const primaryModelError = err as any;
-      console.warn(`Error with primary model ${MODEL}, falling back to ${FALLBACK_MODEL}:`, primaryModelError);
-      
-      // If the primary model fails, try with the fallback model
-      if (primaryModelError?.status === 404) {
-        finalResponse = await openai.chat.completions.create({
-          model: FALLBACK_MODEL,
-          messages: newMessages,
-          temperature: 0.3, // Lower temperature for focused responses
-          max_tokens: maxTokens, // Dynamic max_tokens from environment
-          presence_penalty: -0.1, // Encourage concise responses
-          frequency_penalty: 0.2, // Avoid repetition
-          stream: false // Use non-streaming for fallback
-        });
-      } else {
-        // If it's not a model availability issue, rethrow the error
-        throw primaryModelError;
+
+      return {
+        content: finalResponse.choices[0].message.content || "I don't know how to respond to that.",
+        usage: finalResponse.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+      };
+    })();
+    
+    // Store pending request for deduplication
+    if (enableResponseCache) {
+      pendingRequests.set(cacheKey, apiCallPromise);
+    }
+    
+    try {
+      const result = await apiCallPromise;
+      return result;
+    } finally {
+      // Clean up pending request
+      if (enableResponseCache) {
+        pendingRequests.delete(cacheKey);
       }
     }
 
-    // Cache the response for faster future requests
-    if (enableResponseCache && finalResponse.choices[0]?.message?.content) {
-      const userMessage = messages[messages.length - 1]?.content || '';
-      const wineId = wineData?.id || 'none';
-      const cacheKey = `${userMessage}_${wineId}_${responseTemplate}_${maxTokens}`;
-      
-      // Manage cache size
-      if (responseCache.size >= MAX_RESPONSE_CACHE_SIZE) {
-        const firstKey = responseCache.keys().next().value;
-        if (firstKey) {
-          responseCache.delete(firstKey);
-        }
-      }
-      
-      responseCache.set(cacheKey, {
-        content: finalResponse.choices[0].message.content,
-        timestamp: Date.now()
-      });
-      console.log('Response cached for future requests');
-    }
-
-    // Return the assistant's response
-    return {
-      content: finalResponse.choices[0].message.content || "I don't know how to respond to that.",
-      usage: finalResponse.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-    };
   } catch (err) {
+    // Clean up pending request on error
+    if (enableResponseCache) {
+      pendingRequests.delete(cacheKey);
+    }
+    
     const error = err as any;
     console.error("Error calling OpenAI API:", error);
     
