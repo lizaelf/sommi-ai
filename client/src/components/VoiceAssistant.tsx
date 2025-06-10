@@ -422,51 +422,48 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("🎤 DEPLOY DEBUG: setupRecording started");
     
     try {
-      // Check if existing stream is active, otherwise get fresh stream
-      let stream = (window as any).currentMicrophoneStream;
-      let needNewStream = true;
-      
-      if (stream) {
-        const tracks = stream.getAudioTracks();
-        const isStreamActive = tracks.length > 0 && tracks[0].readyState === 'live';
-        console.log("🎤 DEPLOY DEBUG: Existing stream check", { 
-          hasExistingStream: true,
+      // Always clean up any existing streams first
+      const existingStream = (window as any).currentMicrophoneStream;
+      if (existingStream) {
+        const tracks = existingStream.getAudioTracks();
+        console.log("🎤 DEPLOY DEBUG: Cleaning up existing stream", { 
           tracksCount: tracks.length,
-          firstTrackState: tracks[0]?.readyState,
-          isStreamActive
+          firstTrackState: tracks[0]?.readyState
         });
-        
-        if (isStreamActive) {
-          needNewStream = false;
-          console.log("🎤 DEPLOY DEBUG: Using existing active stream");
-        } else {
-          console.log("🎤 DEPLOY DEBUG: Existing stream is ended/inactive, requesting new one");
-          // Clean up the ended stream
-          tracks.forEach(track => track.stop());
-          (window as any).currentMicrophoneStream = null;
-        }
-      } else {
-        console.log("🎤 DEPLOY DEBUG: No existing stream found");
+        tracks.forEach((track: MediaStreamTrack) => {
+          track.stop();
+          console.log("🎤 DEPLOY DEBUG: Stopped track:", track.kind, track.readyState);
+        });
+        (window as any).currentMicrophoneStream = null;
       }
       
-      if (needNewStream) {
-        console.log("🎤 DEPLOY DEBUG: Requesting new getUserMedia stream");
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-            sampleRate: 16000, // Optimal for Whisper
-          } 
-        });
-        console.log("🎤 DEPLOY DEBUG: getUserMedia successful", { 
-          streamId: stream.id,
-          tracks: stream.getAudioTracks().length 
-        });
-        
-        // Store the new active stream
-        (window as any).currentMicrophoneStream = stream;
+      // Always request a fresh stream for recording
+      console.log("🎤 DEPLOY DEBUG: Requesting fresh getUserMedia stream for recording");
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 16000, // Optimal for Whisper
+        } 
+      });
+      
+      // Verify the new stream is active
+      const tracks = stream.getAudioTracks();
+      const isActive = tracks.length > 0 && tracks[0].readyState === 'live';
+      console.log("🎤 DEPLOY DEBUG: Fresh stream created", { 
+        streamId: stream.id,
+        tracksCount: tracks.length,
+        firstTrackState: tracks[0]?.readyState,
+        isActive
+      });
+      
+      if (!isActive) {
+        throw new Error("Fresh microphone stream is not active");
       }
+      
+      // Store the new active stream
+      (window as any).currentMicrophoneStream = stream;
       
       streamRef.current = stream;
 
