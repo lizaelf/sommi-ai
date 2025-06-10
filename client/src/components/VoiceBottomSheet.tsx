@@ -345,7 +345,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
 
 
               {/* Unmute Button */}
-              {showUnmuteButton && onUnmute && (
+              {showUnmuteButton && onUnmute && !showAskButton && (
                 <div style={{
                   width: '100%',
                   paddingLeft: '16px',
