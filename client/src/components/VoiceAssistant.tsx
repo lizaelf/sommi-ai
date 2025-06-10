@@ -674,6 +674,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
+    
+    // Wrap entire function in try-catch to prevent unhandled rejections
+    try {
 
     // Check if there's pending autoplay audio from mobile autoplay blocking
     const pendingAudio = (window as any).pendingAutoplayAudio;
@@ -753,14 +756,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       try {
         const controller = new AbortController();
-        timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+        timeoutId = setTimeout(() => {
+          console.log("TTS request timeout - aborting");
+          controller.abort();
+        }, 8000); // 8 second timeout
 
-        const response = await fetch("/api/text-to-speech", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: lastAssistantMessage }),
-          signal: controller.signal,
-        });
+        let response;
+        try {
+          response = await fetch("/api/text-to-speech", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: lastAssistantMessage }),
+            signal: controller.signal,
+          });
+        } catch (fetchError) {
+          // Handle fetch errors including abort
+          if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+            console.log("TTS fetch aborted due to timeout");
+          } else {
+            console.error("TTS fetch error:", fetchError);
+          }
+          throw fetchError;
+        }
 
         if (timeoutId) {
           clearTimeout(timeoutId);
@@ -778,6 +795,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       } catch (serverError) {
         console.log("Server TTS failed, using browser speech synthesis");
+        console.log("Server error details:", {
+          name: serverError instanceof Error ? serverError.name : 'Unknown',
+          message: serverError instanceof Error ? serverError.message : String(serverError)
+        });
         
         // Clear the timeout to prevent unhandled rejection
         if (timeoutId) {
@@ -955,9 +976,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).currentOpenAIAudio = null;
       };
 
-      // Ensure audio plays immediately
-      console.log("Starting manual unmute TTS playback...");
-      await audio.play();
+      // Audio is already playing from the promise above
       console.log("Manual unmute TTS playback initiated successfully");
     } catch (error) {
       console.error("Failed to generate or play unmute TTS audio:", error);
@@ -1005,6 +1024,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           zIndex: 9999,
         },
       });
+    }
+    } catch (globalError) {
+      console.error("Unhandled error in handleUnmute:", globalError);
+      setIsResponding(false);
+      setShowUnmuteButton(true);
+      setShowAskButton(true);
     }
   };
 
