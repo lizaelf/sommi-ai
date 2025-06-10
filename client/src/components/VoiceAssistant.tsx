@@ -682,10 +682,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Try server TTS first with short timeout, fallback to browser TTS
       console.log("Generating unmute TTS audio...");
       let audio: HTMLAudioElement | null = null;
+      let timeoutId: NodeJS.Timeout | null = null;
       
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+        timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
         const response = await fetch("/api/text-to-speech", {
           method: "POST",
@@ -694,7 +695,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           signal: controller.signal,
         });
 
-        clearTimeout(timeoutId);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
 
         if (response.ok) {
           const audioBuffer = await response.arrayBuffer();
@@ -707,6 +711,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       } catch (serverError) {
         console.log("Server TTS failed, using browser speech synthesis");
+        
+        // Clear the timeout to prevent unhandled rejection
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
         
         // Use browser's built-in speech synthesis as immediate fallback
         const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
