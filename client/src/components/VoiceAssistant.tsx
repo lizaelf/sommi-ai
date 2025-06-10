@@ -763,11 +763,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
     
-    // Set thinking state immediately when unmute is clicked
-    setIsThinking(true);
-    setShowUnmuteButton(false);
-    setShowAskButton(false);
-    
     // Wrap entire function in try-catch to prevent unhandled rejections
     try {
 
@@ -780,9 +775,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio = pendingAudio;
       (window as any).pendingAutoplayAudio = null;
 
+      setIsResponding(true);
+
       // Set up event handlers for the pending audio
       pendingAudio.onplay = () => {
-        setIsThinking(false);
         setIsResponding(true);
         setShowUnmuteButton(false);
         setShowAskButton(false);
@@ -798,7 +794,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
       pendingAudio.onerror = (e: any) => {
         console.error("Pending audio playback error:", e);
-        setIsThinking(false);
         setIsResponding(false);
         setShowUnmuteButton(true);
         setShowAskButton(true);
@@ -819,9 +814,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     if (!lastAssistantMessage) {
       console.warn("No assistant message available to play");
-      setIsThinking(false);
       setShowUnmuteButton(true);
-      setShowAskButton(true);
       return;
     }
 
@@ -979,7 +972,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio = audio;
 
       audio.onplay = () => {
-        setIsThinking(false);
         setIsResponding(true);
         setShowUnmuteButton(false);
         setShowAskButton(false);
@@ -1005,7 +997,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           networkState: audio.networkState,
           readyState: audio.readyState,
         });
-        setIsThinking(false);
         setIsResponding(false);
         setShowUnmuteButton(true);
         setShowAskButton(true);
@@ -1096,7 +1087,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       console.log("Manual unmute TTS playback initiated successfully");
     } catch (error) {
       console.error("Failed to generate or play unmute TTS audio:", error);
-      setIsThinking(false);
       setIsResponding(false);
       setShowUnmuteButton(true);
       setShowAskButton(true);
@@ -1144,7 +1134,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
     } catch (globalError) {
       console.error("Unhandled error in handleUnmute:", globalError);
-      setIsThinking(false);
       setIsResponding(false);
       setShowUnmuteButton(true);
       setShowAskButton(true);
