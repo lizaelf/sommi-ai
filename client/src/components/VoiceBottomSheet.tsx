@@ -16,6 +16,7 @@ interface VoiceBottomSheetProps {
   showAskButton?: boolean;
   showUnmuteButton?: boolean;
   isLoadingAudio?: boolean;
+  isVoiceActive?: boolean;
   onSuggestionClick?: (suggestion: string) => void;
   onListenResponse?: () => void;
   onUnmute?: () => void;
@@ -34,6 +35,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   showAskButton = false,
   showUnmuteButton = false,
   isLoadingAudio = false,
+  isVoiceActive = false,
   onSuggestionClick,
   onListenResponse,
   onUnmute
@@ -208,7 +210,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     }
                   `}
                 </style>
-                Listening...
+                {isVoiceActive ? "Speaking..." : "Listening... (2 sec silence to send)"}
               </div>
             </div>
           ) : isLoadingAudio ? (
