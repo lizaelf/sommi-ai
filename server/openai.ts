@@ -151,36 +151,10 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       const wineId = wineData?.id || 'none';
       const cacheKey = `${userMessage.toLowerCase()}_${wineId}_${responseTemplate}_${maxTokens}`;
       
-      // Circuit breaker check - use emergency fallbacks if API is failing
-      const now = Date.now();
-      if (failureCount >= MAX_FAILURES && (now - lastFailureTime) < CIRCUIT_BREAKER_TIMEOUT) {
-        console.log('Circuit breaker active - using emergency fallback');
-        for (const [keyword, response] of emergencyFallbacks) {
-          if (userMessage.toLowerCase().includes(keyword)) {
-            console.log(`Emergency fallback for "${keyword}" - preventing hang`);
-            return {
-              content: response,
-              usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-            };
-          }
-        }
-        // Generic emergency response if no keyword match
-        return {
-          content: 'This Ridge Lytton Springs Zinfandel is a premium wine with excellent character.',
-          usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-        };
-      }
+      // Circuit breaker disabled to allow full responses
       
-      // Check emergency fallbacks for instant responses to common questions
-      for (const [keyword, response] of emergencyFallbacks) {
-        if (userMessage.toLowerCase().includes(keyword)) {
-          console.log(`Using emergency fallback for "${keyword}" - instant TTFB`);
-          return {
-            content: response,
-            usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-          };
-        }
-      }
+      // Emergency fallbacks disabled to allow full detailed responses
+      // (Removed emergency fallback system to enable proper 200-token responses)
       
       // Check response cache
       const cached = responseCache.get(cacheKey);
@@ -329,17 +303,7 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
     lastFailureTime = Date.now();
     console.log(`API failure count: ${failureCount}/${MAX_FAILURES}`);
     
-    // Emergency fallback when API fails
-    const userMessage = messages[messages.length - 1]?.content || '';
-    for (const [keyword, response] of emergencyFallbacks) {
-      if (userMessage.toLowerCase().includes(keyword)) {
-        console.log(`Using emergency fallback after API error for "${keyword}"`);
-        return {
-          content: response,
-          usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-        };
-      }
-    }
+    // Emergency fallbacks disabled - allow proper error handling and full responses
     
     // Check if it's an API key error
     if (error?.message?.includes('API key') || error?.status === 401) {
