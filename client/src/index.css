@@ -1,6 +1,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile Fullscreen Base Styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile-specific fullscreen styles */
+@media (max-width: 768px) {
+  html, body {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    position: fixed;
+    overflow: hidden;
+  }
+  
+  #root {
+    height: 100vh;
+    height: 100dvh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Remove default margins and padding on mobile */
+  .mobile-fullscreen {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+  }
+  
+  /* Ensure containers take full width on mobile */
+  .container, .max-w-md, .max-w-lg, .max-w-xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
 @layer components {
   .all-\[unset\] {
     all: unset;

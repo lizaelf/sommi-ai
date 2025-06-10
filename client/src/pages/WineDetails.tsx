@@ -101,8 +101,8 @@ export default function WineDetails() {
   }, []);
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="relative mx-auto" style={{ maxWidth: "1200px" }}>
+    <div className="min-h-screen bg-background mobile-fullscreen">
+      <div className="relative w-full">
         
         {/* AppHeader - Different behavior for scanned vs wine details */}
         <AppHeader 
