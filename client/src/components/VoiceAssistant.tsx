@@ -422,11 +422,34 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("🎤 DEPLOY DEBUG: setupRecording started");
     
     try {
-      // Use existing stream if available, otherwise get user media for audio recording
+      // Check if existing stream is active, otherwise get fresh stream
       let stream = (window as any).currentMicrophoneStream;
-      console.log("🎤 DEPLOY DEBUG: Existing stream check", { hasExistingStream: !!stream });
+      let needNewStream = true;
       
-      if (!stream) {
+      if (stream) {
+        const tracks = stream.getAudioTracks();
+        const isStreamActive = tracks.length > 0 && tracks[0].readyState === 'live';
+        console.log("🎤 DEPLOY DEBUG: Existing stream check", { 
+          hasExistingStream: true,
+          tracksCount: tracks.length,
+          firstTrackState: tracks[0]?.readyState,
+          isStreamActive
+        });
+        
+        if (isStreamActive) {
+          needNewStream = false;
+          console.log("🎤 DEPLOY DEBUG: Using existing active stream");
+        } else {
+          console.log("🎤 DEPLOY DEBUG: Existing stream is ended/inactive, requesting new one");
+          // Clean up the ended stream
+          tracks.forEach(track => track.stop());
+          (window as any).currentMicrophoneStream = null;
+        }
+      } else {
+        console.log("🎤 DEPLOY DEBUG: No existing stream found");
+      }
+      
+      if (needNewStream) {
         console.log("🎤 DEPLOY DEBUG: Requesting new getUserMedia stream");
         stream = await navigator.mediaDevices.getUserMedia({ 
           audio: {
@@ -440,6 +463,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           streamId: stream.id,
           tracks: stream.getAudioTracks().length 
         });
+        
+        // Store the new active stream
+        (window as any).currentMicrophoneStream = stream;
       }
       
       streamRef.current = stream;
