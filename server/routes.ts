@@ -258,13 +258,19 @@ Format: Return only the description text, no quotes or additional formatting.`;
 
       console.log(`Transcribing audio file: ${audioFile.name} (${Math.round(audioFile.size / 1024)}KB)`);
 
-      // Call OpenAI Whisper API
-      const transcription = await openai.audio.transcriptions.create({
+      // Add timeout protection for transcription
+      const transcriptionPromise = openai.audio.transcriptions.create({
         file: audioFile,
         model: "whisper-1",
         language: "en", // Specify English for better accuracy
         response_format: "text",
       });
+
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Transcription timeout after 15 seconds')), 15000);
+      });
+
+      const transcription = await Promise.race([transcriptionPromise, timeoutPromise]) as string;
 
       console.log(`Transcription result: ${transcription.substring(0, 100)}...`);
 
@@ -604,8 +610,13 @@ Format: Return only the description text, no quotes or additional formatting.`;
         return;
       }
       
-      // Fallback to regular response
-      const response = await chatCompletion(allMessages, wineData);
+      // Fallback to regular response with timeout protection
+      const chatPromise = chatCompletion(allMessages, wineData);
+      const chatTimeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Chat completion timeout after 20 seconds')), 20000);
+      });
+      
+      const response = await Promise.race([chatPromise, chatTimeoutPromise]) as any;
       
       // Save message to storage if conversation exists
       if (actualConversationId) {
