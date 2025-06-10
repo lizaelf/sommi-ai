@@ -787,15 +787,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
       pendingAudio.onended = () => {
         setIsResponding(false);
-        setShowUnmuteButton(true);
+        setShowUnmuteButton(false);
         setShowAskButton(true);
-        console.log("Pending audio playback completed successfully");
+        console.log("Pending audio playback completed successfully - Ask button enabled");
       };
 
       pendingAudio.onerror = (e: any) => {
         console.error("Pending audio playback error:", e);
         setIsResponding(false);
-        setShowUnmuteButton(true);
+        setShowUnmuteButton(false);
         setShowAskButton(true);
       };
 
@@ -951,14 +951,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
         utterance.onend = () => {
           setIsResponding(false);
-          setShowUnmuteButton(true);
+          setShowUnmuteButton(false);
           setShowAskButton(true);
-          console.log("Browser TTS playback completed");
+          console.log("Browser TTS playback completed - Ask button enabled");
         };
 
         utterance.onerror = () => {
           setIsResponding(false);
-          setShowUnmuteButton(true);
+          setShowUnmuteButton(false);
           setShowAskButton(true);
           console.error("Browser TTS playback error");
         };
@@ -980,13 +980,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
       audio.onended = () => {
         setIsResponding(false);
-        setShowUnmuteButton(true);
+        setShowUnmuteButton(false);
         setShowAskButton(true);
         if (audioUrl) {
           URL.revokeObjectURL(audioUrl);
         }
         (window as any).currentOpenAIAudio = null;
-        console.log("Manual unmute TTS playback completed successfully");
+        console.log("Manual unmute TTS playback completed successfully - Ask button enabled");
       };
 
       audio.onerror = (e) => {
@@ -998,7 +998,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           readyState: audio.readyState,
         });
         setIsResponding(false);
-        setShowUnmuteButton(true);
+        setShowUnmuteButton(false);
         setShowAskButton(true);
         if (audioUrl) {
           URL.revokeObjectURL(audioUrl);
@@ -1077,7 +1077,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       audio.onerror = (e) => {
         console.error("Manual unmute TTS playback error:", e);
         setIsResponding(false);
-        setShowUnmuteButton(true);
+        setShowUnmuteButton(false);
         setShowAskButton(true);
         URL.revokeObjectURL(audioUrl);
         (window as any).currentOpenAIAudio = null;
@@ -1088,7 +1088,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     } catch (error) {
       console.error("Failed to generate or play unmute TTS audio:", error);
       setIsResponding(false);
-      setShowUnmuteButton(true);
+      setShowUnmuteButton(false);
       setShowAskButton(true);
 
       // Provide more specific error messages
