@@ -118,11 +118,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
       
       // Fallback: If we've had voice activity but haven't detected silence properly
-      // and it's been more than 3 seconds since last voice, force stop
+      // and it's been more than 4 seconds since last voice, force stop
       if (lastVoiceDetectedRef.current > 0 && 
-          now - lastVoiceDetectedRef.current > 3000 && 
-          consecutiveSilenceCountRef.current > 120) { // 120 * 25ms = 3 seconds
-        console.log("Fallback silence detection - forcing stop after 3 seconds of low audio");
+          now - lastVoiceDetectedRef.current > 4000 && 
+          consecutiveSilenceCountRef.current > 160) { // 160 * 25ms = 4 seconds
+        console.log("Fallback silence detection - forcing stop after 4 seconds of low audio");
         stopListening();
       }
     }
@@ -532,13 +532,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleCloseBottomSheet = () => {
-    console.log("Closing bottom sheet - stopping OpenAI TTS audio playback");
+    console.log("Closing bottom sheet - aborting conversation and stopping audio");
+    
+    // Abort any ongoing conversation processing
+    window.dispatchEvent(new CustomEvent('abortConversation'));
+    
+    // Stop OpenAI TTS audio playback
     if ((window as any).currentOpenAIAudio) {
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
     }
+    
+    // Stop any autoplay audio
+    if ((window as any).currentAutoplayAudio) {
+      (window as any).currentAutoplayAudio.pause();
+      (window as any).currentAutoplayAudio.currentTime = 0;
+      (window as any).currentAutoplayAudio = null;
+    }
+    
     setShowBottomSheet(false);
+    setIsThinking(false);
+    setIsResponding(false);
     stopListening();
   };
 
