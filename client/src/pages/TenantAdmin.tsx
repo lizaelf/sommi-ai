@@ -397,6 +397,7 @@ const TenantAdmin: React.FC = () => {
                     fontWeight: "400",
                     paddingLeft: "40px",
                     paddingRight: "40px",
+                    boxSizing: "border-box",
                   }}
                 />
                 {searchTerm && (
@@ -414,8 +415,12 @@ const TenantAdmin: React.FC = () => {
                   const nextId = Math.max(...wineCards.map(w => w.id), 0) + 1;
                   setLocation(`/wine-edit/${nextId}?new=true`);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
-                style={{ height: "56px" }}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 transition-colors flex items-center gap-2 flex-shrink-0"
+                style={{ 
+                  height: "56px",
+                  borderRadius: "8px",
+                  boxSizing: "border-box"
+                }}
               >
                 <Plus className="w-4 h-4" />
                 Add wine
