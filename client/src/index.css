@@ -17,8 +17,8 @@ html, body {
   padding: 0;
 }
 
-/* Mobile-specific fullscreen styles */
-@media (max-width: 768px) {
+/* Fullscreen styles for all screens up to 1200px */
+@media (max-width: 1199px) {
   html, body {
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile browsers */
@@ -33,7 +33,7 @@ html, body {
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Remove default margins and padding on mobile */
+  /* Remove default margins and padding for fullscreen */
   .mobile-fullscreen {
     margin: 0 !important;
     padding: 0 !important;
@@ -42,13 +42,35 @@ html, body {
     min-height: 100dvh !important;
   }
   
-  /* Ensure containers take full width on mobile */
-  .container, .max-w-md, .max-w-lg, .max-w-xl {
+  /* Ensure containers take full width */
+  .container, .max-w-md, .max-w-lg, .max-w-xl, .max-w-2xl, .max-w-3xl, .max-w-4xl {
     max-width: 100% !important;
     width: 100% !important;
     margin: 0 !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+}
+
+/* Desktop styles for screens 1200px and wider */
+@media (min-width: 1200px) {
+  html, body {
+    position: static;
+    overflow: visible;
+    height: auto;
+  }
+  
+  #root {
+    height: auto;
+    overflow: visible;
+  }
+  
+  .mobile-fullscreen {
+    margin: auto !important;
+    padding: 1rem !important;
+    width: auto !important;
+    min-height: auto !important;
+    max-width: 1200px !important;
   }
 }
 
