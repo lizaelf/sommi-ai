@@ -268,7 +268,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setIsThinking(false);
       // Show unmute button when response is ready
       setShowUnmuteButton(true);
-      setShowAskButton(true);
+      setShowAskButton(false);
     }
   }, [isProcessing]);
 
