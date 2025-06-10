@@ -174,6 +174,15 @@ export default function TenantCreate() {
             </p>
           </div>
 
+          {/* Website */}
+          <FormInput
+            label="Website"
+            type="url"
+            value={formData.website}
+            onChange={(value: string) => handleInputChange('website', value)}
+            placeholder="https://example.com"
+          />
+
           {/* Description */}
           <div>
             <label 
