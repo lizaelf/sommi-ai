@@ -75,8 +75,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     
     // Calculate average volume for voice detection
     const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-    const voiceThreshold = 35; // Higher threshold for voice activity
-    const silenceThreshold = 20; // Lower threshold for silence detection
+    const voiceThreshold = 40; // Higher threshold for voice activity
+    const silenceThreshold = 30; // Higher threshold for silence detection (ambient noise level)
     
     // Use hysteresis to prevent flapping between voice/silence
     const currentThreshold = isVoiceActive ? silenceThreshold : voiceThreshold;
@@ -113,18 +113,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
         
         silenceTimerRef.current = setTimeout(() => {
-          console.log("2 seconds of silence completed - stopping recording now");
+          console.log("1 second of silence completed - stopping recording now");
           stopListening();
-        }, 2000);
+        }, 1000);
       }
       
-      // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 2 seconds
+      // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 1 second
       if (lastVoiceDetectedRef.current > 0 && 
           recordingStartTimeRef.current > 0 &&
-          now - recordingStartTimeRef.current > 2000 && // Must be recording for at least 2 seconds
-          now - lastVoiceDetectedRef.current > 5000 && 
-          consecutiveSilenceCountRef.current > 200) { // 200 * 25ms = 5 seconds
-        console.log("Fallback silence detection - forcing stop after 5 seconds of silence");
+          now - recordingStartTimeRef.current > 1000 && // Must be recording for at least 1 second
+          now - lastVoiceDetectedRef.current > 3000 && 
+          consecutiveSilenceCountRef.current > 120) { // 120 * 25ms = 3 seconds
+        console.log("Fallback silence detection - forcing stop after 3 seconds of silence");
         stopListening();
       }
     }
