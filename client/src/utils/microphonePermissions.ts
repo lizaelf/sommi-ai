@@ -130,12 +130,14 @@ export async function requestMicrophonePermission(): Promise<boolean> {
       };
     } else {
       console.log('🎤 PERMISSION DEBUG: Using desktop audio constraints');
-      // Desktop constraints with advanced options
+      // Desktop constraints with enhanced audio processing enabled for better input detection
       audioConstraints = { 
         audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 44100,
+          channelCount: 1
         } 
       };
     }

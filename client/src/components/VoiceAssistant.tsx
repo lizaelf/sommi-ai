@@ -159,7 +159,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log(`🎧 AUDIO DEBUG: Analyser connected: ${analyserRef.current ? 'YES' : 'NO'}`);
         if (streamRef.current) {
           const tracks = streamRef.current.getTracks();
+          // Enable all audio tracks explicitly
+          tracks.forEach(track => {
+            if (track.kind === 'audio' && !track.enabled) {
+              track.enabled = true;
+              console.log(`🎧 AUDIO DEBUG: Enabled audio track: ${track.label}`);
+            }
+          });
           console.log(`🎧 AUDIO DEBUG: Stream tracks: ${tracks.length}, Active tracks: ${tracks.filter(t => t.readyState === 'live' && t.enabled).length}`);
+          tracks.forEach(track => {
+            console.log(`🎧 TRACK DEBUG: ${track.kind} - enabled:${track.enabled}, readyState:${track.readyState}, label:${track.label}`);
+          });
         }
       }
     }
