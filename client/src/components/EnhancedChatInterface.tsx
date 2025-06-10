@@ -1829,18 +1829,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         >
                           Chat history
                         </h1>
-                        <Button
-                          onClick={() => {
-                            setShowContactSheet(true);
-                            setAnimationState("opening");
-                            setTimeout(() => setAnimationState("open"), 50);
-                          }}
-                          variant="secondary"
-                          size="lg"
-                          fullWidth
-                        >
-                          View wine history
-                        </Button>
+
                       </div>)
                     )}
                   </>
