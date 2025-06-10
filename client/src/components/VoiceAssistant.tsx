@@ -748,6 +748,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Try server TTS first with short timeout, fallback to browser TTS
       console.log("Generating unmute TTS audio...");
       let audio: HTMLAudioElement | null = null;
+      let audioUrl: string | null = null;
       let timeoutId: NodeJS.Timeout | null = null;
       
       try {
@@ -769,7 +770,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         if (response.ok) {
           const audioBuffer = await response.arrayBuffer();
           const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-          const audioUrl = URL.createObjectURL(audioBlob);
+          audioUrl = URL.createObjectURL(audioBlob);
           audio = new Audio(audioUrl);
           console.log("Using server TTS audio");
         } else {
@@ -853,7 +854,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         setIsResponding(false);
         setShowUnmuteButton(true);
         setShowAskButton(true);
-        URL.revokeObjectURL(audioUrl);
+        if (audioUrl) {
+          URL.revokeObjectURL(audioUrl);
+        }
         (window as any).currentOpenAIAudio = null;
         console.log("Manual unmute TTS playback completed successfully");
       };
@@ -869,7 +872,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         setIsResponding(false);
         setShowUnmuteButton(true);
         setShowAskButton(true);
-        URL.revokeObjectURL(audioUrl);
+        if (audioUrl) {
+          URL.revokeObjectURL(audioUrl);
+        }
         (window as any).currentOpenAIAudio = null;
 
         toast({
@@ -904,7 +909,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
       audio.onabort = () => {
         console.log("Manual unmute audio playback aborted");
-        URL.revokeObjectURL(audioUrl);
+        if (audioUrl) {
+          URL.revokeObjectURL(audioUrl);
+        }
         (window as any).currentOpenAIAudio = null;
       };
 
