@@ -27,10 +27,18 @@ app.use((req, res, next) => {
   }
 });
 
-// Enable compression for faster responses
-const enableCompression = process.env.ENABLE_COMPRESSION === 'true';
+// Enable aggressive compression for faster responses
+import compression from "compression";
+const enableCompression = process.env.ENABLE_COMPRESSION !== 'false';
 if (enableCompression) {
   console.log('Compression enabled for faster response delivery');
+  app.use(compression({
+    level: 6,
+    threshold: 1024,
+    filter: (req, res) => {
+      return compression.filter(req, res) || res.getHeader('content-type')?.includes('application/json');
+    }
+  }));
 }
 
 app.use(express.json({ 
