@@ -627,7 +627,7 @@ export async function textToSpeech(text: string): Promise<Buffer> {
           speed: 1.0,
           input: cleanText.slice(0, 300), // Limit text length
         }, {
-          timeout: 10000 // 10 second timeout
+          timeout: 20000 // 20 second timeout for fallback
         });
         
         const buffer = Buffer.from(await fallbackResponse.arrayBuffer());
