@@ -368,7 +368,7 @@ export default function WineEdit() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-white">
+    <div className="min-h-screen bg-background text-white mx-auto" style={{ maxWidth: "1200px" }}>
       <AppHeader 
         title={isNewWine ? "Add wine" : "Edit wine"}
         showBackButton={true}
