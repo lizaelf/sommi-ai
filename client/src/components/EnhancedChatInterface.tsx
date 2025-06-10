@@ -1850,8 +1850,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       // Show full conversation with date headers
                       (<>
                         {(() => {
-                          // Group messages by date
-                          const messagesByDate = messages.reduce((groups: any, message: any, index: number) => {
+                          // Filter messages to show only current session (today's messages)
+                          const today = new Date().toDateString();
+                          const currentSessionMessages = messages.filter((message: any) => {
+                            const messageDate = new Date(message.createdAt || Date.now());
+                            return messageDate.toDateString() === today;
+                          });
+                          
+                          // Group current session messages by date
+                          const messagesByDate = currentSessionMessages.reduce((groups: any, message: any, index: number) => {
                             const messageDate = new Date(message.createdAt || Date.now());
                             const dateKey = messageDate.toDateString();
                             
