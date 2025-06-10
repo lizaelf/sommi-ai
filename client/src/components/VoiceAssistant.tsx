@@ -36,6 +36,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const silenceStartTimeRef = useRef<number | null>(null);
   const lastVoiceDetectedRef = useRef<number>(0);
   const consecutiveSilenceCountRef = useRef<number>(0);
+  const recordingStartTimeRef = useRef<number>(0);
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -117,12 +118,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }, 2000);
       }
       
-      // Fallback: If we've had voice activity but haven't detected silence properly
-      // and it's been more than 4 seconds since last voice, force stop
+      // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 2 seconds
       if (lastVoiceDetectedRef.current > 0 && 
-          now - lastVoiceDetectedRef.current > 4000 && 
-          consecutiveSilenceCountRef.current > 160) { // 160 * 25ms = 4 seconds
-        console.log("Fallback silence detection - forcing stop after 4 seconds of low audio");
+          recordingStartTimeRef.current > 0 &&
+          now - recordingStartTimeRef.current > 2000 && // Must be recording for at least 2 seconds
+          now - lastVoiceDetectedRef.current > 5000 && 
+          consecutiveSilenceCountRef.current > 200) { // 200 * 25ms = 5 seconds
+        console.log("Fallback silence detection - forcing stop after 5 seconds of silence");
         stopListening();
       }
     }
@@ -311,6 +313,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         
         console.log(`Audio blob created: ${Math.round(audioBlob.size / 1024)}KB`);
         
+        // Check if audio blob has sufficient data
+        if (audioBlob.size < 1000) { // Less than 1KB indicates no meaningful audio
+          console.warn("Audio blob too small, skipping transcription");
+          setIsThinking(false);
+          if (!isProcessing) {
+            setShowBottomSheet(false);
+          }
+          return;
+        }
+        
         try {
           // Send audio to Whisper transcription endpoint
           const formData = new FormData();
@@ -408,6 +420,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Start recording
       setIsListening(true);
       setShowBottomSheet(true);
+      recordingStartTimeRef.current = Date.now(); // Initialize recording start time
+      lastVoiceDetectedRef.current = 0; // Reset voice detection
+      consecutiveSilenceCountRef.current = 0; // Reset silence counter
       mediaRecorder.start();
       console.log("Audio recording started");
       

@@ -708,7 +708,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       console.log("Making API request with data:", requestBody);
 
       // Check if streaming is enabled for first-token TTS
-      const enableStreaming = process.env.ENABLE_STREAMING === 'true';
+      const enableStreaming = import.meta.env.VITE_ENABLE_STREAMING === 'true';
       
       if (enableStreaming && isStreamingSupported()) {
         console.log("Starting real-time streaming with first-token TTS");
