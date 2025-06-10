@@ -1140,7 +1140,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
   };
 
-  const handleAsk = () => {
+  const handleAsk = async () => {
     console.log("Ask button clicked - starting new voice recording");
     
     // Stop any existing audio playback
@@ -1156,14 +1156,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentAutoplayAudio = null;
     }
     
+    // Clean up any existing streams to ensure fresh microphone access
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    
+    // Reset global stream to force fresh access
+    (window as any).currentMicrophoneStream = null;
+    
     // Reset UI state and start listening without closing bottom sheet
     setShowUnmuteButton(false);
     setShowAskButton(false);
     setIsResponding(false);
     setIsThinking(false);
     
+    // Keep bottom sheet open explicitly
+    setShowBottomSheet(true);
+    
     // Start listening directly - this will keep the bottom sheet open
-    startListening();
+    await startListening();
   };
 
   return (
