@@ -27,38 +27,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Add global promise rejection handler and enhanced debugging
+  // Add global promise rejection handler for production stability
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.log("🔧 DEBUG: Caught unhandled rejection:", {
-        reason: event.reason,
-        type: typeof event.reason,
-        stack: event.reason?.stack,
-        name: event.reason?.name,
-        message: event.reason?.message
-      });
+      console.log("Caught unhandled rejection:", event.reason);
       event.preventDefault(); // Prevent console error
     };
 
-    const handleError = (event: ErrorEvent) => {
-      console.log("🔧 DEBUG: Caught global error:", {
-        message: event.message,
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno,
-        error: event.error
-      });
-    };
-
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    window.addEventListener('error', handleError);
-    
-    console.log("🔧 DEBUG: Voice Assistant component mounted, error handlers attached");
     
     return () => {
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-      window.removeEventListener('error', handleError);
-      console.log("🔧 DEBUG: Voice Assistant component unmounted, error handlers removed");
     };
   }, []);
   
@@ -82,13 +61,36 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     try {
       // Create audio context for voice activity detection
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Resume audio context if suspended (required for some browsers)
+      if (audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume().then(() => {
+          console.log("🎧 DEBUG: Audio context resumed");
+        });
+      }
+      
       const source = audioContextRef.current.createMediaStreamSource(stream);
       analyserRef.current = audioContextRef.current.createAnalyser();
       
-      // Configure analyser for voice detection
-      analyserRef.current.fftSize = 256;
-      analyserRef.current.smoothingTimeConstant = 0.8;
+      // Configure analyser for voice detection with more sensitive settings
+      analyserRef.current.fftSize = 512; // Increased for better frequency resolution
+      analyserRef.current.smoothingTimeConstant = 0.3; // Reduced for more responsive detection
+      analyserRef.current.minDecibels = -90;
+      analyserRef.current.maxDecibels = -10;
+      
       source.connect(analyserRef.current);
+      
+      // Debug the audio stream
+      console.log("🎧 DEBUG: Stream tracks:", stream.getTracks().map(track => ({
+        kind: track.kind,
+        enabled: track.enabled,
+        muted: track.muted,
+        readyState: track.readyState,
+        label: track.label
+      })));
+      
+      console.log("🎧 DEBUG: Audio context state:", audioContextRef.current.state);
+      console.log("🎧 DEBUG: Sample rate:", audioContextRef.current.sampleRate);
       
       // Start monitoring voice activity with high frequency for immediate response
       voiceDetectionIntervalRef.current = setInterval(() => {
@@ -108,8 +110,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const dataArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    // Calculate average volume for voice detection
-    const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+    // Calculate multiple audio metrics for debugging
+    const dataArrayValues = Array.from(dataArray);
+    const average = dataArrayValues.reduce((a, b) => a + b) / bufferLength;
+    const max = Math.max(...dataArrayValues);
+    const min = Math.min(...dataArrayValues);
+    const nonZeroValues = dataArrayValues.filter(val => val > 0).length;
+    
+    // Try time domain data as well
+    const timeDomainArray = new Uint8Array(bufferLength);
+    analyserRef.current.getByteTimeDomainData(timeDomainArray);
+    const timeDomainValues = Array.from(timeDomainArray);
+    const timeAverage = timeDomainValues.reduce((a, b) => a + b) / bufferLength;
+    const timeMax = Math.max(...timeDomainValues);
+    
     const voiceThreshold = 30; // Threshold for voice activity
     const silenceThreshold = 20; // Lower threshold for silence detection
     
@@ -120,9 +134,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const now = Date.now();
     const recordingDuration = now - recordingStartTimeRef.current;
     
-    // Debug logging every 500ms
+    // Enhanced debug logging every 500ms
     if (consecutiveSilenceCountRef.current % 20 === 0) {
-      console.log(`🔊 VOICE DEBUG: Level=${average.toFixed(1)}, Threshold=${currentThreshold}, Active=${isCurrentlyActive}, Duration=${recordingDuration}ms, VoiceState=${isVoiceActive}`);
+      console.log(`🔊 VOICE DEBUG: FreqAvg=${average.toFixed(1)}, FreqMax=${max}, NonZero=${nonZeroValues}, TimeAvg=${timeAverage.toFixed(1)}, TimeMax=${timeMax}, Threshold=${currentThreshold}, Active=${isCurrentlyActive}, Duration=${recordingDuration}ms`);
+      
+      // Additional debugging for persistent zero levels
+      if (average === 0 && max === 0 && timeAverage === 128) {
+        console.log(`🎧 AUDIO DEBUG: No audio input detected - checking stream and context state`);
+        console.log(`🎧 AUDIO DEBUG: Audio context state: ${audioContextRef.current?.state}`);
+        console.log(`🎧 AUDIO DEBUG: Analyser connected: ${analyserRef.current ? 'YES' : 'NO'}`);
+        if (streamRef.current) {
+          const tracks = streamRef.current.getTracks();
+          console.log(`🎧 AUDIO DEBUG: Stream tracks: ${tracks.length}, Active tracks: ${tracks.filter(t => t.readyState === 'live' && t.enabled).length}`);
+        }
+      }
     }
     
     if (isCurrentlyActive) {
@@ -708,7 +733,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleUnmute = async () => {
-    console.log("🔧 DEBUG: Unmute button clicked - starting TTS playback");
+    console.log("Unmute button clicked - starting TTS playback");
     
     // Wrap entire function in try-catch to prevent unhandled rejections
     try {
@@ -790,27 +815,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       let timeoutId: NodeJS.Timeout | null = null;
       
       try {
-        console.log("🔧 DEBUG: Starting TTS fetch with timeout handling");
-        
         // Create a safer Promise wrapper that prevents unhandled rejections
         const safeTimeout = (ms: number) => {
           return new Promise<never>((_, reject) => {
             timeoutId = setTimeout(() => {
-              console.log("🔧 DEBUG: TTS request timeout reached");
+              console.log("TTS request timeout reached");
               reject(new Error('TTS_TIMEOUT'));
             }, ms);
           });
         };
 
         const safeFetch = async () => {
-          console.log("🔧 DEBUG: Initiating TTS fetch request");
           const response = await fetch("/api/text-to-speech", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: lastAssistantMessage }),
           });
-          
-          console.log("🔧 DEBUG: TTS fetch completed, status:", response.status);
           
           if (timeoutId) {
             clearTimeout(timeoutId);
@@ -823,20 +843,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         // Race between fetch and timeout with comprehensive error handling
         let response;
         try {
-          console.log("🔧 DEBUG: Starting Promise.race for TTS");
           response = await Promise.race([
             safeFetch().catch(err => {
-              console.log("🔧 DEBUG: safeFetch rejected:", err);
               throw err;
             }),
             safeTimeout(8000).catch(err => {
-              console.log("🔧 DEBUG: safeTimeout rejected:", err);
               throw err;
             })
           ]);
-          console.log("🔧 DEBUG: Promise.race resolved successfully");
         } catch (raceError) {
-          console.log("🔧 DEBUG: Promise.race failed:", raceError);
           if (timeoutId) {
             clearTimeout(timeoutId);
             timeoutId = null;
@@ -854,12 +869,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           throw new Error(`TTS API error: ${response.status}`);
         }
       } catch (serverError) {
-        console.log("🔧 DEBUG: Server TTS failed, using browser speech synthesis");
-        console.log("🔧 DEBUG: Server error details:", {
+        console.log("Server TTS failed, using browser speech synthesis");
+        console.log("Server error details:", {
           name: serverError instanceof Error ? serverError.name : 'Unknown',
-          message: serverError instanceof Error ? serverError.message : String(serverError),
-          stack: serverError instanceof Error ? serverError.stack : 'No stack',
-          type: typeof serverError
+          message: serverError instanceof Error ? serverError.message : String(serverError)
         });
         
         // Clear the timeout to prevent unhandled rejection
