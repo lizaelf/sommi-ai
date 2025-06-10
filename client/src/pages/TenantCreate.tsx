@@ -32,15 +32,7 @@ export default function TenantCreate() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Auto-generate slug from name
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
-  };
+
 
   const handleInputChange = (field: keyof TenantFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));

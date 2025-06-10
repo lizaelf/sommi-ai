@@ -62,17 +62,7 @@ export function AppHeader({
             )}
           </div>
           
-          {/* Right side - Custom content */}
-          <div className="flex items-center gap-3">
-            {rightContent || (
-              <>
-                <div className="cursor-pointer text-white/80 hover:text-white transition-all duration-200">
-                  <Search className="w-6 h-6" />
-                </div>
-                <ProfileIcon />
-              </>
-            )}
-          </div>
+
         </div>
       </div>
     </div>
