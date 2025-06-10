@@ -753,7 +753,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 </div>
               )}
 
-              {currentConversationId && messages.length > 0 && (
+              {currentConversation && messages.length > 0 && (
                 <>
                   <div style={{ width: "100%", padding: "0 20px", marginBottom: "40px" }}>
                     {messages.map((message, index) => (
