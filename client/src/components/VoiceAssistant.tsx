@@ -34,6 +34,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const voiceDetectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const silenceStartTimeRef = useRef<number | null>(null);
+  const lastVoiceDetectedRef = useRef<number>(0);
+  const consecutiveSilenceCountRef = useRef<number>(0);
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -70,32 +72,40 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const dataArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    // Calculate RMS (root mean square) for better voice detection
-    const sum = dataArray.reduce((acc, val) => acc + val * val, 0);
-    const rms = Math.sqrt(sum / bufferLength);
-    const threshold = 15; // More sensitive threshold for silence detection
+    // Calculate average volume for voice detection
+    const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+    const voiceThreshold = 35; // Higher threshold for voice activity
+    const silenceThreshold = 20; // Lower threshold for silence detection
     
-    const isCurrentlyActive = rms > threshold;
+    // Use hysteresis to prevent flapping between voice/silence
+    const currentThreshold = isVoiceActive ? silenceThreshold : voiceThreshold;
+    const isCurrentlyActive = average > currentThreshold;
     
-    // Always log activity for debugging
-    if (isCurrentlyActive && !isVoiceActive) {
-      console.log(`Voice detected - RMS: ${rms.toFixed(2)}, threshold: ${threshold}`);
-    } else if (!isCurrentlyActive && isVoiceActive) {
-      console.log(`Silence detected - RMS: ${rms.toFixed(2)}, threshold: ${threshold}`);
-    }
+    const now = Date.now();
     
-    if (isCurrentlyActive !== isVoiceActive) {
-      setIsVoiceActive(isCurrentlyActive);
+    if (isCurrentlyActive) {
+      lastVoiceDetectedRef.current = now;
+      consecutiveSilenceCountRef.current = 0;
       
-      if (isCurrentlyActive) {
-        // Voice detected - clear any existing silence timer immediately
+      if (!isVoiceActive) {
+        console.log(`Voice detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
+        setIsVoiceActive(true);
+        
+        // Clear any existing silence timer
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
           silenceTimerRef.current = null;
           console.log("Silence timer cleared - voice detected");
         }
-      } else {
-        // Voice stopped - start 2-second timer
+      }
+    } else {
+      consecutiveSilenceCountRef.current++;
+      
+      if (isVoiceActive) {
+        console.log(`Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
+        setIsVoiceActive(false);
+        
+        // Start 2-second silence timer
         console.log("Starting 2-second silence countdown");
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
@@ -105,6 +115,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           console.log("2 seconds of silence completed - stopping recording now");
           stopListening();
         }, 2000);
+      }
+      
+      // Fallback: If we've had voice activity but haven't detected silence properly
+      // and it's been more than 3 seconds since last voice, force stop
+      if (lastVoiceDetectedRef.current > 0 && 
+          now - lastVoiceDetectedRef.current > 3000 && 
+          consecutiveSilenceCountRef.current > 120) { // 120 * 25ms = 3 seconds
+        console.log("Fallback silence detection - forcing stop after 3 seconds of low audio");
+        stopListening();
       }
     }
   };
