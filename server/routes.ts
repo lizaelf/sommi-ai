@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech, generateConversationSummary } from "./openai";
+import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech, generateConversationSummary, ParallelTTSProcessor } from "./openai";
 import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
 import { z } from "zod";
 import { google } from "googleapis";
@@ -496,6 +496,10 @@ Format: Return only the description text, no quotes or additional formatting.`;
       const requestStreaming = req.headers['accept'] === 'text/event-stream';
       
       if (enableStreaming && requestStreaming) {
+        // LATENCY MEASUREMENT: Start timing the entire response pipeline
+        const pipelineStartTime = performance.now();
+        console.log("🚀 Starting streaming response pipeline with latency measurement");
+        
         // Set up Server-Sent Events for real-time streaming
         res.writeHead(200, {
           'Content-Type': 'text/event-stream',
@@ -506,33 +510,66 @@ Format: Return only the description text, no quotes or additional formatting.`;
         });
         
         try {
+          // LATENCY MEASUREMENT: OpenAI API call start
+          const apiCallStart = performance.now();
+          console.log("📡 Starting OpenAI API call");
+          
           // Start streaming response from OpenAI
           const stream = await chatCompletionStream(allMessages, wineData);
           let fullContent = '';
           let firstTokenReceived = false;
+          let ttsProcessor = new ParallelTTSProcessor();
+          let tokenCount = 0;
+          
+          const apiCallEnd = performance.now();
+          const apiLatency = apiCallEnd - apiCallStart;
+          console.log(`⚡ OpenAI API responded in: ${apiLatency.toFixed(2)}ms`);
           
           for await (const chunk of stream) {
             const delta = chunk.choices?.[0]?.delta?.content;
             if (delta) {
+              tokenCount++;
               fullContent += delta;
               
-              // Send first token immediately for TTS to start
+              // LATENCY MEASUREMENT: First token received
               if (!firstTokenReceived) {
                 firstTokenReceived = true;
+                const firstTokenLatency = performance.now() - pipelineStartTime;
+                console.log(`🎯 FIRST TOKEN RECEIVED: ${firstTokenLatency.toFixed(2)}ms total latency`);
+                
+                // Start progressive TTS immediately with first token
+                console.log("🔊 Starting progressive TTS with first token");
+                await ttsProcessor.processTokens(delta);
+                
                 res.write(`data: ${JSON.stringify({ 
                   type: 'first_token', 
                   content: delta,
-                  start_tts: true 
+                  start_tts: true,
+                  latency: firstTokenLatency
                 })}\n\n`);
+              } else {
+                // Continue progressive TTS processing
+                await ttsProcessor.processTokens(delta);
               }
               
               // Stream each token for real-time display
               res.write(`data: ${JSON.stringify({ 
                 type: 'token', 
-                content: delta 
+                content: delta,
+                token_number: tokenCount
               })}\n\n`);
             }
           }
+          
+          // LATENCY MEASUREMENT: Complete response received
+          const completeResponseLatency = performance.now() - pipelineStartTime;
+          console.log(`✅ Complete response received: ${completeResponseLatency.toFixed(2)}ms, ${tokenCount} tokens`);
+          
+          // Get all processed TTS audio buffers
+          const audioBuffers = await ttsProcessor.getAllProcessedAudio();
+          console.log(`🎵 TTS processing complete: ${audioBuffers.length} audio chunks,`, {
+            total_size: audioBuffers.reduce((sum: number, buf: Buffer) => sum + buf.length, 0)
+          });
           
           // Save messages to storage
           if (actualConversationId) {
