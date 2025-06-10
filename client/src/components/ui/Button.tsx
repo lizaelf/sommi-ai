@@ -102,7 +102,7 @@ const Button: React.FC<ButtonProps> = ({
       if (variant === "default") {
         e.currentTarget.style.transform = "scale(1)";
       } else if (variant === "secondary") {
-        e.currentTarget.style.backgroundColor = "#191919";
+        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
       } else if (variant === "danger") {
         e.currentTarget.style.backgroundColor = "#5D1D1E";
       }
