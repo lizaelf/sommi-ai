@@ -33,6 +33,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const voiceDetectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const silenceStartTimeRef = useRef<number | null>(null);
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -51,10 +52,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       analyserRef.current.smoothingTimeConstant = 0.8;
       source.connect(analyserRef.current);
       
-      // Start monitoring voice activity
+      // Start monitoring voice activity with faster polling for better precision
       voiceDetectionIntervalRef.current = setInterval(() => {
         checkVoiceActivity();
-      }, 100); // Check every 100ms
+      }, 50); // Check every 50ms for more precise detection
       
       console.log("Voice activity detection started");
     } catch (error) {
@@ -69,9 +70,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const dataArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    // Calculate average volume
+    // Calculate average volume with better sensitivity
     const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-    const threshold = 30; // Voice activity threshold
+    const threshold = 25; // Lowered threshold for better voice detection
     
     const isCurrentlyActive = average > threshold;
     
@@ -79,19 +80,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setIsVoiceActive(isCurrentlyActive);
       
       if (isCurrentlyActive) {
-        // Voice detected - clear any existing silence timer
+        // Voice detected - clear any existing silence timer immediately
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
           silenceTimerRef.current = null;
         }
         console.log("Voice activity detected");
       } else {
-        // Voice stopped - start 2-second timer
-        console.log("Voice activity stopped, starting 2-second timer");
+        // Voice stopped - start precise 2-second timer with timestamp tracking
+        const now = Date.now();
+        silenceStartTimeRef.current = now;
+        console.log("Voice activity stopped at", now, "- starting 2-second timer");
+        
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+        }
+        
         silenceTimerRef.current = setTimeout(() => {
-          console.log("2 seconds of silence detected, sending question");
-          stopListening();
-        }, 2000);
+          const elapsed = Date.now() - (silenceStartTimeRef.current || 0);
+          console.log(`Silence timer fired after ${elapsed}ms - stopping recording`);
+          if (elapsed >= 1900) { // Allow small timing variance
+            stopListening();
+          }
+        }, 2000); // Exactly 2 seconds
       }
     }
   };
@@ -464,18 +475,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const stopListening = () => {
+    // Immediately stop voice detection to prevent any further timers
+    stopVoiceDetection();
+    
+    // Stop media recorder
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.stop();
     }
+    
+    // Stop media stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
     
-    // Stop voice detection
-    stopVoiceDetection();
-    
     setIsListening(false);
+    console.log("Audio recording stopped immediately");
   };
 
   const toggleListening = () => {
