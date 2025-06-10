@@ -156,16 +156,16 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       // Emergency fallbacks disabled to allow full detailed responses
       // (Removed emergency fallback system to enable proper 200-token responses)
       
-      // Check response cache
-      const cached = responseCache.get(cacheKey);
-      if (cached && (Date.now() - cached.timestamp) < cacheTTL) {
-        console.log('Using cached response for faster TTFB');
-        cached.accessCount++;
-        return {
-          content: cached.content,
-          usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-        };
-      }
+      // Response cache temporarily disabled to ensure fresh 200-token responses
+      // const cached = responseCache.get(cacheKey);
+      // if (cached && (Date.now() - cached.timestamp) < cacheTTL) {
+      //   console.log('Using cached response for faster TTFB');
+      //   cached.accessCount++;
+      //   return {
+      //     content: cached.content,
+      //     usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+      //   };
+      // }
       
       // Request deduplication - prevent duplicate API calls for identical requests
       if (pendingRequests.has(cacheKey)) {
@@ -259,29 +259,8 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       }
     }
 
-    // Cache the response for faster future requests
-    if (enableResponseCache && finalResponse.choices[0]?.message?.content) {
-      const userMessage = messages[messages.length - 1]?.content || '';
-      const wineId = wineData?.id || 'none';
-      const cacheKey = `${userMessage.toLowerCase()}_${wineId}_${responseTemplate}_${maxTokens}`;
-      
-      // Manage cache size with LRU eviction
-      if (responseCache.size >= MAX_RESPONSE_CACHE_SIZE) {
-        const sortedEntries = Array.from(responseCache.entries())
-          .sort(([,a], [,b]) => a.accessCount - b.accessCount);
-        for (let i = 0; i < 10; i++) { // Remove 10 items at once
-          const keyToDelete = sortedEntries[i]?.[0];
-          if (keyToDelete) responseCache.delete(keyToDelete);
-        }
-      }
-      
-      responseCache.set(cacheKey, {
-        content: finalResponse.choices[0].message.content,
-        timestamp: Date.now(),
-        accessCount: 1
-      });
-      console.log('Response cached for future requests');
-    }
+    // Response caching disabled to ensure fresh 200-token responses
+    console.log('Response caching disabled - generating fresh responses with 200-token limit');
 
     // Reset failure count on successful API call
     if (finalResponse.choices[0]?.message?.content) {
