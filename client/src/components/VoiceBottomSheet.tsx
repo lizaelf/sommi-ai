@@ -201,15 +201,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 alignItems: 'center',
                 gap: '8px'
               }}>
-                <style>
-                  {`
-                    @keyframes pulseDot {
-                      0% { opacity: 0.4; }
-                      50% { opacity: 1; }
-                      100% { opacity: 0.4; }
-                    }
-                  `}
-                </style>
                 Listening...
               </div>
             </div>
