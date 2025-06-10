@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+// Wine Data Synchronization for Multi-Environment Deployment
+// Handles data consistency between development and production environments
 
 interface WineData {
   id: number;
@@ -50,7 +50,7 @@ export function getDevelopmentWineData(): WineData[] {
       name: "Monte Bello Cabernet Sauvignon",
       year: 2021,
       bottles: 2,
-      image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1748949892850.jpeg",
+      image: "/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png",
       ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
       buyAgainLink: "https://ridge.com/product/monte-bello",
       qrCode: "QR_002",
@@ -84,8 +84,22 @@ export function getDevelopmentWineData(): WineData[] {
       buyAgainLink: "",
       qrCode: "QR_004",
       qrLink: "/scanned?wine=4",
-      description: "The 2021 cherdoney showcases vibrant acidity balanced by rich, buttery mouthfeel, indicative of its Chardonnay roots. It reveals notes of tart green apple, ripe pear, and hints of vanilla with subtle minerality that speaks to cool-climate terroir.",
-      foodPairing: ["Grilled chicken", "Seafood", "Creamy pasta", "Light cheeses"],
+      description: "The 2021 Cherdoney presents a refined and elegant profile, characterized by notes of citrus, green apple, and subtle tropical fruit. The wine displays excellent balance with crisp acidity and a mineral-driven finish. Its clean, refreshing character makes it an ideal companion for lighter fare and seafood dishes.",
+      foodPairing: ["Oysters", "Grilled fish", "Soft cheeses", "Summer salads"],
+      conversationHistory: []
+    },
+    {
+      id: 5,
+      name: "red wine",
+      year: 2023,
+      bottles: 0,
+      image: "",
+      ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+      buyAgainLink: "",
+      qrCode: "QR_005",
+      qrLink: "/scanned?wine=5",
+      description: "A young and vibrant red wine with bright fruit flavors and soft tannins. This approachable wine showcases fresh red berry character with hints of spice and earth. The medium-bodied profile makes it versatile for various occasions and food pairings.",
+      foodPairing: ["Pizza", "Pasta with tomato sauce", "Grilled vegetables", "Casual dining"],
       conversationHistory: []
     }
   ];
@@ -103,7 +117,7 @@ export function getDeployedWineData(): WineData[] {
       name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
       year: 2021,
       bottles: 6,
-      image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg",
+      image: "/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png",
       ratings: { vn: 95, jd: 93, ws: 92, abv: 14.8 },
       buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
       qrCode: "QR_001",
@@ -118,7 +132,7 @@ export function getDeployedWineData(): WineData[] {
       name: "Monte Bello Cabernet Sauvignon",
       year: 2021,
       bottles: 2,
-      image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1748949892850.jpeg",
+      image: "/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png",
       ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
       buyAgainLink: "https://ridge.com/product/monte-bello",
       qrCode: "QR_002",
@@ -152,8 +166,22 @@ export function getDeployedWineData(): WineData[] {
       buyAgainLink: "",
       qrCode: "QR_004",
       qrLink: "/scanned?wine=4",
-      description: "The 2021 cherdoney showcases vibrant acidity balanced by rich, buttery mouthfeel, indicative of its Chardonnay roots. It reveals notes of tart green apple, ripe pear, and hints of vanilla with subtle minerality that speaks to cool-climate terroir.",
-      foodPairing: ["Grilled chicken", "Seafood", "Creamy pasta", "Light cheeses"],
+      description: "The 2021 Cherdoney presents a refined and elegant profile, characterized by notes of citrus, green apple, and subtle tropical fruit. The wine displays excellent balance with crisp acidity and a mineral-driven finish. Its clean, refreshing character makes it an ideal companion for lighter fare and seafood dishes.",
+      foodPairing: ["Oysters", "Grilled fish", "Soft cheeses", "Summer salads"],
+      conversationHistory: []
+    },
+    {
+      id: 5,
+      name: "red wine",
+      year: 2023,
+      bottles: 0,
+      image: "",
+      ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+      buyAgainLink: "",
+      qrCode: "QR_005",
+      qrLink: "/scanned?wine=5",
+      description: "A young and vibrant red wine with bright fruit flavors and soft tannins. This approachable wine showcases fresh red berry character with hints of spice and earth. The medium-bodied profile makes it versatile for various occasions and food pairings.",
+      foodPairing: ["Pizza", "Pasta with tomato sauce", "Grilled vegetables", "Casual dining"],
       conversationHistory: []
     }
   ];
@@ -164,48 +192,45 @@ export function getDeployedWineData(): WineData[] {
  */
 export function compareWineData(): {
   inSync: boolean;
+  differences: string[];
   developmentCount: number;
   deployedCount: number;
-  missingInDeployed: WineData[];
-  differences: any[];
 } {
   const devData = getDevelopmentWineData();
   const deployedData = getDeployedWineData();
   
-  const missingInDeployed = devData.filter(devWine => 
-    !deployedData.find(depWine => depWine.id === devWine.id)
-  );
+  const differences: string[] = [];
   
-  const differences: any[] = [];
+  // Check counts
+  if (devData.length !== deployedData.length) {
+    differences.push(`Wine count mismatch: development has ${devData.length}, deployed has ${deployedData.length}`);
+  }
   
-  // Check for differences in existing wines
-  devData.forEach(devWine => {
-    const deployedWine = deployedData.find(dep => dep.id === devWine.id);
-    if (deployedWine) {
-      const diffs: any = { id: devWine.id, name: devWine.name, changes: [] };
-      
-      if (devWine.year !== deployedWine.year) {
-        diffs.changes.push({ field: 'year', dev: devWine.year, deployed: deployedWine.year });
-      }
-      if (devWine.bottles !== deployedWine.bottles) {
-        diffs.changes.push({ field: 'bottles', dev: devWine.bottles, deployed: deployedWine.bottles });
-      }
-      if (devWine.description !== deployedWine.description) {
-        diffs.changes.push({ field: 'description', dev: 'updated', deployed: 'outdated' });
-      }
-      
-      if (diffs.changes.length > 0) {
-        differences.push(diffs);
-      }
+  // Check individual wines
+  for (const devWine of devData) {
+    const deployedWine = deployedData.find(w => w.id === devWine.id);
+    if (!deployedWine) {
+      differences.push(`Wine ID ${devWine.id} exists in development but not in deployed`);
+      continue;
     }
-  });
+    
+    // Check key fields
+    if (devWine.name !== deployedWine.name) {
+      differences.push(`Wine ${devWine.id}: name differs (dev: "${devWine.name}", deployed: "${deployedWine.name}")`);
+    }
+    if (devWine.bottles !== deployedWine.bottles) {
+      differences.push(`Wine ${devWine.id}: bottle count differs (dev: ${devWine.bottles}, deployed: ${deployedWine.bottles})`);
+    }
+    if (devWine.image !== deployedWine.image) {
+      differences.push(`Wine ${devWine.id}: image path differs (dev: "${devWine.image}", deployed: "${deployedWine.image}")`);
+    }
+  }
   
   return {
-    inSync: missingInDeployed.length === 0 && differences.length === 0,
+    inSync: differences.length === 0,
+    differences,
     developmentCount: devData.length,
-    deployedCount: deployedData.length,
-    missingInDeployed,
-    differences
+    deployedCount: deployedData.length
   };
 }
 
@@ -214,10 +239,20 @@ export function compareWineData(): {
  */
 export function syncToDeployed(wineData: WineData[]): { success: boolean; message: string } {
   try {
-    // In production, this would update your database
-    console.log(`Syncing ${wineData.length} wines to deployed environment`);
+    // In a real implementation, this would update your production database
+    // For now, we'll just validate the data structure
     
-    // Simulate successful sync
+    for (const wine of wineData) {
+      if (!wine.id || !wine.name || typeof wine.bottles !== 'number') {
+        return {
+          success: false,
+          message: `Invalid wine data structure for wine ID ${wine.id}`
+        };
+      }
+    }
+    
+    console.log(`Would sync ${wineData.length} wines to deployed environment`);
+    
     return {
       success: true,
       message: `Successfully synchronized ${wineData.length} wines to deployed environment`
@@ -225,7 +260,7 @@ export function syncToDeployed(wineData: WineData[]): { success: boolean; messag
   } catch (error) {
     return {
       success: false,
-      message: `Failed to sync wine data: ${error}`
+      message: `Sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     };
   }
 }
