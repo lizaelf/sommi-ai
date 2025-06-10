@@ -64,6 +64,7 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
     frameCount.current += 1;
     
     let scale = 1.0; // Default size
+    let hasAudioActivity = false;
     
     // Try to get real audio data
     if (analyser && dataArray) {
@@ -75,34 +76,53 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
         const average = sum / dataArray.length;
         let volume = Math.min(average / 128, 1.0); // Normalize 0-1
         
-        // Apply multiple smoothing layers for ultra-smooth animation
-        volume = Math.pow(volume, 0.3); // Enhance sensitivity
+        // Check if there's actual audio activity (above silence threshold)
+        hasAudioActivity = volume > 0.05; // Only animate if volume is above 5%
         
-        // Convert to scale: 1.0 (silence) to 3.0 (loud) - extremely dramatic 200% size increase
-        const targetScale = 1.0 + (volume * 2.0);
-        
-        // Ultra-smooth interpolation with momentum-based smoothing
-        const lerpFactor = 0.08; // Much slower, smoother transitions
-        scale = scale + (targetScale - scale) * lerpFactor;
-        
-        // Only log occasionally to reduce console spam
-        if (frameCount.current % 30 === 0) {
-          console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
+        if (hasAudioActivity) {
+          // Apply multiple smoothing layers for ultra-smooth animation
+          volume = Math.pow(volume, 0.3); // Enhance sensitivity
+          
+          // Convert to scale: 1.0 (silence) to 3.0 (loud) - extremely dramatic 200% size increase
+          const targetScale = 1.0 + (volume * 2.0);
+          
+          // Ultra-smooth interpolation with momentum-based smoothing
+          const lerpFactor = 0.08; // Much slower, smoother transitions
+          scale = scale + (targetScale - scale) * lerpFactor;
+          
+          // Only log occasionally to reduce console spam
+          if (frameCount.current % 30 === 0) {
+            console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
+          }
+        } else {
+          // No audio activity - use base scale
+          scale = 1.0;
         }
       } catch (error) {
-        // If audio fails, use gentle pulse
-        const time = Date.now() * 0.003;
-        scale = 1.0 + Math.sin(time) * 0.1;
+        // If audio fails and we're processing, use gentle pulse
+        if (isProcessing) {
+          const time = Date.now() * 0.003;
+          scale = 1.0 + Math.sin(time) * 0.1;
+          hasAudioActivity = true;
+        } else {
+          scale = 1.0;
+          hasAudioActivity = false;
+        }
       }
-    } else {
-      // Fallback pulse animation
+    } else if (isProcessing) {
+      // Fallback pulse animation only during processing
       const time = Date.now() * 0.003;
       scale = 1.0 + Math.sin(time) * 0.1;
+      hasAudioActivity = true;
+    } else {
+      // No audio source and not processing - static
+      scale = 1.0;
+      hasAudioActivity = false;
     }
     
     const newSize = baseSize * scale;
     setSize(newSize);
-    setOpacity(0.8);
+    setOpacity(hasAudioActivity ? 0.8 : 0.6);
     
     // Continue animation if in any active state
     if (isListening || isProcessing || isPlaying || showTestAnimation) {
