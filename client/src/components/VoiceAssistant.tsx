@@ -75,8 +75,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     
     // Calculate average volume for voice detection
     const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-    const voiceThreshold = 60; // Much higher threshold for voice activity
-    const silenceThreshold = 45; // Higher threshold for silence detection (ambient noise level)
+    const voiceThreshold = 30; // Threshold for voice activity
+    const silenceThreshold = 20; // Lower threshold for silence detection
     
     // Use hysteresis to prevent flapping between voice/silence
     const currentThreshold = isVoiceActive ? silenceThreshold : voiceThreshold;
@@ -109,7 +109,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         // Only start silence timer if we've been recording for at least 1 second
         const recordingDuration = now - recordingStartTimeRef.current;
         if (recordingDuration > 1000) {
-          console.log("Starting 1.5-second silence countdown");
+          console.log(`Starting 1.5-second silence countdown (recorded for ${recordingDuration}ms)`);
           if (silenceTimerRef.current) {
             clearTimeout(silenceTimerRef.current);
           }
@@ -120,6 +120,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }, 1500);
         } else {
           console.log(`Recording too short (${recordingDuration}ms) - not starting silence timer yet`);
+        }
+      } else {
+        // Log ongoing silence detection
+        if (consecutiveSilenceCountRef.current % 40 === 0) { // Every 1 second
+          const recordingDuration = now - recordingStartTimeRef.current;
+          console.log(`Ongoing silence - Level: ${average.toFixed(2)}, Duration: ${recordingDuration}ms, Silence count: ${consecutiveSilenceCountRef.current}`);
         }
       }
       
