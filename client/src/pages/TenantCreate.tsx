@@ -201,42 +201,17 @@ export default function TenantCreate() {
             />
           </div>
 
-          {/* Status */}
-          <div>
-            <label 
-              className="block text-sm font-medium mb-2"
-              style={{ color: "white" }}
-            >
-              Status
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) => handleInputChange('status', e.target.value as 'active' | 'inactive')}
-              className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-white/30"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
-            >
-              <option value="active" style={{ backgroundColor: '#3a3a3a', color: 'white' }}>Active</option>
-              <option value="inactive" style={{ backgroundColor: '#3a3a3a', color: 'white' }}>Inactive</option>
-            </select>
-          </div>
+
         </div>
       </div>
-      {/* Bottom Action Buttons */}
+      {/* Bottom Action Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
-        <div className="flex gap-3">
-          <button
-            onClick={handleCancel}
-            className="flex-1 flex items-center justify-center px-4 py-3 border border-white/20 rounded-lg text-white hover:bg-white/5 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="flex-1 flex items-center justify-center px-4 py-3 bg-white text-black rounded-lg hover:bg-white/90 transition-colors font-medium"
-          >
-            Create Tenant
-          </button>
-        </div>
+        <button
+          onClick={handleSave}
+          className="w-full flex items-center justify-center px-6 py-4 bg-[#6A53E7] text-white rounded-lg hover:bg-[#5a43d7] transition-colors font-medium text-lg"
+        >
+          Create
+        </button>
       </div>
     </div>
   );
