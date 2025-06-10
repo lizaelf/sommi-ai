@@ -919,16 +919,49 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log("Browser TTS: Full text length:", lastAssistantMessage.length);
         console.log("Browser TTS: Text content:", lastAssistantMessage);
         
-        // Select a good voice if available
+        // Select the same consistent male voice
         const selectVoice = () => {
           const voices = speechSynthesis.getVoices();
-          const preferredVoice = voices.find(voice => 
-            voice.name.includes('Google') && voice.lang.startsWith('en')
-          ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+          
+          // Priority 1: Use the globally selected voice if available
+          if (window.selectedVoice && voices.includes(window.selectedVoice)) {
+            utterance.voice = window.selectedVoice;
+            console.log("Using consistent global voice:", window.selectedVoice.name);
+            return;
+          }
+          
+          // Priority 2: Google UK English Male for consistency
+          let preferredVoice = voices.find(voice => 
+            voice.name.includes('Google UK English Male'));
+          
+          // Priority 3: Other Google male voices
+          if (!preferredVoice) {
+            preferredVoice = voices.find(voice => 
+              voice.name.includes('Google') && voice.name.includes('Male'));
+          }
+          
+          // Priority 4: Any male voice
+          if (!preferredVoice) {
+            preferredVoice = voices.find(voice => 
+              voice.name.includes('Male'));
+          }
+          
+          // Priority 5: Named male voices
+          if (!preferredVoice) {
+            preferredVoice = voices.find(voice => 
+              voice.name.includes('David') || voice.name.includes('James') || 
+              voice.name.includes('Thomas') || voice.name.includes('Daniel'));
+          }
+          
+          // Fallback
+          if (!preferredVoice) {
+            preferredVoice = voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+          }
           
           if (preferredVoice) {
             utterance.voice = preferredVoice;
-            console.log("Selected voice:", preferredVoice.name);
+            window.selectedVoice = preferredVoice; // Store for consistency
+            console.log("Selected consistent male voice:", preferredVoice.name);
           }
         };
         
