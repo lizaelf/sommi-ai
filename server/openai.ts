@@ -642,12 +642,14 @@ export async function textToSpeech(text: string): Promise<Buffer> {
       speed: VoiceConfig.SPEED
     });
     
-    // Use OpenAI's Text-to-Speech API with FIXED consistent voice settings
+    // Use OpenAI's Text-to-Speech API with FIXED consistent voice settings and timeout
     const response = await openai.audio.speech.create({
       model: VoiceConfig.MODEL,
       voice: VoiceConfig.VOICE,
       speed: VoiceConfig.SPEED,
       input: cleanText,
+    }, {
+      timeout: 15000 // 15 second timeout
     });
     
     console.log("OpenAI TTS response received");
@@ -671,6 +673,28 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     return buffer;
   } catch (error) {
     console.error("Error in text-to-speech conversion:", error);
+    
+    // If it's a timeout error, try with a simpler model
+    if (error && (error as any).message?.includes('timeout')) {
+      console.log("Retrying with fallback TTS model due to timeout");
+      try {
+        const fallbackResponse = await openai.audio.speech.create({
+          model: 'tts-1', // Use faster model
+          voice: 'alloy', // Use default voice
+          speed: 1.0,
+          input: cleanText.slice(0, 300), // Limit text length
+        }, {
+          timeout: 10000 // 10 second timeout
+        });
+        
+        const buffer = Buffer.from(await fallbackResponse.arrayBuffer());
+        console.log("Fallback TTS conversion successful, buffer size:", buffer.length);
+        return buffer;
+      } catch (fallbackError) {
+        console.error("Fallback TTS also failed:", fallbackError);
+      }
+    }
+    
     throw new Error(`Failed to convert text to speech: ${(error as any)?.message || "Unknown error"}`);
   }
 }

@@ -672,16 +672,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).currentAutoplayAudio = null;
       }
 
-      // Generate audio using server TTS
+      // Generate audio using server TTS with timeout
       console.log("Generating unmute TTS audio...");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+
       const response = await fetch("/api/text-to-speech", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: lastAssistantMessage }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error(`TTS API error: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`TTS API error: ${response.status} - ${errorText}`);
       }
 
       const audioBuffer = await response.arrayBuffer();
@@ -808,6 +815,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowUnmuteButton(true);
       setShowAskButton(true);
 
+      // Provide more specific error messages
+      let errorMessage = "Failed to play audio";
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "Audio generation timed out - please try again";
+        } else if (error.message.includes('timeout')) {
+          errorMessage = "Audio service is slow - please try again";
+        } else if (error.message.includes('500')) {
+          errorMessage = "Audio service unavailable - please try again";
+        }
+      }
+
       toast({
         description: (
           <span
@@ -818,10 +837,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               whiteSpace: "nowrap",
             }}
           >
-            Failed to play audio
+            {errorMessage}
           </span>
         ),
-        duration: 2000,
+        duration: 3000,
         className: "bg-white text-black border-none",
         style: {
           position: "fixed",
