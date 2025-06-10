@@ -106,16 +106,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log(`Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(false);
         
-        // Start 2-second silence timer
-        console.log("Starting 2-second silence countdown");
-        if (silenceTimerRef.current) {
-          clearTimeout(silenceTimerRef.current);
+        // Only start silence timer if we've been recording for at least 500ms
+        const recordingDuration = now - recordingStartTimeRef.current;
+        if (recordingDuration > 500) {
+          console.log("Starting 2-second silence countdown");
+          if (silenceTimerRef.current) {
+            clearTimeout(silenceTimerRef.current);
+          }
+          
+          silenceTimerRef.current = setTimeout(() => {
+            console.log("1 second of silence completed - stopping recording now");
+            stopListening();
+          }, 1000);
+        } else {
+          console.log(`Recording too short (${recordingDuration}ms) - not starting silence timer yet`);
         }
-        
-        silenceTimerRef.current = setTimeout(() => {
-          console.log("1 second of silence completed - stopping recording now");
-          stopListening();
-        }, 1000);
       }
       
       // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 1 second
@@ -317,6 +322,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Initialize MediaRecorder with optimal settings for Whisper
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus', // Opus codec for better compression
+        audioBitsPerSecond: 16000, // Lower bitrate for faster processing
       });
       
       mediaRecorderRef.current = mediaRecorder;
@@ -326,6 +332,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
+          console.log(`Audio data chunk: ${event.data.size} bytes`);
         }
       };
       
@@ -420,7 +427,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       recordingStartTimeRef.current = Date.now(); // Initialize recording start time
       lastVoiceDetectedRef.current = 0; // Reset voice detection
       consecutiveSilenceCountRef.current = 0; // Reset silence counter
-      mediaRecorder.start();
+      mediaRecorder.start(100); // Request data every 100ms to ensure we get audio chunks
       console.log("Audio recording started");
       
       // Start voice activity detection

@@ -459,20 +459,21 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
         }}
       />
       
-      {/* Inner circle provides focused area - without background color */}
+      {/* Animated glow ring - highly visible */}
       {(isListening || isProcessing || isPlaying || showTestAnimation) && (
         <div 
           style={{
-            width: `${size * 0.7}px`,
-            height: `${size * 0.7}px`,
+            width: `${size * 1.2}px`, // Larger ring for better visibility
+            height: `${size * 1.2}px`,
             borderRadius: '50%',
-            border: `1px solid rgba(255, 255, 255, ${opacity * 0.3})`, // Subtle border instead of background
+            border: `3px solid rgba(255, 255, 255, ${Math.max(opacity, 0.8)})`, // Strong white border
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
             zIndex: 2,
-            boxShadow: `0 0 ${opacity * 10}px rgba(255, 255, 255, ${opacity * 0.2})` // Subtle glow
+            boxShadow: `0 0 ${Math.max(opacity * 20, 15)}px rgba(255, 255, 255, ${Math.max(opacity, 0.6)})`, // Strong glow
+            background: `radial-gradient(circle, rgba(255, 255, 255, ${opacity * 0.1}) 0%, transparent 70%)` // Subtle background
           }}
         />
       )}
