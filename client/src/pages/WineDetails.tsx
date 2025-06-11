@@ -61,17 +61,24 @@ export default function WineDetails() {
   
   // Set QR modal state when component mounts or when isQRScan changes
   useEffect(() => {
+    console.log('🔄 QR scan state changed:', { isQRScan, interactionChoiceMade, showQRModal });
     setShowQRModal(isQRScan);
-  }, [isQRScan]);
+  }, [isQRScan, interactionChoiceMade]);
 
   // Listen for QR reset events from the header button
   useEffect(() => {
-    const handleQRReset = () => {
+    const handleQRReset = (event: Event) => {
+      console.log('🔄 QR Reset event received in WineDetails:', event);
       setInteractionChoiceMade(false);
     };
 
+    console.log('🎧 Setting up QR reset event listener');
     window.addEventListener('qrReset', handleQRReset);
-    return () => window.removeEventListener('qrReset', handleQRReset);
+    
+    return () => {
+      console.log('🧹 Cleaning up QR reset event listener');
+      window.removeEventListener('qrReset', handleQRReset);
+    };
   }, []);
   
   // Load selected wine data from URL parameter or localStorage

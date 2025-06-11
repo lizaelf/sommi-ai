@@ -73,6 +73,38 @@ export function AppHeader({
     };
   }, []);
 
+  // Improved reset function with better feedback and error handling
+  const handleReset = async () => {
+    try {
+      setIsResetting(true);
+      console.log('🔄 Reset button clicked - clearing interaction choice');
+      
+      // Clear localStorage
+      localStorage.removeItem('interaction_choice_made');
+      
+      // Add a small delay to ensure localStorage is cleared
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Dispatch the reset event
+      const resetEvent = new CustomEvent('qrReset', { 
+        detail: { timestamp: Date.now() },
+        bubbles: true 
+      });
+      window.dispatchEvent(resetEvent);
+      
+      console.log('✅ Reset event dispatched successfully');
+      
+      // Provide visual feedback
+      setTimeout(() => {
+        setIsResetting(false);
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Error during reset:', error);
+      setIsResetting(false);
+    }
+  };
+
   // Dynamic styles based on scroll state
   const headerStyle = {
     position: 'fixed' as const,
@@ -90,9 +122,18 @@ export function AppHeader({
   console.log('🎨 Header render - scrolled:', scrolled);
 
   return (
-    <div style={headerStyle}>
-      <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
-        <div className="relative flex items-center justify-between h-full">
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      <div style={headerStyle}>
+        <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
+          <div className="relative flex items-center justify-between h-full">
           {/* Left side - Back button or Logo + Title */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {showBackButton && onBack ? (
@@ -117,39 +158,9 @@ export function AppHeader({
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
-            {/* Enhanced Reset QR button with visual feedback */}
+            {/* Improved Reset button with better visual feedback */}
             <button
-              onClick={async () => {
-                if (isResetting) return;
-                
-                try {
-                  setIsResetting(true);
-                  console.log('Starting QR reset process...');
-                  
-                  localStorage.removeItem('interaction_choice_made');
-                  console.log('LocalStorage cleared successfully');
-                  
-                  await new Promise(resolve => setTimeout(resolve, 100));
-                  
-                  const resetEvent = new CustomEvent('qrReset', {
-                    detail: {
-                      timestamp: Date.now(),
-                      source: 'header-button',
-                      success: true
-                    },
-                    bubbles: true
-                  });
-                  window.dispatchEvent(resetEvent);
-                  console.log('QR reset event dispatched successfully');
-                  
-                  await new Promise(resolve => setTimeout(resolve, 300));
-                  
-                } catch (error) {
-                  console.error('QR reset failed:', error);
-                } finally {
-                  setIsResetting(false);
-                }
-              }}
+              onClick={handleReset}
               disabled={isResetting}
               style={{
                 background: isResetting 
@@ -159,7 +170,7 @@ export function AppHeader({
                   ? "1px solid rgba(34, 197, 94, 0.4)" 
                   : "1px solid rgba(255, 255, 255, 0.2)",
                 borderRadius: "20px",
-                color: "white",
+                color: isResetting ? "#22c55e" : "white",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "12px",
                 fontWeight: 500,
@@ -181,15 +192,16 @@ export function AppHeader({
                   e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
                 }
               }}
-              title={isResetting ? "Resetting QR state..." : "Reset QR scan state"}
+              title={isResetting ? "Resetting..." : "Reset QR scan state"}
             >
               <RotateCcw 
-                size={14} 
-                style={{
-                  animation: isResetting ? "spin 1s linear infinite" : "none"
+                size={12} 
+                style={{ 
+                  transform: isResetting ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 0.3s ease"
                 }}
               />
-              {isResetting ? "Resetting..." : "Reset QR"}
+              {isResetting ? "Resetting..." : "Reset"}
             </button>
             
             {rightContent || (
@@ -224,7 +236,8 @@ export function AppHeader({
 
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
