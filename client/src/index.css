@@ -692,37 +692,25 @@ button:active {
   }
 }
 
-.circle-movement-animation {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 72px;
-  height: 72px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 10;
+.input-focused {
+  animation: bg-white-hue 2s linear infinite;
 }
 
-.moving-circle {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  background: #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 16px rgba(255, 255, 255, 0.5);
-  transform: translateX(-50%);
-  transform-origin: 50% 36px;
-  animation: circle-rotate 3s linear infinite;
-}
-
-@keyframes circle-rotate {
-  from {
-    transform: translateX(-50%) rotate(0deg);
+@keyframes bg-white-hue {
+  0% {
+    filter: brightness(1) opacity(1);
   }
-  to {
-    transform: translateX(-50%) rotate(360deg);
+  25% {
+    filter: brightness(1.2) opacity(0.9);
+  }
+  50% {
+    filter: brightness(1.4) opacity(0.8);
+  }
+  75% {
+    filter: brightness(1.2) opacity(0.9);
+  }
+  100% {
+    filter: brightness(1) opacity(1);
   }
 }
 
