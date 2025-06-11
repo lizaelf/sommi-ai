@@ -74,7 +74,7 @@ export default function WineDetails() {
         } else {
           console.log('No wine ID found in URL parameters');
           // For QR scan state, use default wine (first wine from DataSyncManager)
-          const wines = DataSyncManager.getAllWines();
+          const wines = DataSyncManager.getUnifiedWineData();
           if (wines.length > 0) {
             console.log('Using default wine for QR scan state:', wines[0]);
             return wines[0];
