@@ -48,50 +48,14 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
             <div className="flex gap-4">
               <button
                 onClick={onTextChoice}
-                style={{
-                  flex: 1,
-                  height: "56px",
-                  background: "rgba(255, 255, 255, 0.15)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "28px",
-                  color: "white",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                }}
+                className="flex-1 h-14 bg-white/15 hover:bg-white/25 border border-white/20 rounded-full text-white font-medium text-base transition-all duration-200 ease-out"
               >
                 Text
               </button>
               
               <button
                 onClick={onVoiceChoice}
-                style={{
-                  flex: 1,
-                  height: "56px",
-                  background: "white",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "28px",
-                  color: "black",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.9)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "white";
-                }}
+                className="flex-1 h-14 bg-white hover:bg-white/90 border border-white/20 rounded-full text-black font-medium text-base transition-all duration-200 ease-out"
               >
                 Voice
               </button>
