@@ -1063,11 +1063,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <div
                   style={{
                     display: "flex",
-                    padding: 8,
                     alignItems: "baseline",
                     gap: 4,
-                    background: "rgba(255, 255, 255, 0.10)",
-                    borderRadius: 8,
                   }}
                 >
                   <div
@@ -1098,11 +1095,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <div
                   style={{
                     display: "flex",
-                    padding: 8,
                     alignItems: "baseline",
                     gap: 4,
-                    background: "rgba(255, 255, 255, 0.10)",
-                    borderRadius: 8,
                   }}
                 >
                   <div
@@ -1133,11 +1127,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <div
                   style={{
                     display: "flex",
-                    padding: 8,
                     alignItems: "baseline",
                     gap: 4,
-                    background: "rgba(255, 255, 255, 0.10)",
-                    borderRadius: 8,
                   }}
                 >
                   <div
@@ -1168,11 +1159,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <div
                   style={{
                     display: "flex",
-                    padding: 8,
                     alignItems: "baseline",
                     gap: 4,
-                    background: "rgba(255, 255, 255, 0.10)",
-                    borderRadius: 8,
                   }}
                 >
                   <div
