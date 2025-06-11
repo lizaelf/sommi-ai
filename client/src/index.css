@@ -310,8 +310,8 @@ button:not(.react-button) {
 
 /* Secondary Button Class */
 .secondary-button {
-  background-color: transparent !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background-color: rgba(255, 255, 255, 0.10) !important;
+  border: rgba(255, 255, 255, 0.10) !important;
   color: white !important;
   border-radius: 32px !important;
   padding: 8px 16px !important;
@@ -322,7 +322,7 @@ button:not(.react-button) {
   outline: none !important;
   transition: all 0.2s ease !important;
   white-space: nowrap !important;
-  min-height: 36px !important;
+  min-height: 40px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
