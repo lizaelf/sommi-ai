@@ -2273,19 +2273,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                     <button
                       onClick={() => handleSendMessage("Tasting notes")}
-                      className="whitespace-nowrap text-white text-sm"
+                      className="whitespace-nowrap"
                       style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.12) !important",
+                        border: "none !important",
+                        color: "white !important",
+                        fontSize: "14px !important",
+                        fontWeight: 500,
+                        fontFamily: "Inter, sans-serif",
                         borderRadius: "24px",
-                        background: "rgba(255, 255, 255, 0.08)",
-                        border: "none",
                         padding: "8px 16px",
                         transition: "all 0.2s ease"
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2) !important";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12) !important";
                       }}
                     >
                       Tasting notes
@@ -2294,19 +2298,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       onClick={() =>
                         handleSendMessage("Simple recipes for this wine")
                       }
-                      className="whitespace-nowrap text-white text-sm"
+                      className="whitespace-nowrap"
                       style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.12) !important",
+                        border: "none !important",
+                        color: "white !important",
+                        fontSize: "14px !important",
+                        fontWeight: 500,
+                        fontFamily: "Inter, sans-serif",
                         borderRadius: "24px",
-                        background: "rgba(255, 255, 255, 0.08)",
-                        border: "none",
                         padding: "8px 16px",
                         transition: "all 0.2s ease"
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2) !important";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12) !important";
                       }}
                     >
                       Simple recipes
@@ -2315,19 +2323,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       onClick={() =>
                         handleSendMessage("Where is this wine from?")
                       }
-                      className="whitespace-nowrap text-white text-sm"
+                      className="whitespace-nowrap"
                       style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.12) !important",
+                        border: "none !important",
+                        color: "white !important",
+                        fontSize: "14px !important",
+                        fontWeight: 500,
+                        fontFamily: "Inter, sans-serif",
                         borderRadius: "24px",
-                        background: "rgba(255, 255, 255, 0.08)",
-                        border: "none",
                         padding: "8px 16px",
                         transition: "all 0.2s ease"
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2) !important";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12) !important";
                       }}
                     >
                       Where it's from
