@@ -384,7 +384,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             <div style={{ 
               display: 'flex', 
               flexDirection: 'column', 
-              gap: '16px',
               width: '100%'
             }}>
               
