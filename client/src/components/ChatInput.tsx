@@ -51,7 +51,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           backgroundOrigin: 'border-box',
           backgroundClip: 'padding-box, border-box',
           overflow: 'hidden',
-          animation: !isFocused ? 'bg-hue-idle 3s linear infinite' : 'none'
+          animation: !isFocused ? 'bg-hue-idle 1.5s linear infinite' : 'none'
         }}
       >
         {isFocused && (
