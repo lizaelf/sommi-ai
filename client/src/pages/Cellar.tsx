@@ -8,7 +8,7 @@ import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 // Default wine image removed - only authentic uploaded images will be displayed
 import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@assets/Logo.png";
-import lineImage from "@assets/line.png";
+
 import AppHeader from "@/components/AppHeader";
 
 const Cellar = () => {
@@ -1160,11 +1160,9 @@ const Cellar = () => {
           {/* Line separator below last wine rack */}
           <div
             style={{
-              backgroundImage: `url(${lineImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              height: "10px",
+              height: "1px",
+              alignSelf: "stretch",
+              background: "linear-gradient(90deg, rgba(255, 255, 255, 0.60) 12.26%, rgba(255, 255, 255, 0.40) 33.07%, rgba(255, 255, 255, 0.60) 67.79%, rgba(255, 255, 255, 0.36) 80%)",
             }}
           />
         </div>
