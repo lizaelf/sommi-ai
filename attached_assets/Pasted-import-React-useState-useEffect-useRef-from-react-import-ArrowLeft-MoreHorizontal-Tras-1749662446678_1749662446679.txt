@@ -133,7 +133,6 @@ export function AppHeader({
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
