@@ -50,7 +50,7 @@ const Button: React.FC<ButtonProps> = ({
   if (variant === "headerIcon") {
     return (
       <button
-        className="header-icon-button react-button"
+        className={`header-icon-button react-button ${className}`}
         style={style}
         onClick={disabled ? undefined : onClick}
         disabled={disabled}
