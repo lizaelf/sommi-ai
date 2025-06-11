@@ -119,12 +119,8 @@ export function AppHeader({
             {/* Temporary Reset button for QR scan testing */}
             <button
               onClick={() => {
-                console.log('🔄 Reset QR button clicked');
-                console.log('🗑️ Removing interaction_choice_made from localStorage');
                 localStorage.removeItem('interaction_choice_made');
-                console.log('🔄 Triggering QR scan modal directly');
-                // Dispatch custom event to trigger QR modal
-                window.dispatchEvent(new CustomEvent('triggerQRModal'));
+                window.location.reload();
               }}
               style={{
                 background: "rgba(255, 255, 255, 0.15)",
