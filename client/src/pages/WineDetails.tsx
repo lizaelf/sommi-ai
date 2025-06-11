@@ -59,28 +59,22 @@ export default function WineDetails() {
     // Continue to the chat interface
   };
   
-  // Set QR modal state when component mounts or when isQRScan changes
+  // Set QR modal state when component mounts
   useEffect(() => {
-    console.log('🔄 QR scan state changed:', { isQRScan, interactionChoiceMade, showQRModal });
+    console.log('🔄 Initial QR scan state:', { isQRScan, interactionChoiceMade });
     setShowQRModal(isQRScan);
-  }, [isQRScan, interactionChoiceMade]);
+  }, []);
 
   // Listen for QR reset events from the header button
   useEffect(() => {
     const handleQRReset = (event: Event) => {
-      console.log('🔄 QR Reset event received in WineDetails:', event);
-      // Force both state updates to ensure modal appears
+      console.log('🔄 QR Reset event received - forcing modal to show');
       setInteractionChoiceMade(false);
       setShowQRModal(true);
     };
 
-    console.log('🎧 Setting up QR reset event listener');
     window.addEventListener('qrReset', handleQRReset);
-    
-    return () => {
-      console.log('🧹 Cleaning up QR reset event listener');
-      window.removeEventListener('qrReset', handleQRReset);
-    };
+    return () => window.removeEventListener('qrReset', handleQRReset);
   }, []);
   
   // Load selected wine data from URL parameter or localStorage
@@ -139,7 +133,7 @@ export default function WineDetails() {
   console.log('🔍 QR Debug:', {
     location,
     isScannedPage,
-    interactionChoiceMade: localStorage.getItem('interaction_choice_made'),
+    interactionChoiceMade,
     isQRScan,
     showQRModal,
     wine: wine ? 'loaded' : 'null',
