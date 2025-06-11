@@ -18,67 +18,22 @@ const Button: React.FC<ButtonProps> = ({
   style = {},
   ...props
 }) => {
-  // Use CSS class for secondaryFilled to override global button styles
-  if (variant === "secondaryFilled") {
-    return (
-      <button
-        className="secondary-filled-button"
-        style={style}
-        onClick={disabled ? undefined : onClick}
-        disabled={disabled}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-
-  const getVariantStyles = (): React.CSSProperties => {
+  // Get the appropriate CSS class for each variant
+  const getVariantClass = () => {
     switch (variant) {
+      case "primary":
+        return "react-button primary-button";
       case "secondary":
-        return {
-          backgroundColor: "transparent",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          color: "white",
-          borderRadius: "32px",
-          padding: "8px 16px",
-          fontSize: "14px",
-          fontWeight: 500,
-          fontFamily: "Inter, sans-serif",
-          cursor: "pointer",
-          outline: "none",
-          transition: "all 0.2s ease",
-          whiteSpace: "nowrap",
-          minHeight: "36px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxSizing: "border-box",
-        };
-      default: // primary
-        return {
-          backgroundColor: "white",
-          border: "none",
-          color: "black",
-          borderRadius: "32px",
-          padding: "12px 24px",
-          fontSize: "16px",
-          fontWeight: 500,
-          fontFamily: "Inter, sans-serif",
-          cursor: "pointer",
-          outline: "none",
-          transition: "all 0.2s ease",
-          minHeight: "48px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxSizing: "border-box",
-        };
+        return "react-button secondary-button";
+      case "secondaryFilled":
+        return "react-button secondary-filled-button";
+      default:
+        return "react-button primary-button";
     }
   };
 
-  const baseStyles: React.CSSProperties = {
-    ...getVariantStyles(),
+  const finalClassName = `${getVariantClass()} ${className}`.trim();
+  const finalStyle = {
     opacity: disabled ? 0.5 : 1,
     cursor: disabled ? "not-allowed" : "pointer",
     ...style,
@@ -86,8 +41,8 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={className}
-      style={baseStyles}
+      className={finalClassName}
+      style={finalStyle}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       {...props}
