@@ -60,9 +60,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         )}
         
         {!isFocused && (
-          <div className="rotating-border">
-            <div className="rotating-border-inner" />
-          </div>
+          <div className="rotating-border" />
         )}
         <input
           ref={inputRef}
