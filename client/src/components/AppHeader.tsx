@@ -67,7 +67,7 @@ export function AppHeader({
     transition: 'all 0.3s ease'
   };
   
-  console.log('Header render - scrolled:', scrolled, 'styles:', headerStyles);
+  console.log('AppHeader render - scrolled:', scrolled, 'background:', headerStyles.background);
 
   return (
     <div 
