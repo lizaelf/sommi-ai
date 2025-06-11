@@ -69,7 +69,9 @@ export default function WineDetails() {
   useEffect(() => {
     const handleQRReset = (event: Event) => {
       console.log('🔄 QR Reset event received in WineDetails:', event);
+      // Force both state updates to ensure modal appears
       setInteractionChoiceMade(false);
+      setShowQRModal(true);
     };
 
     console.log('🎧 Setting up QR reset event listener');
