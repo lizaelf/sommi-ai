@@ -1,5 +1,6 @@
 import React from 'react';
 import { BottomSheet } from './ui/BottomSheet';
+import Button from './ui/Button';
 
 interface QRScanModalProps {
   isOpen: boolean;
@@ -17,19 +18,32 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
     >
       {/* Choice Buttons */}
       <div className="flex gap-3 w-full">
-        <button
+        <Button
           onClick={onTextChoice}
-          className="flex-1 h-14 bg-white/15 hover:bg-white/25 border border-white/20 rounded-full text-white font-medium text-base transition-all duration-200 ease-out"
+          variant="secondary"
+          style={{
+            flex: 1,
+            height: '56px',
+            fontSize: '16px',
+            fontWeight: 500,
+          }}
         >
           Text
-        </button>
+        </Button>
         
-        <button
+        <Button
           onClick={onVoiceChoice}
-          className="flex-1 h-14 bg-blue-600 hover:bg-blue-700 border border-blue-500 rounded-full text-white font-semibold text-base transition-all duration-200 ease-out shadow-lg"
+          variant="primary"
+          style={{
+            flex: 1,
+            height: '56px',
+            fontSize: '16px',
+            fontWeight: 600,
+            backgroundColor: '#2563eb', // blue-600
+          }}
         >
           Voice
-        </button>
+        </Button>
       </div>
     </BottomSheet>
   );
