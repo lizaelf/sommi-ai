@@ -1823,7 +1823,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                       style={{
                                         backgroundColor: message.role === "user" ? "#F5F5F5" : "transparent",
                                         borderRadius: "16px",
-                                        padding: "12px 16px",
+                                        padding: "12px 0",
                                         width: message.role === "user" ? "fit-content" : "100%",
                                         maxWidth: message.role === "user" ? "80%" : "100%",
                                       }}
@@ -1831,10 +1831,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                       {message.role === "assistant" ? (
                                         <div
                                           style={{
+                                            ...typography.body,
                                             color: "#DBDBDB",
-                                            fontFamily: "Inter, system-ui, sans-serif",
-                                            fontSize: "14px",
-                                            lineHeight: "1.5",
                                           }}
                                         >
                                           {formatContent(message.content)}
@@ -1842,10 +1840,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                       ) : (
                                         <div
                                           style={{
+                                            ...typography.body,
                                             color: "#000000",
-                                            fontFamily: "Inter, system-ui, sans-serif",
-                                            fontSize: "14px",
-                                            lineHeight: "1.5",
                                           }}
                                         >
                                           {formatContent(message.content)}
