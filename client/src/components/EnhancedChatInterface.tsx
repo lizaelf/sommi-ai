@@ -698,13 +698,17 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           console.log("Playing precomputed TTS audio");
           await audioElement.play();
           
-          // Clean up URL when done
+          // Clean up URL when done and reset to Ask button state
           audioElement.onended = () => {
             URL.revokeObjectURL(audioUrl);
             (window as any).currentOpenAIAudio = null;
+            // Signal that suggestion playback ended to show Ask button
+            window.dispatchEvent(new CustomEvent('suggestionPlaybackEnded'));
           };
         } catch (error) {
           console.warn("Failed to play precomputed audio:", error);
+          // If audio fails, still signal playback ended
+          window.dispatchEvent(new CustomEvent('suggestionPlaybackEnded'));
         }
       }
     };

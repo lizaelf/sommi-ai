@@ -97,6 +97,18 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     if (cached) {
       console.log(`Using precomputed response for: ${suggestion}`);
       
+      // Stop any currently playing audio first
+      if ((window as any).currentOpenAIAudio) {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio.currentTime = 0;
+        (window as any).currentOpenAIAudio = null;
+      }
+      
+      // Stop browser speech synthesis
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      
       // Add user message first
       const userMessage = {
         role: "user" as const,
@@ -124,6 +136,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         window.dispatchEvent(new CustomEvent('immediateResponse', {
           detail: { message: assistantMessage, audio: cached.audio }
         }));
+        
+        // Trigger mute state to show Stop button instead of Ask
+        window.dispatchEvent(new CustomEvent('suggestionPlaybackStarted'));
       }, 100);
       
       return; // Exit early to prevent fallback API call

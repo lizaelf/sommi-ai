@@ -27,6 +27,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   
+  // Listen for suggestion playback events to show Stop button
+  useEffect(() => {
+    const handleSuggestionPlayback = () => {
+      setIsResponding(true);
+      setShowUnmuteButton(false);
+      setShowAskButton(false);
+    };
+
+    const handleSuggestionPlaybackEnded = () => {
+      setIsResponding(false);
+      setShowUnmuteButton(false);
+      setShowAskButton(true);
+    };
+
+    window.addEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
+    window.addEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
+    
+    return () => {
+      window.removeEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
+      window.removeEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
+    };
+  }, []);
+  
   // Audio cache for TTS responses to minimize fallback usage
   const audioCache = useRef<Map<string, Blob>>(new Map());
   
