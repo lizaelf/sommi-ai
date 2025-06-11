@@ -47,7 +47,6 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
             height: '56px',
             fontSize: '16px',
             fontWeight: 600,
-            backgroundColor: '#2563eb', // blue-600
           }}
         >
           Voice
