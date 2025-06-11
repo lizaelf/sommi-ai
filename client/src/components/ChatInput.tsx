@@ -36,33 +36,24 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
   const inputContainer = (
     <div className="relative w-full">
       <div
+        className={`relative w-full h-16 rounded-3xl border-2 border-transparent ${
+          !isFocused ? 'input-idle' : ''
+        }`}
         style={{
-          position: 'relative',
-          width: '100%',
-          height: '64px',
-          borderRadius: '24px',
-          borderTop: '2px solid transparent',
-          borderRight: '1px solid transparent',
-          borderBottom: '1px solid transparent',
-          borderLeft: '1px solid transparent',
-          backgroundImage: isFocused 
-            ? 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)'
+          backgroundImage: !isFocused 
+            ? 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.7))' 
             : 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
           backgroundOrigin: 'border-box',
-          backgroundClip: 'padding-box, border-box',
-          overflow: 'hidden'
+          backgroundClip: 'padding-box, border-box'
         }}
       >
+
         {isFocused && (
           <div className="absolute inset-0 rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-slide-lr"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent animate-slide-lr-delayed"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow"></div>
           </div>
-        )}
-        
-        {!isFocused && (
-          <div className="border-pulse-animation" />
         )}
         <input
           ref={inputRef}
@@ -99,7 +90,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             lineHeight: '24px',
             fontWeight: 400,
             position: 'relative',
-            zIndex: 5,
+            zIndex: 10,
             left: 0,
             top: 0
           }}
