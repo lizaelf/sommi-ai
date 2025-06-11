@@ -1832,9 +1832,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                   margin: "8px 0 0 0",
                                   width: "100%",
                                 }}
-                              >
-                                View full conversation
-                              </Button>
+                              >View all</Button>
                             </div>
                           )}
                         </div>
