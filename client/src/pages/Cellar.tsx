@@ -1064,7 +1064,7 @@ const Cellar = () => {
                           width: "60px",
                           objectFit: "cover",
                           borderRadius: "4px",
-                          marginBottom: "8px"
+                          marginBottom: "2px"
                         }}
                         onError={(e) => {
                           // Hide image if it fails to load
@@ -1114,7 +1114,7 @@ const Cellar = () => {
                           width: "60px",
                           objectFit: "cover",
                           borderRadius: "4px",
-                          marginBottom: "8px"
+                          marginBottom: "2px"
                         }}
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
@@ -1163,7 +1163,7 @@ const Cellar = () => {
                           width: "60px",
                           objectFit: "cover",
                           borderRadius: "4px",
-                          marginBottom: "8px"
+                          marginBottom: "2px"
                         }}
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
