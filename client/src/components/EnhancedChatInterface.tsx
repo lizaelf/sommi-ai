@@ -670,6 +670,51 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [messages]);
 
+  // Listen for precomputed suggestion responses
+  useEffect(() => {
+    const handleImmediateResponse = async (event: CustomEvent) => {
+      const { message, audio } = event.detail;
+      
+      // Add the precomputed response immediately to conversation
+      const immediateMessage: ClientMessage = {
+        ...message,
+        conversationId: currentConversationId || 0,
+        createdAt: new Date().toISOString()
+      };
+      
+      await addMessage(immediateMessage);
+      setIsTyping(false);
+      
+      // Handle audio playback if available
+      if (audio) {
+        try {
+          const audioUrl = URL.createObjectURL(audio);
+          const audioElement = new Audio(audioUrl);
+          
+          // Set up global audio reference for mute controls
+          (window as any).currentOpenAIAudio = audioElement;
+          
+          console.log("Playing precomputed TTS audio");
+          await audioElement.play();
+          
+          // Clean up URL when done
+          audioElement.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+            (window as any).currentOpenAIAudio = null;
+          };
+        } catch (error) {
+          console.warn("Failed to play precomputed audio:", error);
+        }
+      }
+    };
+
+    window.addEventListener('immediateResponse', handleImmediateResponse as EventListener);
+    
+    return () => {
+      window.removeEventListener('immediateResponse', handleImmediateResponse as EventListener);
+    };
+  }, [currentConversationId, addMessage]);
+
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;

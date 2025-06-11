@@ -708,8 +708,41 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
   };
 
+  // Listen for precomputed suggestion responses
+  useEffect(() => {
+    const handleSuggestionResponse = (event: CustomEvent) => {
+      const { response, audio, suggestion } = event.detail;
+      console.log(`Using precomputed response for: ${suggestion}`);
+      
+      // Create a mock message object for immediate display
+      const immediateMessage = {
+        role: "assistant" as const,
+        content: response,
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        conversationId: 0 // Will be updated by the conversation handler
+      };
+      
+      // Dispatch immediate response to conversation
+      window.dispatchEvent(new CustomEvent('immediateResponse', {
+        detail: { message: immediateMessage, audio }
+      }));
+      
+      setShowBottomSheet(false);
+    };
+
+    window.addEventListener('suggestionResponse', handleSuggestionResponse as EventListener);
+    
+    return () => {
+      window.removeEventListener('suggestionResponse', handleSuggestionResponse as EventListener);
+    };
+  }, []);
+
   const handleSuggestionClick = (suggestion: string) => {
     console.log("Suggestion clicked:", suggestion);
+    
+    // The VoiceBottomSheet will handle precomputed responses via custom events
+    // If no precomputed response is available, fall back to normal API call
     onSendMessage(suggestion);
     setShowBottomSheet(false);
   };
