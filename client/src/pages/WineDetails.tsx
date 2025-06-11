@@ -56,6 +56,18 @@ export default function WineDetails() {
   useEffect(() => {
     setShowQRModal(isQRScan);
   }, [isQRScan]);
+
+  // Listen for QR reset events from the header button
+  useEffect(() => {
+    const handleQRReset = () => {
+      // Re-evaluate QR scan state
+      const shouldShowModal = !localStorage.getItem('interaction_choice_made');
+      setShowQRModal(shouldShowModal);
+    };
+
+    window.addEventListener('qrReset', handleQRReset);
+    return () => window.removeEventListener('qrReset', handleQRReset);
+  }, []);
   
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {

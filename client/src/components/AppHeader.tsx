@@ -120,7 +120,8 @@ export function AppHeader({
             <button
               onClick={() => {
                 localStorage.removeItem('interaction_choice_made');
-                window.location.reload();
+                // Force re-render by dispatching a custom event
+                window.dispatchEvent(new CustomEvent('qrReset'));
               }}
               style={{
                 background: "rgba(255, 255, 255, 0.15)",
