@@ -1079,6 +1079,15 @@ const Cellar = () => {
             </div>
           </div>
 
+          {/* Line separator */}
+          <div
+            style={{
+              height: "1px",
+              alignSelf: "stretch",
+              background: "linear-gradient(90deg, rgba(255, 255, 255, 0.60) 12.26%, rgba(255, 255, 255, 0.40) 33.07%, rgba(255, 255, 255, 0.60) 67.79%, rgba(255, 255, 255, 0.36) 80%)",
+            }}
+          />
+
           {/* Second Wine Rack Container */}
           <div
             className="bg-cover bg-center bg-no-repeat relative"
@@ -1117,6 +1126,15 @@ const Cellar = () => {
               })}
             </div>
           </div>
+
+          {/* Line separator */}
+          <div
+            style={{
+              height: "1px",
+              alignSelf: "stretch",
+              background: "linear-gradient(90deg, rgba(255, 255, 255, 0.60) 12.26%, rgba(255, 255, 255, 0.40) 33.07%, rgba(255, 255, 255, 0.60) 67.79%, rgba(255, 255, 255, 0.36) 80%)",
+            }}
+          />
 
           {/* Third Wine Rack Container */}
           <div
