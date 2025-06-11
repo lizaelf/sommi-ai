@@ -60,16 +60,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         )}
         
         {!isFocused && (
-          <div className="absolute inset-0 rounded-3xl overflow-hidden">
-            <div 
-              className="absolute inset-0 rounded-3xl"
-              style={{
-                background: 'conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.2), transparent, rgba(255, 255, 255, 0.1), transparent)',
-                animation: 'spin-border 3s linear infinite',
-                mask: 'radial-gradient(circle, transparent 22px, black 24px)',
-                WebkitMask: 'radial-gradient(circle, transparent 22px, black 24px)'
-              }}
-            />
+          <div className="rotating-border">
+            <div className="rotating-border-inner" />
           </div>
         )}
         <input
