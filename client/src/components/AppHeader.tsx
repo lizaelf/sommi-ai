@@ -57,9 +57,9 @@ export function AppHeader({
     <div 
       className="fixed top-0 left-0 right-0 z-50"
       style={{
-        backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.9)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(10px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(10px)' : 'none',
+        backgroundColor: scrolled ? 'rgba(10, 10, 10, 0.6)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(4px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(4px)' : 'none',
         borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
         transition: 'all 0.3s ease',
         ...className
