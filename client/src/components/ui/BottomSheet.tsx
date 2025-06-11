@@ -42,15 +42,18 @@ export function BottomSheet({
     if (isOpen) {
       setAnimationState("opening");
       setAllowBackdropClose(false);
-      setTimeout(() => {
+      const timer1 = setTimeout(() => {
         setAnimationState("open");
         // Allow backdrop close after animation completes
-        setTimeout(() => setAllowBackdropClose(true), 100);
+        const timer2 = setTimeout(() => setAllowBackdropClose(true), 100);
+        return () => clearTimeout(timer2);
       }, 50);
+      return () => clearTimeout(timer1);
     } else {
       setAnimationState("closing");
       setAllowBackdropClose(false);
-      setTimeout(() => setAnimationState("closed"), 300);
+      const timer = setTimeout(() => setAnimationState("closed"), 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
@@ -66,8 +69,6 @@ export function BottomSheet({
     }, 300);
   };
 
-  console.log('🔄 BottomSheet render check:', { animationState, portalElement: !!portalElement, isOpen });
-  
   if (animationState === "closed" || !portalElement) return null;
 
   return createPortal(

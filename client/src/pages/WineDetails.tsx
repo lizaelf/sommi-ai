@@ -59,25 +59,15 @@ export default function WineDetails() {
     // Continue to the chat interface
   };
   
-  // Set QR modal state when component mounts and when interaction state changes
+  // Set QR modal state based on interaction choice
   useEffect(() => {
-    console.log('🔄 Initial QR scan state:', { isQRScan, interactionChoiceMade });
-    if (!interactionChoiceMade) {
-      setTimeout(() => {
-        console.log('🔄 Setting modal to true via timeout');
-        setShowQRModal(true);
-      }, 100);
-    }
+    setShowQRModal(!interactionChoiceMade);
   }, [interactionChoiceMade]);
 
   // Listen for QR reset events from the header button
   useEffect(() => {
     const handleQRReset = (event: Event) => {
-      console.log('🔄 QR Reset event received - forcing modal to show');
-      console.log('🔄 Current states before reset:', { interactionChoiceMade, showQRModal });
       setInteractionChoiceMade(false);
-      setShowQRModal(true);
-      console.log('🔄 States set - modal should appear');
     };
 
     window.addEventListener('qrReset', handleQRReset);

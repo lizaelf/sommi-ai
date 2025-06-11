@@ -9,8 +9,6 @@ interface QRScanModalProps {
 }
 
 export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoice }: QRScanModalProps) {
-  console.log('🔄 QRScanModal render:', { isOpen });
-  
   return (
     <BottomSheet 
       isOpen={isOpen} 
