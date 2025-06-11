@@ -710,8 +710,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   // Listen for precomputed suggestion responses
   useEffect(() => {
-    const handleSuggestionResponse = (event: CustomEvent) => {
-      const { response, audio, suggestion } = event.detail;
+    const handleSuggestionResponse = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { response, audio, suggestion } = customEvent.detail;
       console.log(`Using precomputed response for: ${suggestion}`);
       
       // Create a mock message object for immediate display
@@ -731,10 +732,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowBottomSheet(false);
     };
 
-    window.addEventListener('suggestionResponse', handleSuggestionResponse as EventListener);
+    window.addEventListener('suggestionResponse', handleSuggestionResponse);
     
     return () => {
-      window.removeEventListener('suggestionResponse', handleSuggestionResponse as EventListener);
+      window.removeEventListener('suggestionResponse', handleSuggestionResponse);
     };
   }, []);
 

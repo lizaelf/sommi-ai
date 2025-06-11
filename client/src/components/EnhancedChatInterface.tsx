@@ -672,8 +672,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
   // Listen for precomputed suggestion responses
   useEffect(() => {
-    const handleImmediateResponse = async (event: CustomEvent) => {
-      const { message, audio } = event.detail;
+    const handleImmediateResponse = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { message, audio } = customEvent.detail;
       
       // Add the precomputed response immediately to conversation
       const immediateMessage: ClientMessage = {
@@ -708,10 +709,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       }
     };
 
-    window.addEventListener('immediateResponse', handleImmediateResponse as EventListener);
+    window.addEventListener('immediateResponse', handleImmediateResponse);
     
     return () => {
-      window.removeEventListener('immediateResponse', handleImmediateResponse as EventListener);
+      window.removeEventListener('immediateResponse', handleImmediateResponse);
     };
   }, [currentConversationId, addMessage]);
 
