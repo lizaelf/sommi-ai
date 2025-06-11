@@ -1031,10 +1031,9 @@ const Cellar = () => {
       <div style={{ paddingTop: '91px' }}>
 
 
-        {/* Cellar Container with rounded corners */}
+        {/* Cellar Container */}
         <div
           style={{
-            borderRadius: "8px",
             overflow: "hidden",
             margin: "0 16px 0 16px",
           }}
