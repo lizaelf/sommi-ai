@@ -19,7 +19,7 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
       {/* Choice Buttons */}
       <div className="flex gap-3 w-full">
         <Button
-          onClick={onTextChoice}
+          onClick={onClose}
           variant="secondary"
           style={{
             flex: 1,
