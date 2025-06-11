@@ -30,7 +30,8 @@ export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
-  const [interactionChoiceMade, setInteractionChoiceMade] = useState<boolean>(false);
+  // Add state to track interaction choice instead of relying on inline computation
+  const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
   const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
@@ -40,39 +41,91 @@ export default function WineDetails() {
   
   // Initialize interaction choice state from localStorage
   useEffect(() => {
-    const choiceMade = Boolean(localStorage.getItem('interaction_choice_made'));
-    setInteractionChoiceMade(choiceMade);
+    const choiceMade = localStorage.getItem('interaction_choice_made');
+    const hasChoice = !!choiceMade;
+    console.log('🏁 Initial state check:', { choiceMade, hasChoice });
+    setInteractionChoiceMade(hasChoice);
   }, []);
-  
-  // Check if this is a fresh QR scan (show interaction choice) - now reactive to state changes
+
+  // Compute QR scan state based on reactive state
   const isQRScan = !interactionChoiceMade;
-  
-
-  
-
   
   // Handle interaction choice
   const handleInteractionChoice = (choice: 'text' | 'voice') => {
+    console.log('🎯 Interaction choice made:', choice);
     localStorage.setItem('interaction_choice_made', choice);
     setInteractionChoiceMade(true);
     setShowQRModal(false);
-    // Continue to the chat interface
   };
   
   // Set QR modal state when component mounts or when isQRScan changes
   useEffect(() => {
+    console.log('🔄 QR scan state changed:', { isQRScan, interactionChoiceMade });
     setShowQRModal(isQRScan);
   }, [isQRScan]);
 
-  // Listen for QR reset events from the header button
+  // Listen for QR reset events from the header button with enhanced handling
   useEffect(() => {
-    const handleQRReset = () => {
-      setInteractionChoiceMade(false);
+    const handleQRReset = (event: Event) => {
+      console.log('🔄 QR Reset event received:', event);
+      
+      // Force clear localStorage and update state
+      try {
+        localStorage.removeItem('interaction_choice_made');
+        console.log('✅ LocalStorage cleared successfully');
+        
+        // Update state with callback to ensure it triggers
+        setInteractionChoiceMade(prev => {
+          console.log('🔄 State update: prev =', prev, ', new = false');
+          return false;
+        });
+        
+        // Force modal to show immediately as backup
+        setTimeout(() => {
+          setShowQRModal(true);
+          console.log('🔄 Modal forced to show via timeout');
+        }, 100);
+        
+        console.log('✅ QR reset completed successfully');
+      } catch (error) {
+        console.error('❌ Error during QR reset:', error);
+      }
     };
 
-    window.addEventListener('qrReset', handleQRReset);
-    return () => window.removeEventListener('qrReset', handleQRReset);
+    // Add listener with more specific event handling
+    window.addEventListener('qrReset', handleQRReset, { passive: true });
+    // Also listen on document for backup
+    document.addEventListener('qrReset', handleQRReset, { passive: true });
+    
+    console.log('🎧 QR reset event listeners registered');
+    
+    return () => {
+      window.removeEventListener('qrReset', handleQRReset);
+      document.removeEventListener('qrReset', handleQRReset);
+      console.log('🧹 QR reset event listeners cleaned up');
+    };
   }, []);
+
+  // Additional safeguard: Watch for localStorage changes
+  useEffect(() => {
+    const checkLocalStorage = () => {
+      const currentChoice = localStorage.getItem('interaction_choice_made');
+      const hasChoice = !!currentChoice;
+      
+      if (hasChoice !== interactionChoiceMade) {
+        console.log('🔄 LocalStorage mismatch detected, syncing state:', { 
+          localStorage: hasChoice, 
+          state: interactionChoiceMade 
+        });
+        setInteractionChoiceMade(hasChoice);
+      }
+    };
+
+    // Check periodically for localStorage changes (fallback)
+    const interval = setInterval(checkLocalStorage, 1000);
+    
+    return () => clearInterval(interval);
+  }, [interactionChoiceMade]);
   
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
@@ -130,7 +183,7 @@ export default function WineDetails() {
   console.log('🔍 QR Debug:', {
     location,
     isScannedPage,
-    interactionChoiceMade: localStorage.getItem('interaction_choice_made'),
+    interactionChoiceMade,
     isQRScan,
     showQRModal,
     wine: wine ? 'loaded' : 'null',
