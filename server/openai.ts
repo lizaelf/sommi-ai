@@ -563,7 +563,6 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     console.log("Converting text to speech...");
     
     // Clean up the text for better speech synthesis
-    // Remove markdown-like formatting if any
     let cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1')
                        .replace(/\*(.*?)\*/g, '$1')
                        .replace(/#+\s/g, '')
@@ -585,56 +584,78 @@ export async function textToSpeech(text: string): Promise<Buffer> {
       speed: VoiceConfig.SPEED
     });
     
-    // Use OpenAI's Text-to-Speech API with FIXED consistent voice settings and timeout
-    const response = await openai.audio.speech.create({
-      model: VoiceConfig.MODEL,
-      voice: VoiceConfig.VOICE,
-      speed: VoiceConfig.SPEED,
-      input: cleanText,
-    }, {
-      timeout: 30000 // 30 second timeout for deployment environments
-    });
+    // Retry logic to minimize fallbacks
+    let attempts = 0;
+    const maxAttempts = 2;
     
-    console.log("OpenAI TTS response received");
-    
-    // Convert the response to a buffer
-    const buffer = Buffer.from(await response.arrayBuffer());
-    console.log("Text-to-speech conversion successful, buffer size:", buffer.length);
-    
-    // Cache the response for consistency and performance
-    if (voiceCache.size >= MAX_CACHE_SIZE) {
-      // Remove oldest entry to make space
-      const entries = voiceCache.entries();
-      const firstEntry = entries.next().value;
-      if (firstEntry) {
-        voiceCache.delete(firstEntry[0]);
+    while (attempts < maxAttempts) {
+      try {
+        attempts++;
+        
+        // Use OpenAI's Text-to-Speech API with optimized timeout
+        const response = await openai.audio.speech.create({
+          model: VoiceConfig.MODEL,
+          voice: VoiceConfig.VOICE,
+          speed: VoiceConfig.SPEED,
+          input: cleanText,
+        }, {
+          timeout: attempts === 1 ? 45000 : 30000 // Longer timeout on first attempt
+        });
+        
+        console.log("OpenAI TTS response received");
+        
+        // Convert the response to a buffer
+        const buffer = Buffer.from(await response.arrayBuffer());
+        console.log("Text-to-speech conversion successful, buffer size:", buffer.length);
+        
+        // Cache the response for consistency and performance
+        if (voiceCache.size >= MAX_CACHE_SIZE) {
+          const entries = voiceCache.entries();
+          const firstEntry = entries.next().value;
+          if (firstEntry) {
+            voiceCache.delete(firstEntry[0]);
+          }
+        }
+        voiceCache.set(cacheKey, buffer);
+        console.log("Voice response cached for future consistency");
+        
+        return buffer;
+        
+      } catch (attemptError: any) {
+        console.log(`TTS attempt ${attempts} failed:`, attemptError.message);
+        
+        if (attempts === maxAttempts) {
+          throw attemptError;
+        }
+        
+        // Brief pause before retry
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
-    voiceCache.set(cacheKey, buffer);
-    console.log("Voice response cached for future consistency");
     
-    return buffer;
+    throw new Error("All TTS attempts failed");
+    
   } catch (error) {
     console.error("Error in text-to-speech conversion:", error);
     
-    // If it's a timeout error, try with a simpler model
-    if (error && (error as any).message?.includes('timeout')) {
-      console.log("Retrying with fallback TTS model due to timeout");
+    // Final fallback with simplified parameters
+    if ((error as any).message?.includes('timeout') || (error as any).code === 'ECONNRESET') {
+      console.log("Attempting final fallback TTS with simplified parameters");
       try {
         const fallbackResponse = await openai.audio.speech.create({
-          model: 'tts-1', // Use faster model
-          voice: 'alloy', // Use default voice
-          speed: 1.0,
-          input: cleanText.slice(0, 300), // Limit text length
+          model: 'tts-1',
+          voice: 'onyx', // Keep consistent voice
+          speed: 1.2,
+          input: cleanText.slice(0, 500),
         }, {
-          timeout: 20000 // 20 second timeout for fallback
+          timeout: 25000
         });
         
         const buffer = Buffer.from(await fallbackResponse.arrayBuffer());
         console.log("Fallback TTS conversion successful, buffer size:", buffer.length);
         return buffer;
       } catch (fallbackError) {
-        console.error("Fallback TTS also failed:", fallbackError);
+        console.error("Final fallback TTS failed:", fallbackError);
       }
     }
     
