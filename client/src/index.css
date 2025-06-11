@@ -673,13 +673,22 @@ button:active {
   }
 }
 
-/* Hue rotation animation for idle state gradient border */
-@keyframes bg-hue-idle {
+/* Opacity pulsing animation for idle state gradient border */
+@keyframes bg-opacity-idle {
   0% {
-    filter: hue-rotate(0deg);
+    filter: brightness(1) opacity(1);
+  }
+  25% {
+    filter: brightness(1.3) opacity(0.8);
+  }
+  50% {
+    filter: brightness(0.7) opacity(1.2);
+  }
+  75% {
+    filter: brightness(1.1) opacity(0.9);
   }
   100% {
-    filter: hue-rotate(360deg);
+    filter: brightness(1) opacity(1);
   }
 }
 
