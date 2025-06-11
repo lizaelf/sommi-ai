@@ -1034,7 +1034,6 @@ const Cellar = () => {
         {/* Cellar Container */}
         <div
           style={{
-            overflow: "hidden",
             margin: "0 16px 0 16px",
           }}
         >
