@@ -6,7 +6,7 @@ interface ButtonProps {
   onClick?: () => void;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
-  variant?: "default" | "secondary" | "danger";
+  variant?: "default" | "secondary" | "danger" | "secondaryFilled";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   disabled?: boolean;
@@ -77,6 +77,18 @@ const Button: React.FC<ButtonProps> = ({
       border: "none",
       color: "white",
     },
+    secondaryFilled: {
+      background: "rgba(255, 255, 255, 0.08)",
+      backgroundColor: "rgba(255, 255, 255, 0.08)",
+      border: "none",
+      borderRadius: "9999px",
+      color: "white",
+      fontSize: "14px",
+      fontWeight: "500",
+      fontFamily: "Inter, sans-serif",
+      padding: "8px 16px",
+      transition: "all 0.2s ease",
+    },
   };
 
   const handleClick = () => {
@@ -93,6 +105,8 @@ const Button: React.FC<ButtonProps> = ({
         e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
       } else if (variant === "danger") {
         e.currentTarget.style.backgroundColor = "#4A1617";
+      } else if (variant === "secondaryFilled") {
+        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
       }
     }
   };
@@ -105,6 +119,8 @@ const Button: React.FC<ButtonProps> = ({
         e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
       } else if (variant === "danger") {
         e.currentTarget.style.backgroundColor = "#5D1D1E";
+      } else if (variant === "secondaryFilled") {
+        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
       }
     }
   };
