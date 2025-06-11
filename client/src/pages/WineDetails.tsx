@@ -113,7 +113,15 @@ export default function WineDetails() {
             <>
               {isScannedPage && (
                 <Link to="/cellar">
-                  <Button variant="secondary" size="sm">
+                  <Button 
+                    variant="secondary" 
+                    size="sm"
+                    style={{
+                      borderRadius: "24px",
+                      background: "rgba(255, 255, 255, 0.08)",
+                      border: "none"
+                    }}
+                  >
                     My cellar
                   </Button>
                 </Link>
