@@ -49,6 +49,54 @@ export function useConversation(wineId?: string | number): UseConversationReturn
   // Query client for server-side data operations
   const queryClient = useQueryClient();
 
+  // Create a new conversation
+  const createNewConversation = useCallback(async (): Promise<number | null> => {
+    try {
+      // Create wine-specific conversation title and metadata
+      const wineTitle = wineId && wineId !== 'default' 
+        ? `Wine ${String(wineId).replace('wine_', '')} Conversation` 
+        : `New Conversation`;
+      
+      const newConversation = {
+        userId: 1, // Default user ID
+        title: `${wineTitle} ${new Date().toLocaleString()}`,
+        createdAt: new Date(),
+        lastActivity: new Date(),
+        messages: [],
+        // Add wine metadata for filtering
+        metadata: wineId && wineId !== 'default' ? { wineId } : undefined
+      };
+      
+      const id = await indexedDBService.createConversation(newConversation);
+      
+      if (id) {
+        // Update localStorage
+        localStorage.setItem(getConversationKey(wineId), id.toString());
+        
+        // Update state
+        setCurrentConversationIdState(id);
+        setMessages([]);
+        
+        // Refresh conversations list (wine-specific)
+        let conversations: any[] = [];
+        if (wineId && wineId !== 'default') {
+          conversations = await indexedDBService.getWineConversations(wineId);
+        } else {
+          conversations = await indexedDBService.getAllConversations();
+        }
+        setLocalConversations(adaptIDBConversationsToConversations(conversations));
+        
+        console.log(`Created new conversation for wine ${wineId}: ${id}`);
+        return id;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error creating new wine-specific conversation", error);
+      return null;
+    }
+  }, [wineId]);
+
   /**
    * Load the most recent conversation for the specific wine
    */
@@ -99,11 +147,15 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       console.error("Error loading wine-specific conversation:", error);
       await createNewConversation();
     }
-  }, [wineId]);
+  }, [wineId, createNewConversation]);
 
   // Initialization code that loads saved conversation from backend and IndexedDB
   useEffect(() => {
+    let isMounted = true;
+    
     async function initializeConversation() {
+      if (!isMounted) return;
+      
       console.log("Initializing conversation...");
       
       // Force scroll to top on initialization
@@ -113,23 +165,31 @@ export function useConversation(wineId?: string | number): UseConversationReturn
         // First, try to load conversations from backend (for deployment persistence)
         try {
           const backendConversations = await fetch('/api/conversations');
+          if (!isMounted) return;
+          
           if (backendConversations.ok) {
             const conversations = await backendConversations.json();
+            if (!isMounted) return;
+            
             if (conversations && conversations.length > 0) {
               console.log(`Loaded ${conversations.length} conversations from backend`);
               setLocalConversations(conversations);
               
               // Get the most recent conversation
               const mostRecent = conversations[0]; // Backend should return sorted by most recent
-              if (mostRecent) {
+              if (mostRecent && isMounted) {
                 console.log(`Using most recent conversation from backend: ${mostRecent.id}`);
                 setCurrentConversationIdState(mostRecent.id);
                 localStorage.setItem(getConversationKey(wineId), mostRecent.id.toString());
                 
                 // Load messages for this conversation from backend
                 const messagesResponse = await fetch(`/api/conversations/${mostRecent.id}/messages`);
+                if (!isMounted) return;
+                
                 if (messagesResponse.ok) {
                   const backendMessages = await messagesResponse.json();
+                  if (!isMounted) return;
+                  
                   console.log(`Loaded ${backendMessages.length} messages from backend`);
                   setMessages(backendMessages);
                   
@@ -141,8 +201,11 @@ export function useConversation(wineId?: string | number): UseConversationReturn
             }
           }
         } catch (backendError) {
+          if (!isMounted) return;
           console.log('Backend not available, falling back to IndexedDB:', backendError);
         }
+        
+        if (!isMounted) return;
         
         // Fallback to IndexedDB if backend is not available
         const savedConversationId = localStorage.getItem(getConversationKey(wineId));
@@ -152,6 +215,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
           console.log(`Found saved conversation ID in localStorage: ${conversationId}`);
           
           const conversation = await indexedDBService.getConversation(conversationId);
+          if (!isMounted) return;
           
           if (conversation) {
             console.log(`Using saved conversation ID from localStorage: ${conversationId}`);
@@ -166,24 +230,33 @@ export function useConversation(wineId?: string | number): UseConversationReturn
             }
           } else {
             console.log(`Saved conversation ${conversationId} not found, loading most recent`);
-            await loadMostRecentConversation();
+            if (isMounted) {
+              await loadMostRecentConversation();
+            }
           }
         } else {
           console.log('No saved conversation ID in localStorage, loading most recent');
-          await loadMostRecentConversation();
+          if (isMounted) {
+            await loadMostRecentConversation();
+          }
         }
+        
+        if (!isMounted) return;
         
         // Load all conversations from IndexedDB
         const allConversations = await indexedDBService.getAllConversations();
-        if (allConversations && allConversations.length > 0) {
+        if (allConversations && allConversations.length > 0 && isMounted) {
           setLocalConversations(adaptIDBConversationsToConversations(allConversations));
           console.log(`Loaded ${allConversations.length} conversations from IndexedDB`);
         }
       } catch (error) {
+        if (!isMounted) return;
         console.error("Error initializing conversation", error);
         // Fall back to creating a new conversation
         try {
-          await createNewConversation();
+          if (isMounted) {
+            await createNewConversation();
+          }
         } catch (fallbackError) {
           console.error("Failed to create new conversation after error", fallbackError);
         }
@@ -201,7 +274,11 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     }
     
     initializeConversation();
-  }, [wineId]);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [wineId, loadMostRecentConversation, createNewConversation]);
   
   // Function to add a message to the current conversation
   const addMessage = useCallback(async (message: Message | ClientMessage) => {
@@ -275,54 +352,6 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     } else {
       localStorage.removeItem(getConversationKey(wineId));
       setMessages([]);
-    }
-  }, [wineId]);
-  
-  // Create a new conversation
-  const createNewConversation = useCallback(async (): Promise<number | null> => {
-    try {
-      // Create wine-specific conversation title and metadata
-      const wineTitle = wineId && wineId !== 'default' 
-        ? `Wine ${wineId.replace('wine_', '')} Conversation` 
-        : `New Conversation`;
-      
-      const newConversation = {
-        userId: 1, // Default user ID
-        title: `${wineTitle} ${new Date().toLocaleString()}`,
-        createdAt: new Date(),
-        lastActivity: new Date(),
-        messages: [],
-        // Add wine metadata for filtering
-        metadata: wineId && wineId !== 'default' ? { wineId } : undefined
-      };
-      
-      const id = await indexedDBService.createConversation(newConversation);
-      
-      if (id) {
-        // Update localStorage
-        localStorage.setItem(getConversationKey(wineId), id.toString());
-        
-        // Update state
-        setCurrentConversationIdState(id);
-        setMessages([]);
-        
-        // Refresh conversations list (wine-specific)
-        let conversations: any[] = [];
-        if (wineId && wineId !== 'default') {
-          conversations = await indexedDBService.getWineConversations(wineId);
-        } else {
-          conversations = await indexedDBService.getAllConversations();
-        }
-        setLocalConversations(adaptIDBConversationsToConversations(conversations));
-        
-        console.log(`Created new conversation for wine ${wineId}: ${id}`);
-        return id;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error("Error creating new wine-specific conversation", error);
-      return null;
     }
   }, [wineId]);
   
