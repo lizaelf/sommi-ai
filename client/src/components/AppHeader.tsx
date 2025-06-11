@@ -58,9 +58,9 @@ export function AppHeader({
   }, [scrolled]);
 
   const headerStyles = {
-    backgroundColor: scrolled ? 'rgba(10, 10, 10, 0.6)' : 'transparent',
-    backdropFilter: scrolled ? 'blur(4px)' : 'none',
-    WebkitBackdropFilter: scrolled ? 'blur(4px)' : 'none',
+    background: scrolled ? 'rgba(10, 10, 10, 0.60)' : 'transparent',
+    backdropFilter: scrolled ? 'blur(2px)' : 'none',
+    WebkitBackdropFilter: scrolled ? 'blur(2px)' : 'none',
     borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
     transition: 'all 0.3s ease'
   };
@@ -101,7 +101,14 @@ export function AppHeader({
               <div className="relative" ref={dropdownRef}>
                 <Button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  variant="headerIcon"
+                  variant="secondary"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    padding: "0",
+                    minHeight: "40px",
+                    borderRadius: "20px",
+                  }}
                 >
                   <MoreHorizontal className="w-6 h-6" />
                 </Button>
