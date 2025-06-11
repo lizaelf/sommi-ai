@@ -47,11 +47,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           borderLeft: '1px solid transparent',
           backgroundImage: isFocused 
             ? 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)'
-            : 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 100%)',
+            : 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
           backgroundOrigin: 'border-box',
           backgroundClip: 'padding-box, border-box',
-          overflow: 'hidden',
-          animation: !isFocused ? 'bg-hue-idle 1.5s linear infinite' : 'none'
+          overflow: 'hidden'
         }}
       >
         {isFocused && (
@@ -60,6 +59,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent animate-slide-lr-delayed"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow"></div>
           </div>
+        )}
+        
+        {!isFocused && (
+          <div className="border-pulse-animation" />
         )}
         <input
           ref={inputRef}
