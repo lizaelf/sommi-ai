@@ -31,7 +31,7 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
           Text
         </Button>
         
-        <Button
+        <button
           onClick={() => {
             // Close the QR modal first
             onClose();
@@ -41,16 +41,34 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
               window.dispatchEvent(new CustomEvent('triggerVoiceAssistant'));
             }, 100);
           }}
-          variant="primary"
           style={{
             flex: 1,
-            height: '56px',
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            border: 'none',
+            borderRadius: '24px',
+            padding: '8px 12px',
+            color: 'white',
             fontSize: '16px',
-            fontWeight: 600,
+            fontWeight: 500,
+            fontFamily: 'Inter, sans-serif',
+            cursor: 'pointer',
+            outline: 'none',
+            transition: 'all 0.2s ease',
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
+            boxSizing: 'border-box',
+            height: '56px',
+            minWidth: 'fit-content'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
           }}
         >
           Voice
-        </Button>
+        </button>
       </div>
     </BottomSheet>
   );
