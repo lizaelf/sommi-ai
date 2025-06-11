@@ -2273,24 +2273,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                     <button
                       onClick={() => handleSendMessage("Tasting notes")}
-                      className="whitespace-nowrap"
-                      style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.12) !important",
-                        border: "none !important",
-                        color: "white !important",
-                        fontSize: "14px !important",
-                        fontWeight: 500,
-                        fontFamily: "Inter, sans-serif",
-                        borderRadius: "24px",
-                        padding: "8px 16px",
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2) !important";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12) !important";
-                      }}
+                      className="bg-white/10 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-white/20"
                     >
                       Tasting notes
                     </button>
@@ -2298,24 +2281,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       onClick={() =>
                         handleSendMessage("Simple recipes for this wine")
                       }
-                      className="whitespace-nowrap"
-                      style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.12) !important",
-                        border: "none !important",
-                        color: "white !important",
-                        fontSize: "14px !important",
-                        fontWeight: 500,
-                        fontFamily: "Inter, sans-serif",
-                        borderRadius: "24px",
-                        padding: "8px 16px",
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2) !important";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12) !important";
-                      }}
+                      className="bg-white/10 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-white/20"
                     >
                       Simple recipes
                     </button>
@@ -2323,24 +2289,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       onClick={() =>
                         handleSendMessage("Where is this wine from?")
                       }
-                      className="whitespace-nowrap"
-                      style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.12) !important",
-                        border: "none !important",
-                        color: "white !important",
-                        fontSize: "14px !important",
-                        fontWeight: 500,
-                        fontFamily: "Inter, sans-serif",
-                        borderRadius: "24px",
-                        padding: "8px 16px",
-                        transition: "all 0.2s ease"
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2) !important";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12) !important";
-                      }}
+                      className="bg-white/10 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-white/20"
                     >
                       Where it's from
                     </button>
