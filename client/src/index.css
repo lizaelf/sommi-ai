@@ -673,13 +673,13 @@ button:active {
   }
 }
 
-/* Hue rotation animation for idle state gradient border */
-@keyframes bg-hue-idle {
+/* Moving gradient animation for idle state border */
+@keyframes bg-slide-idle {
   0% {
-    filter: hue-rotate(0deg);
+    background-position: -200% 0;
   }
   100% {
-    filter: hue-rotate(360deg);
+    background-position: 200% 0;
   }
 }
 
