@@ -116,6 +116,35 @@ export function AppHeader({
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
+            {/* Temporary Reset button for QR scan testing */}
+            <button
+              onClick={() => {
+                localStorage.removeItem('interaction_choice_made');
+                window.location.reload();
+              }}
+              style={{
+                background: "rgba(255, 255, 255, 0.15)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "20px",
+                color: "white",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "12px",
+                fontWeight: 500,
+                padding: "8px 12px",
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+              }}
+              title="Reset to QR scan state"
+            >
+              Reset QR
+            </button>
+            
             {rightContent || (
               <div className="relative" ref={dropdownRef}>
                 <IconButton

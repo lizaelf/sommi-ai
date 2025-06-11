@@ -39,12 +39,7 @@ export default function WineDetails() {
   // Check if this is a fresh QR scan (show interaction choice)
   const isQRScan = isScannedPage && !localStorage.getItem('interaction_choice_made');
   
-  // For testing - temporarily clear the choice to see the QR scan state
-  useEffect(() => {
-    if (isScannedPage) {
-      localStorage.removeItem('interaction_choice_made');
-    }
-  }, [isScannedPage]);
+
   
   // Handle interaction choice
   const handleInteractionChoice = (choice: 'text' | 'voice') => {
