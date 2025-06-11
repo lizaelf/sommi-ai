@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Trash2, RotateCcw } from "lucide-react";
 import Logo from "@/components/Logo";
 import { IconButton } from "@/components/ui/IconButton";
 
@@ -22,6 +22,7 @@ export function AppHeader({
 }: AppHeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -116,34 +117,88 @@ export function AppHeader({
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
-            {/* Temporary Reset button for QR scan testing */}
+            {/* Enhanced Reset QR button with visual feedback */}
             <button
-              onClick={() => {
-                localStorage.removeItem('interaction_choice_made');
-                // Force re-render by dispatching a custom event
-                window.dispatchEvent(new CustomEvent('qrReset'));
+              onClick={async () => {
+                if (isResetting) return; // Prevent multiple clicks
+                
+                try {
+                  setIsResetting(true);
+                  console.log('Starting QR reset process...');
+                  
+                  // Clear localStorage with error handling
+                  try {
+                    localStorage.removeItem('interaction_choice_made');
+                    console.log('LocalStorage cleared successfully');
+                  } catch (storageError) {
+                    console.error('Error clearing localStorage:', storageError);
+                    throw new Error('Failed to clear local storage');
+                  }
+                  
+                  // Small delay to ensure localStorage is properly cleared
+                  await new Promise(resolve => setTimeout(resolve, 100));
+                  
+                  // Dispatch enhanced event with details
+                  const resetEvent = new CustomEvent('qrReset', {
+                    detail: {
+                      timestamp: Date.now(),
+                      source: 'header-button',
+                      success: true
+                    }
+                  });
+                  window.dispatchEvent(resetEvent);
+                  console.log('QR reset event dispatched successfully');
+                  
+                  // Brief delay for visual feedback
+                  await new Promise(resolve => setTimeout(resolve, 300));
+                  
+                } catch (error) {
+                  console.error('QR reset failed:', error);
+                  // Could add toast notification here in future
+                } finally {
+                  setIsResetting(false);
+                }
               }}
+              disabled={isResetting}
               style={{
-                background: "rgba(255, 255, 255, 0.15)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
+                background: isResetting 
+                  ? "rgba(34, 197, 94, 0.2)" 
+                  : "rgba(255, 255, 255, 0.15)",
+                border: isResetting 
+                  ? "1px solid rgba(34, 197, 94, 0.4)" 
+                  : "1px solid rgba(255, 255, 255, 0.2)",
                 borderRadius: "20px",
                 color: "white",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "12px",
                 fontWeight: 500,
                 padding: "8px 12px",
-                cursor: "pointer",
-                transition: "all 0.2s ease"
+                cursor: isResetting ? "not-allowed" : "pointer",
+                transition: "all 0.2s ease",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                opacity: isResetting ? 0.8 : 1
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                if (!isResetting) {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                if (!isResetting) {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                }
               }}
-              title="Reset"
+              title={isResetting ? "Resetting QR state..." : "Reset QR scan state"}
             >
-              Reset
+              <RotateCcw 
+                size={14} 
+                style={{
+                  animation: isResetting ? "spin 1s linear infinite" : "none"
+                }}
+              />
+              {isResetting ? "Resetting..." : "Reset QR"}
             </button>
             
             {rightContent || (

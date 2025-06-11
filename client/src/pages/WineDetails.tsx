@@ -30,6 +30,7 @@ export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [interactionChoiceMade, setInteractionChoiceMade] = useState<boolean>(false);
   const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
@@ -37,9 +38,14 @@ export default function WineDetails() {
   // Determine if this is a scanned page (root/scanned routes) or wine details page
   const isScannedPage = location === '/' || location === '/scanned' || location.includes('/scanned?');
   
-  // Check if this is a fresh QR scan (show interaction choice)
-  // Show QR scan state if: 1) it's a scanned page route, or 2) interaction choice was cleared (reset)
-  const isQRScan = !localStorage.getItem('interaction_choice_made');
+  // Initialize interaction choice state from localStorage
+  useEffect(() => {
+    const choiceMade = Boolean(localStorage.getItem('interaction_choice_made'));
+    setInteractionChoiceMade(choiceMade);
+  }, []);
+  
+  // Check if this is a fresh QR scan (show interaction choice) - now reactive to state changes
+  const isQRScan = !interactionChoiceMade;
   
 
   
@@ -48,6 +54,7 @@ export default function WineDetails() {
   // Handle interaction choice
   const handleInteractionChoice = (choice: 'text' | 'voice') => {
     localStorage.setItem('interaction_choice_made', choice);
+    setInteractionChoiceMade(true);
     setShowQRModal(false);
     // Continue to the chat interface
   };
@@ -59,14 +66,15 @@ export default function WineDetails() {
 
   // Listen for QR reset events from the header button
   useEffect(() => {
-    const handleQRReset = () => {
-      // Re-evaluate QR scan state
-      const shouldShowModal = !localStorage.getItem('interaction_choice_made');
-      setShowQRModal(shouldShowModal);
+    const handleQRReset = (event: CustomEvent) => {
+      console.log('QR Reset event received:', event.detail);
+      // Update the reactive state instead of just checking localStorage
+      setInteractionChoiceMade(false);
+      // The modal will show automatically due to the isQRScan reactive computation
     };
 
-    window.addEventListener('qrReset', handleQRReset);
-    return () => window.removeEventListener('qrReset', handleQRReset);
+    window.addEventListener('qrReset', handleQRReset as EventListener);
+    return () => window.removeEventListener('qrReset', handleQRReset as EventListener);
   }, []);
   
   // Load selected wine data from URL parameter or localStorage
