@@ -19,38 +19,25 @@ export function AppHeader({
   showBackButton = false,
   onDeleteTenant
 }: AppHeaderProps) {
-  const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
     <div 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${className}`}
-      style={{
-        backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
-        backdropFilter: scrolled ? 'blur(8px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(8px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
-      }}
+      className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-white/10 ${className}`}
     >
       <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
