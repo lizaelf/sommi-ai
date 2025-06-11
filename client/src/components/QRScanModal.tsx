@@ -45,7 +45,7 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
             </h2>
             
             {/* Choice Buttons */}
-            <div className="flex gap-4">
+            <div className="flex gap-3 w-full">
               <button
                 onClick={onTextChoice}
                 className="flex-1 h-14 bg-white/15 hover:bg-white/25 border border-white/20 rounded-full text-white font-medium text-base transition-all duration-200 ease-out"
