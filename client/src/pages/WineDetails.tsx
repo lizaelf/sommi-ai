@@ -74,13 +74,15 @@ export default function WineDetails() {
   useEffect(() => {
     const handleQRReset = (event: Event) => {
       console.log('🔄 QR Reset event received - forcing modal to show');
+      console.log('🔄 Current states before reset:', { interactionChoiceMade, showQRModal });
       setInteractionChoiceMade(false);
       setShowQRModal(true);
+      console.log('🔄 States set - modal should appear');
     };
 
     window.addEventListener('qrReset', handleQRReset);
     return () => window.removeEventListener('qrReset', handleQRReset);
-  }, []);
+  }, [interactionChoiceMade, showQRModal]);
   
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
