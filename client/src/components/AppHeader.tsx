@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
 import Logo from "@/components/Logo";
+import Button from "@/components/ui/Button";
 
 interface AppHeaderProps {
   title?: string;
@@ -98,12 +99,19 @@ export function AppHeader({
           <div className="flex items-center gap-3">
             {rightContent || (
               <div className="relative" ref={dropdownRef}>
-                <button 
+                <Button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="cursor-pointer text-white/80 hover:text-white transition-all duration-200 bg-transparent border-none p-0"
+                  variant="secondary"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    padding: "0",
+                    minHeight: "40px",
+                    borderRadius: "20px",
+                  }}
                 >
                   <MoreHorizontal className="w-6 h-6" />
-                </button>
+                </Button>
                 
                 {showDropdown && onDeleteTenant && (
                   <div className="absolute right-0 top-full mt-2 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg min-w-[160px] z-50">
