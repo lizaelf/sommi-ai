@@ -205,20 +205,24 @@ body {
   }
 }
 
-/* Force remove all button borders and outlines */
-button {
+/* Update the global button rule to exclude secondary-filled buttons */
+button:not(.secondary-filled-button) {
+  all: unset;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  background-image: linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2)) !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
-button:focus {
+button:not(.secondary-filled-button):focus {
   outline: none !important;
   box-shadow: none !important;
   border: none !important;
 }
 
-button:active {
+button:not(.secondary-filled-button):active {
   outline: none !important;
   box-shadow: none !important;
   border: none !important;
