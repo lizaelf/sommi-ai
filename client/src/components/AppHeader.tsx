@@ -79,9 +79,29 @@ export function AppHeader({
             {showBackButton && onBack ? (
               <div
                 onClick={onBack}
-                className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
+                className="cursor-pointer transition-all duration-200"
+                style={{
+                  background: "rgba(255, 255, 255, 0.15)",
+                  borderRadius: "20px",
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                }}
               >
-                <ArrowLeft className="w-6 h-6" />
+                <ArrowLeft className="w-5 h-5" style={{ color: "white" }} />
               </div>
             ) : (
               <Logo />
