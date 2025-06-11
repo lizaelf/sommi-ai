@@ -38,7 +38,9 @@ export function AppHeader({
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
+      const scrollY = window.scrollY;
+      console.log('Scroll position:', scrollY, 'Scrolled state:', scrollY > 10);
+      if (scrollY > 10) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -54,7 +56,12 @@ export function AppHeader({
 
   return (
     <div 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'} ${className}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${className}`}
+      style={{
+        backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.9)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(8px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+      }}
     >
       <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
