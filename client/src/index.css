@@ -245,8 +245,8 @@ button:active {
 
 /* Suggestion buttons with forced styling */
 .suggestion-button {
-  background: rgba(255, 255, 255, 0.1) !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
   color: white !important;
   border: none !important;
   border-radius: 9999px !important;
@@ -260,8 +260,8 @@ button:active {
 }
 
 .suggestion-button:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  background-color: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
 }
 
 @tailwind base;
