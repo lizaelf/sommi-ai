@@ -1758,52 +1758,105 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         <div style={{ marginBottom: "32px" }}>
                           <h2
                             style={{
-                              ...typography.h2,
                               color: "white",
                               marginBottom: "16px",
                               textAlign: "left",
                               fontSize: "18px",
                               fontWeight: 500,
+                              fontFamily: "Inter, sans-serif",
                             }}
                           >
-                            Chat with previous conversation with AI
+                            Chat
                           </h2>
                           
+                          {/* Show recent conversation messages */}
                           {messages.length > 0 && (
-                            <button
-                              onClick={() => setShowFullConversation(true)}
-                              style={{
-                                backgroundColor: "rgba(255, 255, 255, 0.08)",
-                                borderRadius: "32px",
-                                height: "56px",
-                                minHeight: "56px",
-                                maxHeight: "56px",
-                                padding: "0 16px",
-                                margin: "0 0 16px 0",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                border: "none",
-                                color: "white",
-                                fontFamily: "Inter, sans-serif",
-                                fontSize: "16px",
-                                fontWeight: 500,
-                                cursor: "pointer",
-                                outline: "none",
-                                width: "100%",
-                                boxSizing: "border-box",
-                                lineHeight: "1",
-                                transition: "background-color 0.2s ease",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                              }}
-                            >
-                              View conversation history
-                            </button>
+                            <div style={{ marginBottom: "16px" }}>
+                              {(() => {
+                                // Show last 2-3 conversation exchanges (4-6 messages)
+                                const recentMessages = messages.slice(-6);
+                                
+                                return recentMessages.map((message: any, index: number) => (
+                                  <div
+                                    key={`recent-${message.id}-${index}`}
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: message.role === "user" ? "flex-end" : "flex-start",
+                                      width: "100%",
+                                      marginBottom: "12px",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        backgroundColor: message.role === "user" ? "#F5F5F5" : "transparent",
+                                        borderRadius: "16px",
+                                        padding: "12px 16px",
+                                        width: message.role === "user" ? "fit-content" : "100%",
+                                        maxWidth: message.role === "user" ? "80%" : "100%",
+                                      }}
+                                    >
+                                      {message.role === "assistant" ? (
+                                        <div
+                                          style={{
+                                            color: "#DBDBDB",
+                                            fontFamily: "Inter, system-ui, sans-serif",
+                                            fontSize: "14px",
+                                            lineHeight: "1.5",
+                                          }}
+                                        >
+                                          {formatContent(message.content)}
+                                        </div>
+                                      ) : (
+                                        <div
+                                          style={{
+                                            color: "#000000",
+                                            fontFamily: "Inter, system-ui, sans-serif",
+                                            fontSize: "14px",
+                                            lineHeight: "1.5",
+                                          }}
+                                        >
+                                          {formatContent(message.content)}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ));
+                              })()}
+                              
+                              {/* View full conversation button */}
+                              <button
+                                onClick={() => setShowFullConversation(true)}
+                                style={{
+                                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                                  borderRadius: "32px",
+                                  height: "48px",
+                                  padding: "0 16px",
+                                  margin: "8px 0 0 0",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  border: "none",
+                                  color: "white",
+                                  fontFamily: "Inter, sans-serif",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                  cursor: "pointer",
+                                  outline: "none",
+                                  width: "100%",
+                                  boxSizing: "border-box",
+                                  lineHeight: "1",
+                                  transition: "background-color 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                                }}
+                              >
+                                View full conversation
+                              </button>
+                            </div>
                           )}
                         </div>
 
