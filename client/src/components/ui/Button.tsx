@@ -28,7 +28,7 @@ const Button: React.FC<ButtonProps> = ({
     display: "inline-flex" as const,
     justifyContent: "center" as const,
     alignItems: "center" as const,
-    borderRadius: (fullWidth || className?.includes('w-full')) ? 0 : (variant === "secondary" ? 16 : 24),
+    borderRadius: (fullWidth || className?.includes('w-full')) ? 0 : 24,
     border: "1px solid transparent",
     cursor: disabled ? "not-allowed" : "pointer",
     fontFamily: "Inter, sans-serif",
@@ -66,9 +66,9 @@ const Button: React.FC<ButtonProps> = ({
       color: "white",
     },
     secondary: {
-      background: "rgba(255, 255, 255, 0.05)",
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      border: "1px solid rgba(255, 255, 255, 0.20)",
+      background: "rgba(255, 255, 255, 0.08)",
+      backgroundColor: "rgba(255, 255, 255, 0.08)",
+      border: "none",
       color: "white",
     },
     danger: {
@@ -90,7 +90,7 @@ const Button: React.FC<ButtonProps> = ({
       if (variant === "default") {
         e.currentTarget.style.transform = "scale(1.02)";
       } else if (variant === "secondary") {
-        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.10)";
+        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
       } else if (variant === "danger") {
         e.currentTarget.style.backgroundColor = "#4A1617";
       }
@@ -102,7 +102,7 @@ const Button: React.FC<ButtonProps> = ({
       if (variant === "default") {
         e.currentTarget.style.transform = "scale(1)";
       } else if (variant === "secondary") {
-        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
       } else if (variant === "danger") {
         e.currentTarget.style.backgroundColor = "#5D1D1E";
       }
