@@ -26,7 +26,7 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
         
         <button
           onClick={onVoiceChoice}
-          className="flex-1 h-14 bg-white hover:bg-white/90 border border-white/20 rounded-full text-black font-semibold text-base transition-all duration-200 ease-out shadow-sm"
+          className="flex-1 h-14 bg-blue-600 hover:bg-blue-700 border border-blue-500 rounded-full text-white font-semibold text-base transition-all duration-200 ease-out shadow-lg"
         >
           Voice
         </button>
