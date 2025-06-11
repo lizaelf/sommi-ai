@@ -16,7 +16,23 @@ Create a new repository on GitHub named `sommi-ai` (or use your existing one).
 
 ### 2. Build the Application
 
-The application is already built with the correct paths for GitHub Pages deployment. The built files are in the `dist/` directory.
+Before building, ensure wine images are copied to the public directory:
+
+```bash
+# Copy wine images and assets
+node copy-assets.js
+
+# Build the application
+npm run build
+```
+
+Alternatively, use the automated build script:
+
+```bash
+./build.sh
+```
+
+The application is built with the correct paths for deployment. The built files are in the `dist/` directory.
 
 ### 3. Set Up GitHub Pages
 
@@ -53,6 +69,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Copy Assets
+        run: node copy-assets.js
 
       - name: Build
         run: npm run build
