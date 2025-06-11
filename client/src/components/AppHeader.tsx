@@ -72,7 +72,7 @@ export function AppHeader({
       style={headerStyles}
     >
       <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
-        <div className="flex items-center justify-between h-full">
+        <div className="relative flex items-center justify-between h-full">
           {/* Left side - Back button or Logo + Title */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {showBackButton && onBack ? (
@@ -87,7 +87,7 @@ export function AppHeader({
             )}
             {title && (
               <h1 
-                className="text-white text-[18px] font-medium truncate whitespace-nowrap flex-1 mr-4 text-left"
+                className="absolute left-1/2 transform -translate-x-1/2 text-white text-[18px] font-medium truncate whitespace-nowrap text-center"
               >
                 {title}
               </h1>
