@@ -118,7 +118,7 @@ export default function ConversationDialog() {
           title={getWineDisplayName()}
           showBackButton={true}
           onBack={handleBackClick}
-          rightContent={<ProfileIcon />}
+          rightContent={<ButtonIcon />}
         />
 
       {/* Conversation Content */}
