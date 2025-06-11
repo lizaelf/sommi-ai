@@ -1791,18 +1791,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
                         {/* Chat with AI Section */}
                         <div style={{ marginBottom: "32px" }}>
-                          <h2
+                          <h1
                             style={{
+                              ...typography.h1,
                               color: "white",
                               marginBottom: "16px",
                               textAlign: "left",
-                              fontSize: "18px",
-                              fontWeight: 500,
-                              fontFamily: "Inter, sans-serif",
                             }}
                           >
                             Chat
-                          </h2>
+                          </h1>
                           
                           {/* Show recent conversation messages */}
                           {messages.length > 0 && (
