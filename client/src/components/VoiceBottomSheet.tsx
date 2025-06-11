@@ -412,8 +412,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                         onClick={() => handleSuggestionClick(suggestion)}
                         style={{
                           backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                          border: '1px solid rgba(255, 255, 255, 0.15)',
-                          borderRadius: '16px',
+                          border: 'none',
+                          borderRadius: '24px',
                           padding: '8px 12px',
                           color: 'white',
                           fontSize: '13px',
@@ -429,11 +429,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
                         }}
                       >
                         {suggestion}

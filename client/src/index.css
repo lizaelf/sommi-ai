@@ -121,28 +121,28 @@ html, body {
     color: #000000 !important;
   }
 
-  /* Suggestion Button Style - White 12% Fill */
+  /* Suggestion Button Style - White 8% Fill */
   .suggestion-button {
-    background: rgba(255, 255, 255, 0.12) !important;
-    background-color: rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
     border: none !important;
     outline: none !important;
     padding: 8px 16px !important;
-    border-radius: 20px !important;
+    border-radius: 24px !important;
     transition: all 0.2s ease !important;
   }
 
   .suggestion-button:hover {
-    background: rgba(255, 255, 255, 0.18) !important;
-    background-color: rgba(255, 255, 255, 0.18) !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    background-color: rgba(255, 255, 255, 0.16) !important;
     border: none !important;
     outline: none !important;
   }
 
   .suggestion-button:active,
   .suggestion-button:focus {
-    background: rgba(255, 255, 255, 0.15) !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    background-color: rgba(255, 255, 255, 0.12) !important;
     border: none !important;
     outline: none !important;
   }

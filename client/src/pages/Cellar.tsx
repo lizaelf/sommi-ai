@@ -1213,8 +1213,8 @@ const Cellar = () => {
                 maxHeight: "56px",
                 padding: "0 24px",
                 borderRadius: "24px",
-                backgroundColor: "transparent",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
+                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                border: "none",
                 color: "white",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "16px",
@@ -1228,13 +1228,10 @@ const Cellar = () => {
                 boxSizing: "border-box",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(255, 255, 255, 0.05)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.4)";
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
               }}
             >
               View wine history
@@ -1325,8 +1322,8 @@ const Cellar = () => {
                       height: "56px",
                       padding: "0 24px",
                       borderRadius: "24px",
-                      backgroundColor: "transparent",
-                      border: "1px solid rgba(255, 255, 255, 0.3)",
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      border: "none",
                       color: "white",
                       fontFamily: "Inter, sans-serif",
                       fontSize: "16px",
