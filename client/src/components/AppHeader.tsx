@@ -101,7 +101,14 @@ export function AppHeader({
               <div className="relative" ref={dropdownRef}>
                 <Button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  variant="headerIcon"
+                  variant="secondary"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    padding: "0",
+                    minHeight: "40px",
+                    borderRadius: "20px",
+                  }}
                 >
                   <MoreHorizontal className="w-6 h-6" />
                 </Button>
