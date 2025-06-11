@@ -70,7 +70,13 @@ export default function WineDetails() {
     const handleQRReset = (event: Event) => {
       console.log('🔄 QR Reset event received - forcing modal to show');
       setInteractionChoiceMade(false);
-      setShowQRModal(true);
+      
+      // Force close and reopen to ensure modal appears
+      setShowQRModal(false);
+      setTimeout(() => {
+        console.log('🔄 Setting modal to true via timeout');
+        setShowQRModal(true);
+      }, 50);
     };
 
     window.addEventListener('qrReset', handleQRReset);
@@ -316,10 +322,22 @@ export default function WineDetails() {
       {/* QR Scan Modal */}
       <QRScanModal
         isOpen={showQRModal}
-        onClose={() => setShowQRModal(false)}
-        onTextChoice={() => handleInteractionChoice('text')}
-        onVoiceChoice={() => handleInteractionChoice('voice')}
+        onClose={() => {
+          console.log('🔄 QR Modal close triggered');
+          setShowQRModal(false);
+        }}
+        onTextChoice={() => {
+          console.log('🔄 QR Modal text choice selected');
+          handleInteractionChoice('text');
+        }}
+        onVoiceChoice={() => {
+          console.log('🔄 QR Modal voice choice selected');
+          handleInteractionChoice('voice');
+        }}
       />
+      
+      {/* Debug info */}
+      {console.log('🔄 QR Modal render:', { showQRModal, isQRScan, interactionChoiceMade })}
     </div>
   );
 }
