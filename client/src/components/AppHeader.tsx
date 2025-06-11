@@ -20,6 +20,7 @@ export function AppHeader({
   onDeleteTenant
 }: AppHeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,9 +36,25 @@ export function AppHeader({
     };
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div 
-      className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-white/10 ${className}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'} ${className}`}
     >
       <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
