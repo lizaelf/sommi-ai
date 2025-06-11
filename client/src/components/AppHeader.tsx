@@ -140,9 +140,9 @@ export function AppHeader({
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
               }}
-              title="Reset to QR scan state"
+              title="Reset"
             >
-              Reset QR
+              Reset
             </button>
             
             {rightContent || (

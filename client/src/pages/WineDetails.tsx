@@ -49,11 +49,9 @@ export default function WineDetails() {
     // Continue to the chat interface
   };
   
-  // Set interaction choice state when component mounts
+  // Set interaction choice state when component mounts or when isQRScan changes
   useEffect(() => {
-    if (isQRScan) {
-      setShowInteractionChoice(true);
-    }
+    setShowInteractionChoice(isQRScan);
   }, [isQRScan]);
   
   // Load selected wine data from URL parameter or localStorage
