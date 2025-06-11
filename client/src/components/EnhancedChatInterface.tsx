@@ -1869,46 +1869,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
                             {/* Show whole dialog button - hide on scanned page */}
                             {!showBuyButton && (
-                              <button
+                              <Button
                                 onClick={() => setLocation("/wine/conversation")}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                                }}
-                                onMouseDown={(e) => {
-                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                                }}
-                                onMouseUp={(e) => {
-                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                                }}
+                                variant="secondary"
                                 style={{
-                                  backgroundColor: "rgba(255, 255, 255, 0.08)",
-                                  borderRadius: "32px",
                                   height: "56px",
-                                  minHeight: "56px",
-                                  maxHeight: "56px",
-                                  padding: "0 16px",
-                                  margin: 0,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  border: "none",
-                                  color: "white",
-                                  fontFamily: "Inter, sans-serif",
-                                  fontSize: "16px",
-                                  fontWeight: 500,
-                                  cursor: "pointer",
-                                  outline: "none",
                                   width: "100%",
-                                  boxSizing: "border-box",
-                                  lineHeight: "1",
-                                  transition: "background-color 0.2s ease",
                                 }}
                               >
                                 Show whole dialog
-                              </button>
+                              </Button>
                             )}
 
 
@@ -2071,36 +2041,19 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             paddingTop: "20px",
                           }}
                         >
-                          <button
+                          <Button
                             onClick={() => setShowFullConversation(false)}
+                            variant="secondary"
                             style={{
-                              backgroundColor: "rgba(255, 255, 255, 0.08)",
-                              borderRadius: "32px",
                               height: "56px",
-                              minHeight: "56px",
-                              maxHeight: "56px",
-                              padding: "0 16px",
-                              margin: 0,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              border: "none",
-                              color: "white",
-                              fontFamily: "Inter, sans-serif",
-                              fontSize: "16px",
-                              fontWeight: 500,
-                              cursor: "pointer",
-                              outline: "none",
                               width: "100%",
                               maxWidth: "320px",
                               marginLeft: "auto",
                               marginRight: "auto",
-                              boxSizing: "border-box",
-                              lineHeight: "1",
                             }}
                           >
                             Back to Summary
-                          </button>
+                          </Button>
                         </div>
                       </>)
                     ) : (
@@ -2250,8 +2203,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
         {/* Scroll to Bottom Floating Button */}
         {showScrollToBottom && (
-          <button
+          <Button
             onClick={scrollToBottom}
+            variant="secondary"
             style={{
               position: 'fixed',
               bottom: '100px',
@@ -2259,24 +2213,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               width: '48px',
               height: '48px',
               borderRadius: '24px',
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
-              border: 'none',
               boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               zIndex: 1000,
-              transition: 'all 0.3s ease',
               backdropFilter: 'blur(8px)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
-              e.currentTarget.style.transform = 'scale(1.05)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-              e.currentTarget.style.transform = 'scale(1)';
+              padding: '0',
+              minHeight: '48px',
             }}
           >
             <svg
@@ -2288,15 +2229,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             >
               <path
                 d="M12 16l-4-4h8l-4 4z"
-                fill="#333"
+                fill="white"
               />
               <path
                 d="M12 20l-4-4h8l-4 4z"
-                fill="#333"
+                fill="white"
                 opacity="0.6"
               />
             </svg>
-          </button>
+          </Button>
         )}
       </div>
       {/* Contact Bottom Sheet */}
@@ -2350,18 +2291,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
-              <div
+              <Button
+                onClick={handleCloseContactSheet}
+                variant="secondary"
                 style={{
                   position: "absolute",
                   top: "16px",
                   right: "16px",
-                  cursor: "pointer",
                   zIndex: 10,
+                  width: "40px",
+                  height: "40px",
+                  padding: "0",
+                  minHeight: "40px",
+                  borderRadius: "20px",
                 }}
-                onClick={handleCloseContactSheet}
               >
                 <X size={24} color="white" />
-              </div>
+              </Button>
 
               {/* Header */}
               <div style={{ marginBottom: "24px", marginTop: "0px" }}>
