@@ -18,31 +18,44 @@ const Button: React.FC<ButtonProps> = ({
   style = {},
   ...props
 }) => {
-  // Get the appropriate CSS class for each variant
-  const getVariantClass = () => {
-    switch (variant) {
-      case "primary":
-        return "react-button primary-button";
-      case "secondary":
-        return "react-button secondary-button";
-      case "secondaryFilled":
-        return "react-button secondary-filled-button";
-      default:
-        return "react-button primary-button";
-    }
-  };
+  // Use CSS classes for variants to override global button styles
+  if (variant === "secondaryFilled") {
+    return (
+      <button
+        className="secondary-filled-button react-button"
+        style={style}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
 
-  const finalClassName = `${getVariantClass()} ${className}`.trim();
-  const finalStyle = {
-    opacity: disabled ? 0.5 : 1,
-    cursor: disabled ? "not-allowed" : "pointer",
-    ...style,
-  };
+  if (variant === "primary") {
+    return (
+      <button
+        className="primary-button react-button"
+        style={style}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
 
+  // Secondary variant also uses CSS class
   return (
     <button
-      className={finalClassName}
-      style={finalStyle}
+      className="secondary-button react-button"
+      style={{
+        opacity: disabled ? 0.5 : 1,
+        cursor: disabled ? "not-allowed" : "pointer",
+        ...style,
+      }}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       {...props}

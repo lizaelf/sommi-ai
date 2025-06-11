@@ -327,15 +327,16 @@ button:not(.react-button) {
   align-items: center !important;
   justify-content: center !important;
   box-sizing: border-box !important;
+  background-image: none !important;
 }
 
 .secondary-button:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 .secondary-button:active {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
   transform: scale(0.98);
 }
 
