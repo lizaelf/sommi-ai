@@ -1755,7 +1755,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         >Want more?</h1>
 
                         {/* Buy again button */}
-                        <Button
+                        <button
                           onClick={() => {
                             if (currentWine?.buyAgainLink) {
                               window.open(currentWine.buyAgainLink, '_blank');
@@ -1763,14 +1763,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                               console.log("No buy again link available");
                             }
                           }}
-                          variant="primary"
+                          className="primary-button"
                           style={{
                             margin: "0 0 32px 0",
                             width: "100%",
                           }}
                         >
                           Buy again
-                        </Button>
+                        </button>
 
                         {/* Chat with AI Section */}
                         <div style={{ marginBottom: "32px" }}>
@@ -2225,27 +2225,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       console.log("No buy again link available");
                     }
                   }}
+                  className="primary-button"
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.08)",
-                    borderRadius: "32px",
-                    height: "56px",
-                    minHeight: "56px",
-                    maxHeight: "56px",
-                    padding: "0 16px",
                     margin: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "none",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    outline: "none",
                     width: "100%",
-                    boxSizing: "border-box",
-                    lineHeight: "1",
                   }}
                 >Buy again
                                   </button>)
