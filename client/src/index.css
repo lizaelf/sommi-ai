@@ -692,26 +692,16 @@ button:active {
   }
 }
 
-.input-idle {
-  animation: bg-white-hue 2s linear infinite;
-}
-
-@keyframes bg-white-hue {
-  0% {
-    filter: brightness(1) opacity(1);
-  }
-  25% {
-    filter: brightness(1.2) opacity(0.9);
-  }
-  50% {
-    filter: brightness(1.4) opacity(0.8);
-  }
-  75% {
-    filter: brightness(1.2) opacity(0.9);
-  }
-  100% {
-    filter: brightness(1) opacity(1);
-  }
+.idle-border-animation {
+  position: absolute;
+  inset: -2px;
+  border-radius: 26px;
+  background: linear-gradient(315deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.4));
+  animation: bg-brightness-idle 3s ease-in-out infinite;
+  mask: radial-gradient(circle, transparent 60px, black 62px);
+  -webkit-mask: radial-gradient(circle, transparent 60px, black 62px);
+  pointer-events: none;
+  z-index: 1;
 }
 
 
