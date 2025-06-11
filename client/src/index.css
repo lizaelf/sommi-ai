@@ -257,10 +257,63 @@ button:not(.react-button) {
   box-shadow: none !important;
 }
 
+/* Header Icon Button Class */
+.header-icon-button {
+  background-color: rgba(255, 255, 255, 0.10) !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 20px !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: Inter, sans-serif !important;
+  cursor: pointer !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  background-image: none !important;
+}
+
+.header-icon-button:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.header-icon-button:active {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  transform: scale(0.98);
+}
+
+/* Suggestion buttons with forced styling */
+.suggestion-button {
+  background: rgba(255, 255, 255, 0.10) !important;
+  background-color: rgba(255, 255, 255, 0.10) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  padding: 8px 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: Inter, sans-serif !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+.suggestion-button:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
+}
+
 /* Secondary Button Class */
 .secondary-button {
   background-color: rgba(255, 255, 255, 0.10) !important;
-  border: rgba(255, 255, 255, 0.20) !important;
+  border: rgba(255, 255, 255, 0.10) !important;
   color: white !important;
   border-radius: 32px !important;
   padding: 8px 16px !important;
