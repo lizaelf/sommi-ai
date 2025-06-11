@@ -28,12 +28,37 @@ interface SelectedWine {
 export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
+  const [showInteractionChoice, setShowInteractionChoice] = useState(false);
   const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
   // Determine if this is a scanned page (root/scanned routes) or wine details page
   const isScannedPage = location === '/' || location === '/scanned' || location.includes('/scanned?');
+  
+  // Check if this is a fresh QR scan (show interaction choice)
+  const isQRScan = isScannedPage && !localStorage.getItem('interaction_choice_made');
+  
+  // For testing - temporarily clear the choice to see the QR scan state
+  useEffect(() => {
+    if (isScannedPage) {
+      localStorage.removeItem('interaction_choice_made');
+    }
+  }, [isScannedPage]);
+  
+  // Handle interaction choice
+  const handleInteractionChoice = (choice: 'text' | 'voice') => {
+    localStorage.setItem('interaction_choice_made', choice);
+    setShowInteractionChoice(false);
+    // Continue to the chat interface
+  };
+  
+  // Set interaction choice state when component mounts
+  useEffect(() => {
+    if (isQRScan) {
+      setShowInteractionChoice(true);
+    }
+  }, [isQRScan]);
   
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
@@ -243,16 +268,206 @@ export default function WineDetails() {
           </div>
         )}
 
-        {/* Main Content Area */}
-        <div>
-          <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
-            id: wine.id,
-            name: wine.name,
-            image: wine.image,
-            bottles: wine.bottles,
-            ratings: wine.ratings
-          } : null} />
-        </div>
+        {/* QR Scan Interaction Choice or Main Content Area */}
+        {showInteractionChoice && wine ? (
+          <div className="px-6 pb-6 space-y-6">
+            {/* Wine Title */}
+            <div className="text-center">
+              <h1 style={{
+                fontFamily: "Lora, serif",
+                fontSize: "28px",
+                lineHeight: "36px",
+                fontWeight: 500,
+                color: "white",
+                marginBottom: "8px"
+              }}>
+                {wine.year} {wine.name}
+              </h1>
+              
+              {/* Location with flag */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <span style={{
+                  fontSize: "18px"
+                }}>🇺🇸</span>
+                <span style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  color: "#CECECE"
+                }}>
+                  {wine.location || "San Luis Obispo County, United States"}
+                </span>
+              </div>
+              
+              {/* Wine Ratings */}
+              <div className="flex justify-center gap-3 mb-8">
+                <div style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "4px"
+                }}>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "white"
+                  }}>
+                    {wine.ratings.vn}
+                  </span>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    color: "#CECECE"
+                  }}>
+                    VN
+                  </span>
+                </div>
+                
+                <div style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "4px"
+                }}>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "white"
+                  }}>
+                    {wine.ratings.jd}
+                  </span>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    color: "#CECECE"
+                  }}>
+                    JD
+                  </span>
+                </div>
+                
+                <div style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "4px"
+                }}>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "white"
+                  }}>
+                    {wine.ratings.ws}
+                  </span>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    color: "#CECECE"
+                  }}>
+                    WS
+                  </span>
+                </div>
+                
+                <div style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "4px"
+                }}>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "white"
+                  }}>
+                    {wine.ratings.abv}%
+                  </span>
+                  <span style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    color: "#CECECE"
+                  }}>
+                    ABV
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Interaction Choice */}
+            <div className="text-center space-y-6">
+              <p style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "18px",
+                lineHeight: "28px",
+                color: "white",
+                marginBottom: "32px"
+              }}>
+                Would you like to<br />
+                learn more about wine by
+              </p>
+              
+              {/* Choice Buttons */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => handleInteractionChoice('text')}
+                  style={{
+                    flex: 1,
+                    height: "56px",
+                    background: "rgba(255, 255, 255, 0.15)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "28px",
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                  }}
+                >
+                  Text
+                </button>
+                
+                <button
+                  onClick={() => handleInteractionChoice('voice')}
+                  style={{
+                    flex: 1,
+                    height: "56px",
+                    background: "white",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "28px",
+                    color: "black",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.9)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "white";
+                  }}
+                >
+                  Voice
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings
+            } : null} />
+          </div>
+        )}
       </div>
     </div>
   );
