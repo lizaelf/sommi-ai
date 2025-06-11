@@ -2271,28 +2271,28 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 (<>
                   {/* Suggestion chips - always visible above input */}
                   <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                    <button
+                    <Button
                       onClick={() => handleSendMessage("Tasting notes")}
-                      className="suggestion-button"
+                      className="bg-white/10 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
                     >
                       Tasting notes
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         handleSendMessage("Simple recipes for this wine")
                       }
-                      className="suggestion-button"
+                      className="bg-white/10 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
                     >
                       Simple recipes
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() =>
                         handleSendMessage("Where is this wine from?")
                       }
-                      className="suggestion-button"
+                      className="bg-white/10 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
                     >
                       Where it's from
-                    </button>
+                    </Button>
                   </div>
                   <ChatInput
                     onSendMessage={handleSendMessage}
