@@ -119,7 +119,10 @@ export function AppHeader({
             {/* Temporary Reset button for QR scan testing */}
             <button
               onClick={() => {
+                console.log('🔄 Reset QR button clicked');
+                console.log('🗑️ Removing interaction_choice_made from localStorage');
                 localStorage.removeItem('interaction_choice_made');
+                console.log('🔄 Reloading page to trigger QR scan state');
                 window.location.reload();
               }}
               style={{

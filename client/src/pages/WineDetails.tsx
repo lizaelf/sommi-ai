@@ -47,13 +47,16 @@ export default function WineDetails() {
   
   // Handle interaction choice
   const handleInteractionChoice = (choice: 'text' | 'voice') => {
+    console.log('🎯 Interaction choice made:', choice);
     localStorage.setItem('interaction_choice_made', choice);
+    console.log('🔄 Setting showQRModal to false');
     setShowQRModal(false);
     // Continue to the chat interface
   };
   
   // Set QR modal state when component mounts or when isQRScan changes
   useEffect(() => {
+    console.log('🎯 useEffect triggered - isQRScan:', isQRScan, 'setting showQRModal to:', isQRScan);
     setShowQRModal(isQRScan);
   }, [isQRScan]);
   
