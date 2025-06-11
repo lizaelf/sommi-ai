@@ -1823,7 +1823,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                       style={{
                                         backgroundColor: message.role === "user" ? "#F5F5F5" : "transparent",
                                         borderRadius: "16px",
-                                        padding: "12px 0",
+                                        padding: message.role === "user" ? "12px 16px" : "12px 0",
                                         width: message.role === "user" ? "fit-content" : "100%",
                                         maxWidth: message.role === "user" ? "80%" : "100%",
                                       }}
@@ -1908,7 +1908,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                         color: "rgba(255, 255, 255, 0.8)",
                                         lineHeight: "1.6",
                                         margin: "0 0 16px 0",
-                                        paddingBottom: "16px",
                                       }}
                                     >
                                       {summaryText}
