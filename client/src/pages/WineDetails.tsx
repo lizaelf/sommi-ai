@@ -37,7 +37,8 @@ export default function WineDetails() {
   const isScannedPage = location === '/' || location === '/scanned' || location.includes('/scanned?');
   
   // Check if this is a fresh QR scan (show interaction choice)
-  const isQRScan = isScannedPage && !localStorage.getItem('interaction_choice_made');
+  // Show QR scan state if: 1) it's a scanned page route, or 2) interaction choice was cleared (reset)
+  const isQRScan = !localStorage.getItem('interaction_choice_made');
   
 
   
