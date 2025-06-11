@@ -36,18 +36,24 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
   const inputContainer = (
     <div className="relative w-full">
       <div
-        className={`relative w-full h-16 rounded-3xl border-2 border-transparent ${
-          !isFocused ? 'input-idle' : ''
-        }`}
         style={{
-          backgroundImage: !isFocused 
-            ? 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.7))' 
-            : 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
+          position: 'relative',
+          width: '100%',
+          height: '64px',
+          borderRadius: '24px',
+          borderTop: '2px solid transparent',
+          borderRight: '1px solid transparent',
+          borderBottom: '1px solid transparent',
+          borderLeft: '1px solid transparent',
+          backgroundImage: isFocused 
+            ? 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)'
+            : 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(236, 160, 255, 0.8), rgba(170, 178, 255, 0.6), rgba(132, 255, 201, 0.7))',
           backgroundOrigin: 'border-box',
-          backgroundClip: 'padding-box, border-box'
+          backgroundClip: 'padding-box, border-box',
+          overflow: 'hidden',
+          animation: !isFocused ? 'bg-hue-idle 3s linear infinite' : 'none'
         }}
       >
-
         {isFocused && (
           <div className="absolute inset-0 rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-slide-lr"></div>

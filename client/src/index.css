@@ -673,45 +673,25 @@ button:active {
   }
 }
 
-/* Border brightness animation for idle state gradient border */
-@keyframes bg-brightness-idle {
+/* Hue rotation animation for idle state gradient border */
+@keyframes bg-hue-idle {
   0% {
-    filter: brightness(1);
-  }
-  25% {
-    filter: brightness(1.4);
-  }
-  50% {
-    filter: brightness(0.8);
-  }
-  75% {
-    filter: brightness(1.2);
+    filter: hue-rotate(0deg);
   }
   100% {
-    filter: brightness(1);
+    filter: hue-rotate(360deg);
   }
 }
 
-.input-idle {
-  animation: bg-white-hue 2s linear infinite;
-}
-
-@keyframes bg-white-hue {
-  0% {
-    filter: brightness(1) opacity(1);
-  }
-  25% {
-    filter: brightness(1.2) opacity(0.9);
-  }
-  50% {
-    filter: brightness(1.4) opacity(0.8);
-  }
-  75% {
-    filter: brightness(1.2) opacity(0.9);
-  }
-  100% {
-    filter: brightness(1) opacity(1);
-  }
+.rotating-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(236, 160, 255, 0.8), rgba(170, 178, 255, 0.6), rgba(132, 255, 201, 0.7));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  animation: bg-hue-idle 3s linear infinite;
 }
 
 
