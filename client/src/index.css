@@ -678,8 +678,19 @@ button:active {
   inset: 0;
   border-radius: 24px;
   padding: 2px;
-  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.4), transparent, rgba(255, 255, 255, 0.6), transparent);
-  animation: spin-border 2s linear infinite;
+  background: conic-gradient(from 0deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 5%, 
+    transparent 15%, 
+    rgba(255, 255, 255, 0.4) 25%, 
+    transparent 35%, 
+    rgba(255, 255, 255, 0.6) 45%, 
+    transparent 55%, 
+    rgba(255, 255, 255, 0.3) 65%, 
+    transparent 75%, 
+    rgba(255, 255, 255, 0.5) 85%, 
+    transparent 95%);
+  animation: spin-border 3s linear infinite;
 }
 
 .rotating-border-inner {
