@@ -41,12 +41,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowAskButton(true);
     };
 
+    const handleTriggerVoiceAssistant = () => {
+      setShowBottomSheet(true);
+      setShowAskButton(true);
+    };
+
     window.addEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
     window.addEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
+    window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
     
     return () => {
       window.removeEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
       window.removeEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
+      window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
     };
   }, []);
   
