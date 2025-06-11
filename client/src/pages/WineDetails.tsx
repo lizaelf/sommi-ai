@@ -59,6 +59,17 @@ export default function WineDetails() {
     console.log('🎯 useEffect triggered - isQRScan:', isQRScan, 'setting showQRModal to:', isQRScan);
     setShowQRModal(isQRScan);
   }, [isQRScan]);
+
+  // Listen for custom QR modal trigger event
+  useEffect(() => {
+    const handleTriggerQRModal = () => {
+      console.log('🎯 Custom QR modal trigger event received');
+      setShowQRModal(true);
+    };
+
+    window.addEventListener('triggerQRModal', handleTriggerQRModal);
+    return () => window.removeEventListener('triggerQRModal', handleTriggerQRModal);
+  }, []);
   
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
