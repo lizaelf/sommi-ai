@@ -41,21 +41,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           width: '100%',
           height: '64px',
           borderRadius: '24px',
-          ...(isFocused ? {
-            borderTop: '2px solid transparent',
-            borderRight: '1px solid transparent',
-            borderBottom: '1px solid transparent',
-            borderLeft: '1px solid transparent',
-            backgroundImage: 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
-            backgroundOrigin: 'border-box',
-            backgroundClip: 'padding-box, border-box'
-          } : {
-            border: '3px solid transparent',
-            backgroundImage: 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgb(236, 160, 255), rgb(170, 178, 255), rgb(132, 255, 201))',
-            backgroundOrigin: 'border-box',
-            backgroundClip: 'padding-box, border-box',
-            animation: 'bg-hue 2s linear infinite'
-          }),
+          borderTop: '2px solid transparent',
+          borderRight: '1px solid transparent',
+          borderBottom: '1px solid transparent',
+          borderLeft: '1px solid transparent',
+          backgroundImage: 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)',
+          backgroundOrigin: 'border-box',
+          backgroundClip: 'padding-box, border-box',
           overflow: 'hidden'
         }}
       >
@@ -67,7 +59,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           </div>
         )}
         
-
+        {!isFocused && (
+          <div className="rotating-border" />
+        )}
         <input
           ref={inputRef}
           type="text"
