@@ -693,24 +693,22 @@ button:active {
 }
 
 .input-focused {
-  animation: bg-white-hue 2s linear infinite;
+  border: 3px solid white !important;
+  animation: border-pulse 2s ease-in-out infinite;
 }
 
-@keyframes bg-white-hue {
+@keyframes border-pulse {
   0% {
-    opacity: 1;
-  }
-  25% {
-    opacity: 0.7;
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   }
   50% {
-    opacity: 0.5;
-  }
-  75% {
-    opacity: 0.7;
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
   }
   100% {
-    opacity: 1;
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   }
 }
 

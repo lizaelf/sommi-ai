@@ -36,8 +36,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
   const inputContainer = (
     <div className="relative w-full">
       <div
-        className={`relative w-full h-16 rounded-3xl border-2 border-transparent ${
-          isFocused ? 'input-focused' : 'border-white/20'
+        className={`relative w-full h-16 rounded-3xl border-2 ${
+          isFocused ? 'input-focused border-transparent' : 'border-white/20'
         }`}
         style={{
           backgroundColor: '#1C1C1C',
