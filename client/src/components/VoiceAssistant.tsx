@@ -364,48 +364,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       isSecure: window.location.protocol === 'https:'
     });
 
-    // Always request fresh permission for reliable behavior
-    console.log("🎤 DEPLOY DEBUG: Requesting microphone permission for voice recording");
-    const hasPermission = await requestMicrophonePermission();
-    console.log("🎤 DEPLOY DEBUG: Permission result:", hasPermission);
-    
-    if (!hasPermission) {
-      console.log("🎤 DEPLOY DEBUG: Permission denied - closing bottom sheet and showing toast");
-      setIsListening(false);
-      setShowBottomSheet(false);
-      
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            Microphone access required for voice input
-          </span>
-        ),
-        duration: 3000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
-      return;
-    }
-
-    console.log("🎤 DEPLOY DEBUG: Permission granted - calling setupRecording");
+    // Direct stream request without intermediate permission check
+    console.log("🎤 DEPLOY DEBUG: Starting direct stream request for recording");
     return setupRecording();
   };
 
@@ -413,49 +373,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("🎤 DEPLOY DEBUG: setupRecording started");
     
     try {
-      // Always clean up any existing streams first
-      const existingStream = (window as any).currentMicrophoneStream;
-      if (existingStream) {
-        const tracks = existingStream.getAudioTracks();
-        console.log("🎤 DEPLOY DEBUG: Cleaning up existing stream", { 
-          tracksCount: tracks.length,
-          firstTrackState: tracks[0]?.readyState
-        });
-        tracks.forEach((track: MediaStreamTrack) => {
-          track.stop();
-          console.log("🎤 DEPLOY DEBUG: Stopped track:", track.kind, track.readyState);
-        });
-        (window as any).currentMicrophoneStream = null;
+      // Clean up any existing streams first
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
       }
       
-      // Always request a fresh stream for recording
-      console.log("🎤 DEPLOY DEBUG: Requesting fresh getUserMedia stream for recording");
+      // Request fresh microphone stream
+      console.log("🎤 DEPLOY DEBUG: Requesting fresh microphone stream");
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-          sampleRate: 16000, // Optimal for Whisper
+          sampleRate: 44100,
+          channelCount: 1
         } 
       });
       
-      // Verify the new stream is active
-      const tracks = stream.getAudioTracks();
-      const isActive = tracks.length > 0 && tracks[0].readyState === 'live';
-      console.log("🎤 DEPLOY DEBUG: Fresh stream created", { 
-        streamId: stream.id,
-        tracksCount: tracks.length,
-        firstTrackState: tracks[0]?.readyState,
-        isActive
-      });
-      
-      if (!isActive) {
-        throw new Error("Fresh microphone stream is not active");
-      }
-      
-      // Store the new active stream
-      (window as any).currentMicrophoneStream = stream;
-      
+      console.log("🎤 DEPLOY DEBUG: Stream created successfully");
       streamRef.current = stream;
 
       // Initialize MediaRecorder with optimal settings for Whisper
@@ -1241,9 +1177,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleAsk = async () => {
-    console.log("🔍 DEBUG: Ask button clicked - starting new voice recording");
-    console.log("🔍 DEBUG: Current states before Ask - isListening:", isListening, "isResponding:", isResponding, "isThinking:", isThinking);
-    console.log("🔍 DEBUG: Current button states - showAskButton:", showAskButton, "showUnmuteButton:", showUnmuteButton);
+    console.log("🔍 DEBUG: Ask button clicked - starting voice recording");
     
     // Prevent multiple rapid clicks
     if (isListening || isProcessing) {
@@ -1256,54 +1190,149 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
-      console.log("🔍 DEBUG: Stopped existing OpenAI audio");
     }
     
     if ((window as any).currentAutoplayAudio) {
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
-      console.log("🔍 DEBUG: Stopped existing autoplay audio");
     }
     
-    // Clean up any existing streams to ensure fresh microphone access
+    // Stop browser speech synthesis
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    
+    // Clean up existing streams
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => {
-        console.log("🔍 DEBUG: Stopping track:", track.kind, track.readyState);
-        track.stop();
-      });
+      streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
-      console.log("🔍 DEBUG: Cleaned up existing stream");
     }
     
-    // Reset global stream to force fresh access
-    (window as any).currentMicrophoneStream = null;
-    console.log("🔍 DEBUG: Reset global microphone stream");
-    
-    // Reset UI state and start listening without closing bottom sheet
+    // Reset UI state
     setShowUnmuteButton(false);
     setShowAskButton(false);
     setIsResponding(false);
     setIsThinking(false);
-    console.log("🔍 DEBUG: Reset UI states");
-    
-    // Keep bottom sheet open explicitly
     setShowBottomSheet(true);
-    console.log("🔍 DEBUG: Set showBottomSheet to true");
+    setIsListening(true);
     
-    // Small delay to ensure state updates are processed
-    await new Promise(resolve => setTimeout(resolve, 50));
-    
-    // Start listening directly - this will keep the bottom sheet open
-    console.log("🔍 DEBUG: About to call startListening()");
     try {
-      await startListening();
-      console.log("🔍 DEBUG: startListening() completed successfully");
+      // Request microphone access and start recording in one step
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 44100,
+          channelCount: 1
+        }
+      });
+      
+      console.log("🔍 DEBUG: Microphone stream obtained");
+      streamRef.current = stream;
+      
+      // Setup recording immediately
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+        audioBitsPerSecond: 16000,
+      });
+      
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+      
+      // Setup recording handlers
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = async () => {
+        setIsThinking(true);
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' });
+        
+        if (audioBlob.size < 1000) {
+          console.warn("Audio too small, using fallback");
+          onSendMessage("Tell me about this wine");
+          setIsThinking(false);
+          setShowAskButton(true);
+          setIsListening(false);
+          if (!isProcessing) setShowBottomSheet(false);
+          return;
+        }
+        
+        try {
+          const formData = new FormData();
+          formData.append('audio', audioBlob, 'recording.webm');
+          
+          const response = await fetch('/api/transcribe', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            if (result.text && result.text.trim()) {
+              onSendMessage(result.text.trim());
+            } else {
+              onSendMessage("Tell me about this wine");
+            }
+          } else {
+            onSendMessage("Tell me about this wine");
+          }
+        } catch (error) {
+          console.error("Transcription error:", error);
+          onSendMessage("Tell me about this wine");
+        } finally {
+          setIsThinking(false);
+          setIsListening(false);
+          if (!isProcessing) setShowBottomSheet(false);
+        }
+      };
+      
+      // Start recording
+      mediaRecorder.start(250);
+      console.log("🔍 DEBUG: Recording started");
+      
+      // Start voice detection
+      startVoiceDetection(stream);
+      
+      // Auto-stop after 4 seconds
+      setTimeout(() => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+          stopListening();
+        }
+      }, 4000);
+      
     } catch (error) {
-      console.error("🔍 DEBUG: Error in startListening():", error);
-      // Reset states on error
+      console.error("🔍 DEBUG: Microphone access failed:", error);
       setIsListening(false);
       setShowAskButton(true);
+      
+      toast({
+        description: (
+          <span style={{ fontFamily: "Inter, sans-serif", fontSize: "16px", fontWeight: 500 }}>
+            {error instanceof Error && error.name === "NotAllowedError" 
+              ? "Microphone access required for voice input" 
+              : "Failed to start voice recording"}
+          </span>
+        ),
+        duration: 3000,
+        className: "bg-white text-black border-none",
+        style: {
+          position: "fixed",
+          top: "74px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "auto",
+          maxWidth: "none",
+          padding: "8px 24px",
+          borderRadius: "32px",
+          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+          zIndex: 9999,
+        },
+      });
     }
   };
 
