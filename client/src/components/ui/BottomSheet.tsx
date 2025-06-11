@@ -125,7 +125,8 @@ export function BottomSheet({
                 fontSize: "20px",
                 fontWeight: 500,
                 textAlign: "center",
-                margin: "0",
+                margin: "0 auto",
+                width: "250px",
               }}
             >
               {title}
