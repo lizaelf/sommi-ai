@@ -468,6 +468,35 @@ class IndexedDBService {
       throw error;
     }
   }
+
+  // Clear all data from IndexedDB
+  public async clearAllData(): Promise<void> {
+    try {
+      const db = await this.initDB();
+      const transaction = db.transaction([CONVERSATION_STORE, USER_STORE], 'readwrite');
+      
+      const conversationStore = transaction.objectStore(CONVERSATION_STORE);
+      const userStore = transaction.objectStore(USER_STORE);
+      
+      await Promise.all([
+        new Promise<void>((resolve, reject) => {
+          const request = conversationStore.clear();
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        }),
+        new Promise<void>((resolve, reject) => {
+          const request = userStore.clear();
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        })
+      ]);
+      
+      console.log('Cleared all IndexedDB data');
+    } catch (error) {
+      console.error('Error clearing IndexedDB data:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance

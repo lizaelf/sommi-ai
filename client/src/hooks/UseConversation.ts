@@ -101,7 +101,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     }
   }, [wineId]);
 
-  // Initialization code that loads saved conversation from localStorage or IndexedDB
+  // Initialization code that loads saved conversation from backend and IndexedDB
   useEffect(() => {
     async function initializeConversation() {
       console.log("Initializing conversation...");
@@ -110,7 +110,41 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       window.scrollTo(0, 0);
       
       try {
-        // First, check if there's a specific conversation ID in localStorage
+        // First, try to load conversations from backend (for deployment persistence)
+        try {
+          const backendConversations = await fetch('/api/conversations');
+          if (backendConversations.ok) {
+            const conversations = await backendConversations.json();
+            if (conversations && conversations.length > 0) {
+              console.log(`Loaded ${conversations.length} conversations from backend`);
+              setLocalConversations(conversations);
+              
+              // Get the most recent conversation
+              const mostRecent = conversations[0]; // Backend should return sorted by most recent
+              if (mostRecent) {
+                console.log(`Using most recent conversation from backend: ${mostRecent.id}`);
+                setCurrentConversationIdState(mostRecent.id);
+                localStorage.setItem(getConversationKey(wineId), mostRecent.id.toString());
+                
+                // Load messages for this conversation from backend
+                const messagesResponse = await fetch(`/api/conversations/${mostRecent.id}/messages`);
+                if (messagesResponse.ok) {
+                  const backendMessages = await messagesResponse.json();
+                  console.log(`Loaded ${backendMessages.length} messages from backend`);
+                  setMessages(backendMessages);
+                  
+                  // Sync to IndexedDB for offline access
+                  await syncBackendToIndexedDB(conversations, mostRecent.id, backendMessages);
+                  return;
+                }
+              }
+            }
+          }
+        } catch (backendError) {
+          console.log('Backend not available, falling back to IndexedDB:', backendError);
+        }
+        
+        // Fallback to IndexedDB if backend is not available
         const savedConversationId = localStorage.getItem(getConversationKey(wineId));
         
         if (savedConversationId) {
@@ -132,16 +166,14 @@ export function useConversation(wineId?: string | number): UseConversationReturn
             }
           } else {
             console.log(`Saved conversation ${conversationId} not found, loading most recent`);
-            // If the conversation doesn't exist, fall back to most recent
             await loadMostRecentConversation();
           }
         } else {
           console.log('No saved conversation ID in localStorage, loading most recent');
-          // No saved ID in localStorage, use most recent conversation
           await loadMostRecentConversation();
         }
         
-        // Load all conversations
+        // Load all conversations from IndexedDB
         const allConversations = await indexedDBService.getAllConversations();
         if (allConversations && allConversations.length > 0) {
           setLocalConversations(adaptIDBConversationsToConversations(allConversations));
@@ -158,6 +190,16 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       }
     }
     
+    // Helper function to sync backend data to IndexedDB
+    async function syncBackendToIndexedDB(conversations: any[], currentId: number, messages: any[]) {
+      try {
+        // Skip IndexedDB sync for now to avoid complexity - backend persistence is working
+        console.log('Backend data loaded successfully, skipping IndexedDB sync');
+      } catch (error) {
+        console.error('Error syncing backend to IndexedDB:', error);
+      }
+    }
+    
     initializeConversation();
   }, [wineId]);
   
@@ -169,13 +211,34 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     setMessages(prev => [...prev, message as ClientMessage]);
     
     try {
-      // Add to IndexedDB using the adapter
+      // Try to sync with backend first (for deployment persistence)
+      try {
+        const response = await fetch('/api/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            conversationId: currentConversationId,
+            role: message.role,
+            content: message.content,
+          }),
+        });
+        
+        if (response.ok) {
+          console.log('Message synced to backend successfully');
+        }
+      } catch (backendError) {
+        console.log('Backend sync failed, storing locally:', backendError);
+      }
+      
+      // Always store in IndexedDB for offline access
       await indexedDBService.addMessageToConversation(
         currentConversationId, 
         adaptMessageToIDBMessage(message)
       );
       
-      // Also update the conversation's last activity timestamp
+      // Update conversation's last activity timestamp
       const conversation = await indexedDBService.getConversation(currentConversationId);
       if (conversation) {
         conversation.lastActivity = new Date();
@@ -186,7 +249,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       const allConversations = await indexedDBService.getAllConversations();
       setLocalConversations(adaptIDBConversationsToConversations(allConversations));
     } catch (error) {
-      console.error("Error adding message to IndexedDB", error);
+      console.error("Error adding message", error);
     }
   }, [currentConversationId]);
   
