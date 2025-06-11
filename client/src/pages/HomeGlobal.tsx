@@ -72,16 +72,23 @@ const HomeGlobal = () => {
                   display: "inline-flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  background: "rgba(255, 255, 255, 0.04)",
-                  borderRadius: "24px",
-                  border: "1px solid transparent",
-                  backgroundImage:
-                    "linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2))",
-                  backgroundOrigin: "border-box",
-                  backgroundClip: "padding-box, border-box",
+                  background: "rgba(255, 255, 255, 0.15)",
+                  borderRadius: "20px",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
                   padding: "0 16px",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
                 }}
               >
                 <span

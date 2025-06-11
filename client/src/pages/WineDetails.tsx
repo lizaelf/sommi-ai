@@ -113,14 +113,47 @@ export default function WineDetails() {
             <>
               {isScannedPage && (
                 <Link to="/cellar">
-                  <Button 
-                    variant="secondary" 
+                  <div
                     style={{
-                      borderRadius: "24px"
+                      width: "auto",
+                      height: "40px",
+                      display: "inline-flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      background: "rgba(255, 255, 255, 0.15)",
+                      borderRadius: "20px",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      padding: "0 16px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                      backdropFilter: "blur(10px)",
+                      WebkitBackdropFilter: "blur(10px)",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
                     }}
                   >
-                    My cellar
-                  </Button>
+                    <span
+                      style={{
+                        color: "white",
+                        fontSize: "14px",
+                        lineHeight: "normal",
+                        fontFamily: "Inter, sans-serif",
+                        fontWeight: "400",
+                        display: "inline-block",
+                        padding: "0",
+                        margin: "0",
+                      }}
+                    >
+                      My cellar
+                    </span>
+                  </div>
                 </Link>
               )}
               <ProfileIcon 
