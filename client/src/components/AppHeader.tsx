@@ -39,31 +39,37 @@ export function AppHeader({
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10;
+      console.log('Scroll event triggered - Position:', window.scrollY, 'Should show bg:', isScrolled, 'Current scrolled state:', scrolled);
       setScrolled(isScrolled);
-      console.log('Scroll position:', window.scrollY, 'Scrolled:', isScrolled); // Debug log
     };
     
     // Check initial scroll position
     handleScroll();
     
-    window.addEventListener('scroll', handleScroll);
+    // Add scroll listener to window and document
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [scrolled]);
+
+  const headerStyles = {
+    backgroundColor: scrolled ? 'rgba(10, 10, 10, 0.6)' : 'transparent',
+    backdropFilter: scrolled ? 'blur(4px)' : 'none',
+    WebkitBackdropFilter: scrolled ? 'blur(4px)' : 'none',
+    borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+    transition: 'all 0.3s ease'
+  };
+  
+  console.log('Header render - scrolled:', scrolled, 'styles:', headerStyles);
 
   return (
     <div 
       className="fixed top-0 left-0 right-0 z-50"
-      style={{
-        backgroundColor: scrolled ? 'rgba(10, 10, 10, 0.6)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(4px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(4px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-        transition: 'all 0.3s ease',
-        ...className
-      }}
+      style={headerStyles}
     >
       <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
         <div className="flex items-center justify-between h-full">
