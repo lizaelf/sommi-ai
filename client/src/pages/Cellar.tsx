@@ -1052,7 +1052,7 @@ const Cellar = () => {
                 return (
                   <div
                     key={index}
-                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-center justify-center"
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
                     onClick={() => wine && handleWineClick(wine.id)}
                   >
                     {wine && wine.image && (
@@ -1102,7 +1102,7 @@ const Cellar = () => {
                 return (
                   <div
                     key={index}
-                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-center justify-center"
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
                     onClick={() => wine && handleWineClick(wine.id)}
                   >
                     {wine && wine.image && (
@@ -1151,7 +1151,7 @@ const Cellar = () => {
                 return (
                   <div
                     key={index}
-                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-center justify-center"
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center"
                     onClick={() => wine && handleWineClick(wine.id)}
                   >
                     {wine && wine.image && (
