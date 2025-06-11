@@ -1124,8 +1124,7 @@ const Cellar = () => {
           <div
             className="bg-cover bg-center bg-no-repeat relative"
             style={{
-              backgroundImage: `url(${backgroundImage})`,
-              backgroundSize: "cover",
+              background: "linear-gradient(180deg, rgba(255, 255, 255, 0.00) 61.11%, rgba(255, 255, 255, 0.20) 95.67%, rgba(255, 255, 255, 0.30) 98.56%)",
               height: "228px",
             }}
           >
