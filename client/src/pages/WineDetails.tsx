@@ -42,6 +42,8 @@ export default function WineDetails() {
   
 
   
+
+  
   // Handle interaction choice
   const handleInteractionChoice = (choice: 'text' | 'voice') => {
     localStorage.setItem('interaction_choice_made', choice);
@@ -71,6 +73,12 @@ export default function WineDetails() {
           }
         } else {
           console.log('No wine ID found in URL parameters');
+          // For QR scan state, use default wine (first wine from DataSyncManager)
+          const wines = DataSyncManager.getAllWines();
+          if (wines.length > 0) {
+            console.log('Using default wine for QR scan state:', wines[0]);
+            return wines[0];
+          }
           return null;
         }
       } else {
@@ -100,6 +108,17 @@ export default function WineDetails() {
   };
   
   const wine = loadSelectedWine();
+  
+  console.log('🔍 QR Debug:', {
+    location,
+    isScannedPage,
+    interactionChoiceMade: localStorage.getItem('interaction_choice_made'),
+    isQRScan,
+    showInteractionChoice,
+    wine: wine ? 'loaded' : 'null',
+    wineId,
+    renderCondition: showInteractionChoice && wine
+  });
   
   // Add scroll listener to detect when page is scrolled
   useEffect(() => {
