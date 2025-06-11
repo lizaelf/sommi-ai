@@ -121,14 +121,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           conversationId: 0
         };
         
-        window.dispatchEvent(new CustomEvent('suggestionResponse', {
-          detail: {
-            response: cached.response,
-            audio: cached.audio,
-            suggestion
-          }
-        }));
-        
         window.dispatchEvent(new CustomEvent('immediateResponse', {
           detail: { message: assistantMessage, audio: cached.audio }
         }));
