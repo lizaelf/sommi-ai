@@ -20,6 +20,7 @@ export function BottomSheet({
 }: BottomSheetProps) {
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
+  const [allowBackdropClose, setAllowBackdropClose] = useState(false);
 
   useEffect(() => {
     let element = document.getElementById("bottom-sheet-portal");
@@ -40,9 +41,15 @@ export function BottomSheet({
   useEffect(() => {
     if (isOpen) {
       setAnimationState("opening");
-      setTimeout(() => setAnimationState("open"), 50);
+      setAllowBackdropClose(false);
+      setTimeout(() => {
+        setAnimationState("open");
+        // Allow backdrop close after animation completes
+        setTimeout(() => setAllowBackdropClose(true), 100);
+      }, 50);
     } else {
       setAnimationState("closing");
+      setAllowBackdropClose(false);
       setTimeout(() => setAnimationState("closed"), 300);
     }
   }, [isOpen]);
@@ -77,7 +84,11 @@ export function BottomSheet({
         opacity: animationState === "open" ? 1 : animationState === "opening" ? 0.8 : 0,
         transition: "opacity 0.3s ease-out",
       }}
-      onClick={handleClose}
+      onClick={(e) => {
+        if (allowBackdropClose && e.target === e.currentTarget) {
+          handleClose();
+        }
+      }}
     >
       <div
         className={className}

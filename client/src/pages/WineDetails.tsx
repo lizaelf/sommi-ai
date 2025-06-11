@@ -335,9 +335,6 @@ export default function WineDetails() {
           handleInteractionChoice('voice');
         }}
       />
-      
-      {/* Debug info */}
-      {console.log('🔄 QR Modal render:', { showQRModal, isQRScan, interactionChoiceMade })}
     </div>
   );
 }
