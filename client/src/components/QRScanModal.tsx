@@ -34,8 +34,8 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
             {/* Title */}
             <h2 style={{
               fontFamily: "Inter, sans-serif",
-              fontSize: "24px",
-              lineHeight: "32px",
+              fontSize: "20px",
+              lineHeight: "28px",
               fontWeight: 500,
               color: "white",
               margin: 0
