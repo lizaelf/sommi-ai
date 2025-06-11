@@ -41,22 +41,34 @@ export function AppHeader({
     console.log('🚀 AppHeader mounted - setting up scroll listener');
     
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const shouldShowBg = scrollY > 10;
-      console.log(`📜 Scroll detected: ${scrollY}px - Background: ${shouldShowBg}`);
+      // Check both window scroll and root element scroll (for mobile fullscreen)
+      const windowScrollY = window.scrollY;
+      const rootElement = document.getElementById('root');
+      const rootScrollY = rootElement ? rootElement.scrollTop : 0;
+      const totalScrollY = Math.max(windowScrollY, rootScrollY);
+      
+      const shouldShowBg = totalScrollY > 10;
+      console.log(`📜 Scroll detected - Window: ${windowScrollY}px, Root: ${rootScrollY}px, Total: ${totalScrollY}px - Background: ${shouldShowBg}`);
       setScrolled(shouldShowBg);
     };
     
     // Check initial position
-    console.log('📍 Initial scroll position:', window.scrollY);
+    const rootElement = document.getElementById('root');
+    console.log('📍 Initial scroll - Window:', window.scrollY, 'Root:', rootElement?.scrollTop || 0);
     handleScroll();
     
-    // Add listener
+    // Add listeners to both window and root element
     window.addEventListener('scroll', handleScroll, { passive: true });
+    if (rootElement) {
+      rootElement.addEventListener('scroll', handleScroll, { passive: true });
+    }
     
     return () => {
-      console.log('🧹 AppHeader unmounted - cleaning up scroll listener');
+      console.log('🧹 AppHeader unmounted - cleaning up scroll listeners');
       window.removeEventListener('scroll', handleScroll);
+      if (rootElement) {
+        rootElement.removeEventListener('scroll', handleScroll);
+      }
     };
   }, []);
 
