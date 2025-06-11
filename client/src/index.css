@@ -1,6 +1,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Keyframe animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Mobile Fullscreen Base Styles */
 html,
 body {
