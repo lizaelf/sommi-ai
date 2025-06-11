@@ -26,6 +26,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+  
+  // Audio cache for TTS responses to minimize fallback usage
+  const audioCache = useRef<Map<string, Blob>>(new Map());
+  
+  const getCachedAudio = (text: string): Blob | null => {
+    const cacheKey = btoa(text).slice(0, 50); // Create cache key from text
+    return audioCache.current.get(cacheKey) || null;
+  };
+  
+  const setCachedAudio = (text: string, audioBlob: Blob): void => {
+    const cacheKey = btoa(text).slice(0, 50);
+    audioCache.current.set(cacheKey, audioBlob);
+    // Limit cache size to prevent memory issues
+    if (audioCache.current.size > 10) {
+      const firstKey = audioCache.current.keys().next().value;
+      if (firstKey) {
+        audioCache.current.delete(firstKey);
+      }
+    }
+  };
 
   // Add global promise rejection handler for production stability
   useEffect(() => {
@@ -835,7 +855,45 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).currentAutoplayAudio = null;
       }
 
-      // Try server TTS first with short timeout, fallback to browser TTS
+      // Check for cached audio first to minimize fallback usage
+      const cachedAudio = getCachedAudio(lastAssistantMessage);
+      if (cachedAudio) {
+        console.log("Using cached TTS audio");
+        const audioUrl = URL.createObjectURL(cachedAudio);
+        const audio = new Audio(audioUrl);
+        
+        // Store reference for stop functionality
+        (window as any).currentOpenAIAudio = audio;
+
+        audio.onplay = () => {
+          setIsResponding(true);
+          setShowUnmuteButton(false);
+          setShowAskButton(false);
+          console.log("Cached TTS playback started successfully");
+        };
+
+        audio.onended = () => {
+          setIsResponding(false);
+          setShowUnmuteButton(false);
+          setShowAskButton(true);
+          URL.revokeObjectURL(audioUrl);
+          console.log("Cached TTS playback completed - Ask button enabled");
+        };
+
+        audio.onerror = () => {
+          setIsResponding(false);
+          setShowUnmuteButton(false);
+          setShowAskButton(true);
+          URL.revokeObjectURL(audioUrl);
+          console.error("Cached TTS playback error");
+        };
+
+        await audio.play();
+        console.log("Cached audio play promise resolved successfully");
+        return;
+      }
+
+      // Try server TTS with optimized timeout, fallback to browser TTS
       console.log("Generating unmute TTS audio...");
       let audio: HTMLAudioElement | null = null;
       let audioUrl: string | null = null;
@@ -867,14 +925,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           return response;
         };
 
-        // Race between fetch and timeout with comprehensive error handling
+        // Race between fetch and timeout with extended timeout for stability
         let response;
         try {
           response = await Promise.race([
             safeFetch().catch(err => {
               throw err;
             }),
-            safeTimeout(30000).catch(err => {
+            safeTimeout(60000).catch(err => {
               throw err;
             })
           ]);
@@ -889,6 +947,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         if (response.ok) {
           const audioBuffer = await response.arrayBuffer();
           const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+          
+          // Cache the successful audio response to minimize future fallbacks
+          setCachedAudio(lastAssistantMessage, audioBlob);
+          
           audioUrl = URL.createObjectURL(audioBlob);
           audio = new Audio(audioUrl);
           console.log("Using server TTS audio");
@@ -918,15 +980,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log("Browser TTS: Full text length:", lastAssistantMessage.length);
         console.log("Browser TTS: Text content:", lastAssistantMessage);
         
-        // Select the same consistent male voice
+        // Select the same consistent male voice using voiceURI
         const selectVoice = () => {
           const voices = speechSynthesis.getVoices();
           
-          // Priority 1: Use the globally selected voice if available
-          if (window.selectedVoice && voices.includes(window.selectedVoice)) {
-            utterance.voice = window.selectedVoice;
-            console.log("Using consistent global voice:", window.selectedVoice.name);
-            return;
+          // Priority 1: Use stored voiceURI if available
+          const storedVoiceURI = localStorage.getItem('preferredVoiceURI');
+          if (storedVoiceURI) {
+            const storedVoice = voices.find(voice => voice.voiceURI === storedVoiceURI);
+            if (storedVoice) {
+              utterance.voice = storedVoice;
+              console.log("Using stored voice:", storedVoice.name, "URI:", storedVoice.voiceURI);
+              return;
+            }
           }
           
           // Priority 2: Google UK English Male for consistency
@@ -959,8 +1025,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           
           if (preferredVoice) {
             utterance.voice = preferredVoice;
-            window.selectedVoice = preferredVoice; // Store for consistency
-            console.log("Selected consistent male voice:", preferredVoice.name);
+            // Store voiceURI for consistent reuse
+            localStorage.setItem('preferredVoiceURI', preferredVoice.voiceURI);
+            console.log("Selected consistent male voice:", preferredVoice.name, "URI:", preferredVoice.voiceURI);
           }
         };
         
