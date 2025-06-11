@@ -36,11 +36,15 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
   const inputContainer = (
     <div className="relative w-full">
       <div
-        className={`relative w-full h-16 rounded-3xl border-2 border-white ${
-          isFocused ? 'animate-pulse' : ''
+        className={`relative w-full h-16 rounded-3xl border-2 border-transparent ${
+          isFocused ? 'input-focused' : 'border-white/20'
         }`}
         style={{
-          backgroundColor: '#1C1C1C'
+          backgroundImage: isFocused 
+            ? 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.7))' 
+            : 'none',
+          backgroundOrigin: 'border-box',
+          backgroundClip: 'padding-box, border-box'
         }}
       >
 
@@ -72,7 +76,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             alignItems: 'center',
             alignSelf: 'stretch',
             borderRadius: '24px',
-            backgroundColor: 'transparent',
+            backgroundColor: isFocused ? 'transparent' : '#1C1C1C',
             border: 'none',
             width: '100%',
             height: '64px',
@@ -80,7 +84,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             color: 'white',
             WebkitAppearance: 'none',
             appearance: 'none',
-            background: 'transparent',
+            background: isFocused ? 'transparent' : '#1C1C1C',
             fontFamily: 'Inter, sans-serif',
             fontSize: '16px',
             lineHeight: '24px',
@@ -90,7 +94,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             left: 0,
             top: 0
           }}
-          className="text-sm pr-12 placeholder-[#999999] flex items-center !bg-transparent"
+          className={`text-sm pr-12 placeholder-[#999999] flex items-center ${isFocused ? '!bg-transparent' : 'bg-[#1C1C1C] !bg-[#1C1C1C]'}`}
           placeholder="Ask me about..."
           disabled={isProcessing}
           onKeyPress={(e) => {
