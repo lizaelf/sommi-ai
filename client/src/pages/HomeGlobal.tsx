@@ -6,7 +6,7 @@ import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import AppHeader from "@/components/AppHeader";
-import { ProfileIcon } from "@/components/ProfileIcon";
+import { ButtonIcon } from "@/components/ButtonIcon";
 
 interface Wine {
   id: number;
@@ -107,7 +107,7 @@ const HomeGlobal = () => {
                 </span>
               </div>
             </Link>
-            <ProfileIcon 
+            <ButtonIcon 
               onEditContact={() => console.log('Edit contact clicked')}
               onManageNotifications={() => console.log('Manage notifications clicked')}
               onDeleteAccount={() => console.log('Delete account clicked')}

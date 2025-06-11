@@ -3,17 +3,17 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/UseToast";
 
-interface ProfileIconProps {
+interface ButtonIconProps {
   onEditContact?: () => void;
   onManageNotifications?: () => void;
   onDeleteAccount?: () => void;
 }
 
-export function ProfileIcon({ 
+export function ButtonIcon({ 
   onEditContact, 
   onManageNotifications, 
   onDeleteAccount 
-}: ProfileIconProps) {
+}: ButtonIconProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const { toast } = useToast();

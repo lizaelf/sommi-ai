@@ -6,7 +6,7 @@ import { TextGenerateEffect } from '../components/ui/TextGenerateEffect';
 import { useState, useEffect } from 'react';
 import typography from '../styles/typography';
 import AppHeader from '@/components/AppHeader';
-import { ProfileIcon } from '@/components/ProfileIcon';
+import { ButtonIcon } from '@/components/ButtonIcon';
 
 export default function ConversationDialog() {
   const [, setLocation] = useLocation();

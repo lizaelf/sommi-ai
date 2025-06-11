@@ -9,7 +9,7 @@ export { WineCard } from './WineCard';
 export { SearchInterface } from './SearchInterface';
 export { ConfirmationDialog } from './ConfirmationDialog';
 export { NotificationSettings } from './NotificationSettings';
-export { ProfileIcon } from '../ProfileIcon';
+export { ButtonIcon } from '../ButtonIcon';
 
 // Existing Components
 export { default as Button } from './Button';

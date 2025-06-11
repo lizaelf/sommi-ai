@@ -7,7 +7,7 @@ import typography from '@/styles/typography';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { DataSyncManager } from '@/utils/dataSync';
 import AppHeader from '@/components/AppHeader';
-import { ProfileIcon } from '@/components/ProfileIcon';
+import { ButtonIcon } from '@/components/ButtonIcon';
 
 interface SelectedWine {
   id: number;
@@ -156,7 +156,7 @@ export default function WineDetails() {
                   </div>
                 </Link>
               )}
-              <ProfileIcon 
+              <ButtonIcon 
                 onEditContact={() => console.log('Edit contact clicked')}
                 onManageNotifications={() => console.log('Manage notifications clicked')}
                 onDeleteAccount={() => console.log('Delete account clicked')}
