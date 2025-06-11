@@ -692,16 +692,57 @@ button:active {
   }
 }
 
-.idle-border-animation {
+.circle-movement-animation {
   position: absolute;
-  inset: -2px;
-  border-radius: 26px;
-  background: linear-gradient(315deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.4));
-  animation: bg-brightness-idle 3s ease-in-out infinite;
-  mask: radial-gradient(circle, transparent 60px, black 62px);
-  -webkit-mask: radial-gradient(circle, transparent 60px, black 62px);
+  inset: 0;
+  border-radius: 24px;
+  overflow: hidden;
   pointer-events: none;
   z-index: 1;
+}
+
+.moving-circle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 70%, transparent 100%);
+  border-radius: 50%;
+  animation: circle-orbit 4s linear infinite;
+}
+
+@keyframes circle-orbit {
+  0% {
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  25% {
+    top: 50%;
+    right: 2px;
+    left: auto;
+    transform: translateY(-50%);
+  }
+  50% {
+    bottom: 2px;
+    left: 50%;
+    top: auto;
+    right: auto;
+    transform: translateX(-50%);
+  }
+  75% {
+    top: 50%;
+    left: 2px;
+    bottom: auto;
+    right: auto;
+    transform: translateY(-50%);
+  }
+  100% {
+    top: 2px;
+    left: 50%;
+    bottom: auto;
+    right: auto;
+    transform: translateX(-50%);
+  }
 }
 
 
