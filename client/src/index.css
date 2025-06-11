@@ -692,7 +692,7 @@ button:active {
   }
 }
 
-.input-focused {
+.input-idle {
   animation: bg-white-hue 2s linear infinite;
 }
 
