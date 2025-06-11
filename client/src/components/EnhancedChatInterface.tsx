@@ -1824,38 +1824,17 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                               })()}
                               
                               {/* View full conversation button */}
-                              <button
+                              <Button
                                 onClick={() => setLocation("/wine/conversation")}
+                                variant="secondary"
                                 style={{
-                                  backgroundColor: "rgba(255, 255, 255, 0.08)",
-                                  borderRadius: "32px",
                                   height: "48px",
-                                  padding: "0 16px",
                                   margin: "8px 0 0 0",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  border: "none",
-                                  color: "white",
-                                  fontFamily: "Inter, sans-serif",
-                                  fontSize: "14px",
-                                  fontWeight: 500,
-                                  cursor: "pointer",
-                                  outline: "none",
                                   width: "100%",
-                                  boxSizing: "border-box",
-                                  lineHeight: "1",
-                                  transition: "background-color 0.2s ease",
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
                                 }}
                               >
                                 View full conversation
-                              </button>
+                              </Button>
                             </div>
                           )}
                         </div>
