@@ -1052,7 +1052,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   height: "100%",
                   justifyContent: "center",
                   alignItems: "center",
-                  gap: 4,
+                  gap: 20,
                   display: "flex",
                   position: "relative",
                   zIndex: 2,
