@@ -189,7 +189,7 @@ export function AppHeader({
                   animation: isResetting ? "spin 1s linear infinite" : "none"
                 }}
               />
-              {isResetting ? "Resetting..." : "Reset QR"}
+              {isResetting ? "Resetting..." : "Reset"}
             </button>
             
             {rightContent || (
