@@ -40,8 +40,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           isFocused ? 'input-focused' : 'border-white/20'
         }`}
         style={{
+          backgroundColor: '#1C1C1C',
           backgroundImage: isFocused 
-            ? 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.7))' 
+            ? 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.8))' 
             : 'none',
           backgroundOrigin: 'border-box',
           backgroundClip: 'padding-box, border-box'
@@ -76,7 +77,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             alignItems: 'center',
             alignSelf: 'stretch',
             borderRadius: '24px',
-            backgroundColor: isFocused ? 'transparent' : '#1C1C1C',
+            backgroundColor: 'transparent',
             border: 'none',
             width: '100%',
             height: '64px',
@@ -84,7 +85,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             color: 'white',
             WebkitAppearance: 'none',
             appearance: 'none',
-            background: isFocused ? 'transparent' : '#1C1C1C',
+            background: 'transparent',
             fontFamily: 'Inter, sans-serif',
             fontSize: '16px',
             lineHeight: '24px',
@@ -94,7 +95,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             left: 0,
             top: 0
           }}
-          className={`text-sm pr-12 placeholder-[#999999] flex items-center ${isFocused ? '!bg-transparent' : 'bg-[#1C1C1C] !bg-[#1C1C1C]'}`}
+          className="text-sm pr-12 placeholder-[#999999] flex items-center !bg-transparent"
           placeholder="Ask me about..."
           disabled={isProcessing}
           onKeyPress={(e) => {

@@ -698,19 +698,19 @@ button:active {
 
 @keyframes bg-white-hue {
   0% {
-    filter: brightness(1) opacity(1);
+    opacity: 1;
   }
   25% {
-    filter: brightness(1.2) opacity(0.9);
+    opacity: 0.7;
   }
   50% {
-    filter: brightness(1.4) opacity(0.8);
+    opacity: 0.5;
   }
   75% {
-    filter: brightness(1.2) opacity(0.9);
+    opacity: 0.7;
   }
   100% {
-    filter: brightness(1) opacity(1);
+    opacity: 1;
   }
 }
 
