@@ -663,21 +663,8 @@ button:active {
   animation-delay: 4s;
 }
 
-/* Circular border animation for input default state */
-@keyframes spin-border {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 /* Hue rotation animation for idle state gradient border */
-@keyframes bg-hue-idle {
-  0% {
-    filter: hue-rotate(0deg);
-  }
+@keyframes bg-hue {
   100% {
     filter: hue-rotate(360deg);
   }
@@ -687,11 +674,11 @@ button:active {
   position: absolute;
   inset: 0;
   border-radius: 24px;
-  padding: 2px;
-  background: linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(236, 160, 255, 0.8), rgba(170, 178, 255, 0.6), rgba(132, 255, 201, 0.7));
+  border: 3px solid transparent;
+  background-image: linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgb(236, 160, 255), rgb(170, 178, 255), rgb(132, 255, 201));
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  animation: bg-hue-idle 3s linear infinite;
+  animation: bg-hue 2s linear infinite;
 }
 
 
