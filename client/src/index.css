@@ -692,15 +692,16 @@ button:active {
   }
 }
 
-.rotating-border {
+.idle-border-animation {
   position: absolute;
-  inset: 0;
-  border-radius: 24px;
-  padding: 2px;
-  background: linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(315deg, rgba(236, 160, 255, 0.8), rgba(170, 178, 255, 0.6), rgba(132, 255, 201, 0.7));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  animation: bg-hue-idle 3s linear infinite;
+  inset: -2px;
+  border-radius: 26px;
+  background: linear-gradient(315deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.4));
+  animation: bg-brightness-idle 3s ease-in-out infinite;
+  mask: radial-gradient(circle, transparent 60px, black 62px);
+  -webkit-mask: radial-gradient(circle, transparent 60px, black 62px);
+  pointer-events: none;
+  z-index: 1;
 }
 
 
