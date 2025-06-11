@@ -495,11 +495,9 @@ button:not(.react-button) {
     min-height: calc(100dvh + env(safe-area-inset-bottom)) !important;
   }
 
-  button:not(.secondary-filled-button){
+  button:not(.react-button) {
     all: unset;
     background: transparent !important;
-    border: 1px solid transparent !important;
-    background-image: linear-gradient(#0A0A0A, #0A0A0A), linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2)) !important;
     background-origin: border-box !important;
     background-clip: padding-box, border-box !important;
     color: white !important;
@@ -511,13 +509,13 @@ button:not(.react-button) {
     transition: all 0.2s ease !important;
   }
 
-  button:hover {
+  button:not(.react-button):hover {
     background: rgba(255, 255, 255, 0.16) !important;
     background-image: none !important;
   }
 
-  button:active,
-  button:focus {
+  button:not(.react-button):active,
+  button:not(.react-button):focus {
     background: rgba(255, 255, 255, 0.16) !important;
     background-image: none !important;
   }

@@ -1755,7 +1755,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         >Want more?</h1>
 
                         {/* Buy again button */}
-                        <button
+                        <Button
                           onClick={() => {
                             if (currentWine?.buyAgainLink) {
                               window.open(currentWine.buyAgainLink, '_blank');
@@ -1763,14 +1763,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                               console.log("No buy again link available");
                             }
                           }}
-                          className="primary-button"
+                          variant="primary"
                           style={{
                             margin: "0 0 32px 0",
                             width: "100%",
                           }}
                         >
                           Buy again
-                        </button>
+                        </Button>
 
                         {/* Chat with AI Section */}
                         <div style={{ marginBottom: "32px" }}>
@@ -2217,7 +2217,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             <div className="max-w-3xl mx-auto">
               {showBuyButton && !showChatInput ? (
                 // Show Buy Again Button for WineDetails page
-                (<button
+                (<Button
                   onClick={() => {
                     if (currentWine?.buyAgainLink) {
                       window.open(currentWine.buyAgainLink, '_blank');
@@ -2225,13 +2225,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       console.log("No buy again link available");
                     }
                   }}
-                  className="primary-button"
+                  variant="primary"
                   style={{
                     margin: 0,
                     width: "100%",
                   }}
                 >Buy again
-                                  </button>)
+                                  </Button>)
               ) : (
                 // Show suggestions and input for Home page
                 (<>
