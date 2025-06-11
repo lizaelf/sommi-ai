@@ -1,5 +1,6 @@
 import React from "react";
 import { Search, X } from "lucide-react";
+import { IconButton } from "./IconButton";
 
 interface SearchInterfaceProps {
   isOpen: boolean;
@@ -72,17 +73,21 @@ export function SearchInterface({
         />
         
         <div
-          onClick={onClose}
           style={{
             position: "absolute",
-            right: "16px",
+            right: "8px",
             top: "50%",
             transform: "translateY(-50%)",
-            cursor: "pointer",
             zIndex: 1,
           }}
         >
-          <X size={18} color="#959493" />
+          <IconButton
+            icon={X}
+            onClick={onClose}
+            variant="ghost"
+            size="sm"
+            title="Close search"
+          />
         </div>
       </div>
       

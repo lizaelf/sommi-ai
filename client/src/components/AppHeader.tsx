@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
 import Logo from "@/components/Logo";
-import Button from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface AppHeaderProps {
   title?: string;
@@ -77,12 +77,13 @@ export function AppHeader({
           {/* Left side - Back button or Logo + Title */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {showBackButton && onBack ? (
-              <div
+              <IconButton
+                icon={ArrowLeft}
                 onClick={onBack}
-                className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
-              >
-                <ArrowLeft className="w-6 h-6" />
-              </div>
+                variant="ghost"
+                size="md"
+                title="Go back"
+              />
             ) : (
               <Logo />
             )}
@@ -99,19 +100,13 @@ export function AppHeader({
           <div className="flex items-center gap-3">
             {rightContent || (
               <div className="relative" ref={dropdownRef}>
-                <Button
+                <IconButton
+                  icon={MoreHorizontal}
                   onClick={() => setShowDropdown(!showDropdown)}
-                  variant="secondary"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    padding: "0",
-                    minHeight: "40px",
-                    borderRadius: "20px",
-                  }}
-                >
-                  <MoreHorizontal className="w-6 h-6" />
-                </Button>
+                  variant="headerIcon"
+                  size="md"
+                  title="More options"
+                />
                 
                 {showDropdown && onDeleteTenant && (
                   <div className="absolute right-0 top-full mt-2 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg min-w-[160px] z-50">
