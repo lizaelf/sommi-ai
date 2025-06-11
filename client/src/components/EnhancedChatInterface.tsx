@@ -1907,7 +1907,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                         ...typography.body,
                                         color: "rgba(255, 255, 255, 0.8)",
                                         lineHeight: "1.6",
-                                        margin: "0 0 16px 0",
+                                        margin: "0",
                                       }}
                                     >
                                       {summaryText}
