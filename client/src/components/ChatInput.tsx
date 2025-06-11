@@ -51,13 +51,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           overflow: 'hidden'
         }}
       >
-        {isFocused && (
-          <div className="absolute inset-0 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-slide-lr"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent animate-slide-lr-delayed"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow"></div>
-          </div>
-        )}
+        {/* Animated border - always visible, with different intensity based on focus */}
+        <div className="absolute inset-0 rounded-3xl overflow-hidden">
+          <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-slide-lr ${!isFocused ? 'opacity-60' : ''}`}></div>
+          <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent animate-slide-lr-delayed ${!isFocused ? 'opacity-60' : ''}`}></div>
+          <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow ${!isFocused ? 'opacity-60' : ''}`}></div>
+        </div>
         <input
           ref={inputRef}
           type="text"
