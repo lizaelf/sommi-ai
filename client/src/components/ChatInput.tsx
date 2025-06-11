@@ -58,6 +58,20 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow"></div>
           </div>
         )}
+        
+        {!isFocused && (
+          <div className="absolute inset-0 rounded-3xl overflow-hidden">
+            <div 
+              className="absolute inset-0 rounded-3xl"
+              style={{
+                background: 'conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.2), transparent, rgba(255, 255, 255, 0.1), transparent)',
+                animation: 'spin-border 3s linear infinite',
+                mask: 'radial-gradient(circle, transparent 22px, black 24px)',
+                WebkitMask: 'radial-gradient(circle, transparent 22px, black 24px)'
+              }}
+            />
+          </div>
+        )}
         <input
           ref={inputRef}
           type="text"
