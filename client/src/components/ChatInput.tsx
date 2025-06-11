@@ -99,7 +99,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             lineHeight: '24px',
             fontWeight: 400,
             position: 'relative',
-            zIndex: 10,
+            zIndex: 5,
             left: 0,
             top: 0
           }}
