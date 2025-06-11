@@ -257,12 +257,15 @@ button:not(.react-button) {
   box-shadow: none !important;
 }
 
-/* Header Icon Button Class - Enhanced with higher specificity */
+/* Header Icon Button Class - Maximum specificity override with debug */
+button.header-icon-button.react-button,
 button.header-icon-button,
+.header-icon-button.react-button,
 .header-icon-button {
-  background: rgba(255, 255, 255, 0.10) !important;
-  background-color: rgba(255, 255, 255, 0.10) !important;
-  border: none !important;
+  background: rgba(255, 255, 255, 0.20) !important;
+  background-color: rgba(255, 255, 255, 0.20) !important;
+  background-image: none !important;
+  border: 2px solid rgba(255, 0, 0, 0.5) !important;
   color: white !important;
   border-radius: 20px !important;
   width: 40px !important;
@@ -283,38 +286,54 @@ button.header-icon-button,
   align-items: center !important;
   justify-content: center !important;
   box-sizing: border-box !important;
-  background-image: none !important;
-  border-width: 0 !important;
-  box-shadow: none !important;
+  border-width: 2px !important;
+  border-style: solid !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
   text-decoration: none !important;
   line-height: 1 !important;
   position: relative !important;
-  overflow: hidden !important;
+  overflow: visible !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
 }
 
+button.header-icon-button.react-button:hover,
 button.header-icon-button:hover,
+.header-icon-button.react-button:hover,
 .header-icon-button:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   color: white !important;
   transform: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
+button.header-icon-button.react-button:active,
 button.header-icon-button:active,
+.header-icon-button.react-button:active,
 .header-icon-button:active {
-  background: rgba(255, 255, 255, 0.20) !important;
-  background-color: rgba(255, 255, 255, 0.20) !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
   color: white !important;
   transform: scale(0.95) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
 }
 
+button.header-icon-button.react-button:focus,
 button.header-icon-button:focus,
+.header-icon-button.react-button:focus,
 .header-icon-button:focus {
-  background: rgba(255, 255, 255, 0.12) !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.20) !important;
+  background-color: rgba(255, 255, 255, 0.20) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   color: white !important;
   outline: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Ensure the icon inside the button is styled correctly */
