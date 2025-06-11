@@ -364,32 +364,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       isSecure: window.location.protocol === 'https:'
     });
 
-    // Check if we already have permission or can skip the prompt
-    const shouldSkip = shouldSkipPermissionPrompt();
-    console.log("🎤 DEPLOY DEBUG: Permission check", { shouldSkip });
-    
-    if (shouldSkip) {
-      console.log("🎤 DEPLOY DEBUG: Using existing microphone permission for voice recording");
-      const hasPermission = await requestMicrophonePermission();
-      console.log("🎤 DEPLOY DEBUG: Existing permission result:", hasPermission);
-      
-      if (!hasPermission) {
-        console.log("🎤 DEPLOY DEBUG: Existing permission invalid, setting states and returning");
-        setIsListening(false);
-        setShowBottomSheet(false);
-        console.log("🎤 DEPLOY DEBUG: States set - requesting fresh permission");
-        // Don't return here, fall through to request fresh permission
-      } else {
-        // Permission exists, continue with recording setup
-        console.log("🎤 DEPLOY DEBUG: Permission valid, calling setupRecording");
-        return setupRecording();
-      }
-    }
-
-    // Request microphone permission
-    console.log("🎤 DEPLOY DEBUG: Requesting fresh microphone permission for voice recording");
+    // Always request fresh permission for reliable behavior
+    console.log("🎤 DEPLOY DEBUG: Requesting microphone permission for voice recording");
     const hasPermission = await requestMicrophonePermission();
-    console.log("🎤 DEPLOY DEBUG: Fresh permission result:", hasPermission);
+    console.log("🎤 DEPLOY DEBUG: Permission result:", hasPermission);
     
     if (!hasPermission) {
       console.log("🎤 DEPLOY DEBUG: Permission denied - closing bottom sheet and showing toast");
@@ -1267,6 +1245,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("🔍 DEBUG: Current states before Ask - isListening:", isListening, "isResponding:", isResponding, "isThinking:", isThinking);
     console.log("🔍 DEBUG: Current button states - showAskButton:", showAskButton, "showUnmuteButton:", showUnmuteButton);
     
+    // Prevent multiple rapid clicks
+    if (isListening || isProcessing) {
+      console.log("🔍 DEBUG: Already processing, ignoring click");
+      return;
+    }
+    
     // Stop any existing audio playback
     if ((window as any).currentOpenAIAudio) {
       (window as any).currentOpenAIAudio.pause();
@@ -1307,6 +1291,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setShowBottomSheet(true);
     console.log("🔍 DEBUG: Set showBottomSheet to true");
     
+    // Small delay to ensure state updates are processed
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
     // Start listening directly - this will keep the bottom sheet open
     console.log("🔍 DEBUG: About to call startListening()");
     try {
@@ -1314,6 +1301,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       console.log("🔍 DEBUG: startListening() completed successfully");
     } catch (error) {
       console.error("🔍 DEBUG: Error in startListening():", error);
+      // Reset states on error
+      setIsListening(false);
+      setShowAskButton(true);
     }
   };
 
