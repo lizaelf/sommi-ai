@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { IconButton } from "./IconButton";
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -120,12 +121,16 @@ export function BottomSheet({
                 position: "absolute",
                 top: "-8px",
                 right: "-8px",
-                cursor: "pointer",
                 zIndex: 10,
               }}
-              onClick={handleClose}
             >
-              <X size={24} color="white" />
+              <IconButton
+                icon={X}
+                onClick={handleClose}
+                variant="ghost"
+                size="md"
+                title="Close"
+              />
             </div>
           </div>
         )}

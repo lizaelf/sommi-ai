@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Plus, Save, X, Menu, Search, User, Settings } from "lucide-react";
 import { Link } from "wouter";
 import AppHeader from "@/components/AppHeader";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface Tenant {
   id: number;
@@ -94,12 +95,13 @@ const SommTenantAdmin: React.FC = () => {
       <AppHeader 
         title="Somm tenant admin"
         rightContent={
-          <button
+          <IconButton
+            icon={Plus}
             onClick={() => (window.location.href = "/tenant-create")}
-            className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
-          >
-            <Plus className="w-6 h-6 text-white" />
-          </button>
+            variant="headerIcon"
+            size="md"
+            title="Create new tenant"
+          />
         }
       />
       <div
@@ -141,13 +143,15 @@ const SommTenantAdmin: React.FC = () => {
         {tenants.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">No tenants available.</div>
-            <button
+            <IconButton
+              icon={Plus}
               onClick={() => (window.location.href = "/tenant-create")}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              variant="primary"
+              size="lg"
+              className="px-4 py-2"
             >
-              <Plus className="w-4 h-4 mr-2" />
               Create Your First Tenant
-            </button>
+            </IconButton>
           </div>
         )}
       </div>

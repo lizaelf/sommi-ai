@@ -3,6 +3,7 @@ export { BottomSheet } from './BottomSheet';
 export { FormInput } from './FormInput';
 export { LoadingSpinner } from './LoadingSpinner';
 export { DropdownMenu } from './DropdownMenu';
+export { IconButton } from './IconButton';
 
 // Specialized Components
 export { WineCard } from './WineCard';
