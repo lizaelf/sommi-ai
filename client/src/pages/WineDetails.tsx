@@ -36,13 +36,25 @@ export default function WineDetails() {
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (id && !wine) {
-      const wineData = DataSyncManager.getWineById(parseInt(id));
+    // Initialize data sync manager
+    DataSyncManager.initialize();
+    
+    // Get wine ID from URL params (either route param or query param)
+    const urlParams = new URLSearchParams(window.location.search);
+    const wineIdFromQuery = urlParams.get('wine');
+    const wineId = id || wineIdFromQuery;
+    
+    console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId, location });
+    
+    if (wineId && !wine) {
+      const wineData = DataSyncManager.getWineById(parseInt(wineId));
+      console.log(`WineDetails: Looking for wine ID ${wineId}, found:`, wineData);
       if (wineData) {
         setWine(wineData);
+        console.log('WineDetails: Wine loaded successfully:', wineData.name);
       }
     }
-  }, [id, wine]);
+  }, [id, wine, location]);
 
   useEffect(() => {
     console.log('🔍 QR Debug:', {
@@ -52,7 +64,8 @@ export default function WineDetails() {
       isQRScan,
       showQRModal,
       wine: wine ? 'loaded' : 'not loaded',
-      wineId: wine?.id
+      wineId: wine?.id,
+      urlParams: new URLSearchParams(window.location.search).get('wine')
     });
 
     if (isScannedPage && !interactionChoiceMade) {
@@ -532,6 +545,16 @@ export default function WineDetails() {
           console.log('🔄 QR Modal close triggered');
           setShowQRModal(false);
           setInteractionChoiceMade(true);
+        }}
+        onTextChoice={() => {
+          console.log('💬 Text interaction selected');
+          setInteractionChoiceMade(true);
+          setShowQRModal(false);
+        }}
+        onVoiceChoice={() => {
+          console.log('🎤 Voice interaction selected');
+          setInteractionChoiceMade(true);
+          setShowQRModal(false);
         }}
       />
     </div>
