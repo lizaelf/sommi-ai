@@ -311,22 +311,24 @@ export default function WineDetails() {
         </div>
       </div>
       
-      {/* QR Scan Modal */}
-      <QRScanModal
-        isOpen={showQRModal}
-        onClose={() => {
-          console.log('🔄 QR Modal close triggered');
-          setShowQRModal(false);
-        }}
-        onTextChoice={() => {
-          console.log('🔄 QR Modal text choice selected');
-          handleInteractionChoice('text');
-        }}
-        onVoiceChoice={() => {
-          console.log('🔄 QR Modal voice choice selected');
-          handleInteractionChoice('voice');
-        }}
-      />
+      {/* QR Scan Modal - Only show on scanned pages */}
+      {isScannedPage && (
+        <QRScanModal
+          isOpen={showQRModal}
+          onClose={() => {
+            console.log('🔄 QR Modal close triggered');
+            setShowQRModal(false);
+          }}
+          onTextChoice={() => {
+            console.log('🔄 QR Modal text choice selected');
+            handleInteractionChoice('text');
+          }}
+          onVoiceChoice={() => {
+            console.log('🔄 QR Modal voice choice selected');
+            handleInteractionChoice('voice');
+          }}
+        />
+      )}
     </div>
   );
 }
