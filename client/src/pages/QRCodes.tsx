@@ -1,5 +1,5 @@
 import React from "react";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import { AppHeader } from "@/components/AppHeader";
 
 const QRCodes: React.FC = () => {
@@ -83,7 +83,7 @@ const QRCodes: React.FC = () => {
                 </p>
                 
                 <div className="bg-white p-4 rounded-lg mb-4 inline-block">
-                  <QRCode 
+                  <QRCodeSVG 
                     value={page.url}
                     size={150}
                     level="M"
