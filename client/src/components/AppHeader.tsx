@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Logo from "@/components/Logo";
 import { IconButton } from "@/components/ui/IconButton";
 import { useLocation } from "wouter";
@@ -10,7 +10,6 @@ interface AppHeaderProps {
   rightContent?: React.ReactNode;
   className?: string;
   showBackButton?: boolean;
-  onDeleteTenant?: () => void;
 }
 
 export function AppHeader({ 
@@ -18,28 +17,10 @@ export function AppHeader({
   onBack, 
   rightContent, 
   className = "",
-  showBackButton = false,
-  onDeleteTenant
+  showBackButton = false
 }: AppHeaderProps) {
-  const [showDropdown, setShowDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const [location] = useLocation();
-  
-
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   useEffect(() => {
     console.log('🚀 AppHeader mounted - setting up scroll listener');
@@ -130,22 +111,7 @@ export function AppHeader({
                   title="More options"
                 />
                 
-                {showDropdown && onDeleteTenant && (
-                  <div className="absolute right-0 top-full mt-2 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg min-w-[160px] z-50">
-                    <button
-                      onClick={() => {
-                        setShowDropdown(false);
-                        if (confirm('Are you sure you want to delete this tenant? This action cannot be undone.')) {
-                          onDeleteTenant();
-                        }
-                      }}
-                      className="w-full px-4 py-3 text-left text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors flex items-center gap-2 rounded-lg"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete Tenant
-                    </button>
-                  </div>
-                )}
+
               </div>
             )}
           </div>
