@@ -481,9 +481,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   </h1>
                   <div style={{ display: "flex", gap: "16px", width: "100%", overflowX: "auto", scrollbarWidth: "none", paddingBottom: "8px" }}>
                     {getAllWineData()
-                      .filter((wine) => wine.id !== currentWine?.id)
+                      .filter((wine: any) => wine.id !== currentWine?.id)
                       .slice(0, 3)
-                      .map((wine) => (
+                      .map((wine: any) => (
                         <div
                           key={wine.id}
                           onClick={() => setLocation(`/?wine=${wine.id}`)}
@@ -539,7 +539,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         <ChatMessage
                           key={`message-${message.id}-${index}`}
                           message={message}
-                          isUser={message.role === 'user'}
                         />
                       ))}
                       {isTyping && (
