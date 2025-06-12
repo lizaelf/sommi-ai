@@ -8,10 +8,8 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Use HTTP-based connection with optimized settings
-const sql = neon(process.env.DATABASE_URL, {
-  fullResults: false,
-});
+// Use HTTP-based connection instead of WebSocket to avoid connection issues
+const sql = neon(process.env.DATABASE_URL);
 export const db = drizzle(sql, { schema });
 
 // For backwards compatibility, export a mock pool

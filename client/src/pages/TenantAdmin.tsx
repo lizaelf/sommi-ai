@@ -361,6 +361,15 @@ const TenantAdmin: React.FC = () => {
         showBackButton={true}
         onBack={() => setLocation('/somm-tenant-admin')}
         className="z-[60]"
+        onDeleteTenant={() => {
+          // Navigate back to tenant list after deletion
+          setLocation('/somm-tenant-admin');
+          // Add toast notification
+          toast({
+            title: "Tenant deleted",
+            description: "The tenant has been successfully deleted.",
+          });
+        }}
       />
       
       <div className="fixed top-[75px] left-0 right-0 bg-black z-[59] border-b border-white/10">

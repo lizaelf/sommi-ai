@@ -338,108 +338,30 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Aggressive circuit breaker and rate limiter for database operations
-  let dbFailureCount = 0;
-  let lastFailureTime = 0;
-  let circuitOpen = false;
-  let activeDbRequests = 0;
-  const MAX_FAILURES = 1; // Trigger after first failure
-  const MAX_CONCURRENT_DB_REQUESTS = 1; // Only allow 1 concurrent DB request
-  const CIRCUIT_BREAKER_TIMEOUT = 120000; // 2 minutes
-
-  function isCircuitOpen() {
-    if (circuitOpen) {
-      const timeSinceLastFailure = Date.now() - lastFailureTime;
-      if (timeSinceLastFailure >= CIRCUIT_BREAKER_TIMEOUT) {
-        console.log('Circuit breaker timeout reached, attempting to reset');
-        circuitOpen = false;
-        dbFailureCount = 0;
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-  function recordFailure() {
-    dbFailureCount++;
-    lastFailureTime = Date.now();
-    circuitOpen = true;
-    console.log(`Database failure recorded. Count: ${dbFailureCount}, Circuit opened`);
-  }
-
-  function recordSuccess() {
-    if (circuitOpen) {
-      console.log('Database success recorded, resetting circuit breaker');
-      circuitOpen = false;
-    }
-    dbFailureCount = 0;
-  }
-
   // Get all conversations
   app.get("/api/conversations", async (_req, res) => {
     try {
-      // Check circuit breaker and rate limit
-      if (isCircuitOpen()) {
-        console.log('Database circuit breaker is open, returning empty array');
-        return res.json([]);
-      }
-
-      if (activeDbRequests >= MAX_CONCURRENT_DB_REQUESTS) {
-        console.log('Too many concurrent database requests, returning empty array');
-        return res.json([]);
-      }
-
-      activeDbRequests++;
-      try {
-        const conversations = await storage.getAllConversations();
-        recordSuccess();
-        res.json(conversations);
-      } finally {
-        activeDbRequests--;
-      }
+      const conversations = await storage.getAllConversations();
+      res.json(conversations);
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      recordFailure();
-      activeDbRequests = Math.max(0, activeDbRequests - 1);
-      
-      // Return empty array instead of error to prevent UI blocking
-      res.json([]);
+      res.status(500).json({ message: "Failed to fetch conversations" });
     }
   });
   
   // Get the most recent conversation
   app.get("/api/conversations/recent", async (_req, res) => {
     try {
-      // Check circuit breaker and rate limit
-      if (isCircuitOpen()) {
-        console.log('Database circuit breaker is open, returning null');
-        return res.json(null);
-      }
-
-      if (activeDbRequests >= MAX_CONCURRENT_DB_REQUESTS) {
-        console.log('Too many concurrent database requests, returning null');
-        return res.json(null);
+      const conversation = await storage.getMostRecentConversation();
+      
+      if (!conversation) {
+        return res.status(404).json({ message: "No conversations found" });
       }
       
-      activeDbRequests++;
-      try {
-        const conversation = await storage.getMostRecentConversation();
-        recordSuccess();
-        
-        if (!conversation) {
-          return res.json(null);
-        }
-        
-        res.json(conversation);
-      } finally {
-        activeDbRequests--;
-      }
+      res.json(conversation);
     } catch (error) {
       console.error("Error fetching most recent conversation:", error);
-      recordFailure();
-      activeDbRequests = Math.max(0, activeDbRequests - 1);
-      res.json(null);
+      res.status(500).json({ message: "Failed to fetch most recent conversation" });
     }
   });
 
@@ -472,25 +394,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Delete all conversations (for account deletion)
-  app.delete("/api/conversations", async (_req, res) => {
-    try {
-      const conversations = await storage.getAllConversations();
-      
-      // Delete all conversations and their messages
-      for (const conversation of conversations) {
-        await storage.deleteConversation(conversation.id);
-      }
-      
-      console.log(`Deleted ${conversations.length} conversations for account deletion`);
-      res.status(200).json({ message: "All conversations deleted successfully", count: conversations.length });
-    } catch (error) {
-      console.error("Error deleting all conversations:", error);
-      res.status(500).json({ message: "Failed to delete all conversations" });
-    }
-  });
-
-  // Delete a specific conversation
+  // Delete a conversation
   app.delete("/api/conversations/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);

@@ -32,7 +32,6 @@ interface UseConversationReturn {
   createNewConversation: () => Promise<number | null>;
   clearConversation: () => Promise<void>;
   refetchMessages: () => Promise<any>;
-  resetAllConversations: () => Promise<void>;
 }
 
 /**
@@ -163,16 +162,9 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       window.scrollTo(0, 0);
       
       try {
-        // First, try to load conversations from backend (with timeout and error handling)
+        // First, try to load conversations from backend (for deployment persistence)
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
-          
-          const backendConversations = await fetch('/api/conversations', {
-            signal: controller.signal
-          });
-          clearTimeout(timeoutId);
-          
+          const backendConversations = await fetch('/api/conversations');
           if (!isMounted) return;
           
           if (backendConversations.ok) {
@@ -210,12 +202,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
           }
         } catch (backendError) {
           if (!isMounted) return;
-          console.log('Backend conversation loading failed, using local storage fallback');
-          // Prevent unhandled promise rejection
-          if (backendError instanceof Error && backendError.name !== 'AbortError') {
-            // Log non-timeout errors for debugging
-            console.debug('Backend error details:', backendError.message);
-          }
+          console.log('Backend not available, falling back to IndexedDB:', backendError);
         }
         
         if (!isMounted) return;
@@ -412,26 +399,6 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     }
   }, [currentConversationId]);
   
-  // Reset all conversation data (for account deletion)
-  const resetAllConversations = useCallback(async () => {
-    console.log('Resetting all conversation data...');
-    
-    // Clear all state
-    setMessages([]);
-    setLocalConversations([]);
-    setCurrentConversationIdState(null);
-    
-    // Clear localStorage conversation keys
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
-      if (key.startsWith('conversation_wine_') || key.startsWith('conversation_')) {
-        localStorage.removeItem(key);
-      }
-    });
-    
-    console.log('All conversation data reset');
-  }, []);
-
   return {
     currentConversationId,
     setCurrentConversationId,
@@ -440,7 +407,6 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     conversations: localConversations,
     createNewConversation,
     clearConversation,
-    refetchMessages,
-    resetAllConversations
+    refetchMessages
   };
 }

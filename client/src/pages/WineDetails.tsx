@@ -9,7 +9,6 @@ import { DataSyncManager } from '@/utils/dataSync';
 import AppHeader from '@/components/AppHeader';
 import { ButtonIcon } from '@/components/ButtonIcon';
 import QRScanModal from '@/components/QRScanModal';
-import { useConversation } from '@/hooks/UseConversation';
 
 interface SelectedWine {
   id: number;
@@ -36,9 +35,6 @@ export default function WineDetails() {
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
-  // Get conversation management functions
-  const { resetAllConversations } = useConversation(wineId);
-  
   // Determine if this is a scanned page (only /scanned routes) or wine details page
   const isScannedPage = location === '/scanned' || location.includes('/scanned?');
   
@@ -48,12 +44,7 @@ export default function WineDetails() {
   useEffect(() => {
     const choiceMade = Boolean(localStorage.getItem('interaction_choice_made'));
     setInteractionChoiceMade(choiceMade);
-    
-    // For scanned pages, ensure QR modal shows if no choice made
-    if (isScannedPage && !choiceMade) {
-      setShowQRModal(true);
-    }
-  }, [isScannedPage]);
+  }, []);
   
   // Check if this is a fresh QR scan (show interaction choice) - now reactive to state changes
   const isQRScan = !interactionChoiceMade;
@@ -70,14 +61,10 @@ export default function WineDetails() {
     // Continue to the chat interface
   };
   
-  // Set QR modal state based on interaction choice - only for scanned pages
+  // Set QR modal state based on interaction choice
   useEffect(() => {
-    if (isScannedPage) {
-      setShowQRModal(!interactionChoiceMade);
-    } else {
-      setShowQRModal(false);
-    }
-  }, [interactionChoiceMade, isScannedPage]);
+    setShowQRModal(!interactionChoiceMade);
+  }, [interactionChoiceMade]);
 
   // Listen for QR reset events from the header button
   useEffect(() => {
@@ -194,138 +181,24 @@ export default function WineDetails() {
                 onManageNotifications={() => console.log('Manage notifications clicked')}
                 onResetQR={async () => {
                   try {
-                    console.log('Starting complete account reset...');
+                    console.log('Starting QR reset process...');
+                    localStorage.removeItem('interaction_choice_made');
+                    console.log('LocalStorage cleared successfully');
                     
-                    // Show confirmation dialog
-                    const confirmed = confirm('Are you sure you want to delete your account? This will permanently delete all your conversations and data. This action cannot be undone.');
-                    if (!confirmed) {
-                      console.log('Account deletion cancelled by user');
-                      return;
-                    }
+                    await new Promise(resolve => setTimeout(resolve, 100));
                     
-                    // Reset conversation state first
-                    try {
-                      await resetAllConversations();
-                      console.log('Conversation state reset successfully');
-                    } catch (error) {
-                      console.warn('Error resetting conversation state:', error);
-                    }
-                    
-                    // Clear all localStorage data
-                    localStorage.clear();
-                    console.log('LocalStorage cleared completely');
-                    
-                    // Clear IndexedDB data using the service
-                    try {
-                      // Import IndexedDB service dynamically (default export)
-                      const indexedDBServiceModule = await import('../lib/indexedDB');
-                      const indexedDBService = indexedDBServiceModule.default;
-                      await indexedDBService.clearAllData();
-                      console.log('IndexedDB cleared via service');
-                    } catch (error) {
-                      console.warn('Error clearing IndexedDB via service, trying manual cleanup:', error);
-                      
-                      // Fallback to manual database deletion
-                      try {
-                        const indexedDB = window.indexedDB;
-                        const databases = await indexedDB.databases();
-                        
-                        for (const db of databases) {
-                          if (db.name) {
-                            const deleteRequest = indexedDB.deleteDatabase(db.name);
-                            await new Promise((resolve, reject) => {
-                              deleteRequest.onsuccess = () => resolve(true);
-                              deleteRequest.onerror = () => reject(deleteRequest.error);
-                            });
-                            console.log(`Manually deleted database: ${db.name}`);
-                          }
-                        }
-                      } catch (fallbackError) {
-                        console.warn('Manual IndexedDB cleanup also failed:', fallbackError);
-                      }
-                    }
-                    
-                    // Clear session storage
-                    sessionStorage.clear();
-                    console.log('SessionStorage cleared');
-                    
-                    // Clear browser cache
-                    try {
-                      if ('caches' in window) {
-                        const cacheNames = await caches.keys();
-                        await Promise.all(
-                          cacheNames.map(cacheName => caches.delete(cacheName))
-                        );
-                        console.log('Browser cache cleared');
-                      }
-                    } catch (error) {
-                      console.warn('Browser cache clearing failed:', error);
-                    }
-                    
-                    // Clear service worker cache if available
-                    try {
-                      if ('serviceWorker' in navigator) {
-                        const registrations = await navigator.serviceWorker.getRegistrations();
-                        await Promise.all(
-                          registrations.map(registration => registration.unregister())
-                        );
-                        console.log('Service worker cache cleared');
-                      }
-                    } catch (error) {
-                      console.warn('Service worker cache clearing failed:', error);
-                    }
-                    
-                    // Try to clear server-side conversations with shorter timeout
-                    try {
-                      const controller = new AbortController();
-                      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
-                      
-                      const response = await fetch('/api/conversations', {
-                        method: 'DELETE',
-                        headers: {
-                          'Content-Type': 'application/json'
-                        },
-                        signal: controller.signal
-                      });
-                      
-                      clearTimeout(timeoutId);
-                      
-                      if (response.ok) {
-                        console.log('Server-side conversations cleared');
-                      } else {
-                        console.warn('Failed to clear server-side conversations, but proceeding with local cleanup');
-                      }
-                    } catch (error) {
-                      // Don't log the full error object, just a simple message
-                      console.warn('Server-side data clearing skipped due to connection issues');
-                    }
-                    
-                    // Dispatch reset event
-                    const resetEvent = new CustomEvent('accountReset', {
+                    const resetEvent = new CustomEvent('qrReset', {
                       detail: {
                         timestamp: Date.now(),
-                        source: 'delete-account',
+                        source: 'profile-menu',
                         success: true
                       },
                       bubbles: true
                     });
                     window.dispatchEvent(resetEvent);
-                    console.log('Account reset event dispatched');
-                    
-                    // Navigate to scanned page with QR modal instead of refreshing
-                    console.log('Navigating to scanned page with QR modal...');
-                    
-                    // Clear any remaining interaction state before navigation
-                    localStorage.removeItem('interaction_choice_made');
-                    
-                    // Force a complete page reload to ensure fresh state
-                    window.location.replace(`/scanned?wine=${wineId}`);
-                    
-                    // The replace will happen immediately with fresh QR modal state
-                    
+                    console.log('QR reset event dispatched successfully');
                   } catch (error) {
-                    console.error('Account deletion failed:', error);
-                    alert('Failed to delete account. Please try again.');
+                    console.error('QR reset failed:', error);
                   }
                 }}
               />
@@ -333,11 +206,8 @@ export default function WineDetails() {
           }
         />
 
-        {/* Conditional Content: Show wine details only on non-scanned pages */}
-        {!isScannedPage && (
-          <>
-            {/* Wine Image Section */}
-            <div className="pt-[75px] pb-4">
+        {/* Wine Image Section */}
+        <div className="pt-[75px] pb-4">
           <div className="flex justify-center items-center px-4">
             {wine ? (
               <img
@@ -451,11 +321,9 @@ export default function WineDetails() {
             )}
           </div>
         )}
-          </>
-        )}
 
-        {/* Main Content Area - Always show chat interface */}
-        <div className={isScannedPage ? "pt-[75px]" : ""}>
+        {/* Main Content Area */}
+        <div>
           <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
             id: wine.id,
             name: wine.name,
