@@ -1643,49 +1643,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     })()}
 
                     {/* Show whole dialog button */}
-                    <button
+                    <Button
                       onClick={() => setLocation("/wine/conversation")}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                      }}
-                      onMouseDown={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                      }}
-                      onMouseUp={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                      }}
+                      variant="secondary"
                       style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.08)",
-                        borderRadius: "32px",
                         height: "56px",
-                        minHeight: "56px",
-                        maxHeight: "56px",
-                        padding: "0 16px",
-                        margin: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "none",
-                        color: "white",
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        outline: "none",
                         width: "100%",
-                        boxSizing: "border-box",
-                        lineHeight: "1",
-                        transition: "background-color 0.2s ease",
+                        margin: 0,
                       }}
                     >
                       Show whole dialog
-                    </button>
+                    </Button>
 
                     {/* Buy again button */}
-                    <button
+                    <Button
                       onClick={() => {
                         if (currentWine?.buyAgainLink) {
                           window.open(currentWine.buyAgainLink, '_blank');
@@ -1693,31 +1664,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           console.log("No buy again link available");
                         }
                       }}
+                      variant="secondary"
                       style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.08)",
-                        borderRadius: "32px",
                         height: "56px",
-                        minHeight: "56px",
-                        maxHeight: "56px",
-                        padding: "0 16px",
-                        margin: "8px 0 0 0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "none",
-                        color: "white",
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        outline: "none",
                         width: "100%",
-                        boxSizing: "border-box",
-                        lineHeight: "1",
+                        margin: "8px 0 0 0",
                       }}
                     >
                       Buy again
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -1752,7 +1707,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                               console.log("No buy again link available");
                             }
                           }}
-                          variant="primary"
+                          variant="secondary"
                           style={{
                             margin: "0 0 32px 0",
                             width: "100%",

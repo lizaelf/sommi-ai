@@ -349,11 +349,9 @@ export default function WineDetails() {
         {/* Want More Section - Always show at top */}
         <div style={{ 
           width: "100%",
-          padding: "20px",
+          padding: "0 20px",
           marginTop: "80px", // Add top margin to clear header
-          marginBottom: "32px",
-          backgroundColor: "rgba(255, 0, 0, 0.1)", // Debug red background
-          border: "2px solid red" // Debug border
+          marginBottom: "32px"
         }}>
           <h1 style={{
             fontFamily: "Lora, serif",
@@ -363,7 +361,7 @@ export default function WineDetails() {
             marginBottom: "24px",
             textAlign: "left"
           }}>
-            Want more? {wine ? `(Wine ID: ${wine.id})` : '(No wine)'}
+            Want more?
           </h1>
 
           <Button
@@ -372,7 +370,7 @@ export default function WineDetails() {
               console.log('Buy again clicked:', buyLink);
               window.open(buyLink, '_blank');
             }}
-            variant="primary"
+            variant="secondary"
             style={{
               margin: "0 0 32px 0",
               width: "100%",
