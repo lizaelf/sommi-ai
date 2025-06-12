@@ -9,6 +9,7 @@ import { DataSyncManager } from '@/utils/dataSync';
 import AppHeader from '@/components/AppHeader';
 import { ButtonIcon } from '@/components/ButtonIcon';
 import QRScanModal from '@/components/QRScanModal';
+import WineRecommendations from '@/components/WineRecommendations';
 import { useConversation } from '@/hooks/UseConversation';
 
 interface SelectedWine {
@@ -25,6 +26,7 @@ interface SelectedWine {
   location?: string;
   description?: string;
   foodPairing?: string[];
+  buyAgainLink?: string;
 }
 
 export default function WineDetails() {
@@ -454,9 +456,50 @@ export default function WineDetails() {
           </>
         )}
 
+        {/* Want More Section */}
+        {wine && (
+          <div style={{ 
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "32px"
+          }}>
+            <h1 style={{
+              fontFamily: "Lora, serif",
+              fontSize: "32px",
+              fontWeight: 700,
+              color: "white",
+              marginBottom: "24px",
+              textAlign: "left"
+            }}>
+              Want more?
+            </h1>
+
+            <Button
+              onClick={() => {
+                if (wine.buyAgainLink) {
+                  window.open(wine.buyAgainLink, '_blank');
+                } else {
+                  console.log("No buy again link available");
+                }
+              }}
+              variant="primary"
+              style={{
+                margin: "0 0 32px 0",
+                width: "100%",
+                height: "56px"
+              }}
+            >
+              Buy again
+            </Button>
+          </div>
+        )}
+
+        {/* Wine Recommendations Section */}
+        {wine && <WineRecommendations currentWineId={wine.id} />}
+
         {/* Main Content Area - Always show chat interface */}
         <div className={isScannedPage ? "pt-[75px]" : ""}>
-          <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
+          <EnhancedChatInterface showBuyButton={false} selectedWine={wine ? {
             id: wine.id,
             name: wine.name,
             image: wine.image,
