@@ -113,7 +113,7 @@ export function AppHeader({
             )}
             {title && (
               <h1 
-                className="absolute left-1/2 transform -translate-x-1/2 text-white text-[18px] font-medium truncate whitespace-nowrap text-center"
+                className="text-white text-[18px] font-medium truncate whitespace-nowrap text-center flex-1"
               >
                 {title}
               </h1>
