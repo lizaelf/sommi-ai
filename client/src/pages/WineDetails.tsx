@@ -9,9 +9,6 @@ import { DataSyncManager } from '@/utils/dataSync';
 import AppHeader from '@/components/AppHeader';
 import { ButtonIcon } from '@/components/ButtonIcon';
 import QRScanModal from '@/components/QRScanModal';
-import WineRecommendations from '@/components/WineRecommendations';
-import WantMoreSection from '@/components/WantMoreSection';
-import WeRecommendSection from '@/components/WeRecommendSection';
 import { useConversation } from '@/hooks/UseConversation';
 
 interface SelectedWine {
@@ -28,7 +25,6 @@ interface SelectedWine {
   location?: string;
   description?: string;
   foodPairing?: string[];
-  buyAgainLink?: string;
 }
 
 export default function WineDetails() {
@@ -121,21 +117,12 @@ export default function WineDetails() {
         }
       } else {
         // For wine details page, use the route parameter
-        if (wineId) {
-          const wine = DataSyncManager.getWineById(wineId);
-          if (wine) {
-            console.log(`WineDetails: Found wine:`, wine);
-            return wine;
-          } else {
-            console.log(`Wine ID ${wineId} not found in DataSyncManager`);
-          }
+        const wine = DataSyncManager.getWineById(wineId);
+        if (wine) {
+          console.log(`WineDetails: Found wine:`, wine);
+          return wine;
         } else {
-          // For homepage without wine ID, load default wine
-          const wines = DataSyncManager.getUnifiedWineData();
-          if (wines.length > 0) {
-            console.log('Loading default wine for homepage:', wines[0]);
-            return wines[0];
-          }
+          console.log(`Wine ID ${wineId} not found in DataSyncManager`);
         }
       }
       
@@ -165,8 +152,6 @@ export default function WineDetails() {
     wine: wine ? 'loaded' : 'null',
     wineId
   });
-  
-  console.log('🍷 Wine object details:', wine);
   
   // Add scroll listener to detect when page is scrolled
   useEffect(() => {
@@ -348,28 +333,6 @@ export default function WineDetails() {
           }
         />
 
-        {/* Want More and Recommendations Sections */}
-        <div style={{ 
-          marginTop: "80px",
-          backgroundColor: "rgba(255, 0, 0, 0.1)", // Debug: red background
-          border: "2px solid red", // Debug: red border
-          minHeight: "200px",
-          padding: "20px"
-        }}>
-          {console.log('🔧 DEBUG: Wine object:', wine)}
-          {console.log('🔧 DEBUG: isScannedPage:', isScannedPage)}
-          {console.log('🔧 DEBUG: Current location:', window.location.href)}
-          
-          <div style={{ color: "white", marginBottom: "20px" }}>
-            DEBUG: Wine loaded: {wine ? 'YES' : 'NO'} | 
-            Scanned page: {isScannedPage ? 'YES' : 'NO'} | 
-            Wine ID: {wine?.id || 'None'}
-          </div>
-          
-          <WantMoreSection wine={wine} />
-          <WeRecommendSection wine={wine} />
-        </div>
-
         {/* Conditional Content: Show wine details only on non-scanned pages */}
         {!isScannedPage && (
           <>
@@ -493,7 +456,7 @@ export default function WineDetails() {
 
         {/* Main Content Area - Always show chat interface */}
         <div className={isScannedPage ? "pt-[75px]" : ""}>
-          <EnhancedChatInterface showBuyButton={false} selectedWine={wine ? {
+          <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
             id: wine.id,
             name: wine.name,
             image: wine.image,
