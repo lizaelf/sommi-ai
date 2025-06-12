@@ -252,21 +252,27 @@ export default function WineDetails() {
 
         {/* Want more? Section - Always visible */}
         <div style={{ 
-          marginTop: "32px", 
+          marginTop: "32px",
+          marginBottom: "32px", 
           paddingLeft: "24px", 
           paddingRight: "24px",
-          border: "2px solid red",
-          backgroundColor: "rgba(255, 0, 0, 0.1)"
+          paddingTop: "32px",
+          paddingBottom: "32px",
+          border: "3px solid red",
+          backgroundColor: "rgba(255, 0, 0, 0.3)",
+          position: "relative",
+          zIndex: 10
         }}>
           <h2 style={{
             fontFamily: "Lora, serif",
-            fontSize: "28px",
-            fontWeight: 400,
+            fontSize: "32px",
+            fontWeight: 600,
             color: "white",
-            marginBottom: "20px",
-            margin: 0
+            marginBottom: "24px",
+            textAlign: "center",
+            textShadow: "2px 2px 4px rgba(0,0,0,0.8)"
           }}>
-            Want more?
+            🍷 Want more? 🍷
           </h2>
           
           {wine?.buyAgainLink ? (
@@ -282,60 +288,70 @@ export default function WineDetails() {
                 color: "black",
                 border: "none",
                 borderRadius: "32px",
-                padding: "16px 24px",
+                padding: "20px 24px",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
+                fontSize: "18px",
+                fontWeight: 600,
                 cursor: "pointer",
                 transition: "all 0.2s ease",
-                marginTop: "20px"
+                marginTop: "20px",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.3)"
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#f5f5f5";
+                e.currentTarget.style.transform = "scale(1.02)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "white";
+                e.currentTarget.style.transform = "scale(1)";
               }}
               >
-                Buy again
+                🛒 Buy Again 🛒
               </button>
             </a>
           ) : (
             <div style={{
               width: "100%",
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
               color: "white",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
+              border: "2px solid rgba(255, 255, 255, 0.4)",
               borderRadius: "32px",
-              padding: "16px 24px",
+              padding: "20px 24px",
               fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
+              fontSize: "18px",
+              fontWeight: 600,
               marginTop: "20px",
-              textAlign: "center"
+              textAlign: "center",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.3)"
             }}>
-              Explore our collection
+              🍾 Explore our collection 🍾
             </div>
           )}
         </div>
 
         {/* We recommend Section - Always visible */}
         <div style={{ 
-          marginTop: "40px", 
+          marginTop: "40px",
+          marginBottom: "60px", 
           paddingLeft: "24px", 
           paddingRight: "24px",
-          border: "2px solid blue",
-          backgroundColor: "rgba(0, 0, 255, 0.1)"
+          paddingTop: "32px",
+          paddingBottom: "32px",
+          border: "3px solid blue",
+          backgroundColor: "rgba(0, 0, 255, 0.3)",
+          position: "relative",
+          zIndex: 10
         }}>
           <h2 style={{
             fontFamily: "Lora, serif",
-            fontSize: "28px",
-            fontWeight: 400,
+            fontSize: "32px",
+            fontWeight: 600,
             color: "white",
             marginBottom: "24px",
-            margin: 0
+            textAlign: "center",
+            textShadow: "2px 2px 4px rgba(0,0,0,0.8)"
           }}>
-            We recommend
+            🍾 We recommend 🍾
           </h2>
           
           <div style={{
