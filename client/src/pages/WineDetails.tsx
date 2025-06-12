@@ -333,8 +333,11 @@ export default function WineDetails() {
           }
         />
 
-        {/* Wine Image Section */}
-        <div className="pt-[75px] pb-4">
+        {/* Conditional Content: Show wine details only on non-scanned pages */}
+        {!isScannedPage && (
+          <>
+            {/* Wine Image Section */}
+            <div className="pt-[75px] pb-4">
           <div className="flex justify-center items-center px-4">
             {wine ? (
               <img
@@ -448,9 +451,11 @@ export default function WineDetails() {
             )}
           </div>
         )}
+          </>
+        )}
 
-        {/* Main Content Area */}
-        <div>
+        {/* Main Content Area - Always show chat interface */}
+        <div className={isScannedPage ? "pt-[75px]" : ""}>
           <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
             id: wine.id,
             name: wine.name,
