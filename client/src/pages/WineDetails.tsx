@@ -317,7 +317,7 @@ export default function WineDetails() {
         {/* We recommend Section */}
         <div style={{ 
           marginTop: "48px",
-          marginBottom: "60px", 
+          marginBottom: "120px", 
           paddingLeft: "24px", 
           paddingRight: "24px"
         }}>
@@ -492,7 +492,7 @@ export default function WineDetails() {
         </div>
 
         {/* Main Content Area */}
-        <div style={{ marginTop: "40px" }}>
+        <div style={{ marginTop: "80px", paddingBottom: "40px" }}>
           <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
             id: wine.id,
             name: wine.name,
