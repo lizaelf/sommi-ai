@@ -240,6 +240,32 @@ export default function WineDetails() {
                     sessionStorage.clear();
                     console.log('SessionStorage cleared');
                     
+                    // Clear browser cache
+                    try {
+                      if ('caches' in window) {
+                        const cacheNames = await caches.keys();
+                        await Promise.all(
+                          cacheNames.map(cacheName => caches.delete(cacheName))
+                        );
+                        console.log('Browser cache cleared');
+                      }
+                    } catch (error) {
+                      console.warn('Browser cache clearing failed:', error);
+                    }
+                    
+                    // Clear service worker cache if available
+                    try {
+                      if ('serviceWorker' in navigator) {
+                        const registrations = await navigator.serviceWorker.getRegistrations();
+                        await Promise.all(
+                          registrations.map(registration => registration.unregister())
+                        );
+                        console.log('Service worker cache cleared');
+                      }
+                    } catch (error) {
+                      console.warn('Service worker cache clearing failed:', error);
+                    }
+                    
                     // Try to clear server-side conversations with shorter timeout
                     try {
                       const controller = new AbortController();
