@@ -116,7 +116,10 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+    <div 
+      className="min-h-screen bg-black text-white relative"
+      style={{ overflowX: 'hidden', overflowY: 'auto' }}
+    >
       <AppHeader />
       
       <div className="relative">
