@@ -32,6 +32,7 @@ interface UseConversationReturn {
   createNewConversation: () => Promise<number | null>;
   clearConversation: () => Promise<void>;
   refetchMessages: () => Promise<any>;
+  resetAllConversations: () => Promise<void>;
 }
 
 /**
@@ -399,6 +400,26 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     }
   }, [currentConversationId]);
   
+  // Reset all conversation data (for account deletion)
+  const resetAllConversations = useCallback(async () => {
+    console.log('Resetting all conversation data...');
+    
+    // Clear all state
+    setMessages([]);
+    setLocalConversations([]);
+    setCurrentConversationIdState(null);
+    
+    // Clear localStorage conversation keys
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith('conversation_wine_') || key.startsWith('conversation_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    console.log('All conversation data reset');
+  }, []);
+
   return {
     currentConversationId,
     setCurrentConversationId,
@@ -407,6 +428,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     conversations: localConversations,
     createNewConversation,
     clearConversation,
-    refetchMessages
+    refetchMessages,
+    resetAllConversations
   };
 }

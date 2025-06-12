@@ -194,45 +194,62 @@ export default function WineDetails() {
                     localStorage.clear();
                     console.log('LocalStorage cleared completely');
                     
-                    // Clear IndexedDB data
+                    // Clear IndexedDB data using the service
                     try {
-                      const indexedDB = window.indexedDB;
-                      const databases = await indexedDB.databases();
-                      
-                      for (const db of databases) {
-                        if (db.name) {
-                          const deleteRequest = indexedDB.deleteDatabase(db.name);
-                          await new Promise((resolve, reject) => {
-                            deleteRequest.onsuccess = () => resolve(true);
-                            deleteRequest.onerror = () => reject(deleteRequest.error);
-                          });
-                          console.log(`Deleted database: ${db.name}`);
-                        }
-                      }
+                      // Import IndexedDB service dynamically (default export)
+                      const indexedDBServiceModule = await import('../lib/indexedDB');
+                      const indexedDBService = indexedDBServiceModule.default;
+                      await indexedDBService.clearAllData();
+                      console.log('IndexedDB cleared via service');
                     } catch (error) {
-                      console.warn('Error clearing IndexedDB:', error);
+                      console.warn('Error clearing IndexedDB via service, trying manual cleanup:', error);
+                      
+                      // Fallback to manual database deletion
+                      try {
+                        const indexedDB = window.indexedDB;
+                        const databases = await indexedDB.databases();
+                        
+                        for (const db of databases) {
+                          if (db.name) {
+                            const deleteRequest = indexedDB.deleteDatabase(db.name);
+                            await new Promise((resolve, reject) => {
+                              deleteRequest.onsuccess = () => resolve(true);
+                              deleteRequest.onerror = () => reject(deleteRequest.error);
+                            });
+                            console.log(`Manually deleted database: ${db.name}`);
+                          }
+                        }
+                      } catch (fallbackError) {
+                        console.warn('Manual IndexedDB cleanup also failed:', fallbackError);
+                      }
                     }
                     
                     // Clear session storage
                     sessionStorage.clear();
                     console.log('SessionStorage cleared');
                     
-                    // Try to clear server-side conversations
+                    // Try to clear server-side conversations with timeout
                     try {
+                      const controller = new AbortController();
+                      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+                      
                       const response = await fetch('/api/conversations', {
                         method: 'DELETE',
                         headers: {
                           'Content-Type': 'application/json'
-                        }
+                        },
+                        signal: controller.signal
                       });
+                      
+                      clearTimeout(timeoutId);
                       
                       if (response.ok) {
                         console.log('Server-side conversations cleared');
                       } else {
-                        console.warn('Failed to clear server-side conversations');
+                        console.warn('Failed to clear server-side conversations, but proceeding with local cleanup');
                       }
                     } catch (error) {
-                      console.warn('Error clearing server-side data:', error);
+                      console.warn('Error clearing server-side data (proceeding with local cleanup):', error);
                     }
                     
                     // Dispatch reset event
