@@ -347,15 +347,11 @@ export default function WineDetails() {
         />
 
         {/* Want More Section - Always show at top */}
-        {console.log('🔧 Rendering Want More section, wine loaded:', !!wine)}
         <div style={{ 
           width: "100%",
           padding: "0 20px",
           marginTop: "80px",
-          marginBottom: "32px",
-          backgroundColor: "rgba(255, 0, 0, 0.1)", // Temporary debug background
-          border: "2px solid red", // Temporary debug border
-          minHeight: "100px"
+          marginBottom: "32px"
         }}>
           <h1 style={{
             fontFamily: "Lora, serif",
@@ -386,12 +382,8 @@ export default function WineDetails() {
         </div>
 
         {/* Wine Recommendations Section - Always show at top */}
-        {console.log('🔧 Rendering Recommendations section')}
         <div style={{ 
-          marginBottom: "32px",
-          backgroundColor: "rgba(0, 255, 0, 0.1)", // Temporary debug background
-          border: "2px solid green", // Temporary debug border
-          minHeight: "100px"
+          marginBottom: "32px"
         }}>
           <WineRecommendations currentWineId={wine?.id || 1} />
         </div>
