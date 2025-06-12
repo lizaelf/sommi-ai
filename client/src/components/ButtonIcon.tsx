@@ -7,14 +7,12 @@ interface ButtonIconProps {
   onEditContact?: () => void;
   onManageNotifications?: () => void;
   onDeleteAccount?: () => void;
-  onResetQR?: () => void;
 }
 
 export function ButtonIcon({ 
   onEditContact, 
   onManageNotifications, 
-  onDeleteAccount,
-  onResetQR 
+  onDeleteAccount 
 }: ButtonIconProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
@@ -168,46 +166,6 @@ export function ButtonIcon({
                 />
               </svg>
               Manage notifications
-            </button>
-          )}
-
-          {onResetQR && (
-            <button
-              className="profile-menu-item"
-              onClick={() => {
-                setShowProfileMenu(false);
-                onResetQR();
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                padding: "16px 20px",
-                backgroundColor: "transparent",
-                border: "none",
-                color: "white",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                width: "100%",
-                textAlign: "left",
-                borderBottom: onDeleteAccount ? "1px solid #373737" : "none",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M1 4v6h6l-2-2c1.69-1.69 4.31-1.69 6 0s1.69 4.31 0 6c-1.69 1.69-4.31 1.69-6 0l-1.41 1.41c2.52 2.52 6.59 2.52 9.11 0s2.52-6.59 0-9.11-6.59-2.52-9.11 0L5 4H1z"
-                  fill="currentColor"
-                />
-              </svg>
-              Reset QR State
             </button>
           )}
 

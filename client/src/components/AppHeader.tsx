@@ -27,7 +27,8 @@ export function AppHeader({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [location] = useLocation();
   
-
+  // Show Reset button only on the main page (root "/" route)
+  const showResetButton = location === "/";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -112,7 +113,7 @@ export function AppHeader({
             )}
             {title && (
               <h1 
-                className="text-white text-[18px] font-medium truncate whitespace-nowrap text-center flex-1"
+                className="absolute left-1/2 transform -translate-x-1/2 text-white text-[18px] font-medium truncate whitespace-nowrap text-center"
               >
                 {title}
               </h1>
@@ -121,6 +122,83 @@ export function AppHeader({
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
+            {/* Enhanced Reset QR button with visual feedback - Only show on main page */}
+            {showResetButton && (
+              <button
+                onClick={async () => {
+                  if (isResetting) return;
+                  
+                  try {
+                    setIsResetting(true);
+                    console.log('Starting QR reset process...');
+                    
+                    localStorage.removeItem('interaction_choice_made');
+                    console.log('LocalStorage cleared successfully');
+                    
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    const resetEvent = new CustomEvent('qrReset', {
+                      detail: {
+                        timestamp: Date.now(),
+                        source: 'header-button',
+                        success: true
+                      },
+                      bubbles: true
+                    });
+                    window.dispatchEvent(resetEvent);
+                    console.log('QR reset event dispatched successfully');
+                    
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                  } catch (error) {
+                    console.error('QR reset failed:', error);
+                  } finally {
+                    setIsResetting(false);
+                  }
+                }}
+                disabled={isResetting}
+                style={{
+                  background: isResetting 
+                    ? "rgba(34, 197, 94, 0.2)" 
+                    : "rgba(255, 255, 255, 0.15)",
+                  border: isResetting 
+                    ? "1px solid rgba(34, 197, 94, 0.4)" 
+                    : "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "20px",
+                  color: "white",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  padding: "8px 12px",
+                  cursor: isResetting ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  opacity: isResetting ? 0.8 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!isResetting) {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isResetting) {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                  }
+                }}
+                title={isResetting ? "Resetting QR state..." : "Reset QR scan state"}
+              >
+                <RotateCcw 
+                  size={14} 
+                  style={{
+                    animation: isResetting ? "spin 1s linear infinite" : "none"
+                  }}
+                />
+                {isResetting ? "Resetting..." : "Reset"}
+              </button>
+            )}
+            
             {rightContent || (
               <div className="relative" ref={dropdownRef}>
                 <IconButton
