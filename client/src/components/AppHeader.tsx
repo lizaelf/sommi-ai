@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import Logo from "@/components/Logo";
 import { IconButton } from "@/components/ui/IconButton";
@@ -101,19 +101,7 @@ export function AppHeader({
           
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
-            {rightContent || (
-              <div className="relative" ref={dropdownRef}>
-                <IconButton
-                  icon={MoreHorizontal}
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  variant="headerIcon"
-                  size="md"
-                  title="More options"
-                />
-                
-
-              </div>
-            )}
+            {rightContent}
           </div>
 
         </div>
