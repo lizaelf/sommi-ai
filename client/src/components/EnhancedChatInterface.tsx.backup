@@ -1758,8 +1758,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     Buy again
                   </Button>
 
-                  {/* Chat with AI Section - always visible */}
-                  <div style={{ marginBottom: "32px" }}>
+                  {/* Chat with AI Section */}
+                  {showBuyButton && hasSharedContact && (
+                    <div style={{ marginBottom: "32px" }}>
                           <h1
                             style={{
                               ...typography.h1,
@@ -1834,9 +1835,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             </div>
                           )}
                         </div>
-                      )}
 
-                      {/* Discussion Summary */}
+                        {/* Discussion Summary */}
                         {messages.length > 0 && (
                           <div style={{ marginBottom: "32px" }}>
                             {(() => {
