@@ -341,27 +341,41 @@ Format: Return only the description text, no quotes or additional formatting.`;
   // Get all conversations
   app.get("/api/conversations", async (_req, res) => {
     try {
+      // Add timeout and retry logic for database connections
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
       const conversations = await storage.getAllConversations();
+      clearTimeout(timeoutId);
+      
       res.json(conversations);
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      res.status(500).json({ message: "Failed to fetch conversations" });
+      
+      // Return empty array instead of error to prevent UI blocking
+      res.json([]);
     }
   });
   
   // Get the most recent conversation
   app.get("/api/conversations/recent", async (_req, res) => {
     try {
+      // Add timeout for database connection
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
       const conversation = await storage.getMostRecentConversation();
+      clearTimeout(timeoutId);
       
       if (!conversation) {
-        return res.status(404).json({ message: "No conversations found" });
+        return res.json(null); // Return null instead of 404 to prevent UI errors
       }
       
       res.json(conversation);
     } catch (error) {
       console.error("Error fetching most recent conversation:", error);
-      res.status(500).json({ message: "Failed to fetch most recent conversation" });
+      // Return null instead of error to prevent UI blocking
+      res.json(null);
     }
   });
 

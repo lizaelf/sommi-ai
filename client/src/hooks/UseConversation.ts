@@ -163,9 +163,16 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       window.scrollTo(0, 0);
       
       try {
-        // First, try to load conversations from backend (for deployment persistence)
+        // First, try to load conversations from backend (with timeout and error handling)
         try {
-          const backendConversations = await fetch('/api/conversations');
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+          
+          const backendConversations = await fetch('/api/conversations', {
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          
           if (!isMounted) return;
           
           if (backendConversations.ok) {
@@ -203,7 +210,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
           }
         } catch (backendError) {
           if (!isMounted) return;
-          console.log('Backend not available, falling back to IndexedDB:', backendError);
+          console.log('Backend conversation loading failed, using local storage fallback');
         }
         
         if (!isMounted) return;
