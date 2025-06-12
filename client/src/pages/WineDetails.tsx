@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation, useParams } from 'wouter';
+import { Link, useLocation, useParams, useRouter } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
@@ -35,6 +35,7 @@ export default function WineDetails() {
   const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
+  const router = useRouter();
   
   // Get conversation management functions
   const { resetAllConversations } = useConversation(wineId);
@@ -276,8 +277,16 @@ export default function WineDetails() {
                     window.dispatchEvent(resetEvent);
                     console.log('Account reset event dispatched');
                     
-                    // Refresh the page to reset application state
-                    window.location.reload();
+                    // Navigate to scanned page with QR modal instead of refreshing
+                    console.log('Navigating to scanned page with QR modal...');
+                    router.push(`/scanned?wine=${wineId}`);
+                    
+                    // Short delay to ensure navigation completes, then trigger QR modal
+                    setTimeout(() => {
+                      setShowQRModal(true);
+                      setInteractionChoiceMade(false);
+                      console.log('QR modal triggered after account deletion');
+                    }, 100);
                     
                   } catch (error) {
                     console.error('Account deletion failed:', error);
