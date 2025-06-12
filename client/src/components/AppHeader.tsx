@@ -10,6 +10,7 @@ interface AppHeaderProps {
   rightContent?: React.ReactNode;
   className?: string;
   showBackButton?: boolean;
+  onDeleteTenant?: () => void;
 }
 
 export function AppHeader({ 
@@ -17,7 +18,8 @@ export function AppHeader({
   onBack, 
   rightContent, 
   className = "",
-  showBackButton = false
+  showBackButton = false,
+  onDeleteTenant
 }: AppHeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -43,22 +45,34 @@ export function AppHeader({
     console.log('🚀 AppHeader mounted - setting up scroll listener');
     
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const shouldShowBg = scrollY > 10;
-      console.log(`📜 Scroll detected: ${scrollY}px - Background: ${shouldShowBg}`);
+      // Check both window scroll and root element scroll (for mobile fullscreen)
+      const windowScrollY = window.scrollY;
+      const rootElement = document.getElementById('root');
+      const rootScrollY = rootElement ? rootElement.scrollTop : 0;
+      const totalScrollY = Math.max(windowScrollY, rootScrollY);
+      
+      const shouldShowBg = totalScrollY > 10;
+      console.log(`📜 Scroll detected - Window: ${windowScrollY}px, Root: ${rootScrollY}px, Total: ${totalScrollY}px - Background: ${shouldShowBg}`);
       setScrolled(shouldShowBg);
     };
     
     // Check initial position
-    console.log('📍 Initial scroll position:', window.scrollY);
+    const rootElement = document.getElementById('root');
+    console.log('📍 Initial scroll - Window:', window.scrollY, 'Root:', rootElement?.scrollTop || 0);
     handleScroll();
     
-    // Add listener
+    // Add listeners to both window and root element
     window.addEventListener('scroll', handleScroll, { passive: true });
+    if (rootElement) {
+      rootElement.addEventListener('scroll', handleScroll, { passive: true });
+    }
     
     return () => {
-      console.log('🧹 AppHeader unmounted - cleaning up scroll listener');
+      console.log('🧹 AppHeader unmounted - cleaning up scroll listeners');
       window.removeEventListener('scroll', handleScroll);
+      if (rootElement) {
+        rootElement.removeEventListener('scroll', handleScroll);
+      }
     };
   }, []);
 
@@ -116,7 +130,22 @@ export function AppHeader({
                   title="More options"
                 />
                 
-
+                {showDropdown && onDeleteTenant && (
+                  <div className="absolute right-0 top-full mt-2 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg min-w-[160px] z-50">
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false);
+                        if (confirm('Are you sure you want to delete this tenant? This action cannot be undone.')) {
+                          onDeleteTenant();
+                        }
+                      }}
+                      className="w-full px-4 py-3 text-left text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors flex items-center gap-2 rounded-lg"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete Tenant
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -9,11 +9,11 @@ import { DataSyncManager } from '@/utils/dataSync';
 import AppHeader from '@/components/AppHeader';
 import { ButtonIcon } from '@/components/ButtonIcon';
 import QRScanModal from '@/components/QRScanModal';
+import { useConversation } from '@/hooks/UseConversation';
 
 interface SelectedWine {
   id: number;
   name: string;
-  year?: number;
   image: string;
   bottles: number;
   ratings: {
@@ -31,95 +31,69 @@ export default function WineDetails() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
-  const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
+  const [interactionChoiceMade, setInteractionChoiceMade] = useState<boolean>(false);
   const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
-  const isScannedPage = location === '/' || location === '/scanned' || location.includes('/scanned?');
+  // Get conversation management functions
+  const { resetAllConversations } = useConversation(wineId);
+  
+  // Determine if this is a scanned page (only /scanned routes) or wine details page
+  const isScannedPage = location === '/scanned' || location.includes('/scanned?');
+  
+  console.log('🔍 Route Debug:', { location, isScannedPage });
   
   // Initialize interaction choice state from localStorage
   useEffect(() => {
-    const choiceMade = localStorage.getItem('interaction_choice_made');
-    const hasChoice = !!choiceMade;
-    console.log('🏁 Initial state check:', { choiceMade, hasChoice });
-    setInteractionChoiceMade(hasChoice);
-  }, []);
-
+    const choiceMade = Boolean(localStorage.getItem('interaction_choice_made'));
+    setInteractionChoiceMade(choiceMade);
+    
+    // For scanned pages, ensure QR modal shows if no choice made
+    if (isScannedPage && !choiceMade) {
+      setShowQRModal(true);
+    }
+  }, [isScannedPage]);
+  
+  // Check if this is a fresh QR scan (show interaction choice) - now reactive to state changes
   const isQRScan = !interactionChoiceMade;
   
+
+  
+
+  
+  // Handle interaction choice
   const handleInteractionChoice = (choice: 'text' | 'voice') => {
-    console.log('🎯 Interaction choice made:', choice);
     localStorage.setItem('interaction_choice_made', choice);
     setInteractionChoiceMade(true);
     setShowQRModal(false);
+    // Continue to the chat interface
   };
   
+  // Set QR modal state based on interaction choice - only for scanned pages
   useEffect(() => {
-    console.log('🔄 QR scan state changed:', { isQRScan, interactionChoiceMade });
-    setShowQRModal(isQRScan);
-  }, [isQRScan]);
+    if (isScannedPage) {
+      setShowQRModal(!interactionChoiceMade);
+    } else {
+      setShowQRModal(false);
+    }
+  }, [interactionChoiceMade, isScannedPage]);
 
   // Listen for QR reset events from the header button
   useEffect(() => {
     const handleQRReset = (event: Event) => {
-      console.log('🔄 QR Reset event received:', event);
-      
-      try {
-        localStorage.removeItem('interaction_choice_made');
-        console.log('✅ LocalStorage cleared successfully');
-        
-        setInteractionChoiceMade(prev => {
-          console.log('🔄 State update: prev =', prev, ', new = false');
-          return false;
-        });
-        
-        setTimeout(() => {
-          setShowQRModal(true);
-          console.log('🔄 Modal forced to show via timeout');
-        }, 100);
-        
-        console.log('✅ QR reset completed successfully');
-      } catch (error) {
-        console.error('❌ Error during QR reset:', error);
-      }
+      setInteractionChoiceMade(false);
+      setShowQRModal(true);
     };
 
-    window.addEventListener('qrReset', handleQRReset, { passive: true });
-    document.addEventListener('qrReset', handleQRReset, { passive: true });
-    
-    console.log('🎧 QR reset event listeners registered');
-    
-    return () => {
-      window.removeEventListener('qrReset', handleQRReset);
-      document.removeEventListener('qrReset', handleQRReset);
-      console.log('🧹 QR reset event listeners cleaned up');
-    };
+    window.addEventListener('qrReset', handleQRReset);
+    return () => window.removeEventListener('qrReset', handleQRReset);
   }, []);
-
-  // Additional safeguard: Watch for localStorage changes
-  useEffect(() => {
-    const checkLocalStorage = () => {
-      const currentChoice = localStorage.getItem('interaction_choice_made');
-      const hasChoice = !!currentChoice;
-      
-      if (hasChoice !== interactionChoiceMade) {
-        console.log('🔄 LocalStorage mismatch detected, syncing state:', { 
-          localStorage: hasChoice, 
-          state: interactionChoiceMade 
-        });
-        setInteractionChoiceMade(hasChoice);
-      }
-    };
-
-    const interval = setInterval(checkLocalStorage, 1000);
-    
-    return () => clearInterval(interval);
-  }, [interactionChoiceMade]);
   
   // Load selected wine data from URL parameter or localStorage
   const loadSelectedWine = () => {
     try {
+      // For scanned page, check URL parameters first
       if (isScannedPage) {
         const urlParams = new URLSearchParams(window.location.search);
         const wineId = urlParams.get('wine');
@@ -133,6 +107,7 @@ export default function WineDetails() {
           }
         } else {
           console.log('No wine ID found in URL parameters');
+          // For QR scan state, use default wine (first wine from DataSyncManager)
           const wines = DataSyncManager.getUnifiedWineData();
           if (wines.length > 0) {
             console.log('Using default wine for QR scan state:', wines[0]);
@@ -141,6 +116,7 @@ export default function WineDetails() {
           return null;
         }
       } else {
+        // For wine details page, use the route parameter
         const wine = DataSyncManager.getWineById(wineId);
         if (wine) {
           console.log(`WineDetails: Found wine:`, wine);
@@ -150,9 +126,11 @@ export default function WineDetails() {
         }
       }
       
+      // Fallback to localStorage for backwards compatibility
       const storedWine = localStorage.getItem('selectedWine');
       if (storedWine) {
         const wine = JSON.parse(storedWine);
+        // Clear the stored data after use
         localStorage.removeItem('selectedWine');
         return wine;
       }
@@ -187,17 +165,17 @@ export default function WineDetails() {
     
     window.addEventListener('scroll', handleScroll);
     
+    // Clean up the listener when component unmounts
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-
   
   return (
     <div className="min-h-screen bg-background mobile-fullscreen">
       <div className="relative w-full">
         
+        {/* AppHeader - Different behavior for scanned vs wine details */}
         <AppHeader 
           title={isScannedPage ? undefined : (wine ? `${wine.year} ${wine.name}` : getWineDisplayName())}
           showBackButton={!isScannedPage}
@@ -214,14 +192,152 @@ export default function WineDetails() {
               <ButtonIcon 
                 onEditContact={() => console.log('Edit contact clicked')}
                 onManageNotifications={() => console.log('Manage notifications clicked')}
-                onResetQR={() => console.log('Reset QR clicked')}
+                onResetQR={async () => {
+                  try {
+                    console.log('Starting complete account reset...');
+                    
+                    // Show confirmation dialog
+                    const confirmed = confirm('Are you sure you want to delete your account? This will permanently delete all your conversations and data. This action cannot be undone.');
+                    if (!confirmed) {
+                      console.log('Account deletion cancelled by user');
+                      return;
+                    }
+                    
+                    // Reset conversation state first
+                    try {
+                      await resetAllConversations();
+                      console.log('Conversation state reset successfully');
+                    } catch (error) {
+                      console.warn('Error resetting conversation state:', error);
+                    }
+                    
+                    // Clear all localStorage data
+                    localStorage.clear();
+                    console.log('LocalStorage cleared completely');
+                    
+                    // Clear IndexedDB data using the service
+                    try {
+                      // Import IndexedDB service dynamically (default export)
+                      const indexedDBServiceModule = await import('../lib/indexedDB');
+                      const indexedDBService = indexedDBServiceModule.default;
+                      await indexedDBService.clearAllData();
+                      console.log('IndexedDB cleared via service');
+                    } catch (error) {
+                      console.warn('Error clearing IndexedDB via service, trying manual cleanup:', error);
+                      
+                      // Fallback to manual database deletion
+                      try {
+                        const indexedDB = window.indexedDB;
+                        const databases = await indexedDB.databases();
+                        
+                        for (const db of databases) {
+                          if (db.name) {
+                            const deleteRequest = indexedDB.deleteDatabase(db.name);
+                            await new Promise((resolve, reject) => {
+                              deleteRequest.onsuccess = () => resolve(true);
+                              deleteRequest.onerror = () => reject(deleteRequest.error);
+                            });
+                            console.log(`Manually deleted database: ${db.name}`);
+                          }
+                        }
+                      } catch (fallbackError) {
+                        console.warn('Manual IndexedDB cleanup also failed:', fallbackError);
+                      }
+                    }
+                    
+                    // Clear session storage
+                    sessionStorage.clear();
+                    console.log('SessionStorage cleared');
+                    
+                    // Clear browser cache
+                    try {
+                      if ('caches' in window) {
+                        const cacheNames = await caches.keys();
+                        await Promise.all(
+                          cacheNames.map(cacheName => caches.delete(cacheName))
+                        );
+                        console.log('Browser cache cleared');
+                      }
+                    } catch (error) {
+                      console.warn('Browser cache clearing failed:', error);
+                    }
+                    
+                    // Clear service worker cache if available
+                    try {
+                      if ('serviceWorker' in navigator) {
+                        const registrations = await navigator.serviceWorker.getRegistrations();
+                        await Promise.all(
+                          registrations.map(registration => registration.unregister())
+                        );
+                        console.log('Service worker cache cleared');
+                      }
+                    } catch (error) {
+                      console.warn('Service worker cache clearing failed:', error);
+                    }
+                    
+                    // Try to clear server-side conversations with shorter timeout
+                    try {
+                      const controller = new AbortController();
+                      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+                      
+                      const response = await fetch('/api/conversations', {
+                        method: 'DELETE',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        signal: controller.signal
+                      });
+                      
+                      clearTimeout(timeoutId);
+                      
+                      if (response.ok) {
+                        console.log('Server-side conversations cleared');
+                      } else {
+                        console.warn('Failed to clear server-side conversations, but proceeding with local cleanup');
+                      }
+                    } catch (error) {
+                      // Don't log the full error object, just a simple message
+                      console.warn('Server-side data clearing skipped due to connection issues');
+                    }
+                    
+                    // Dispatch reset event
+                    const resetEvent = new CustomEvent('accountReset', {
+                      detail: {
+                        timestamp: Date.now(),
+                        source: 'delete-account',
+                        success: true
+                      },
+                      bubbles: true
+                    });
+                    window.dispatchEvent(resetEvent);
+                    console.log('Account reset event dispatched');
+                    
+                    // Navigate to scanned page with QR modal instead of refreshing
+                    console.log('Navigating to scanned page with QR modal...');
+                    
+                    // Clear any remaining interaction state before navigation
+                    localStorage.removeItem('interaction_choice_made');
+                    
+                    // Force a complete page reload to ensure fresh state
+                    window.location.replace(`/scanned?wine=${wineId}`);
+                    
+                    // The replace will happen immediately with fresh QR modal state
+                    
+                  } catch (error) {
+                    console.error('Account deletion failed:', error);
+                    alert('Failed to delete account. Please try again.');
+                  }
+                }}
               />
             </>
           }
         />
 
-        {/* Wine Section - Simple layout like yesterday */}
-        <div className="pt-[75px] pb-4">
+        {/* Conditional Content: Show wine details only on non-scanned pages */}
+        {!isScannedPage && (
+          <>
+            {/* Wine Image Section */}
+            <div className="pt-[75px] pb-4">
           <div className="flex justify-center items-center px-4">
             {wine ? (
               <img
@@ -240,27 +356,28 @@ export default function WineDetails() {
           </div>
         </div>
 
-        {/* Wine Info Below Image */}
+        {/* Wine Details Section */}
         {wine && (
-          <div className="text-center px-6 pb-8">
-            <h1 style={{
-              fontFamily: "Lora, serif",
-              fontSize: "24px",
-              fontWeight: 400,
-              color: "white",
-              lineHeight: "32px",
-              margin: "0 0 12px 0"
-            }}>
-              {wine.year} {wine.name}
-            </h1>
-            
+          <div className="px-6 pb-6 space-y-4">
+            {/* Location */}
             {wine.location && (
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <span>🇺🇸</span>
-                <p style={{
+              <div>
+                <h3 style={{
                   fontFamily: "Inter, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#CECECE",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px"
+                }}>
+                  LOCATION
+                </h3>
+                <p style={{
+                  fontFamily: "Lora, serif",
                   fontSize: "16px",
-                  color: "#B8B8B8",
+                  lineHeight: "24px",
+                  color: "white",
                   margin: 0
                 }}>
                   {wine.location}
@@ -268,97 +385,77 @@ export default function WineDetails() {
               </div>
             )}
 
-            {/* Ratings - Simplified */}
-            {wine.ratings && (
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "16px",
-                maxWidth: "320px",
-                margin: "0 auto"
-              }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "white"
-                  }}>
-                    {wine.ratings.vn}
-                  </div>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "11px",
-                    color: "#999",
-                    textTransform: "uppercase"
-                  }}>
-                    VN
-                  </div>
-                </div>
-                
-                <div style={{ textAlign: "center" }}>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "white"
-                  }}>
-                    {wine.ratings.jd}
-                  </div>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "11px",
-                    color: "#999",
-                    textTransform: "uppercase"
-                  }}>
-                    JD
-                  </div>
-                </div>
-                
-                <div style={{ textAlign: "center" }}>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "white"
-                  }}>
-                    {wine.ratings.ws}
-                  </div>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "11px",
-                    color: "#999",
-                    textTransform: "uppercase"
-                  }}>
-                    WS
-                  </div>
-                </div>
-                
-                <div style={{ textAlign: "center" }}>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "white"
-                  }}>
-                    {wine.ratings.abv}%
-                  </div>
-                  <div style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "11px",
-                    color: "#999",
-                    textTransform: "uppercase"
-                  }}>
-                    ABV
-                  </div>
+            {/* Description */}
+            {wine.description && (
+              <div>
+                <h3 style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#CECECE",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px"
+                }}>
+                  DESCRIPTION
+                </h3>
+                <p style={{
+                  fontFamily: "Lora, serif",
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                  color: "white",
+                  margin: 0
+                }}>
+                  {wine.description}
+                </p>
+              </div>
+            )}
+
+            {/* Food Pairing */}
+            {wine.foodPairing && wine.foodPairing.length > 0 && (
+              <div>
+                <h3 style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#CECECE",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px"
+                }}>
+                  FOOD PAIRING
+                </h3>
+                <div style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px"
+                }}>
+                  {wine.foodPairing.map((food: string, index: number) => (
+                    <span
+                      key={index}
+                      style={{
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "14px",
+                        padding: "6px 12px",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "16px",
+                        color: "white",
+                        border: "1px solid rgba(255, 255, 255, 0.2)"
+                      }}
+                    >
+                      {food}
+                    </span>
+                  ))}
                 </div>
               </div>
             )}
           </div>
         )}
+          </>
+        )}
 
-        {/* Main Content Area - Enhanced Chat Interface */}
-        <div>
+        {/* Main Content Area - Always show chat interface */}
+        <div className={isScannedPage ? "pt-[75px]" : ""}>
           <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
             id: wine.id,
             name: wine.name,
