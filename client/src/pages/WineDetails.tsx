@@ -305,9 +305,14 @@ export default function WineDetails() {
                     
                     // Navigate to scanned page with QR modal instead of refreshing
                     console.log('Navigating to scanned page with QR modal...');
+                    
+                    // Clear any remaining interaction state before navigation
+                    localStorage.removeItem('interaction_choice_made');
+                    
+                    // Navigate to scanned page which will trigger QR modal automatically
                     window.location.href = `/scanned?wine=${wineId}`;
                     
-                    // The navigation will happen immediately, so we don't need the setTimeout
+                    // The navigation will happen immediately, QR modal will show due to cleared state
                     
                   } catch (error) {
                     console.error('Account deletion failed:', error);
