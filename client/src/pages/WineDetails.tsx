@@ -164,6 +164,8 @@ export default function WineDetails() {
     wineId
   });
   
+  console.log('🍷 Wine object details:', wine);
+  
   // Add scroll listener to detect when page is scrolled
   useEffect(() => {
     const handleScroll = () => {
@@ -465,46 +467,41 @@ export default function WineDetails() {
           </>
         )}
 
-        {/* Want More Section */}
-        {wine && (
-          <div style={{ 
-            width: "100%",
-            padding: "0 20px",
-            marginBottom: "32px"
+        {/* Want More Section - Always show for testing */}
+        <div style={{ 
+          width: "100%",
+          padding: "0 20px",
+          marginBottom: "32px"
+        }}>
+          <h1 style={{
+            fontFamily: "Lora, serif",
+            fontSize: "32px",
+            fontWeight: 700,
+            color: "white",
+            marginBottom: "24px",
+            textAlign: "left"
           }}>
-            <h1 style={{
-              fontFamily: "Lora, serif",
-              fontSize: "32px",
-              fontWeight: 700,
-              color: "white",
-              marginBottom: "24px",
-              textAlign: "left"
-            }}>
-              Want more?
-            </h1>
+            Want more?
+          </h1>
 
-            <Button
-              onClick={() => {
-                if (wine.buyAgainLink) {
-                  window.open(wine.buyAgainLink, '_blank');
-                } else {
-                  console.log("No buy again link available");
-                }
-              }}
-              variant="primary"
-              style={{
-                margin: "0 0 32px 0",
-                width: "100%",
-                height: "56px"
-              }}
-            >
-              Buy again
-            </Button>
-          </div>
-        )}
+          <Button
+            onClick={() => {
+              const buyLink = wine?.buyAgainLink || "https://www.ridgewine.com/wines/2021-lytton-springs/";
+              window.open(buyLink, '_blank');
+            }}
+            variant="primary"
+            style={{
+              margin: "0 0 32px 0",
+              width: "100%",
+              height: "56px"
+            }}
+          >
+            Buy again
+          </Button>
+        </div>
 
-        {/* Wine Recommendations Section */}
-        {wine && <WineRecommendations currentWineId={wine.id} />}
+        {/* Wine Recommendations Section - Always show for testing */}
+        <WineRecommendations currentWineId={wine?.id || 1} />
 
         {/* Main Content Area - Always show chat interface */}
         <div className={isScannedPage ? "pt-[75px]" : ""}>
