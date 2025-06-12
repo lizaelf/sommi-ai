@@ -9,6 +9,7 @@ import { DataSyncManager } from '@/utils/dataSync';
 import AppHeader from '@/components/AppHeader';
 import { ButtonIcon } from '@/components/ButtonIcon';
 import QRScanModal from '@/components/QRScanModal';
+import { useConversation } from '@/hooks/UseConversation';
 
 interface SelectedWine {
   id: number;
@@ -34,6 +35,9 @@ export default function WineDetails() {
   const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
+  
+  // Get conversation management functions
+  const { resetAllConversations } = useConversation(wineId);
   
   // Determine if this is a scanned page (only /scanned routes) or wine details page
   const isScannedPage = location === '/scanned' || location.includes('/scanned?');
@@ -188,6 +192,14 @@ export default function WineDetails() {
                     if (!confirmed) {
                       console.log('Account deletion cancelled by user');
                       return;
+                    }
+                    
+                    // Reset conversation state first
+                    try {
+                      await resetAllConversations();
+                      console.log('Conversation state reset successfully');
+                    } catch (error) {
+                      console.warn('Error resetting conversation state:', error);
                     }
                     
                     // Clear all localStorage data
