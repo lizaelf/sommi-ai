@@ -298,7 +298,7 @@ export default function WineDetails() {
             )}
 
             {/* Want more? Section */}
-            <div style={{ marginTop: "32px" }}>
+            <div style={{ marginTop: "32px", border: "1px solid red", padding: "16px" }}>
               <h2 style={{
                 fontFamily: "Lora, serif",
                 fontSize: "28px",
@@ -345,7 +345,7 @@ export default function WineDetails() {
             </div>
 
             {/* We recommend Section */}
-            <div style={{ marginTop: "40px" }}>
+            <div style={{ marginTop: "40px", border: "1px solid blue", padding: "16px" }}>
               <h2 style={{
                 fontFamily: "Lora, serif",
                 fontSize: "28px",
