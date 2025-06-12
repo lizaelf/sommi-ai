@@ -1831,7 +1831,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </div>
           </div>
 
-          {/* Input Area or Buy Button - Fixed to Bottom */}
+          {/* Suggestions and Input - Fixed to Bottom */}
           <div
             style={{
               backgroundColor: "#1C1C1C",
@@ -1845,76 +1845,54 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             }}
           >
             <div className="max-w-3xl mx-auto">
-              {showBuyButton && !showChatInput ? (
-                // Show Buy Again Button for WineDetails page
-                (<Button
-                  onClick={() => {
-                    if (currentWine?.buyAgainLink) {
-                      window.open(currentWine.buyAgainLink, '_blank');
-                    } else {
-                      console.log("No buy again link available");
-                    }
-                  }}
-                  variant="primary"
-                  style={{
-                    margin: 0,
-                    width: "100%",
-                  }}
-                >Buy again
-                                  </Button>)
-              ) : (
-                // Show suggestions and input for Home page
-                (<>
-                  {/* Suggestion chips - always visible above input */}
-                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                    <Button
-                      onClick={() => handleSendMessage("Tasting notes")}
-                      variant="suggestion"
-                      size="sm"
-                      className="whitespace-nowrap flex-shrink-0"
-                    >
-                      Tasting notes
-                    </Button>
-                    <Button
-                      onClick={() => handleSendMessage("Food pairing")}
-                      variant="suggestion"
-                      size="sm"
-                      className="whitespace-nowrap flex-shrink-0"
-                    >
-                      Food pairing
-                    </Button>
-                    <Button
-                      onClick={() => handleSendMessage("Serving temperature")}
-                      variant="suggestion"
-                      size="sm"
-                      className="whitespace-nowrap flex-shrink-0"
-                    >
-                      Serving temperature
-                    </Button>
-                    <Button
-                      onClick={() => handleSendMessage("Aging potential")}
-                      variant="suggestion"
-                      size="sm"
-                      className="whitespace-nowrap flex-shrink-0"
-                    >
-                      Aging potential
-                    </Button>
-                  </div>
+              {/* Suggestion chips - always visible above input */}
+              <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                <Button
+                  onClick={() => handleSendMessage("Tasting notes")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Tasting notes
+                </Button>
+                <Button
+                  onClick={() => handleSendMessage("Food pairing")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Food pairing
+                </Button>
+                <Button
+                  onClick={() => handleSendMessage("Serving temperature")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Serving temperature
+                </Button>
+                <Button
+                  onClick={() => handleSendMessage("Aging potential")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Aging potential
+                </Button>
+              </div>
 
-                  {/* Voice Assistant and Chat Input */}
-                  <div className="flex gap-2 sm:gap-3 items-end w-full">
-                    <VoiceAssistant onSendMessage={handleSendMessage} />
-                    <div className="flex-1">
-                      <ChatInput 
-                        onSendMessage={handleSendMessage} 
-                        disabled={isTyping}
-                        onFocus={() => setIsKeyboardFocused(true)}
-                        onBlur={() => setIsKeyboardFocused(false)}
-                      />
-                    </div>
-                  </div>
-                </>)
-              )}
+              {/* Voice Assistant and Chat Input */}
+              <div className="flex gap-2 sm:gap-3 items-end w-full">
+                <VoiceAssistant onSendMessage={handleSendMessage} />
+                <div className="flex-1">
+                  <ChatInput 
+                    onSendMessage={handleSendMessage} 
+                    disabled={isTyping}
+                    onFocus={() => setIsKeyboardFocused(true)}
+                    onBlur={() => setIsKeyboardFocused(false)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
