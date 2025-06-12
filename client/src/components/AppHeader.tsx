@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, MoreHorizontal, Trash2, RotateCcw } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { IconButton } from "@/components/ui/IconButton";
 import { useLocation } from "wouter";
@@ -23,7 +23,6 @@ export function AppHeader({
 }: AppHeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [location] = useLocation();
   
