@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
-import Logo from '@/components/Logo';
-import Button from '@/components/ui/Button';
-import typography from '@/styles/typography';
-import { getWineDisplayName } from '../../../shared/wineConfig';
-import { DataSyncManager } from '@/utils/dataSync';
-import AppHeader from '@/components/AppHeader';
-import { ButtonIcon } from '@/components/ButtonIcon';
 import QRScanModal from '@/components/QRScanModal';
+import AppHeader from '@/components/AppHeader';
+import { DataSyncManager } from '@/utils/dataSync';
 
 interface SelectedWine {
   id: number;
@@ -24,182 +20,169 @@ interface SelectedWine {
   location?: string;
   description?: string;
   foodPairing?: string[];
+  buyAgainLink?: string;
 }
 
 export default function WineDetails() {
-  const [scrolled, setScrolled] = useState(false);
-  const [selectedWine, setSelectedWine] = useState<SelectedWine | null>(null);
-  const [showQRModal, setShowQRModal] = useState(false);
-  const [interactionChoiceMade, setInteractionChoiceMade] = useState<boolean>(false);
   const [location] = useLocation();
-  const params = useParams();
-  const wineId = parseInt(params.id || "1");
-  
-  // Determine if this is a scanned page (only /scanned routes) or wine details page
-  const isScannedPage = location === '/scanned' || location.includes('/scanned?');
-  
-  // Initialize interaction choice state from localStorage
-  useEffect(() => {
-    const choiceMade = Boolean(localStorage.getItem('interaction_choice_made'));
-    setInteractionChoiceMade(choiceMade);
-  }, []);
-  
-  // Check if this is a fresh QR scan (show interaction choice) - now reactive to state changes
-  const isQRScan = !interactionChoiceMade;
-  
+  const { id } = useParams();
+  const [wine, setWine] = useState<SelectedWine | null>(null);
+  const [showActions, setShowActions] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
+  const isQRScan = new URLSearchParams(window.location.search).has('wine');
+  const isScannedPage = location === '/scanned';
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
 
-  
-
-  
-  // Handle interaction choice
-  const handleInteractionChoice = (choice: 'text' | 'voice') => {
-    localStorage.setItem('interaction_choice_made', choice);
-    setInteractionChoiceMade(true);
-    setShowQRModal(false);
-    // Continue to the chat interface
-  };
-  
-  // Set QR modal state based on interaction choice
   useEffect(() => {
-    setShowQRModal(!interactionChoiceMade);
-  }, [interactionChoiceMade]);
+    if (id && !wine) {
+      const wineData = DataSyncManager.getWineById(parseInt(id));
+      if (wineData) {
+        setWine(wineData);
+      }
+    }
+  }, [id, wine]);
 
-  // Listen for QR reset events from the header button
   useEffect(() => {
-    const handleQRReset = (event: Event) => {
-      setInteractionChoiceMade(false);
+    console.log('🔍 QR Debug:', {
+      location,
+      isScannedPage,
+      interactionChoiceMade,
+      isQRScan,
+      showQRModal,
+      wine: wine ? 'loaded' : 'not loaded',
+      wineId: wine?.id
+    });
+
+    if (isScannedPage && !interactionChoiceMade) {
       setShowQRModal(true);
-    };
+    }
+  }, [location, isScannedPage, interactionChoiceMade, isQRScan, wine]);
 
-    window.addEventListener('qrReset', handleQRReset);
-    return () => window.removeEventListener('qrReset', handleQRReset);
-  }, []);
-  
-  // Load selected wine data from URL parameter or localStorage
-  const loadSelectedWine = () => {
-    try {
-      // For scanned page, check URL parameters first
-      if (isScannedPage) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const wineId = urlParams.get('wine');
-        
-        if (wineId) {
-          console.log(`Scanned page: Loading wine data for ID ${wineId}`);
-          const wine = DataSyncManager.getWineById(parseInt(wineId));
-          if (wine) {
-            console.log(`Scanned page: Found wine:`, wine);
-            return wine;
-          }
-        } else {
-          console.log('No wine ID found in URL parameters');
-          // For QR scan state, use default wine (first wine from DataSyncManager)
-          const wines = DataSyncManager.getUnifiedWineData();
-          if (wines.length > 0) {
-            console.log('Using default wine for QR scan state:', wines[0]);
-            return wines[0];
-          }
-          return null;
-        }
-      } else {
-        // For wine details page, use the route parameter
-        const wine = DataSyncManager.getWineById(wineId);
-        if (wine) {
-          console.log(`WineDetails: Found wine:`, wine);
-          return wine;
-        } else {
-          console.log(`Wine ID ${wineId} not found in DataSyncManager`);
-        }
-      }
-      
-      // Fallback to localStorage for backwards compatibility
-      const storedWine = localStorage.getItem('selectedWine');
-      if (storedWine) {
-        const wine = JSON.parse(storedWine);
-        // Clear the stored data after use
-        localStorage.removeItem('selectedWine');
-        return wine;
-      }
-      return null;
-    } catch (error) {
-      console.error('Error loading selected wine:', error);
-      return null;
+  const handleQRReset = (event: Event) => {
+    console.log('🔄 QR Reset triggered');
+    const detail = (event as CustomEvent).detail;
+    
+    if (detail?.action === 'voice') {
+      console.log('🎤 Voice interaction selected');
+      setInteractionChoiceMade(true);
+      setShowQRModal(false);
+    } else if (detail?.action === 'text') {
+      console.log('💬 Text interaction selected');
+      setInteractionChoiceMade(true);
+      setShowQRModal(false);
     }
   };
-  
-  const wine = loadSelectedWine();
-  
-  console.log('🔍 QR Debug:', {
-    location,
-    isScannedPage,
-    interactionChoiceMade,
-    isQRScan,
-    showQRModal,
-    wine: wine ? 'loaded' : 'null',
-    wineId
-  });
-  
-  // Add scroll listener to detect when page is scrolled
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    
-    // Clean up the listener when component unmounts
+    window.addEventListener('qr-reset', handleQRReset);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('qr-reset', handleQRReset);
     };
   }, []);
-  
-  return (
-    <div className="min-h-screen bg-background mobile-fullscreen">
-      <div className="relative w-full">
-        
-        {/* AppHeader - Different behavior for scanned vs wine details */}
-        <AppHeader 
-          title={isScannedPage ? undefined : (wine ? `${wine.year} ${wine.name}` : getWineDisplayName())}
-          showBackButton={!isScannedPage}
-          onBack={!isScannedPage ? () => window.history.back() : undefined}
-          rightContent={
-            <>
-              {isScannedPage && (
-                <Link to="/cellar">
-                  <button className="secondary-button react-button">
-                    My cellar
-                  </button>
-                </Link>
-              )}
-              <ButtonIcon 
-                onEditContact={() => console.log('Edit contact clicked')}
-                onManageNotifications={() => console.log('Manage notifications clicked')}
-                onDeleteAccount={() => console.log('Delete account clicked')}
-              />
-            </>
-          }
-        />
 
-        {/* Wine Image Section */}
-        <div className="pt-[75px] pb-4">
-          <div className="flex justify-center items-center px-4">
-            {wine ? (
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    console.log('Wine image loaded successfully:', wine?.image);
+  };
+
+  if (!wine) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
+          <Link href="/">
+            <button className="bg-white text-black px-6 py-2 rounded-full">
+              Return Home
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <AppHeader />
+      
+      <div className="relative">
+        {/* Wine Hero Section */}
+        <div className="px-6 pt-20 pb-6">
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/">
+              <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                <ArrowLeft size={24} />
+              </button>
+            </Link>
+            
+            <div className="relative">
+              <button 
+                onClick={() => setShowActions(!showActions)}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <MoreHorizontal size={24} />
+              </button>
+              
+              {showActions && (
+                <div className="absolute right-0 top-full mt-2 bg-white/10 backdrop-blur-sm rounded-lg p-2 min-w-[120px]">
+                  <button 
+                    onClick={() => {
+                      console.log('Delete wine action');
+                      setShowActions(false);
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-white/10 rounded-md transition-colors"
+                  >
+                    <Trash2 size={16} />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="text-center mb-8">
+            <div className="relative mx-auto mb-6" style={{ width: "280px", height: "400px" }}>
               <img
+                ref={imageRef}
                 src={wine.image}
                 alt={wine.name}
-                style={{
-                  height: "170px",
-                  width: "auto",
+                onLoad={handleImageLoad}
+                className={`w-full h-full object-contain transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                style={{ 
+                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))',
+                  objectPosition: 'center'
                 }}
-                onLoad={() => console.log("Wine image loaded successfully:", wine.image)}
-                onError={() => console.log("Wine image failed to load:", wine.image)}
               />
-            ) : (
-              <div style={{ height: "170px", width: "auto" }}>Loading...</div>
-            )}
+              {!imageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
+            
+            <h1 className="text-2xl font-bold mb-2" style={{ fontFamily: "Lora, serif" }}>
+              {wine.name}
+            </h1>
+            
+            <p className="text-lg text-gray-300 mb-4">
+              {wine.bottles} bottles remaining
+            </p>
+            
+            <div className="flex justify-center gap-3 mb-6">
+              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
+                {wine.ratings.vn} VN
+              </span>
+              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
+                {wine.ratings.jd} JD
+              </span>
+              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
+                {wine.ratings.ws} WS
+              </span>
+              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
+                {wine.ratings.abv}% ABV
+              </span>
+            </div>
           </div>
         </div>
 
@@ -209,24 +192,10 @@ export default function WineDetails() {
             {/* Location */}
             {wine.location && (
               <div>
-                <h3 style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#CECECE",
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px"
-                }}>
-                  LOCATION
+                <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "Lora, serif" }}>
+                  Origin
                 </h3>
-                <p style={{
-                  fontFamily: "Lora, serif",
-                  fontSize: "16px",
-                  lineHeight: "24px",
-                  color: "white",
-                  margin: 0
-                }}>
+                <p className="text-gray-300">
                   {wine.location}
                 </p>
               </div>
@@ -235,24 +204,10 @@ export default function WineDetails() {
             {/* Description */}
             {wine.description && (
               <div>
-                <h3 style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#CECECE",
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px"
-                }}>
-                  DESCRIPTION
+                <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "Lora, serif" }}>
+                  Tasting Notes
                 </h3>
-                <p style={{
-                  fontFamily: "Lora, serif",
-                  fontSize: "16px",
-                  lineHeight: "24px",
-                  color: "white",
-                  margin: 0
-                }}>
+                <p className="text-gray-300 leading-relaxed">
                   {wine.description}
                 </p>
               </div>
@@ -261,283 +216,21 @@ export default function WineDetails() {
             {/* Food Pairing */}
             {wine.foodPairing && wine.foodPairing.length > 0 && (
               <div>
-                <h3 style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#CECECE",
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px"
-                }}>
-                  FOOD PAIRING
+                <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: "Lora, serif" }}>
+                  Perfect Pairings
                 </h3>
-                <div style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "8px"
-                }}>
-                  {wine.foodPairing.map((food: string, index: number) => (
-                    <span
+                <div className="flex flex-wrap gap-2">
+                  {wine.foodPairing.map((pairing, index) => (
+                    <span 
                       key={index}
-                      style={{
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "14px",
-                        padding: "6px 12px",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        borderRadius: "16px",
-                        color: "white",
-                        border: "1px solid rgba(255, 255, 255, 0.2)"
-                      }}
+                      className="bg-white/10 px-3 py-1 rounded-full text-sm"
                     >
-                      {food}
+                      {pairing}
                     </span>
                   ))}
                 </div>
               </div>
             )}
-
-        {/* Want more? Section - Always visible */}
-        <div style={{ marginTop: "32px", paddingLeft: "24px", paddingRight: "24px" }}>
-          <h2 style={{
-            fontFamily: "Lora, serif",
-            fontSize: "28px",
-            fontWeight: 400,
-            color: "white",
-            marginBottom: "20px",
-            margin: 0
-          }}>
-            Want more?
-          </h2>
-          
-          {wine?.buyAgainLink ? (
-                <a 
-                  href={wine.buyAgainLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: "none" }}
-                >
-                  <button style={{
-                    width: "100%",
-                    backgroundColor: "white",
-                    color: "black",
-                    border: "none",
-                    borderRadius: "32px",
-                    padding: "16px 24px",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    marginTop: "20px"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f5f5f5";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "white";
-                  }}
-                  >
-                    Buy again
-                  </button>
-                </a>
-              ) : (
-                <div style={{
-                  width: "100%",
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  color: "white",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "32px",
-                  padding: "16px 24px",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  marginTop: "20px",
-                  textAlign: "center"
-                }}>
-                  Check back later for availability
-                </div>
-              )}
-        </div>
-
-        {/* We recommend Section - Always visible */}
-        <div style={{ marginTop: "40px", paddingLeft: "24px", paddingRight: "24px" }}>
-          <h2 style={{
-            fontFamily: "Lora, serif",
-            fontSize: "28px",
-            fontWeight: 400,
-            color: "white",
-            marginBottom: "24px",
-            margin: 0
-          }}>
-            We recommend
-          </h2>
-              
-              <div style={{
-                display: "flex",
-                gap: "16px",
-                overflowX: "auto",
-                paddingBottom: "8px"
-              }}>
-                {/* Wine Recommendation 1 - Estate Chardonnay */}
-                <div style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "20px",
-                  minWidth: "280px",
-                  border: "1px solid rgba(255, 255, 255, 0.1)"
-                }}>
-                  <div style={{
-                    width: "100%",
-                    height: "200px",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    borderRadius: "12px",
-                    marginBottom: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}>
-                    <div style={{
-                      width: "60px",
-                      height: "140px",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      borderRadius: "4px"
-                    }} />
-                  </div>
-                  
-                  <h3 style={{
-                    fontFamily: "Lora, serif",
-                    fontSize: "18px",
-                    fontWeight: 400,
-                    color: "white",
-                    marginBottom: "8px",
-                    textAlign: "center"
-                  }}>
-                    2022 Estate Chardonnay
-                  </h3>
-                  
-                  <div style={{
-                    display: "flex",
-                    gap: "8px",
-                    justifyContent: "center",
-                    flexWrap: "wrap"
-                  }}>
-                    <span style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 500
-                    }}>
-                      95 VN
-                    </span>
-                    <span style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 500
-                    }}>
-                      93 JD
-                    </span>
-                    <span style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 500
-                    }}>
-                      93 WS
-                    </span>
-                  </div>
-                </div>
-
-                {/* Wine Recommendation 2 - Monte Bello Cabernet */}
-                <div style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "20px",
-                  minWidth: "280px",
-                  border: "1px solid rgba(255, 255, 255, 0.1)"
-                }}>
-                  <div style={{
-                    width: "100%",
-                    height: "200px",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    borderRadius: "12px",
-                    marginBottom: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}>
-                    <div style={{
-                      width: "60px",
-                      height: "140px",
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      borderRadius: "4px"
-                    }} />
-                  </div>
-                  
-                  <h3 style={{
-                    fontFamily: "Lora, serif",
-                    fontSize: "18px",
-                    fontWeight: 400,
-                    color: "white",
-                    marginBottom: "8px",
-                    textAlign: "center"
-                  }}>
-                    2021 Monte Bello Cabernet Sauvignon
-                  </h3>
-                  
-                  <div style={{
-                    display: "flex",
-                    gap: "8px",
-                    justifyContent: "center",
-                    flexWrap: "wrap"
-                  }}>
-                    <span style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 500
-                    }}>
-                      95 VN
-                    </span>
-                    <span style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 500
-                    }}>
-                      93 JD
-                    </span>
-                    <span style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      color: "white",
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                      fontFamily: "Inter, sans-serif",
-                      fontWeight: 500
-                    }}>
-                      93 WS
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -821,7 +514,7 @@ export default function WineDetails() {
         </div>
 
         {/* Main Content Area */}
-        <div>
+        <div style={{ marginTop: "40px" }}>
           <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
             id: wine.id,
             name: wine.name,
@@ -838,14 +531,7 @@ export default function WineDetails() {
         onClose={() => {
           console.log('🔄 QR Modal close triggered');
           setShowQRModal(false);
-        }}
-        onTextChoice={() => {
-          console.log('🔄 QR Modal text choice selected');
-          handleInteractionChoice('text');
-        }}
-        onVoiceChoice={() => {
-          console.log('🔄 QR Modal voice choice selected');
-          handleInteractionChoice('voice');
+          setInteractionChoiceMade(true);
         }}
       />
     </div>
