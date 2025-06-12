@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation, useParams, useRouter } from 'wouter';
+import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
@@ -35,7 +35,6 @@ export default function WineDetails() {
   const [location] = useLocation();
   const params = useParams();
   const wineId = parseInt(params.id || "1");
-  const router = useRouter();
   
   // Get conversation management functions
   const { resetAllConversations } = useConversation(wineId);
@@ -241,10 +240,10 @@ export default function WineDetails() {
                     sessionStorage.clear();
                     console.log('SessionStorage cleared');
                     
-                    // Try to clear server-side conversations with timeout
+                    // Try to clear server-side conversations with shorter timeout
                     try {
                       const controller = new AbortController();
-                      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+                      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
                       
                       const response = await fetch('/api/conversations', {
                         method: 'DELETE',
@@ -262,7 +261,8 @@ export default function WineDetails() {
                         console.warn('Failed to clear server-side conversations, but proceeding with local cleanup');
                       }
                     } catch (error) {
-                      console.warn('Error clearing server-side data (proceeding with local cleanup):', error);
+                      // Don't log the full error object, just a simple message
+                      console.warn('Server-side data clearing skipped due to connection issues');
                     }
                     
                     // Dispatch reset event
@@ -279,14 +279,9 @@ export default function WineDetails() {
                     
                     // Navigate to scanned page with QR modal instead of refreshing
                     console.log('Navigating to scanned page with QR modal...');
-                    router.push(`/scanned?wine=${wineId}`);
+                    window.location.href = `/scanned?wine=${wineId}`;
                     
-                    // Short delay to ensure navigation completes, then trigger QR modal
-                    setTimeout(() => {
-                      setShowQRModal(true);
-                      setInteractionChoiceMade(false);
-                      console.log('QR modal triggered after account deletion');
-                    }, 100);
+                    // The navigation will happen immediately, so we don't need the setTimeout
                     
                   } catch (error) {
                     console.error('Account deletion failed:', error);
