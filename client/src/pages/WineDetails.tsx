@@ -192,15 +192,7 @@ export default function WineDetails() {
     };
   }, []);
 
-  // Reset conversation functionality
-  const resetAllConversations = async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log('Conversation reset completed');
-        resolve(true);
-      }, 100);
-    });
-  };
+
   
   return (
     <div className="min-h-screen bg-background mobile-fullscreen">
@@ -222,262 +214,148 @@ export default function WineDetails() {
               <ButtonIcon 
                 onEditContact={() => console.log('Edit contact clicked')}
                 onManageNotifications={() => console.log('Manage notifications clicked')}
-                onDeleteAccount={async () => {
-                  console.log('Delete account clicked');
-                  const confirmed = confirm('Are you sure you want to delete your account? This will permanently delete all your conversations and data. This action cannot be undone.');
-                  if (!confirmed) {
-                    console.log('Account deletion cancelled by user');
-                    return;
-                  }
-                  
-                  try {
-                    await resetAllConversations();
-                    console.log('Conversation state reset successfully');
-                  } catch (error) {
-                    console.warn('Error resetting conversation state:', error);
-                  }
-                  
-                  localStorage.clear();
-                  console.log('LocalStorage cleared completely');
-                  
-                  try {
-                    const indexedDBServiceModule = await import('../lib/indexedDB');
-                    const indexedDBService = indexedDBServiceModule.default;
-                    await indexedDBService.clearAllData();
-                    console.log('IndexedDB cleared via service');
-                  } catch (error) {
-                    console.warn('Error clearing IndexedDB via service, trying manual cleanup:', error);
-                    
-                    try {
-                      const indexedDB = window.indexedDB;
-                      const databases = await indexedDB.databases();
-                      
-                      for (const db of databases) {
-                        if (db.name) {
-                          const deleteRequest = indexedDB.deleteDatabase(db.name);
-                          await new Promise((resolve, reject) => {
-                            deleteRequest.onsuccess = () => resolve(true);
-                            deleteRequest.onerror = () => reject(deleteRequest.error);
-                          });
-                          console.log(`Manually deleted database: ${db.name}`);
-                        }
-                      }
-                    } catch (fallbackError) {
-                      console.warn('Manual IndexedDB cleanup also failed:', fallbackError);
-                    }
-                  }
-                  
-                  sessionStorage.clear();
-                  console.log('SessionStorage cleared');
-                  
-                  try {
-                    if ('caches' in window) {
-                      const cacheNames = await caches.keys();
-                      await Promise.all(
-                        cacheNames.map(cacheName => caches.delete(cacheName))
-                      );
-                      console.log('Browser cache cleared');
-                    }
-                  } catch (error) {
-                    console.warn('Browser cache clearing failed:', error);
-                  }
-                  
-                  try {
-                    if ('serviceWorker' in navigator) {
-                      const registrations = await navigator.serviceWorker.getRegistrations();
-                      await Promise.all(
-                        registrations.map(registration => registration.unregister())
-                      );
-                      console.log('Service worker cache cleared');
-                    }
-                  } catch (error) {
-                    console.warn('Service worker cache clearing failed:', error);
-                  }
-                  
-                  try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-                    
-                    const response = await fetch('/api/conversations', {
-                      method: 'DELETE',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (response.ok) {
-                      console.log('Server-side conversations cleared');
-                    } else {
-                      console.warn('Failed to clear server-side conversations, but proceeding with local cleanup');
-                    }
-                  } catch (error) {
-                    console.warn('Server-side data clearing skipped due to connection issues');
-                  }
-                  
-                  alert('Account deleted successfully. The page will now reload.');
-                  
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 500);
-                }}
+                onResetQR={() => console.log('Reset QR clicked')}
               />
             </>
           }
         />
 
-        {/* Wine Hero Section - Yesterday's Layout Structure */}
-        <div className="pt-[75px] pb-8">
-          {/* Wine Image */}
-          <div className="flex justify-center items-center px-4 mb-8">
+        {/* Wine Section - Simple layout like yesterday */}
+        <div className="pt-[75px] pb-4">
+          <div className="flex justify-center items-center px-4">
             {wine ? (
               <img
                 src={wine.image}
                 alt={wine.name}
                 style={{
-                  height: "280px",
+                  height: "170px",
                   width: "auto",
                 }}
-                onLoad={() => console.log("Wine bottle image loaded:", wine.name)}
-                onError={() => console.log("Wine bottle image failed to load:", wine.image)}
+                onLoad={() => console.log("Wine image loaded successfully:", wine.image)}
+                onError={() => console.log("Wine image failed to load:", wine.image)}
               />
             ) : (
-              <div style={{ height: "280px", width: "auto" }}>Loading...</div>
+              <div style={{ height: "170px", width: "auto" }}>Loading...</div>
             )}
           </div>
+        </div>
 
-          {/* Wine Title and Location - Centered like yesterday */}
-          {wine && (
-            <div className="text-center px-6 mb-6">
-              <h1 style={{
-                fontFamily: "Lora, serif",
-                fontSize: "28px",
-                fontWeight: 400,
-                color: "white",
-                lineHeight: "36px",
-                margin: "0 0 16px 0"
-              }}>
-                {wine.year} {wine.name}
-              </h1>
-              
-              {wine.location && (
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <span style={{
-                    fontSize: "16px",
-                    color: "#B8B8B8"
-                  }}>🇺🇸</span>
-                  <p style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    color: "#B8B8B8",
-                    margin: 0
-                  }}>
-                    {wine.location}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+        {/* Wine Info Below Image */}
+        {wine && (
+          <div className="text-center px-6 pb-8">
+            <h1 style={{
+              fontFamily: "Lora, serif",
+              fontSize: "24px",
+              fontWeight: 400,
+              color: "white",
+              lineHeight: "32px",
+              margin: "0 0 12px 0"
+            }}>
+              {wine.year} {wine.name}
+            </h1>
+            
+            {wine.location && (
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <span>🇺🇸</span>
+                <p style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  color: "#B8B8B8",
+                  margin: 0
+                }}>
+                  {wine.location}
+                </p>
+              </div>
+            )}
 
-          {/* Ratings Row - Horizontal like yesterday */}
-          {wine && wine.ratings && (
-            <div className="px-6 mb-8">
+            {/* Ratings - Simplified */}
+            {wine.ratings && (
               <div style={{
                 display: "flex",
                 justifyContent: "space-between",
-                gap: "12px",
-                maxWidth: "400px",
+                gap: "16px",
+                maxWidth: "320px",
                 margin: "0 auto"
               }}>
-                <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ textAlign: "center" }}>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "24px",
+                    fontSize: "20px",
                     fontWeight: 600,
-                    color: "white",
-                    marginBottom: "4px"
+                    color: "white"
                   }}>
                     {wine.ratings.vn}
                   </div>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "12px",
-                    color: "#B8B8B8",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px"
+                    fontSize: "11px",
+                    color: "#999",
+                    textTransform: "uppercase"
                   }}>
                     VN
                   </div>
                 </div>
                 
-                <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ textAlign: "center" }}>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "24px",
+                    fontSize: "20px",
                     fontWeight: 600,
-                    color: "white",
-                    marginBottom: "4px"
+                    color: "white"
                   }}>
                     {wine.ratings.jd}
                   </div>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "12px",
-                    color: "#B8B8B8",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px"
+                    fontSize: "11px",
+                    color: "#999",
+                    textTransform: "uppercase"
                   }}>
                     JD
                   </div>
                 </div>
                 
-                <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ textAlign: "center" }}>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "24px",
+                    fontSize: "20px",
                     fontWeight: 600,
-                    color: "white",
-                    marginBottom: "4px"
+                    color: "white"
                   }}>
                     {wine.ratings.ws}
                   </div>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "12px",
-                    color: "#B8B8B8",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px"
+                    fontSize: "11px",
+                    color: "#999",
+                    textTransform: "uppercase"
                   }}>
                     WS
                   </div>
                 </div>
                 
-                <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ textAlign: "center" }}>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "24px",
+                    fontSize: "20px",
                     fontWeight: 600,
-                    color: "white",
-                    marginBottom: "4px"
+                    color: "white"
                   }}>
                     {wine.ratings.abv}%
                   </div>
                   <div style={{
                     fontFamily: "Inter, sans-serif",
-                    fontSize: "12px",
-                    color: "#B8B8B8",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px"
+                    fontSize: "11px",
+                    color: "#999",
+                    textTransform: "uppercase"
                   }}>
                     ABV
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Main Content Area - Enhanced Chat Interface */}
         <div>
