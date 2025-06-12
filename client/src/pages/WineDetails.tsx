@@ -331,23 +331,26 @@ export default function WineDetails() {
             We recommend
           </h2>
           
-          <div style={{
-            display: "flex",
-            gap: "16px",
-            overflowX: "auto",
-            paddingBottom: "8px"
-          }}>
+          <div 
+            className="wine-recommendations-container"
+            style={{
+              display: "flex",
+              gap: "16px",
+              overflowX: "auto",
+              paddingBottom: "16px"
+            }}>
             {/* Wine Recommendation 1 - Estate Chardonnay */}
             <div style={{
-              minWidth: "280px",
+              flex: "0 0 auto",
+              width: "220px",
               backgroundColor: "rgba(255, 255, 255, 0.08)",
               borderRadius: "16px",
-              padding: "24px",
+              padding: "16px",
               border: "1px solid rgba(255, 255, 255, 0.12)"
             }}>
               <div style={{
                 width: "100%",
-                height: "200px",
+                height: "180px",
                 backgroundColor: "rgba(255, 255, 255, 0.05)",
                 borderRadius: "12px",
                 marginBottom: "16px",
@@ -412,15 +415,16 @@ export default function WineDetails() {
 
             {/* Wine Recommendation 2 - Monte Bello */}
             <div style={{
-              minWidth: "280px",
+              flex: "0 0 auto",
+              width: "240px",
               backgroundColor: "rgba(255, 255, 255, 0.08)",
               borderRadius: "16px",
-              padding: "24px",
+              padding: "20px",
               border: "1px solid rgba(255, 255, 255, 0.12)"
             }}>
               <div style={{
                 width: "100%",
-                height: "200px",
+                height: "180px",
                 backgroundColor: "rgba(255, 255, 255, 0.05)",
                 borderRadius: "12px",
                 marginBottom: "16px",

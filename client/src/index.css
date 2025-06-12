@@ -1,6 +1,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbars for wine recommendation cards */
+.wine-recommendations-container {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.wine-recommendations-container::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
 /* Keyframe animations */
 @keyframes spin {
   from {
