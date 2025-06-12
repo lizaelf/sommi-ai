@@ -248,7 +248,13 @@ export default function WineDetails() {
         )}
 
         {/* Want more? Section - Always visible */}
-        <div style={{ marginTop: "32px", paddingLeft: "24px", paddingRight: "24px" }}>
+        <div style={{ 
+          marginTop: "32px", 
+          paddingLeft: "24px", 
+          paddingRight: "24px",
+          border: "2px solid red",
+          backgroundColor: "rgba(255, 0, 0, 0.1)"
+        }}>
           <h2 style={{
             fontFamily: "Lora, serif",
             fontSize: "28px",
@@ -311,7 +317,13 @@ export default function WineDetails() {
         </div>
 
         {/* We recommend Section - Always visible */}
-        <div style={{ marginTop: "40px", paddingLeft: "24px", paddingRight: "24px" }}>
+        <div style={{ 
+          marginTop: "40px", 
+          paddingLeft: "24px", 
+          paddingRight: "24px",
+          border: "2px solid blue",
+          backgroundColor: "rgba(0, 0, 255, 0.1)"
+        }}>
           <h2 style={{
             fontFamily: "Lora, serif",
             fontSize: "28px",
