@@ -35,8 +35,8 @@ export default function WineDetails() {
   const params = useParams();
   const wineId = parseInt(params.id || "1");
   
-  // Determine if this is a scanned page (root/scanned routes) or wine details page
-  const isScannedPage = location === '/' || location === '/scanned' || location.includes('/scanned?');
+  // Determine if this is a scanned page (only /scanned routes) or wine details page
+  const isScannedPage = location === '/scanned' || location.includes('/scanned?');
   
   // Initialize interaction choice state from localStorage
   useEffect(() => {
