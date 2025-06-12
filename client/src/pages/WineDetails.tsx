@@ -179,7 +179,6 @@ export default function WineDetails() {
               <ButtonIcon 
                 onEditContact={() => console.log('Edit contact clicked')}
                 onManageNotifications={() => console.log('Manage notifications clicked')}
-                onDeleteAccount={() => console.log('Delete account clicked')}
                 onResetQR={async () => {
                   try {
                     console.log('Starting QR reset process...');

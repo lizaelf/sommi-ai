@@ -6,14 +6,12 @@ import { useToast } from "@/hooks/UseToast";
 interface ButtonIconProps {
   onEditContact?: () => void;
   onManageNotifications?: () => void;
-  onDeleteAccount?: () => void;
   onResetQR?: () => void;
 }
 
 export function ButtonIcon({ 
   onEditContact, 
   onManageNotifications, 
-  onDeleteAccount,
   onResetQR 
 }: ButtonIconProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -152,7 +150,7 @@ export function ButtonIcon({
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
-                borderBottom: onDeleteAccount ? "1px solid #373737" : "none",
+                borderBottom: "1px solid #373737",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
@@ -192,7 +190,7 @@ export function ButtonIcon({
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
-                borderBottom: onDeleteAccount ? "1px solid #373737" : "none",
+                borderBottom: "none",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
@@ -211,44 +209,7 @@ export function ButtonIcon({
             </button>
           )}
 
-          {onDeleteAccount && (
-            <button
-              className="profile-menu-item"
-              onClick={() => {
-                setShowProfileMenu(false);
-                onDeleteAccount();
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                padding: "16px 20px",
-                backgroundColor: "transparent",
-                border: "none",
-                color: "#FF6B6B",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                width: "100%",
-                textAlign: "left",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 107, 107, 0.1)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                  fill="currentColor"
-                />
-              </svg>
-              Delete Account
-            </button>
-          )}
+
         </div>,
         portalElement
       )}
