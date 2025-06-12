@@ -21,7 +21,6 @@ import {
 } from "@shared/wineConfig";
 import { DataSyncManager } from "@/utils/dataSync";
 import { ShiningText } from "@/components/ShiningText";
-import CodeFreezedInput from "./CodeFreezedInput";
 
 import { createStreamingClient, isStreamingSupported } from "@/lib/streamingClient";
 // Import typography styles
@@ -1832,8 +1831,70 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </div>
           </div>
 
-          {/* CodeFreezed Input Component */}
-          <CodeFreezedInput />
+          {/* Suggestions and Input - Fixed to Bottom */}
+          <div
+            style={{
+              backgroundColor: "#1C1C1C",
+              padding: "16px",
+              zIndex: 50,
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+            }}
+          >
+            <div className="max-w-3xl mx-auto">
+              {/* Suggestion chips - always visible above input */}
+              <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                <Button
+                  onClick={() => handleSendMessage("Tasting notes")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Tasting notes
+                </Button>
+                <Button
+                  onClick={() => handleSendMessage("Food pairing")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Food pairing
+                </Button>
+                <Button
+                  onClick={() => handleSendMessage("Serving temperature")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Serving temperature
+                </Button>
+                <Button
+                  onClick={() => handleSendMessage("Aging potential")}
+                  variant="suggestion"
+                  size="sm"
+                  className="whitespace-nowrap flex-shrink-0"
+                >
+                  Aging potential
+                </Button>
+              </div>
+
+              {/* Voice Assistant and Chat Input */}
+              <div className="flex gap-2 sm:gap-3 items-end w-full">
+                <VoiceAssistant onSendMessage={handleSendMessage} />
+                <div className="flex-1">
+                  <ChatInput 
+                    onSendMessage={handleSendMessage} 
+                    disabled={isTyping}
+                    onFocus={() => setIsKeyboardFocused(true)}
+                    onBlur={() => setIsKeyboardFocused(false)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Scroll to bottom button */}
           {showScrollToBottom && (
