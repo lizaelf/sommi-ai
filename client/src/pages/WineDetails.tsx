@@ -48,7 +48,12 @@ export default function WineDetails() {
   useEffect(() => {
     const choiceMade = Boolean(localStorage.getItem('interaction_choice_made'));
     setInteractionChoiceMade(choiceMade);
-  }, []);
+    
+    // For scanned pages, ensure QR modal shows if no choice made
+    if (isScannedPage && !choiceMade) {
+      setShowQRModal(true);
+    }
+  }, [isScannedPage]);
   
   // Check if this is a fresh QR scan (show interaction choice) - now reactive to state changes
   const isQRScan = !interactionChoiceMade;
@@ -65,10 +70,14 @@ export default function WineDetails() {
     // Continue to the chat interface
   };
   
-  // Set QR modal state based on interaction choice
+  // Set QR modal state based on interaction choice - only for scanned pages
   useEffect(() => {
-    setShowQRModal(!interactionChoiceMade);
-  }, [interactionChoiceMade]);
+    if (isScannedPage) {
+      setShowQRModal(!interactionChoiceMade);
+    } else {
+      setShowQRModal(false);
+    }
+  }, [interactionChoiceMade, isScannedPage]);
 
   // Listen for QR reset events from the header button
   useEffect(() => {
@@ -309,10 +318,10 @@ export default function WineDetails() {
                     // Clear any remaining interaction state before navigation
                     localStorage.removeItem('interaction_choice_made');
                     
-                    // Navigate to scanned page which will trigger QR modal automatically
-                    window.location.href = `/scanned?wine=${wineId}`;
+                    // Force a complete page reload to ensure fresh state
+                    window.location.replace(`/scanned?wine=${wineId}`);
                     
-                    // The navigation will happen immediately, QR modal will show due to cleared state
+                    // The replace will happen immediately with fresh QR modal state
                     
                   } catch (error) {
                     console.error('Account deletion failed:', error);
