@@ -103,7 +103,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             top: 0
           }}
           className={`text-sm pr-12 placeholder-[#999999] flex items-center ${isFocused ? '!bg-transparent' : 'bg-[#1C1C1C] !bg-[#1C1C1C]'}`}
-          placeholder="Ask me about..."
+          placeholder="Ask me about wine..."
           disabled={isProcessing}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
