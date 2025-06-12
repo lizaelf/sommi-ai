@@ -181,24 +181,78 @@ export default function WineDetails() {
                 onManageNotifications={() => console.log('Manage notifications clicked')}
                 onResetQR={async () => {
                   try {
-                    console.log('Starting QR reset process...');
-                    localStorage.removeItem('interaction_choice_made');
-                    console.log('LocalStorage cleared successfully');
+                    console.log('Starting complete account reset...');
                     
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    // Show confirmation dialog
+                    const confirmed = confirm('Are you sure you want to delete your account? This will permanently delete all your conversations and data. This action cannot be undone.');
+                    if (!confirmed) {
+                      console.log('Account deletion cancelled by user');
+                      return;
+                    }
                     
-                    const resetEvent = new CustomEvent('qrReset', {
+                    // Clear all localStorage data
+                    localStorage.clear();
+                    console.log('LocalStorage cleared completely');
+                    
+                    // Clear IndexedDB data
+                    try {
+                      const indexedDB = window.indexedDB;
+                      const databases = await indexedDB.databases();
+                      
+                      for (const db of databases) {
+                        if (db.name) {
+                          const deleteRequest = indexedDB.deleteDatabase(db.name);
+                          await new Promise((resolve, reject) => {
+                            deleteRequest.onsuccess = () => resolve(true);
+                            deleteRequest.onerror = () => reject(deleteRequest.error);
+                          });
+                          console.log(`Deleted database: ${db.name}`);
+                        }
+                      }
+                    } catch (error) {
+                      console.warn('Error clearing IndexedDB:', error);
+                    }
+                    
+                    // Clear session storage
+                    sessionStorage.clear();
+                    console.log('SessionStorage cleared');
+                    
+                    // Try to clear server-side conversations
+                    try {
+                      const response = await fetch('/api/conversations', {
+                        method: 'DELETE',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        }
+                      });
+                      
+                      if (response.ok) {
+                        console.log('Server-side conversations cleared');
+                      } else {
+                        console.warn('Failed to clear server-side conversations');
+                      }
+                    } catch (error) {
+                      console.warn('Error clearing server-side data:', error);
+                    }
+                    
+                    // Dispatch reset event
+                    const resetEvent = new CustomEvent('accountReset', {
                       detail: {
                         timestamp: Date.now(),
-                        source: 'profile-menu',
+                        source: 'delete-account',
                         success: true
                       },
                       bubbles: true
                     });
                     window.dispatchEvent(resetEvent);
-                    console.log('QR reset event dispatched successfully');
+                    console.log('Account reset event dispatched');
+                    
+                    // Refresh the page to reset application state
+                    window.location.reload();
+                    
                   } catch (error) {
-                    console.error('QR reset failed:', error);
+                    console.error('Account deletion failed:', error);
+                    alert('Failed to delete account. Please try again.');
                   }
                 }}
               />

@@ -394,7 +394,25 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Delete a conversation
+  // Delete all conversations (for account deletion)
+  app.delete("/api/conversations", async (_req, res) => {
+    try {
+      const conversations = await storage.getAllConversations();
+      
+      // Delete all conversations and their messages
+      for (const conversation of conversations) {
+        await storage.deleteConversation(conversation.id);
+      }
+      
+      console.log(`Deleted ${conversations.length} conversations for account deletion`);
+      res.status(200).json({ message: "All conversations deleted successfully", count: conversations.length });
+    } catch (error) {
+      console.error("Error deleting all conversations:", error);
+      res.status(500).json({ message: "Failed to delete all conversations" });
+    }
+  });
+
+  // Delete a specific conversation
   app.delete("/api/conversations/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
