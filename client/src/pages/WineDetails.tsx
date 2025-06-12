@@ -180,6 +180,28 @@ export default function WineDetails() {
                 onEditContact={() => console.log('Edit contact clicked')}
                 onManageNotifications={() => console.log('Manage notifications clicked')}
                 onDeleteAccount={() => console.log('Delete account clicked')}
+                onResetQR={async () => {
+                  try {
+                    console.log('Starting QR reset process...');
+                    localStorage.removeItem('interaction_choice_made');
+                    console.log('LocalStorage cleared successfully');
+                    
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    const resetEvent = new CustomEvent('qrReset', {
+                      detail: {
+                        timestamp: Date.now(),
+                        source: 'profile-menu',
+                        success: true
+                      },
+                      bubbles: true
+                    });
+                    window.dispatchEvent(resetEvent);
+                    console.log('QR reset event dispatched successfully');
+                  } catch (error) {
+                    console.error('QR reset failed:', error);
+                  }
+                }}
               />
             </>
           }
