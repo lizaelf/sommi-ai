@@ -470,8 +470,10 @@ export default function WineDetails() {
         {/* Want More Section - Always show for testing */}
         <div style={{ 
           width: "100%",
-          padding: "0 20px",
-          marginBottom: "32px"
+          padding: "20px",
+          marginBottom: "32px",
+          backgroundColor: "rgba(255, 0, 0, 0.1)", // Debug red background
+          border: "2px solid red" // Debug border
         }}>
           <h1 style={{
             fontFamily: "Lora, serif",
@@ -481,12 +483,13 @@ export default function WineDetails() {
             marginBottom: "24px",
             textAlign: "left"
           }}>
-            Want more?
+            Want more? {wine ? `(Wine ID: ${wine.id})` : '(No wine)'}
           </h1>
 
           <Button
             onClick={() => {
               const buyLink = wine?.buyAgainLink || "https://www.ridgewine.com/wines/2021-lytton-springs/";
+              console.log('Buy again clicked:', buyLink);
               window.open(buyLink, '_blank');
             }}
             variant="primary"
@@ -501,7 +504,12 @@ export default function WineDetails() {
         </div>
 
         {/* Wine Recommendations Section - Always show for testing */}
-        <WineRecommendations currentWineId={wine?.id || 1} />
+        <div style={{ 
+          backgroundColor: "rgba(0, 255, 0, 0.1)", // Debug green background
+          border: "2px solid green" // Debug border
+        }}>
+          <WineRecommendations currentWineId={wine?.id || 1} />
+        </div>
 
         {/* Main Content Area - Always show chat interface */}
         <div className={isScannedPage ? "pt-[75px]" : ""}>
