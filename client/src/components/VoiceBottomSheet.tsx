@@ -350,11 +350,10 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           ) : isResponding ? (
             <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
               <button
-                className="voice-bottom-sheet-button"
+                className="secondary-button react-button"
                 onClick={onMute}
                 style={{
                   width: '100%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
                   borderRadius: '32px',
                   height: '56px',
                   padding: '0 16px',
@@ -363,7 +362,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: '8px',
-                  color: 'white',
                   border: 'none',
                   cursor: 'pointer',
                   fontFamily: 'Inter, sans-serif',
@@ -374,7 +372,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   boxSizing: 'border-box'
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
                 </svg>
                 Stop
