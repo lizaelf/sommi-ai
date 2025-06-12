@@ -42,7 +42,7 @@ export default function WineDetails() {
     // Get wine ID from URL params (either route param or query param)
     const urlParams = new URLSearchParams(window.location.search);
     const wineIdFromQuery = urlParams.get('wine');
-    const wineId = id || wineIdFromQuery;
+    const wineId = id || wineIdFromQuery || '1'; // Default to wine ID 1 if none provided
     
     console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId, location });
     
