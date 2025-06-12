@@ -8,10 +8,10 @@ const QRCodes: React.FC = () => {
 
   const pages = [
     {
-      title: "Main Wine Page",
+      title: "Scanned Wine Page",
       description: "QR scan landing with voice/text interaction",
-      path: "/",
-      url: `https://${deployedDomain}/`
+      path: "/scanned",
+      url: `https://${deployedDomain}/scanned`
     },
     {
       title: "Wine Cellar",
