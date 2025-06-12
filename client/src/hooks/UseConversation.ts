@@ -211,6 +211,11 @@ export function useConversation(wineId?: string | number): UseConversationReturn
         } catch (backendError) {
           if (!isMounted) return;
           console.log('Backend conversation loading failed, using local storage fallback');
+          // Prevent unhandled promise rejection
+          if (backendError instanceof Error && backendError.name !== 'AbortError') {
+            // Log non-timeout errors for debugging
+            console.debug('Backend error details:', backendError.message);
+          }
         }
         
         if (!isMounted) return;

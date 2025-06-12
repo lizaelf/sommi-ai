@@ -5,6 +5,18 @@ import { setupAudioContextInitialization, setupUserInteractionTracking } from ".
 import { enableDarkMode } from "./utils/darkMode";
 import "@fontsource/lora"; // Import Lora font
 
+// Global error handling to prevent unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  // Prevent the default behavior (console error)
+  event.preventDefault();
+  
+  // Log only network-related errors for debugging
+  if (event.reason && event.reason.message && 
+      (event.reason.message.includes('fetch') || event.reason.message.includes('network'))) {
+    console.debug('Network request failed silently:', event.reason.message);
+  }
+});
+
 // Force English language for the entire application
 document.documentElement.lang = 'en-US';
 document.documentElement.setAttribute('data-locale', 'en-US');
