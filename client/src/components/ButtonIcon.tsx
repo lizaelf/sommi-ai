@@ -183,7 +183,7 @@ export function ButtonIcon({
                 padding: "16px 20px",
                 backgroundColor: "transparent",
                 border: "none",
-                color: "white",
+                color: "#FF6B6B",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "14px",
                 cursor: "pointer",
@@ -193,7 +193,7 @@ export function ButtonIcon({
                 borderBottom: "none",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+                e.currentTarget.style.backgroundColor = "rgba(255, 107, 107, 0.1)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
@@ -201,11 +201,11 @@ export function ButtonIcon({
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path
-                  d="M1 4v6h6l-2-2c1.69-1.69 4.31-1.69 6 0s1.69 4.31 0 6c-1.69 1.69-4.31 1.69-6 0l-1.41 1.41c2.52 2.52 6.59 2.52 9.11 0s2.52-6.59 0-9.11-6.59-2.52-9.11 0L5 4H1z"
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
                   fill="currentColor"
                 />
               </svg>
-              Reset QR State
+              Delete Account
             </button>
           )}
 
