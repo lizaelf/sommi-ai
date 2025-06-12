@@ -119,12 +119,21 @@ export default function WineDetails() {
         }
       } else {
         // For wine details page, use the route parameter
-        const wine = DataSyncManager.getWineById(wineId);
-        if (wine) {
-          console.log(`WineDetails: Found wine:`, wine);
-          return wine;
+        if (wineId) {
+          const wine = DataSyncManager.getWineById(wineId);
+          if (wine) {
+            console.log(`WineDetails: Found wine:`, wine);
+            return wine;
+          } else {
+            console.log(`Wine ID ${wineId} not found in DataSyncManager`);
+          }
         } else {
-          console.log(`Wine ID ${wineId} not found in DataSyncManager`);
+          // For homepage without wine ID, load default wine
+          const wines = DataSyncManager.getUnifiedWineData();
+          if (wines.length > 0) {
+            console.log('Loading default wine for homepage:', wines[0]);
+            return wines[0];
+          }
         }
       }
       
