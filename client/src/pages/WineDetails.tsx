@@ -296,6 +296,232 @@ export default function WineDetails() {
                 </div>
               </div>
             )}
+
+            {/* Want more? Section */}
+            <div style={{ marginTop: "32px" }}>
+              <h2 style={{
+                fontFamily: "Lora, serif",
+                fontSize: "28px",
+                fontWeight: 400,
+                color: "white",
+                marginBottom: "20px",
+                margin: 0
+              }}>
+                Want more?
+              </h2>
+              
+              {wine?.buyAgainLink && (
+                <a 
+                  href={wine.buyAgainLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none" }}
+                >
+                  <button style={{
+                    width: "100%",
+                    backgroundColor: "white",
+                    color: "black",
+                    border: "none",
+                    borderRadius: "32px",
+                    padding: "16px 24px",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    marginTop: "20px"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f5f5f5";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "white";
+                  }}
+                  >
+                    Buy again
+                  </button>
+                </a>
+              )}
+            </div>
+
+            {/* We recommend Section */}
+            <div style={{ marginTop: "40px" }}>
+              <h2 style={{
+                fontFamily: "Lora, serif",
+                fontSize: "28px",
+                fontWeight: 400,
+                color: "white",
+                marginBottom: "24px",
+                margin: 0
+              }}>
+                We recommend
+              </h2>
+              
+              <div style={{
+                display: "flex",
+                gap: "16px",
+                overflowX: "auto",
+                paddingBottom: "8px"
+              }}>
+                {/* Wine Recommendation 1 - Estate Chardonnay */}
+                <div style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "20px",
+                  minWidth: "280px",
+                  border: "1px solid rgba(255, 255, 255, 0.1)"
+                }}>
+                  <div style={{
+                    width: "100%",
+                    height: "200px",
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: "12px",
+                    marginBottom: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
+                    <div style={{
+                      width: "60px",
+                      height: "140px",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      borderRadius: "4px"
+                    }} />
+                  </div>
+                  
+                  <h3 style={{
+                    fontFamily: "Lora, serif",
+                    fontSize: "18px",
+                    fontWeight: 400,
+                    color: "white",
+                    marginBottom: "8px",
+                    textAlign: "center"
+                  }}>
+                    2022 Estate Chardonnay
+                  </h3>
+                  
+                  <div style={{
+                    display: "flex",
+                    gap: "8px",
+                    justifyContent: "center",
+                    flexWrap: "wrap"
+                  }}>
+                    <span style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      fontSize: "12px",
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 500
+                    }}>
+                      95 VN
+                    </span>
+                    <span style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      fontSize: "12px",
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 500
+                    }}>
+                      93 JD
+                    </span>
+                    <span style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      fontSize: "12px",
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 500
+                    }}>
+                      93 WS
+                    </span>
+                  </div>
+                </div>
+
+                {/* Wine Recommendation 2 - Monte Bello Cabernet */}
+                <div style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "20px",
+                  minWidth: "280px",
+                  border: "1px solid rgba(255, 255, 255, 0.1)"
+                }}>
+                  <div style={{
+                    width: "100%",
+                    height: "200px",
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: "12px",
+                    marginBottom: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
+                    <div style={{
+                      width: "60px",
+                      height: "140px",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      borderRadius: "4px"
+                    }} />
+                  </div>
+                  
+                  <h3 style={{
+                    fontFamily: "Lora, serif",
+                    fontSize: "18px",
+                    fontWeight: 400,
+                    color: "white",
+                    marginBottom: "8px",
+                    textAlign: "center"
+                  }}>
+                    2021 Monte Bello Cabernet Sauvignon
+                  </h3>
+                  
+                  <div style={{
+                    display: "flex",
+                    gap: "8px",
+                    justifyContent: "center",
+                    flexWrap: "wrap"
+                  }}>
+                    <span style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      fontSize: "12px",
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 500
+                    }}>
+                      95 VN
+                    </span>
+                    <span style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      fontSize: "12px",
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 500
+                    }}>
+                      93 JD
+                    </span>
+                    <span style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      color: "white",
+                      padding: "4px 8px",
+                      borderRadius: "12px",
+                      fontSize: "12px",
+                      fontFamily: "Inter, sans-serif",
+                      fontWeight: 500
+                    }}>
+                      93 WS
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
