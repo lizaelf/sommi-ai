@@ -416,10 +416,10 @@ export default function WineDetails() {
             {/* Wine Recommendation 2 - Monte Bello */}
             <div style={{
               flex: "0 0 auto",
-              width: "240px",
+              width: "220px",
               backgroundColor: "rgba(255, 255, 255, 0.08)",
               borderRadius: "16px",
-              padding: "20px",
+              padding: "16px",
               border: "1px solid rgba(255, 255, 255, 0.12)"
             }}>
               <div style={{
