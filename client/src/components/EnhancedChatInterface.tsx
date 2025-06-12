@@ -1731,34 +1731,32 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               >
                 {showBuyButton && (
                   <>
-                    {hasSharedContact ? (
-                      <>
-                        <h1
-                          style={{
-                            ...typography.h1,
-                            color: "white",
-                            marginBottom: "24px",
-                            textAlign: "left",
-                          }}
-                        >Want more?</h1>
+                    <h1
+                      style={{
+                        ...typography.h1,
+                        color: "white",
+                        marginBottom: "24px",
+                        textAlign: "left",
+                      }}
+                    >Want more?</h1>
 
-                        {/* Buy again button */}
-                        <Button
-                          onClick={() => {
-                            if (currentWine?.buyAgainLink) {
-                              window.open(currentWine.buyAgainLink, '_blank');
-                            } else {
-                              console.log("No buy again link available");
-                            }
-                          }}
-                          variant="primary"
-                          style={{
-                            margin: "0 0 32px 0",
-                            width: "100%",
-                          }}
-                        >
-                          Buy again
-                        </Button>
+                    {/* Buy again button */}
+                    <Button
+                      onClick={() => {
+                        if (currentWine?.buyAgainLink) {
+                          window.open(currentWine.buyAgainLink, '_blank');
+                        } else {
+                          console.log("No buy again link available");
+                        }
+                      }}
+                      variant="primary"
+                      style={{
+                        margin: "0 0 32px 0",
+                        width: "100%",
+                      }}
+                    >
+                      Buy again
+                    </Button>
 
                         {/* Chat with AI Section */}
                         <div style={{ marginBottom: "32px" }}>
@@ -1882,25 +1880,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
                           </div>
                         )}
-                      </>
-                    ) : (
-                      // Show "Chat history" section when user hasn't shared contact info
-                      (<div
-                        style={{ textAlign: "center", marginBottom: "32px" }}
-                      >
-                        <h1
-                          style={{
-                            ...typography.h1,
-                            color: "white",
-                            margin: "0 0 24px 0",
-                            textAlign: "left",
-                          }}
-                        >
-                          Chat history
-                        </h1>
-
-                      </div>)
-                    )}
                   </>
                 )}
 
