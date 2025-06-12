@@ -297,20 +297,20 @@ export default function WineDetails() {
               </div>
             )}
 
-            {/* Want more? Section */}
-            <div style={{ marginTop: "32px" }}>
-              <h2 style={{
-                fontFamily: "Lora, serif",
-                fontSize: "28px",
-                fontWeight: 400,
-                color: "white",
-                marginBottom: "20px",
-                margin: 0
-              }}>
-                Want more?
-              </h2>
-              
-              {wine?.buyAgainLink ? (
+        {/* Want more? Section - Always visible */}
+        <div style={{ marginTop: "32px", paddingLeft: "24px", paddingRight: "24px" }}>
+          <h2 style={{
+            fontFamily: "Lora, serif",
+            fontSize: "28px",
+            fontWeight: 400,
+            color: "white",
+            marginBottom: "20px",
+            margin: 0
+          }}>
+            Want more?
+          </h2>
+          
+          {wine?.buyAgainLink ? (
                 <a 
                   href={wine.buyAgainLink}
                   target="_blank"
@@ -358,20 +358,20 @@ export default function WineDetails() {
                   Check back later for availability
                 </div>
               )}
-            </div>
+        </div>
 
-            {/* We recommend Section */}
-            <div style={{ marginTop: "40px" }}>
-              <h2 style={{
-                fontFamily: "Lora, serif",
-                fontSize: "28px",
-                fontWeight: 400,
-                color: "white",
-                marginBottom: "24px",
-                margin: 0
-              }}>
-                We recommend
-              </h2>
+        {/* We recommend Section - Always visible */}
+        <div style={{ marginTop: "40px", paddingLeft: "24px", paddingRight: "24px" }}>
+          <h2 style={{
+            fontFamily: "Lora, serif",
+            fontSize: "28px",
+            fontWeight: 400,
+            color: "white",
+            marginBottom: "24px",
+            margin: 0
+          }}>
+            We recommend
+          </h2>
               
               <div style={{
                 display: "flex",
@@ -540,6 +540,285 @@ export default function WineDetails() {
             </div>
           </div>
         )}
+
+        {/* Want more? Section - Always visible */}
+        <div style={{ marginTop: "32px", paddingLeft: "24px", paddingRight: "24px" }}>
+          <h2 style={{
+            fontFamily: "Lora, serif",
+            fontSize: "28px",
+            fontWeight: 400,
+            color: "white",
+            marginBottom: "20px",
+            margin: 0
+          }}>
+            Want more?
+          </h2>
+          
+          {wine?.buyAgainLink ? (
+            <a 
+              href={wine.buyAgainLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <button style={{
+                width: "100%",
+                backgroundColor: "white",
+                color: "black",
+                border: "none",
+                borderRadius: "32px",
+                padding: "16px 24px",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                marginTop: "20px"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#f5f5f5";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "white";
+              }}
+              >
+                Buy again
+              </button>
+            </a>
+          ) : (
+            <div style={{
+              width: "100%",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              color: "white",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: "32px",
+              padding: "16px 24px",
+              fontFamily: "Inter, sans-serif",
+              fontSize: "16px",
+              fontWeight: 500,
+              marginTop: "20px",
+              textAlign: "center"
+            }}>
+              Explore our collection
+            </div>
+          )}
+        </div>
+
+        {/* We recommend Section - Always visible */}
+        <div style={{ marginTop: "40px", paddingLeft: "24px", paddingRight: "24px" }}>
+          <h2 style={{
+            fontFamily: "Lora, serif",
+            fontSize: "28px",
+            fontWeight: 400,
+            color: "white",
+            marginBottom: "24px",
+            margin: 0
+          }}>
+            We recommend
+          </h2>
+          
+          <div style={{
+            display: "flex",
+            gap: "16px",
+            overflowX: "auto",
+            paddingBottom: "8px"
+          }}>
+            {/* Wine Recommendation 1 - Cabernet Sauvignon */}
+            <div style={{
+              minWidth: "200px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "16px",
+              padding: "16px",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <div style={{
+                width: "100%",
+                height: "120px",
+                backgroundColor: "rgba(139, 69, 19, 0.3)",
+                borderRadius: "8px",
+                marginBottom: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "24px",
+                color: "rgba(255, 255, 255, 0.8)",
+                backgroundImage: "linear-gradient(135deg, #8B4513 0%, #A0522D 100%)"
+              }}>
+                🍷
+              </div>
+              <h3 style={{
+                fontFamily: "Lora, serif",
+                fontSize: "16px",
+                fontWeight: 400,
+                color: "white",
+                margin: "0 0 8px 0",
+                lineHeight: "1.3"
+              }}>
+                Monte Bello Cabernet
+              </h3>
+              <p style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                color: "rgba(255, 255, 255, 0.7)",
+                margin: "0 0 12px 0"
+              }}>
+                Bold & structured
+              </p>
+              <button style={{
+                width: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                color: "white",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "24px",
+                padding: "8px 16px",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+              }}
+              >
+                View Details
+              </button>
+            </div>
+
+            {/* Wine Recommendation 2 - Pinot Noir */}
+            <div style={{
+              minWidth: "200px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "16px",
+              padding: "16px",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <div style={{
+                width: "100%",
+                height: "120px",
+                backgroundColor: "rgba(128, 0, 32, 0.3)",
+                borderRadius: "8px",
+                marginBottom: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "24px",
+                color: "rgba(255, 255, 255, 0.8)",
+                backgroundImage: "linear-gradient(135deg, #800020 0%, #B22222 100%)"
+              }}>
+                🍷
+              </div>
+              <h3 style={{
+                fontFamily: "Lora, serif",
+                fontSize: "16px",
+                fontWeight: 400,
+                color: "white",
+                margin: "0 0 8px 0",
+                lineHeight: "1.3"
+              }}>
+                Sonoma Pinot Noir
+              </h3>
+              <p style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                color: "rgba(255, 255, 255, 0.7)",
+                margin: "0 0 12px 0"
+              }}>
+                Elegant & smooth
+              </p>
+              <button style={{
+                width: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                color: "white",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "24px",
+                padding: "8px 16px",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+              }}
+              >
+                View Details
+              </button>
+            </div>
+
+            {/* Wine Recommendation 3 - Merlot */}
+            <div style={{
+              minWidth: "200px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "16px",
+              padding: "16px",
+              border: "1px solid rgba(255, 255, 255, 0.1)"
+            }}>
+              <div style={{
+                width: "100%",
+                height: "120px",
+                backgroundColor: "rgba(75, 0, 130, 0.3)",
+                borderRadius: "8px",
+                marginBottom: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "24px",
+                color: "rgba(255, 255, 255, 0.8)",
+                backgroundImage: "linear-gradient(135deg, #4B0082 0%, #663399 100%)"
+              }}>
+                🍷
+              </div>
+              <h3 style={{
+                fontFamily: "Lora, serif",
+                fontSize: "16px",
+                fontWeight: 400,
+                color: "white",
+                margin: "0 0 8px 0",
+                lineHeight: "1.3"
+              }}>
+                Napa Valley Merlot
+              </h3>
+              <p style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                color: "rgba(255, 255, 255, 0.7)",
+                margin: "0 0 12px 0"
+              }}>
+                Rich & velvety
+              </p>
+              <button style={{
+                width: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                color: "white",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "24px",
+                padding: "8px 16px",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+              }}
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Main Content Area */}
         <div>
