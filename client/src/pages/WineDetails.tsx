@@ -349,7 +349,23 @@ export default function WineDetails() {
         />
 
         {/* Want More and Recommendations Sections */}
-        <div style={{ marginTop: "80px" }}>
+        <div style={{ 
+          marginTop: "80px",
+          backgroundColor: "rgba(255, 0, 0, 0.1)", // Debug: red background
+          border: "2px solid red", // Debug: red border
+          minHeight: "200px",
+          padding: "20px"
+        }}>
+          {console.log('🔧 DEBUG: Wine object:', wine)}
+          {console.log('🔧 DEBUG: isScannedPage:', isScannedPage)}
+          {console.log('🔧 DEBUG: Current location:', window.location.href)}
+          
+          <div style={{ color: "white", marginBottom: "20px" }}>
+            DEBUG: Wine loaded: {wine ? 'YES' : 'NO'} | 
+            Scanned page: {isScannedPage ? 'YES' : 'NO'} | 
+            Wine ID: {wine?.id || 'None'}
+          </div>
+          
           <WantMoreSection wine={wine} />
           <WeRecommendSection wine={wine} />
         </div>
