@@ -38,6 +38,8 @@ export default function WineDetails() {
   // Determine if this is a scanned page (only /scanned routes) or wine details page
   const isScannedPage = location === '/scanned' || location.includes('/scanned?');
   
+  console.log('🔍 Route Debug:', { location, isScannedPage });
+  
   // Initialize interaction choice state from localStorage
   useEffect(() => {
     const choiceMade = Boolean(localStorage.getItem('interaction_choice_made'));
