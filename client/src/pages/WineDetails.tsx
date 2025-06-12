@@ -250,29 +250,20 @@ export default function WineDetails() {
           </div>
         )}
 
-        {/* Want more? Section - Always visible */}
+        {/* Want more? Section */}
         <div style={{ 
-          marginTop: "32px",
-          marginBottom: "32px", 
+          marginTop: "48px",
           paddingLeft: "24px", 
-          paddingRight: "24px",
-          paddingTop: "32px",
-          paddingBottom: "32px",
-          border: "3px solid red",
-          backgroundColor: "rgba(255, 0, 0, 0.3)",
-          position: "relative",
-          zIndex: 10
+          paddingRight: "24px"
         }}>
           <h2 style={{
             fontFamily: "Lora, serif",
             fontSize: "32px",
-            fontWeight: 600,
+            fontWeight: 400,
             color: "white",
-            marginBottom: "24px",
-            textAlign: "center",
-            textShadow: "2px 2px 4px rgba(0,0,0,0.8)"
+            marginBottom: "24px"
           }}>
-            🍷 Want more? 🍷
+            Want more?
           </h2>
           
           {wine?.buyAgainLink ? (
@@ -288,70 +279,56 @@ export default function WineDetails() {
                 color: "black",
                 border: "none",
                 borderRadius: "32px",
-                padding: "20px 24px",
+                padding: "16px 24px",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "18px",
-                fontWeight: 600,
+                fontSize: "16px",
+                fontWeight: 500,
                 cursor: "pointer",
-                transition: "all 0.2s ease",
-                marginTop: "20px",
-                boxShadow: "0 4px 8px rgba(0,0,0,0.3)"
+                transition: "all 0.2s ease"
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#f5f5f5";
-                e.currentTarget.style.transform = "scale(1.02)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "white";
-                e.currentTarget.style.transform = "scale(1)";
               }}
               >
-                🛒 Buy Again 🛒
+                Buy again
               </button>
             </a>
           ) : (
             <div style={{
               width: "100%",
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
               color: "white",
-              border: "2px solid rgba(255, 255, 255, 0.4)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
               borderRadius: "32px",
-              padding: "20px 24px",
+              padding: "16px 24px",
               fontFamily: "Inter, sans-serif",
-              fontSize: "18px",
-              fontWeight: 600,
-              marginTop: "20px",
-              textAlign: "center",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.3)"
+              fontSize: "16px",
+              fontWeight: 500,
+              textAlign: "center"
             }}>
-              🍾 Explore our collection 🍾
+              Explore our collection
             </div>
           )}
         </div>
 
-        {/* We recommend Section - Always visible */}
+        {/* We recommend Section */}
         <div style={{ 
-          marginTop: "40px",
+          marginTop: "48px",
           marginBottom: "60px", 
           paddingLeft: "24px", 
-          paddingRight: "24px",
-          paddingTop: "32px",
-          paddingBottom: "32px",
-          border: "3px solid blue",
-          backgroundColor: "rgba(0, 0, 255, 0.3)",
-          position: "relative",
-          zIndex: 10
+          paddingRight: "24px"
         }}>
           <h2 style={{
             fontFamily: "Lora, serif",
             fontSize: "32px",
-            fontWeight: 600,
+            fontWeight: 400,
             color: "white",
-            marginBottom: "24px",
-            textAlign: "center",
-            textShadow: "2px 2px 4px rgba(0,0,0,0.8)"
+            marginBottom: "24px"
           }}>
-            🍾 We recommend 🍾
+            We recommend
           </h2>
           
           <div style={{
@@ -360,200 +337,153 @@ export default function WineDetails() {
             overflowX: "auto",
             paddingBottom: "8px"
           }}>
-            {/* Wine Recommendation 1 - Cabernet Sauvignon */}
+            {/* Wine Recommendation 1 - Estate Chardonnay */}
             <div style={{
-              minWidth: "200px",
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              minWidth: "280px",
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
               borderRadius: "16px",
-              padding: "16px",
-              border: "1px solid rgba(255, 255, 255, 0.1)"
+              padding: "24px",
+              border: "1px solid rgba(255, 255, 255, 0.12)"
             }}>
               <div style={{
                 width: "100%",
-                height: "120px",
-                backgroundColor: "rgba(139, 69, 19, 0.3)",
-                borderRadius: "8px",
-                marginBottom: "12px",
+                height: "200px",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "12px",
+                marginBottom: "16px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "24px",
-                color: "rgba(255, 255, 255, 0.8)",
-                backgroundImage: "linear-gradient(135deg, #8B4513 0%, #A0522D 100%)"
+                backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')",
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center"
               }}>
-                🍷
               </div>
               <h3 style={{
-                fontFamily: "Lora, serif",
-                fontSize: "16px",
-                fontWeight: 400,
+                fontFamily: "Inter, sans-serif",
+                fontSize: "18px",
+                fontWeight: 600,
                 color: "white",
-                margin: "0 0 8px 0",
-                lineHeight: "1.3"
+                marginBottom: "16px",
+                lineHeight: "1.3",
+                textAlign: "center"
               }}>
-                Monte Bello Cabernet
+                2022 Estate Chardonnay
               </h3>
-              <p style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                color: "rgba(255, 255, 255, 0.7)",
-                margin: "0 0 12px 0"
+              <div style={{
+                display: "flex",
+                gap: "8px",
+                justifyContent: "center",
+                flexWrap: "wrap"
               }}>
-                Bold & structured
-              </p>
-              <button style={{
-                width: "100%",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                color: "white",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                borderRadius: "24px",
-                padding: "8px 16px",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
-              }}
-              >
-                View Details
-              </button>
+                <span style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.15)",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "16px",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  95 <span style={{ opacity: 0.7 }}>VN</span>
+                </span>
+                <span style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.15)",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "16px",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  93 <span style={{ opacity: 0.7 }}>JD</span>
+                </span>
+                <span style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.15)",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "16px",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  93 <span style={{ opacity: 0.7 }}>WS</span>
+                </span>
+              </div>
             </div>
 
-            {/* Wine Recommendation 2 - Pinot Noir */}
+            {/* Wine Recommendation 2 - Monte Bello */}
             <div style={{
-              minWidth: "200px",
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              minWidth: "280px",
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
               borderRadius: "16px",
-              padding: "16px",
-              border: "1px solid rgba(255, 255, 255, 0.1)"
+              padding: "24px",
+              border: "1px solid rgba(255, 255, 255, 0.12)"
             }}>
               <div style={{
                 width: "100%",
-                height: "120px",
-                backgroundColor: "rgba(128, 0, 32, 0.3)",
-                borderRadius: "8px",
-                marginBottom: "12px",
+                height: "200px",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "12px",
+                marginBottom: "16px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "24px",
-                color: "rgba(255, 255, 255, 0.8)",
-                backgroundImage: "linear-gradient(135deg, #800020 0%, #B22222 100%)"
+                backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')",
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center"
               }}>
-                🍷
               </div>
               <h3 style={{
-                fontFamily: "Lora, serif",
-                fontSize: "16px",
-                fontWeight: 400,
+                fontFamily: "Inter, sans-serif",
+                fontSize: "18px",
+                fontWeight: 600,
                 color: "white",
-                margin: "0 0 8px 0",
-                lineHeight: "1.3"
+                marginBottom: "16px",
+                lineHeight: "1.3",
+                textAlign: "center"
               }}>
-                Sonoma Pinot Noir
+                2021 Monte Bello Cabernet Sauvignon
               </h3>
-              <p style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                color: "rgba(255, 255, 255, 0.7)",
-                margin: "0 0 12px 0"
+              <div style={{
+                display: "flex",
+                gap: "8px",
+                justifyContent: "center",
+                flexWrap: "wrap"
               }}>
-                Elegant & smooth
-              </p>
-              <button style={{
-                width: "100%",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                color: "white",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                borderRadius: "24px",
-                padding: "8px 16px",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
-              }}
-              >
-                View Details
-              </button>
+                <span style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.15)",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "16px",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  95 <span style={{ opacity: 0.7 }}>VN</span>
+                </span>
+                <span style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.15)",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "16px",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  93 <span style={{ opacity: 0.7 }}>JD</span>
+                </span>
+                <span style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.15)",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "16px",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  93 <span style={{ opacity: 0.7 }}>WS</span>
+                </span>
+              </div>
             </div>
 
-            {/* Wine Recommendation 3 - Merlot */}
-            <div style={{
-              minWidth: "200px",
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
-              borderRadius: "16px",
-              padding: "16px",
-              border: "1px solid rgba(255, 255, 255, 0.1)"
-            }}>
-              <div style={{
-                width: "100%",
-                height: "120px",
-                backgroundColor: "rgba(75, 0, 130, 0.3)",
-                borderRadius: "8px",
-                marginBottom: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "24px",
-                color: "rgba(255, 255, 255, 0.8)",
-                backgroundImage: "linear-gradient(135deg, #4B0082 0%, #663399 100%)"
-              }}>
-                🍷
-              </div>
-              <h3 style={{
-                fontFamily: "Lora, serif",
-                fontSize: "16px",
-                fontWeight: 400,
-                color: "white",
-                margin: "0 0 8px 0",
-                lineHeight: "1.3"
-              }}>
-                Napa Valley Merlot
-              </h3>
-              <p style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                color: "rgba(255, 255, 255, 0.7)",
-                margin: "0 0 12px 0"
-              }}>
-                Rich & velvety
-              </p>
-              <button style={{
-                width: "100%",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                color: "white",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                borderRadius: "24px",
-                padding: "8px 16px",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
-              }}
-              >
-                View Details
-              </button>
-            </div>
+
           </div>
         </div>
 
