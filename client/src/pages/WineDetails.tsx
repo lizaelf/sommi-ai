@@ -250,6 +250,17 @@ export default function WineDetails() {
           </div>
         )}
 
+        {/* Main Content Area */}
+        <div style={{ marginTop: "40px", paddingBottom: "40px" }}>
+          <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
+            id: wine.id,
+            name: wine.name,
+            image: wine.image,
+            bottles: wine.bottles,
+            ratings: wine.ratings
+          } : null} />
+        </div>
+
         {/* Want more? Section */}
         <div style={{ 
           marginTop: "48px",
@@ -489,17 +500,6 @@ export default function WineDetails() {
 
 
           </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div style={{ marginTop: "80px", paddingBottom: "40px" }}>
-          <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
-            id: wine.id,
-            name: wine.name,
-            image: wine.image,
-            bottles: wine.bottles,
-            ratings: wine.ratings
-          } : null} />
         </div>
       </div>
       
