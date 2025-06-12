@@ -38,6 +38,28 @@ export interface IStorage {
 
 // Database storage implementation
 export class DatabaseStorage implements IStorage {
+  private static connectionCount = 0;
+  private static maxConnections = 3;
+  private static activeConnections = new Set<Promise<any>>();
+
+  private async executeWithLimit<T>(operation: () => Promise<T>): Promise<T> {
+    // Check connection limit
+    if (DatabaseStorage.connectionCount >= DatabaseStorage.maxConnections) {
+      throw new Error('Connection limit reached');
+    }
+
+    DatabaseStorage.connectionCount++;
+    const promise = operation();
+    DatabaseStorage.activeConnections.add(promise);
+
+    try {
+      const result = await promise;
+      return result;
+    } finally {
+      DatabaseStorage.connectionCount--;
+      DatabaseStorage.activeConnections.delete(promise);
+    }
+  }
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     const results = await db.select().from(users).where(eq(users.id, id));

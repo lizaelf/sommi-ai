@@ -338,19 +338,44 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Simple circuit breaker for database operations
+  let dbFailureCount = 0;
+  let lastFailureTime = 0;
+  const MAX_FAILURES = 3;
+  const CIRCUIT_BREAKER_TIMEOUT = 30000; // 30 seconds
+
+  function isCircuitOpen() {
+    if (dbFailureCount >= MAX_FAILURES) {
+      const timeSinceLastFailure = Date.now() - lastFailureTime;
+      return timeSinceLastFailure < CIRCUIT_BREAKER_TIMEOUT;
+    }
+    return false;
+  }
+
+  function recordFailure() {
+    dbFailureCount++;
+    lastFailureTime = Date.now();
+  }
+
+  function recordSuccess() {
+    dbFailureCount = 0;
+  }
+
   // Get all conversations
   app.get("/api/conversations", async (_req, res) => {
     try {
-      // Add timeout and retry logic for database connections
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-      
+      // Check circuit breaker
+      if (isCircuitOpen()) {
+        console.log('Database circuit breaker is open, returning empty array');
+        return res.json([]);
+      }
+
       const conversations = await storage.getAllConversations();
-      clearTimeout(timeoutId);
-      
+      recordSuccess();
       res.json(conversations);
     } catch (error) {
       console.error("Error fetching conversations:", error);
+      recordFailure();
       
       // Return empty array instead of error to prevent UI blocking
       res.json([]);
@@ -360,12 +385,14 @@ Format: Return only the description text, no quotes or additional formatting.`;
   // Get the most recent conversation
   app.get("/api/conversations/recent", async (_req, res) => {
     try {
-      // Add timeout for database connection
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      // Check circuit breaker
+      if (isCircuitOpen()) {
+        console.log('Database circuit breaker is open, returning null');
+        return res.json(null);
+      }
       
       const conversation = await storage.getMostRecentConversation();
-      clearTimeout(timeoutId);
+      recordSuccess();
       
       if (!conversation) {
         return res.json(null); // Return null instead of 404 to prevent UI errors
@@ -374,6 +401,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
       res.json(conversation);
     } catch (error) {
       console.error("Error fetching most recent conversation:", error);
+      recordFailure();
       // Return null instead of error to prevent UI blocking
       res.json(null);
     }
