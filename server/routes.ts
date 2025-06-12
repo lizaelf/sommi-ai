@@ -338,16 +338,25 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Simple circuit breaker for database operations
+  // Aggressive circuit breaker and rate limiter for database operations
   let dbFailureCount = 0;
   let lastFailureTime = 0;
-  const MAX_FAILURES = 3;
-  const CIRCUIT_BREAKER_TIMEOUT = 30000; // 30 seconds
+  let circuitOpen = false;
+  let activeDbRequests = 0;
+  const MAX_FAILURES = 1; // Trigger after first failure
+  const MAX_CONCURRENT_DB_REQUESTS = 1; // Only allow 1 concurrent DB request
+  const CIRCUIT_BREAKER_TIMEOUT = 120000; // 2 minutes
 
   function isCircuitOpen() {
-    if (dbFailureCount >= MAX_FAILURES) {
+    if (circuitOpen) {
       const timeSinceLastFailure = Date.now() - lastFailureTime;
-      return timeSinceLastFailure < CIRCUIT_BREAKER_TIMEOUT;
+      if (timeSinceLastFailure >= CIRCUIT_BREAKER_TIMEOUT) {
+        console.log('Circuit breaker timeout reached, attempting to reset');
+        circuitOpen = false;
+        dbFailureCount = 0;
+        return false;
+      }
+      return true;
     }
     return false;
   }
@@ -355,27 +364,44 @@ Format: Return only the description text, no quotes or additional formatting.`;
   function recordFailure() {
     dbFailureCount++;
     lastFailureTime = Date.now();
+    circuitOpen = true;
+    console.log(`Database failure recorded. Count: ${dbFailureCount}, Circuit opened`);
   }
 
   function recordSuccess() {
+    if (circuitOpen) {
+      console.log('Database success recorded, resetting circuit breaker');
+      circuitOpen = false;
+    }
     dbFailureCount = 0;
   }
 
   // Get all conversations
   app.get("/api/conversations", async (_req, res) => {
     try {
-      // Check circuit breaker
+      // Check circuit breaker and rate limit
       if (isCircuitOpen()) {
         console.log('Database circuit breaker is open, returning empty array');
         return res.json([]);
       }
 
-      const conversations = await storage.getAllConversations();
-      recordSuccess();
-      res.json(conversations);
+      if (activeDbRequests >= MAX_CONCURRENT_DB_REQUESTS) {
+        console.log('Too many concurrent database requests, returning empty array');
+        return res.json([]);
+      }
+
+      activeDbRequests++;
+      try {
+        const conversations = await storage.getAllConversations();
+        recordSuccess();
+        res.json(conversations);
+      } finally {
+        activeDbRequests--;
+      }
     } catch (error) {
       console.error("Error fetching conversations:", error);
       recordFailure();
+      activeDbRequests = Math.max(0, activeDbRequests - 1);
       
       // Return empty array instead of error to prevent UI blocking
       res.json([]);
@@ -385,24 +411,34 @@ Format: Return only the description text, no quotes or additional formatting.`;
   // Get the most recent conversation
   app.get("/api/conversations/recent", async (_req, res) => {
     try {
-      // Check circuit breaker
+      // Check circuit breaker and rate limit
       if (isCircuitOpen()) {
         console.log('Database circuit breaker is open, returning null');
         return res.json(null);
       }
-      
-      const conversation = await storage.getMostRecentConversation();
-      recordSuccess();
-      
-      if (!conversation) {
-        return res.json(null); // Return null instead of 404 to prevent UI errors
+
+      if (activeDbRequests >= MAX_CONCURRENT_DB_REQUESTS) {
+        console.log('Too many concurrent database requests, returning null');
+        return res.json(null);
       }
       
-      res.json(conversation);
+      activeDbRequests++;
+      try {
+        const conversation = await storage.getMostRecentConversation();
+        recordSuccess();
+        
+        if (!conversation) {
+          return res.json(null);
+        }
+        
+        res.json(conversation);
+      } finally {
+        activeDbRequests--;
+      }
     } catch (error) {
       console.error("Error fetching most recent conversation:", error);
       recordFailure();
-      // Return null instead of error to prevent UI blocking
+      activeDbRequests = Math.max(0, activeDbRequests - 1);
       res.json(null);
     }
   });
