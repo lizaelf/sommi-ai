@@ -10,6 +10,7 @@ import VoiceAssistant from "./VoiceAssistant";
 import WineBottleImage from "./WineBottleImage";
 import USFlagImage from "./USFlagImage";
 import Button from "./ui/Button";
+import WineRecommendations from "./WineRecommendations";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import typography from "@/styles/typography";
@@ -1759,6 +1760,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         >
                           Buy again
                         </Button>
+
+                        {/* Wine Recommendations Section */}
+                        <WineRecommendations currentWineId={selectedWine?.id} />
 
                         {/* Chat with AI Section */}
                         <div style={{ marginBottom: "32px" }}>
