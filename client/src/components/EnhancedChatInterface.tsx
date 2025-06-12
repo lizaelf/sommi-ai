@@ -50,9 +50,6 @@ interface SelectedWine {
     ws: number;
     abv: number;
   };
-  location?: string;
-  description?: string;
-  foodPairing?: string[];
 }
 
 interface EnhancedChatInterfaceProps {
@@ -66,31 +63,40 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 }) => {
   const [currentWine, setCurrentWine] = useState<any>(null);
 
-  // Load wine data from DataSyncManager
+  // Load current wine data from CRM or use selectedWine prop
   useEffect(() => {
-    const loadWineData = async () => {
-      try {
-        const wineData = await DataSyncManager.getWineById(1);
-        if (wineData) {
-          console.log('WineDetails: Found wine:', wineData);
-          setCurrentWine(wineData);
-        } else {
-          console.log('WineDetails: No wine found for ID 1');
-        }
-      } catch (error) {
-        console.error('WineDetails: Error loading wine data:', error);
-      }
-    };
-
-    if (!selectedWine) {
-      loadWineData();
-    } else {
+    if (selectedWine) {
       setCurrentWine(selectedWine);
+    } else {
+      // Get wine ID from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const wineId = urlParams.get('wine');
+      
+      if (wineId) {
+        // Load wine from unified data system
+        const unifiedWines = DataSyncManager.getUnifiedWineData();
+        const wine = unifiedWines.find((w: any) => w.id === parseInt(wineId));
+        if (wine) {
+          // Get full wine data from CRM
+          const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+          const fullWine = crmWines.find((w: any) => w.id === parseInt(wineId));
+          setCurrentWine(fullWine || wine);
+          return;
+        }
+      }
+      
+      // Fallback to first wine in CRM
+      const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+      const wine = crmWines.find((w: any) => w.id === 1) || crmWines[0];
+      if (wine) {
+        setCurrentWine(wine);
+      }
     }
   }, [selectedWine]);
-
+  // Get wine-specific content based on current wine
   const getWineHistory = () => {
-    if (currentWine?.description) {
+    if (currentWine && currentWine.description) {
+      console.log('🍷 Displaying wine description for:', currentWine.name, 'Description length:', currentWine.description.length);
       return currentWine.description;
     }
     console.log('⚠️ No wine description found, using fallback config');
@@ -217,29 +223,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   });
 
   // State to control showing chat input interface instead of contact form
-  const [showChatInput, setShowChatInput] = useState(() => {
-    return localStorage.getItem("hasSharedContact") === "true";
-  });
+  const [showChatInput, setShowChatInput] = useState(true);
 
-  // Add state for contact form
+  // State for contact bottom sheet - using same structure as Cellar page
   const [showContactSheet, setShowContactSheet] = useState(false);
-  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
+  const [animationState, setAnimationState] = useState<
+    "closed" | "opening" | "open" | "closing"
+  >("closed");
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-
-  // Create portal element on mount
-  useEffect(() => {
-    const element = document.createElement('div');
-    document.body.appendChild(element);
-    setPortalElement(element);
-
-    return () => {
-      if (element.parentNode) {
-        element.parentNode.removeChild(element);
-      }
-    };
-  }, []);
-
-  // Contact form state
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -254,69 +245,158 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     phone: "",
   });
 
+  const [selectedCountry, setSelectedCountry] = useState({
+    dial_code: "+1",
+    flag: "🇺🇸",
+    name: "United States",
+    code: "US",
+  });
+
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState({ code: "US", name: "United States", dial_code: "+1" });
-  const [filteredCountries] = useState([
-    { code: "US", name: "United States", dial_code: "+1" },
-    { code: "CA", name: "Canada", dial_code: "+1" },
-    { code: "GB", name: "United Kingdom", dial_code: "+44" },
-    { code: "FR", name: "France", dial_code: "+33" },
-    { code: "DE", name: "Germany", dial_code: "+49" },
-    { code: "IT", name: "Italy", dial_code: "+39" },
-    { code: "ES", name: "Spain", dial_code: "+34" },
-    { code: "AU", name: "Australia", dial_code: "+61" },
-    { code: "JP", name: "Japan", dial_code: "+81" },
-    { code: "CN", name: "China", dial_code: "+86" },
-  ]);
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
 
-  // Handle opening contact sheet
-  const handleOpenContactSheet = () => {
-    setShowContactSheet(true);
-    setAnimationState("opening");
-    setTimeout(() => setAnimationState("open"), 50);
-  };
+  // Set up portal element for contact bottom sheet
+  useEffect(() => {
+    const portal = document.createElement("div");
+    document.body.appendChild(portal);
+    setPortalElement(portal);
 
-  // Handle closing contact sheet
+    return () => {
+      document.body.removeChild(portal);
+    };
+  }, []);
+
   const handleCloseContactSheet = () => {
+    setShowContactSheet(false);
     setAnimationState("closing");
-    setTimeout(() => {
-      setAnimationState("closed");
-      setShowContactSheet(false);
-    }, 300);
+    setTimeout(() => setAnimationState("closed"), 300);
   };
 
-  // Enhanced content formatting with bold text support and list handling
-  const formatContent = (content: string) => {
-    if (!content) return <></>;
-
-    // Helper function to format text with bold support
-    const formatText = (text: string) => {
-      if (!text) return "";
-      
-      // Split by ** to find bold text
-      const parts = text.split(/\*\*(.*?)\*\*/g);
-      
-      return parts.map((part, index) => {
-        // Odd indices are the content between ** markers (bold text)
-        if (index % 2 === 1) {
-          return (
-            <strong key={index} style={{ fontWeight: 600 }}>
-              {part}
-            </strong>
-          );
-        }
-        return part;
-      });
+  // Form validation and handling from Cellar page
+  const validateForm = () => {
+    const newErrors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
     };
 
-    // Split content into lines
-    const lines = content.split('\n');
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    }
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every((error) => error === "");
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field as keyof typeof errors]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          phone: `${selectedCountry.dial_code}${formData.phone}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem("hasSharedContact", "true");
+        setHasSharedContact(true);
+        handleCloseContactSheet();
+
+        // Show success toast notification
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Contact saved successfully!
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "91px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+      } else {
+        console.error("Failed to save contact:", data);
+        if (data.errors) {
+          setErrors(data.errors);
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  // Simplified content formatter for lists and bold text
+  const formatContent = (content: string) => {
+    if (!content) return null;
+
+    // Handle bold text first
+    const formatText = (text: string) => {
+      const parts = text.split(/(\*\*.*?\*\*)/g);
+      return parts.map((part, i) =>
+        part.startsWith("**") && part.endsWith("**") ? (
+          <strong key={i}>{part.slice(2, -2)}</strong>
+        ) : (
+          part
+        ),
+      );
+    };
+
+    const lines = content.split("\n");
     const elements: React.ReactNode[] = [];
     let listItems: string[] = [];
 
     lines.forEach((line, i) => {
-      const isListItem = /^[-•*]\s/.test(line.trim()) || /^\d+\.\s/.test(line.trim());
-      
+      const isListItem = /^[-•*]\s|^\d+\.\s/.test(line.trim());
+
       if (isListItem) {
         listItems.push(line.trim().replace(/^[-•*]\s|^\d+\.\s/, ""));
       } else {
@@ -520,76 +600,201 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   block: "start",
                   inline: "nearest",
                 });
-
-                console.log("Maintained user question at top");
               }
             }
-          }, 500); // Allow time for AI response to render
+          }, 300);
         }
       }
     }
+    // On initial load, scroll to top to show beginning of page
+    else if (chatContainerRef.current && messages.length === 0) {
+      chatContainerRef.current.scrollTo({
+        top: 0,
+        behavior: "auto",
+      });
+    }
+  }, [messages.length]); // Only depend on messages.length to trigger when new messages are added
+
+  // Reset suggestions visibility when conversation changes
+  useEffect(() => {
+    if (messages.length === 0) {
+      setHideSuggestions(false);
+    }
   }, [messages.length]);
 
-  // Handle sending messages to the API
+  // Auto-conversation starter after 2 seconds of inactivity
+  useEffect(() => {
+    // Clear existing timer
+    if (inactivityTimer) {
+      clearTimeout(inactivityTimer);
+    }
+
+    // Only trigger if no messages exist and user hasn't been auto-prompted yet
+    if (messages.length === 0 && !hasTriggeredAutoQuestion && !isTyping) {
+      const timer = setTimeout(() => {
+        if (messages.length === 0 && !hasTriggeredAutoQuestion) {
+          console.log("Triggering automatic conversation starter after 2 seconds of inactivity");
+          setHasTriggeredAutoQuestion(true);
+          
+          const autoQuestions = [
+            "Tell me about this wine's flavor profile",
+            "What food pairs well with this wine?",
+            "What makes this wine special?",
+            "How should I serve this wine?",
+            "What's the story behind this wine?"
+          ];
+          
+          const randomQuestion = autoQuestions[Math.floor(Math.random() * autoQuestions.length)];
+          handleSendMessage(randomQuestion);
+        }
+      }, 2000); // 2 seconds
+      
+      setInactivityTimer(timer);
+    }
+
+    // Cleanup timer on unmount
+    return () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+      }
+    };
+  }, [messages.length, hasTriggeredAutoQuestion, isTyping]);
+
+  // Reset auto-question trigger when user manually sends a message
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'user') {
+        setHasTriggeredAutoQuestion(false);
+      }
+    }
+  }, [messages]);
+
+  // Listen for precomputed suggestion responses
+  useEffect(() => {
+    const handleImmediateResponse = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { message, audio } = customEvent.detail;
+      
+      // Add the precomputed response immediately to conversation
+      const immediateMessage: ClientMessage = {
+        ...message,
+        conversationId: currentConversationId || 0,
+        createdAt: new Date().toISOString()
+      };
+      
+      await addMessage(immediateMessage);
+      setIsTyping(false);
+      
+      // Handle audio playback if available
+      if (audio) {
+        try {
+          const audioUrl = URL.createObjectURL(audio);
+          const audioElement = new Audio(audioUrl);
+          
+          // Set up global audio reference for mute controls
+          (window as any).currentOpenAIAudio = audioElement;
+          
+          console.log("Playing precomputed TTS audio");
+          await audioElement.play();
+          
+          // Clean up URL when done and reset to Ask button state
+          audioElement.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+            (window as any).currentOpenAIAudio = null;
+            // Signal that suggestion playback ended to show Ask button
+            window.dispatchEvent(new CustomEvent('suggestionPlaybackEnded'));
+          };
+        } catch (error) {
+          console.warn("Failed to play precomputed audio:", error);
+          // If audio fails, still signal playback ended
+          window.dispatchEvent(new CustomEvent('suggestionPlaybackEnded'));
+        }
+      }
+    };
+
+    window.addEventListener('immediateResponse', handleImmediateResponse);
+    
+    return () => {
+      window.removeEventListener('immediateResponse', handleImmediateResponse);
+    };
+  }, [currentConversationId, addMessage]);
+
+  // Handle sending a message
   const handleSendMessage = async (content: string) => {
-    if (!content.trim() || isTyping) return;
+    if (content.trim() === "" || !currentConversationId) return;
+
+    // Hide suggestions after sending a message
+    setHideSuggestions(true);
+    setIsTyping(true);
 
     try {
-      console.log("Sending message:", content);
-      setIsTyping(true);
-      setHideSuggestions(true);
-
-      // Add the user's message immediately to the UI
-      const userMessage: ClientMessage = {
+      // Add user message to UI immediately
+      const tempUserMessage: ClientMessage = {
         id: Date.now(),
-        content: content.trim(),
+        content,
         role: "user",
         conversationId: currentConversationId,
         createdAt: new Date().toISOString(),
       };
 
-      addMessage(userMessage);
+      // Add message to the conversation
+      await addMessage(tempUserMessage);
 
-      // Prepare the request body for the API
+      // Debug log the wine data being sent
+      console.log("Sending wine data to API:", currentWine);
+      
+      // Make the API request - system prompt will be dynamically generated based on wine data
+      // Safari compatibility: ensure proper headers and body formatting
       const requestBody = {
-        message: content.trim(),
+        messages: [
+          { role: "user", content },
+        ],
         conversationId: currentConversationId,
-        wineData: currentWine,
+        wineData: currentWine, // Include wine data from CRM - this will generate dynamic system prompt
+        optimize_for_speed: true, // Additional flag to optimize for speed
       };
 
-      console.log("API request body:", requestBody);
+      console.log("Making API request with data:", requestBody);
 
-      // Try streaming if supported
-      if (isStreamingSupported()) {
-        console.log("Using streaming API");
+      // Check if streaming is enabled for first-token TTS
+      const enableStreaming = import.meta.env.VITE_ENABLE_STREAMING === 'true';
+      
+      if (enableStreaming && isStreamingSupported()) {
+        console.log("Starting real-time streaming with first-token TTS");
         
-        const streamingClient = createStreamingClient();
-        const eventSource = streamingClient.createEventSource('/api/chat/stream', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-          },
-          body: JSON.stringify(requestBody)
-        });
+        // Create streaming request with Server-Sent Events
+        const eventSource = new EventSource(`/api/chat-stream?${new URLSearchParams({
+          messages: JSON.stringify([{ role: "user", content }]),
+          conversationId: currentConversationId?.toString() || '',
+          wineData: JSON.stringify(currentWine),
+          optimize_for_speed: 'true'
+        })}`);
         
+        // Store the current event source for abort functionality
         setCurrentEventSource(eventSource);
         
         let streamingContent = '';
+        let firstTokenReceived = false;
         let assistantMessageId = Date.now() + 1;
         
         eventSource.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            console.log('Streaming event received:', data);
             
             switch (data.type) {
-              case 'start':
-                console.log("Streaming started");
-                streamingContent = data.content || '';
+              case 'first_token':
+                console.log(`First token received in ${data.latency?.toFixed(2)}ms:`, data.content);
+                streamingContent = data.content;
+                firstTokenReceived = true;
                 
-                // Create initial message in UI
+                // Start TTS with first token for maximum responsiveness
+                if (data.start_tts && window.voiceAssistant?.speakResponse) {
+                  console.log("Starting immediate TTS with first token");
+                  window.voiceAssistant.speakResponse(data.content);
+                }
+                
+                // Create initial assistant message
                 const initialMessage: ClientMessage = {
                   id: assistantMessageId,
                   content: streamingContent,
@@ -693,52 +898,54 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
         setLatestMessageId(assistantMessage.id);
         (window as any).lastAssistantMessageText = assistantMessage.content;
-
-        addMessage(assistantMessage);
-
-        // Auto-play TTS if enabled and voice assistant is available
-        if (window.voiceAssistant?.speakResponse) {
-          await window.voiceAssistant.speakResponse(assistantMessage.content);
-        }
-
-        // Trigger unmute button to show after response is ready
+        await addMessage(assistantMessage);
         window.dispatchEvent(new CustomEvent('showUnmuteButton'));
+        console.log("Response received - autoplay disabled, user must click to listen");
       }
+
+      // Refresh all messages
+      refetchMessages();
     } catch (error) {
-      console.error("Error sending message:", error);
-      
-      // Add error message to UI to provide user feedback
-      const errorMessage: ClientMessage = {
-        id: Date.now() + 1,
-        content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
-        role: "assistant",
-        conversationId: currentConversationId,
-        createdAt: new Date().toISOString(),
-      };
-      
-      addMessage(errorMessage);
-      
+      console.error("Error in chat request:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined
+      });
       toast({
-        title: "Connection Error",
-        description: "Failed to send message. Please try again.",
+        title: "Error",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
         variant: "destructive",
       });
     } finally {
       setIsTyping(false);
+      setCurrentEventSource(null);
     }
   };
 
-  // Cleanup event source on unmount or when starting new conversation
+  // Abort ongoing conversation when component unmounts or conversation changes
+  useEffect(() => {
+    return () => {
+      if (currentEventSource) {
+        console.log("Aborting ongoing conversation due to component cleanup");
+        currentEventSource.close();
+        setCurrentEventSource(null);
+      }
+    };
+  }, [currentEventSource]);
+
+  // Global function to abort conversation when bottom sheet closes
   useEffect(() => {
     const abortConversation = () => {
       if (currentEventSource) {
+        console.log("Aborting conversation due to bottom sheet close");
         currentEventSource.close();
         setCurrentEventSource(null);
         setIsTyping(false);
       }
     };
-    
-    // Listen for abort events
+
+    // Listen for bottom sheet close events
     window.addEventListener('abortConversation', abortConversation);
     
     return () => {
@@ -841,139 +1048,155 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               {/* Wine ratings section */}
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "16px",
-                  alignItems: "center",
+                  width: "100%",
+                  height: "100%",
                   justifyContent: "center",
-                  padding: "20px",
+                  alignItems: "center",
+                  gap: 20,
+                  display: "flex",
                   position: "relative",
                   zIndex: 2,
-                  marginBottom: "40px",
+                  padding: "0 20px",
+                  marginBottom: "0",
                 }}
               >
-                {/* Vinous */}
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "6px",
+                    alignItems: "baseline",
+                    gap: 4,
                   }}
                 >
-                  <span
+                  <div
                     style={{
+                      justifyContent: "center",
+                      display: "flex",
+                      color: "white",
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.num,
+                    }}
+                  >
+                    {currentWine ? currentWine.ratings.vn : 95}
+                  </div>
+                  <div
+                    style={{
+                      justifyContent: "center",
+                      display: "flex",
                       color: "rgba(255, 255, 255, 0.60)",
-                      ...typography.body2R,
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.body1R,
                     }}
                   >
                     VN
-                  </span>
-                  <span
-                    style={{
-                      color: "white",
-                      ...typography.h3,
-                      lineHeight: "20px",
-                    }}
-                  >
-                    {selectedWine ? selectedWine.ratings.vn : currentWine?.ratings.vn || 95}
-                  </span>
+                  </div>
                 </div>
-
-                {/* Jeb Dunnuck */}
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "6px",
+                    alignItems: "baseline",
+                    gap: 4,
                   }}
                 >
-                  <span
+                  <div
                     style={{
+                      justifyContent: "center",
+                      display: "flex",
+                      color: "white",
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.num,
+                    }}
+                  >
+                    {currentWine ? currentWine.ratings.jd : 93}
+                  </div>
+                  <div
+                    style={{
+                      justifyContent: "center",
+                      display: "flex",
                       color: "rgba(255, 255, 255, 0.60)",
-                      ...typography.body2R,
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.body1R,
                     }}
                   >
                     JD
-                  </span>
-                  <span
-                    style={{
-                      color: "white",
-                      ...typography.h3,
-                      lineHeight: "20px",
-                    }}
-                  >
-                    {selectedWine ? selectedWine.ratings.jd : currentWine?.ratings.jd || 93}
-                  </span>
+                  </div>
                 </div>
-
-                {/* Wine Spectator */}
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "6px",
+                    alignItems: "baseline",
+                    gap: 4,
                   }}
                 >
-                  <span
+                  <div
                     style={{
+                      justifyContent: "center",
+                      display: "flex",
+                      color: "white",
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.num,
+                    }}
+                  >
+                    {currentWine ? currentWine.ratings.ws : 93}
+                  </div>
+                  <div
+                    style={{
+                      justifyContent: "center",
+                      display: "flex",
                       color: "rgba(255, 255, 255, 0.60)",
-                      ...typography.body2R,
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.body1R,
                     }}
                   >
                     WS
-                  </span>
-                  <span
-                    style={{
-                      color: "white",
-                      ...typography.h3,
-                      lineHeight: "20px",
-                    }}
-                  >
-                    {selectedWine ? selectedWine.ratings.ws : currentWine?.ratings.ws || 92}
-                  </span>
+                  </div>
                 </div>
-
-                {/* ABV */}
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "6px",
+                    alignItems: "baseline",
+                    gap: 4,
                   }}
                 >
-                  <span
+                  <div
                     style={{
+                      justifyContent: "center",
+                      display: "flex",
+                      color: "white",
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.num,
+                    }}
+                  >
+                    {currentWine ? `${currentWine.ratings.abv}%` : '14.3%'}
+                  </div>
+                  <div
+                    style={{
+                      justifyContent: "center",
+                      display: "flex",
                       color: "rgba(255, 255, 255, 0.60)",
-                      ...typography.body2R,
+                      wordWrap: "break-word",
+                      height: "16px",
+                      ...typography.body1R,
                     }}
                   >
                     ABV
-                  </span>
-                  <span
-                    style={{
-                      color: "white",
-                      ...typography.h3,
-                      lineHeight: "20px",
-                    }}
-                  >
-                    {selectedWine ? `${selectedWine.ratings.abv}%` : currentWine?.ratings.abv ? `${currentWine.ratings.abv}%` : "14.8%"}
-                  </span>
+                  </div>
                 </div>
               </div>
 
-              {/* History Section */}
+              {/* Historic Heritage Section */}
               <div
                 style={{
                   width: "100%",
                   padding: "0 20px",
+                  marginTop: "48px",
                   marginBottom: "20px",
-                  textAlign: "left",
-                  position: "relative",
-                  zIndex: 2,
                 }}
               >
                 <p
@@ -1100,14 +1323,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   {expandedItem === "redMeat" && (
                     <div
                       style={{
-                        padding: "0 0 20px 0",
+                        padding: "0 0 20px 0", // Remove left padding
                         color: "white",
-                        ...typography.body,
+                        ...typography.body, // Using Body text style as requested
                       }}
+                      className="pl-[0px] pr-[0px]"
                     >
-                      <p style={{ margin: "0 0 12px 0", color: "rgba(255, 255, 255, 0.8)" }}>
-                        {getFoodPairingContent().description}
-                      </p>
                       <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         {getFoodPairingContent().dishes.map((dish: string, index: number) => (
                           <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
@@ -1116,14 +1337,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           </div>
                         ))}
                       </div>
-                      <p style={{ margin: "12px 0 0 0", color: "rgba(255, 255, 255, 0.8)" }}>
-                        {getFoodPairingContent().conclusion}
-                      </p>
                     </div>
                   )}
                 </div>
 
-                {/* Cheese Pairing - Expandable */}
+                {/* Cheese Pairings - Expandable */}
                 <div
                   onClick={() => {
                     // Toggle expanded state for this item
@@ -1164,47 +1382,28 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     >
                       <span style={{ fontSize: "24px" }}>🧀</span>
                       <span style={{ color: "white", ...typography.body }}>
-                        Cheese
+                        Cheese Pairings
                       </span>
                     </div>
-                    <div
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
+                        transform:
+                          expandedItem === "cheese"
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                        transition: "transform 0.3s ease",
                       }}
                     >
-                      <span
-                        style={{
-                          color: "black",
-                          backgroundColor: "#e0e0e0",
-                          padding: "6px 14px",
-                          borderRadius: "999px",
-                          ...typography.buttonPlus1,
-                        }}
-                      >
-                        Great match
-                      </span>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          transform:
-                            expandedItem === "cheese"
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
-                          transition: "transform 0.3s ease",
-                        }}
-                      >
-                        <path
-                          d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
-                          fill="white"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
+                        fill="white"
+                      />
+                    </svg>
                   </div>
 
                   {/* Expanded content - only visible when expanded */}
@@ -1216,9 +1415,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         ...typography.body,
                       }}
                     >
-                      <p style={{ margin: "0 0 12px 0", color: "rgba(255, 255, 255, 0.8)" }}>
-                        {getCheesePairingContent().description}
-                      </p>
                       <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                         {getCheesePairingContent().cheeses.map((cheese: string, index: number) => (
                           <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
@@ -1227,17 +1423,17 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           </div>
                         ))}
                       </div>
-                      <p style={{ margin: "12px 0 0 0", color: "rgba(255, 255, 255, 0.8)" }}>
-                        {getCheesePairingContent().conclusion}
-                      </p>
                     </div>
                   )}
                 </div>
 
-                {/* Vegetarian Pairing - Expandable */}
+                {/* Vegetarian Options - Expandable */}
                 <div
                   onClick={() => {
-                    setExpandedItem(expandedItem === "vegetarian" ? null : "vegetarian");
+                    // Toggle expanded state for this item
+                    setExpandedItem(
+                      expandedItem === "vegetarian" ? null : "vegetarian",
+                    );
                   }}
                   style={{
                     backgroundColor: "#191919",
@@ -1272,47 +1468,28 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     >
                       <span style={{ fontSize: "24px" }}>🥗</span>
                       <span style={{ color: "white", ...typography.body }}>
-                        Vegetarian
+                        Vegetarian Options
                       </span>
                     </div>
-                    <div
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
+                        transform:
+                          expandedItem === "vegetarian"
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                        transition: "transform 0.3s ease",
                       }}
                     >
-                      <span
-                        style={{
-                          color: "black",
-                          backgroundColor: "#e0e0e0",
-                          padding: "6px 14px",
-                          borderRadius: "999px",
-                          ...typography.buttonPlus1,
-                        }}
-                      >
-                        Good match
-                      </span>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          transform:
-                            expandedItem === "vegetarian"
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
-                          transition: "transform 0.3s ease",
-                        }}
-                      >
-                        <path
-                          d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
-                          fill="white"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
+                        fill="white"
+                      />
+                    </svg>
                   </div>
 
                   {/* Expanded content - only visible when expanded */}
@@ -1544,7 +1721,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 </div>
               )}
 
-              {/* Conversation Section - Want more? section always visible when showBuyButton is true */}
+              {/* Conversation Section */}
               <div
                 style={{
                   width: "100%",
@@ -1554,153 +1731,175 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               >
                 {showBuyButton && (
                   <>
-                    <h1
-                      style={{
-                        ...typography.h1,
-                        color: "white",
-                        marginBottom: "24px",
-                        textAlign: "left",
-                      }}
-                    >Want more?</h1>
+                    {hasSharedContact ? (
+                      <>
+                        <h1
+                          style={{
+                            ...typography.h1,
+                            color: "white",
+                            marginBottom: "24px",
+                            textAlign: "left",
+                          }}
+                        >Want more?</h1>
 
-                    {/* Buy again button */}
-                    <Button
-                      onClick={() => {
-                        if (currentWine?.buyAgainLink) {
-                          window.open(currentWine.buyAgainLink, '_blank');
-                        } else {
-                          console.log("No buy again link available");
-                        }
-                      }}
-                      variant="primary"
-                      style={{
-                        margin: "0 0 32px 0",
-                        width: "100%",
-                      }}
-                    >
-                      Buy again
-                    </Button>
+                        {/* Buy again button */}
+                        <Button
+                          onClick={() => {
+                            if (currentWine?.buyAgainLink) {
+                              window.open(currentWine.buyAgainLink, '_blank');
+                            } else {
+                              console.log("No buy again link available");
+                            }
+                          }}
+                          variant="primary"
+                          style={{
+                            margin: "0 0 32px 0",
+                            width: "100%",
+                          }}
+                        >
+                          Buy again
+                        </Button>
 
-                    {/* Chat with AI Section */}
-                    <div style={{ marginBottom: "32px" }}>
-                      <h1
-                        style={{
-                          ...typography.h1,
-                          color: "white",
-                          marginBottom: "16px",
-                          textAlign: "left",
-                        }}
-                      >
-                        Chat
-                      </h1>
-                      
-                      {/* Show recent conversation messages */}
-                      {messages.length > 0 && (
-                        <div style={{ marginBottom: "16px" }}>
-                          {(() => {
-                            // Show last 2-3 conversation exchanges (4-6 messages)
-                            const recentMessages = messages.slice(-6);
-                            
-                            return recentMessages.map((message: any, index: number) => (
-                              <div
-                                key={`recent-${message.id}-${index}`}
-                                style={{
-                                  display: "flex",
-                                  justifyContent: message.role === "user" ? "flex-end" : "flex-start",
-                                  width: "100%",
-                                  marginBottom: "12px",
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    backgroundColor: message.role === "user" ? "#F5F5F5" : "transparent",
-                                    borderRadius: "16px",
-                                    padding: message.role === "user" ? "12px 16px" : "12px 0",
-                                    width: message.role === "user" ? "fit-content" : "100%",
-                                    maxWidth: message.role === "user" ? "80%" : "100%",
-                                  }}
-                                >
-                                  {message.role === "assistant" ? (
-                                    <div
-                                      style={{
-                                        ...typography.body,
-                                        color: "#DBDBDB",
-                                      }}
-                                    >
-                                      {formatContent(message.content)}
-                                    </div>
-                                  ) : (
-                                    <div
-                                      style={{
-                                        ...typography.body,
-                                        color: "#000000",
-                                      }}
-                                    >
-                                      {formatContent(message.content)}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            ));
-                          })()}
-                          
-                          {/* View full conversation button */}
-                          <Button
-                            onClick={() => setLocation("/wine/conversation")}
-                            variant="secondary"
+                        {/* Chat with AI Section */}
+                        <div style={{ marginBottom: "32px" }}>
+                          <h1
                             style={{
-                              height: "48px",
-                              margin: "8px 0 0 0",
-                              width: "100%",
-                            }}
-                          >View all</Button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Discussion Summary */}
-                    {messages.length > 0 && (
-                      <div style={{ marginBottom: "32px" }}>
-                        {(() => {
-                          // Generate a comprehensive summary based on the conversation
-                          const summaryText = messages.length > 0 
-                            ? "Based on your conversation, you've explored the unique characteristics, flavor profile, and pairing possibilities of this exceptional wine. The discussion covered various aspects including its distinctive terroir, winemaking traditions, and what makes it a standout choice for wine enthusiasts. Your questions and our AI sommelier's responses have provided valuable insights into this wine's complexity and versatility."
-                            : "This wine offers a rich tapestry of flavors and aromas that reflect its prestigious terroir and traditional winemaking methods. From its complex tasting profile to perfect food pairings, this bottle represents the finest expression of its varietal and region.";
-
-                          return (
-                            <div>
-                              {/* Hide summary text on scanned page */}
-                              {!showBuyButton && (
-                                <p
-                                  style={{
-                                    ...typography.body,
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    lineHeight: "1.6",
-                                    margin: "0",
-                                  }}
-                                >
-                                  {summaryText}
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })()}
-
-                        {/* Show whole dialog button - hide on scanned page */}
-                        {!showBuyButton && (
-                          <Button
-                            onClick={() => setLocation("/wine/conversation")}
-                            variant="secondary"
-                            style={{
-                              height: "56px",
-                              width: "100%",
+                              ...typography.h1,
+                              color: "white",
+                              marginBottom: "16px",
+                              textAlign: "left",
                             }}
                           >
-                            Show whole dialog
-                          </Button>
-                        )}
+                            Chat
+                          </h1>
+                          
+                          {/* Show recent conversation messages */}
+                          {messages.length > 0 && (
+                            <div style={{ marginBottom: "16px" }}>
+                              {(() => {
+                                // Show last 2-3 conversation exchanges (4-6 messages)
+                                const recentMessages = messages.slice(-6);
+                                
+                                return recentMessages.map((message: any, index: number) => (
+                                  <div
+                                    key={`recent-${message.id}-${index}`}
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: message.role === "user" ? "flex-end" : "flex-start",
+                                      width: "100%",
+                                      marginBottom: "12px",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        backgroundColor: message.role === "user" ? "#F5F5F5" : "transparent",
+                                        borderRadius: "16px",
+                                        padding: message.role === "user" ? "12px 16px" : "12px 0",
+                                        width: message.role === "user" ? "fit-content" : "100%",
+                                        maxWidth: message.role === "user" ? "80%" : "100%",
+                                      }}
+                                    >
+                                      {message.role === "assistant" ? (
+                                        <div
+                                          style={{
+                                            ...typography.body,
+                                            color: "#DBDBDB",
+                                          }}
+                                        >
+                                          {formatContent(message.content)}
+                                        </div>
+                                      ) : (
+                                        <div
+                                          style={{
+                                            ...typography.body,
+                                            color: "#000000",
+                                          }}
+                                        >
+                                          {formatContent(message.content)}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ));
+                              })()}
+                              
+                              {/* View full conversation button */}
+                              <Button
+                                onClick={() => setLocation("/wine/conversation")}
+                                variant="secondary"
+                                style={{
+                                  height: "48px",
+                                  margin: "8px 0 0 0",
+                                  width: "100%",
+                                }}
+                              >View all</Button>
+                            </div>
+                          )}
+                        </div>
 
-                      </div>
+                        {/* Discussion Summary */}
+                        {messages.length > 0 && (
+                          <div style={{ marginBottom: "32px" }}>
+                            {(() => {
+                              // Generate a comprehensive summary based on the conversation
+                              const summaryText = messages.length > 0 
+                                ? "Based on your conversation, you've explored the unique characteristics, flavor profile, and pairing possibilities of this exceptional wine. The discussion covered various aspects including its distinctive terroir, winemaking traditions, and what makes it a standout choice for wine enthusiasts. Your questions and our AI sommelier's responses have provided valuable insights into this wine's complexity and versatility."
+                                : "This wine offers a rich tapestry of flavors and aromas that reflect its prestigious terroir and traditional winemaking methods. From its complex tasting profile to perfect food pairings, this bottle represents the finest expression of its varietal and region.";
+
+                              return (
+                                <div>
+                                  {/* Hide summary text on scanned page */}
+                                  {!showBuyButton && (
+                                    <p
+                                      style={{
+                                        ...typography.body,
+                                        color: "rgba(255, 255, 255, 0.8)",
+                                        lineHeight: "1.6",
+                                        margin: "0",
+                                      }}
+                                    >
+                                      {summaryText}
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            })()}
+
+                            {/* Show whole dialog button - hide on scanned page */}
+                            {!showBuyButton && (
+                              <Button
+                                onClick={() => setLocation("/wine/conversation")}
+                                variant="secondary"
+                                style={{
+                                  height: "56px",
+                                  width: "100%",
+                                }}
+                              >
+                                Show whole dialog
+                              </Button>
+                            )}
+
+
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      // Show "Chat history" section when user hasn't shared contact info
+                      (<div
+                        style={{ textAlign: "center", marginBottom: "32px" }}
+                      >
+                        <h1
+                          style={{
+                            ...typography.h1,
+                            color: "white",
+                            margin: "0 0 24px 0",
+                            textAlign: "left",
+                          }}
+                        >
+                          Chat history
+                        </h1>
+
+                      </div>)
                     )}
                   </>
                 )}
@@ -1756,82 +1955,171 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 >
                                   <span
                                     style={{
-                                      color: "rgba(255, 255, 255, 0.7)",
+                                      color: "rgba(255, 255, 255, 0.8)",
                                       fontSize: "12px",
                                       fontWeight: 500,
-                                      textTransform: "uppercase",
-                                      letterSpacing: "0.5px",
+                                      fontFamily: "Inter, sans-serif",
                                     }}
                                   >
-                                    {new Date(dateKey).toLocaleDateString("en-US", {
-                                      weekday: "long",
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
+                                    {new Date(dateKey).toLocaleDateString('en-US', {
+                                      weekday: 'long',
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric'
                                     })}
                                   </span>
                                 </div>
                               </div>
 
                               {/* Messages for this date */}
-                              {dayMessages.map((message: any, messageIndex: number) => (
-                                <ChatMessage
-                                  key={`${dateKey}-${message.id}-${messageIndex}`}
-                                  message={message}
-                                  isLatest={message.id === latestMessageId}
-                                  formatContent={formatContent}
-                                />
+                              {dayMessages.map((message: any, msgIndex: number) => (
+                                <div
+                                  key={`${message.id}-${message.originalIndex}`}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent:
+                                      message.role === "user"
+                                        ? "flex-end"
+                                        : "flex-start",
+                                    width: "100%",
+                                    marginBottom: "12px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      backgroundColor:
+                                        message.role === "user"
+                                          ? "#F5F5F5"
+                                          : "transparent",
+                                      borderRadius: "16px",
+                                      padding: "16px",
+                                      width:
+                                        message.role === "user"
+                                          ? "fit-content"
+                                          : "100%",
+                                      maxWidth:
+                                        message.role === "user" ? "80%" : "100%",
+                                    }}
+                                    data-role={message.role}
+                                  >
+                                    {message.role === "assistant" ? (
+                                      <div
+                                        style={{
+                                          color: "#DBDBDB",
+                                          fontFamily: "Inter, system-ui, sans-serif",
+                                          fontSize: "16px",
+                                          lineHeight: "1.6",
+                                        }}
+                                      >
+                                        {formatContent(message.content)}
+                                      </div>
+                                    ) : (
+                                      <div
+                                        style={{
+                                          color: "#000000",
+                                          fontFamily: "Inter, system-ui, sans-serif",
+                                          fontSize: "16px",
+                                          lineHeight: "1.6",
+                                        }}
+                                      >
+                                        {formatContent(message.content)}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               ))}
                             </div>
                           ));
                         })()}
+                        {/* Back to Summary Button */}
+                        <div
+                          style={{
+                            textAlign: "center",
+                            marginBottom: "20px",
+                            paddingTop: "20px",
+                          }}
+                        >
+                          <Button
+                            onClick={() => setShowFullConversation(false)}
+                            variant="secondary"
+                            style={{
+                              height: "56px",
+                              width: "100%",
+                              maxWidth: "320px",
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                            }}
+                          >
+                            Back to Summary
+                          </Button>
+                        </div>
                       </>)
                     ) : (
-                      // Show only the most recent messages (default view)
-                      messages.slice(-4).map((message: any, index: number) => (
-                        <ChatMessage
-                          key={`${message.id}-${index}`}
-                          message={message}
-                          isLatest={message.id === latestMessageId}
-                          formatContent={formatContent}
-                        />
-                      ))
-                    )
-                  ) : (
-                    // Loading state when no messages
-                    <div className="flex items-center justify-center py-8">
-                      <div className="text-center">
-                        <div className="typing-indicator mb-4">
-                          <span></span>
-                          <span></span>
-                          <span></span>
-                        </div>
-                        <p className="text-gray-500 text-sm">Initializing conversation...</p>
-                      </div>
-                    </div>
-                  )}
+                      // Show summary
+                      ((() => {
+                        // Generate summary content for 3 main topics
+                        const summaryTopics = [
+                          {
+                            title: "Tasting Profile",
+                            summary:
+                              "Discover the complex flavors and aromas that make this wine unique, from initial notes to the lingering finish.",
+                          },
+                          {
+                            title: "Food Pairing",
+                            summary:
+                              "Learn which dishes complement this wine best and how to create perfect pairings for your dining experience.",
+                          },
+                          {
+                            title: "Wine Origin",
+                            summary:
+                              "Explore the terroir, region, and winemaking traditions that shaped this bottle's distinctive character.",
+                          },
+                        ];
 
-                  {/* Typing indicator */}
+                        return (
+                          <div
+                            style={{
+                              color: "#DBDBDB",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                            }}
+                          ></div>
+                        );
+                      })())
+                    )
+                  ) : null}
+
+                  {/* Typing Indicator */}
                   {isTyping && (
-                    <div className="flex justify-start">
-                      <div className="bg-gray-100 rounded-2xl px-4 py-3 max-w-xs">
-                        <div className="typing-indicator">
-                          <span></span>
-                          <span></span>
-                          <span></span>
-                        </div>
-                      </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                        marginBottom: "12px",
+                        padding: "16px",
+                      }}
+                    >
+                      <ShiningText text="Thinking..." />
                     </div>
                   )}
                 </div>
 
-                {/* Space for fixed input - 80px bottom padding */}
-                <div style={{ height: "80px" }}></div>
+                {/* Hidden Audio Controls - kept for compatibility */}
+                <div
+                  id="audio-controls"
+                  style={{ display: "none", visibility: "hidden" }}
+                >
+                  <button id="play-audio-btn">Play Response Audio</button>
+                </div>
               </div>
             </div>
+
+            {/* Extra space at the bottom */}
+            <div style={{ height: "80px" }}></div>
           </div>
 
-          {/* Suggestions and Input - Fixed to Bottom */}
+          {/* Input Area or Buy Button - Fixed to Bottom */}
           <div
             style={{
               backgroundColor: "#1C1C1C",
@@ -1845,99 +2133,432 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             }}
           >
             <div className="max-w-3xl mx-auto">
-              {/* Suggestion chips - always visible above input */}
-              <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                <Button
-                  onClick={() => handleSendMessage("Tasting notes")}
-                  variant="suggestion"
-                  size="sm"
-                  className="whitespace-nowrap flex-shrink-0"
-                >
-                  Tasting notes
-                </Button>
-                <Button
-                  onClick={() => handleSendMessage("Food pairing")}
-                  variant="suggestion"
-                  size="sm"
-                  className="whitespace-nowrap flex-shrink-0"
-                >
-                  Food pairing
-                </Button>
-                <Button
-                  onClick={() => handleSendMessage("Serving temperature")}
-                  variant="suggestion"
-                  size="sm"
-                  className="whitespace-nowrap flex-shrink-0"
-                >
-                  Serving temperature
-                </Button>
-                <Button
-                  onClick={() => handleSendMessage("Aging potential")}
-                  variant="suggestion"
-                  size="sm"
-                  className="whitespace-nowrap flex-shrink-0"
-                >
-                  Aging potential
-                </Button>
-              </div>
-
-              {/* Voice Assistant and Chat Input */}
-              <div className="flex gap-2 sm:gap-3 items-end w-full">
-                <VoiceAssistant onSendMessage={handleSendMessage} />
-                <div className="flex-1">
-                  <ChatInput 
-                    onSendMessage={handleSendMessage} 
-                    disabled={isTyping}
+              {showBuyButton && !showChatInput ? (
+                // Show Buy Again Button for WineDetails page
+                (<Button
+                  onClick={() => {
+                    if (currentWine?.buyAgainLink) {
+                      window.open(currentWine.buyAgainLink, '_blank');
+                    } else {
+                      console.log("No buy again link available");
+                    }
+                  }}
+                  variant="primary"
+                  style={{
+                    margin: 0,
+                    width: "100%",
+                  }}
+                >Buy again
+                                  </Button>)
+              ) : (
+                // Show suggestions and input for Home page
+                (<>
+                  {/* Suggestion chips - always visible above input */}
+                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                    <Button
+                      onClick={() => handleSendMessage("Tasting notes")}
+                      variant="secondary"
+                      style={{ height: "32px" }}
+                    >
+                      Tasting notes
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        handleSendMessage("Simple recipes for this wine")
+                      }
+                      variant="secondary"
+                      style={{ height: "32px" }}
+                    >
+                      Simple recipes
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        handleSendMessage("Where is this wine from?")
+                      }
+                      variant="secondary"
+                      style={{ height: "32px" }}
+                    >
+                      Where it's from
+                    </Button>
+                  </div>
+                  <ChatInput
+                    onSendMessage={handleSendMessage}
+                    isProcessing={isTyping}
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
+                    voiceButtonComponent={
+                      <VoiceAssistant
+                        onSendMessage={handleSendMessage}
+                        isProcessing={isTyping}
+                      />
+                    }
                   />
+                </>)
+              )}
+            </div>
+          </div>
+        </main>
+
+        {/* Scroll to Bottom Floating Button */}
+        {showScrollToBottom && (
+          <Button
+            onClick={scrollToBottom}
+            variant="secondary"
+            style={{
+              position: 'fixed',
+              bottom: '100px',
+              right: '20px',
+              width: '48px',
+              height: '48px',
+              borderRadius: '24px',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              zIndex: 1000,
+              backdropFilter: 'blur(8px)',
+              padding: '0',
+              minHeight: '48px',
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 16l-4-4h8l-4 4z"
+                fill="white"
+              />
+              <path
+                d="M12 20l-4-4h8l-4 4z"
+                fill="white"
+                opacity="0.6"
+              />
+            </svg>
+          </Button>
+        )}
+      </div>
+      {/* Contact Bottom Sheet */}
+      {animationState !== "closed" &&
+        portalElement &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 9999,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-end",
+              opacity:
+                animationState === "open"
+                  ? 1
+                  : animationState === "opening"
+                    ? 0.8
+                    : 0,
+              transition: "opacity 0.3s ease-out",
+            }}
+            onClick={handleCloseContactSheet}
+          >
+            <div
+              style={{
+                background:
+                  "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
+                backdropFilter: "blur(20px)",
+                width: "100%",
+                maxWidth: "500px",
+                borderRadius: "24px 24px 0px 0px",
+                borderTop: "1px solid rgba(255, 255, 255, 0.20)",
+                paddingTop: "24px",
+                paddingLeft: "24px",
+                paddingRight: "24px",
+                paddingBottom: "28px",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
+                transform:
+                  animationState === "open"
+                    ? "translateY(0)"
+                    : "translateY(100%)",
+                transition: "transform 0.3s ease-out",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <Button
+                onClick={handleCloseContactSheet}
+                variant="secondary"
+                style={{
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  zIndex: 10,
+                  width: "40px",
+                  height: "40px",
+                  padding: "0",
+                  minHeight: "40px",
+                  borderRadius: "20px",
+                }}
+              >
+                <X size={24} color="white" />
+              </Button>
+
+              {/* Header */}
+              <div style={{ marginBottom: "24px", marginTop: "0px" }}>
+                <h2
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    margin: "0 0 12px 0",
+                  }}
+                >
+                  Want to see wine history?
+                </h2>
+
+                <p
+                  style={{
+                    color: "#CECECE",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    lineHeight: "1.3",
+                    textAlign: "center",
+                    margin: "0 0 8px 0",
+                  }}
+                >
+                  Enter your contact info
+                </p>
+              </div>
+
+              {/* Form Fields */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "16px",
+                  marginBottom: "24px",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="First name"
+                  value={formData.firstName}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
+                  className="contact-form-input"
+                  style={{
+                    display: "flex",
+                    height: "64px",
+                    padding: "16px 24px",
+                    alignItems: "center",
+                    width: "100%",
+                    background: "transparent !important",
+                    backgroundColor: "transparent !important",
+                    color: "white !important",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+                {errors.firstName && (
+                  <div
+                    style={{
+                      color: "#ff4444",
+                      fontSize: "14px",
+                      marginTop: "-12px",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {errors.firstName}
+                  </div>
+                )}
+
+                <input
+                  type="text"
+                  placeholder="Last name"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
+                  className="contact-form-input"
+                  style={{
+                    display: "flex",
+                    height: "64px",
+                    padding: "16px 24px",
+                    alignItems: "center",
+                    width: "100%",
+                    color: "white !important",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+                {errors.lastName && (
+                  <div
+                    style={{
+                      color: "#ff4444",
+                      fontSize: "14px",
+                      marginTop: "-12px",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {errors.lastName}
+                  </div>
+                )}
+
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  className="contact-form-input"
+                  style={{
+                    display: "flex",
+                    height: "64px",
+                    padding: "16px 24px",
+                    alignItems: "center",
+                    width: "100%",
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+                {errors.email && (
+                  <div
+                    style={{
+                      color: "#ff4444",
+                      fontSize: "14px",
+                      marginTop: "-12px",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {errors.email}
+                  </div>
+                )}
+
+                {/* Phone number with country selector */}
+                <div style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      height: "64px",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    className="contact-form-input"
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        paddingLeft: "24px",
+                        paddingRight: "12px",
+                        cursor: "pointer",
+                        borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+                      }}
+                      onClick={() => setShowCountryDropdown(true)}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>
+                          {selectedCountry.flag}
+                        </span>
+                        <span
+                          style={{
+                            color: "white",
+                            fontFamily: "Inter, sans-serif",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {selectedCountry.dial_code}
+                        </span>
+                      </div>
+                    </div>
+                    <input
+                      type="tel"
+                      placeholder="Phone number"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                      className="contact-form-input"
+                      style={{
+                        display: "flex",
+                        height: "56px",
+                        padding: "16px 24px",
+                        alignItems: "center",
+                        flex: 1,
+                        color: "white",
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "16px",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+                  {errors.phone && (
+                    <div
+                      style={{
+                        color: "#ff4444",
+                        fontSize: "14px",
+                        marginTop: "4px",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      {errors.phone}
+                    </div>
+                  )}
+                </div>
+
+                {/* Save Button */}
+                <div
+                  style={{
+                    width: "100%",
+                  }}
+                >
+                  <button
+                    onClick={handleSubmit}
+                    className="save-button"
+                    style={{
+                      width: "100%",
+                      height: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "black",
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Scroll to bottom button */}
-          {showScrollToBottom && (
-            <Button
-              onClick={scrollToBottom}
-              style={{
-                position: 'fixed',
-                bottom: '100px',
-                right: '20px',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                color: '#000',
-                border: 'none',
-                width: '48px',
-                height: '48px',
-                borderRadius: '24px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-                zIndex: 1000,
-                backdropFilter: 'blur(8px)',
-                padding: '0',
-                minHeight: '48px',
-              }}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 16l-4-4h8l-4 4z"
-                  fill="white"
-                />
-                <path
-                  d="M12 20l-4-4h8l-4 4z"
-                  fill="white"
-                  opacity="0.6"
-                />
-              </svg>
-            </Button>
-          )}
-        </main>
-      </div>
+          </div>,
+          portalElement,
+        )}
     </div>
   );
 };
