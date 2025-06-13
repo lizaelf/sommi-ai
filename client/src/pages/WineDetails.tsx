@@ -167,12 +167,12 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'visible', overflowX: 'hidden' }}>
       <AppHeader />
       <HeaderSpacer />
 
-      {/* Main Content Container */}
-      <div className="w-full">
+      {/* Main Content Container - No height constraints */}
+      <div className="w-full" style={{ height: 'auto', overflow: 'visible' }}>
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
