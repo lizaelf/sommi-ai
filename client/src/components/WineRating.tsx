@@ -81,7 +81,7 @@ export default function WineRating({
             alignItems: "center",
             gap: `${gap}px`,
             flexWrap: "wrap" as const,
-            justifyContent: "center",
+            justifyContent: "flex-start",
           },
           ratingItem: {
             color: "white",
