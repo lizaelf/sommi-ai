@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
@@ -30,7 +30,8 @@ export default function WineDetails() {
   const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
-  const isQRScan = new URLSearchParams(window.location.search).has('wine');
+  const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  const isQRScan = urlParams.has('wine');
   const isScannedPage = location === '/scanned';
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -41,7 +42,6 @@ export default function WineDetails() {
     const loadWineData = async () => {
       DataSyncManager.initialize();
       
-      const urlParams = new URLSearchParams(window.location.search);
       const wineIdFromQuery = urlParams.get('wine');
       const wineId = id || wineIdFromQuery || '1';
       
