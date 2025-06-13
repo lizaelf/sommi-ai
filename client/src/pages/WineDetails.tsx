@@ -30,6 +30,7 @@ export default function WineDetails() {
   const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
+  const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
   const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isQRScan = urlParams.has('wine');
   const isScannedPage = location === '/scanned';
@@ -44,6 +45,7 @@ export default function WineDetails() {
   // Load wine data when ID changes
   useEffect(() => {
     let mounted = true;
+    setLoadingState('loading'); // Reset loading state when wine ID changes
     
     const loadWineData = async () => {
       const wineIdFromQuery = urlParams.get('wine');
@@ -69,9 +71,11 @@ export default function WineDetails() {
             conversationHistory: wineData.conversationHistory || []
           };
           setWine(transformedWine);
+          setLoadingState('loaded');
           console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
         } else if (mounted) {
           console.log('WineDetails: Wine not found for ID:', wineId);
+          setLoadingState('error');
         }
       }
     };
@@ -109,28 +113,59 @@ export default function WineDetails() {
   };
 
   // Memoized chat interface to prevent unnecessary re-renders
-  const MemoizedChatInterface = useMemo(() => (
-    <EnhancedChatInterface 
-      showBuyButton={true} 
-      selectedWine={wine ? {
-        id: wine.id,
-        name: wine.name,
-        image: wine.image,
-        bottles: wine.bottles,
-        ratings: wine.ratings
-      } : null} 
-    />
-  ), [wine]);
-
-  // Handle wine not found case
-  if (!wine) {
+  const MemoizedChatInterface = useMemo(() => {
+    if (!wine) return null;
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Loading...</h2>
-        </div>
-      </div>
+      <EnhancedChatInterface 
+        showBuyButton={true} 
+        selectedWine={{
+          id: wine.id,
+          name: wine.name,
+          image: wine.image,
+          bottles: wine.bottles,
+          ratings: wine.ratings
+        }} 
+      />
     );
+  }, [wine]);
+
+  // Loading component
+  const LoadingComponent = () => (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+        <h2 className="text-2xl font-bold mb-2">Loading Wine Details</h2>
+        <p className="text-gray-400">Fetching wine information...</p>
+      </div>
+    </div>
+  );
+
+  // Error component
+  const ErrorComponent = () => (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-red-400 text-6xl mb-4">⚠</div>
+        <h2 className="text-2xl font-bold mb-2">Wine Not Found</h2>
+        <p className="text-gray-400 mb-6">The requested wine could not be located in our collection.</p>
+        <Link href="/home-global" className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+          Return to Collection
+        </Link>
+      </div>
+    </div>
+  );
+
+  // Handle loading states
+  if (loadingState === 'loading') {
+    return <LoadingComponent />;
+  }
+
+  if (loadingState === 'error') {
+    return <ErrorComponent />;
+  }
+
+  // Ensure wine is loaded before rendering
+  if (!wine) {
+    return <LoadingComponent />;
   }
 
   return (
