@@ -150,19 +150,17 @@ export default function WineDetails() {
 
           {/* Wine Image */}
           <div className="text-center mb-6">
-            <div className="relative inline-block bg-white rounded-lg p-4">
-              <img
-                ref={imageRef}
-                src={wine.image}
-                alt={wine.name}
-                className="max-h-48 w-auto mx-auto object-contain"
-                onLoad={handleImageLoad}
-                style={{
-                  filter: imageLoaded ? 'none' : 'blur(10px)',
-                  transition: 'filter 0.3s ease'
-                }}
-              />
-            </div>
+            <img
+              ref={imageRef}
+              src={wine.image}
+              alt={wine.name}
+              className="max-h-48 w-auto mx-auto object-contain"
+              onLoad={handleImageLoad}
+              style={{
+                filter: imageLoaded ? 'none' : 'blur(10px)',
+                transition: 'filter 0.3s ease'
+              }}
+            />
           </div>
 
           {/* Wine Name and Year */}
