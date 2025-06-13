@@ -131,7 +131,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '1.9.7';
+const CURRENT_VERSION = '2.0.0';
 
 export class DataSyncManager {
   
@@ -160,7 +160,7 @@ export class DataSyncManager {
           const existingWine = storedWines.find(w => w.id === masterWine.id);
           return {
             ...masterWine,
-            // Preserve the uploaded image from existing data
+            // Preserve only valid uploaded images (base64 data)
             image: (existingWine && existingWine.image && existingWine.image.startsWith('data:')) 
               ? existingWine.image 
               : masterWine.image
