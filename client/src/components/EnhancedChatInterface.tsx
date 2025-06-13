@@ -1613,6 +1613,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     gap: "16px",
                     overflowX: "auto",
                     paddingBottom: "8px",
+                    paddingLeft: "4px",
+                    paddingRight: "4px",
+                    marginLeft: "-4px",
+                    marginRight: "-4px",
                   }}
                 >
                   {/* Recommendation 1 - Estate Chardonnay */}
