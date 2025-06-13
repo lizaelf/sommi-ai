@@ -569,8 +569,8 @@ export default function WineDetails() {
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                   {getCheesePairingContent().cheeses.map((cheese: string, index: number) => (
                     <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ fontSize: "16px" }}>🧀</span>
-                      <span>{cheese}</span>
+                      <span style={{ ...typography.body }}>🧀</span>
+                      <span style={{ ...typography.body }}>{cheese}</span>
                     </div>
                   ))}
                 </div>
@@ -653,8 +653,8 @@ export default function WineDetails() {
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                   {getVegetarianPairingContent().dishes.map((dish: string, index: number) => (
                     <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ fontSize: "16px" }}>🥗</span>
-                      <span>{dish}</span>
+                      <span style={{ ...typography.body }}>🥗</span>
+                      <span style={{ ...typography.body }}>{dish}</span>
                     </div>
                   ))}
                 </div>
@@ -735,8 +735,8 @@ export default function WineDetails() {
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                   {getAvoidPairingContent().items.map((item: string, index: number) => (
                     <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ fontSize: "16px", color: "red" }}>❌</span>
-                      <span>{item}</span>
+                      <span style={{ ...typography.body, color: "red" }}>❌</span>
+                      <span style={{ ...typography.body }}>{item}</span>
                     </div>
                   ))}
                 </div>

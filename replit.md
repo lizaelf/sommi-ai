@@ -104,10 +104,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - Eliminated FOUC (Flash of Unstyled Content) issues
 
 ### Typography Standardization (June 13, 2025)
+- Consolidated section header style into h1 (32px Lora serif, 700 weight) for unified heading hierarchy
 - Updated ButtonIcon component text styling to use consistent typography constants
 - Standardized profile menu items to use typography.body1R (14px Inter, 400 weight)
 - Updated bottom sheet text to use typography.h2 for titles and typography.body for content
 - Enhanced WineDetails page error and loading components with proper typography
+- Systematically updated all font styles throughout WineDetails page to use standardized typography constants
+- Replaced all inline fontSize, fontFamily, and fontWeight properties with typography imports
+- Applied consistent typography to food pairing sections, wine recommendations, and error states
 - Implemented comprehensive typography system using Lora serif for headings and Inter for body text
 - All text elements now follow established design library standards for visual consistency
 
