@@ -1186,6 +1186,7 @@ export default function WineDetails() {
                 <div
                   ref={chatContainerRef}
                   className="flex-1 overflow-y-auto scrollbar-hide"
+                  style={{ backgroundColor: "transparent" }}
                 >
                   {/* Conversation Content */}
                   <div style={{ backgroundColor: "transparent" }}>
@@ -1203,7 +1204,7 @@ export default function WineDetails() {
                       </h1>
                     </div>
                     
-                    <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px" }}>
+                    <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", backgroundColor: "transparent" }}>
                       {messages.length > 0 ? (
                         <>
                           {messages.map((message: any, index: number) => (
