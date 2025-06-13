@@ -177,10 +177,37 @@ export default function WineDetails() {
   const ErrorComponent = () => (
     <div className="flex items-center justify-center h-[calc(100vh-100px)]">
       <div className="text-center">
-        <div className="text-2xl font-bold text-white mb-4">Wine Not Found</div>
-        <p className="text-gray-400 mb-6">The wine you're looking for could not be found.</p>
+        <div 
+          style={{
+            color: "white",
+            marginBottom: "16px",
+            ...typography.h1,
+          }}
+        >
+          Wine Not Found
+        </div>
+        <p 
+          style={{
+            color: "#999999",
+            marginBottom: "24px",
+            ...typography.body,
+          }}
+        >
+          The wine you're looking for could not be found.
+        </p>
         <Link href="/home-global">
-          <button className="bg-white text-black px-6 py-2 rounded-lg font-medium">
+          <button 
+            style={{
+              backgroundColor: "white",
+              color: "black",
+              padding: "12px 24px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              ...typography.body,
+              fontWeight: "600",
+            }}
+          >
             Go Back Home
           </button>
         </Link>
@@ -197,7 +224,15 @@ export default function WineDetails() {
           <span></span>
           <span></span>
         </div>
-        <p className="mt-4 text-gray-600">Loading wine details...</p>
+        <p 
+          style={{
+            marginTop: "16px",
+            color: "#999999",
+            ...typography.body,
+          }}
+        >
+          Loading wine details...
+        </p>
       </div>
     </div>
   );
