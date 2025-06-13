@@ -758,7 +758,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 </h1>
               </div>
               
-              <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "20px", paddingRight: "20px" }}>
+              <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px" }}>
                 {messages.length > 0 ? (
                   <>
                     {messages.map((message: any, index: number) => (
@@ -840,7 +840,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           <div
             style={{
               backgroundColor: "#1C1C1C",
-              padding: "16px 20px",
+              padding: "16px",
               zIndex: 50,
               position: "fixed",
               bottom: 0,
