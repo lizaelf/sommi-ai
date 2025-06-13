@@ -1729,9 +1729,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             margin: "0 0 16px 0",
                             height: "72px",
                             display: "flex",
-                            alignItems: "center",
+                            alignItems: "flex-start",
                             justifyContent: "center",
-                            fontSize: "14px",
+                            fontSize: "20px",
                             lineHeight: "1.2",
                           }}
                         >
