@@ -16,6 +16,7 @@ import {
   createStreamingClient,
   isStreamingSupported,
 } from "@/lib/streamingClient";
+import typography from "@/styles/typography";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -746,12 +747,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <h1
                   style={{
                     color: "white",
-                    fontFamily: "Lora, serif",
-                    fontSize: "32px",
-                    fontWeight: "700",
-                    lineHeight: "40px",
                     textAlign: "left",
                     margin: "0",
+                    ...typography.h1,
                   }}
                 >
                   Chat

@@ -116,6 +116,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - Removed excessive left and right paddings from chat interface while maintaining proper 16px message spacing
 - Made header completely transparent by default (no background or blur) with smooth transitions when scrolling
 - Removed top padding to position content at the start of the page
+- Applied h1 typography constants to chat title for consistent design system compliance
+- Updated HomeGlobal route from /home-global to / (root path) with logo navigation updated accordingly
 - Implemented comprehensive typography system using Lora serif for headings and Inter for body text
 - All text elements now follow established design library standards for visual consistency
 
