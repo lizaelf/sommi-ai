@@ -268,10 +268,15 @@ export default function WineDetails() {
         </div>
 
         {/* Want more? Section - Fixed spacing */}
-        <div className="px-6 pb-6 mt-12">
+        <div className="px-6 pb-6 mt-12 bg-red-500/20 border border-red-500">
           <h2 className="text-3xl font-normal mb-6" style={{ fontFamily: "Lora, serif" }}>
             Want more?
           </h2>
+          
+          {(() => {
+            console.log("Want more section rendering, buyAgainLink:", wine?.buyAgainLink);
+            return null;
+          })()}
           
           {wine?.buyAgainLink ? (
             <a 
@@ -292,10 +297,15 @@ export default function WineDetails() {
         </div>
 
         {/* We recommend Section - Fixed spacing */}
-        <div className="px-6 pb-6 mt-12">
+        <div className="px-6 pb-6 mt-12 bg-blue-500/20 border border-blue-500">
           <h2 className="text-3xl font-normal mb-6" style={{ fontFamily: "Lora, serif" }}>
             We recommend
           </h2>
+          
+          {(() => {
+            console.log("We recommend section rendering");
+            return null;
+          })()}
           
           <div className="flex gap-4 overflow-x-auto pb-4">
             {/* Wine Recommendation 1 - Estate Chardonnay */}
