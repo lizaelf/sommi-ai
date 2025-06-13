@@ -36,16 +36,20 @@ export default function WineDetails() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
+  // Initialize DataSyncManager once on component mount
+  useEffect(() => {
+    DataSyncManager.initialize();
+  }, []);
+
+  // Load wine data when ID changes
   useEffect(() => {
     let mounted = true;
     
     const loadWineData = async () => {
-      DataSyncManager.initialize();
-      
       const wineIdFromQuery = urlParams.get('wine');
       const wineId = id || wineIdFromQuery || '1';
       
-      if (wineId && mounted) { // Remove !wine condition for immediate loading
+      if (wineId && mounted) {
         const wineData = DataSyncManager.getWineById(parseInt(wineId));
         if (wineData) {
           console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
@@ -77,7 +81,7 @@ export default function WineDetails() {
     return () => {
       mounted = false;
     };
-  }, [id]); // Only depend on id
+  }, [id, urlParams]); // Depend on id and urlParams
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
