@@ -4,7 +4,6 @@ import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import QRScanModal from '@/components/QRScanModal';
 import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
-import WineDetailsSkeleton from '@/components/WineDetailsSkeleton';
 import { DataSyncManager } from '@/utils/dataSync';
 
 interface SelectedWine {
@@ -34,9 +33,6 @@ export default function WineDetails() {
   const isQRScan = new URLSearchParams(window.location.search).has('wine');
   const isScannedPage = location === '/scanned';
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isReady, setIsReady] = useState(false);
-  const [showSkeleton, setShowSkeleton] = useState(true);
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -75,15 +71,9 @@ export default function WineDetails() {
           setWine(transformedWine);
           console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
           
-          // Hide skeleton and show content immediately to prevent flash
-          if (mounted) {
-            setShowSkeleton(false);
-            setIsReady(true);
-            setIsLoading(false);
-          }
+          // Wine data loaded successfully
         } else if (mounted) {
           console.log('WineDetails: Wine not found for ID:', wineId);
-          setIsLoading(false);
         }
       }
     };
@@ -120,34 +110,19 @@ export default function WineDetails() {
     console.log('Wine image loaded successfully:', wine?.image);
   };
 
-  // Show skeleton loading to prevent UI flash
-  if (showSkeleton) {
-    return <WineDetailsSkeleton />;
-  }
-
   // Handle wine not found case
-  if (!wine && !isLoading) {
+  if (!wine) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
-          <Link href="/">
-            <button className="bg-white text-black px-6 py-2 rounded-full">
-              Return Home
-            </button>
-          </Link>
+          <h2 className="text-2xl font-bold mb-4">Loading...</h2>
         </div>
       </div>
     );
   }
 
-  // Don't render anything if wine is still loading
-  if (!wine) {
-    return <WineDetailsSkeleton />;
-  }
-
   return (
-    <div className={`bg-black text-white ${isReady ? 'wine-details-ready' : 'wine-details-loading'}`} style={{ 
+    <div className="bg-black text-white" style={{ 
       minHeight: '100vh', 
       overflowY: 'visible', 
       overflowX: 'hidden'

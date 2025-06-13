@@ -30,7 +30,7 @@ const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [location, setLocation] = useLocation();
   const [wines, setWines] = useState<Wine[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleWineClick = (wineId: number) => {
     // Navigate to wine details page for any wine
@@ -51,16 +51,9 @@ const HomeGlobal = () => {
     const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
     const filteredWines = crmWines.filter((wine: Wine) => wine.id === 1 || wine.id === 2);
     setWines(filteredWines);
-    
-    // Set loading to false after data is loaded
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
   }, []);
 
-  if (isLoading) {
-    return <HomeGlobalSkeleton />;
-  }
+
 
   return (
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
