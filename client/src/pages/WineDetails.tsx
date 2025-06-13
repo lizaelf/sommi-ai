@@ -120,6 +120,11 @@ export default function WineDetails() {
       <AppHeader />
       <HeaderSpacer />
       
+      {/* TEST MARKER AT TOP - This should be visible */}
+      <div className="w-full bg-red-600 p-4 text-center text-white text-2xl font-bold">
+        🔴 TOP MARKER - IF YOU SEE THIS, RENDERING WORKS 🔴
+      </div>
+      
       {/* Main Content Container - Completely removed height constraints */}
       <div className="w-full" style={{ height: 'auto', overflow: 'visible' }}>
         {/* Wine Hero Section */}
@@ -369,6 +374,11 @@ export default function WineDetails() {
             } : null} 
           />
         </div>
+      </div>
+
+      {/* TEST MARKER OUTSIDE CONTAINER */}
+      <div className="w-full bg-purple-600 p-8 text-center text-white text-3xl font-bold">
+        🟣 OUTSIDE CONTAINER MARKER 🟣
       </div>
       
       {/* QR Scan Modal */}
