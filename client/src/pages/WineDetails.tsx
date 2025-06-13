@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Trash2, X } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
-import EnhancedChatInterface from "@/components/EnhancedChatInterface";
+import { useQuery } from "@tanstack/react-query";
+import { createPortal } from "react-dom";
+import { useToast } from "@/hooks/UseToast";
 import QRScanModal from "@/components/QRScanModal";
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
@@ -9,6 +11,16 @@ import WineBottleImage from "@/components/WineBottleImage";
 import USFlagImage from "@/components/USFlagImage";
 import WineRating from "@/components/WineRating";
 import Button from "@/components/ui/Button";
+import ChatInput from "@/components/ChatInput";
+import VoiceAssistant from "@/components/VoiceAssistant";
+import { useConversation } from "@/hooks/UseConversation";
+import { ClientMessage } from "@/lib/types";
+import { ShiningText } from "@/components/ShiningText";
+import {
+  createStreamingClient,
+  isStreamingSupported,
+} from "@/lib/streamingClient";
+import ContactBottomSheet, { ContactFormData } from "@/components/ContactBottomSheet";
 import typography from "@/styles/typography";
 
 interface SelectedWine {
@@ -40,6 +52,242 @@ export default function WineDetails() {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
+
+  // Chat interface state
+  const [isTyping, setIsTyping] = useState(false);
+  const [hideSuggestions, setHideSuggestions] = useState(false);
+  const [showChatInput, setShowChatInput] = useState(true);
+  const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
+  const [showContactSheet, setShowContactSheet] = useState(false);
+  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [hasSharedContact, setHasSharedContact] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+  const [selectedCountry, setSelectedCountry] = useState({
+    flag: "🇺🇸",
+    dial_code: "+1",
+    name: "United States"
+  });
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  // Chat conversation management
+  const {
+    messages,
+    currentConversationId,
+    addMessage,
+    refetchMessages,
+  } = useConversation();
+
+  // API status check
+  const { data: apiStatus } = useQuery({
+    queryKey: ["/api/status"],
+    refetchInterval: 30000,
+  });
+
+  // Chat functions
+  const formatContent = (content: string) => {
+    return content.split('\n').map((line, index) => (
+      <span key={index}>
+        {line}
+        {index < content.split('\n').length - 1 && <br />}
+      </span>
+    ));
+  };
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleSuggestionClick = async (content: string) => {
+    if (content.trim() === "" || !currentConversationId) return;
+
+    setHideSuggestions(true);
+    setIsTyping(true);
+
+    try {
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        content,
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      await addMessage(tempUserMessage);
+
+      const requestBody = {
+        messages: [{ role: "user", content }],
+        conversationId: currentConversationId,
+        wineData: wine,
+        optimize_for_speed: true,
+        text_only: true,
+      };
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Priority": "high",
+        },
+        body: JSON.stringify(requestBody),
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      if (responseData.message && responseData.message.content) {
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1,
+          content: responseData.message.content,
+          role: "assistant",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+
+        await addMessage(assistantMessage);
+      }
+
+      refetchMessages();
+    } catch (error) {
+      console.error("Error in suggestion request:", error);
+      toast({
+        title: "Error",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleSendMessage = async (content: string) => {
+    if (content.trim() === "" || !currentConversationId) return;
+
+    setHideSuggestions(true);
+    setIsTyping(true);
+
+    try {
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        content,
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      await addMessage(tempUserMessage);
+
+      const requestBody = {
+        messages: [{ role: "user", content }],
+        conversationId: currentConversationId,
+        wineData: wine,
+        optimize_for_speed: true,
+        text_only: true,
+      };
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Priority": "high",
+        },
+        body: JSON.stringify(requestBody),
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      if (responseData.message && responseData.message.content) {
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1,
+          content: responseData.message.content,
+          role: "assistant",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+
+        await addMessage(assistantMessage);
+      }
+
+      refetchMessages();
+    } catch (error) {
+      console.error("Error in chat request:", error);
+      toast({
+        title: "Error",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleCloseContactSheet = () => {
+    setShowContactSheet(false);
+    setAnimationState("closing");
+    setTimeout(() => setAnimationState("closed"), 300);
+  };
+
+  const handleSubmit = async (data: ContactFormData) => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        localStorage.setItem("hasSharedContact", "true");
+        setHasSharedContact(true);
+        handleCloseContactSheet();
+
+        toast({
+          description: "Contact saved successfully!",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error saving contact:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save contact information",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Helper functions for wine data
   const getWineHistory = () => {
@@ -74,6 +322,50 @@ export default function WineDetails() {
   useEffect(() => {
     DataSyncManager.initialize();
   }, []);
+
+  // Handle chat interface ready callback
+  const handleChatInterfaceReady = () => {
+    setChatInterfaceReady(true);
+    console.log("Chat interface ready");
+  };
+
+  // Initialize chat interface ready state
+  useEffect(() => {
+    handleChatInterfaceReady();
+  }, []);
+
+  // Initialize portal element for modals
+  useEffect(() => {
+    setPortalElement(document.body);
+  }, []);
+
+  // Check if contact has been shared
+  useEffect(() => {
+    const hasShared = localStorage.getItem("hasSharedContact") === "true";
+    setHasSharedContact(hasShared);
+  }, []);
+
+  // Scroll management
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+      setShowScrollToBottom(!isNearBottom && scrollHeight > clientHeight);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [messages.length]);
 
   // Load wine data when ID changes
   useEffect(() => {
@@ -118,11 +410,6 @@ export default function WineDetails() {
       mounted = false;
     };
   }, [id]);
-
-  const handleChatInterfaceReady = () => {
-    console.log("Chat interface ready");
-    setChatInterfaceReady(true);
-  };
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -864,17 +1151,242 @@ export default function WineDetails() {
 
         {/* Chat Interface */}
         <div className="mt-0 pb-10">
-          <EnhancedChatInterface
-            showBuyButton={true}
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings,
-            } : undefined}
-            onReady={handleChatInterfaceReady}
-          />
+          <div
+            className="flex flex-col h-auto"
+            style={{ width: "100%" }}
+          >
+            {/* Main Content Area */}
+            <div className="flex flex-1 overflow-hidden">
+              {/* Chat Area */}
+              <main
+                className="flex-1 flex flex-col bg-background overflow-hidden"
+                style={{
+                  backgroundColor: "#0A0A0A !important",
+                  backgroundImage: "none !important",
+                  width: "100%",
+                }}
+              >
+                {/* Scrollable container */}
+                <div
+                  ref={chatContainerRef}
+                  className="flex-1 overflow-y-auto scrollbar-hide"
+                >
+                  {/* Conversation Content */}
+                  <div>
+                    {/* Chat Title */}
+                    <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
+                      <h1
+                        style={{
+                          color: "white",
+                          textAlign: "left",
+                          margin: "0",
+                          ...typography.h1,
+                        }}
+                      >
+                        Chat
+                      </h1>
+                    </div>
+                    
+                    <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px" }}>
+                      {messages.length > 0 ? (
+                        <>
+                          {messages.map((message: any, index: number) => (
+                            <div
+                              key={`${message.id}-${index}`}
+                              style={{
+                                display: "flex",
+                                justifyContent:
+                                  message.role === "user" ? "flex-end" : "flex-start",
+                                width: "100%",
+                                marginBottom: "12px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  backgroundColor:
+                                    message.role === "user"
+                                      ? "#F5F5F5"
+                                      : "transparent",
+                                  borderRadius: "16px",
+                                  padding: message.role === "user" ? "12px 16px 12px 16px" : "16px 0",
+                                  width:
+                                    message.role === "user" ? "fit-content" : "100%",
+                                  maxWidth: message.role === "user" ? "80%" : "100%",
+                                }}
+                              >
+                                {message.role === "assistant" ? (
+                                  <div
+                                    style={{
+                                      color: "#DBDBDB",
+                                      fontFamily: "Inter, system-ui, sans-serif",
+                                      fontSize: "16px",
+                                      lineHeight: "1.6",
+                                    }}
+                                  >
+                                    {formatContent(message.content)}
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{
+                                      color: "#000000",
+                                      fontFamily: "Inter, system-ui, sans-serif",
+                                      fontSize: "16px",
+                                      lineHeight: "1.6",
+                                    }}
+                                  >
+                                    {formatContent(message.content)}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            minHeight: "200px",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          <p
+                            style={{
+                              color: "rgba(255, 255, 255, 0.6)",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              fontSize: "16px",
+                              textAlign: "center",
+                              margin: "0",
+                            }}
+                          >
+                            Ask a question to see chat history
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Typing Indicator */}
+                      {isTyping && (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100%",
+                            marginBottom: "12px",
+                            padding: "16px",
+                          }}
+                        >
+                          <ShiningText text="Thinking..." />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Extra space at the bottom */}
+                  <div style={{ height: "80px" }}></div>
+                </div>
+
+                {/* Input Area - Fixed to Bottom */}
+                <div
+                  style={{
+                    backgroundColor: "#1C1C1C",
+                    padding: "16px",
+                    zIndex: 50,
+                    position: "fixed",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                >
+                  <div className="max-w-3xl mx-auto">
+                    <>
+                      {/* Suggestion chips */}
+                      <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                        <Button
+                          onClick={() => handleSuggestionClick("Tasting notes")}
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          Tasting notes
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleSuggestionClick("Simple recipes for this wine")
+                          }
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          Simple recipes
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleSuggestionClick("Where is this wine from?")
+                          }
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          Where it's from
+                        </Button>
+                      </div>
+                      <ChatInput
+                        onSendMessage={handleSendMessage}
+                        isProcessing={isTyping}
+                        onFocus={() => setIsKeyboardFocused(true)}
+                        onBlur={() => setIsKeyboardFocused(false)}
+                        voiceButtonComponent={
+                          <VoiceAssistant
+                            onSendMessage={handleSendMessage}
+                            isProcessing={isTyping}
+                          />
+                        }
+                      />
+                    </>
+                  </div>
+                </div>
+              </main>
+
+              {/* Scroll to Bottom Floating Button */}
+              {showScrollToBottom && (
+                <Button
+                  onClick={scrollToBottom}
+                  variant="secondary"
+                  style={{
+                    position: "fixed",
+                    bottom: "100px",
+                    right: "20px",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "24px",
+                    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
+                    zIndex: 1000,
+                    backdropFilter: "blur(8px)",
+                    padding: "0",
+                    minHeight: "48px",
+                  }}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 16l-4-4h8l-4 4z" fill="white" />
+                    <path d="M12 20l-4-4h8l-4 4z" fill="white" opacity="0.6" />
+                  </svg>
+                </Button>
+              )}
+            </div>
+
+            <ContactBottomSheet
+              isOpen={animationState !== "closed"}
+              onClose={handleCloseContactSheet}
+              onSubmit={handleSubmit}
+            />
+          </div>
         </div>
       </div>
 
