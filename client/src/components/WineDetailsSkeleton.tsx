@@ -1,7 +1,7 @@
 function SkeletonBox({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-white/10 ${className || ''}`}
+      className={`animate-pulse rounded-md bg-gray-600/30 ${className || ''}`}
       {...props}
     />
   );
@@ -9,81 +9,59 @@ function SkeletonBox({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 
 export default function WineDetailsSkeleton() {
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header Skeleton */}
-      <div className="flex items-center justify-between p-4 h-16">
-        <SkeletonBox className="h-6 w-6 rounded-full" />
-        <SkeletonBox className="h-6 w-32" />
-        <SkeletonBox className="h-6 w-6 rounded-full" />
+    <div className="min-h-screen bg-black">
+      {/* Header spacer only */}
+      <div className="h-16"></div>
+
+      {/* Wine Image Skeleton - No background, just shape */}
+      <div className="flex justify-center mb-8 px-6">
+        <SkeletonBox className="h-64 w-36" />
       </div>
 
-      {/* Wine Image Skeleton */}
-      <div className="flex justify-center mb-8 px-4">
-        <SkeletonBox className="h-80 w-48 rounded-lg" />
+      {/* Wine Title Skeleton - Clean lines */}
+      <div className="px-6 mb-6 text-center">
+        <SkeletonBox className="h-6 w-64 mx-auto mb-3" />
+        <SkeletonBox className="h-4 w-20 mx-auto" />
       </div>
 
-      {/* Wine Title Skeleton */}
-      <div className="px-6 mb-6">
-        <SkeletonBox className="h-8 w-3/4 mb-2" />
-        <SkeletonBox className="h-6 w-1/2" />
-      </div>
-
-      {/* Ratings Skeleton */}
+      {/* Ratings Skeleton - Just 4 small boxes */}
       <div className="px-6 mb-8">
-        <div className="flex gap-4 justify-center">
-          <div className="flex flex-col items-center">
-            <SkeletonBox className="h-12 w-16 rounded-lg mb-2" />
-            <SkeletonBox className="h-4 w-8" />
-          </div>
-          <div className="flex flex-col items-center">
-            <SkeletonBox className="h-12 w-16 rounded-lg mb-2" />
-            <SkeletonBox className="h-4 w-8" />
-          </div>
-          <div className="flex flex-col items-center">
-            <SkeletonBox className="h-12 w-16 rounded-lg mb-2" />
-            <SkeletonBox className="h-4 w-8" />
-          </div>
-          <div className="flex flex-col items-center">
-            <SkeletonBox className="h-12 w-16 rounded-lg mb-2" />
-            <SkeletonBox className="h-4 w-10" />
-          </div>
+        <div className="flex justify-between max-w-xs mx-auto">
+          <SkeletonBox className="h-8 w-8" />
+          <SkeletonBox className="h-8 w-8" />
+          <SkeletonBox className="h-8 w-8" />
+          <SkeletonBox className="h-8 w-8" />
         </div>
       </div>
 
-      {/* Wine Description Skeleton */}
+      {/* Description lines */}
       <div className="px-6 mb-8">
-        <SkeletonBox className="h-4 w-full mb-2" />
-        <SkeletonBox className="h-4 w-full mb-2" />
-        <SkeletonBox className="h-4 w-3/4 mb-2" />
-        <SkeletonBox className="h-4 w-5/6" />
+        <SkeletonBox className="h-3 w-full mb-2" />
+        <SkeletonBox className="h-3 w-full mb-2" />
+        <SkeletonBox className="h-3 w-2/3 mb-2" />
+        <SkeletonBox className="h-3 w-4/5" />
       </div>
 
-      {/* Buy Again Button Skeleton */}
+      {/* Button skeleton */}
       <div className="px-6 mb-8">
-        <SkeletonBox className="h-14 w-full rounded-xl" />
+        <SkeletonBox className="h-12 w-full" />
       </div>
 
-      {/* Recommendations Section Skeleton */}
+      {/* Recommendation cards */}
       <div className="px-6 mb-8">
-        <SkeletonBox className="h-8 w-48 mb-6" />
-        <div className="flex gap-4 overflow-hidden">
-          {[1, 2, 3].map((index) => (
-            <div key={index} className="min-w-52 flex-shrink-0">
-              <SkeletonBox className="h-48 w-full rounded-xl mb-4" />
-              <SkeletonBox className="h-6 w-3/4 mb-2" />
-              <div className="flex gap-3 justify-center">
-                <SkeletonBox className="h-6 w-12" />
-                <SkeletonBox className="h-6 w-12" />
-                <SkeletonBox className="h-6 w-12" />
-              </div>
-            </div>
-          ))}
+        <SkeletonBox className="h-6 w-32 mb-4" />
+        <div className="flex gap-4">
+          <div className="min-w-48 flex-shrink-0">
+            <SkeletonBox className="h-40 w-full mb-3" />
+            <SkeletonBox className="h-4 w-2/3 mb-1" />
+            <SkeletonBox className="h-3 w-1/2" />
+          </div>
+          <div className="min-w-48 flex-shrink-0">
+            <SkeletonBox className="h-40 w-full mb-3" />
+            <SkeletonBox className="h-4 w-2/3 mb-1" />
+            <SkeletonBox className="h-3 w-1/2" />
+          </div>
         </div>
-      </div>
-
-      {/* Chat Interface Skeleton */}
-      <div className="px-6">
-        <SkeletonBox className="h-12 w-full rounded-full" />
       </div>
     </div>
   );
