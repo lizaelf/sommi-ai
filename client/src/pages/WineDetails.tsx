@@ -562,6 +562,7 @@ export default function WineDetails() {
         <WineRating
           ratings={wine ? wine.ratings : { vn: 95, jd: 93, ws: 93, abv: 14.3 }}
           align="left"
+          hideAbv={true}
           style={{
             position: "relative",
             zIndex: 2,
