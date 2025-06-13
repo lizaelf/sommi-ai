@@ -14,20 +14,12 @@
 
 const typography = {
   
-  // Section header (for larger headers that need to be bigger than h1)
-  sectionHeader: {
+  // Heading styles using Lora font
+  h1: {
     fontSize: '32px',
     lineHeight: '40px',
     fontFamily: 'Lora, serif',
-    fontWeight: '400'
-  },
-  
-  // Heading styles using Lora font
-  h1: {
-    fontSize: '24px',
-    lineHeight: '32px',
-    fontFamily: 'Lora, serif',
-    fontWeight: '500'
+    fontWeight: '700'
   },
   
   // H2 heading style using Inter font
