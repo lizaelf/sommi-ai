@@ -267,6 +267,7 @@ export default function WineDetailsRefactored() {
             showActions={showActions}
             onToggleActions={() => setShowActions(!showActions)}
           />
+          <div style={{ height: "75px" }} />
         </>
       }
       showDefaultHeader={false}
