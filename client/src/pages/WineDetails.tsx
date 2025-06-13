@@ -270,6 +270,30 @@ export default function WineDetails() {
 
         </div>
 
+        {/* Want more? Section - positioned in normal flow after wine details */}
+        <div className="px-6 py-8 bg-gray-600 border-t-2 border-white/30 min-h-[200px]">
+          <h2 className="text-3xl font-normal mb-6 text-white font-serif">
+            Want more?
+          </h2>
+          
+          {wine?.buyAgainLink ? (
+            <a 
+              href={wine.buyAgainLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                Buy again
+              </button>
+            </a>
+          ) : (
+            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+              Explore our collection
+            </button>
+          )}
+        </div>
+
         {/* Chat Interface - moved to very bottom */}
         <div className="mt-10 pb-10">
           <EnhancedChatInterface 
@@ -306,75 +330,6 @@ export default function WineDetails() {
           setShowQRModal(false);
         }}
       />
-
-      {/* EXTREME DEBUG: Want more section OUTSIDE all containers */}
-      <div 
-        style={{ 
-          backgroundColor: 'red',
-          color: 'white',
-          padding: '40px',
-          margin: '20px 0',
-          border: '5px solid yellow',
-          fontSize: '24px',
-          textAlign: 'center',
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 99999,
-          minHeight: '300px',
-          width: '80%',
-          maxWidth: '500px',
-          boxSizing: 'border-box'
-        }}
-      >
-        <h2 style={{ color: 'white', fontSize: '32px', marginBottom: '20px' }}>
-          🔴 WANT MORE SECTION TEST 🔴
-        </h2>
-        <p style={{ marginBottom: '20px' }}>
-          This is COMPLETELY outside all containers with FIXED positioning!
-        </p>
-        
-        {wine?.buyAgainLink ? (
-          <a 
-            href={wine.buyAgainLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'block', marginTop: '20px' }}
-          >
-            <button style={{
-              backgroundColor: 'white',
-              color: 'black',
-              border: 'none',
-              borderRadius: '25px',
-              padding: '16px 24px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              width: '100%',
-              maxWidth: '300px'
-            }}>
-              Buy again
-            </button>
-          </a>
-        ) : (
-          <button style={{
-            backgroundColor: 'white',
-            color: 'black',
-            border: 'none',
-            borderRadius: '25px',
-            padding: '16px 24px',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            width: '100%',
-            maxWidth: '300px',
-            marginTop: '20px'
-          }}>
-            Explore our collection
-          </button>
-        )}
-      </div>
     </div>
   );
 }
