@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
-import { Link, useLocation, useParams } from 'wouter';
-import EnhancedChatInterface from '@/components/EnhancedChatInterface';
-import QRScanModal from '@/components/QRScanModal';
-import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
-import { DataSyncManager } from '@/utils/dataSync';
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
+import { Link, useLocation, useParams } from "wouter";
+import EnhancedChatInterface from "@/components/EnhancedChatInterface";
+import QRScanModal from "@/components/QRScanModal";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import { DataSyncManager } from "@/utils/dataSync";
 
 interface SelectedWine {
   id: number;
@@ -24,17 +24,16 @@ interface SelectedWine {
 }
 
 export default function WineDetails() {
-  console.log('🍷 WineDetails rendering at:', new Date().toISOString());
-  
   const [location] = useLocation();
   const { id } = useParams();
   const [wine, setWine] = useState<SelectedWine | null>(null);
   const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
-  const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
+  const [loadingState, setLoadingState] = useState<
+    "loading" | "loaded" | "error"
+  >("loading");
   const [chatInterfaceReady, setChatInterfaceReady] = useState(false);
-  const isScannedPage = location === '/scanned';
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -43,31 +42,26 @@ export default function WineDetails() {
     DataSyncManager.initialize();
   }, []);
 
-  // Debug component lifecycle and routing
-  useEffect(() => {
-    console.log('WineDetails mounted with wine:', wine?.id);
-    console.log('Current location:', location);
-    console.log('Route params:', { id });
-    
-    return () => {
-      console.log('WineDetails unmounting');
-    };
-  }, [wine?.id, location, id]);
-
   // Load wine data when ID changes
   useEffect(() => {
     let mounted = true;
-    setLoadingState('loading');
-    
-    const loadWineData = () => {
+    setLoadingState("loading");
+    setChatInterfaceReady(false); // Reset chat interface ready state
+
+    const loadWineData = async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const wineIdFromQuery = urlParams.get('wine');
-      const wineId = id || wineIdFromQuery || '1';
-      
+      const wineIdFromQuery = urlParams.get("wine");
+      const wineId = id || wineIdFromQuery || "1";
+
       if (wineId && mounted) {
         const wineData = DataSyncManager.getWineById(parseInt(wineId));
         if (wineData) {
-          console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
+          console.log(
+            "WineDetails: Loading wine ID",
+            wineId,
+            "found:",
+            wineData,
+          );
           const transformedWine = {
             id: wineData.id,
             name: wineData.name,
@@ -81,20 +75,23 @@ export default function WineDetails() {
             location: wineData.location,
             description: wineData.description,
             foodPairing: wineData.foodPairing,
-            conversationHistory: wineData.conversationHistory || []
+            conversationHistory: wineData.conversationHistory || [],
           };
           setWine(transformedWine);
-          setLoadingState('loaded');
-          console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
+          setLoadingState("loaded");
+          console.log(
+            "WineDetails: Wine loaded successfully:",
+            transformedWine.name,
+          );
         } else if (mounted) {
-          console.log('WineDetails: Wine not found for ID:', wineId);
-          setLoadingState('error');
+          console.log("WineDetails: Wine not found for ID:", wineId);
+          setLoadingState("error");
         }
       }
     };
-    
+
     loadWineData();
-    
+
     return () => {
       mounted = false;
     };
@@ -102,32 +99,33 @@ export default function WineDetails() {
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
-    if (detail?.action === 'voice') {
-      console.log('🎤 Voice interaction selected');
+    if (detail?.action === "voice") {
+      console.log("🎤 Voice interaction selected");
       setInteractionChoiceMade(true);
       setShowQRModal(false);
-    } else if (detail?.action === 'text') {
-      console.log('💬 Text interaction selected');
+    } else if (detail?.action === "text") {
+      console.log("💬 Text interaction selected");
       setInteractionChoiceMade(true);
       setShowQRModal(false);
     }
   };
 
   useEffect(() => {
-    window.addEventListener('qr-reset', handleQRReset);
+    window.addEventListener("qr-reset", handleQRReset);
     return () => {
-      window.removeEventListener('qr-reset', handleQRReset);
+      window.removeEventListener("qr-reset", handleQRReset);
     };
   }, []);
 
-
-
   const handleImageLoad = () => {
     setImageLoaded(true);
-    console.log('Wine image loaded successfully:', wine?.image);
+    console.log("Wine image loaded successfully:", wine?.image);
   };
 
-
+  const handleChatInterfaceReady = () => {
+    setChatInterfaceReady(true);
+    console.log("Chat interface ready");
+  };
 
   // Loading component
   const LoadingComponent = () => (
@@ -146,8 +144,13 @@ export default function WineDetails() {
       <div className="text-center">
         <div className="text-red-400 text-6xl mb-4">⚠</div>
         <h2 className="text-2xl font-bold mb-2">Wine Not Found</h2>
-        <p className="text-gray-400 mb-6">The requested wine could not be located in our collection.</p>
-        <Link href="/home-global" className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+        <p className="text-gray-400 mb-6">
+          The requested wine could not be located in our collection.
+        </p>
+        <Link
+          href="/home-global"
+          className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+        >
           Return to Collection
         </Link>
       </div>
@@ -155,179 +158,197 @@ export default function WineDetails() {
   );
 
   // Handle loading states
-  if (loadingState === 'error') {
-    return <ErrorComponent />;
-  }
-
-  // Component readiness loading condition
-  if (loadingState !== 'loaded' || !wine) {
+  if (loadingState === "loading" || !wine) {
     return <LoadingComponent />;
   }
 
-  // Debug styling to identify component mounting issues
-  const debugStyle = {
-    minHeight: '100vh',
-    overflowY: 'visible' as const,
-    overflowX: 'hidden' as const,
-    border: '3px solid red', // TEMP: to identify this component
-    animationDelay: '100ms'
-  };
+  if (loadingState === "error") {
+    return <ErrorComponent />;
+  }
 
   return (
-    <div 
-      key={wine.id} 
-      className="bg-black text-white opacity-0 animate-fade-in" 
-      style={debugStyle}>
-      <AppHeader 
-        title={wine?.name || "Wine Details"} 
-        onBack={() => window.history.back()} 
-        rightContent={
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowActions(!showActions)}
-              className="p-2 text-white hover:bg-white/10 rounded-full transition-colors"
-            >
-              <MoreHorizontal size={20} />
-            </button>
-            {showActions && (
-              <div className="absolute top-12 right-4 bg-gray-800 rounded-lg shadow-lg p-2 z-50">
-                <button
-                  onClick={() => {
-                    if (wine?.id) {
-                      // DataSyncManager.deleteWine(wine.id);
-                      window.history.back();
-                    }
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 text-red-400 hover:bg-red-400/10 rounded-md transition-colors w-full"
-                >
-                  <Trash2 size={16} />
-                  Delete Wine
-                </button>
-              </div>
-            )}
-          </div>
-        }
-      />
+    <div className="bg-black text-white min-h-screen">
+      <AppHeader />
       <HeaderSpacer />
 
-      {/* Wine Display Content */}
-      <div className="flex flex-col">
-        {/* Wine Image and Basic Info */}
-        <div className="relative">
-          <div className="flex flex-col items-center px-6 pt-6 pb-4">
-            <div className="w-48 h-64 mb-4 relative">
-              {wine?.image && (
-                <img
-                  ref={imageRef}
-                  src={wine.image}
-                  alt={wine.name}
-                  className={`w-full h-full object-contain transition-opacity duration-300 ${
-                    imageLoaded ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  onLoad={() => {
-                    setImageLoaded(true);
-                    console.log('Wine bottle image loaded:', wine.name);
-                  }}
-                  onError={() => {
-                    console.log('Wine bottle image failed to load');
-                    setImageLoaded(true);
-                  }}
-                />
-              )}
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-gray-800 rounded-lg animate-pulse" />
+      {/* Main Content Container */}
+      <div className="w-full">
+        {/* Wine Hero Section */}
+        <div className="px-6 pb-6">
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/">
+              <ArrowLeft className="w-6 h-6 text-white cursor-pointer" />
+            </Link>
+            <div className="relative">
+              <MoreHorizontal
+                className="w-6 h-6 text-white cursor-pointer"
+                onClick={() => setShowActions(!showActions)}
+              />
+              {showActions && (
+                <div className="absolute right-0 top-8 bg-gray-800 rounded-lg shadow-lg p-2 min-w-[120px] z-10">
+                  <button
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700 rounded"
+                    onClick={() => {
+                      // Handle delete action
+                      setShowActions(false);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
               )}
             </div>
-            
-            <h1 className="text-2xl font-bold text-white text-center mb-2">
-              {wine?.name}
-            </h1>
-            
-            {wine?.location && (
-              <p className="text-gray-400 text-center mb-4">
-                {wine.location}
-              </p>
-            )}
-            
-            {wine?.description && (
-              <p className="text-gray-300 text-center text-sm leading-relaxed max-w-md">
+          </div>
+
+          {/* Wine Image */}
+          <div className="text-center mb-6">
+            <div className="relative inline-block bg-gray-800 rounded-lg p-4">
+              <img
+                ref={imageRef}
+                src={wine.image}
+                alt={wine.name}
+                className="max-h-48 w-auto mx-auto object-contain"
+                onLoad={handleImageLoad}
+                style={{
+                  filter: imageLoaded ? "none" : "blur(5px)",
+                  transition: "filter 0.2s ease",
+                  opacity: imageLoaded ? 1 : 0.7,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Wine Name and Year */}
+          <h1
+            className="text-2xl font-bold text-center mb-2"
+            style={{ fontFamily: "Lora, serif" }}
+          >
+            2021 {wine.name}
+          </h1>
+
+          {/* Bottle Count */}
+          <div className="text-center text-gray-300 mb-6">
+            {wine.bottles} bottles
+          </div>
+
+          {/* Wine Ratings */}
+          <div className="flex justify-between text-center mb-6">
+            <div>
+              <div className="text-lg font-bold text-yellow-400">
+                {wine.ratings.vn}
+              </div>
+              <div className="text-xs text-gray-400">VN</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-yellow-400">
+                {wine.ratings.jd}
+              </div>
+              <div className="text-xs text-gray-400">JD</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-yellow-400">
+                {wine.ratings.ws}
+              </div>
+              <div className="text-xs text-gray-400">WS</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-yellow-400">
+                {wine.ratings.abv}%
+              </div>
+              <div className="text-xs text-gray-400">ABV</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Wine Details Section */}
+        <div className="px-6 pb-6 space-y-6">
+          {/* Location */}
+          {wine.location && (
+            <div>
+              <h3
+                className="text-lg font-semibold mb-2"
+                style={{ fontFamily: "Lora, serif" }}
+              >
+                Origin
+              </h3>
+              <p className="text-gray-300">{wine.location}</p>
+            </div>
+          )}
+
+          {/* Description */}
+          {wine.description && (
+            <div>
+              <h3
+                className="text-lg font-semibold mb-2"
+                style={{ fontFamily: "Lora, serif" }}
+              >
+                Tasting Notes
+              </h3>
+              <p className="text-gray-300 leading-relaxed">
                 {wine.description}
               </p>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
 
-        {/* Wine Ratings */}
-        <div className="px-6 py-4">
-          <h2 className="text-lg font-semibold text-white mb-3">Ratings</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-800 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-white">{wine?.ratings?.vn || 95}</div>
-              <div className="text-sm text-gray-400">Vivino</div>
+          {/* Food Pairing */}
+          {wine.foodPairing && wine.foodPairing.length > 0 && (
+            <div>
+              <h3
+                className="text-lg font-semibold mb-3"
+                style={{ fontFamily: "Lora, serif" }}
+              >
+                Perfect Pairings
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {wine.foodPairing.map((pairing, index) => (
+                  <span
+                    key={index}
+                    className="bg-white/10 px-3 py-1 rounded-full text-sm"
+                  >
+                    {pairing}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="bg-gray-800 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-white">{wine?.ratings?.jd || 93}</div>
-              <div className="text-sm text-gray-400">James Dean</div>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-white">{wine?.ratings?.ws || 92}</div>
-              <div className="text-sm text-gray-400">Wine Spectator</div>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-white">{wine?.ratings?.abv || 14.8}%</div>
-              <div className="text-sm text-gray-400">ABV</div>
-            </div>
-          </div>
+          )}
         </div>
-
-        {/* Food Pairing */}
-        {wine?.foodPairing && wine.foodPairing.length > 0 && (
-          <div className="px-6 py-4">
-            <h2 className="text-lg font-semibold text-white mb-3">Food Pairing</h2>
-            <div className="flex flex-wrap gap-2">
-              {wine.foodPairing.map((food, index) => (
-                <span
-                  key={index}
-                  className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
-                >
-                  {food}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Chat Interface */}
-        <div className="mt-6">
+        <div className="mt-0 pb-10">
           <EnhancedChatInterface
             showBuyButton={true}
-            selectedWine={wine}
-            onReady={() => setChatInterfaceReady(true)}
+            selectedWine={{
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings,
+            }}
+            onReady={handleChatInterfaceReady}
           />
         </div>
       </div>
 
       {/* QR Scan Modal */}
-      {showQRModal && (
-        <QRScanModal
-          isOpen={showQRModal}
-          onClose={() => {
-            console.log('QR Modal close triggered');
-            setShowQRModal(false);
-            setInteractionChoiceMade(true);
-          }}
-          onTextChoice={() => {
-            console.log('Text interaction selected');
-            setInteractionChoiceMade(true);
-            setShowQRModal(false);
-          }}
-          onVoiceChoice={() => {
-            console.log('Voice interaction selected');
-            setInteractionChoiceMade(true);
-            setShowQRModal(false);
-          }}
-        />
-      )}
+      <QRScanModal
+        isOpen={showQRModal}
+        onClose={() => {
+          console.log("🔄 QR Modal close triggered");
+          setShowQRModal(false);
+          setInteractionChoiceMade(true);
+        }}
+        onTextChoice={() => {
+          console.log("💬 Text interaction selected");
+          setInteractionChoiceMade(true);
+          setShowQRModal(false);
+        }}
+        onVoiceChoice={() => {
+          console.log("🎤 Voice interaction selected");
+          setInteractionChoiceMade(true);
+          setShowQRModal(false);
+        }}
+      />
     </div>
   );
 }
