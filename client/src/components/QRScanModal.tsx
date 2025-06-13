@@ -33,13 +33,12 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
         
         <Button
           onClick={() => {
-            // Close the QR modal first
-            onClose();
-            // Trigger the voice assistant
+            onVoiceChoice();
+            // Trigger the voice assistant with welcome message
             setTimeout(() => {
               // Dispatch a custom event to trigger voice assistant
               window.dispatchEvent(new CustomEvent('triggerVoiceAssistant'));
-            }, 100);
+            }, 300);
           }}
           variant="primary"
           style={{
