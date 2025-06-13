@@ -123,7 +123,7 @@ export default function WineDetails() {
       <AppHeader />
       <HeaderSpacer />
       
-      <div className="relative">
+      <div>
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
