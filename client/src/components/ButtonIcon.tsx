@@ -21,6 +21,40 @@ export function ButtonIcon({
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const { toast } = useToast();
 
+  // Typography constants matching the design library
+  const typography = {
+    h1: {
+      fontSize: "32px",
+      fontWeight: "700",
+      lineHeight: "1.2",
+      fontFamily: "Lora, serif",
+    },
+    h2: {
+      fontSize: "20px",
+      fontWeight: "600",
+      lineHeight: "1.4",
+      fontFamily: "Inter, sans-serif",
+    },
+    body: {
+      fontSize: "16px",
+      fontWeight: "400",
+      lineHeight: "1.5",
+      fontFamily: "Inter, sans-serif",
+    },
+    body1R: {
+      fontSize: "14px",
+      fontWeight: "400",
+      lineHeight: "1.4",
+      fontFamily: "Inter, sans-serif",
+    },
+    buttonPlus1: {
+      fontSize: "14px",
+      fontWeight: "600",
+      lineHeight: "1.2",
+      fontFamily: "Inter, sans-serif",
+    },
+  };
+
   // Function to clear all chat history
   const clearChatHistory = async () => {
     try {
@@ -188,13 +222,12 @@ export function ButtonIcon({
                 backgroundColor: "transparent",
                 border: "none",
                 color: "white",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
                 borderBottom: "1px solid #373737",
+                ...typography.body1R,
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
@@ -228,13 +261,12 @@ export function ButtonIcon({
                 backgroundColor: "transparent",
                 border: "none",
                 color: "white",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
                 borderBottom: onDeleteAccount ? "1px solid #373737" : "none",
+                ...typography.body1R,
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
@@ -265,12 +297,11 @@ export function ButtonIcon({
                 backgroundColor: "transparent",
                 border: "none",
                 color: "#FF6B6B",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
+                ...typography.body1R,
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "rgba(255, 107, 107, 0.1)";
@@ -355,11 +386,8 @@ export function ButtonIcon({
               <h2
                 style={{
                   color: "white",
-                  fontFamily: "Lora, serif",
-                  fontSize: "24px",
-                  fontWeight: "700",
-                  lineHeight: "1.2",
                   margin: "0 0 16px 0",
+                  ...typography.h2,
                 }}
               >
                 Chat history cleared
@@ -367,11 +395,8 @@ export function ButtonIcon({
               <p
                 style={{
                   color: "#CECECE",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  fontWeight: "400",
-                  lineHeight: "1.4",
                   margin: "0",
+                  ...typography.body,
                 }}
               >
                 How would you like to continue?
@@ -392,7 +417,7 @@ export function ButtonIcon({
                 style={{
                   width: "100%",
                   height: "56px",
-                  fontSize: "16px",
+                  ...typography.body,
                   fontWeight: "600",
                 }}
               >
@@ -405,7 +430,7 @@ export function ButtonIcon({
                 style={{
                   width: "100%",
                   height: "56px",
-                  fontSize: "16px",
+                  ...typography.body,
                   fontWeight: "600",
                 }}
               >
