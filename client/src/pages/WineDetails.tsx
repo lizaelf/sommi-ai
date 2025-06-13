@@ -174,145 +174,85 @@ export default function WineDetails() {
       {/* Main Content Container - No height constraints */}
       <div className="w-full" style={{ height: 'auto', overflow: 'visible' }}>
         {/* Wine Hero Section */}
-        <div className="px-6 pb-6">
-          <div className="flex items-center justify-between mb-6">
-            <Link href="/">
-              <ArrowLeft className="w-6 h-6 text-white cursor-pointer" />
-            </Link>
-            <div className="relative">
-              <MoreHorizontal
-                className="w-6 h-6 text-white cursor-pointer"
-                onClick={() => setShowActions(!showActions)}
-              />
-              {showActions && (
-                <div className="absolute right-0 top-8 bg-gray-800 rounded-lg shadow-lg p-2 min-w-[120px] z-10">
-                  <button
-                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700 rounded"
-                    onClick={() => {
-                      // Handle delete action
-                      setShowActions(false);
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Wine Image */}
-          <div className="text-center mb-6">
-            <div className="relative inline-block bg-gray-800 rounded-lg p-4">
-              <img
-                ref={imageRef}
-                src={wine.image}
-                alt={wine.name}
-                className="max-h-48 w-auto mx-auto object-contain"
-                onLoad={handleImageLoad}
-                style={{
-                  filter: imageLoaded ? "none" : "blur(5px)",
-                  transition: "filter 0.2s ease",
-                  opacity: imageLoaded ? 1 : 0.7,
-                }}
-              />
-            </div>
+        <div className="px-6 pt-8 pb-8">
+          {/* Wine Image - Large and Centered */}
+          <div className="text-center mb-8">
+            <img
+              ref={imageRef}
+              src={wine.image}
+              alt={wine.name}
+              className="h-80 w-auto mx-auto object-contain"
+              onLoad={handleImageLoad}
+              style={{
+                filter: imageLoaded ? "none" : "blur(10px)",
+                transition: "filter 0.3s ease",
+              }}
+            />
           </div>
 
           {/* Wine Name and Year */}
-          <h1
-            className="text-2xl font-bold text-center mb-2"
-            style={{ fontFamily: "Lora, serif" }}
-          >
+          <h1 className="text-3xl font-bold text-white text-center mb-4" style={{ fontFamily: "Lora, serif" }}>
             2021 {wine.name}
           </h1>
 
-          {/* Bottle Count */}
-          <div className="text-center text-gray-300 mb-6">
-            {wine.bottles} bottles
-          </div>
-
-          {/* Wine Ratings */}
-          <div className="flex justify-between text-center mb-6">
-            <div>
-              <div className="text-lg font-bold text-yellow-400">
-                {wine.ratings.vn}
-              </div>
-              <div className="text-xs text-gray-400">VN</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-yellow-400">
-                {wine.ratings.jd}
-              </div>
-              <div className="text-xs text-gray-400">JD</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-yellow-400">
-                {wine.ratings.ws}
-              </div>
-              <div className="text-xs text-gray-400">WS</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-yellow-400">
-                {wine.ratings.abv}%
-              </div>
-              <div className="text-xs text-gray-400">ABV</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Wine Details Section */}
-        <div className="px-6 pb-6 space-y-6">
-          {/* Location */}
+          {/* Location with Flag */}
           {wine.location && (
-            <div>
-              <h3
-                className="text-lg font-semibold mb-2"
-                style={{ fontFamily: "Lora, serif" }}
-              >
-                Origin
-              </h3>
-              <p className="text-gray-300">{wine.location}</p>
-            </div>
-          )}
-
-          {/* Description */}
-          {wine.description && (
-            <div>
-              <h3
-                className="text-lg font-semibold mb-2"
-                style={{ fontFamily: "Lora, serif" }}
-              >
-                Tasting Notes
-              </h3>
-              <p className="text-gray-300 leading-relaxed">
-                {wine.description}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <span className="text-2xl">🇺🇸</span>
+              <p className="text-gray-400 text-center">
+                {wine.location}
               </p>
             </div>
           )}
 
-          {/* Food Pairing */}
-          {wine.foodPairing && wine.foodPairing.length > 0 && (
+          {/* Wine Ratings - Horizontal Layout */}
+          <div className="flex justify-center gap-8 text-center mb-8">
             <div>
-              <h3
-                className="text-lg font-semibold mb-3"
-                style={{ fontFamily: "Lora, serif" }}
-              >
-                Perfect Pairings
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {wine.foodPairing.map((pairing, index) => (
-                  <span
-                    key={index}
-                    className="bg-white/10 px-3 py-1 rounded-full text-sm"
-                  >
-                    {pairing}
-                  </span>
-                ))}
-              </div>
+              <div className="text-xl font-bold text-white">{wine.ratings.vn}</div>
+              <div className="text-sm text-gray-400">VN</div>
             </div>
+            <div>
+              <div className="text-xl font-bold text-white">{wine.ratings.jd}</div>
+              <div className="text-sm text-gray-400">JD</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-white">{wine.ratings.ws}</div>
+              <div className="text-sm text-gray-400">WS</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-white">{wine.ratings.abv}%</div>
+              <div className="text-sm text-gray-400">ABV</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Wine Description */}
+        <div className="px-6 pb-8">
+          {wine.description && (
+            <p className="text-gray-300 leading-relaxed text-base">
+              {wine.description}
+            </p>
           )}
         </div>
+
+        {/* Food Pairing Section */}
+        {wine.foodPairing && wine.foodPairing.length > 0 && (
+          <div className="px-6 pb-8">
+            <h2 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "Lora, serif" }}>
+              Food pairing
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {wine.foodPairing.map((pairing, index) => (
+                <span
+                  key={index}
+                  className="bg-white/10 px-4 py-2 rounded-full text-sm text-white"
+                >
+                  {pairing}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Chat Interface */}
         <div className="mt-0 pb-10">
