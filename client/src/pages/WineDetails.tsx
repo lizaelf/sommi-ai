@@ -1186,7 +1186,7 @@ export default function WineDetails() {
         </div>
 
         {/* Chat Interface */}
-        <div className="mt-0 pb-10" style={{ backgroundColor: #909090 }}>
+        <div className="mt-0 pb-10" >
           <div
             className="flex flex-col h-auto"
             style={{ width: "100%" }}
@@ -1197,8 +1197,6 @@ export default function WineDetails() {
               <main
                 className="flex-1 flex flex-col overflow-hidden"
                 style={{
-                  backgroundColor: "transparent",
-                  backgroundImage: "none",
                   width: "100%",
                 }}
               >
@@ -1207,6 +1205,7 @@ export default function WineDetails() {
                   ref={chatContainerRef}
                   style={{
                     backgroundColor: "transparent",
+                    backgroundImage: "none",
                     flex: "1",
                     overflowY: "auto",
                     scrollbarWidth: "none",
