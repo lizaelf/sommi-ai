@@ -168,8 +168,9 @@ export default function WineDetails() {
                 className="max-h-48 w-auto mx-auto object-contain"
                 onLoad={handleImageLoad}
                 style={{
-                  filter: imageLoaded ? 'none' : 'blur(10px)',
-                  transition: 'filter 0.3s ease'
+                  filter: imageLoaded ? 'none' : 'blur(5px)', // Reduced blur
+                  transition: 'filter 0.2s ease', // Faster transition
+                  opacity: imageLoaded ? 1 : 0.7 // Add opacity change
                 }}
               />
             </div>
