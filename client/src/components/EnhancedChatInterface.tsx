@@ -986,30 +986,29 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-[100dvh] max-h-[100dvh] mx-auto" style={{ maxWidth: "1200px" }}>
+    <div className="flex flex-col mx-auto" style={{ maxWidth: "1200px", height: "auto" }}>
       {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1" style={{ overflow: "visible" }}>
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-background overflow-hidden" style={{
+        <main className="flex-1 flex flex-col bg-background" style={{
           backgroundColor: "#0A0A0A !important",
-          backgroundImage: "none !important"
+          backgroundImage: "none !important",
+          overflow: "visible"
         }}>
-          {/* Scrollable container */}
+          {/* Content container */}
           <div
             ref={chatContainerRef}
-            className="flex-1 overflow-y-auto scrollbar-hide"
+            className="flex-1"
+            style={{ overflow: "visible" }}
           >
-            {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
+            {/* Wine bottle image with natural height */}
             <div
               className="w-full flex flex-col items-center justify-center py-8 relative"
               style={{
                 backgroundColor: "#0A0A0A",
                 paddingTop: "75px", // Match the header height exactly
-                minHeight: "100vh", // Make the div full screen height
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
+                minHeight: "auto",
+                position: "relative",
               }}
             >
               {/* Wine bottle image */}

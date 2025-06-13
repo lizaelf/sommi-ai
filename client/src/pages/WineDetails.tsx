@@ -122,8 +122,8 @@ export default function WineDetails() {
       <AppHeader />
       <HeaderSpacer />
 
-      {/* Main Content Container - Completely removed height constraints */}
-      <div className="w-full min-h-screen" style={{ height: 'auto', overflow: 'visible' }}>
+      {/* Main Content Container - No height constraints */}
+      <div className="w-full" style={{ height: 'auto', overflow: 'visible' }}>
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
