@@ -1205,8 +1205,13 @@ export default function WineDetails() {
                 {/* Scrollable container */}
                 <div
                   ref={chatContainerRef}
-                  className="flex-1 overflow-y-auto scrollbar-hide"
-                  style={{ backgroundColor: "transparent" }}
+                  style={{
+                    backgroundColor: "transparent",
+                    flex: "1",
+                    overflowY: "auto",
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                  }}
                 >
                   {/* Conversation Content */}
                   <div 
