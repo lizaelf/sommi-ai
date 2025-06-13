@@ -406,6 +406,23 @@ export default function WineDetails() {
     };
   }, [id]);
 
+  // Detect QR code access and show interaction choice
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isQRAccess = urlParams.get('qr') === 'true' || 
+                       urlParams.get('source') === 'qr' ||
+                       document.referrer === '' || 
+                       !document.referrer.includes(window.location.hostname);
+    
+    // Check if user hasn't made interaction choice yet and this appears to be QR access
+    if (isQRAccess && !interactionChoiceMade && loadingState === 'loaded') {
+      // Small delay to ensure page is fully loaded before showing modal
+      setTimeout(() => {
+        setShowQRModal(true);
+      }, 500);
+    }
+  }, [loadingState, interactionChoiceMade]);
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
