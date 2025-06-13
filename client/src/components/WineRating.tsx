@@ -34,6 +34,7 @@ export default function WineRating({
             gap: `${gap / 2}px`,
             flexWrap: "wrap" as const,
             justifyContent: align === "left" ? "flex-start" : "center",
+            width: "fit-content",
           },
           ratingItem: {
             color: "white",
@@ -60,6 +61,7 @@ export default function WineRating({
             gap: `${gap / 4}px`,
             flexWrap: "wrap" as const,
             justifyContent: align === "left" ? "flex-start" : "center",
+            width: "fit-content",
           },
           ratingItem: {
             color: "white",
@@ -86,6 +88,7 @@ export default function WineRating({
             gap: `${gap}px`,
             flexWrap: "wrap" as const,
             justifyContent: align === "left" ? "flex-start" : "center",
+            width: "fit-content",
           },
           ratingItem: {
             color: "white",

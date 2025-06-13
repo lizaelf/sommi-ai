@@ -209,8 +209,6 @@ export default function WineDetails() {
       <div
         className="w-full flex flex-col items-center justify-center py-8 relative"
         style={{
-          backgroundColor: "#0A0A0A",
-          paddingTop: "75px", // Match the header height exactly
           minHeight: "100vh", // Make the div full screen height
         }}
       >
