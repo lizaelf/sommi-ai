@@ -820,6 +820,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       alignItems: "center",
                       minHeight: "200px",
                       width: "100%",
+                      textAlign: "center",
                     }}
                   >
                     <p
