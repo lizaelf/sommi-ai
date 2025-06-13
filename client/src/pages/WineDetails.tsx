@@ -1135,14 +1135,17 @@ export default function WineDetails() {
                   {/* Wine Name */}
                   <h2
                     style={{
-                      ...typography.h2,
+                      ...typography.buttonPlus1,
                       color: "white",
                       textAlign: "center",
                       margin: "0 0 16px 0",
-                      height: "72px",
+                      height: "50px",
                       display: "flex",
-                      alignItems: "flex-start",
+                      alignItems: "center",
                       justifyContent: "center",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {recommendedWine.year ? `${recommendedWine.year} ` : ""}{recommendedWine.name}
