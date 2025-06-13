@@ -13,7 +13,6 @@ interface WineRatingProps {
   className?: string;
   style?: React.CSSProperties;
   align?: "center" | "left";
-  hideAbv?: boolean;
 }
 
 export default function WineRating({
@@ -23,7 +22,6 @@ export default function WineRating({
   className = "",
   style = {},
   align = "center",
-  hideAbv = false,
 }: WineRatingProps) {
   // Define styles based on variant
   const getVariantStyles = () => {
@@ -168,16 +166,7 @@ export default function WineRating({
         </span>
       )}
 
-      {ratings.abv && !hideAbv && (
-        <span style={styles.ratingItem}>
-          <span style={styles.valueStyle}>
-            {variant === "compact" || variant === "minimal"
-              ? `ABV: ${ratings.abv}%`
-              : `${ratings.abv}%`}
-          </span>
-          {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
-        </span>
-      )}
+
 
     </div>
   );
