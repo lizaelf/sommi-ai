@@ -323,15 +323,10 @@ export default function WineDetails() {
     DataSyncManager.initialize();
   }, []);
 
-  // Handle chat interface ready callback
-  const handleChatInterfaceReady = () => {
-    setChatInterfaceReady(true);
-    console.log("Chat interface ready");
-  };
-
   // Initialize chat interface ready state
   useEffect(() => {
-    handleChatInterfaceReady();
+    setChatInterfaceReady(true);
+    console.log("Chat interface ready");
   }, []);
 
   // Initialize portal element for modals
