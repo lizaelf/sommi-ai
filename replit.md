@@ -58,6 +58,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - Enhanced component with proper default export and interface compatibility
 - Maintained conversation history, voice assistant, and suggestion features
 
+### WineDetails Page Rollback
+- Restored WineDetails page to original structure with integrated wine display elements
+- Maintained separation between wine display content and EnhancedChatInterface
+- Preserved wine image, ratings, food pairing, and description sections
+- Kept clean component architecture without duplicated chat interface code
+- Fixed QRScanModal integration and removed non-existent DataSyncManager methods
+
 ### Navigation Enhancement
 - Wine recommendation cards now navigate to `/wine-details/${id}` on click
 - HomeGlobal wine cards use proper wine details routing
