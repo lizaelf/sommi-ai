@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
-// Removed unused import
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 
 // Ensure window.voiceAssistant type is available
 declare global {
@@ -400,21 +400,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       />
       
       {isUser ? (
-        // User Message - Enhanced styling with gradient
-        <div className="flex justify-end mb-4">
-          <div className="bg-gradient-to-r from-blue-600/30 to-purple-600/30 text-white rounded-2xl py-3 px-4 max-w-[85%] border border-blue-400/40 shadow-lg backdrop-blur-xl text-sm sm:text-base">
-            <div className="leading-relaxed">
-              {formatContent(message.content)}
-            </div>
+        // User Message - Smaller and right-aligned
+        <div className="flex justify-end mb-2">
+          <div className="bg-primary/10 text-foreground rounded-lg py-1.5 sm:py-2 px-3 sm:px-4 max-w-[85%] border border-primary/20 text-sm sm:text-base">
+            {formatContent(message.content)}
           </div>
         </div>
       ) : (
-        // AI Message - Enhanced wine info style with improved design
-        <div data-role="assistant" className="relative mb-4">
-          <div className="bg-gradient-to-r from-gray-800/50 to-gray-700/50 text-white/95 rounded-2xl py-4 px-5 border border-gray-600/40 shadow-xl backdrop-blur-xl">
-            <div className="text-foreground font-normal whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
-              {formatContent(message.content)}
-            </div>
+        // AI Message - Wine info style with full text display
+        <div data-role="assistant" className="relative">
+          <div className="text-foreground font-normal whitespace-pre-wrap">
+            {formatContent(message.content)}
           </div>
           
           {/* Play/Pause Button - Always show for assistant messages */}
