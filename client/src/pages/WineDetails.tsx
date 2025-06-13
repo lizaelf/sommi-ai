@@ -147,7 +147,7 @@ export default function WineDetails() {
                       setShowActions(false);
                       
                       try {
-                        // Clear chat history for this wine
+                        // Clear only chat history - no other user data affected
                         const response = await fetch('/api/conversations', {
                           method: 'DELETE',
                           headers: {
@@ -157,7 +157,12 @@ export default function WineDetails() {
                         
                         if (response.ok) {
                           console.log('Chat history cleared successfully');
-                          // Trigger a refresh of the chat interface
+                          // Clear only conversation data from localStorage
+                          localStorage.removeItem("currentConversationId");
+                          localStorage.removeItem("conversations");
+                          localStorage.removeItem("messages");
+                          
+                          // Trigger a refresh of the chat interface only
                           window.dispatchEvent(new CustomEvent('chat-history-cleared'));
                         } else {
                           console.error('Failed to clear chat history');
@@ -169,7 +174,7 @@ export default function WineDetails() {
                     className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-white/10 rounded-md transition-colors"
                   >
                     <Trash2 size={16} />
-                    Clear Chat
+                    Clear Chat History
                   </button>
                 </div>
               )}
