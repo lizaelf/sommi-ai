@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
-import ChatInterface from "@/components/ChatInterface";
+import EnhancedChatInterface from "@/components/EnhancedChatInterface";
 import QRScanModal from "@/components/QRScanModal";
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";

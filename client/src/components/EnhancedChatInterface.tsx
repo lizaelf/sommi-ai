@@ -17,6 +17,7 @@ import {
   isStreamingSupported,
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
+import ContactBottomSheet, { ContactFormData } from "./ContactBottomSheet";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -946,8 +947,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         )}
       </div>
 
-      {/* Contact Bottom Sheet */}
-      {animationState !== "closed" &&
+      <ContactBottomSheet
+        isOpen={animationState !== "closed"}
+        onClose={handleCloseContactSheet}
+        onSubmit={handleSubmit}
+      />
+
+      {/* Legacy Contact Bottom Sheet - keeping for reference but commented out */}
+      {false && animationState !== "closed" &&
         portalElement &&
         createPortal(
           <div

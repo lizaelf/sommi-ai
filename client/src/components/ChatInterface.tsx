@@ -83,37 +83,29 @@ export default function ChatInterface({
     ));
   };
 
-  // Initialize conversation
+  // Initialize conversation - use the hook's built-in initialization
   useEffect(() => {
     const initializeConversation = async () => {
       console.log("Initializing conversation...");
-      try {
-        const conversations = await getAllConversations();
-        
-        if (conversations && conversations.length > 0) {
-          const mostRecent = conversations[0];
-          console.log(`Using most recent conversation from backend: ${mostRecent.id}`);
-          
-          const conversationWithMessages = await getConversationById(mostRecent.id);
-          if (conversationWithMessages) {
-            setCurrentConversationId(mostRecent.id);
-            setMessages(conversationWithMessages.messages || []);
-            console.log(`Loaded ${conversationWithMessages.messages?.length || 0} messages from backend`);
-          }
-        }
-        
+      
+      // The useConversation hook handles initialization automatically
+      if (hookConversationId) {
+        setCurrentConversationId(hookConversationId);
         setIsComponentReady(true);
         console.log("Chat interface ready");
         onReady?.();
-      } catch (error) {
-        console.error("Error initializing conversation:", error);
-        setIsComponentReady(true);
-        onReady?.();
+      } else {
+        // Wait a bit for the hook to initialize
+        setTimeout(() => {
+          setIsComponentReady(true);
+          console.log("Chat interface ready");
+          onReady?.();
+        }, 100);
       }
     };
 
     initializeConversation();
-  }, [getAllConversations, getConversationById, setMessages, onReady]);
+  }, [hookConversationId, onReady]);
 
   // Wine data initialization
   useEffect(() => {
