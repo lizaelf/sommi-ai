@@ -743,7 +743,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             {/* Conversation Content */}
             <div>
               {/* Chat Title */}
-              <div style={{ marginBottom: "24px", paddingLeft: "20px", paddingRight: "20px" }}>
+              <div style={{ marginBottom: "24px" }}>
                 <h1
                   style={{
                     color: "white",
