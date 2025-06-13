@@ -119,15 +119,6 @@ export default function WineDetails() {
     <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'visible', overflowX: 'hidden' }}>
       <AppHeader />
       <HeaderSpacer />
-      
-
-      
-      {/* TEST SECTIONS AT TOP */}
-      <div style={{ padding: '24px', backgroundColor: '#ff0000', margin: '16px 0', border: '4px solid #00ff00' }}>
-        <h2 style={{ color: 'white', fontSize: '32px', fontWeight: 'bold' }}>
-          TOP TEST SECTION - SHOULD BE VISIBLE
-        </h2>
-      </div>
 
       {/* Main Content Container - Completely removed height constraints */}
       <div className="w-full min-h-screen" style={{ height: 'auto', overflow: 'visible' }}>
@@ -276,55 +267,82 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* Simple inline sections */}
-        <div style={{ padding: '24px', backgroundColor: '#1a1a1a', margin: '16px 0' }}>
-          <h2 style={{ color: 'white', fontSize: '28px', marginBottom: '16px', fontFamily: 'Lora, serif' }}>
+        {/* Want more? Section */}
+        <div className="px-6 py-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             Want more?
           </h2>
-          <button style={{ 
-            width: '100%', 
-            backgroundColor: 'white', 
-            color: 'black', 
-            padding: '16px', 
-            borderRadius: '24px',
-            border: 'none',
-            fontSize: '16px',
-            fontWeight: '500'
-          }}>
-            Buy again
-          </button>
+          
+          {wine?.buyAgainLink ? (
+            <a 
+              href={wine.buyAgainLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                Buy again
+              </button>
+            </a>
+          ) : (
+            <div className="w-full bg-white/15 text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium text-center">
+              Explore our collection
+            </div>
+          )}
         </div>
 
-        <div style={{ padding: '24px', backgroundColor: '#2a2a2a', margin: '16px 0' }}>
-          <h2 style={{ color: 'white', fontSize: '28px', marginBottom: '16px', fontFamily: 'Lora, serif' }}>
+        {/* We recommend Section */}
+        <div className="px-6 pb-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             We recommend
           </h2>
-          <div style={{ display: 'flex', gap: '16px', overflowX: 'auto' }}>
-            <div style={{ 
-              minWidth: '200px', 
-              backgroundColor: 'rgba(255,255,255,0.1)', 
-              padding: '16px', 
-              borderRadius: '16px',
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}>
-              <div style={{ 
-                width: '100%', 
-                height: '150px', 
-                backgroundColor: 'rgba(255,255,255,0.05)', 
-                borderRadius: '8px',
-                marginBottom: '12px'
-              }}></div>
-              <h3 style={{ color: 'white', fontSize: '18px', textAlign: 'center', marginBottom: '8px' }}>
-                Estate Chardonnay
+          
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {/* Wine Recommendation 1 - Estate Chardonnay */}
+            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
+              <div 
+                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')"
+                }}
+              />
+              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
+                2022 Estate Chardonnay
               </h3>
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                <span style={{ 
-                  backgroundColor: 'rgba(255,255,255,0.15)', 
-                  color: 'white', 
-                  padding: '4px 12px', 
-                  borderRadius: '16px',
-                  fontSize: '14px'
-                }}>95 VN</span>
+              <div className="flex gap-2 justify-center flex-wrap">
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  95 <span className="opacity-70">VN</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  93 <span className="opacity-70">JD</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  93 <span className="opacity-70">WS</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Wine Recommendation 2 - Monte Bello */}
+            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
+              <div 
+                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')"
+                }}
+              />
+              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
+                2021 Monte Bello Cabernet Sauvignon
+              </h3>
+              <div className="flex gap-2 justify-center flex-wrap">
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  95 <span className="opacity-70">VN</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  93 <span className="opacity-70">JD</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  93 <span className="opacity-70">WS</span>
+                </span>
               </div>
             </div>
           </div>
