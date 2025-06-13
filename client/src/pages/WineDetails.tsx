@@ -20,7 +20,9 @@ import {
   createStreamingClient,
   isStreamingSupported,
 } from "@/lib/streamingClient";
-import ContactBottomSheet, { ContactFormData } from "@/components/ContactBottomSheet";
+import ContactBottomSheet, {
+  ContactFormData,
+} from "@/components/ContactBottomSheet";
 import typography from "@/styles/typography";
 
 interface SelectedWine {
@@ -47,7 +49,9 @@ export default function WineDetails() {
   const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
-  const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
+  const [loadingState, setLoadingState] = useState<
+    "loading" | "loaded" | "error"
+  >("loading");
   const [chatInterfaceReady, setChatInterfaceReady] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -59,7 +63,9 @@ export default function WineDetails() {
   const [showChatInput, setShowChatInput] = useState(true);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
   const [showContactSheet, setShowContactSheet] = useState(false);
-  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
+  const [animationState, setAnimationState] = useState<
+    "closed" | "opening" | "open" | "closing"
+  >("closed");
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const [hasSharedContact, setHasSharedContact] = useState(false);
   const [formData, setFormData] = useState({
@@ -77,7 +83,7 @@ export default function WineDetails() {
   const [selectedCountry, setSelectedCountry] = useState({
     flag: "🇺🇸",
     dial_code: "+1",
-    name: "United States"
+    name: "United States",
   });
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
@@ -85,12 +91,8 @@ export default function WineDetails() {
   const { toast } = useToast();
 
   // Chat conversation management
-  const {
-    messages,
-    currentConversationId,
-    addMessage,
-    refetchMessages,
-  } = useConversation();
+  const { messages, currentConversationId, addMessage, refetchMessages } =
+    useConversation();
 
   // API status check
   const { data: apiStatus } = useQuery({
@@ -100,10 +102,10 @@ export default function WineDetails() {
 
   // Chat functions
   const formatContent = (content: string) => {
-    return content.split('\n').map((line, index) => (
+    return content.split("\n").map((line, index) => (
       <span key={index}>
         {line}
-        {index < content.split('\n').length - 1 && <br />}
+        {index < content.split("\n").length - 1 && <br />}
       </span>
     ));
   };
@@ -291,30 +293,48 @@ export default function WineDetails() {
 
   // Helper functions for wine data
   const getWineHistory = () => {
-    return wine?.description || "Lytton Springs is a renowned single-vineyard red wine produced by Ridge Vineyards, located in the Dry Creek Valley of Sonoma County, California. Celebrated for its rich heritage and distinctive field-blend style, Lytton Springs has become a benchmark for Zinfandel-based wines in the United States.";
+    return (
+      wine?.description ||
+      "Lytton Springs is a renowned single-vineyard red wine produced by Ridge Vineyards, located in the Dry Creek Valley of Sonoma County, California. Celebrated for its rich heritage and distinctive field-blend style, Lytton Springs has become a benchmark for Zinfandel-based wines in the United States."
+    );
   };
 
   const getFoodPairingContent = () => {
     return {
-      dishes: wine?.foodPairing || ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"]
+      dishes: wine?.foodPairing || [
+        "Grilled lamb",
+        "BBQ ribs",
+        "Aged cheddar",
+        "Dark chocolate desserts",
+      ],
     };
   };
 
   const getCheesePairingContent = () => {
     return {
-      cheeses: ["Aged Gouda", "Manchego", "Aged Cheddar", "Pecorino Romano"]
+      cheeses: ["Aged Gouda", "Manchego", "Aged Cheddar", "Pecorino Romano"],
     };
   };
 
   const getVegetarianPairingContent = () => {
     return {
-      dishes: ["Roasted eggplant", "Mushroom risotto", "Grilled portobello", "Vegetarian lasagna"]
+      dishes: [
+        "Roasted eggplant",
+        "Mushroom risotto",
+        "Grilled portobello",
+        "Vegetarian lasagna",
+      ],
     };
   };
 
   const getAvoidPairingContent = () => {
     return {
-      items: ["Delicate fish", "Light salads", "Citrus-based dishes", "Spicy Asian cuisine"]
+      items: [
+        "Delicate fish",
+        "Light salads",
+        "Citrus-based dishes",
+        "Spicy Asian cuisine",
+      ],
     };
   };
 
@@ -351,8 +371,8 @@ export default function WineDetails() {
       setShowScrollToBottom(!isNearBottom && scrollHeight > clientHeight);
     };
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Auto-scroll to bottom when new messages arrive
@@ -368,33 +388,33 @@ export default function WineDetails() {
 
     const loadWineData = async () => {
       try {
-        setLoadingState('loading');
-        
+        setLoadingState("loading");
+
         if (!id) {
           if (mounted) {
-            setLoadingState('error');
+            setLoadingState("error");
           }
           return;
         }
 
         // Get wine from DataSyncManager
         const wineData = DataSyncManager.getWineById(parseInt(id));
-        
+
         if (!wineData) {
           if (mounted) {
-            setLoadingState('error');
+            setLoadingState("error");
           }
           return;
         }
 
         if (mounted) {
           setWine(wineData);
-          setLoadingState('loaded');
+          setLoadingState("loaded");
         }
       } catch (error) {
         console.error("Error loading wine data:", error);
         if (mounted) {
-          setLoadingState('error');
+          setLoadingState("error");
         }
       }
     };
@@ -412,11 +432,11 @@ export default function WineDetails() {
     const initializeScrolling = () => {
       // Reset scroll position to enable proper scrolling
       window.scrollTo(0, 0);
-      
+
       // Ensure document body has proper scroll behavior
-      document.body.style.overflow = 'auto';
-      document.documentElement.style.overflow = 'auto';
-      
+      document.body.style.overflow = "auto";
+      document.documentElement.style.overflow = "auto";
+
       // Force a reflow to ensure scroll is working
       document.body.offsetHeight;
     };
@@ -429,13 +449,14 @@ export default function WineDetails() {
   // Detect QR code access and show interaction choice
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const isQRAccess = urlParams.get('qr') === 'true' || 
-                       urlParams.get('source') === 'qr' ||
-                       document.referrer === '' || 
-                       !document.referrer.includes(window.location.hostname);
-    
+    const isQRAccess =
+      urlParams.get("qr") === "true" ||
+      urlParams.get("source") === "qr" ||
+      document.referrer === "" ||
+      !document.referrer.includes(window.location.hostname);
+
     // Check if user hasn't made interaction choice yet and this appears to be QR access
-    if (isQRAccess && !interactionChoiceMade && loadingState === 'loaded') {
+    if (isQRAccess && !interactionChoiceMade && loadingState === "loaded") {
       // Small delay to ensure page is fully loaded before showing modal
       setTimeout(() => {
         setShowQRModal(true);
@@ -451,7 +472,7 @@ export default function WineDetails() {
   const ErrorComponent = () => (
     <div className="flex items-center justify-center h-[calc(100vh-100px)]">
       <div className="text-center">
-        <div 
+        <div
           style={{
             color: "white",
             marginBottom: "16px",
@@ -460,7 +481,7 @@ export default function WineDetails() {
         >
           Wine Not Found
         </div>
-        <p 
+        <p
           style={{
             color: "#999999",
             marginBottom: "24px",
@@ -470,7 +491,7 @@ export default function WineDetails() {
           The wine you're looking for could not be found.
         </p>
         <Link href="/">
-          <button 
+          <button
             style={{
               backgroundColor: "white",
               color: "black",
@@ -498,7 +519,7 @@ export default function WineDetails() {
           <span></span>
           <span></span>
         </div>
-        <p 
+        <p
           style={{
             marginTop: "16px",
             color: "#999999",
@@ -520,7 +541,10 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'auto', overflowX: 'hidden' }}>
+    <div
+      className="bg-black text-white"
+      style={{ minHeight: "100vh", overflowY: "auto", overflowX: "hidden" }}
+    >
       <AppHeader />
       <HeaderSpacer />
 
@@ -532,10 +556,7 @@ export default function WineDetails() {
         }}
       >
         {/* Wine bottle image - THIS CONTAINS THE BLURRED CIRCLE/GLOW EFFECT */}
-        <WineBottleImage 
-          image={wine?.image} 
-          wineName={wine?.name} 
-        />
+        <WineBottleImage image={wine?.image} wineName={wine?.name} />
 
         {/* Wine name with typography styling */}
         <div
@@ -575,7 +596,10 @@ export default function WineDetails() {
           }}
         >
           <USFlagImage />
-          <span>{wine?.location || "Santa Cruz Mountains | California | United States"}</span>
+          <span>
+            {wine?.location ||
+              "Santa Cruz Mountains | California | United States"}
+          </span>
         </div>
 
         {/* Wine ratings section */}
@@ -632,9 +656,7 @@ export default function WineDetails() {
           {/* Red Meat Pairing - Expandable */}
           <div
             onClick={() => {
-              setExpandedItem(
-                expandedItem === "redMeat" ? null : "redMeat",
-              );
+              setExpandedItem(expandedItem === "redMeat" ? null : "redMeat");
             }}
             style={{
               backgroundColor: "#191919",
@@ -728,12 +750,22 @@ export default function WineDetails() {
                 }}
               >
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                  {getFoodPairingContent().dishes.map((dish: string, index: number) => (
-                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ ...typography.body }}>🥩</span>
-                      <span style={{ ...typography.body }}>{dish}</span>
-                    </div>
-                  ))}
+                  {getFoodPairingContent().dishes.map(
+                    (dish: string, index: number) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span style={{ ...typography.body }}>🥩</span>
+                        <span style={{ ...typography.body }}>{dish}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             )}
@@ -742,9 +774,7 @@ export default function WineDetails() {
           {/* Cheese Pairings - Expandable */}
           <div
             onClick={() => {
-              setExpandedItem(
-                expandedItem === "cheese" ? null : "cheese",
-              );
+              setExpandedItem(expandedItem === "cheese" ? null : "cheese");
             }}
             style={{
               backgroundColor: "#191919",
@@ -812,12 +842,22 @@ export default function WineDetails() {
                 }}
               >
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                  {getCheesePairingContent().cheeses.map((cheese: string, index: number) => (
-                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ ...typography.body }}>🧀</span>
-                      <span style={{ ...typography.body }}>{cheese}</span>
-                    </div>
-                  ))}
+                  {getCheesePairingContent().cheeses.map(
+                    (cheese: string, index: number) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span style={{ ...typography.body }}>🧀</span>
+                        <span style={{ ...typography.body }}>{cheese}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             )}
@@ -896,12 +936,22 @@ export default function WineDetails() {
                 }}
               >
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                  {getVegetarianPairingContent().dishes.map((dish: string, index: number) => (
-                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ ...typography.body }}>🥗</span>
-                      <span style={{ ...typography.body }}>{dish}</span>
-                    </div>
-                  ))}
+                  {getVegetarianPairingContent().dishes.map(
+                    (dish: string, index: number) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span style={{ ...typography.body }}>🥗</span>
+                        <span style={{ ...typography.body }}>{dish}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             )}
@@ -978,12 +1028,24 @@ export default function WineDetails() {
                 }}
               >
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                  {getAvoidPairingContent().items.map((item: string, index: number) => (
-                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ ...typography.body, color: "red" }}>❌</span>
-                      <span style={{ ...typography.body }}>{item}</span>
-                    </div>
-                  ))}
+                  {getAvoidPairingContent().items.map(
+                    (item: string, index: number) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span style={{ ...typography.body, color: "red" }}>
+                          ❌
+                        </span>
+                        <span style={{ ...typography.body }}>{item}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             )}
@@ -1013,7 +1075,7 @@ export default function WineDetails() {
           <Button
             onClick={() => {
               if (wine?.buyAgainLink) {
-                window.open(wine.buyAgainLink, '_blank');
+                window.open(wine.buyAgainLink, "_blank");
               }
             }}
             variant="primary"
@@ -1061,10 +1123,14 @@ export default function WineDetails() {
             }}
           >
             {(() => {
-              const adminWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+              const adminWines = JSON.parse(
+                localStorage.getItem("admin-wines") || "[]",
+              );
               const currentWineId = wine?.id;
-              const filteredWines = adminWines.filter((wine: any) => wine.id !== currentWineId);
-              
+              const filteredWines = adminWines.filter(
+                (wine: any) => wine.id !== currentWineId,
+              );
+
               if (filteredWines.length === 0) {
                 return (
                   <div
@@ -1080,23 +1146,27 @@ export default function WineDetails() {
                       textAlign: "center",
                     }}
                   >
-                    <span style={{ 
-                      color: "rgba(255, 255, 255, 0.8)", 
-                      marginBottom: "8px",
-                      ...typography.body
-                    }}>
+                    <span
+                      style={{
+                        color: "rgba(255, 255, 255, 0.8)",
+                        marginBottom: "8px",
+                        ...typography.body,
+                      }}
+                    >
                       No other wines available
                     </span>
-                    <span style={{ 
-                      color: "rgba(255, 255, 255, 0.6)", 
-                      ...typography.body1R
-                    }}>
+                    <span
+                      style={{
+                        color: "rgba(255, 255, 255, 0.6)",
+                        ...typography.body1R,
+                      }}
+                    >
                       Add more wines in the admin panel to see recommendations
                     </span>
                   </div>
                 );
               }
-              
+
               return filteredWines.map((recommendedWine: any) => (
                 <div
                   key={recommendedWine.id}
@@ -1114,10 +1184,12 @@ export default function WineDetails() {
                     transition: "all 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                    e.currentTarget.style.backgroundColor =
+                      "rgba(255, 255, 255, 0.12)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                    e.currentTarget.style.backgroundColor =
+                      "rgba(255, 255, 255, 0.08)";
                   }}
                   onClick={() => {
                     if (recommendedWine.id) {
@@ -1130,7 +1202,9 @@ export default function WineDetails() {
                     style={{
                       width: "120px",
                       height: "200px",
-                      backgroundImage: recommendedWine.image ? `url('${recommendedWine.image}')` : "none",
+                      backgroundImage: recommendedWine.image
+                        ? `url('${recommendedWine.image}')`
+                        : "none",
                       backgroundColor: "transparent",
                       backgroundSize: "contain",
                       backgroundRepeat: "no-repeat",
@@ -1142,16 +1216,18 @@ export default function WineDetails() {
                     }}
                   >
                     {!recommendedWine.image && (
-                      <span style={{ 
-                        color: "rgba(255, 255, 255, 0.6)", 
-                        textAlign: "center",
-                        ...typography.body1M
-                      }}>
+                      <span
+                        style={{
+                          color: "rgba(255, 255, 255, 0.6)",
+                          textAlign: "center",
+                          ...typography.body1M,
+                        }}
+                      >
                         No Image
                       </span>
                     )}
                   </div>
-                  
+
                   {/* Wine Name */}
                   <h2
                     style={{
@@ -1168,12 +1244,13 @@ export default function WineDetails() {
                       lineHeight: "1.2",
                     }}
                   >
-                    {recommendedWine.year ? `${recommendedWine.year} ` : ""}{recommendedWine.name}
+                    {recommendedWine.year ? `${recommendedWine.year} ` : ""}
+                    {recommendedWine.name}
                   </h2>
-                  
+
                   {/* Rating Badges */}
                   {recommendedWine.ratings && (
-                    <WineRating 
+                    <WineRating
                       ratings={recommendedWine.ratings}
                       gap={15}
                       hideAbv={true}
@@ -1186,11 +1263,8 @@ export default function WineDetails() {
         </div>
 
         {/* Chat Interface */}
-        <div className="mt-0 pb-10" >
-          <div
-            className="flex flex-col h-auto"
-            style={{ width: "100%" }}
-          >
+        <div className="mt-0 pb-10">
+          <div className="flex flex-col h-auto" style={{ width: "100%" }}>
             {/* Main Content Area */}
             <div className="flex flex-1 overflow-hidden">
               {/* Chat Area */}
@@ -1204,8 +1278,6 @@ export default function WineDetails() {
                 <div
                   ref={chatContainerRef}
                   style={{
-                    backgroundColor: "transparent",
-                    backgroundImage: "none",
                     flex: "1",
                     overflowY: "auto",
                     scrollbarWidth: "none",
@@ -1213,15 +1285,19 @@ export default function WineDetails() {
                   }}
                 >
                   {/* Conversation Content */}
-                  <div 
+                  <div
                     style={{
-                      backgroundColor: "transparent",
-                      backgroundImage: "none",
                       width: "100%",
                     }}
                   >
                     {/* Chat Title */}
-                    <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
+                    <div
+                      style={{
+                        marginBottom: "24px",
+                        paddingLeft: "16px",
+                        paddingRight: "16px",
+                      }}
+                    >
                       <h1
                         style={{
                           color: "white",
@@ -1233,8 +1309,15 @@ export default function WineDetails() {
                         Chat
                       </h1>
                     </div>
-                    
-                    <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", backgroundColor: "transparent" }}>
+
+                    <div
+                      id="conversation"
+                      className="space-y-4 mb-96"
+                      style={{
+                        paddingLeft: "16px",
+                        paddingRight: "16px",
+                      }}
+                    >
                       {messages.length > 0 ? (
                         <>
                           {messages.map((message: any, index: number) => (
@@ -1243,7 +1326,9 @@ export default function WineDetails() {
                               style={{
                                 display: "flex",
                                 justifyContent:
-                                  message.role === "user" ? "flex-end" : "flex-start",
+                                  message.role === "user"
+                                    ? "flex-end"
+                                    : "flex-start",
                                 width: "100%",
                                 marginBottom: "12px",
                               }}
@@ -1255,17 +1340,24 @@ export default function WineDetails() {
                                       ? "#F5F5F5"
                                       : "transparent",
                                   borderRadius: "16px",
-                                  padding: message.role === "user" ? "12px 16px 12px 16px" : "16px 0",
+                                  padding:
+                                    message.role === "user"
+                                      ? "12px 16px 12px 16px"
+                                      : "16px 0",
                                   width:
-                                    message.role === "user" ? "fit-content" : "100%",
-                                  maxWidth: message.role === "user" ? "80%" : "100%",
+                                    message.role === "user"
+                                      ? "fit-content"
+                                      : "100%",
+                                  maxWidth:
+                                    message.role === "user" ? "80%" : "100%",
                                 }}
                               >
                                 {message.role === "assistant" ? (
                                   <div
                                     style={{
                                       color: "#DBDBDB",
-                                      fontFamily: "Inter, system-ui, sans-serif",
+                                      fontFamily:
+                                        "Inter, system-ui, sans-serif",
                                       fontSize: "16px",
                                       lineHeight: "1.6",
                                     }}
@@ -1276,7 +1368,8 @@ export default function WineDetails() {
                                   <div
                                     style={{
                                       color: "#000000",
-                                      fontFamily: "Inter, system-ui, sans-serif",
+                                      fontFamily:
+                                        "Inter, system-ui, sans-serif",
                                       fontSize: "16px",
                                       lineHeight: "1.6",
                                     }}
@@ -1361,7 +1454,9 @@ export default function WineDetails() {
                         </Button>
                         <Button
                           onClick={() =>
-                            handleSuggestionClick("Simple recipes for this wine")
+                            handleSuggestionClick(
+                              "Simple recipes for this wine",
+                            )
                           }
                           variant="secondary"
                           style={{ height: "32px" }}
