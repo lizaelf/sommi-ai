@@ -1629,7 +1629,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     textAlign: "left",
                   }}
                 >
-                  More
+                  Want more?
                 </h1>
 
                 {/* Buy again button */}
