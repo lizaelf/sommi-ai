@@ -1594,16 +1594,27 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   marginBottom: "20px",
                 }}
               >
-                <h1
-                  style={{
-                    ...typography.h1,
-                    color: "white",
-                    marginBottom: "24px",
-                    textAlign: "left",
-                  }}
-                >
-                  We recommend
-                </h1>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                  <h1
+                    style={{
+                      ...typography.h1,
+                      color: "white",
+                      margin: "0",
+                      textAlign: "left",
+                    }}
+                  >
+                    We recommend
+                  </h1>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ 
+                      color: "rgba(255, 255, 255, 0.6)", 
+                      fontSize: "14px", 
+                      fontFamily: "Inter, sans-serif" 
+                    }}>
+                      Swipe →
+                    </span>
+                  </div>
+                </div>
 
                 {/* Wine Recommendation Cards - Horizontal Scroll */}
                 <div
@@ -1812,6 +1823,244 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       >
                         <span style={{ ...typography.num, color: "white" }}>
                           93
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
+                          JD
+                        </span>
+                      </span>
+                      <span
+                        style={{
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <span style={{ ...typography.num, color: "white" }}>
+                          93
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
+                          WS
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Recommendation 3 - Additional Wine */}
+                  <div
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      borderRadius: "16px",
+                      padding: "16px 16px 24px 16px",
+                      width: "208px",
+                      minWidth: "208px",
+                      flexShrink: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                    }}
+                  >
+                    {/* Wine Bottle Image Placeholder */}
+                    <div
+                      style={{
+                        width: "120px",
+                        height: "200px",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: "20px",
+                        border: "2px dashed rgba(255, 255, 255, 0.3)",
+                      }}
+                    >
+                      <span style={{ 
+                        color: "rgba(255, 255, 255, 0.6)", 
+                        fontSize: "12px",
+                        textAlign: "center",
+                        fontFamily: "Inter, sans-serif"
+                      }}>
+                        Wine Image
+                      </span>
+                    </div>
+                    
+                    {/* Wine Name */}
+                    <h2
+                      style={{
+                        ...typography.h2,
+                        color: "white",
+                        textAlign: "center",
+                        margin: "0 0 16px 0",
+                        height: "72px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      2020 Vintage Reserve
+                    </h2>
+                    
+                    {/* Rating Badges */}
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "20px",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <span style={{ ...typography.num, color: "white" }}>
+                          94
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
+                          VN
+                        </span>
+                      </span>
+                      <span
+                        style={{
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <span style={{ ...typography.num, color: "white" }}>
+                          92
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
+                          JD
+                        </span>
+                      </span>
+                      <span
+                        style={{
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <span style={{ ...typography.num, color: "white" }}>
+                          91
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
+                          WS
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Recommendation 4 - Additional Wine */}
+                  <div
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      borderRadius: "16px",
+                      padding: "16px 16px 24px 16px",
+                      width: "208px",
+                      minWidth: "208px",
+                      flexShrink: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                    }}
+                  >
+                    {/* Wine Bottle Image Placeholder */}
+                    <div
+                      style={{
+                        width: "120px",
+                        height: "200px",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: "20px",
+                        border: "2px dashed rgba(255, 255, 255, 0.3)",
+                      }}
+                    >
+                      <span style={{ 
+                        color: "rgba(255, 255, 255, 0.6)", 
+                        fontSize: "12px",
+                        textAlign: "center",
+                        fontFamily: "Inter, sans-serif"
+                      }}>
+                        Wine Image
+                      </span>
+                    </div>
+                    
+                    {/* Wine Name */}
+                    <h2
+                      style={{
+                        ...typography.h2,
+                        color: "white",
+                        textAlign: "center",
+                        margin: "0 0 16px 0",
+                        height: "72px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      2019 Special Selection
+                    </h2>
+                    
+                    {/* Rating Badges */}
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "20px",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <span style={{ ...typography.num, color: "white" }}>
+                          96
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
+                          VN
+                        </span>
+                      </span>
+                      <span
+                        style={{
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <span style={{ ...typography.num, color: "white" }}>
+                          94
                         </span>
                         <span style={{ ...typography.body1R, color: "#999999" }}>
                           JD
