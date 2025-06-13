@@ -48,16 +48,29 @@ export default function WineDetails() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
   const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
+  const [chatInterfaceReady, setChatInterfaceReady] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  // Chat interface state
+  const [isTyping, setIsTyping] = useState(false);
+  const [hideSuggestions, setHideSuggestions] = useState(false);
+  const [showChatInput, setShowChatInput] = useState(true);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
-  const [eventSource, setEventSource] = useState<EventSource | null>(null);
-  const [currentEventSource, setCurrentEventSource] = useState<EventSource | null>(null);
-  const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: "",
+  const [showContactSheet, setShowContactSheet] = useState(false);
+  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [hasSharedContact, setHasSharedContact] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
   });
@@ -105,72 +118,65 @@ export default function WineDetails() {
   };
 
   const handleSuggestionClick = async (content: string) => {
-    if (isTyping) return;
+    if (content.trim() === "" || !currentConversationId) return;
+
+    setHideSuggestions(true);
+    setIsTyping(true);
 
     try {
-      const newMessage: ClientMessage = {
+      const tempUserMessage: ClientMessage = {
         id: Date.now(),
-        role: "user",
         content,
-        timestamp: Date.now(),
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
       };
 
-      addMessage(newMessage);
-      setIsTyping(true);
+      await addMessage(tempUserMessage);
 
-      setTimeout(scrollToBottom, 100);
+      const requestBody = {
+        messages: [{ role: "user", content }],
+        conversationId: currentConversationId,
+        wineData: wine,
+        optimize_for_speed: true,
+        text_only: true,
+      };
 
-      if (!isStreamingSupported()) {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: [...messages, newMessage].map(msg => ({
-              role: msg.role,
-              content: msg.content,
-            })),
-            wineData: wine,
-          }),
-        });
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Priority": "high",
+        },
+        body: JSON.stringify(requestBody),
+        credentials: "same-origin",
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
 
-        const data = await response.json();
-        
+      const responseData = await response.json();
+
+      if (responseData.message && responseData.message.content) {
         const assistantMessage: ClientMessage = {
           id: Date.now() + 1,
+          content: responseData.message.content,
           role: "assistant",
-          content: data.content,
-          timestamp: Date.now(),
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
         };
 
-        addMessage(assistantMessage);
-        setTimeout(scrollToBottom, 100);
-      } else {
-        const streamingClient = createStreamingClient();
-        await streamingClient.streamCompletion(
-          [...messages, newMessage],
-          wine || undefined,
-          (content) => {
-            const assistantMessage: ClientMessage = {
-              id: Date.now() + 1,
-              role: "assistant",
-              content,
-              timestamp: Date.now(),
-            };
-            addMessage(assistantMessage);
-            setTimeout(scrollToBottom, 100);
-          },
-          () => setIsTyping(false)
-        );
+        await addMessage(assistantMessage);
       }
+
+      refetchMessages();
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Error in suggestion request:", error);
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
         variant: "destructive",
       });
     } finally {
@@ -179,72 +185,65 @@ export default function WineDetails() {
   };
 
   const handleSendMessage = async (content: string) => {
-    if (isTyping) return;
+    if (content.trim() === "" || !currentConversationId) return;
+
+    setHideSuggestions(true);
+    setIsTyping(true);
 
     try {
-      const newMessage: ClientMessage = {
+      const tempUserMessage: ClientMessage = {
         id: Date.now(),
-        role: "user",
         content,
-        timestamp: Date.now(),
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
       };
 
-      addMessage(newMessage);
-      setIsTyping(true);
+      await addMessage(tempUserMessage);
 
-      setTimeout(scrollToBottom, 100);
+      const requestBody = {
+        messages: [{ role: "user", content }],
+        conversationId: currentConversationId,
+        wineData: wine,
+        optimize_for_speed: true,
+        text_only: true,
+      };
 
-      if (!isStreamingSupported()) {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: [...messages, newMessage].map(msg => ({
-              role: msg.role,
-              content: msg.content,
-            })),
-            wineData: wine,
-          }),
-        });
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Priority": "high",
+        },
+        body: JSON.stringify(requestBody),
+        credentials: "same-origin",
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
 
-        const data = await response.json();
-        
+      const responseData = await response.json();
+
+      if (responseData.message && responseData.message.content) {
         const assistantMessage: ClientMessage = {
           id: Date.now() + 1,
+          content: responseData.message.content,
           role: "assistant",
-          content: data.content,
-          timestamp: Date.now(),
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
         };
 
-        addMessage(assistantMessage);
-        setTimeout(scrollToBottom, 100);
-      } else {
-        const streamingClient = createStreamingClient();
-        await streamingClient.streamCompletion(
-          [...messages, newMessage],
-          wine || undefined,
-          (content) => {
-            const assistantMessage: ClientMessage = {
-              id: Date.now() + 1,
-              role: "assistant",
-              content,
-              timestamp: Date.now(),
-            };
-            addMessage(assistantMessage);
-            setTimeout(scrollToBottom, 100);
-          },
-          () => setIsTyping(false)
-        );
+        await addMessage(assistantMessage);
       }
+
+      refetchMessages();
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Error in chat request:", error);
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
         variant: "destructive",
       });
     } finally {
@@ -253,42 +252,117 @@ export default function WineDetails() {
   };
 
   const handleCloseContactSheet = () => {
-    setAnimationState('closing');
-    setTimeout(() => {
-      setAnimationState('closed');
-    }, 300);
+    setShowContactSheet(false);
+    setAnimationState("closing");
+    setTimeout(() => setAnimationState("closed"), 300);
   };
 
   const handleSubmit = async (data: ContactFormData) => {
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
 
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Your information has been submitted successfully!",
-        });
+      const result = await response.json();
+
+      if (result.success) {
+        localStorage.setItem("hasSharedContact", "true");
+        setHasSharedContact(true);
         handleCloseContactSheet();
-        setFormData({ name: "", email: "", phone: "" });
-      } else {
-        throw new Error('Failed to submit');
+
+        toast({
+          description: "Contact saved successfully!",
+          duration: 3000,
+        });
       }
     } catch (error) {
+      console.error("Error saving contact:", error);
       toast({
         title: "Error",
-        description: "Failed to submit your information. Please try again.",
+        description: "Failed to save contact information",
         variant: "destructive",
       });
     }
   };
 
-  // Load wine data
+  // Helper functions for wine data
+  const getWineHistory = () => {
+    return wine?.description || "Lytton Springs is a renowned single-vineyard red wine produced by Ridge Vineyards, located in the Dry Creek Valley of Sonoma County, California. Celebrated for its rich heritage and distinctive field-blend style, Lytton Springs has become a benchmark for Zinfandel-based wines in the United States.";
+  };
+
+  const getFoodPairingContent = () => {
+    return {
+      dishes: wine?.foodPairing || ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"]
+    };
+  };
+
+  const getCheesePairingContent = () => {
+    return {
+      cheeses: ["Aged Gouda", "Manchego", "Aged Cheddar", "Pecorino Romano"]
+    };
+  };
+
+  const getVegetarianPairingContent = () => {
+    return {
+      dishes: ["Roasted eggplant", "Mushroom risotto", "Grilled portobello", "Vegetarian lasagna"]
+    };
+  };
+
+  const getAvoidPairingContent = () => {
+    return {
+      items: ["Delicate fish", "Light salads", "Citrus-based dishes", "Spicy Asian cuisine"]
+    };
+  };
+
+  // Initialize DataSyncManager once on component mount
+  useEffect(() => {
+    DataSyncManager.initialize();
+  }, []);
+
+  // Initialize chat interface ready state
+  useEffect(() => {
+    setChatInterfaceReady(true);
+    console.log("Chat interface ready");
+  }, []);
+
+  // Initialize portal element for modals
+  useEffect(() => {
+    setPortalElement(document.body);
+  }, []);
+
+  // Check if contact has been shared
+  useEffect(() => {
+    const hasShared = localStorage.getItem("hasSharedContact") === "true";
+    setHasSharedContact(hasShared);
+  }, []);
+
+  // Scroll management
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+      setShowScrollToBottom(!isNearBottom && scrollHeight > clientHeight);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [messages.length]);
+
+  // Load wine data when ID changes
   useEffect(() => {
     let mounted = true;
 
@@ -296,28 +370,29 @@ export default function WineDetails() {
       try {
         setLoadingState('loading');
         
-        await DataSyncManager.initialize();
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const wineIdFromQuery = urlParams.get('wine');
-        const wineId = id || wineIdFromQuery || '1';
-        
-        console.log('DataSyncManager: Looking for wine ID', wineId);
-        
-        const wineData = DataSyncManager.getWineById(parseInt(wineId));
-        
-        if (mounted) {
-          if (wineData) {
-            console.log('DataSyncManager: Found wine data:', wineData);
-            setWine(wineData);
-            setLoadingState('loaded');
-          } else {
-            console.error('DataSyncManager: Wine not found for ID:', wineId);
+        if (!id) {
+          if (mounted) {
             setLoadingState('error');
           }
+          return;
+        }
+
+        // Get wine from DataSyncManager
+        const wineData = DataSyncManager.getWineById(parseInt(id));
+        
+        if (!wineData) {
+          if (mounted) {
+            setLoadingState('error');
+          }
+          return;
+        }
+
+        if (mounted) {
+          setWine(wineData);
+          setLoadingState('loaded');
         }
       } catch (error) {
-        console.error('Error loading wine data:', error);
+        console.error("Error loading wine data:", error);
         if (mounted) {
           setLoadingState('error');
         }
@@ -333,13 +408,20 @@ export default function WineDetails() {
 
   // Fix scrolling initialization
   useEffect(() => {
+    // Force scroll restoration and ensure page is scrollable
     const initializeScrolling = () => {
+      // Reset scroll position to enable proper scrolling
       window.scrollTo(0, 0);
+      
+      // Ensure document body has proper scroll behavior
       document.body.style.overflow = 'auto';
       document.documentElement.style.overflow = 'auto';
+      
+      // Force a reflow to ensure scroll is working
       document.body.offsetHeight;
     };
 
+    // Run immediately and after a small delay
     initializeScrolling();
     setTimeout(initializeScrolling, 100);
   }, []);
@@ -352,7 +434,9 @@ export default function WineDetails() {
                        document.referrer === '' || 
                        !document.referrer.includes(window.location.hostname);
     
+    // Check if user hasn't made interaction choice yet and this appears to be QR access
     if (isQRAccess && !interactionChoiceMade && loadingState === 'loaded') {
+      // Small delay to ensure page is fully loaded before showing modal
       setTimeout(() => {
         setShowQRModal(true);
       }, 500);
@@ -363,7 +447,7 @@ export default function WineDetails() {
     setImageLoaded(true);
   };
 
-  // Error component
+  // Component for when no wine is found
   const ErrorComponent = () => (
     <div className="flex items-center justify-center h-[calc(100vh-100px)]">
       <div className="text-center">
@@ -386,15 +470,26 @@ export default function WineDetails() {
           The wine you're looking for could not be found.
         </p>
         <Link href="/">
-          <Button variant="secondary">
-            Go Home
-          </Button>
+          <button 
+            style={{
+              backgroundColor: "white",
+              color: "black",
+              padding: "12px 24px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+              ...typography.body,
+              fontWeight: "600",
+            }}
+          >
+            Go Back Home
+          </button>
         </Link>
       </div>
     </div>
   );
 
-  // Loading component
+  // Component for loading state
   const LoadingComponent = () => (
     <div className="flex items-center justify-center h-[calc(100vh-100px)]">
       <div className="text-center">
@@ -433,9 +528,10 @@ export default function WineDetails() {
       <div
         className="w-full flex flex-col items-center justify-center py-8 relative"
         style={{
-          minHeight: "100vh",
+          minHeight: "100vh", // Make the div full screen height
         }}
       >
+        {/* Wine bottle image - THIS CONTAINS THE BLURRED CIRCLE/GLOW EFFECT */}
         <WineBottleImage 
           image={wine?.image} 
           wineName={wine?.name} 
@@ -446,7 +542,6 @@ export default function WineDetails() {
           style={{
             width: "100%",
             textAlign: "center",
-            justifyContent: "center",
             display: "flex",
             flexDirection: "column",
             color: "white",
@@ -454,18 +549,18 @@ export default function WineDetails() {
             position: "relative",
             zIndex: 2,
             padding: "0 20px",
-            marginBottom: "0",
+            marginBottom: "20px",
             ...typography.h1,
           }}
         >
-          {wine ? `2021 ${wine.name}` : "2021 Ridge Lytton Springs Dry Creek Zinfandel"}
+          {wine ? `2021 ${wine.name}` : `2021 Wine Name`}
         </div>
 
         {/* Wine region with typography styling and flag */}
         <div
           style={{
-            textAlign: "center",
-            justifyContent: "center",
+            textAlign: "left",
+            justifyContent: "flex-start",
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
@@ -473,268 +568,867 @@ export default function WineDetails() {
             wordWrap: "break-word",
             position: "relative",
             zIndex: 2,
-            padding: "20px 20px",
+            padding: "0 20px",
             gap: "6px",
-            marginBottom: "0",
+            marginBottom: "20px",
             ...typography.body1R,
           }}
         >
           <USFlagImage />
-          <span>Santa Cruz Mountains | California | United States</span>
+          <span>{wine?.location || "Santa Cruz Mountains | California | United States"}</span>
         </div>
 
         {/* Wine ratings section */}
-        <div
+        <WineRating
+          ratings={wine ? wine.ratings : { vn: 95, jd: 93, ws: 93, abv: 14.3 }}
+          align="left"
           style={{
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "20px",
-            display: "flex",
-            flexWrap: "wrap",
             position: "relative",
             zIndex: 2,
             padding: "0 20px",
-            marginBottom: "0",
+            marginBottom: "32px",
+          }}
+        />
+
+        {/* Historic Heritage Section - Moved below ratings */}
+        <div
+          style={{
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "32px",
           }}
         >
-          <WineRating 
-            ratings={wine?.ratings || {}} 
-            variant="default" 
-          />
+          <p
+            style={{
+              color: "white",
+              textAlign: "left",
+              marginBottom: "16px",
+              ...typography.body,
+            }}
+          >
+            {getWineHistory()}
+          </p>
         </div>
 
-        {/* Food pairing and other sections would go here */}
-        {/* ... (keeping existing food pairing sections) ... */}
-      </div>
-
-      {/* Chat Interface */}
-      <div className="mt-0 pb-10" style={{ backgroundColor: "transparent" }}>
+        {/* Food Pairing Section */}
         <div
-          className="flex flex-col h-auto"
-          style={{ width: "100%" }}
+          style={{
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "20px",
+          }}
         >
-          {/* Main Content Area */}
-          <div className="flex flex-1 overflow-hidden">
-            {/* Chat Area - Direct content without wrapper div */}
-            <main
-              className="flex-1 flex flex-col overflow-hidden"
-              ref={chatContainerRef}
-              style={{
-                backgroundColor: "transparent",
-                backgroundImage: "none",
-                width: "100%",
-                flex: "1",
-                overflowY: "auto",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              {/* Chat Title */}
-              <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
-                <h1
-                  style={{
-                    color: "white",
-                    textAlign: "left",
-                    margin: "0",
-                    ...typography.h1,
-                  }}
-                >
-                  Chat
-                </h1>
-              </div>
-              
-              <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", backgroundColor: "transparent" }}>
-                {messages.length > 0 ? (
-                  <>
-                    {messages.map((message: any, index: number) => (
-                      <div
-                        key={`${message.id}-${index}`}
-                        style={{
-                          display: "flex",
-                          justifyContent:
-                            message.role === "user" ? "flex-end" : "flex-start",
-                          width: "100%",
-                          marginBottom: "12px",
-                        }}
-                      >
-                        <div
-                          style={{
-                            backgroundColor:
-                              message.role === "user"
-                                ? "#F5F5F5"
-                                : "transparent",
-                            borderRadius: "16px",
-                            padding: message.role === "user" ? "12px 16px 12px 16px" : "16px 0",
-                            width:
-                              message.role === "user" ? "fit-content" : "100%",
-                            maxWidth: message.role === "user" ? "80%" : "100%",
-                          }}
-                        >
-                          {message.role === "assistant" ? (
-                            <div
-                              style={{
-                                color: "#DBDBDB",
-                                fontFamily: "Inter, system-ui, sans-serif",
-                                fontSize: "16px",
-                                lineHeight: "1.6",
-                              }}
-                            >
-                              {formatContent(message.content)}
-                            </div>
-                          ) : (
-                            <div
-                              style={{
-                                color: "#000000",
-                                fontFamily: "Inter, system-ui, sans-serif",
-                                fontSize: "16px",
-                                lineHeight: "1.6",
-                              }}
-                            >
-                              {formatContent(message.content)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      minHeight: "200px",
-                      width: "100%",
-                      textAlign: "center",
-                    }}
-                  >
-                    <p
-                      style={{
-                        color: "rgba(255, 255, 255, 0.6)",
-                        fontFamily: "Inter, system-ui, sans-serif",
-                        fontSize: "16px",
-                        textAlign: "center",
-                        margin: "0",
-                      }}
-                    >
-                      Ask a question to see chat history
-                    </p>
-                  </div>
-                )}
+          <h1
+            style={{
+              ...typography.h1,
+              color: "white",
+              marginBottom: "24px",
+              textAlign: "left",
+            }}
+          >
+            Food pairing
+          </h1>
 
-                {/* Typing Indicator */}
-                {isTyping && (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "100%",
-                      marginBottom: "12px",
-                      padding: "16px",
-                    }}
-                  >
-                    <ShiningText text="Thinking..." />
-                  </div>
-                )}
-              </div>
-
-              {/* Extra space at the bottom */}
-              <div style={{ height: "80px" }}></div>
-            </main>
-
-            {/* Input Area - Fixed to Bottom */}
+          {/* Red Meat Pairing - Expandable */}
+          <div
+            onClick={() => {
+              setExpandedItem(
+                expandedItem === "redMeat" ? null : "redMeat",
+              );
+            }}
+            style={{
+              backgroundColor: "#191919",
+              borderRadius: "16px",
+              padding: "0 20px",
+              minHeight: "64px",
+              marginBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              alignSelf: "stretch",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+            }}
+          >
+            {/* Header row - always visible */}
             <div
               style={{
-                backgroundColor: "#1C1C1C",
-                padding: "16px",
-                zIndex: 50,
-                position: "fixed",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                minHeight: "64px",
+                width: "100%",
               }}
             >
-              <div className="max-w-3xl mx-auto">
-                <>
-                  {/* Suggestion chips */}
-                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                    <Button
-                      onClick={() => handleSuggestionClick("Tasting notes")}
-                      variant="secondary"
-                      style={{ height: "32px" }}
-                    >
-                      Tasting notes
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        handleSuggestionClick("Simple recipes for this wine")
-                      }
-                      variant="secondary"
-                      style={{ height: "32px" }}
-                    >
-                      Simple recipes
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        handleSuggestionClick("Where is this wine from?")
-                      }
-                      variant="secondary"
-                      style={{ height: "32px" }}
-                    >
-                      Where it's from
-                    </Button>
-                  </div>
-                  <ChatInput
-                    onSendMessage={handleSendMessage}
-                    isProcessing={isTyping}
-                    onFocus={() => setIsKeyboardFocused(true)}
-                    onBlur={() => setIsKeyboardFocused(false)}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                <span style={{ fontSize: "24px" }}>🥩</span>
+                <span
+                  style={{
+                    color: "white",
+                    ...typography.body,
+                  }}
+                >
+                  Red Meat
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <span
+                  style={{
+                    color: "black",
+                    backgroundColor: "#e0e0e0",
+                    padding: "6px 14px",
+                    borderRadius: "999px",
+                    ...typography.buttonPlus1,
+                  }}
+                >
+                  Perfect match
+                </span>
+                {/* Rotating chevron icon for expanded state */}
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{
+                    transform:
+                      expandedItem === "redMeat"
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                    transition: "transform 0.3s ease",
+                  }}
+                >
+                  <path
+                    d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
+                    fill="white"
                   />
-                </>
+                </svg>
               </div>
             </div>
+
+            {/* Expanded content - only visible when expanded */}
+            {expandedItem === "redMeat" && (
+              <div
+                style={{
+                  padding: "0 0 20px 0",
+                  color: "white",
+                  ...typography.body,
+                }}
+              >
+                <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                  {getFoodPairingContent().dishes.map((dish: string, index: number) => (
+                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <span style={{ ...typography.body }}>🥩</span>
+                      <span style={{ ...typography.body }}>{dish}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Scroll to Bottom Floating Button */}
-          {showScrollToBottom && (
-            <Button
-              onClick={scrollToBottom}
-              variant="secondary"
+          {/* Cheese Pairings - Expandable */}
+          <div
+            onClick={() => {
+              setExpandedItem(
+                expandedItem === "cheese" ? null : "cheese",
+              );
+            }}
+            style={{
+              backgroundColor: "#191919",
+              borderRadius: "16px",
+              padding: "0 20px",
+              minHeight: "64px",
+              marginBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              alignSelf: "stretch",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+            }}
+          >
+            <div
               style={{
-                position: "fixed",
-                bottom: "100px",
-                right: "20px",
-                width: "48px",
-                height: "48px",
-                borderRadius: "24px",
-                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
-                zIndex: 1000,
-                backdropFilter: "blur(8px)",
-                padding: "0",
-                minHeight: "48px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                minHeight: "64px",
+                width: "100%",
               }}
             >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                <span style={{ fontSize: "24px" }}>🧀</span>
+                <span style={{ color: "white", ...typography.body }}>
+                  Cheese Pairings
+                </span>
+              </div>
               <svg
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  transform:
+                    expandedItem === "cheese"
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                  transition: "transform 0.3s ease",
+                }}
               >
-                <path d="M12 16l-4-4h8l-4 4z" fill="white" />
-                <path d="M12 20l-4-4h8l-4 4z" fill="white" opacity="0.6" />
+                <path
+                  d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
+                  fill="white"
+                />
               </svg>
-            </Button>
-          )}
+            </div>
 
-          <ContactBottomSheet
-            isOpen={animationState !== "closed"}
-            onClose={handleCloseContactSheet}
-            onSubmit={handleSubmit}
-          />
+            {/* Expanded content */}
+            {expandedItem === "cheese" && (
+              <div
+                style={{
+                  padding: "0 0 20px 0",
+                  color: "white",
+                  ...typography.body,
+                }}
+              >
+                <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                  {getCheesePairingContent().cheeses.map((cheese: string, index: number) => (
+                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <span style={{ ...typography.body }}>🧀</span>
+                      <span style={{ ...typography.body }}>{cheese}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Vegetarian Options - Expandable */}
+          <div
+            onClick={() => {
+              setExpandedItem(
+                expandedItem === "vegetarian" ? null : "vegetarian",
+              );
+            }}
+            style={{
+              backgroundColor: "#191919",
+              borderRadius: "16px",
+              padding: "0 20px",
+              minHeight: "64px",
+              marginBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              alignSelf: "stretch",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                minHeight: "64px",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                <span style={{ fontSize: "24px" }}>🥗</span>
+                <span style={{ color: "white", ...typography.body }}>
+                  Vegetarian Options
+                </span>
+              </div>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  transform:
+                    expandedItem === "vegetarian"
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                  transition: "transform 0.3s ease",
+                }}
+              >
+                <path
+                  d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
+                  fill="white"
+                />
+              </svg>
+            </div>
+
+            {/* Expanded content */}
+            {expandedItem === "vegetarian" && (
+              <div
+                style={{
+                  padding: "0 0 20px 0",
+                  color: "white",
+                  ...typography.body,
+                }}
+              >
+                <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                  {getVegetarianPairingContent().dishes.map((dish: string, index: number) => (
+                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <span style={{ ...typography.body }}>🥗</span>
+                      <span style={{ ...typography.body }}>{dish}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Avoid pairing with - Expandable */}
+          <div
+            onClick={() => {
+              setExpandedItem(expandedItem === "avoid" ? null : "avoid");
+            }}
+            style={{
+              backgroundColor: "#191919",
+              borderRadius: "16px",
+              padding: "0 20px",
+              minHeight: "64px",
+              marginBottom: "8px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              alignSelf: "stretch",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                minHeight: "64px",
+                width: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                <span style={{ fontSize: "24px", color: "red" }}>❌</span>
+                <span style={{ color: "white", ...typography.body }}>
+                  Avoid pairing with
+                </span>
+              </div>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  transform:
+                    expandedItem === "avoid"
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                  transition: "transform 0.3s ease",
+                }}
+              >
+                <path
+                  d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
+                  fill="white"
+                />
+              </svg>
+            </div>
+
+            {/* Expanded content */}
+            {expandedItem === "avoid" && (
+              <div
+                style={{
+                  padding: "0 0 20px 0",
+                  color: "white",
+                  ...typography.body,
+                }}
+              >
+                <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
+                  {getAvoidPairingContent().items.map((item: string, index: number) => (
+                    <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <span style={{ ...typography.body, color: "red" }}>❌</span>
+                      <span style={{ ...typography.body }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* More Section */}
+        <div
+          style={{
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "20px",
+          }}
+        >
+          <h1
+            style={{
+              ...typography.h1,
+              color: "white",
+              marginBottom: "24px",
+              textAlign: "left",
+            }}
+          >
+            Want more?
+          </h1>
+
+          {/* Buy again button */}
+          <Button
+            onClick={() => {
+              if (wine?.buyAgainLink) {
+                window.open(wine.buyAgainLink, '_blank');
+              }
+            }}
+            variant="primary"
+            style={{
+              margin: "0 0 24px 0",
+              width: "100%",
+              height: "56px",
+            }}
+          >
+            Buy again
+          </Button>
+        </div>
+
+        {/* We recommend Section */}
+        <div
+          style={{
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "20px",
+          }}
+        >
+          <h1
+            style={{
+              ...typography.h1,
+              color: "white",
+              marginBottom: "24px",
+              textAlign: "left",
+            }}
+          >
+            We recommend
+          </h1>
+
+          {/* Wine Recommendation Cards - Horizontal Scroll */}
+          <div
+            className="wine-recommendations-container"
+            style={{
+              display: "flex",
+              gap: "16px",
+              overflowX: "auto",
+              paddingBottom: "8px",
+              paddingLeft: "4px",
+              paddingRight: "4px",
+              marginLeft: "-4px",
+              marginRight: "-4px",
+            }}
+          >
+            {(() => {
+              const adminWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
+              const currentWineId = wine?.id;
+              const filteredWines = adminWines.filter((wine: any) => wine.id !== currentWineId);
+              
+              if (filteredWines.length === 0) {
+                return (
+                  <div
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      borderRadius: "16px",
+                      padding: "32px",
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    <span style={{ 
+                      color: "rgba(255, 255, 255, 0.8)", 
+                      marginBottom: "8px",
+                      ...typography.body
+                    }}>
+                      No other wines available
+                    </span>
+                    <span style={{ 
+                      color: "rgba(255, 255, 255, 0.6)", 
+                      ...typography.body1R
+                    }}>
+                      Add more wines in the admin panel to see recommendations
+                    </span>
+                  </div>
+                );
+              }
+              
+              return filteredWines.map((recommendedWine: any) => (
+                <div
+                  key={recommendedWine.id}
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.08)",
+                    borderRadius: "16px",
+                    padding: "16px 16px 24px 16px",
+                    width: "208px",
+                    minWidth: "208px",
+                    flexShrink: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                  }}
+                  onClick={() => {
+                    if (recommendedWine.id) {
+                      setLocation(`/wine-details/${recommendedWine.id}`);
+                    }
+                  }}
+                >
+                  {/* Wine Bottle Image */}
+                  <div
+                    style={{
+                      width: "120px",
+                      height: "200px",
+                      backgroundImage: recommendedWine.image ? `url('${recommendedWine.image}')` : "none",
+                      backgroundColor: "transparent",
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center",
+                      marginBottom: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {!recommendedWine.image && (
+                      <span style={{ 
+                        color: "rgba(255, 255, 255, 0.6)", 
+                        textAlign: "center",
+                        ...typography.body1M
+                      }}>
+                        No Image
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Wine Name */}
+                  <h2
+                    style={{
+                      ...typography.buttonPlus1,
+                      color: "white",
+                      textAlign: "center",
+                      margin: "0 0 12px 0",
+                      height: "50px",
+                      width: "100%",
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 3,
+                      lineHeight: "1.2",
+                    }}
+                  >
+                    {recommendedWine.year ? `${recommendedWine.year} ` : ""}{recommendedWine.name}
+                  </h2>
+                  
+                  {/* Rating Badges */}
+                  {recommendedWine.ratings && (
+                    <WineRating 
+                      ratings={recommendedWine.ratings}
+                      gap={15}
+                      hideAbv={true}
+                    />
+                  )}
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+
+        {/* Chat Interface */}
+        <div className="mt-0 pb-10" style={{ backgroundColor: "transparent" }}>
+          <div
+            className="flex flex-col h-auto"
+            style={{ width: "100%" }}
+          >
+            {/* Main Content Area */}
+            <div className="flex flex-1 overflow-hidden">
+              {/* Chat Area */}
+              <main
+                className="flex-1 flex flex-col overflow-hidden"
+                style={{
+                  backgroundColor: "transparent",
+                  backgroundImage: "none",
+                  width: "100%",
+                }}
+              >
+                {/* Scrollable container */}
+                <div
+                  ref={chatContainerRef}
+                  style={{
+                    backgroundColor: "transparent",
+                    flex: "1",
+                    overflowY: "auto",
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                  }}
+                >
+                  {/* Conversation Content */}
+                  <div 
+                    style={{
+                      backgroundColor: "transparent",
+                      backgroundImage: "none",
+                      width: "100%",
+                    }}
+                  >
+                    {/* Chat Title */}
+                    <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
+                      <h1
+                        style={{
+                          color: "white",
+                          textAlign: "left",
+                          margin: "0",
+                          ...typography.h1,
+                        }}
+                      >
+                        Chat
+                      </h1>
+                    </div>
+                    
+                    <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", backgroundColor: "transparent" }}>
+                      {messages.length > 0 ? (
+                        <>
+                          {messages.map((message: any, index: number) => (
+                            <div
+                              key={`${message.id}-${index}`}
+                              style={{
+                                display: "flex",
+                                justifyContent:
+                                  message.role === "user" ? "flex-end" : "flex-start",
+                                width: "100%",
+                                marginBottom: "12px",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  backgroundColor:
+                                    message.role === "user"
+                                      ? "#F5F5F5"
+                                      : "transparent",
+                                  borderRadius: "16px",
+                                  padding: message.role === "user" ? "12px 16px 12px 16px" : "16px 0",
+                                  width:
+                                    message.role === "user" ? "fit-content" : "100%",
+                                  maxWidth: message.role === "user" ? "80%" : "100%",
+                                }}
+                              >
+                                {message.role === "assistant" ? (
+                                  <div
+                                    style={{
+                                      color: "#DBDBDB",
+                                      fontFamily: "Inter, system-ui, sans-serif",
+                                      fontSize: "16px",
+                                      lineHeight: "1.6",
+                                    }}
+                                  >
+                                    {formatContent(message.content)}
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{
+                                      color: "#000000",
+                                      fontFamily: "Inter, system-ui, sans-serif",
+                                      fontSize: "16px",
+                                      lineHeight: "1.6",
+                                    }}
+                                  >
+                                    {formatContent(message.content)}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            minHeight: "200px",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          <p
+                            style={{
+                              color: "rgba(255, 255, 255, 0.6)",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              fontSize: "16px",
+                              textAlign: "center",
+                              margin: "0",
+                            }}
+                          >
+                            Ask a question to see chat history
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Typing Indicator */}
+                      {isTyping && (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100%",
+                            marginBottom: "12px",
+                            padding: "16px",
+                          }}
+                        >
+                          <ShiningText text="Thinking..." />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Extra space at the bottom */}
+                  <div style={{ height: "80px" }}></div>
+                </div>
+
+                {/* Input Area - Fixed to Bottom */}
+                <div
+                  style={{
+                    backgroundColor: "#1C1C1C",
+                    padding: "16px",
+                    zIndex: 50,
+                    position: "fixed",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                >
+                  <div className="max-w-3xl mx-auto">
+                    <>
+                      {/* Suggestion chips */}
+                      <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                        <Button
+                          onClick={() => handleSuggestionClick("Tasting notes")}
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          Tasting notes
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleSuggestionClick("Simple recipes for this wine")
+                          }
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          Simple recipes
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleSuggestionClick("Where is this wine from?")
+                          }
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          Where it's from
+                        </Button>
+                      </div>
+                      <ChatInput
+                        onSendMessage={handleSendMessage}
+                        isProcessing={isTyping}
+                        onFocus={() => setIsKeyboardFocused(true)}
+                        onBlur={() => setIsKeyboardFocused(false)}
+                      />
+                    </>
+                  </div>
+                </div>
+              </main>
+
+              {/* Scroll to Bottom Floating Button */}
+              {showScrollToBottom && (
+                <Button
+                  onClick={scrollToBottom}
+                  variant="secondary"
+                  style={{
+                    position: "fixed",
+                    bottom: "100px",
+                    right: "20px",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "24px",
+                    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
+                    zIndex: 1000,
+                    backdropFilter: "blur(8px)",
+                    padding: "0",
+                    minHeight: "48px",
+                  }}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 16l-4-4h8l-4 4z" fill="white" />
+                    <path d="M12 20l-4-4h8l-4 4z" fill="white" opacity="0.6" />
+                  </svg>
+                </Button>
+              )}
+            </div>
+
+            <ContactBottomSheet
+              isOpen={animationState !== "closed"}
+              onClose={handleCloseContactSheet}
+              onSubmit={handleSubmit}
+            />
+          </div>
         </div>
       </div>
 
