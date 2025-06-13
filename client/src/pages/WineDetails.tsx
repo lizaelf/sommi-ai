@@ -314,187 +314,185 @@ export default function WineDetails() {
             </div>
           )}
         </div>
+      </div>
 
-        {/* We recommend Section */}
-        <div style={{ 
-          marginTop: "48px",
-          marginBottom: "120px", 
-          paddingLeft: "24px", 
-          paddingRight: "24px"
+      {/* We recommend Section */}
+      <div style={{ 
+        marginTop: "48px",
+        marginBottom: "40px", 
+        paddingLeft: "24px", 
+        paddingRight: "24px"
+      }}>
+        <h2 style={{
+          fontFamily: "Lora, serif",
+          fontSize: "32px",
+          fontWeight: 400,
+          color: "white",
+          marginBottom: "24px"
         }}>
-          <h2 style={{
-            fontFamily: "Lora, serif",
-            fontSize: "32px",
-            fontWeight: 400,
-            color: "white",
-            marginBottom: "24px"
+          We recommend
+        </h2>
+        
+        <div 
+          className="wine-recommendations-container"
+          style={{
+            display: "flex",
+            gap: "16px",
+            overflowX: "auto",
+            paddingBottom: "16px"
           }}>
-            We recommend
-          </h2>
-          
-          <div 
-            className="wine-recommendations-container"
-            style={{
+          {/* Wine Recommendation 1 - Estate Chardonnay */}
+          <div style={{
+            flex: "0 0 auto",
+            width: "220px",
+            backgroundColor: "rgba(255, 255, 255, 0.08)",
+            borderRadius: "16px",
+            padding: "16px",
+            border: "1px solid rgba(255, 255, 255, 0.12)"
+          }}>
+            <div style={{
+              width: "100%",
+              height: "180px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "12px",
+              marginBottom: "16px",
               display: "flex",
-              gap: "16px",
-              overflowX: "auto",
-              paddingBottom: "16px"
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center"
             }}>
-            {/* Wine Recommendation 1 - Estate Chardonnay */}
-            <div style={{
-              flex: "0 0 auto",
-              width: "220px",
-              backgroundColor: "rgba(255, 255, 255, 0.08)",
-              borderRadius: "16px",
-              padding: "16px",
-              border: "1px solid rgba(255, 255, 255, 0.12)"
-            }}>
-              <div style={{
-                width: "100%",
-                height: "180px",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                borderRadius: "12px",
-                marginBottom: "16px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')",
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center"
-              }}>
-              </div>
-              <h3 style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "18px",
-                fontWeight: 600,
-                color: "white",
-                marginBottom: "16px",
-                lineHeight: "1.3",
-                textAlign: "center"
-              }}>
-                2022 Estate Chardonnay
-              </h3>
-              <div style={{
-                display: "flex",
-                gap: "8px",
-                justifyContent: "center",
-                flexWrap: "wrap"
-              }}>
-                <span style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  color: "white",
-                  padding: "6px 12px",
-                  borderRadius: "16px",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  95 <span style={{ opacity: 0.7 }}>VN</span>
-                </span>
-                <span style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  color: "white",
-                  padding: "6px 12px",
-                  borderRadius: "16px",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  93 <span style={{ opacity: 0.7 }}>JD</span>
-                </span>
-                <span style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  color: "white",
-                  padding: "6px 12px",
-                  borderRadius: "16px",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  93 <span style={{ opacity: 0.7 }}>WS</span>
-                </span>
-              </div>
             </div>
-
-            {/* Wine Recommendation 2 - Monte Bello */}
-            <div style={{
-              flex: "0 0 auto",
-              width: "220px",
-              backgroundColor: "rgba(255, 255, 255, 0.08)",
-              borderRadius: "16px",
-              padding: "16px",
-              border: "1px solid rgba(255, 255, 255, 0.12)"
+            <h3 style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "18px",
+              fontWeight: 600,
+              color: "white",
+              marginBottom: "16px",
+              lineHeight: "1.3",
+              textAlign: "center"
             }}>
-              <div style={{
-                width: "100%",
-                height: "180px",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                borderRadius: "12px",
-                marginBottom: "16px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')",
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center"
-              }}>
-              </div>
-              <h3 style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "18px",
-                fontWeight: 600,
+              2022 Estate Chardonnay
+            </h3>
+            <div style={{
+              display: "flex",
+              gap: "8px",
+              justifyContent: "center",
+              flexWrap: "wrap"
+            }}>
+              <span style={{
+                backgroundColor: "rgba(255, 255, 255, 0.15)",
                 color: "white",
-                marginBottom: "16px",
-                lineHeight: "1.3",
-                textAlign: "center"
+                padding: "6px 12px",
+                borderRadius: "16px",
+                fontSize: "14px",
+                fontWeight: 600
               }}>
-                2021 Monte Bello Cabernet Sauvignon
-              </h3>
-              <div style={{
-                display: "flex",
-                gap: "8px",
-                justifyContent: "center",
-                flexWrap: "wrap"
+                95 <span style={{ opacity: 0.7 }}>VN</span>
+              </span>
+              <span style={{
+                backgroundColor: "rgba(255, 255, 255, 0.15)",
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "16px",
+                fontSize: "14px",
+                fontWeight: 600
               }}>
-                <span style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  color: "white",
-                  padding: "6px 12px",
-                  borderRadius: "16px",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  95 <span style={{ opacity: 0.7 }}>VN</span>
-                </span>
-                <span style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  color: "white",
-                  padding: "6px 12px",
-                  borderRadius: "16px",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  93 <span style={{ opacity: 0.7 }}>JD</span>
-                </span>
-                <span style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  color: "white",
-                  padding: "6px 12px",
-                  borderRadius: "16px",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  93 <span style={{ opacity: 0.7 }}>WS</span>
-                </span>
-              </div>
+                93 <span style={{ opacity: 0.7 }}>JD</span>
+              </span>
+              <span style={{
+                backgroundColor: "rgba(255, 255, 255, 0.15)",
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "16px",
+                fontSize: "14px",
+                fontWeight: 600
+              }}>
+                93 <span style={{ opacity: 0.7 }}>WS</span>
+              </span>
             </div>
+          </div>
 
-
+          {/* Wine Recommendation 2 - Monte Bello */}
+          <div style={{
+            flex: "0 0 auto",
+            width: "220px",
+            backgroundColor: "rgba(255, 255, 255, 0.08)",
+            borderRadius: "16px",
+            padding: "16px",
+            border: "1px solid rgba(255, 255, 255, 0.12)"
+          }}>
+            <div style={{
+              width: "100%",
+              height: "180px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "12px",
+              marginBottom: "16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center"
+            }}>
+            </div>
+            <h3 style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "18px",
+              fontWeight: 600,
+              color: "white",
+              marginBottom: "16px",
+              lineHeight: "1.3",
+              textAlign: "center"
+            }}>
+              2021 Monte Bello Cabernet Sauvignon
+            </h3>
+            <div style={{
+              display: "flex",
+              gap: "8px",
+              justifyContent: "center",
+              flexWrap: "wrap"
+            }}>
+              <span style={{
+                backgroundColor: "rgba(255, 255, 255, 0.15)",
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "16px",
+                fontSize: "14px",
+                fontWeight: 600
+              }}>
+                95 <span style={{ opacity: 0.7 }}>VN</span>
+              </span>
+              <span style={{
+                backgroundColor: "rgba(255, 255, 255, 0.15)",
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "16px",
+                fontSize: "14px",
+                fontWeight: 600
+              }}>
+                93 <span style={{ opacity: 0.7 }}>JD</span>
+              </span>
+              <span style={{
+                backgroundColor: "rgba(255, 255, 255, 0.15)",
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "16px",
+                fontSize: "14px",
+                fontWeight: 600
+              }}>
+                93 <span style={{ opacity: 0.7 }}>WS</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Chat Interface - Positioned at the bottom after all content */}
-      <div style={{ marginTop: "40px", paddingBottom: "40px" }}>
+      {/* Chat Interface - Positioned after recommendations */}
+      <div style={{ paddingBottom: "40px" }}>
         <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
           id: wine.id,
           name: wine.name,
