@@ -266,6 +266,11 @@ export default function WineDetails() {
             </div>
           )}
 
+          {/* SIMPLE TEST ELEMENT */}
+          <div style={{ backgroundColor: 'red', padding: '20px', margin: '20px 0', color: 'white', fontSize: '20px', fontWeight: 'bold' }}>
+            TEST ELEMENT - IF YOU SEE THIS, RENDERING WORKS
+          </div>
+
           {/* Want more? Section */}
           <div className="mt-8">
             <h3 className="text-2xl font-normal mb-4 text-white" style={{ fontFamily: "Lora, serif" }}>
