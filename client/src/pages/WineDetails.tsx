@@ -270,30 +270,6 @@ export default function WineDetails() {
 
         </div>
 
-        {/* Want more? Section - positioned in normal flow after wine details */}
-        <div className="px-6 py-8 bg-gray-600 border-t-2 border-white/30 min-h-[200px]">
-          <h2 className="text-3xl font-normal mb-6 text-white font-serif">
-            Want more?
-          </h2>
-          
-          {wine?.buyAgainLink ? (
-            <a 
-              href={wine.buyAgainLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
-            >
-              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
-                Buy again
-              </button>
-            </a>
-          ) : (
-            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
-              Explore our collection
-            </button>
-          )}
-        </div>
-
         {/* Chat Interface - moved to very bottom */}
         <div className="mt-10 pb-10">
           <EnhancedChatInterface 
@@ -307,6 +283,30 @@ export default function WineDetails() {
             } : null} 
           />
         </div>
+      </div>
+
+      {/* Want more? Section - positioned OUTSIDE main container */}
+      <div className="w-full px-6 py-8 bg-gray-600 border-t-2 border-white/30 min-h-[200px]">
+        <h2 className="text-3xl font-normal mb-6 text-white font-serif">
+          Want more?
+        </h2>
+        
+        {wine?.buyAgainLink ? (
+          <a 
+            href={wine.buyAgainLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+              Buy again
+            </button>
+          </a>
+        ) : (
+          <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+            Explore our collection
+          </button>
+        )}
       </div>
 
 
