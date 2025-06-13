@@ -740,25 +740,25 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             className="flex-1 overflow-y-auto scrollbar-hide"
           >
             {/* Conversation Content */}
-            <div className="px-6 pt-6">
+            <div className="pt-6">
               {/* Chat Title */}
-              <div style={{ marginBottom: "24px" }}>
+              <div style={{ marginBottom: "24px", paddingLeft: "20px", paddingRight: "20px" }}>
                 <h1
                   style={{
                     color: "white",
                     fontFamily: "Lora, serif",
-                    fontSize: "24px",
+                    fontSize: "32px",
                     fontWeight: "700",
-                    lineHeight: "1.2",
-                    textAlign: "center",
+                    lineHeight: "40px",
+                    textAlign: "left",
                     margin: "0",
                   }}
                 >
-                  Chat with your sommelier
+                  Chat
                 </h1>
               </div>
               
-              <div id="conversation" className="space-y-4 mb-96">
+              <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "20px", paddingRight: "20px" }}>
                 {messages.length > 0 ? (
                   <>
                     {messages.map((message: any, index: number) => (
@@ -840,7 +840,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           <div
             style={{
               backgroundColor: "#1C1C1C",
-              padding: "16px",
+              padding: "16px 20px",
               zIndex: 50,
               position: "fixed",
               bottom: 0,
