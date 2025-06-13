@@ -1084,135 +1084,113 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
   return (
     <div className="flex flex-col h-[100dvh] max-h-[100dvh] mx-auto" style={{ maxWidth: "1200px" }}>
-      {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-background overflow-hidden" style={{
-          backgroundColor: "#0A0A0A !important",
-          backgroundImage: "none !important"
-        }}>
-          {/* Scrollable container */}
+      {/* Keep only the conversation and input sections */}
+      <div className="flex-1 overflow-hidden">
+        <main className="flex-1 flex flex-col bg-background overflow-hidden">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto scrollbar-hide">
+            {/* Conversation Content */}
+            <div id="conversation" className="space-y-4 mb-96 pt-6 px-6">
+              {messages.map((message, index) => (
+                <ChatMessage
+                  key={`${message.id}-${index}`}
+                  message={message}
+                  isUser={message.role === "user"}
+                  isTyping={false}
+                  formatContent={formatContent}
+                />
+              ))}
+
+              {isTyping && (
+                <ChatMessage
+                  key="typing"
+                  message={{
+                    id: -1,
+                    content: "",
+                    role: "assistant",
+                    conversationId: currentConversationId || 0,
+                    createdAt: new Date().toISOString(),
+                  }}
+                  isUser={false}
+                  isTyping={true}
+                  formatContent={formatContent}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Fixed Input Area */}
           <div
-            ref={chatContainerRef}
-            className="flex-1 overflow-y-auto scrollbar-hide"
+            style={{
+              backgroundColor: "#0A0A0A",
+              padding: "20px",
+              zIndex: 10,
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
           >
-            {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
-            <div
-              className="w-full flex flex-col items-center justify-center py-8 relative"
-              style={{
-                backgroundColor: "#0A0A0A",
-                paddingTop: "75px", // Match the header height exactly
-                minHeight: "100vh", // Make the div full screen height
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-              }}
-            >
-              {/* Wine bottle image */}
-              <WineBottleImage 
-                image={selectedWine?.image || currentWine?.image} 
-                wineName={selectedWine?.name || currentWine?.name} 
-              />
-
-              {/* Wine name with typography styling */}
-              <div
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  justifyContent: "center",
-                  display: "flex",
-                  flexDirection: "column",
-                  color: "white",
-                  wordWrap: "break-word",
-                  position: "relative",
-                  zIndex: 2,
-                  padding: "0 20px",
-                  marginBottom: "0",
-                  ...typography.h1,
-                }}
+            {showBuyButton && showChatInput && (
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => window.open(currentWine?.buyAgainLink || currentWine?.buyAgainLink)}
+                className="w-full mb-4 bg-white text-black hover:bg-gray-200"
               >
-                {selectedWine ? `2021 ${selectedWine.name}` : currentWine ? `${currentWine.year} ${currentWine.name}` : `${getWineVintage()} ${getWineDisplayName()}`}
+                Buy Again
+              </Button>
+            )}
+
+            {!hideSuggestions && !isTyping && (
+              <div className="mb-4 space-y-2">
+                <button
+                  onClick={() => handleSuggestionClick("What makes this wine special?")}
+                  className="w-full p-3 text-left bg-gray-800 hover:bg-gray-700 rounded-lg text-white"
+                >
+                  What makes this wine special?
+                </button>
+                <button
+                  onClick={() => handleSuggestionClick("What food pairs well with this wine?")}
+                  className="w-full p-3 text-left bg-gray-800 hover:bg-gray-700 rounded-lg text-white"
+                >
+                  What food pairs well with this wine?
+                </button>
+                <button
+                  onClick={() => handleSuggestionClick("Tell me about the winemaking process")}
+                  className="w-full p-3 text-left bg-gray-800 hover:bg-gray-700 rounded-lg text-white"
+                >
+                  Tell me about the winemaking process
+                </button>
               </div>
+            )}
 
-              {/* Wine region with typography styling and flag */}
-              <div
-                style={{
-                  textAlign: "center",
-                  justifyContent: "center",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  color: "rgba(255, 255, 255, 0.60)",
-                  wordWrap: "break-word",
-                  position: "relative",
-                  zIndex: 2,
-                  padding: "20px 20px",
-                  gap: "6px",
-                  marginBottom: "0",
-                  ...typography.body1R,
-                }}
-              >
-                <USFlagImage />
-                <span>{selectedWine ? "Santa Cruz Mountains | California | United States" : getWineRegion()}</span>
-              </div>
+            <ChatInput
+              onSendMessage={handleSendMessage}
+              disabled={isTyping}
+              onFocus={() => setIsKeyboardFocused(true)}
+              onBlur={() => setIsKeyboardFocused(false)}
+            />
+            <VoiceAssistant
+              onSendMessage={handleSendMessage}
+              disabled={isTyping}
+            />
+          </div>
+        </main>
+      </div>
 
-              {/* Wine ratings section */}
-              <div
-                style={{
-                  width: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "20px",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  position: "relative",
-                  zIndex: 2,
-                  padding: "0 20px",
-                  marginBottom: "0",
-                }}
-              >
-                <span
-                  style={{
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  <span style={{ ...typography.num, color: "white" }}>
-                    {currentWine ? currentWine.ratings.vn : 95}
-                  </span>
-                  <span style={{ ...typography.body1R, color: "#999999" }}>
-                    VN
-                  </span>
-                </span>
-                <span
-                  style={{
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  <span style={{ ...typography.num, color: "white" }}>
-                    {currentWine ? currentWine.ratings.jd : 93}
-                  </span>
-                  <span style={{ ...typography.body1R, color: "#999999" }}>
-                    JD
-                  </span>
-                </span>
-                <span
-                  style={{
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  <span style={{ ...typography.num, color: "white" }}>
-                    {currentWine ? currentWine.ratings.ws : 93}
-                  </span>
+      {/* Scroll to Bottom Button */}
+      {showScrollToBottom && (
+        <button
+          onClick={scrollToBottom}
+          className="fixed bottom-24 right-6 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-20"
+        >
+          ↓
+        </button>
+      )}
+    </div>
+  );
+}
                   <span style={{ ...typography.body1R, color: "#999999" }}>
                     WS
                   </span>
