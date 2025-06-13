@@ -81,7 +81,7 @@ const ChatOnly: React.FC<ChatOnlyProps> = ({
         id: Date.now(),
         content: messageText,
         role: "user",
-        conversationId: currentConversationId,
+        conversationId: currentConversationId || 1,
         createdAt: new Date().toISOString(),
       };
 
@@ -89,76 +89,10 @@ const ChatOnly: React.FC<ChatOnlyProps> = ({
 
       const requestBody = {
         message: messageText,
-        conversationId: currentConversationId,
+        conversationId: currentConversationId || 1,
         wineData: currentWine,
       };
 
-      // Try streaming first if supported
-      if (isStreamingSupported()) {
-        const eventSource = createStreamingClient("/api/chat/stream", requestBody);
-        setCurrentEventSource(eventSource);
-        
-        let streamingContent = '';
-        const assistantMessageId = Date.now() + 1;
-        
-        eventSource.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            
-            switch(data.type) {
-              case 'start':
-                const initialMessage: ClientMessage = {
-                  id: assistantMessageId,
-                  content: streamingContent,
-                  role: "assistant",
-                  conversationId: currentConversationId,
-                  createdAt: new Date().toISOString(),
-                };
-                
-                addMessage(initialMessage);
-                setLatestMessageId(assistantMessageId);
-                break;
-                
-              case 'token':
-                if (data.content) {
-                  streamingContent += data.content;
-                  refetchMessages();
-                }
-                break;
-                
-              case 'complete':
-                console.log("Streaming completed successfully");
-                (window as any).lastAssistantMessageText = streamingContent;
-                window.dispatchEvent(new CustomEvent('showUnmuteButton'));
-                eventSource.close();
-                setCurrentEventSource(null);
-                refetchMessages();
-                break;
-                
-              case 'error':
-                console.error("Streaming error:", data.message);
-                eventSource.close();
-                setCurrentEventSource(null);
-                throw new Error(data.message || 'Streaming failed');
-            }
-          } catch (parseError) {
-            console.error('Error parsing streaming event:', parseError);
-            eventSource.close();
-            setCurrentEventSource(null);
-          }
-        };
-        
-        eventSource.onerror = (error) => {
-          console.error('EventSource error:', error);
-          eventSource.close();
-          setCurrentEventSource(null);
-          throw new Error('Streaming connection failed');
-        };
-        
-        return;
-      }
-      
-      // Fallback to regular request
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -181,11 +115,10 @@ const ChatOnly: React.FC<ChatOnlyProps> = ({
           id: Date.now() + 1,
           content: responseData.message.content,
           role: "assistant",
-          conversationId: currentConversationId,
+          conversationId: currentConversationId || 1,
           createdAt: new Date().toISOString(),
         };
 
-        setLatestMessageId(assistantMessage.id);
         (window as any).lastAssistantMessageText = assistantMessage.content;
         addMessage(assistantMessage);
       }
@@ -239,7 +172,6 @@ const ChatOnly: React.FC<ChatOnlyProps> = ({
                 >
                   <ChatMessage
                     message={message}
-                    isLatest={message.id === latestMessageId}
                     isUserMessage={message.role === "user"}
                   />
                 </div>

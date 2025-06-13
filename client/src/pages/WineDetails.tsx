@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
-import ChatOnly from '@/components/ChatOnly';
+import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import QRScanModal from '@/components/QRScanModal';
 import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
 import { DataSyncManager } from '@/utils/dataSync';
@@ -493,7 +493,7 @@ export default function WineDetails() {
 
       {/* Chat Interface - Positioned after recommendations */}
       <div style={{ paddingBottom: "40px" }}>
-        <ChatOnly showBuyButton={true} selectedWine={wine ? {
+        <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
           id: wine.id,
           name: wine.name,
           image: wine.image,
