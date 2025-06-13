@@ -736,6 +736,10 @@ export default function WineDetails() {
               color: "white",
               marginBottom: "24px",
               textAlign: "left",
+              paddingLeft: "0",
+              paddingRight: "0",
+              marginLeft: "0",
+              marginRight: "0",
             }}
           >
             We recommend
