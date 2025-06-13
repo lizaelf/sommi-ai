@@ -1172,10 +1172,10 @@ export default function WineDetails() {
             <div className="flex flex-1 overflow-hidden">
               {/* Chat Area */}
               <main
-                className="flex-1 flex flex-col bg-background overflow-hidden"
+                className="flex-1 flex flex-col overflow-hidden"
                 style={{
-                  backgroundColor: "#0A0A0A !important",
-                  backgroundImage: "none !important",
+                  backgroundColor: "transparent",
+                  backgroundImage: "none",
                   width: "100%",
                 }}
               >
