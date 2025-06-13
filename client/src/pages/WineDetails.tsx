@@ -33,9 +33,7 @@ export default function WineDetails() {
   const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
-  const [loadingState, setLoadingState] = useState<
-    "loading" | "loaded" | "error"
-  >("loading");
+  const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
   const [chatInterfaceReady, setChatInterfaceReady] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -118,47 +116,43 @@ export default function WineDetails() {
   // Load wine data when ID changes
   useEffect(() => {
     let mounted = true;
-    setLoadingState("loading");
-    setChatInterfaceReady(false); // Reset chat interface ready state
 
     const loadWineData = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const wineIdFromQuery = urlParams.get("wine");
-      const wineId = id || wineIdFromQuery || "1";
+      try {
+        setLoadingState('loading');
+        
+        if (!id) {
+          console.error("No wine ID provided");
+          if (mounted) {
+            setLoadingState('error');
+          }
+          return;
+        }
 
-      if (wineId && mounted) {
-        const wineData = DataSyncManager.getWineById(parseInt(wineId));
-        if (wineData) {
-          console.log(
-            "WineDetails: Loading wine ID",
-            wineId,
-            "found:",
-            wineData,
-          );
-          const transformedWine = {
-            id: wineData.id,
-            name: wineData.name,
-            year: wineData.year,
-            bottles: wineData.bottles,
-            image: wineData.image,
-            ratings: wineData.ratings,
-            buyAgainLink: wineData.buyAgainLink,
-            qrCode: wineData.qrCode,
-            qrLink: wineData.qrLink,
-            location: wineData.location,
-            description: wineData.description,
-            foodPairing: wineData.foodPairing,
-            conversationHistory: wineData.conversationHistory || [],
-          };
-          setWine(transformedWine);
-          setLoadingState("loaded");
-          console.log(
-            "WineDetails: Wine loaded successfully:",
-            transformedWine.name,
-          );
-        } else if (mounted) {
-          console.log("WineDetails: Wine not found for ID:", wineId);
-          setLoadingState("error");
+        console.log("WineDetails: Loading wine ID", id);
+        
+        // Get wine from DataSyncManager
+        const wineData = DataSyncManager.getWineById(parseInt(id));
+        
+        if (!wineData) {
+          console.error("Wine not found for ID:", id);
+          if (mounted) {
+            setLoadingState('error');
+          }
+          return;
+        }
+
+        console.log("WineDetails: Loading wine ID", id, "found:", wineData);
+
+        if (mounted) {
+          setWine(wineData);
+          setLoadingState('loaded');
+          console.log("WineDetails: Wine loaded successfully:", wineData.name);
+        }
+      } catch (error) {
+        console.error("Error loading wine data:", error);
+        if (mounted) {
+          setLoadingState('error');
         }
       }
     };
@@ -168,70 +162,47 @@ export default function WineDetails() {
     return () => {
       mounted = false;
     };
-  }, [id]); // Only depend on id
+  }, [id]);
 
-  const handleQRReset = (event: Event) => {
-    const detail = (event as CustomEvent).detail;
-    if (detail?.action === "voice") {
-      console.log("🎤 Voice interaction selected");
-      setInteractionChoiceMade(true);
-      setShowQRModal(false);
-    } else if (detail?.action === "text") {
-      console.log("💬 Text interaction selected");
-      setInteractionChoiceMade(true);
-      setShowQRModal(false);
-    }
+  const handleChatInterfaceReady = () => {
+    console.log("Chat interface ready");
+    setChatInterfaceReady(true);
   };
-
-  useEffect(() => {
-    window.addEventListener("qr-reset", handleQRReset);
-    return () => {
-      window.removeEventListener("qr-reset", handleQRReset);
-    };
-  }, []);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
-    console.log("Wine image loaded successfully:", wine?.image);
   };
 
-  const handleChatInterfaceReady = () => {
-    setChatInterfaceReady(true);
-    console.log("Chat interface ready");
-  };
-
-  // Loading component
-  const LoadingComponent = () => (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-        <h2 className="text-2xl font-bold mb-2">Loading Wine Details</h2>
-        <p className="text-gray-400">Fetching wine information...</p>
-      </div>
-    </div>
-  );
-
-  // Error component
+  // Component for when no wine is found
   const ErrorComponent = () => (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+    <div className="flex items-center justify-center h-[calc(100vh-100px)]">
       <div className="text-center">
-        <div className="text-red-400 text-6xl mb-4">⚠</div>
-        <h2 className="text-2xl font-bold mb-2">Wine Not Found</h2>
-        <p className="text-gray-400 mb-6">
-          The requested wine could not be located in our collection.
-        </p>
-        <Link
-          href="/home-global"
-          className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-        >
-          Return to Collection
+        <div className="text-2xl font-bold text-white mb-4">Wine Not Found</div>
+        <p className="text-gray-400 mb-6">The wine you're looking for could not be found.</p>
+        <Link href="/home-global">
+          <button className="bg-white text-black px-6 py-2 rounded-lg font-medium">
+            Go Back Home
+          </button>
         </Link>
       </div>
     </div>
   );
 
-  // Handle loading states
-  if (loadingState === "loading" || !wine) {
+  // Component for loading state
+  const LoadingComponent = () => (
+    <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+      <div className="text-center">
+        <div className="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p className="mt-4 text-gray-600">Loading wine details...</p>
+      </div>
+    </div>
+  );
+
+  if (loadingState === "loading") {
     return <LoadingComponent />;
   }
 
@@ -514,7 +485,6 @@ export default function WineDetails() {
                   color: "white",
                   ...typography.body,
                 }}
-                className="pl-[0px] pr-[0px]"
               >
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                   {getFoodPairingContent().dishes.map((dish: string, index: number) => (
@@ -1030,16 +1000,27 @@ export default function WineDetails() {
             })()}
           </div>
         </div>
+
+        {/* Chat Interface */}
+        <div className="mt-0 pb-10">
+          <EnhancedChatInterface
+            showBuyButton={true}
+            selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings,
+            } : undefined}
+            onReady={handleChatInterfaceReady}
+          />
+        </div>
       </div>
 
       {/* QR Scan Modal */}
       <QRScanModal
         isOpen={showQRModal}
-        onClose={() => {
-          console.log("🔄 QR Modal close triggered");
-          setShowQRModal(false);
-          setInteractionChoiceMade(true);
-        }}
+        onClose={() => setShowQRModal(false)}
         onTextChoice={() => {
           console.log("💬 Text interaction selected");
           setInteractionChoiceMade(true);
