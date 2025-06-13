@@ -1667,7 +1667,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       <div
                         key={wine.id}
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.08)",
+                          backgroundColor: "transparent",
                           borderRadius: "16px",
                           padding: "16px 16px 24px 16px",
                           width: "208px",
@@ -1680,10 +1680,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           transition: "all 0.3s ease",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                          e.currentTarget.style.backgroundColor = "transparent";
                         }}
                         onClick={() => {
                           // Navigate to wine details page
