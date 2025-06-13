@@ -39,19 +39,15 @@ export default function WineDetails() {
     let mounted = true;
     
     const loadWineData = async () => {
-      // Initialize data sync manager
       DataSyncManager.initialize();
       
-      // Get wine ID from URL params (either route param or query param)
       const urlParams = new URLSearchParams(window.location.search);
       const wineIdFromQuery = urlParams.get('wine');
-      const wineId = id || wineIdFromQuery || '1'; // Default to wine ID 1 if none provided
+      const wineId = id || wineIdFromQuery || '1';
       
-      console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId });
-      
-      if (wineId) {
+      if (wineId && mounted) { // Remove !wine condition for immediate loading
         const wineData = DataSyncManager.getWineById(parseInt(wineId));
-        if (wineData && mounted) {
+        if (wineData) {
           console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
           const transformedWine = {
             id: wineData.id,
@@ -81,7 +77,7 @@ export default function WineDetails() {
     return () => {
       mounted = false;
     };
-  }, [id]); // Remove 'location' dependency to prevent unnecessary re-renders
+  }, [id]); // Only depend on id
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
