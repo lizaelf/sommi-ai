@@ -267,12 +267,17 @@ export default function WineDetails() {
           )}
         </div>
 
+        {/* MARKER: This should be visible - bright orange section */}
+        <div className="w-full bg-orange-500 p-8 text-center text-black text-4xl font-bold">
+          🚨 SECTIONS SHOULD APPEAR HERE 🚨
+        </div>
+
         {/* Want more? and We recommend sections */}
-        <div className="px-6">
+        <div className="px-6 bg-yellow-400 border-8 border-red-500">
           {/* Want more? Section */}
-          <div className="pb-6 mt-8">
-            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
-              Want more?
+          <div className="pb-6 mt-8 bg-green-400 p-4">
+            <h2 className="text-3xl font-normal mb-6 text-black bg-white p-4" style={{ fontFamily: "Lora, serif" }}>
+              WANT MORE SECTION HERE
             </h2>
             
             {wine?.buyAgainLink ? (
@@ -294,9 +299,9 @@ export default function WineDetails() {
           </div>
 
           {/* We recommend Section */}
-          <div className="pb-6 mt-8">
-            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
-              We recommend
+          <div className="pb-6 mt-8 bg-blue-400 p-4">
+            <h2 className="text-3xl font-normal mb-6 text-black bg-white p-4" style={{ fontFamily: "Lora, serif" }}>
+              WE RECOMMEND SECTION HERE
             </h2>
             
             <div className="flex gap-4 overflow-x-auto pb-4">
