@@ -145,13 +145,10 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="bg-black text-white" style={{ 
+    <div className={`bg-black text-white ${isReady ? 'wine-details-ready' : 'wine-details-loading'}`} style={{ 
       minHeight: '100vh', 
       overflowY: 'visible', 
-      overflowX: 'hidden',
-      visibility: isLoading ? 'hidden' : 'visible',
-      opacity: isLoading ? 0 : 1,
-      transition: 'opacity 0.15s ease-in'
+      overflowX: 'hidden'
     }}>
       <AppHeader />
       <HeaderSpacer />
