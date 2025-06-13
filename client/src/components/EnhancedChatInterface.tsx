@@ -55,18 +55,23 @@ interface SelectedWine {
 interface EnhancedChatInterfaceProps {
   showBuyButton?: boolean;
   selectedWine?: SelectedWine | null;
+  onReady?: () => void;
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   showBuyButton = false,
   selectedWine = null,
+  onReady,
 }) => {
-  const [currentWine, setCurrentWine] = useState<any>(null);
+  const [isComponentReady, setIsComponentReady] = useState(false);
+  const [currentWine, setCurrentWine] = useState<any>(selectedWine || null);
 
-  // Load current wine data from CRM or use selectedWine prop
+  // Initialize with selectedWine immediately if available
   useEffect(() => {
     if (selectedWine) {
       setCurrentWine(selectedWine);
+      setIsComponentReady(true);
+      onReady?.(); // Call parent callback
     } else {
       // Get wine ID from URL parameters
       const urlParams = new URLSearchParams(window.location.search);
@@ -81,6 +86,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
           const fullWine = crmWines.find((w: any) => w.id === parseInt(wineId));
           setCurrentWine(fullWine || wine);
+          setIsComponentReady(true);
+          onReady?.();
           return;
         }
       }
@@ -90,9 +97,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       const wine = crmWines.find((w: any) => w.id === 1) || crmWines[0];
       if (wine) {
         setCurrentWine(wine);
+        setIsComponentReady(true);
+        onReady?.();
       }
     }
-  }, [selectedWine]);
+  }, [selectedWine, onReady]);
   // Get wine-specific content based on current wine
   const getWineHistory = () => {
     if (currentWine && currentWine.description) {

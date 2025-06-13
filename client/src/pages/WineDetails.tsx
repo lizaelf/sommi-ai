@@ -33,8 +33,7 @@ export default function WineDetails() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
   const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
-  const [allComponentsReady, setAllComponentsReady] = useState(false);
-  const [chatReady, setChatReady] = useState(false);
+  const [chatInterfaceReady, setChatInterfaceReady] = useState(false);
   const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isQRScan = urlParams.has('wine');
   const isScannedPage = location === '/scanned';
@@ -122,25 +121,7 @@ export default function WineDetails() {
     };
   }, []);
 
-  // Track when all components are ready
-  useEffect(() => {
-    if (wine && loadingState === 'loaded') {
-      // Add a small delay to ensure all components are initialized
-      const timer = setTimeout(() => {
-        setAllComponentsReady(true);
-      }, 50);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [wine, loadingState]);
 
-  // Track when chat interface is ready
-  useEffect(() => {
-    if (wine) {
-      // Simulate chat interface initialization
-      setChatReady(true);
-    }
-  }, [wine]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -180,7 +161,7 @@ export default function WineDetails() {
   }
 
   // Component readiness loading condition
-  if (loadingState !== 'loaded' || !wine || !chatReady || !allComponentsReady) {
+  if (loadingState !== 'loaded' || !wine || !chatInterfaceReady) {
     return <LoadingComponent />;
   }
 
@@ -336,7 +317,8 @@ export default function WineDetails() {
               image: wine.image,
               bottles: wine.bottles,
               ratings: wine.ratings
-            } : null} 
+            } : null}
+            onReady={() => setChatInterfaceReady(true)}
           />
         </div>
       </div>
