@@ -1620,7 +1620,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     style={{
                       backgroundColor: "rgba(255, 255, 255, 0.08)",
                       borderRadius: "16px",
-                      padding: "16px",
+                      padding: "16px 16px 24px 16px",
                       width: "208px",
                       minWidth: "208px",
                       flexShrink: 0,
@@ -1728,7 +1728,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     style={{
                       backgroundColor: "rgba(255, 255, 255, 0.08)",
                       borderRadius: "16px",
-                      padding: "16px",
+                      padding: "16px 16px 24px 16px",
                       width: "208px",
                       minWidth: "208px",
                       flexShrink: 0,
