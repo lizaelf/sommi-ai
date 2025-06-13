@@ -1163,241 +1163,243 @@ export default function WineDetails() {
               ));
             })()}
           </div>
-        </div>
 
-        {/* Chat Interface */}
-        <div className="mt-0 pb-10">
-          <div
-            className="flex flex-col h-auto"
-            style={{ width: "100%" }}
-          >
-            {/* Main Content Area */}
-            <div className="flex flex-1 overflow-hidden">
-              {/* Chat Area */}
-              <main
-                className="flex-1 flex flex-col overflow-hidden"
-                style={{
-                  backgroundColor: "transparent",
-                  backgroundImage: "none",
-                  width: "100%",
-                }}
-              >
-                {/* Scrollable container */}
-                <div
-                  ref={chatContainerRef}
-                  className="flex-1 overflow-y-auto scrollbar-hide"
+          {/* Chat Interface - Moved inside recommendations container */}
+          <div className="mt-8 pb-10">
+            <div
+              className="flex flex-col h-auto"
+              style={{ width: "100%" }}
+            >
+              {/* Main Content Area */}
+              <div className="flex flex-1 overflow-hidden">
+                {/* Chat Area */}
+                <main
+                  className="flex-1 flex flex-col overflow-hidden"
+                  style={{
+                    backgroundColor: "transparent",
+                    backgroundImage: "none",
+                    width: "100%",
+                  }}
                 >
-                  {/* Conversation Content */}
-                  <div style={{ backgroundColor: "transparent" }}>
-                    {/* Chat Title */}
-                    <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
-                      <h1
-                        style={{
-                          color: "white",
-                          textAlign: "left",
-                          margin: "0",
-                          ...typography.h1,
-                        }}
-                      >
-                        Chat
-                      </h1>
-                    </div>
-                    
-                    <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px" }}>
-                      {messages.length > 0 ? (
-                        <>
-                          {messages.map((message: any, index: number) => (
-                            <div
-                              key={`${message.id}-${index}`}
-                              style={{
-                                display: "flex",
-                                justifyContent:
-                                  message.role === "user" ? "flex-end" : "flex-start",
-                                width: "100%",
-                                marginBottom: "12px",
-                              }}
-                            >
+                  {/* Scrollable container */}
+                  <div
+                    ref={chatContainerRef}
+                    className="flex-1 overflow-y-auto scrollbar-hide"
+                  >
+                    {/* Conversation Content */}
+                    <div style={{ backgroundColor: "transparent" }}>
+                      {/* Chat Title */}
+                      <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
+                        <h1
+                          style={{
+                            color: "white",
+                            textAlign: "left",
+                            margin: "0",
+                            ...typography.h1,
+                          }}
+                        >
+                          Chat
+                        </h1>
+                      </div>
+                      
+                      <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px" }}>
+                        {messages.length > 0 ? (
+                          <>
+                            {messages.map((message: any, index: number) => (
                               <div
+                                key={`${message.id}-${index}`}
                                 style={{
-                                  backgroundColor:
-                                    message.role === "user"
-                                      ? "#F5F5F5"
-                                      : "transparent",
-                                  borderRadius: "16px",
-                                  padding: message.role === "user" ? "12px 16px 12px 16px" : "16px 0",
-                                  width:
-                                    message.role === "user" ? "fit-content" : "100%",
-                                  maxWidth: message.role === "user" ? "80%" : "100%",
+                                  display: "flex",
+                                  justifyContent:
+                                    message.role === "user" ? "flex-end" : "flex-start",
+                                  width: "100%",
+                                  marginBottom: "12px",
                                 }}
                               >
-                                {message.role === "assistant" ? (
-                                  <div
-                                    style={{
-                                      color: "#DBDBDB",
-                                      fontFamily: "Inter, system-ui, sans-serif",
-                                      fontSize: "16px",
-                                      lineHeight: "1.6",
-                                    }}
-                                  >
-                                    {formatContent(message.content)}
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{
-                                      color: "#000000",
-                                      fontFamily: "Inter, system-ui, sans-serif",
-                                      fontSize: "16px",
-                                      lineHeight: "1.6",
-                                    }}
-                                  >
-                                    {formatContent(message.content)}
-                                  </div>
-                                )}
+                                <div
+                                  style={{
+                                    backgroundColor:
+                                      message.role === "user"
+                                        ? "#F5F5F5"
+                                        : "transparent",
+                                    borderRadius: "16px",
+                                    padding: message.role === "user" ? "12px 16px 12px 16px" : "16px 0",
+                                    width:
+                                      message.role === "user" ? "fit-content" : "100%",
+                                    maxWidth: message.role === "user" ? "80%" : "100%",
+                                  }}
+                                >
+                                  {message.role === "assistant" ? (
+                                    <div
+                                      style={{
+                                        color: "#DBDBDB",
+                                        fontFamily: "Inter, system-ui, sans-serif",
+                                        fontSize: "16px",
+                                        lineHeight: "1.6",
+                                      }}
+                                    >
+                                      {formatContent(message.content)}
+                                    </div>
+                                  ) : (
+                                    <div
+                                      style={{
+                                        color: "#000000",
+                                        fontFamily: "Inter, system-ui, sans-serif",
+                                        fontSize: "16px",
+                                        lineHeight: "1.6",
+                                      }}
+                                    >
+                                      {formatContent(message.content)}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                        </>
-                      ) : (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            minHeight: "200px",
-                            width: "100%",
-                            textAlign: "center",
-                          }}
-                        >
-                          <p
+                            ))}
+                          </>
+                        ) : (
+                          <div
                             style={{
-                              color: "rgba(255, 255, 255, 0.6)",
-                              fontFamily: "Inter, system-ui, sans-serif",
-                              fontSize: "16px",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              minHeight: "200px",
+                              width: "100%",
                               textAlign: "center",
-                              margin: "0",
                             }}
                           >
-                            Ask a question to see chat history
-                          </p>
-                        </div>
-                      )}
+                            <p
+                              style={{
+                                color: "rgba(255, 255, 255, 0.6)",
+                                fontFamily: "Inter, system-ui, sans-serif",
+                                fontSize: "16px",
+                                textAlign: "center",
+                                margin: "0",
+                              }}
+                            >
+                              Ask a question to see chat history
+                            </p>
+                          </div>
+                        )}
 
-                      {/* Typing Indicator */}
-                      {isTyping && (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            width: "100%",
-                            marginBottom: "12px",
-                            padding: "16px",
-                          }}
-                        >
-                          <ShiningText text="Thinking..." />
+                        {/* Typing Indicator */}
+                        {isTyping && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "100%",
+                              marginBottom: "12px",
+                              padding: "16px",
+                            }}
+                          >
+                            <ShiningText text="Thinking..." />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Extra space at the bottom */}
+                    <div style={{ height: "80px" }}></div>
+                  </div>
+
+                  {/* Input Area - Fixed to Bottom */}
+                  <div
+                    style={{
+                      backgroundColor: "#1C1C1C",
+                      padding: "16px",
+                      zIndex: 50,
+                      position: "fixed",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+                    }}
+                  >
+                    <div className="max-w-3xl mx-auto">
+                      <>
+                        {/* Suggestion chips */}
+                        <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                          <Button
+                            onClick={() => handleSuggestionClick("Tasting notes")}
+                            variant="secondary"
+                            style={{ height: "32px" }}
+                          >
+                            Tasting notes
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              handleSuggestionClick("Simple recipes for this wine")
+                            }
+                            variant="secondary"
+                            style={{ height: "32px" }}
+                          >
+                            Simple recipes
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              handleSuggestionClick("Where is this wine from?")
+                            }
+                            variant="secondary"
+                            style={{ height: "32px" }}
+                          >
+                            Where it's from
+                          </Button>
                         </div>
-                      )}
+                        <ChatInput
+                          onSendMessage={handleSendMessage}
+                          isProcessing={isTyping}
+                          onFocus={() => setIsKeyboardFocused(true)}
+                          onBlur={() => setIsKeyboardFocused(false)}
+                        />
+                      </>
                     </div>
                   </div>
+                </main>
 
-                  {/* Extra space at the bottom */}
-                  <div style={{ height: "80px" }}></div>
-                </div>
-
-                {/* Input Area - Fixed to Bottom */}
-                <div
-                  style={{
-                    backgroundColor: "#1C1C1C",
-                    padding: "16px",
-                    zIndex: 50,
-                    position: "fixed",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    borderTop: "1px solid rgba(255, 255, 255, 0.2)",
-                  }}
-                >
-                  <div className="max-w-3xl mx-auto">
-                    <>
-                      {/* Suggestion chips */}
-                      <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                        <Button
-                          onClick={() => handleSuggestionClick("Tasting notes")}
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          Tasting notes
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            handleSuggestionClick("Simple recipes for this wine")
-                          }
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          Simple recipes
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            handleSuggestionClick("Where is this wine from?")
-                          }
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          Where it's from
-                        </Button>
-                      </div>
-                      <ChatInput
-                        onSendMessage={handleSendMessage}
-                        isProcessing={isTyping}
-                        onFocus={() => setIsKeyboardFocused(true)}
-                        onBlur={() => setIsKeyboardFocused(false)}
-                      />
-                    </>
-                  </div>
-                </div>
-              </main>
-
-              {/* Scroll to Bottom Floating Button */}
-              {showScrollToBottom && (
-                <Button
-                  onClick={scrollToBottom}
-                  variant="secondary"
-                  style={{
-                    position: "fixed",
-                    bottom: "100px",
-                    right: "20px",
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "24px",
-                    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
-                    zIndex: 1000,
-                    backdropFilter: "blur(8px)",
-                    padding: "0",
-                    minHeight: "48px",
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                {/* Scroll to Bottom Floating Button */}
+                {showScrollToBottom && (
+                  <Button
+                    onClick={scrollToBottom}
+                    variant="secondary"
+                    style={{
+                      position: "fixed",
+                      bottom: "100px",
+                      right: "20px",
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "24px",
+                      boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
+                      zIndex: 1000,
+                      backdropFilter: "blur(8px)",
+                      padding: "0",
+                      minHeight: "48px",
+                    }}
                   >
-                    <path d="M12 16l-4-4h8l-4 4z" fill="white" />
-                    <path d="M12 20l-4-4h8l-4 4z" fill="white" opacity="0.6" />
-                  </svg>
-                </Button>
-              )}
-            </div>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M12 16l-4-4h8l-4 4z" fill="white" />
+                      <path d="M12 20l-4-4h8l-4 4z" fill="white" opacity="0.6" />
+                    </svg>
+                  </Button>
+                )}
+              </div>
 
-            <ContactBottomSheet
-              isOpen={animationState !== "closed"}
-              onClose={handleCloseContactSheet}
-              onSubmit={handleSubmit}
-            />
+              <ContactBottomSheet
+                isOpen={animationState !== "closed"}
+                onClose={handleCloseContactSheet}
+                onSubmit={handleSubmit}
+              />
+            </div>
           </div>
         </div>
+
+
       </div>
 
       {/* QR Scan Modal */}
