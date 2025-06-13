@@ -346,6 +346,11 @@ export default function WineDetails() {
               </div>
             </div>
           </div>
+          
+          {/* FINAL TEST - Should be visible */}
+          <div style={{ backgroundColor: 'lime', color: 'black', padding: '30px', margin: '20px 0', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+            ✓ SECTIONS SHOULD APPEAR HERE
+          </div>
         </div>
 
 
