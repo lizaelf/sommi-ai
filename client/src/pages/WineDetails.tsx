@@ -123,7 +123,7 @@ export default function WineDetails() {
 
       
       {/* Main Content Container - Completely removed height constraints */}
-      <div className="w-full" style={{ height: 'auto', overflow: 'visible' }}>
+      <div className="w-full min-h-screen" style={{ height: 'auto', overflow: 'visible' }}>
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
@@ -267,6 +267,11 @@ export default function WineDetails() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* LARGE TEST ELEMENT */}
+        <div className="w-full h-32 bg-yellow-500 flex items-center justify-center border-8 border-red-600 my-8">
+          <span className="text-black text-4xl font-bold">🔥 LARGE TEST - CAN YOU SEE THIS? 🔥</span>
         </div>
 
         {/* Want more? and We recommend sections */}
