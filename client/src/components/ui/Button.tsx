@@ -12,7 +12,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
-  variant = "primary",
+  variant = "secondary",
   disabled = false,
   className = "",
   style = {},
