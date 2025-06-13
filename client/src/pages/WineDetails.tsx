@@ -158,7 +158,13 @@ export default function WineDetails() {
               onLoad={handleImageLoad}
               style={{
                 filter: imageLoaded ? 'none' : 'blur(10px)',
-                transition: 'filter 0.3s ease'
+                transition: 'filter 0.3s ease',
+                backgroundColor: 'transparent',
+                border: 'none',
+                outline: 'none',
+                boxShadow: 'none',
+                imageRendering: 'auto',
+                display: 'block'
               }}
             />
           </div>
