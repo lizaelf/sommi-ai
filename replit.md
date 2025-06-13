@@ -42,6 +42,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 13, 2025)
 
+### Latest Updates (June 13, 2025 - Evening)
+- **Button Component Standardization**: Changed default Button variant from "primary" to "secondary" across entire application
+- **WineRating Component Enhancement**: Added hideAbv prop to selectively hide ABV ratings in specific contexts (recommendation cards)
+- **Rating Display Logic**: Implemented automatic hiding of rating blocks when no rating data exists
+- **Wine Recommendation Cards**: Updated typography to buttonPlus1 style with 3-line text truncation and 12px gap between title and ratings
+- **Chat Interface Optimization**: Removed voice assistant from WineDetails chat input, added explicit transparent backgrounds
+- **Page Scrolling Fix**: Resolved initial scrolling issues with proper overflow settings and scroll initialization
+
 ### Component Standardization (June 13, 2025)
 - **Header Component**: Confirmed AppHeader component consistency across all pages (HomeGlobal, WineDetails, WineEdit)
   - Fixed positioning with 1200px max-width container

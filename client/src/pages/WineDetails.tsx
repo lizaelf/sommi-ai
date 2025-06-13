@@ -406,6 +406,26 @@ export default function WineDetails() {
     };
   }, [id]);
 
+  // Fix scrolling initialization
+  useEffect(() => {
+    // Force scroll restoration and ensure page is scrollable
+    const initializeScrolling = () => {
+      // Reset scroll position to enable proper scrolling
+      window.scrollTo(0, 0);
+      
+      // Ensure document body has proper scroll behavior
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+      
+      // Force a reflow to ensure scroll is working
+      document.body.offsetHeight;
+    };
+
+    // Run immediately and after a small delay
+    initializeScrolling();
+    setTimeout(initializeScrolling, 100);
+  }, []);
+
   // Detect QR code access and show interaction choice
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -500,7 +520,7 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'visible', overflowX: 'hidden' }}>
+    <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'auto', overflowX: 'hidden' }}>
       <AppHeader />
       <HeaderSpacer />
 
