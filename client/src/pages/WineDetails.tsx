@@ -36,6 +36,7 @@ export default function WineDetails() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -74,15 +75,12 @@ export default function WineDetails() {
           setWine(transformedWine);
           console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
           
-          // Use double requestAnimationFrame to ensure DOM is stable
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              if (mounted) {
-                setIsReady(true);
-                setIsLoading(false);
-              }
-            });
-          });
+          // Hide skeleton and show content immediately to prevent flash
+          if (mounted) {
+            setShowSkeleton(false);
+            setIsReady(true);
+            setIsLoading(false);
+          }
         } else if (mounted) {
           console.log('WineDetails: Wine not found for ID:', wineId);
           setIsLoading(false);
@@ -123,21 +121,28 @@ export default function WineDetails() {
   };
 
   // Show skeleton loading to prevent UI flash
-  if (!isReady || !wine) {
-    if (!wine && !isLoading) {
-      return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
-            <Link href="/">
-              <button className="bg-white text-black px-6 py-2 rounded-full">
-                Return Home
-              </button>
-            </Link>
-          </div>
+  if (showSkeleton) {
+    return <WineDetailsSkeleton />;
+  }
+
+  // Handle wine not found case
+  if (!wine && !isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
+          <Link href="/">
+            <button className="bg-white text-black px-6 py-2 rounded-full">
+              Return Home
+            </button>
+          </Link>
         </div>
-      );
-    }
+      </div>
+    );
+  }
+
+  // Don't render anything if wine is still loading
+  if (!wine) {
     return <WineDetailsSkeleton />;
   }
 

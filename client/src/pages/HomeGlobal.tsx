@@ -7,6 +7,7 @@ import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { ButtonIcon } from "@/components/ButtonIcon";
+import HomeGlobalSkeleton from "@/components/HomeGlobalSkeleton";
 
 interface Wine {
   id: number;
@@ -29,6 +30,7 @@ const HomeGlobal = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [location, setLocation] = useLocation();
   const [wines, setWines] = useState<Wine[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleWineClick = (wineId: number) => {
     // Navigate to wine details page for any wine
