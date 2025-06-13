@@ -30,6 +30,14 @@ const typography = {
     fontWeight: '500'
   },
   
+  // H2 heading style using Inter font
+  h2: {
+    fontSize: '20px',
+    lineHeight: '28px',
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: '500'
+  },
+  
   // Button styles using Inter font
   buttonPlus1: {
     fontSize: '16px',

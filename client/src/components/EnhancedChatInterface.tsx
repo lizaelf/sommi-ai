@@ -1701,19 +1701,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     />
                     
                     {/* Wine Name */}
-                    <h3
+                    <h2
                       style={{
-                        ...typography.body,
+                        ...typography.h2,
                         color: "white",
-                        fontWeight: 600,
-                        fontSize: "18px",
                         textAlign: "center",
                         margin: "0 0 16px 0",
-                        lineHeight: "1.3",
                       }}
                     >
                       2022 Estate Chardonnay
-                    </h3>
+                    </h2>
                     
                     {/* Rating Badges */}
                     <div
@@ -1845,19 +1842,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     />
                     
                     {/* Wine Name */}
-                    <h3
+                    <h2
                       style={{
-                        ...typography.body,
+                        ...typography.h2,
                         color: "white",
-                        fontWeight: 600,
-                        fontSize: "18px",
                         textAlign: "center",
                         margin: "0 0 16px 0",
-                        lineHeight: "1.3",
                       }}
                     >
                       2021 Monte Bello Cabernet Sauvignon
-                    </h3>
+                    </h2>
                     
                     {/* Rating Badges */}
                     <div
