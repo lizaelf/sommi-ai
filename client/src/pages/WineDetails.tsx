@@ -230,7 +230,7 @@ export default function WineDetails() {
               className="block"
             >
               <button 
-                className="w-full bg-transparent text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-white/10"
+                className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100"
                 style={{ fontFamily: "Inter, sans-serif" }}
               >
                 Buy again
