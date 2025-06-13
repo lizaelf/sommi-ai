@@ -268,9 +268,9 @@ export default function WineDetails() {
         </div>
 
         {/* Want more? Section */}
-        <div className="px-6 pb-6 mt-8 bg-red-500 border-4 border-yellow-400 relative z-50" style={{ minHeight: '200px' }}>
-          <h2 className="text-3xl font-normal mb-6 text-white bg-black p-4" style={{ fontFamily: "Lora, serif" }}>
-            Want more? SECTION IS HERE
+        <div className="px-6 pb-6 mt-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+            Want more?
           </h2>
           
           {wine?.buyAgainLink ? (
@@ -292,9 +292,9 @@ export default function WineDetails() {
         </div>
 
         {/* We recommend Section */}
-        <div className="px-6 pb-6 mt-8 bg-blue-500 border-4 border-green-400 relative z-50" style={{ minHeight: '300px' }}>
-          <h2 className="text-3xl font-normal mb-6 text-white bg-black p-4" style={{ fontFamily: "Lora, serif" }}>
-            We recommend SECTION IS HERE
+        <div className="px-6 pb-6 mt-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+            We recommend
           </h2>
           
           <div className="flex gap-4 overflow-x-auto pb-4">

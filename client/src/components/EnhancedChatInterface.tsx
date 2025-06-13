@@ -1005,11 +1005,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               style={{
                 backgroundColor: "#0A0A0A",
                 paddingTop: "75px", // Match the header height exactly
-                minHeight: "100vh", // Make the div full screen height
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
+                minHeight: "50vh", // Reduced height to not cover other sections
               }}
             >
               {/* Wine bottle image */}
