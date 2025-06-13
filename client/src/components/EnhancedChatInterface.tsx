@@ -778,7 +778,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 ? "#F5F5F5"
                                 : "transparent",
                             borderRadius: "16px",
-                            padding: "16px",
+                            padding: message.role === "user" ? "16px" : "16px 0",
                             width:
                               message.role === "user" ? "fit-content" : "100%",
                             maxWidth: message.role === "user" ? "80%" : "100%",

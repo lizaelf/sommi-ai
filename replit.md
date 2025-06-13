@@ -42,13 +42,17 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 13, 2025)
 
-### Rating Component Standardization (June 13, 2025)
-- Created reusable WineRating component with multiple variants (default, compact, minimal)
-- Replaced all rating implementations across HomeGlobal, WineDetails, and WineCard components
-- Applied consistent typography constants (typography.num for values, typography.body1R for labels)
-- Standardized spacing and color scheme (#999999 for labels, white for values)
-- Support for three variants: default (main pages), compact (cards), minimal (small spaces)
-- Eliminated code duplication with centralized rating display logic
+### Component Standardization (June 13, 2025)
+- **Header Component**: Confirmed AppHeader component consistency across all pages (HomeGlobal, WineDetails, WineEdit)
+  - Fixed positioning with 1200px max-width container
+  - Transparent by default with scroll-triggered blur effects
+  - Standardized 75px height with proper Logo and ButtonIcon placement
+- **Rating Component**: Created reusable WineRating component with multiple variants (default, compact, minimal)
+  - Replaced all rating implementations across HomeGlobal, WineDetails, WineCard, and WineInfo components
+  - Applied consistent typography constants (typography.num for values, typography.body1R for labels)
+  - Standardized spacing and color scheme (#999999 for labels, white for values)
+  - Support for three variants: default (main pages), compact (cards), minimal (small spaces)
+  - Eliminated code duplication with centralized rating display logic
 
 ### Component Architecture Modernization
 - Implemented component splitting for better code organization and performance
