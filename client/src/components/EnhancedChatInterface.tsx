@@ -1654,6 +1654,263 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
               </div>
 
+              {/* We recommend Section */}
+              <div
+                style={{
+                  width: "100%",
+                  padding: "0 20px",
+                  marginBottom: "20px",
+                }}
+              >
+                <h1
+                  style={{
+                    ...typography.h1,
+                    color: "white",
+                    marginBottom: "24px",
+                    textAlign: "left",
+                  }}
+                >
+                  We recommend
+                </h1>
+
+                {/* Wine Recommendation Cards */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                  }}
+                >
+                  {/* Recommendation 1 */}
+                  <div
+                    style={{
+                      backgroundColor: "#191919",
+                      borderRadius: "16px",
+                      padding: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#252525";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "#191919";
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "60px",
+                        height: "60px",
+                        backgroundColor: "#333",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "24px",
+                      }}
+                    >
+                      🍷
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h3
+                        style={{
+                          ...typography.body,
+                          color: "white",
+                          fontWeight: 600,
+                          margin: "0 0 4px 0",
+                        }}
+                      >
+                        2020 Caymus Cabernet Sauvignon
+                      </h3>
+                      <p
+                        style={{
+                          ...typography.body,
+                          color: "rgba(255, 255, 255, 0.7)",
+                          fontSize: "14px",
+                          margin: 0,
+                        }}
+                      >
+                        Rich, bold flavor with notes of dark fruit
+                      </p>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      <span style={{ color: "#FFD700", fontSize: "16px" }}>★</span>
+                      <span
+                        style={{
+                          ...typography.body,
+                          color: "white",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        94
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Recommendation 2 */}
+                  <div
+                    style={{
+                      backgroundColor: "#191919",
+                      borderRadius: "16px",
+                      padding: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#252525";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "#191919";
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "60px",
+                        height: "60px",
+                        backgroundColor: "#333",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "24px",
+                      }}
+                    >
+                      🍷
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h3
+                        style={{
+                          ...typography.body,
+                          color: "white",
+                          fontWeight: 600,
+                          margin: "0 0 4px 0",
+                        }}
+                      >
+                        2019 Opus One Red Blend
+                      </h3>
+                      <p
+                        style={{
+                          ...typography.body,
+                          color: "rgba(255, 255, 255, 0.7)",
+                          fontSize: "14px",
+                          margin: 0,
+                        }}
+                      >
+                        Elegant complexity with refined tannins
+                      </p>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      <span style={{ color: "#FFD700", fontSize: "16px" }}>★</span>
+                      <span
+                        style={{
+                          ...typography.body,
+                          color: "white",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        96
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Recommendation 3 */}
+                  <div
+                    style={{
+                      backgroundColor: "#191919",
+                      borderRadius: "16px",
+                      padding: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "16px",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#252525";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "#191919";
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "60px",
+                        height: "60px",
+                        backgroundColor: "#333",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "24px",
+                      }}
+                    >
+                      🍷
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h3
+                        style={{
+                          ...typography.body,
+                          color: "white",
+                          fontWeight: 600,
+                          margin: "0 0 4px 0",
+                        }}
+                      >
+                        2021 Silver Oak Alexander Valley
+                      </h3>
+                      <p
+                        style={{
+                          ...typography.body,
+                          color: "rgba(255, 255, 255, 0.7)",
+                          fontSize: "14px",
+                          margin: 0,
+                        }}
+                      >
+                        Smooth finish with vanilla and spice notes
+                      </p>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      <span style={{ color: "#FFD700", fontSize: "16px" }}>★</span>
+                      <span
+                        style={{
+                          ...typography.body,
+                          color: "white",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        92
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Summary Section - Only show on Home page, not Wine Details */}
               {messages.length > 0 && !showBuyButton && (
                 <div
