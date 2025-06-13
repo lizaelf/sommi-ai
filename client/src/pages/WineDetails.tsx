@@ -962,8 +962,6 @@ export default function WineDetails() {
                       display: "flex",
                       alignItems: "flex-start",
                       justifyContent: "center",
-                      fontSize: "20px",
-                      lineHeight: "1.2",
                     }}
                   >
                     {recommendedWine.year ? `${recommendedWine.year} ` : ""}{recommendedWine.name}
