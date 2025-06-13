@@ -1,0 +1,91 @@
+{/* Wine Details Section */}
+        <div className="px-6 pb-6 space-y-6">
+          {/* Location */}
+          {wine.location && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "Lora, serif" }}>
+                Origin
+              </h3>
+              <p className="text-gray-300">
+                {wine.location}
+              </p>
+            </div>
+          )}
+
+          {/* Description */}
+          {wine.description && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "Lora, serif" }}>
+                Tasting Notes
+              </h3>
+              <p className="text-gray-300 leading-relaxed">
+                {wine.description}
+              </p>
+            </div>
+          )}
+
+          {/* Food Pairing */}
+          {wine.foodPairing && wine.foodPairing.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: "Lora, serif" }}>
+                Perfect Pairings
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {wine.foodPairing.map((pairing, index) => (
+                  <span 
+                    key={index}
+                    className="bg-white/10 px-3 py-1 rounded-full text-sm"
+                  >
+                    {pairing}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Want more? Section - PLACED HERE RIGHT AFTER WINE DETAILS */}
+        <div 
+          className="px-6 py-8 border-t-2 border-white/30" 
+          style={{ 
+            backgroundColor: '#4B5563', // Gray-600
+            minHeight: '200px',
+            position: 'relative',
+            zIndex: 1
+          }}
+        >
+          <h2 className="text-3xl font-normal mb-6 text-white font-serif">
+            Want more?
+          </h2>
+          
+          {wine?.buyAgainLink ? (
+            <a 
+              href={wine.buyAgainLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                Buy again
+              </button>
+            </a>
+          ) : (
+            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+              Explore our collection
+            </button>
+          )}
+        </div>
+
+        {/* Chat Interface - MOVED AFTER Want More section */}
+        <div className="mt-0 pb-10">
+          <EnhancedChatInterface 
+            showBuyButton={true} 
+            selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings
+            } : null} 
+          />
+        </div>
