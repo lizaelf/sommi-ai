@@ -83,32 +83,25 @@ export default function WineDetails() {
         setLoadingState('loading');
         
         if (!id) {
-          console.error("No wine ID provided");
           if (mounted) {
             setLoadingState('error');
           }
           return;
         }
 
-        console.log("WineDetails: Loading wine ID", id);
-        
         // Get wine from DataSyncManager
         const wineData = DataSyncManager.getWineById(parseInt(id));
         
         if (!wineData) {
-          console.error("Wine not found for ID:", id);
           if (mounted) {
             setLoadingState('error');
           }
           return;
         }
 
-        console.log("WineDetails: Loading wine ID", id, "found:", wineData);
-
         if (mounted) {
           setWine(wineData);
           setLoadingState('loaded');
-          console.log("WineDetails: Wine loaded successfully:", wineData.name);
         }
       } catch (error) {
         console.error("Error loading wine data:", error);
@@ -769,8 +762,6 @@ export default function WineDetails() {
             onClick={() => {
               if (wine?.buyAgainLink) {
                 window.open(wine.buyAgainLink, '_blank');
-              } else {
-                console.log("No buy again link available");
               }
             }}
             variant="primary"
@@ -1013,12 +1004,10 @@ export default function WineDetails() {
         isOpen={showQRModal}
         onClose={() => setShowQRModal(false)}
         onTextChoice={() => {
-          console.log("💬 Text interaction selected");
           setInteractionChoiceMade(true);
           setShowQRModal(false);
         }}
         onVoiceChoice={() => {
-          console.log("🎤 Voice interaction selected");
           setInteractionChoiceMade(true);
           setShowQRModal(false);
         }}
