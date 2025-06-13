@@ -61,22 +61,7 @@ const HomeGlobal = () => {
 
   return (
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
-      <AppHeader 
-        rightContent={
-          <>
-            <Link to="/cellar">
-              <button className="secondary-button react-button">
-                My cellar
-              </button>
-            </Link>
-            <ButtonIcon 
-              onEditContact={() => console.log('Edit contact clicked')}
-              onManageNotifications={() => console.log('Manage notifications clicked')}
-              onDeleteAccount={() => console.log('Delete account clicked')}
-            />
-          </>
-        }
-      />
+      <AppHeader />
 
       {/* Content */}
       <div className="px-4" style={{ paddingTop: "91px" }}>
