@@ -491,17 +491,17 @@ export default function WineDetails() {
 
           </div>
         </div>
+      </div>
 
-        {/* Main Content Area */}
-        <div style={{ marginTop: "40px", paddingBottom: "40px" }}>
-          <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
-            id: wine.id,
-            name: wine.name,
-            image: wine.image,
-            bottles: wine.bottles,
-            ratings: wine.ratings
-          } : null} />
-        </div>
+      {/* Chat Interface - Positioned at the bottom after all content */}
+      <div style={{ marginTop: "40px", paddingBottom: "40px" }}>
+        <EnhancedChatInterface showBuyButton={true} selectedWine={wine ? {
+          id: wine.id,
+          name: wine.name,
+          image: wine.image,
+          bottles: wine.bottles,
+          ratings: wine.ratings
+        } : null} />
       </div>
       
       {/* QR Scan Modal */}
