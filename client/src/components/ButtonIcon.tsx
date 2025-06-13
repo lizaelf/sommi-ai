@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/UseToast";
+import Button from "@/components/ui/Button";
 
 interface ButtonIconProps {
   onEditContact?: () => void;
@@ -15,8 +16,91 @@ export function ButtonIcon({
   onDeleteAccount 
 }: ButtonIconProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showDeleteBottomSheet, setShowDeleteBottomSheet] = useState(false);
+  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const { toast } = useToast();
+
+  // Function to clear all chat history
+  const clearChatHistory = async () => {
+    try {
+      // Clear conversation data from backend
+      const response = await fetch('/api/conversations', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Clear local storage
+        localStorage.removeItem('conversation_history');
+        localStorage.removeItem('current_conversation_id');
+        
+        // Reload the page to reset state
+        window.location.reload();
+      } else {
+        console.error('Failed to clear chat history from backend');
+        toast({
+          title: "Error",
+          description: "Failed to clear chat history. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error clearing chat history:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear chat history. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Function to handle delete account click
+  const handleDeleteAccount = async () => {
+    setShowProfileMenu(false);
+    
+    // Clear chat history first
+    await clearChatHistory();
+    
+    // Show bottom sheet with interaction choice
+    setAnimationState("opening");
+    setShowDeleteBottomSheet(true);
+    
+    setTimeout(() => {
+      setAnimationState("open");
+    }, 50);
+  };
+
+  // Function to close bottom sheet
+  const closeBottomSheet = () => {
+    setAnimationState("closing");
+    setTimeout(() => {
+      setShowDeleteBottomSheet(false);
+      setAnimationState("closed");
+    }, 300);
+  };
+
+  // Function to handle text interaction choice
+  const handleTextChoice = () => {
+    console.log("💬 Text interaction selected after account deletion");
+    closeBottomSheet();
+    toast({
+      title: "Account Reset",
+      description: "Chat history cleared. You can start a new conversation.",
+    });
+  };
+
+  // Function to handle voice interaction choice
+  const handleVoiceChoice = () => {
+    console.log("🎤 Voice interaction selected after account deletion");
+    closeBottomSheet();
+    toast({
+      title: "Account Reset",
+      description: "Chat history cleared. You can start a new conversation with voice.",
+    });
+  };
 
   // Portal setup effect
   useEffect(() => {
@@ -172,10 +256,7 @@ export function ButtonIcon({
           {onDeleteAccount && (
             <button
               className="profile-menu-item"
-              onClick={() => {
-                setShowProfileMenu(false);
-                onDeleteAccount();
-              }}
+              onClick={handleDeleteAccount}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -207,6 +288,131 @@ export function ButtonIcon({
               Delete Account
             </button>
           )}
+        </div>,
+        portalElement
+      )}
+
+      {/* Delete Account Bottom Sheet */}
+      {showDeleteBottomSheet && portalElement && createPortal(
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-end",
+            opacity: animationState === "open" ? 1 : animationState === "opening" ? 0.8 : 0,
+            transition: "opacity 0.3s ease-out",
+          }}
+          onClick={closeBottomSheet}
+        >
+          <div
+            style={{
+              background: "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
+              backdropFilter: "blur(20px)",
+              width: "100%",
+              maxWidth: "500px",
+              borderRadius: "24px 24px 0px 0px",
+              borderTop: "1px solid rgba(255, 255, 255, 0.20)",
+              paddingTop: "32px",
+              paddingLeft: "24px",
+              paddingRight: "24px",
+              paddingBottom: "32px",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
+              transform: animationState === "open" ? "translateY(0)" : "translateY(100%)",
+              transition: "transform 0.3s ease-out",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <Button
+              onClick={closeBottomSheet}
+              variant="secondary"
+              style={{
+                position: "absolute",
+                top: "16px",
+                right: "16px",
+                zIndex: 10,
+                width: "40px",
+                height: "40px",
+                padding: "0",
+                minHeight: "40px",
+                borderRadius: "20px",
+              }}
+            >
+              <X size={24} color="white" />
+            </Button>
+
+            {/* Header */}
+            <div style={{ marginBottom: "32px", textAlign: "center" }}>
+              <h2
+                style={{
+                  color: "white",
+                  fontFamily: "Lora, serif",
+                  fontSize: "24px",
+                  fontWeight: "700",
+                  lineHeight: "1.2",
+                  margin: "0 0 16px 0",
+                }}
+              >
+                Chat history cleared
+              </h2>
+              <p
+                style={{
+                  color: "#CECECE",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  lineHeight: "1.4",
+                  margin: "0",
+                }}
+              >
+                How would you like to continue?
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+              }}
+            >
+              <Button
+                onClick={handleTextChoice}
+                variant="primary"
+                style={{
+                  width: "100%",
+                  height: "56px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                }}
+              >
+                💬 Continue with Text
+              </Button>
+              
+              <Button
+                onClick={handleVoiceChoice}
+                variant="secondary"
+                style={{
+                  width: "100%",
+                  height: "56px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                }}
+              >
+                🎤 Continue with Voice
+              </Button>
+            </div>
+          </div>
         </div>,
         portalElement
       )}
