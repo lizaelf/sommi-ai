@@ -65,4 +65,26 @@ setupUserInteractionTracking();
 // Enable dark mode by default
 enableDarkMode();
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Create React app
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
+
+// Show the page once React has mounted and fonts are ready
+Promise.all([
+  document.fonts.ready,
+  new Promise(resolve => {
+    // Wait for next frame to ensure React has rendered
+    requestAnimationFrame(() => {
+      requestAnimationFrame(resolve);
+    });
+  })
+]).then(() => {
+  document.body.classList.add('ready');
+  
+  // Remove any loading overlay
+  const loadingOverlay = document.querySelector('.loading-overlay');
+  if (loadingOverlay) {
+    loadingOverlay.classList.add('hidden');
+    setTimeout(() => loadingOverlay.remove(), 150);
+  }
+});
