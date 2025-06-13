@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import wineCircleImage from '@assets/wine-circle.png';
+import placeholderImage from '@assets/Placeholder.png';
 import { 
   shouldSkipPermissionPrompt,
   requestMicrophonePermission 
