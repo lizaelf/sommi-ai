@@ -1209,7 +1209,13 @@ export default function WineDetails() {
                   style={{ backgroundColor: "transparent" }}
                 >
                   {/* Conversation Content */}
-                  <div style={{ backgroundColor: "transparent" }}>
+                  <div 
+                    style={{
+                      backgroundColor: "transparent",
+                      backgroundImage: "none",
+                      width: "100%",
+                    }}
+                  >
                     {/* Chat Title */}
                     <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
                       <h1
