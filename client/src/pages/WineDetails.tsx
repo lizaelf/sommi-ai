@@ -116,12 +116,12 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white overflow-y-auto">
       <AppHeader />
       <HeaderSpacer />
       
       {/* Main Content Container - Fixed the overflow issue */}
-      <div className="w-full">
+      <div className="w-full overflow-y-visible">
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
