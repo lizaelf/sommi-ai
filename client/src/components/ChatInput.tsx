@@ -129,15 +129,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
               disabled={isProcessing}
               title="Send message"
               style={{
-                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(147, 51, 234, 0.4))',
-                border: '1px solid rgba(59, 130, 246, 0.5)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: '0 4px 15px rgba(59, 130, 246, 0.2)',
-                opacity: isProcessing ? 0.5 : 1,
-                transition: 'all 0.3s ease'
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: isProcessing ? 0.5 : 1
               }}
-              className="hover:shadow-lg hover:scale-105"
             />
           ) : (
             voiceButtonComponent
