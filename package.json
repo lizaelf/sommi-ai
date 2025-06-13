@@ -116,6 +116,5 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
-  },
-  "homepage": "https://lizaelf.github.io/sommi-ai/client"
+  }
 }

@@ -1,6 +1,6 @@
-# Deploying Somm.ai to GitHub Pages
+# Deploying Wine Collection App
 
-This document provides instructions for deploying the Somm.ai Cabernet Sauvignon assistant to GitHub Pages.
+This document provides instructions for deploying the wine collection app with synchronized scanned and wine details pages.
 
 ## Prerequisites
 
@@ -14,15 +14,18 @@ This document provides instructions for deploying the Somm.ai Cabernet Sauvignon
 
 Create a new repository on GitHub named `sommi-ai` (or use your existing one).
 
-### 2. Build the Application
+### 2. Synchronize and Build the Application
 
-Before building, ensure wine images are copied to the public directory:
+Ensure deployed version matches Replit version exactly:
 
 ```bash
-# Copy wine images and assets
+# 1. Synchronize deployment configuration
+node deploy-sync.js
+
+# 2. Copy wine images and assets
 node copy-assets.js
 
-# Build the application
+# 3. Build the application
 npm run build
 ```
 
