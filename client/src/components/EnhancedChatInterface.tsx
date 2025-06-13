@@ -1625,7 +1625,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   style={{
                     ...typography.h1,
                     color: "white",
-                    marginBottom: "16px",
+                    marginBottom: "24px",
                     textAlign: "left",
                   }}
                 >
