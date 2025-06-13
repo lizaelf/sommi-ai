@@ -1632,7 +1632,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       return (
                         <div
                           style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.08)",
+                            backgroundColor: "transparent",
                             borderRadius: "16px",
                             padding: "32px",
                             width: "100%",
