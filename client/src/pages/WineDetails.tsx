@@ -116,12 +116,12 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-y-auto">
+    <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'visible', overflowX: 'hidden' }}>
       <AppHeader />
       <HeaderSpacer />
       
-      {/* Main Content Container - Fixed the overflow issue */}
-      <div className="w-full overflow-y-visible">
+      {/* Main Content Container - Completely removed height constraints */}
+      <div className="w-full" style={{ height: 'auto', overflow: 'visible' }}>
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
@@ -268,9 +268,9 @@ export default function WineDetails() {
         </div>
 
         {/* Want more? Section */}
-        <div className="px-6 pb-6 mt-8 bg-red-500 border-4 border-yellow-400" style={{ minHeight: '200px', position: 'static' }}>
-          <h2 className="text-3xl font-normal mb-6 text-white bg-black p-4" style={{ fontFamily: "Lora, serif" }}>
-            Want more? SECTION IS HERE
+        <div className="px-6 pb-6 mt-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+            Want more?
           </h2>
           
           {wine?.buyAgainLink ? (
@@ -292,9 +292,9 @@ export default function WineDetails() {
         </div>
 
         {/* We recommend Section */}
-        <div className="px-6 pb-6 mt-8 bg-blue-500 border-4 border-green-400" style={{ minHeight: '300px', position: 'static' }}>
-          <h2 className="text-3xl font-normal mb-6 text-white bg-black p-4" style={{ fontFamily: "Lora, serif" }}>
-            We recommend SECTION IS HERE
+        <div className="px-6 pb-6 mt-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+            We recommend
           </h2>
           
           <div className="flex gap-4 overflow-x-auto pb-4">
