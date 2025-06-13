@@ -100,6 +100,8 @@ export default function WineDetails() {
     console.log('Wine image loaded successfully:', wine?.image);
   };
 
+
+
   if (!wine) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -268,11 +270,8 @@ export default function WineDetails() {
 
         </div>
 
-        {/* Want more? Section - moved outside wine details container */}
-        <div className="px-6 py-8" style={{ backgroundColor: "red", border: "3px solid yellow" }}>
-          <div style={{ backgroundColor: "lime", color: "black", padding: "10px", marginBottom: "20px", fontSize: "20px", fontWeight: "bold" }}>
-            DEBUG: WANT MORE SECTION IS HERE
-          </div>
+        {/* Want more? Section */}
+        <div className="px-6 py-8">
           <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             Want more?
           </h2>
