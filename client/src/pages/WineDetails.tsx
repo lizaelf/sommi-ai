@@ -266,37 +266,34 @@ export default function WineDetails() {
             </div>
           )}
 
-          {/* Want more? Section */}
-          <div className="mt-8" style={{ backgroundColor: "red", padding: "20px", border: "3px solid yellow" }}>
-            <div style={{ backgroundColor: "lime", color: "black", padding: "10px", marginBottom: "20px", fontSize: "20px", fontWeight: "bold" }}>
-              DEBUG: WANT MORE SECTION IS HERE
-            </div>
-            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
-              Want more?
-            </h2>
-            
-            {wine?.buyAgainLink ? (
-              <a 
-                href={wine.buyAgainLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
-                  Buy again
-                </button>
-              </a>
-            ) : (
-              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
-                Explore our collection
-              </button>
-            )}
-          </div>
-
-
         </div>
 
-
+        {/* Want more? Section - moved outside wine details container */}
+        <div className="px-6 py-8" style={{ backgroundColor: "red", border: "3px solid yellow" }}>
+          <div style={{ backgroundColor: "lime", color: "black", padding: "10px", marginBottom: "20px", fontSize: "20px", fontWeight: "bold" }}>
+            DEBUG: WANT MORE SECTION IS HERE
+          </div>
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+            Want more?
+          </h2>
+          
+          {wine?.buyAgainLink ? (
+            <a 
+              href={wine.buyAgainLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                Buy again
+              </button>
+            </a>
+          ) : (
+            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+              Explore our collection
+            </button>
+          )}
+        </div>
 
         {/* Chat Interface - moved to very bottom */}
         <div className="mt-10 pb-10">
