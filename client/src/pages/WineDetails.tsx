@@ -267,16 +267,25 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* Want more? Section - Fixed spacing */}
-        <div className="px-6 pb-6 mt-12 bg-red-500/20 border border-red-500">
-          <h2 className="text-3xl font-normal mb-6" style={{ fontFamily: "Lora, serif" }}>
+        {/* Chat Interface - Moved above Want more section */}
+        <div className="mt-10 pb-6">
+          <EnhancedChatInterface 
+            showBuyButton={true} 
+            selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings
+            } : null} 
+          />
+        </div>
+
+        {/* Want more? Section */}
+        <div className="px-6 pb-6 mt-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             Want more?
           </h2>
-          
-          {(() => {
-            console.log("Want more section rendering, buyAgainLink:", wine?.buyAgainLink);
-            return null;
-          })()}
           
           {wine?.buyAgainLink ? (
             <a 
@@ -296,16 +305,11 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* We recommend Section - Fixed spacing */}
-        <div className="px-6 pb-6 mt-12 bg-blue-500/20 border border-blue-500">
-          <h2 className="text-3xl font-normal mb-6" style={{ fontFamily: "Lora, serif" }}>
+        {/* We recommend Section */}
+        <div className="px-6 pb-10 mt-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             We recommend
           </h2>
-          
-          {(() => {
-            console.log("We recommend section rendering");
-            return null;
-          })()}
           
           <div className="flex gap-4 overflow-x-auto pb-4">
             {/* Wine Recommendation 1 - Estate Chardonnay */}
@@ -356,20 +360,6 @@ export default function WineDetails() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Chat Interface - Positioned after recommendations */}
-        <div className="mt-10 pb-10">
-          <EnhancedChatInterface 
-            showBuyButton={true} 
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings
-            } : null} 
-          />
         </div>
       </div>
       
