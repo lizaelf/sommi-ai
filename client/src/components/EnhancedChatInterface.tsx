@@ -1673,239 +1673,301 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   We recommend
                 </h1>
 
-                {/* Wine Recommendation Cards */}
+                {/* Wine Recommendation Cards - Horizontal Scroll */}
                 <div
+                  className="wine-recommendations-container"
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "12px",
+                    gap: "16px",
+                    overflowX: "auto",
+                    paddingBottom: "8px",
                   }}
                 >
-                  {/* Recommendation 1 */}
+                  {/* Recommendation 1 - Estate Chardonnay */}
                   <div
                     style={{
-                      backgroundColor: "#191919",
-                      borderRadius: "16px",
-                      padding: "16px",
+                      backgroundColor: "#2A2A2A",
+                      borderRadius: "24px",
+                      padding: "24px",
+                      minWidth: "280px",
                       display: "flex",
+                      flexDirection: "column",
                       alignItems: "center",
-                      gap: "16px",
                       cursor: "pointer",
                       transition: "all 0.3s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#252525";
+                      e.currentTarget.style.backgroundColor = "#353535";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#191919";
+                      e.currentTarget.style.backgroundColor = "#2A2A2A";
                     }}
                   >
+                    {/* Wine Bottle Image */}
                     <div
                       style={{
-                        width: "60px",
-                        height: "60px",
-                        backgroundColor: "#333",
-                        borderRadius: "8px",
+                        width: "120px",
+                        height: "200px",
+                        backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')",
+                        backgroundSize: "contain",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                        marginBottom: "20px",
+                      }}
+                    />
+                    
+                    {/* Wine Name */}
+                    <h3
+                      style={{
+                        ...typography.body,
+                        color: "white",
+                        fontWeight: 600,
+                        fontSize: "18px",
+                        textAlign: "center",
+                        margin: "0 0 16px 0",
+                        lineHeight: "1.3",
+                      }}
+                    >
+                      2022 Estate Chardonnay
+                    </h3>
+                    
+                    {/* Rating Badges */}
+                    <div
+                      style={{
                         display: "flex",
-                        alignItems: "center",
+                        gap: "8px",
+                        flexWrap: "wrap",
                         justifyContent: "center",
-                        fontSize: "24px",
                       }}
                     >
-                      🍷
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h3
+                      <div
                         style={{
-                          ...typography.body,
-                          color: "white",
-                          fontWeight: 600,
-                          margin: "0 0 4px 0",
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          borderRadius: "16px",
+                          padding: "6px 12px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        2020 Caymus Cabernet Sauvignon
-                      </h3>
-                      <p
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          95
+                        </span>
+                        <span
+                          style={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            fontSize: "14px",
+                          }}
+                        >
+                          VN
+                        </span>
+                      </div>
+                      <div
                         style={{
-                          ...typography.body,
-                          color: "rgba(255, 255, 255, 0.7)",
-                          fontSize: "14px",
-                          margin: 0,
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          borderRadius: "16px",
+                          padding: "6px 12px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        Rich, bold flavor with notes of dark fruit
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <span style={{ color: "#FFD700", fontSize: "16px" }}>★</span>
-                      <span
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          93
+                        </span>
+                        <span
+                          style={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            fontSize: "14px",
+                          }}
+                        >
+                          JD
+                        </span>
+                      </div>
+                      <div
                         style={{
-                          ...typography.body,
-                          color: "white",
-                          fontSize: "14px",
-                          fontWeight: 500,
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          borderRadius: "16px",
+                          padding: "6px 12px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        94
-                      </span>
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          93
+                        </span>
+                        <span
+                          style={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            fontSize: "14px",
+                          }}
+                        >
+                          WS
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Recommendation 2 */}
+                  {/* Recommendation 2 - Monte Bello Cabernet */}
                   <div
                     style={{
-                      backgroundColor: "#191919",
-                      borderRadius: "16px",
-                      padding: "16px",
+                      backgroundColor: "#2A2A2A",
+                      borderRadius: "24px",
+                      padding: "24px",
+                      minWidth: "280px",
                       display: "flex",
+                      flexDirection: "column",
                       alignItems: "center",
-                      gap: "16px",
                       cursor: "pointer",
                       transition: "all 0.3s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#252525";
+                      e.currentTarget.style.backgroundColor = "#353535";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#191919";
+                      e.currentTarget.style.backgroundColor = "#2A2A2A";
                     }}
                   >
+                    {/* Wine Bottle Image */}
                     <div
                       style={{
-                        width: "60px",
-                        height: "60px",
-                        backgroundColor: "#333",
-                        borderRadius: "8px",
+                        width: "120px",
+                        height: "200px",
+                        backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1748949884152.jpeg')",
+                        backgroundSize: "contain",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                        marginBottom: "20px",
+                      }}
+                    />
+                    
+                    {/* Wine Name */}
+                    <h3
+                      style={{
+                        ...typography.body,
+                        color: "white",
+                        fontWeight: 600,
+                        fontSize: "18px",
+                        textAlign: "center",
+                        margin: "0 0 16px 0",
+                        lineHeight: "1.3",
+                      }}
+                    >
+                      2021 Monte Bello Cabernet Sauvignon
+                    </h3>
+                    
+                    {/* Rating Badges */}
+                    <div
+                      style={{
                         display: "flex",
-                        alignItems: "center",
+                        gap: "8px",
+                        flexWrap: "wrap",
                         justifyContent: "center",
-                        fontSize: "24px",
                       }}
                     >
-                      🍷
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h3
+                      <div
                         style={{
-                          ...typography.body,
-                          color: "white",
-                          fontWeight: 600,
-                          margin: "0 0 4px 0",
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          borderRadius: "16px",
+                          padding: "6px 12px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        2019 Opus One Red Blend
-                      </h3>
-                      <p
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          95
+                        </span>
+                        <span
+                          style={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            fontSize: "14px",
+                          }}
+                        >
+                          VN
+                        </span>
+                      </div>
+                      <div
                         style={{
-                          ...typography.body,
-                          color: "rgba(255, 255, 255, 0.7)",
-                          fontSize: "14px",
-                          margin: 0,
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          borderRadius: "16px",
+                          padding: "6px 12px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        Elegant complexity with refined tannins
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <span style={{ color: "#FFD700", fontSize: "16px" }}>★</span>
-                      <span
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          93
+                        </span>
+                        <span
+                          style={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            fontSize: "14px",
+                          }}
+                        >
+                          JD
+                        </span>
+                      </div>
+                      <div
                         style={{
-                          ...typography.body,
-                          color: "white",
-                          fontSize: "14px",
-                          fontWeight: 500,
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          borderRadius: "16px",
+                          padding: "6px 12px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        96
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Recommendation 3 */}
-                  <div
-                    style={{
-                      backgroundColor: "#191919",
-                      borderRadius: "16px",
-                      padding: "16px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "16px",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#252525";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#191919";
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "60px",
-                        height: "60px",
-                        backgroundColor: "#333",
-                        borderRadius: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "24px",
-                      }}
-                    >
-                      🍷
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h3
-                        style={{
-                          ...typography.body,
-                          color: "white",
-                          fontWeight: 600,
-                          margin: "0 0 4px 0",
-                        }}
-                      >
-                        2021 Silver Oak Alexander Valley
-                      </h3>
-                      <p
-                        style={{
-                          ...typography.body,
-                          color: "rgba(255, 255, 255, 0.7)",
-                          fontSize: "14px",
-                          margin: 0,
-                        }}
-                      >
-                        Smooth finish with vanilla and spice notes
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <span style={{ color: "#FFD700", fontSize: "16px" }}>★</span>
-                      <span
-                        style={{
-                          ...typography.body,
-                          color: "white",
-                          fontSize: "14px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        92
-                      </span>
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          93
+                        </span>
+                        <span
+                          style={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            fontSize: "14px",
+                          }}
+                        >
+                          WS
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
