@@ -1670,8 +1670,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   {/* Recommendation 1 - Estate Chardonnay */}
                   <div
                     style={{
-                      backgroundColor: "#2A2A2A",
-                      borderRadius: "24px",
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      borderRadius: "16px",
                       padding: "24px",
                       minWidth: "280px",
                       display: "flex",
@@ -1681,39 +1681,24 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       transition: "all 0.3s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#353535";
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#2A2A2A";
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
                     }}
                   >
-                    {/* Wine Bottle Image */}
-                    <div
-                      style={{
-                        width: "120px",
-                        height: "200px",
-                        backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')",
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center",
-                        marginBottom: "20px",
-                      }}
-                    />
-                    
                     {/* Wine Name */}
-                    <h3
+                    <h2
                       style={{
-                        ...typography.body,
+                        ...typography.h1,
                         color: "white",
-                        fontWeight: 600,
-                        fontSize: "18px",
                         textAlign: "center",
                         margin: "0 0 16px 0",
                         lineHeight: "1.3",
                       }}
                     >
                       2022 Estate Chardonnay
-                    </h3>
+                    </h2>
                     
                     {/* Rating Badges */}
                     <div
@@ -1814,8 +1799,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   {/* Recommendation 2 - Monte Bello Cabernet */}
                   <div
                     style={{
-                      backgroundColor: "#2A2A2A",
-                      borderRadius: "24px",
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      borderRadius: "16px",
                       padding: "24px",
                       minWidth: "280px",
                       display: "flex",
@@ -1825,39 +1810,24 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       transition: "all 0.3s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#353535";
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#2A2A2A";
+                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
                     }}
                   >
-                    {/* Wine Bottle Image */}
-                    <div
-                      style={{
-                        width: "120px",
-                        height: "200px",
-                        backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1748949884152.jpeg')",
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center",
-                        marginBottom: "20px",
-                      }}
-                    />
-                    
                     {/* Wine Name */}
-                    <h3
+                    <h2
                       style={{
-                        ...typography.body,
+                        ...typography.h1,
                         color: "white",
-                        fontWeight: 600,
-                        fontSize: "18px",
                         textAlign: "center",
                         margin: "0 0 16px 0",
                         lineHeight: "1.3",
                       }}
                     >
                       2021 Monte Bello Cabernet Sauvignon
-                    </h3>
+                    </h2>
                     
                     {/* Rating Badges */}
                     <div
