@@ -5,7 +5,7 @@ import wineryLogoPath from "@assets/winary-logo.png";
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import { getWineDisplayName } from '../../../shared/wineConfig';
-import AppHeader from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { ButtonIcon } from "@/components/ButtonIcon";
 
 interface Wine {
@@ -62,9 +62,10 @@ const HomeGlobal = () => {
   return (
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
       <AppHeader />
+      <HeaderSpacer />
 
       {/* Content */}
-      <div className="px-4" style={{ paddingTop: "91px" }}>
+      <div className="px-4">
         {/* Ridge Vineyards Logo */}
         <div className="text-center" style={{ marginBottom: "32px" }}>
           <img

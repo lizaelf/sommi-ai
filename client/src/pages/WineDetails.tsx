@@ -3,7 +3,7 @@ import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import QRScanModal from '@/components/QRScanModal';
-import AppHeader from '@/components/AppHeader';
+import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
 import { DataSyncManager } from '@/utils/dataSync';
 
 interface SelectedWine {
@@ -121,10 +121,11 @@ export default function WineDetails() {
       style={{ overflowX: 'hidden', overflowY: 'auto' }}
     >
       <AppHeader />
+      <HeaderSpacer />
       
       <div className="relative">
         {/* Wine Hero Section */}
-        <div className="px-6 pt-20 pb-6">
+        <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
             <Link href="/">
               <button className="p-2 hover:bg-white/10 rounded-full transition-colors">

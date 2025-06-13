@@ -64,12 +64,12 @@ export function AppHeader({
   }, []);
 
   const headerStyles = {
-    background: scrolled ? "rgba(0, 0, 0, 0.9)" : "transparent",
-    backdropFilter: scrolled ? "blur(10px)" : "none",
-    WebkitBackdropFilter: scrolled ? "blur(10px)" : "none",
-    borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.3)" : "none",
-    boxShadow: scrolled ? "0 2px 10px rgba(0, 0, 0, 0.3)" : "none",
-    transition: "all 0.3s ease",
+    backgroundColor: scrolled ? "rgba(10, 10, 10, 0.85)" : "rgba(10, 10, 10, 0)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
+    borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.08)" : "none",
+    transition: "background-color 0.3s ease, border-bottom 0.3s ease",
+    willChange: "background-color, border-bottom",
   };
 
   console.log("Header render - scrolled:", scrolled, "styles:", headerStyles);
@@ -120,5 +120,8 @@ export function AppHeader({
     </div>
   );
 }
+
+// Header spacer component to offset content for fixed header
+export const HeaderSpacer = () => <div style={{ height: "75px" }} />;
 
 export default AppHeader;
