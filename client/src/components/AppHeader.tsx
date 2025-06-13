@@ -24,28 +24,55 @@ export function AppHeader({
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 10;
-      setScrolled(isScrolled);
+      const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const isScrolled = scrollPosition > 10;
+      
+      // Force a re-render by updating state even if the scrolled value hasn't changed
+      setScrolled(prev => {
+        if (prev !== isScrolled) {
+          console.log("🚀 Header scroll state changed:", scrollPosition, "isScrolled:", isScrolled);
+        }
+        return isScrolled;
+      });
     };
 
     // Check initial scroll position
     handleScroll();
 
-    // Add scroll listener to window
+    // Use multiple event listeners for maximum compatibility
     window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("scroll", handleScroll, { passive: true });
+    
+    // Also listen on document body and root element
+    if (document.body) {
+      document.body.addEventListener("scroll", handleScroll, { passive: true });
+    }
+    if (document.documentElement) {
+      document.documentElement.addEventListener("scroll", handleScroll, { passive: true });
+    }
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("scroll", handleScroll);
+      if (document.body) {
+        document.body.removeEventListener("scroll", handleScroll);
+      }
+      if (document.documentElement) {
+        document.documentElement.removeEventListener("scroll", handleScroll);
+      }
     };
   }, []);
 
   const headerStyles = {
-    background: scrolled ? "rgba(10, 10, 10, 0.60)" : "transparent",
-    backdropFilter: scrolled ? "blur(2px)" : "none",
-    WebkitBackdropFilter: scrolled ? "blur(2px)" : "none",
-    borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.1)" : "none",
+    background: scrolled ? "rgba(0, 0, 0, 0.9)" : "transparent",
+    backdropFilter: scrolled ? "blur(10px)" : "none",
+    WebkitBackdropFilter: scrolled ? "blur(10px)" : "none",
+    borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.3)" : "none",
+    boxShadow: scrolled ? "0 2px 10px rgba(0, 0, 0, 0.3)" : "none",
     transition: "all 0.3s ease",
   };
+
+  console.log("Header render - scrolled:", scrolled, "styles:", headerStyles);
 
   return (
     <div className={`fixed top-0 left-0 right-0 z-50 ${className}`} style={headerStyles}>
