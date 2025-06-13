@@ -20,9 +20,35 @@ export function AppHeader({
   className = "",
   showBackButton = false,
 }: AppHeaderProps) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      setScrolled(isScrolled);
+    };
+
+    // Check initial scroll position
+    handleScroll();
+
+    // Add scroll listener to window
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const headerStyles = {
+    background: scrolled ? "rgba(10, 10, 10, 0.60)" : "transparent",
+    backdropFilter: scrolled ? "blur(2px)" : "none",
+    WebkitBackdropFilter: scrolled ? "blur(2px)" : "none",
+    borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.1)" : "none",
+    transition: "all 0.3s ease",
+  };
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 bg-transparent ${className}`}>
+    <div className={`fixed top-0 left-0 right-0 z-50 ${className}`} style={headerStyles}>
       <div className="mx-auto max-w-[1200px] h-[75px] px-4 py-4">
         <div className="relative flex items-center justify-between h-full">
           {/* Left side - Back button or Logo + Title */}
