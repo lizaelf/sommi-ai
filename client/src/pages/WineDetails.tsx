@@ -108,6 +108,20 @@ export default function WineDetails() {
     console.log('Wine image loaded successfully:', wine?.image);
   };
 
+  // Memoized chat interface to prevent unnecessary re-renders
+  const MemoizedChatInterface = useMemo(() => (
+    <EnhancedChatInterface 
+      showBuyButton={true} 
+      selectedWine={wine ? {
+        id: wine.id,
+        name: wine.name,
+        image: wine.image,
+        bottles: wine.bottles,
+        ratings: wine.ratings
+      } : null} 
+    />
+  ), [wine]);
+
   // Handle wine not found case
   if (!wine) {
     return (
@@ -255,16 +269,7 @@ export default function WineDetails() {
 
         {/* Chat Interface */}
         <div className="mt-0 pb-10">
-          <EnhancedChatInterface 
-            showBuyButton={true} 
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings
-            } : null} 
-          />
+          {MemoizedChatInterface}
         </div>
       </div>
 
