@@ -272,20 +272,6 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* Chat Interface */}
-        <div className="mt-10 pb-10">
-          <EnhancedChatInterface 
-            showBuyButton={true} 
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings
-            } : null} 
-          />
-        </div>
-
         {/* Want more? and We recommend sections */}
         <div className="px-6 bg-yellow-400 border-8 border-red-500">
           {/* Want more? Section */}
@@ -368,6 +354,20 @@ export default function WineDetails() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Chat Interface */}
+        <div className="mt-10 pb-10">
+          <EnhancedChatInterface 
+            showBuyButton={true} 
+            selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings
+            } : null} 
+          />
         </div>
       </div>
 
