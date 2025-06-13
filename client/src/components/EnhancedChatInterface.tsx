@@ -1594,27 +1594,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   marginBottom: "20px",
                 }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-                  <h1
-                    style={{
-                      ...typography.h1,
-                      color: "white",
-                      margin: "0",
-                      textAlign: "left",
-                    }}
-                  >
-                    We recommend
-                  </h1>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ 
-                      color: "rgba(255, 255, 255, 0.6)", 
-                      fontSize: "14px", 
-                      fontFamily: "Inter, sans-serif" 
-                    }}>
-                      Swipe →
-                    </span>
-                  </div>
-                </div>
+                <h1
+                  style={{
+                    ...typography.h1,
+                    color: "white",
+                    marginBottom: "24px",
+                    textAlign: "left",
+                  }}
+                >
+                  We recommend
+                </h1>
 
                 {/* Wine Recommendation Cards - Horizontal Scroll */}
                 <div
