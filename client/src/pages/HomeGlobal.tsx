@@ -51,7 +51,16 @@ const HomeGlobal = () => {
     const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
     const filteredWines = crmWines.filter((wine: Wine) => wine.id === 1 || wine.id === 2);
     setWines(filteredWines);
+    
+    // Set loading to false after data is loaded
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
   }, []);
+
+  if (isLoading) {
+    return <HomeGlobalSkeleton />;
+  }
 
   return (
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
