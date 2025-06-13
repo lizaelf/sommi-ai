@@ -37,8 +37,6 @@ export default function WineDetails() {
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
   const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
   const [chatInterfaceReady, setChatInterfaceReady] = useState(false);
-  const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
-  const isQRScan = urlParams.has('wine');
   const isScannedPage = location === '/scanned';
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -62,9 +60,10 @@ export default function WineDetails() {
   // Load wine data when ID changes
   useEffect(() => {
     let mounted = true;
-    setLoadingState('loading'); // Reset loading state when wine ID changes
+    setLoadingState('loading');
     
-    const loadWineData = async () => {
+    const loadWineData = () => {
+      const urlParams = new URLSearchParams(window.location.search);
       const wineIdFromQuery = urlParams.get('wine');
       const wineId = id || wineIdFromQuery || '1';
       
@@ -102,7 +101,7 @@ export default function WineDetails() {
     return () => {
       mounted = false;
     };
-  }, [id, urlParams]); // Depend on id and urlParams
+  }, [id]); // Only depend on id
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
@@ -164,7 +163,7 @@ export default function WineDetails() {
   }
 
   // Component readiness loading condition
-  if (loadingState !== 'loaded' || !wine || !chatInterfaceReady) {
+  if (loadingState !== 'loaded' || !wine) {
     return <LoadingComponent />;
   }
 
