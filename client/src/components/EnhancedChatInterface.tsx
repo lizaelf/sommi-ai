@@ -1075,118 +1075,54 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   marginBottom: "0",
                 }}
               >
-                <div
+                <span
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    borderRadius: "16px",
+                    backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    color: "white",
                     padding: "6px 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
+                    borderRadius: "999px",
+                    fontSize: "14px",
+                    fontWeight: "600",
                   }}
                 >
-                  <span
-                    style={{
-                      color: "white",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {currentWine ? currentWine.ratings.vn : 95}
-                  </span>
-                  <span
-                    style={{
-                      color: "rgba(255, 255, 255, 0.7)",
-                      fontSize: "14px",
-                    }}
-                  >
-                    VN
-                  </span>
-                </div>
-                <div
+                  {currentWine ? currentWine.ratings.vn : 95} <span style={{ opacity: 0.7 }}>VN</span>
+                </span>
+                <span
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    borderRadius: "16px",
+                    backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    color: "white",
                     padding: "6px 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
+                    borderRadius: "999px",
+                    fontSize: "14px",
+                    fontWeight: "600",
                   }}
                 >
-                  <span
-                    style={{
-                      color: "white",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {currentWine ? currentWine.ratings.jd : 93}
-                  </span>
-                  <span
-                    style={{
-                      color: "rgba(255, 255, 255, 0.7)",
-                      fontSize: "14px",
-                    }}
-                  >
-                    JD
-                  </span>
-                </div>
-                <div
+                  {currentWine ? currentWine.ratings.jd : 93} <span style={{ opacity: 0.7 }}>JD</span>
+                </span>
+                <span
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    borderRadius: "16px",
+                    backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    color: "white",
                     padding: "6px 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
+                    borderRadius: "999px",
+                    fontSize: "14px",
+                    fontWeight: "600",
                   }}
                 >
-                  <span
-                    style={{
-                      color: "white",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {currentWine ? currentWine.ratings.ws : 93}
-                  </span>
-                  <span
-                    style={{
-                      color: "rgba(255, 255, 255, 0.7)",
-                      fontSize: "14px",
-                    }}
-                  >
-                    WS
-                  </span>
-                </div>
-                <div
+                  {currentWine ? currentWine.ratings.ws : 93} <span style={{ opacity: 0.7 }}>WS</span>
+                </span>
+                <span
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    borderRadius: "16px",
+                    backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    color: "white",
                     padding: "6px 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
+                    borderRadius: "999px",
+                    fontSize: "14px",
+                    fontWeight: "600",
                   }}
                 >
-                  <span
-                    style={{
-                      color: "white",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {currentWine ? `${currentWine.ratings.abv}%` : '14.3%'}
-                  </span>
-                  <span
-                    style={{
-                      color: "rgba(255, 255, 255, 0.7)",
-                      fontSize: "14px",
-                    }}
-                  >
-                    ABV
-                  </span>
-                </div>
+                  {currentWine ? `${currentWine.ratings.abv}%` : '14.3%'} <span style={{ opacity: 0.7 }}>ABV</span>
+                </span>
               </div>
 
               {/* Historic Heritage Section */}
