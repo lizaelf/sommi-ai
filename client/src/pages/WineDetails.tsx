@@ -267,7 +267,10 @@ export default function WineDetails() {
           )}
 
           {/* Want more? Section */}
-          <div className="mt-8">
+          <div className="mt-8" style={{ backgroundColor: "red", padding: "20px", border: "3px solid yellow" }}>
+            <div style={{ backgroundColor: "lime", color: "black", padding: "10px", marginBottom: "20px", fontSize: "20px", fontWeight: "bold" }}>
+              DEBUG: WANT MORE SECTION IS HERE
+            </div>
             <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
               Want more?
             </h2>
