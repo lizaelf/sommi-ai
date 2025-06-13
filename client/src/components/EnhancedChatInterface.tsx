@@ -1655,6 +1655,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         color: "white",
                         textAlign: "center",
                         margin: "0 0 16px 0",
+                        height: "72px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       2022 Estate Chardonnay
@@ -1664,95 +1668,56 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     <div
                       style={{
                         display: "flex",
-                        gap: "8px",
+                        gap: "20px",
                         flexWrap: "wrap",
                         justifyContent: "center",
                       }}
                     >
-                      <div
+                      <span
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "16px",
-                          padding: "6px 12px",
+                          color: "white",
                           display: "flex",
                           alignItems: "center",
                           gap: "4px",
                         }}
                       >
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           95
                         </span>
-                        <span
-                          style={{
-                            color: "rgba(255, 255, 255, 0.7)",
-                            fontSize: "14px",
-                          }}
-                        >
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           VN
                         </span>
-                      </div>
-                      <div
+                      </span>
+                      <span
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "16px",
-                          padding: "6px 12px",
+                          color: "white",
                           display: "flex",
                           alignItems: "center",
                           gap: "4px",
                         }}
                       >
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           93
                         </span>
-                        <span
-                          style={{
-                            color: "rgba(255, 255, 255, 0.7)",
-                            fontSize: "14px",
-                          }}
-                        >
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           JD
                         </span>
-                      </div>
-                      <div
+                      </span>
+                      <span
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "16px",
-                          padding: "6px 12px",
+                          color: "white",
                           display: "flex",
                           alignItems: "center",
                           gap: "4px",
                         }}
                       >
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           93
                         </span>
-                        <span
-                          style={{
-                            color: "rgba(255, 255, 255, 0.7)",
-                            fontSize: "14px",
-                          }}
-                        >
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           WS
                         </span>
-                      </div>
+                      </span>
                     </div>
                   </div>
 
@@ -1796,6 +1761,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         color: "white",
                         textAlign: "center",
                         margin: "0 0 16px 0",
+                        height: "72px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       2021 Monte Bello Cabernet Sauvignon
@@ -1805,95 +1774,56 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     <div
                       style={{
                         display: "flex",
-                        gap: "8px",
+                        gap: "20px",
                         flexWrap: "wrap",
                         justifyContent: "center",
                       }}
                     >
-                      <div
+                      <span
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "16px",
-                          padding: "6px 12px",
+                          color: "white",
                           display: "flex",
                           alignItems: "center",
                           gap: "4px",
                         }}
                       >
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           95
                         </span>
-                        <span
-                          style={{
-                            color: "rgba(255, 255, 255, 0.7)",
-                            fontSize: "14px",
-                          }}
-                        >
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           VN
                         </span>
-                      </div>
-                      <div
+                      </span>
+                      <span
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "16px",
-                          padding: "6px 12px",
+                          color: "white",
                           display: "flex",
                           alignItems: "center",
                           gap: "4px",
                         }}
                       >
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           93
                         </span>
-                        <span
-                          style={{
-                            color: "rgba(255, 255, 255, 0.7)",
-                            fontSize: "14px",
-                          }}
-                        >
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           JD
                         </span>
-                      </div>
-                      <div
+                      </span>
+                      <span
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          borderRadius: "16px",
-                          padding: "6px 12px",
+                          color: "white",
                           display: "flex",
                           alignItems: "center",
                           gap: "4px",
                         }}
                       >
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           93
                         </span>
-                        <span
-                          style={{
-                            color: "rgba(255, 255, 255, 0.7)",
-                            fontSize: "14px",
-                          }}
-                        >
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           WS
                         </span>
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </div>
