@@ -521,7 +521,7 @@ export default function WineDetails() {
         <div
           style={{
             width: "100%",
-            textAlign: "left",
+            textAlign: "center",
             display: "flex",
             flexDirection: "column",
             color: "white",
@@ -1189,7 +1189,7 @@ export default function WineDetails() {
                   className="flex-1 overflow-y-auto scrollbar-hide"
                 >
                   {/* Conversation Content */}
-                  <div>
+                  <div style={{ backgroundColor: "transparent" }}>
                     {/* Chat Title */}
                     <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
                       <h1
