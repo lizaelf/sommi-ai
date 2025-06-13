@@ -3,8 +3,7 @@ import { ArrowLeft, MoreHorizontal, Trash2, X } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { createPortal } from "react-dom";
 import ChatInput from "./ChatInput";
-import Button from "./Button";
-import WineBottleImage from "./WineBottleImage";
+// Remove unused imports
 import { saveMessageToDB, getChatHistory } from "../lib/indexedDB";
 
 // Typography system
@@ -400,7 +399,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             {(!showBuyButton || showChatInput) && (
               <ChatInput
                 onSendMessage={handleSendMessage}
-                disabled={isTyping}
+                isProcessing={isTyping}
                 onFocus={() => setIsKeyboardFocused(true)}
                 onBlur={() => setIsKeyboardFocused(false)}
               />
