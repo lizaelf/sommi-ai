@@ -34,48 +34,67 @@ export default function WineDetails() {
   const isScannedPage = location === '/scanned';
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isReady, setIsReady] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    // Initialize data sync manager
-    DataSyncManager.initialize();
+    let mounted = true;
     
-    // Get wine ID from URL params (either route param or query param)
-    const urlParams = new URLSearchParams(window.location.search);
-    const wineIdFromQuery = urlParams.get('wine');
-    const wineId = id || wineIdFromQuery || '1'; // Default to wine ID 1 if none provided
-    
-    console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId, location });
-    
-    if (wineId && !wine) {
-      const wineData = DataSyncManager.getWineById(parseInt(wineId));
-      if (wineData) {
-        console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
-        const transformedWine = {
-          id: wineData.id,
-          name: wineData.name,
-          year: wineData.year,
-          bottles: wineData.bottles,
-          image: wineData.image,
-          ratings: wineData.ratings,
-          buyAgainLink: wineData.buyAgainLink,
-          qrCode: wineData.qrCode,
-          qrLink: wineData.qrLink,
-          location: wineData.location,
-          description: wineData.description,
-          foodPairing: wineData.foodPairing,
-          conversationHistory: wineData.conversationHistory || []
-        };
-        setWine(transformedWine);
-        console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
-        // Add a small delay to ensure smooth rendering
-        setTimeout(() => setIsLoading(false), 100);
-      } else {
-        console.log('WineDetails: Wine not found for ID:', wineId);
-        setIsLoading(false);
+    const loadWineData = async () => {
+      // Initialize data sync manager
+      DataSyncManager.initialize();
+      
+      // Get wine ID from URL params (either route param or query param)
+      const urlParams = new URLSearchParams(window.location.search);
+      const wineIdFromQuery = urlParams.get('wine');
+      const wineId = id || wineIdFromQuery || '1'; // Default to wine ID 1 if none provided
+      
+      console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId, location });
+      
+      if (wineId) {
+        const wineData = DataSyncManager.getWineById(parseInt(wineId));
+        if (wineData && mounted) {
+          console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
+          const transformedWine = {
+            id: wineData.id,
+            name: wineData.name,
+            year: wineData.year,
+            bottles: wineData.bottles,
+            image: wineData.image,
+            ratings: wineData.ratings,
+            buyAgainLink: wineData.buyAgainLink,
+            qrCode: wineData.qrCode,
+            qrLink: wineData.qrLink,
+            location: wineData.location,
+            description: wineData.description,
+            foodPairing: wineData.foodPairing,
+            conversationHistory: wineData.conversationHistory || []
+          };
+          setWine(transformedWine);
+          console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
+          
+          // Use double requestAnimationFrame to ensure DOM is stable
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              if (mounted) {
+                setIsReady(true);
+                setIsLoading(false);
+              }
+            });
+          });
+        } else if (mounted) {
+          console.log('WineDetails: Wine not found for ID:', wineId);
+          setIsLoading(false);
+        }
       }
-    }
-  }, [id, wine, location]);
+    };
+    
+    loadWineData();
+    
+    return () => {
+      mounted = false;
+    };
+  }, [id, location]);
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
@@ -102,16 +121,11 @@ export default function WineDetails() {
     console.log('Wine image loaded successfully:', wine?.image);
   };
 
-  // Show loading screen to prevent UI flash
-  if (isLoading || !wine) {
+  // Show loading screen to prevent UI flash - don't render content until ready
+  if (!isReady || !wine) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        {isLoading ? (
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-            <p className="text-white/70">Loading wine details...</p>
-          </div>
-        ) : (
+        {!wine && !isLoading ? (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
             <Link href="/">
@@ -120,13 +134,25 @@ export default function WineDetails() {
               </button>
             </Link>
           </div>
+        ) : (
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-white/70">Loading wine details...</p>
+          </div>
         )}
       </div>
     );
   }
 
   return (
-    <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'visible', overflowX: 'hidden' }}>
+    <div className="bg-black text-white" style={{ 
+      minHeight: '100vh', 
+      overflowY: 'visible', 
+      overflowX: 'hidden',
+      visibility: isLoading ? 'hidden' : 'visible',
+      opacity: isLoading ? 0 : 1,
+      transition: 'opacity 0.15s ease-in'
+    }}>
       <AppHeader />
       <HeaderSpacer />
 
