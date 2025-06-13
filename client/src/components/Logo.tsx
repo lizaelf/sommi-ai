@@ -5,7 +5,7 @@ import logoImage from '@assets/Logo.png';
 
 const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
-    <Link href="/home-global">
+    <Link href="/">
       <div className={`flex items-center cursor-pointer ${className}`}>
         <img 
           src={logoImage} 

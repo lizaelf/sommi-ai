@@ -149,7 +149,7 @@ export default function WineDetails() {
         >
           The wine you're looking for could not be found.
         </p>
-        <Link href="/home-global">
+        <Link href="/">
           <button 
             style={{
               backgroundColor: "white",

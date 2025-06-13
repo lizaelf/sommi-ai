@@ -19,10 +19,9 @@ import QRCodes from "@/pages/QRCodes";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={WineDetails} />
+      <Route path="/" component={HomeGlobal} />
       <Route path="/scanned" component={WineDetails} />
       <Route path="/cellar" component={Cellar} />
-      <Route path="/home-global" component={HomeGlobal} />
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={() => 
         <WineDetails key={`wine-${Date.now()}`} />
