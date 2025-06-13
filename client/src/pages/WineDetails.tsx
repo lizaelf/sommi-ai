@@ -270,25 +270,66 @@ export default function WineDetails() {
 
         </div>
 
-        {/* Want more? Section */}
-        <div className="px-6 py-8 bg-gray-600 border-t-2 border-white/30 min-h-[200px]">
-          <h2 className="text-3xl font-normal mb-6 text-white font-serif">
-            Want more?
+        {/* Want more? Section - EXTREME DEBUG VERSION */}
+        <div 
+          style={{ 
+            backgroundColor: 'red',
+            color: 'white',
+            padding: '40px',
+            margin: '20px 0',
+            border: '5px solid yellow',
+            fontSize: '24px',
+            textAlign: 'center',
+            position: 'relative',
+            zIndex: 9999,
+            minHeight: '300px',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        >
+          <h2 style={{ color: 'white', fontSize: '32px', marginBottom: '20px' }}>
+            🔴 WANT MORE SECTION 🔴
           </h2>
+          <p style={{ marginBottom: '20px' }}>
+            If you can see this red box with yellow border, the section IS rendering!
+          </p>
           
           {wine?.buyAgainLink ? (
             <a 
               href={wine.buyAgainLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="block"
+              style={{ display: 'block', marginTop: '20px' }}
             >
-              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+              <button style={{
+                backgroundColor: 'white',
+                color: 'black',
+                border: 'none',
+                borderRadius: '25px',
+                padding: '16px 24px',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                width: '100%',
+                maxWidth: '300px'
+              }}>
                 Buy again
               </button>
             </a>
           ) : (
-            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+            <button style={{
+              backgroundColor: 'white',
+              color: 'black',
+              border: 'none',
+              borderRadius: '25px',
+              padding: '16px 24px',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              width: '100%',
+              maxWidth: '300px',
+              marginTop: '20px'
+            }}>
               Explore our collection
             </button>
           )}
