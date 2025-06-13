@@ -269,8 +269,13 @@ export default function WineDetails() {
 
         </div>
 
+        {/* DEBUG MARKER */}
+        <div style={{ height: "100px", background: "red", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold" }}>
+          🔴 DEBUG: SECTIONS START HERE
+        </div>
+
         {/* Want more? Section - Positioned outside wine details container */}
-        <div className="px-6 py-8">
+        <div className="px-6 py-8" style={{ minHeight: "200px", marginTop: "50px", backgroundColor: "rgba(255,255,255,0.05)" }}>
           <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             Want more?
           </h2>
@@ -294,7 +299,7 @@ export default function WineDetails() {
         </div>
 
         {/* We recommend Section - Positioned outside wine details container */}
-        <div className="px-6 pb-8">
+        <div className="px-6 pb-8" style={{ minHeight: "300px", marginTop: "30px", backgroundColor: "rgba(0,255,0,0.1)", border: "2px solid lime" }}>
           <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             We recommend
           </h2>
@@ -348,6 +353,11 @@ export default function WineDetails() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* BOTTOM DEBUG MARKER */}
+        <div style={{ height: "300px", background: "blue", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold", margin: "50px 0" }}>
+          🔵 TEST MARKER BOTTOM - SECTIONS END HERE
         </div>
 
         {/* Chat Interface */}
