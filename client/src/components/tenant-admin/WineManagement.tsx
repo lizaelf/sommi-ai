@@ -149,7 +149,7 @@ export const WineManagement: React.FC<WineManagementProps> = ({
                   }}
                 >
                   <img
-                    src={wine.imagePrefix || "/placeholder.png"}
+                    src={wine.image || "/placeholder.png"}
                     alt={wine.name}
                     style={{
                       width: "60px",
@@ -163,11 +163,11 @@ export const WineManagement: React.FC<WineManagementProps> = ({
                       {wine.name}
                     </h4>
                     <p style={{ ...typography.body1R, color: "#CECECE" }}>
-                      Size: {wine.imageSize ? `${wine.imageSize}KB` : "Unknown"}
+                      ID: {wine.id}
                     </p>
                   </div>
                   {isEditMode && (
-                    <Button variant="secondary" size="sm">
+                    <Button variant="secondary">
                       Edit
                     </Button>
                   )}
