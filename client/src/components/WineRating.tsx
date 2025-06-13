@@ -18,7 +18,7 @@ interface WineRatingProps {
 export default function WineRating({
   ratings,
   variant = "default",
-  gap = 20,
+  gap = 16,
   className = "",
   style = {},
   align = "center",
@@ -109,8 +109,8 @@ export default function WineRating({
 
   // Format ABV value
   const formatABV = (value: number) => {
-    return variant === "compact" || variant === "minimal" 
-      ? `${value}% ABV` 
+    return variant === "compact" || variant === "minimal"
+      ? `${value}% ABV`
       : `${value}%`;
   };
 
@@ -133,50 +133,40 @@ export default function WineRating({
       {ratings.vn && (
         <span style={styles.ratingItem}>
           <span style={styles.valueStyle}>
-            {variant === "compact" || variant === "minimal" 
-              ? `VN: ${ratings.vn}` 
+            {variant === "compact" || variant === "minimal"
+              ? `VN: ${ratings.vn}`
               : ratings.vn}
           </span>
-          {(variant === "default") && (
-            <span style={styles.labelStyle}>VN</span>
-          )}
+          {variant === "default" && <span style={styles.labelStyle}>VN</span>}
         </span>
       )}
-      
+
       {ratings.jd && (
         <span style={styles.ratingItem}>
           <span style={styles.valueStyle}>
-            {variant === "compact" || variant === "minimal" 
-              ? `JD: ${ratings.jd}` 
+            {variant === "compact" || variant === "minimal"
+              ? `JD: ${ratings.jd}`
               : ratings.jd}
           </span>
-          {(variant === "default") && (
-            <span style={styles.labelStyle}>JD</span>
-          )}
+          {variant === "default" && <span style={styles.labelStyle}>JD</span>}
         </span>
       )}
-      
+
       {ratings.ws && (
         <span style={styles.ratingItem}>
           <span style={styles.valueStyle}>
-            {variant === "compact" || variant === "minimal" 
-              ? `WS: ${ratings.ws}` 
+            {variant === "compact" || variant === "minimal"
+              ? `WS: ${ratings.ws}`
               : ratings.ws}
           </span>
-          {(variant === "default") && (
-            <span style={styles.labelStyle}>WS</span>
-          )}
+          {variant === "default" && <span style={styles.labelStyle}>WS</span>}
         </span>
       )}
-      
+
       {ratings.abv && (
         <span style={styles.ratingItem}>
-          <span style={styles.valueStyle}>
-            {formatABV(ratings.abv)}
-          </span>
-          {(variant === "default") && (
-            <span style={styles.labelStyle}>ABV</span>
-          )}
+          <span style={styles.valueStyle}>{formatABV(ratings.abv)}</span>
+          {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
         </span>
       )}
     </div>

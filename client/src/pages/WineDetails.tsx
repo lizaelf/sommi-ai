@@ -224,8 +224,7 @@ export default function WineDetails() {
         <div
           style={{
             width: "100%",
-            textAlign: "center",
-            justifyContent: "center",
+            textAlign: "left",
             display: "flex",
             flexDirection: "column",
             color: "white",
@@ -251,7 +250,7 @@ export default function WineDetails() {
           <p
             style={{
               color: "white",
-              textAlign: "center",
+              textAlign: "left",
               marginBottom: "16px",
               ...typography.body,
             }}
@@ -263,8 +262,8 @@ export default function WineDetails() {
         {/* Wine region with typography styling and flag */}
         <div
           style={{
-            textAlign: "center",
-            justifyContent: "center",
+            textAlign: "left",
+            justifyContent: "flex-start",
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
@@ -272,9 +271,9 @@ export default function WineDetails() {
             wordWrap: "break-word",
             position: "relative",
             zIndex: 2,
-            padding: "20px 20px",
+            padding: "0 20px",
             gap: "6px",
-            marginBottom: "0",
+            marginBottom: "20px",
             ...typography.body1R,
           }}
         >
@@ -285,6 +284,7 @@ export default function WineDetails() {
         {/* Wine ratings section */}
         <WineRating
           ratings={wine ? wine.ratings : { vn: 95, jd: 93, ws: 93, abv: 14.3 }}
+          align="left"
           style={{
             position: "relative",
             zIndex: 2,
