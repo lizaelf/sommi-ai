@@ -114,9 +114,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country>(US_COUNTRY);
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    company: "",
     phone: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -211,11 +211,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -224,8 +223,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     
     const newErrors: { [key: string]: string } = {};
     
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
     }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -245,9 +247,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          fullName: formData.fullName,
+          fullName: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
-          company: formData.company,
           phone: formData.phone ? `${selectedCountry.dial_code}${formData.phone}` : "",
         }),
       });
@@ -363,7 +364,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           wordWrap: "break-word",
                         }}
                       >
-                        {formatContent(message.content)}
+                        {message.content}
                       </div>
                     </div>
                   ))
@@ -393,17 +394,26 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               left: 0,
               right: 0,
               borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-              backgroundColor: "#0A0A0A",
             }}
           >
             {/* Show chat input only if showBuyButton is false or showChatInput is true */}
             {(!showBuyButton || showChatInput) && (
-              <ChatInput
-                onSendMessage={handleSendMessage}
-                disabled={isTyping}
-                onFocus={() => setIsKeyboardFocused(true)}
-                onBlur={() => setIsKeyboardFocused(false)}
-              />
+              <>
+                {currentWine ? (
+                  <ChatInput
+                    currentWine={currentWine}
+                    onSendMessage={handleSendMessage}
+                    disabled={isTyping}
+                    onFocus={() => setIsKeyboardFocused(true)}
+                    onBlur={() => setIsKeyboardFocused(false)}
+                  />
+                ) : (
+                  <ChatInput
+                    onSendMessage={handleSendMessage}
+                    disabled={isTyping}
+                  />
+                )}
+              </>
             )}
           </div>
         </main>
@@ -594,6 +604,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       type="tel"
                       name="phone"
                       value={formData.phone}
+                      placeholder={selectedCountry.placeholder}
                       onChange={handleInputChange}
                       style={{
                         flex: 1,
@@ -619,7 +630,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   }}
                 >
                   <button
-                    type="submit"
+                    onClick={handleSubmit}
                     className="save-button"
                     style={{
                       width: "100%",
