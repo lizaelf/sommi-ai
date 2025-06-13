@@ -266,6 +266,30 @@ export default function WineDetails() {
             </div>
           )}
 
+          {/* Want more? Section */}
+          <div className="mt-8">
+            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+              Want more?
+            </h2>
+            
+            {wine?.buyAgainLink ? (
+              <a 
+                href={wine.buyAgainLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                  Buy again
+                </button>
+              </a>
+            ) : (
+              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                Explore our collection
+              </button>
+            )}
+          </div>
+
 
         </div>
 
