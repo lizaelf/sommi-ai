@@ -269,16 +269,8 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* Want more? Section - PLACED HERE RIGHT AFTER WINE DETAILS */}
-        <div 
-          className="px-6 py-8 border-t-2 border-white/30" 
-          style={{ 
-            backgroundColor: '#4B5563', // Gray-600
-            minHeight: '200px',
-            position: 'relative',
-            zIndex: 1
-          }}
-        >
+        {/* Want more? Section */}
+        <div className="px-6 py-8 bg-gray-600 border-t-2 border-white/30 min-h-[200px] relative z-10">
           <h2 className="text-3xl font-normal mb-6 text-white font-serif">
             Want more?
           </h2>
