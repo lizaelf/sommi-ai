@@ -52,7 +52,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
     year: 2021,
     bottles: 6,
-    image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg",
+    image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png",
     ratings: {
       vn: 95,
       jd: 93,
@@ -72,7 +72,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
     name: "Monte Bello Cabernet Sauvignon",
     year: 2021,
     bottles: 2,
-    image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1748949892850.jpeg",
+    image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png",
     ratings: {
       vn: 95,
       jd: 93,
