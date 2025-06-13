@@ -1,4 +1,5 @@
 import React from "react";
+import WineRating from "@/components/WineRating";
 
 interface WineCardProps {
   id: number;
@@ -150,58 +151,11 @@ export function WineCard({
       )}
 
       {showRatings && ratings && (
-        <div
-          style={{
-            display: "flex",
-            gap: "8px",
-            flexWrap: "wrap" as const,
-          }}
-        >
-          {ratings.vn && (
-            <div
-              style={{
-                fontSize: compact ? "10px" : "11px",
-                color: "rgba(255, 255, 255, 0.7)",
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              VN: {ratings.vn}
-            </div>
-          )}
-          {ratings.jd && (
-            <div
-              style={{
-                fontSize: compact ? "10px" : "11px",
-                color: "rgba(255, 255, 255, 0.7)",
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              JD: {ratings.jd}
-            </div>
-          )}
-          {ratings.ws && (
-            <div
-              style={{
-                fontSize: compact ? "10px" : "11px",
-                color: "rgba(255, 255, 255, 0.7)",
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              WS: {ratings.ws}
-            </div>
-          )}
-          {ratings.abv && (
-            <div
-              style={{
-                fontSize: compact ? "10px" : "11px",
-                color: "rgba(255, 255, 255, 0.7)",
-                fontFamily: "Inter, sans-serif",
-              }}
-            >
-              {ratings.abv}% ABV
-            </div>
-          )}
-        </div>
+        <WineRating 
+          ratings={ratings}
+          variant={compact ? "compact" : "minimal"}
+          gap={8}
+        />
       )}
     </div>
   );

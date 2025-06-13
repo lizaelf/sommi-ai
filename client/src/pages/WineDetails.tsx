@@ -852,66 +852,12 @@ export default function WineDetails() {
                   </h2>
                   
                   {/* Rating Badges */}
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "20px",
-                      flexWrap: "wrap",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {recommendedWine.ratings?.vn && (
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          {recommendedWine.ratings.vn}
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          VN
-                        </span>
-                      </span>
-                    )}
-                    {recommendedWine.ratings?.jd && (
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          {recommendedWine.ratings.jd}
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          JD
-                        </span>
-                      </span>
-                    )}
-                    {recommendedWine.ratings?.ws && (
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          {recommendedWine.ratings.ws}
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          WS
-                        </span>
-                      </span>
-                    )}
-                  </div>
+                  {recommendedWine.ratings && (
+                    <WineRating 
+                      ratings={recommendedWine.ratings}
+                      gap={15}
+                    />
+                  )}
                 </div>
               ));
             })()}

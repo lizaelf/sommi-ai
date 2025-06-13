@@ -43,11 +43,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 13, 2025)
 
 ### Rating Component Standardization (June 13, 2025)
-- Unified rating display components across HomeGlobal and WineDetails pages
-- Replaced boxed rating style with clean text-based ratings for visual consistency
-- Applied same typography constants (typography.num for values, typography.body1R for labels)
-- Standardized spacing (20px gaps) and color scheme (#999999 for labels, white for values)
-- Maintained proper flexbox layout with wrap support for responsive design
+- Created reusable WineRating component with multiple variants (default, compact, minimal)
+- Replaced all rating implementations across HomeGlobal, WineDetails, and WineCard components
+- Applied consistent typography constants (typography.num for values, typography.body1R for labels)
+- Standardized spacing and color scheme (#999999 for labels, white for values)
+- Support for three variants: default (main pages), compact (cards), minimal (small spaces)
+- Eliminated code duplication with centralized rating display logic
 
 ### Component Architecture Modernization
 - Implemented component splitting for better code organization and performance

@@ -4,6 +4,7 @@ import wineryLogoPath from "@assets/winary-logo.png";
 // Default images removed - only authentic uploaded images will be displayed
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
+import WineRating from "@/components/WineRating";
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { ButtonIcon } from "@/components/ButtonIcon";
@@ -156,77 +157,8 @@ const HomeGlobal = () => {
                       {wine.bottles} Bottles
                     </p>
 
-                    {/* Ratings - Using same style as WineDetails page */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "20px",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          {wine.ratings.vn}
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          VN
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          {wine.ratings.jd}
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          JD
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          {wine.ratings.ws}
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          WS
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          {wine.ratings.abv}%
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          ABV
-                        </span>
-                      </span>
-                    </div>
+                    {/* Ratings - Using WineRating component */}
+                    <WineRating ratings={wine.ratings} />
                   </div>
                 </div>
               </div>

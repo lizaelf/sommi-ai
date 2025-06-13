@@ -1,6 +1,7 @@
 import React from 'react';
 import WineBottleImage from './WineBottleImage';
 import USFlagImage from './USFlagImage';
+import WineRating from './WineRating';
 import typography from '@/styles/typography';
 
 interface WineInfoProps {
@@ -73,31 +74,15 @@ export const WineInfo: React.FC<WineInfoProps> = ({ wine }) => {
       </div>
 
       {/* Wine ratings section */}
-      <div
+      <WineRating
+        ratings={wine.ratings}
         style={{
-          textAlign: "center",
-          justifyContent: "center",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          color: "rgba(255, 255, 255, 0.80)",
-          wordWrap: "break-word",
           position: "relative",
           zIndex: 2,
           padding: "0 20px",
-          gap: "16px",
           marginBottom: "20px",
-          ...typography.body,
         }}
-      >
-        <span>VN {wine.ratings.vn}</span>
-        <span>•</span>
-        <span>JD {wine.ratings.jd}</span>
-        <span>•</span>
-        <span>WS {wine.ratings.ws}</span>
-        <span>•</span>
-        <span>ABV {wine.ratings.abv}%</span>
-      </div>
+      />
     </div>
   );
 };
