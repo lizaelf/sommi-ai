@@ -117,9 +117,6 @@ export default function WineDetails() {
 
   return (
     <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'visible', overflowX: 'hidden' }}>
-      <div className="fixed top-0 left-0 w-full h-12 bg-blue-500 z-50 flex items-center justify-center">
-        <span className="text-white font-bold">FIXED TEST AT TOP</span>
-      </div>
       <AppHeader />
       <HeaderSpacer />
       
@@ -272,6 +269,90 @@ export default function WineDetails() {
           )}
         </div>
 
+        {/* Want more? and We recommend sections */}
+        <div className="px-6 py-8">
+          {/* Want more? Section */}
+          <div className="pb-8">
+            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+              Want more?
+            </h2>
+            
+            {wine?.buyAgainLink ? (
+              <a 
+                href={wine.buyAgainLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                  Buy again
+                </button>
+              </a>
+            ) : (
+              <div className="w-full bg-white/15 text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium text-center">
+                Explore our collection
+              </div>
+            )}
+          </div>
+
+          {/* We recommend Section */}
+          <div className="pb-6">
+            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+              We recommend
+            </h2>
+            
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {/* Wine Recommendation 1 - Estate Chardonnay */}
+              <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
+                <div 
+                  className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                  style={{
+                    backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')"
+                  }}
+                />
+                <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
+                  2022 Estate Chardonnay
+                </h3>
+                <div className="flex gap-2 justify-center flex-wrap">
+                  <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                    95 <span className="opacity-70">VN</span>
+                  </span>
+                  <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                    93 <span className="opacity-70">JD</span>
+                  </span>
+                  <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                    93 <span className="opacity-70">WS</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Wine Recommendation 2 - Monte Bello */}
+              <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
+                <div 
+                  className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                  style={{
+                    backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')"
+                  }}
+                />
+                <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
+                  2021 Monte Bello Cabernet Sauvignon
+                </h3>
+                <div className="flex gap-2 justify-center flex-wrap">
+                  <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                    95 <span className="opacity-70">VN</span>
+                  </span>
+                  <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                    93 <span className="opacity-70">JD</span>
+                  </span>
+                  <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                    93 <span className="opacity-70">WS</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Chat Interface */}
         <div className="mt-10 pb-10">
           <EnhancedChatInterface 
@@ -284,95 +365,6 @@ export default function WineDetails() {
               ratings: wine.ratings
             } : null} 
           />
-        </div>
-      </div>
-
-      {/* TEST: Simple visible element */}
-      <div className="w-full h-20 bg-red-500 flex items-center justify-center">
-        <span className="text-white text-2xl font-bold">TEST SECTION VISIBLE</span>
-      </div>
-
-      {/* Want more? and We recommend sections */}
-      <div className="px-6 py-8 bg-black">
-        {/* Want more? Section */}
-        <div className="pb-8">
-          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
-            Want more?
-          </h2>
-          
-          {wine?.buyAgainLink ? (
-            <a 
-              href={wine.buyAgainLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
-            >
-              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100">
-                Buy again
-              </button>
-            </a>
-          ) : (
-            <div className="w-full bg-white/15 text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium text-center">
-              Explore our collection
-            </div>
-          )}
-        </div>
-
-        {/* We recommend Section */}
-        <div className="pb-6">
-          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
-            We recommend
-          </h2>
-          
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {/* Wine Recommendation 1 - Estate Chardonnay */}
-            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
-              <div 
-                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')"
-                }}
-              />
-              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
-                2022 Estate Chardonnay
-              </h3>
-              <div className="flex gap-2 justify-center flex-wrap">
-                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
-                  95 <span className="opacity-70">VN</span>
-                </span>
-                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
-                  93 <span className="opacity-70">JD</span>
-                </span>
-                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
-                  93 <span className="opacity-70">WS</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Wine Recommendation 2 - Monte Bello */}
-            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
-              <div 
-                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')"
-                }}
-              />
-              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
-                2021 Monte Bello Cabernet Sauvignon
-              </h3>
-              <div className="flex gap-2 justify-center flex-wrap">
-                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
-                  95 <span className="opacity-70">VN</span>
-                </span>
-                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
-                  93 <span className="opacity-70">JD</span>
-                </span>
-                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
-                  93 <span className="opacity-70">WS</span>
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
