@@ -1331,18 +1331,17 @@ export default function WineDetails() {
                   <div style={{ height: "80px" }}></div>
                 </div>
 
-                {/* Input Area - Same styling approach */}
+                {/* Input Area - Fixed to Bottom */}
                 <div
                   style={{
-                    width: "100%",
-                    padding: "0 20px", // ← Same as other sections
-                    marginBottom: "20px", // ← Same as other sections
+                    backgroundColor: "#1C1C1C",
+                    padding: "16px",
+                    zIndex: 50,
                     position: "fixed",
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    backgroundColor: "transparent", // ← Remove dark background
-                    zIndex: 50,
+                    borderTop: "1px solid rgba(255, 255, 255, 0.2)",
                   }}
                 >
                   <div className="max-w-3xl mx-auto">
