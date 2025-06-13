@@ -266,94 +266,89 @@ export default function WineDetails() {
             </div>
           )}
 
-          {/* Want more? Section */}
-          <div className="mt-8">
-            <h3 className="text-2xl font-normal mb-4 text-white" style={{ fontFamily: "Lora, serif" }}>
-              Want more?
-            </h3>
-            
-            {wine?.buyAgainLink ? (
-              <a 
-                href={wine.buyAgainLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100">
-                  Buy again
-                </button>
-              </a>
-            ) : (
-              <div className="w-full bg-white/15 text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium text-center">
-                Explore our collection
-              </div>
-            )}
-          </div>
 
-          {/* We recommend Section */}
-          <div className="mt-8">
-            <h3 className="text-2xl font-normal mb-4 text-white" style={{ fontFamily: "Lora, serif" }}>
-              We recommend
-            </h3>
-            
-            <div className="flex gap-4 overflow-x-auto pb-4">
-              {/* Wine Recommendation 1 */}
-              <div className="flex-none w-52 bg-white/8 border border-white/12 rounded-2xl p-4">
-                <div 
-                  className="w-full h-40 bg-white/5 rounded-xl mb-3 flex items-center justify-center bg-cover bg-center bg-no-repeat"
-                  style={{
-                    backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')"
-                  }}
-                />
-                <h4 className="text-base font-semibold text-white mb-3 text-center leading-tight">
-                  2022 Estate Chardonnay
-                </h4>
-                <div className="flex gap-2 justify-center flex-wrap">
-                  <span className="bg-white/15 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    95 VN
-                  </span>
-                  <span className="bg-white/15 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    93 JD
-                  </span>
-                  <span className="bg-white/15 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    92 WS
-                  </span>
-                </div>
-              </div>
+        </div>
 
-              {/* Wine Recommendation 2 */}
-              <div className="flex-none w-52 bg-white/8 border border-white/12 rounded-2xl p-4">
-                <div 
-                  className="w-full h-40 bg-white/5 rounded-xl mb-3 flex items-center justify-center bg-cover bg-center bg-no-repeat"
-                  style={{
-                    backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')"
-                  }}
-                />
-                <h4 className="text-base font-semibold text-white mb-3 text-center leading-tight">
-                  2021 Monte Bello Cabernet
-                </h4>
-                <div className="flex gap-2 justify-center flex-wrap">
-                  <span className="bg-white/15 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    97 VN
-                  </span>
-                  <span className="bg-white/15 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    95 JD
-                  </span>
-                  <span className="bg-white/15 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    94 WS
-                  </span>
-                </div>
+        {/* Want more? Section - Positioned outside wine details container */}
+        <div className="px-6 py-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+            Want more?
+          </h2>
+          
+          {wine?.buyAgainLink ? (
+            <a 
+              href={wine.buyAgainLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100">
+                Buy again
+              </button>
+            </a>
+          ) : (
+            <div className="w-full bg-white/15 text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium text-center">
+              Explore our collection
+            </div>
+          )}
+        </div>
+
+        {/* We recommend Section - Positioned outside wine details container */}
+        <div className="px-6 pb-8">
+          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+            We recommend
+          </h2>
+          
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {/* Wine Recommendation 1 */}
+            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
+              <div 
+                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')"
+                }}
+              />
+              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
+                2022 Estate Chardonnay
+              </h3>
+              <div className="flex gap-2 justify-center flex-wrap">
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  95 <span className="opacity-70">VN</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  93 <span className="opacity-70">JD</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  92 <span className="opacity-70">WS</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Wine Recommendation 2 */}
+            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
+              <div 
+                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')"
+                }}
+              />
+              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
+                2021 Monte Bello Cabernet
+              </h3>
+              <div className="flex gap-2 justify-center flex-wrap">
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  97 <span className="opacity-70">VN</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  95 <span className="opacity-70">JD</span>
+                </span>
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
+                  94 <span className="opacity-70">WS</span>
+                </span>
               </div>
             </div>
           </div>
-          
-          {/* FINAL TEST - Should be visible */}
-          <div style={{ backgroundColor: 'lime', color: 'black', padding: '30px', margin: '20px 0', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
-            ✓ SECTIONS SHOULD APPEAR HERE
-          </div>
         </div>
-
-
 
         {/* Chat Interface */}
         <div className="mt-10 pb-10">
