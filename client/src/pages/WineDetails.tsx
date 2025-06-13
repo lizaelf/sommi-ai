@@ -267,20 +267,6 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* Chat Interface - Moved above Want more section */}
-        <div className="mt-10 pb-6">
-          <EnhancedChatInterface 
-            showBuyButton={true} 
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings
-            } : null} 
-          />
-        </div>
-
         {/* Want more? Section */}
         <div className="px-6 pb-6 mt-8">
           <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
@@ -306,7 +292,7 @@ export default function WineDetails() {
         </div>
 
         {/* We recommend Section */}
-        <div className="px-6 pb-10 mt-8">
+        <div className="px-6 pb-6 mt-8">
           <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
             We recommend
           </h2>
@@ -360,6 +346,20 @@ export default function WineDetails() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Chat Interface */}
+        <div className="mt-10 pb-10">
+          <EnhancedChatInterface 
+            showBuyButton={true} 
+            selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings
+            } : null} 
+          />
         </div>
       </div>
       
