@@ -117,6 +117,9 @@ export default function WineDetails() {
 
   return (
     <div className="bg-black text-white" style={{ minHeight: '100vh', overflowY: 'visible', overflowX: 'hidden' }}>
+      <div className="fixed top-0 left-0 w-full h-12 bg-blue-500 z-50 flex items-center justify-center">
+        <span className="text-white font-bold">FIXED TEST AT TOP</span>
+      </div>
       <AppHeader />
       <HeaderSpacer />
       
