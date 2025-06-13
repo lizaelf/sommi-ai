@@ -40,11 +40,11 @@ export function AppHeader({
   }, []);
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 bg-transparent ${className}`}>
-      <div className="mx-auto max-w-[1200px] h-[75px] px-4 py-4">
-        <div className="relative flex items-center justify-between h-full">
+    <div className={`absolute top-4 left-4 right-4 z-50 pointer-events-none ${className}`}>
+      <div className="mx-auto max-w-[1200px] pointer-events-auto">
+        <div className="flex items-center justify-between">
           {/* Left side - Back button or Logo + Title */}
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex items-center gap-3">
             {showBackButton && onBack ? (
               <IconButton
                 icon={ArrowLeft}
@@ -57,7 +57,7 @@ export function AppHeader({
               <Logo />
             )}
             {title && (
-              <h1 className="absolute left-1/2 transform -translate-x-1/2 text-white text-[18px] font-medium truncate whitespace-nowrap text-center">
+              <h1 className="text-white text-[18px] font-medium ml-4">
                 {title}
               </h1>
             )}
