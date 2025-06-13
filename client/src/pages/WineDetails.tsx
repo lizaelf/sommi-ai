@@ -272,9 +272,18 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* MARKER: This should be visible - bright orange section */}
-        <div className="w-full bg-orange-500 p-8 text-center text-black text-4xl font-bold">
-          🚨 SECTIONS SHOULD APPEAR HERE 🚨
+        {/* Chat Interface */}
+        <div className="mt-10 pb-10">
+          <EnhancedChatInterface 
+            showBuyButton={true} 
+            selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings
+            } : null} 
+          />
         </div>
 
         {/* Want more? and We recommend sections */}
@@ -359,20 +368,6 @@ export default function WineDetails() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Chat Interface */}
-        <div className="mt-10 pb-10">
-          <EnhancedChatInterface 
-            showBuyButton={true} 
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings
-            } : null} 
-          />
         </div>
       </div>
 
