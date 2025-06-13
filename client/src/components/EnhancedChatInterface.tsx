@@ -1693,9 +1693,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
                         }}
                         onClick={() => {
-                          // Navigate to wine details if it exists
+                          // Navigate to wine details page
                           if (wine.id) {
-                            window.location.href = `/?wine=${wine.id}`;
+                            setLocation(`/?wine=${wine.id}`);
                           }
                         }}
                       >
