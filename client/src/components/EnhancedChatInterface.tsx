@@ -999,747 +999,364 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             ref={chatContainerRef}
             className="flex-1 overflow-y-auto scrollbar-hide"
           >
-            {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
+            {/* Chat History Section */}
             <div
-              className="w-full flex flex-col items-center justify-center py-8 relative"
+              className="w-full flex flex-col py-8 relative"
               style={{
                 backgroundColor: "#0A0A0A",
-                paddingTop: "75px", // Match the header height exactly
-                minHeight: "50vh", // Reduced height to not cover other sections
+                paddingTop: "75px",
+                minHeight: "50vh",
               }}
             >
-              {/* Wine bottle image */}
-              <WineBottleImage 
-                image={selectedWine?.image || currentWine?.image} 
-                wineName={selectedWine?.name || currentWine?.name} 
-              />
-
-              {/* Wine name with typography styling */}
-              <div
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  justifyContent: "center",
-                  display: "flex",
-                  flexDirection: "column",
-                  color: "white",
-                  wordWrap: "break-word",
-                  position: "relative",
-                  zIndex: 2,
-                  padding: "0 20px",
-                  marginBottom: "0",
-                  ...typography.h1,
-                }}
-              >
-                {selectedWine ? `2021 ${selectedWine.name}` : currentWine ? `${currentWine.year} ${currentWine.name}` : `${getWineVintage()} ${getWineDisplayName()}`}
-              </div>
-
-              {/* Wine region with typography styling and flag */}
-              <div
-                style={{
-                  textAlign: "center",
-                  justifyContent: "center",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  color: "rgba(255, 255, 255, 0.60)",
-                  wordWrap: "break-word",
-                  position: "relative",
-                  zIndex: 2,
-                  padding: "20px 20px",
-                  gap: "6px",
-                  marginBottom: "0",
-                  ...typography.body1R,
-                }}
-              >
-                <USFlagImage />
-                <span>{selectedWine ? "Santa Cruz Mountains | California | United States" : getWineRegion()}</span>
-              </div>
-
-              {/* Wine ratings section */}
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 20,
-                  display: "flex",
-                  position: "relative",
-                  zIndex: 2,
-                  padding: "0 20px",
-                  marginBottom: "0",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
-                  }}
-                >
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
-                    }}
-                  >
-                    {currentWine ? currentWine.ratings.vn : 95}
-                  </div>
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
-                    }}
-                  >
-                    VN
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
-                  }}
-                >
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
-                    }}
-                  >
-                    {currentWine ? currentWine.ratings.jd : 93}
-                  </div>
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
-                    }}
-                  >
-                    JD
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
-                  }}
-                >
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
-                    }}
-                  >
-                    {currentWine ? currentWine.ratings.ws : 93}
-                  </div>
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
-                    }}
-                  >
-                    WS
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
-                  }}
-                >
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
-                    }}
-                  >
-                    {currentWine ? `${currentWine.ratings.abv}%` : '14.3%'}
-                  </div>
-                  <div
-                    style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
-                    }}
-                  >
-                    ABV
-                  </div>
-                </div>
-              </div>
-
-              {/* Historic Heritage Section */}
+              {/* Chat History Header */}
               <div
                 style={{
                   width: "100%",
                   padding: "0 20px",
-                  marginTop: "48px",
-                  marginBottom: "20px",
-                }}
-              >
-                <p
-                  style={{
-                    color: "white",
-                    marginBottom: "16px",
-                    ...typography.body,
-                  }}
-                >
-                  {getWineHistory()}
-                </p>
-              </div>
-
-              {/* Food Pairing Section */}
-              <div
-                style={{
-                  width: "100%",
-                  padding: "0 20px",
-                  marginBottom: "20px",
+                  marginBottom: "24px",
                 }}
               >
                 <h1
                   style={{
                     ...typography.h1,
                     color: "white",
-                    marginBottom: "24px",
+                    marginBottom: "8px",
                     textAlign: "left",
                   }}
                 >
-                  Food pairing
+                  Chat History
                 </h1>
-
-                {/* Red Meat Pairing - Expandable */}
-                <div
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(
-                      expandedItem === "redMeat" ? null : "redMeat",
-                    );
-                  }}
-                  style={{
-                    backgroundColor: "#191919",
-                    borderRadius: "16px",
-                    padding: "0 20px",
-                    minHeight: "64px", // Use minHeight instead of fixed height to allow expansion
-                    marginBottom: "8px",
-                    display: "flex",
-                    flexDirection: "column", // Change to column for expanded view
-                    gap: "10px",
-                    alignSelf: "stretch",
-                    cursor: "pointer", // Show pointer cursor to indicate clickable
-                    transition: "all 0.3s ease", // Smooth transition for expanding
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      minHeight: "64px",
-                      width: "100%",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <span style={{ fontSize: "24px" }}>🥩</span>
-                      <span
-                        style={{
-                          color: "white",
-                          ...typography.body,
-                        }}
-                      >
-                        Red Meat
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "black",
-                          backgroundColor: "#e0e0e0",
-                          padding: "6px 14px",
-                          borderRadius: "999px",
-                          ...typography.buttonPlus1,
-                        }}
-                      >
-                        Perfect match
-                      </span>
-                      {/* Rotating chevron icon for expanded state */}
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          transform:
-                            expandedItem === "redMeat"
-                              ? "rotate(180deg)"
-                              : "rotate(0deg)",
-                          transition: "transform 0.3s ease",
-                        }}
-                      >
-                        <path
-                          d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
-                          fill="white"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === "redMeat" && (
-                    <div
-                      style={{
-                        padding: "0 0 20px 0", // Remove left padding
-                        color: "white",
-                        ...typography.body, // Using Body text style as requested
-                      }}
-                      className="pl-[0px] pr-[0px]"
-                    >
-                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        {getFoodPairingContent().dishes.map((dish: string, index: number) => (
-                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                            <span style={{ fontSize: "16px" }}>🥩</span>
-                            <span>{dish}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Cheese Pairings - Expandable */}
-                <div
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(
-                      expandedItem === "cheese" ? null : "cheese",
-                    );
-                  }}
-                  style={{
-                    backgroundColor: "#191919",
-                    borderRadius: "16px",
-                    padding: "0 20px",
-                    minHeight: "64px",
-                    marginBottom: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    alignSelf: "stretch",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      minHeight: "64px",
-                      width: "100%",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <span style={{ fontSize: "24px" }}>🧀</span>
-                      <span style={{ color: "white", ...typography.body }}>
-                        Cheese Pairings
-                      </span>
-                    </div>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        transform:
-                          expandedItem === "cheese"
-                            ? "rotate(180deg)"
-                            : "rotate(0deg)",
-                        transition: "transform 0.3s ease",
-                      }}
-                    >
-                      <path
-                        d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
-                        fill="white"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === "cheese" && (
-                    <div
-                      style={{
-                        padding: "0 0 20px 0",
-                        color: "white",
-                        ...typography.body,
-                      }}
-                    >
-                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        {getCheesePairingContent().cheeses.map((cheese: string, index: number) => (
-                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                            <span style={{ fontSize: "16px" }}>🧀</span>
-                            <span>{cheese}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Vegetarian Options - Expandable */}
-                <div
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(
-                      expandedItem === "vegetarian" ? null : "vegetarian",
-                    );
-                  }}
-                  style={{
-                    backgroundColor: "#191919",
-                    borderRadius: "16px",
-                    padding: "0 20px",
-                    minHeight: "64px",
-                    marginBottom: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    alignSelf: "stretch",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      minHeight: "64px",
-                      width: "100%",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <span style={{ fontSize: "24px" }}>🥗</span>
-                      <span style={{ color: "white", ...typography.body }}>
-                        Vegetarian Options
-                      </span>
-                    </div>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        transform:
-                          expandedItem === "vegetarian"
-                            ? "rotate(180deg)"
-                            : "rotate(0deg)",
-                        transition: "transform 0.3s ease",
-                      }}
-                    >
-                      <path
-                        d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
-                        fill="white"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === "vegetarian" && (
-                    <div
-                      style={{
-                        padding: "0 0 20px 0",
-                        color: "white",
-                        ...typography.body,
-                      }}
-                    >
-                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        {getVegetarianPairingContent().dishes.map((dish: string, index: number) => (
-                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                            <span style={{ fontSize: "16px" }}>🥗</span>
-                            <span>{dish}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Avoid pairing with - Expandable */}
-                <div
-                  onClick={() => {
-                    // Toggle expanded state for this item
-                    setExpandedItem(expandedItem === "avoid" ? null : "avoid");
-                  }}
-                  style={{
-                    backgroundColor: "#191919",
-                    borderRadius: "16px",
-                    padding: "0 20px",
-                    minHeight: "64px",
-                    marginBottom: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                    alignSelf: "stretch",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {/* Header row - always visible */}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      minHeight: "64px",
-                      width: "100%",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <span style={{ fontSize: "24px", color: "red" }}>❌</span>
-                      <span style={{ color: "white", ...typography.body }}>
-                        Avoid pairing with
-                      </span>
-                    </div>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        transform:
-                          expandedItem === "avoid"
-                            ? "rotate(180deg)"
-                            : "rotate(0deg)",
-                        transition: "transform 0.3s ease",
-                      }}
-                    >
-                      <path
-                        d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
-                        fill="white"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Expanded content - only visible when expanded */}
-                  {expandedItem === "avoid" && (
-                    <div
-                      style={{
-                        padding: "0 0 20px 0",
-                        color: "white",
-                        ...typography.body,
-                      }}
-                    >
-                      <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
-                        {getAvoidPairingContent().items.map((item: string, index: number) => (
-                          <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                            <span style={{ fontSize: "16px", color: "red" }}>❌</span>
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
 
-              {/* Summary Section - Only show on Home page, not Wine Details */}
-              {messages.length > 0 && !showBuyButton && (
-                <div
-                  style={{
-                    width: "100%",
-                    padding: "0 20px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <h1
-                    style={{
-                      ...typography.h1,
-                      color: "white",
-                      marginBottom: "24px",
-                      textAlign: "left",
-                    }}
-                  >Chat summary</h1>
-
-                  {/* Discussion Summary */}
-                  <div style={{ marginBottom: "32px" }}>
-                    {(() => {
-                      // Generate a comprehensive summary based on the conversation
-                      const summaryText = messages.length > 0 
-                        ? "Based on your conversation, you've explored the unique characteristics, flavor profile, and pairing possibilities of this exceptional wine. The discussion covered various aspects including its distinctive terroir, winemaking traditions, and what makes it a standout choice for wine enthusiasts. Your questions and our AI sommelier's responses have provided valuable insights into this wine's complexity and versatility."
-                        : "This wine offers a rich tapestry of flavors and aromas that reflect its prestigious terroir and traditional winemaking methods. From its complex tasting profile to perfect food pairings, this bottle represents the finest expression of its varietal and region.";
-
-                      return (
-                        <div>
-                          <p
-                            style={{
-                              ...typography.body,
-                              color: "rgba(255, 255, 255, 0.8)",
-                              lineHeight: "1.6",
-                              margin: "0 0 16px 0",
-                              paddingBottom: "16px",
-                            }}
-                          >
-                            {summaryText}
-                          </p>
-                        </div>
-                      );
-                    })()}
-
-                    {/* Show whole dialog button */}
-                    <button
-                      onClick={() => setLocation("/wine/conversation")}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                      }}
-                      onMouseDown={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                      }}
-                      onMouseUp={(e) => {
-                        e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-                      }}
-                      style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.08)",
-                        borderRadius: "32px",
-                        height: "56px",
-                        minHeight: "56px",
-                        maxHeight: "56px",
-                        padding: "0 16px",
-                        margin: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "none",
-                        color: "white",
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        outline: "none",
-                        width: "100%",
-                        boxSizing: "border-box",
-                        lineHeight: "1",
-                        transition: "background-color 0.2s ease",
-                      }}
-                    >
-                      Show whole dialog
-                    </button>
-
-                    {/* Buy again button */}
-                    <button
-                      onClick={() => {
-                        if (currentWine?.buyAgainLink) {
-                          window.open(currentWine.buyAgainLink, '_blank');
-                        } else {
-                          console.log("No buy again link available");
-                        }
-                      }}
-                      style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.08)",
-                        borderRadius: "32px",
-                        height: "56px",
-                        minHeight: "56px",
-                        maxHeight: "56px",
-                        padding: "0 16px",
-                        margin: "8px 0 0 0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "none",
-                        color: "white",
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        outline: "none",
-                        width: "100%",
-                        boxSizing: "border-box",
-                        lineHeight: "1",
-                      }}
-                    >
-                      Buy again
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Conversation Section */}
+              {/* Chat Messages Container */}
               <div
                 style={{
                   width: "100%",
                   padding: "0 20px",
-                  marginBottom: "20px",
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "16px",
                 }}
               >
+                {messages.length > 0 ? (
+                  messages.map((message: any, index: number) => (
+                    <div
+                      key={`chat-${message.id}-${index}`}
+                      style={{
+                        display: "flex",
+                        justifyContent: message.role === "user" ? "flex-end" : "flex-start",
+                        width: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          maxWidth: "80%",
+                          padding: "12px 16px",
+                          borderRadius: "16px",
+                          backgroundColor: message.role === "user" ? "#333" : "#1a1a1a",
+                          color: "white",
+                          ...typography.body,
+                          wordWrap: "break-word",
+                        }}
+                      >
+                        {message.content}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      color: "rgba(255, 255, 255, 0.6)",
+                      ...typography.body,
+                      padding: "40px 20px",
+                    }}
+                  >
+                    No conversation history yet. Start chatting to see your messages here.
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Chat Input Section */}
+          <div
+            style={{
+              padding: "20px",
+              zIndex: 40,
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+            }}
+          >
+            {/* Show chat input only if showBuyButton is false or showChatInput is true */}
+            {(!showBuyButton || showChatInput) && (
+              <>
+                {currentWine ? (
+                  <ChatInput
+                    currentWine={currentWine}
+                    onSendMessage={handleSendMessage}
+                    disabled={isTyping}
+                    onFocus={() => setIsKeyboardFocused(true)}
+                    onBlur={() => setIsKeyboardFocused(false)}
+                  />
+                ) : (
+                  <ChatInput
+                    onSendMessage={handleSendMessage}
+                    disabled={isTyping}
+                  />
+                )}
+              </>
+            )}
+          </div>
+        </main>
+      </div>
+
+      {/* Scroll to bottom button */}
+      {showScrollToBottom && (
+        <button
+          onClick={scrollToBottom}
+          style={{
+            position: "fixed",
+            bottom: "100px",
+            right: "20px",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            border: "none",
+            borderRadius: "50%",
+            width: "48px",
+            height: "48px",
+            cursor: "pointer",
+            zIndex: 50,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          ↓
+        </button>
+      )}
+
+      {/* Contact Sheet Modal */}
+      {animationState !== "hidden" && portalElement &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "flex-end",
+              opacity: animationState === "visible" ? 1 : 0,
+              transition: "opacity 0.3s ease",
+            }}
+            onClick={handleCloseContactSheet}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: "#1a1a1a",
+                width: "100%",
+                maxHeight: "80vh",
+                borderRadius: "16px 16px 0 0",
+                padding: "24px",
+                transform: animationState === "visible" ? "translateY(0)" : "translateY(100%)",
+                transition: "transform 0.3s ease",
+                overflow: "auto",
+              }}
+            >
+              {/* Close button */}
+              <button
+                onClick={handleCloseContactSheet}
+                style={{
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  background: "none",
+                  border: "none",
+                  color: "white",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                }}
+              >
+                ×
+              </button>
+
+              <h2 style={{ color: "white", marginBottom: "24px", fontSize: "24px" }}>
+                Share Contact Information
+              </h2>
+
+              <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: "16px" }}>
+                  <label style={{ display: "block", color: "white", marginBottom: "8px" }}>
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      borderRadius: "8px",
+                      border: "1px solid #333",
+                      backgroundColor: "#2a2a2a",
+                      color: "white",
+                      fontSize: "16px",
+                    }}
+                    required
+                  />
+                  {errors.fullName && (
+                    <span style={{ color: "#ff6b6b", fontSize: "14px" }}>
+                      {errors.fullName}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label style={{ display: "block", color: "white", marginBottom: "8px" }}>
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      borderRadius: "8px",
+                      border: "1px solid #333",
+                      backgroundColor: "#2a2a2a",
+                      color: "white",
+                      fontSize: "16px",
+                    }}
+                    required
+                  />
+                  {errors.email && (
+                    <span style={{ color: "#ff6b6b", fontSize: "14px" }}>
+                      {errors.email}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label style={{ display: "block", color: "white", marginBottom: "8px" }}>
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      borderRadius: "8px",
+                      border: "1px solid #333",
+                      backgroundColor: "#2a2a2a",
+                      color: "white",
+                      fontSize: "16px",
+                    }}
+                  />
+                  {errors.company && (
+                    <span style={{ color: "#ff6b6b", fontSize: "14px" }}>
+                      {errors.company}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: "16px" }}>
+                  <label style={{ display: "block", color: "white", marginBottom: "8px" }}>
+                    Phone Number
+                  </label>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <div style={{ position: "relative" }}>
+                      <button
+                        type="button"
+                        onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                        style={{
+                          padding: "12px",
+                          borderRadius: "8px",
+                          border: "1px solid #333",
+                          backgroundColor: "#2a2a2a",
+                          color: "white",
+                          fontSize: "16px",
+                          cursor: "pointer",
+                          minWidth: "80px",
+                        }}
+                      >
+                        {selectedCountry.flag} {selectedCountry.code}
+                      </button>
+                    </div>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      placeholder={selectedCountry.placeholder}
+                      onChange={handleInputChange}
+                      style={{
+                        flex: 1,
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #333",
+                        backgroundColor: "#2a2a2a",
+                        color: "white",
+                        fontSize: "16px",
+                      }}
+                    />
+                  </div>
+                  {errors.phone && (
+                    <span style={{ color: "#ff6b6b", fontSize: "14px" }}>
+                      {errors.phone}
+                    </span>
+                  )}
+                </div>
+
+                <div
+                  style={{
+                    width: "100%",
+                  }}
+                >
+                  <button
+                    onClick={handleSubmit}
+                    className="save-button"
+                    style={{
+                      width: "100%",
+                      height: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "black",
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          portalElement,
+        )}
+    </div>
+  );
+};
+
+export default EnhancedChatInterface;
                 {showBuyButton && (
                   <>
                     {hasSharedContact ? (
