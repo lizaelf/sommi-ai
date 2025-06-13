@@ -233,11 +233,31 @@ export default function WineDetails() {
             position: "relative",
             zIndex: 2,
             padding: "0 20px",
-            marginBottom: "0",
+            marginBottom: "20px",
             ...typography.h1,
           }}
         >
           {wine ? `2021 ${wine.name}` : `2021 Wine Name`}
+        </div>
+
+        {/* Historic Heritage Section - Moved below title */}
+        <div
+          style={{
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "32px",
+          }}
+        >
+          <p
+            style={{
+              color: "white",
+              textAlign: "center",
+              marginBottom: "16px",
+              ...typography.body,
+            }}
+          >
+            {getWineHistory()}
+          </p>
         </div>
 
         {/* Wine region with typography styling and flag */}
@@ -272,26 +292,6 @@ export default function WineDetails() {
             marginBottom: "0",
           }}
         />
-
-        {/* Historic Heritage Section */}
-        <div
-          style={{
-            width: "100%",
-            padding: "0 20px",
-            marginTop: "48px",
-            marginBottom: "20px",
-          }}
-        >
-          <p
-            style={{
-              color: "white",
-              marginBottom: "16px",
-              ...typography.body,
-            }}
-          >
-            {getWineHistory()}
-          </p>
-        </div>
 
         {/* Food Pairing Section */}
         <div
