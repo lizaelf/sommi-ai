@@ -353,13 +353,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     >
                       <div
                         style={{
-                          maxWidth: "80%",
-                          padding: "12px 16px",
-                          borderRadius: "16px",
-                          backgroundColor: message.role === "user" ? "#333" : "#1a1a1a",
+                          maxWidth: "85%",
+                          padding: "16px 20px",
+                          borderRadius: "20px",
+                          background: message.role === "user" 
+                            ? "linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3))"
+                            : "linear-gradient(135deg, rgba(55, 65, 81, 0.5), rgba(75, 85, 99, 0.5))",
+                          border: message.role === "user"
+                            ? "1px solid rgba(59, 130, 246, 0.4)"
+                            : "1px solid rgba(75, 85, 99, 0.4)",
+                          backdropFilter: "blur(20px)",
+                          WebkitBackdropFilter: "blur(20px)",
                           color: "white",
                           ...typography.body,
                           wordWrap: "break-word",
+                          boxShadow: message.role === "user"
+                            ? "0 4px 15px rgba(59, 130, 246, 0.2)"
+                            : "0 4px 15px rgba(0, 0, 0, 0.1)",
                         }}
                       >
                         {formatContent(message.content)}
