@@ -42,6 +42,17 @@ export default function WineDetails() {
     DataSyncManager.initialize();
   }, []);
 
+  // Debug component lifecycle and routing
+  useEffect(() => {
+    console.log('WineDetails mounted with wine:', wine?.id);
+    console.log('Current location:', location);
+    console.log('Route params:', { id });
+    
+    return () => {
+      console.log('WineDetails unmounting');
+    };
+  }, [wine?.id, location, id]);
+
   // Load wine data when ID changes
   useEffect(() => {
     let mounted = true;
@@ -169,11 +180,15 @@ export default function WineDetails() {
   }
 
   return (
-    <div key={wine.id} className="bg-black text-white" style={{ 
-      minHeight: '100vh', 
-      overflowY: 'visible', 
-      overflowX: 'hidden'
-    }}>
+    <div 
+      key={wine.id} 
+      className="bg-black text-white opacity-0 animate-fade-in" 
+      style={{ 
+        minHeight: '100vh', 
+        overflowY: 'visible', 
+        overflowX: 'hidden',
+        animationDelay: '100ms' // Wait for styles to load
+      }}>
       <AppHeader />
       <HeaderSpacer />
 

@@ -21,6 +21,12 @@ export function AppHeader({
   showBackButton = false,
 }: AppHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Initialize header component
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,7 +36,7 @@ export function AppHeader({
       // Force a re-render by updating state even if the scrolled value hasn't changed
       setScrolled(prev => {
         if (prev !== isScrolled) {
-          console.log("🚀 Header scroll state changed:", scrollPosition, "isScrolled:", isScrolled);
+          console.log("Header scroll state changed:", scrollPosition, "isScrolled:", isScrolled);
         }
         return isScrolled;
       });
