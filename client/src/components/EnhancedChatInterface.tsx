@@ -1630,459 +1630,187 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     marginRight: "-4px",
                   }}
                 >
-                  {/* Recommendation 1 - Estate Chardonnay */}
-                  <div
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.08)",
-                      borderRadius: "16px",
-                      padding: "16px 16px 24px 16px",
-                      width: "208px",
-                      minWidth: "208px",
-                      flexShrink: 0,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                    }}
-                  >
-                    {/* Wine Bottle Image */}
-                    <div
-                      style={{
-                        width: "120px",
-                        height: "200px",
-                        backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')",
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center",
-                        marginBottom: "20px",
-                      }}
-                    />
+                  {(() => {
+                    // Get wines from admin panel (localStorage)
+                    const adminWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
                     
-                    {/* Wine Name */}
-                    <h2
-                      style={{
-                        ...typography.h2,
-                        color: "white",
-                        textAlign: "center",
-                        margin: "0 0 16px 0",
-                        height: "72px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      2022 Estate Chardonnay
-                    </h2>
+                    // If no admin wines, show a message
+                    if (adminWines.length === 0) {
+                      return (
+                        <div
+                          style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.08)",
+                            borderRadius: "16px",
+                            padding: "32px",
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            textAlign: "center",
+                          }}
+                        >
+                          <span style={{ 
+                            color: "rgba(255, 255, 255, 0.8)", 
+                            fontSize: "16px",
+                            fontFamily: "Inter, sans-serif",
+                            marginBottom: "8px"
+                          }}>
+                            No wines available
+                          </span>
+                          <span style={{ 
+                            color: "rgba(255, 255, 255, 0.6)", 
+                            fontSize: "14px",
+                            fontFamily: "Inter, sans-serif"
+                          }}>
+                            Add wines in the admin panel to see recommendations
+                          </span>
+                        </div>
+                      );
+                    }
                     
-                    {/* Rating Badges */}
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "20px",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <span
+                    // Show wines from admin panel
+                    return adminWines.map((wine: any) => (
+                      <div
+                        key={wine.id}
                         style={{
-                          color: "white",
+                          backgroundColor: "rgba(255, 255, 255, 0.08)",
+                          borderRadius: "16px",
+                          padding: "16px 16px 24px 16px",
+                          width: "208px",
+                          minWidth: "208px",
+                          flexShrink: 0,
                           display: "flex",
+                          flexDirection: "column",
                           alignItems: "center",
-                          gap: "4px",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                        }}
+                        onClick={() => {
+                          // Navigate to wine details if it exists
+                          if (wine.id) {
+                            window.location.href = `/?wine=${wine.id}`;
+                          }
                         }}
                       >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          95
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          VN
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          93
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          JD
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          93
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          WS
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Recommendation 2 - Monte Bello Cabernet */}
-                  <div
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.08)",
-                      borderRadius: "16px",
-                      padding: "16px 16px 24px 16px",
-                      width: "208px",
-                      minWidth: "208px",
-                      flexShrink: 0,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                    }}
-                  >
-                    {/* Wine Bottle Image */}
-                    <div
-                      style={{
-                        width: "120px",
-                        height: "200px",
-                        backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1748949884152.jpeg')",
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center",
-                        marginBottom: "20px",
-                      }}
-                    />
-                    
-                    {/* Wine Name */}
-                    <h2
-                      style={{
-                        ...typography.h2,
-                        color: "white",
-                        textAlign: "center",
-                        margin: "0 0 16px 0",
-                        height: "72px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      2021 Monte Bello Cabernet Sauvignon
-                    </h2>
-                    
-                    {/* Rating Badges */}
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "20px",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          95
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          VN
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          93
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          JD
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          93
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          WS
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Recommendation 3 - Additional Wine */}
-                  <div
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.08)",
-                      borderRadius: "16px",
-                      padding: "16px 16px 24px 16px",
-                      width: "208px",
-                      minWidth: "208px",
-                      flexShrink: 0,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                    }}
-                  >
-                    {/* Wine Bottle Image Placeholder */}
-                    <div
-                      style={{
-                        width: "120px",
-                        height: "200px",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        borderRadius: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginBottom: "20px",
-                        border: "2px dashed rgba(255, 255, 255, 0.3)",
-                      }}
-                    >
-                      <span style={{ 
-                        color: "rgba(255, 255, 255, 0.6)", 
-                        fontSize: "12px",
-                        textAlign: "center",
-                        fontFamily: "Inter, sans-serif"
-                      }}>
-                        Wine Image
-                      </span>
-                    </div>
-                    
-                    {/* Wine Name */}
-                    <h2
-                      style={{
-                        ...typography.h2,
-                        color: "white",
-                        textAlign: "center",
-                        margin: "0 0 16px 0",
-                        height: "72px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      2020 Vintage Reserve
-                    </h2>
-                    
-                    {/* Rating Badges */}
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "20px",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          94
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          VN
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          92
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          JD
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          91
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          WS
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Recommendation 4 - Additional Wine */}
-                  <div
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.08)",
-                      borderRadius: "16px",
-                      padding: "16px 16px 24px 16px",
-                      width: "208px",
-                      minWidth: "208px",
-                      flexShrink: 0,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
-                    }}
-                  >
-                    {/* Wine Bottle Image Placeholder */}
-                    <div
-                      style={{
-                        width: "120px",
-                        height: "200px",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        borderRadius: "8px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginBottom: "20px",
-                        border: "2px dashed rgba(255, 255, 255, 0.3)",
-                      }}
-                    >
-                      <span style={{ 
-                        color: "rgba(255, 255, 255, 0.6)", 
-                        fontSize: "12px",
-                        textAlign: "center",
-                        fontFamily: "Inter, sans-serif"
-                      }}>
-                        Wine Image
-                      </span>
-                    </div>
-                    
-                    {/* Wine Name */}
-                    <h2
-                      style={{
-                        ...typography.h2,
-                        color: "white",
-                        textAlign: "center",
-                        margin: "0 0 16px 0",
-                        height: "72px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      2019 Special Selection
-                    </h2>
-                    
-                    {/* Rating Badges */}
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "20px",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          96
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          VN
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          94
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          JD
-                        </span>
-                      </span>
-                      <span
-                        style={{
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <span style={{ ...typography.num, color: "white" }}>
-                          93
-                        </span>
-                        <span style={{ ...typography.body1R, color: "#999999" }}>
-                          WS
-                        </span>
-                      </span>
-                    </div>
-                  </div>
+                        {/* Wine Bottle Image */}
+                        <div
+                          style={{
+                            width: "120px",
+                            height: "200px",
+                            backgroundImage: wine.image ? `url('${wine.image}')` : "none",
+                            backgroundColor: wine.image ? "transparent" : "rgba(255, 255, 255, 0.1)",
+                            backgroundSize: "contain",
+                            backgroundRepeat: "no-repeat",
+                            backgroundPosition: "center",
+                            marginBottom: "20px",
+                            borderRadius: wine.image ? "0" : "8px",
+                            border: wine.image ? "none" : "2px dashed rgba(255, 255, 255, 0.3)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {!wine.image && (
+                            <span style={{ 
+                              color: "rgba(255, 255, 255, 0.6)", 
+                              fontSize: "12px",
+                              textAlign: "center",
+                              fontFamily: "Inter, sans-serif"
+                            }}>
+                              No Image
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Wine Name */}
+                        <h2
+                          style={{
+                            ...typography.h2,
+                            color: "white",
+                            textAlign: "center",
+                            margin: "0 0 16px 0",
+                            height: "72px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "14px",
+                            lineHeight: "1.2",
+                          }}
+                        >
+                          {wine.year ? `${wine.year} ` : ""}{wine.name}
+                        </h2>
+                        
+                        {/* Rating Badges */}
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "20px",
+                            flexWrap: "wrap",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {wine.ratings?.vn && (
+                            <span
+                              style={{
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              <span style={{ ...typography.num, color: "white" }}>
+                                {wine.ratings.vn}
+                              </span>
+                              <span style={{ ...typography.body1R, color: "#999999" }}>
+                                VN
+                              </span>
+                            </span>
+                          )}
+                          {wine.ratings?.jd && (
+                            <span
+                              style={{
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              <span style={{ ...typography.num, color: "white" }}>
+                                {wine.ratings.jd}
+                              </span>
+                              <span style={{ ...typography.body1R, color: "#999999" }}>
+                                JD
+                              </span>
+                            </span>
+                          )}
+                          {wine.ratings?.ws && (
+                            <span
+                              style={{
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              <span style={{ ...typography.num, color: "white" }}>
+                                {wine.ratings.ws}
+                              </span>
+                              <span style={{ ...typography.body1R, color: "#999999" }}>
+                                WS
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
 
