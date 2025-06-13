@@ -1625,12 +1625,54 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   style={{
                     ...typography.h1,
                     color: "white",
-                    marginBottom: "24px",
+                    marginBottom: "16px",
                     textAlign: "left",
                   }}
                 >
                   More
                 </h1>
+
+                {/* Buy again button */}
+                <button
+                  onClick={() => {
+                    if (currentWine?.buyAgainLink) {
+                      window.open(currentWine.buyAgainLink, '_blank');
+                    } else {
+                      console.log("No buy again link available");
+                    }
+                  }}
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "32px",
+                    height: "56px",
+                    minHeight: "56px",
+                    maxHeight: "56px",
+                    padding: "0 16px",
+                    margin: "0 0 24px 0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "none",
+                    color: "black",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    outline: "none",
+                    width: "100%",
+                    boxSizing: "border-box",
+                    lineHeight: "1",
+                    transition: "background-color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f0f0f0";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "white";
+                  }}
+                >
+                  Buy again
+                </button>
 
                 {/* Wine Collection - Expandable */}
                 <div
