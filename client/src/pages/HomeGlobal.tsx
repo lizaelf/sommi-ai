@@ -156,154 +156,76 @@ const HomeGlobal = () => {
                       {wine.bottles} Bottles
                     </p>
 
-                    {/* Ratings */}
+                    {/* Ratings - Using same style as WineDetails page */}
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 4,
+                        gap: "20px",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
                       }}
                     >
-                      <div
+                      <span
                         style={{
+                          color: "white",
                           display: "flex",
-                          padding: 8,
-                          alignItems: "baseline",
-                          gap: 4,
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: 8,
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "white",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.num,
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           {wine.ratings.vn}
-                        </div>
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "rgba(255, 255, 255, 0.60)",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.body1R,
-                          }}
-                        >
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           VN
-                        </div>
-                      </div>
-                      <div
+                        </span>
+                      </span>
+                      <span
                         style={{
+                          color: "white",
                           display: "flex",
-                          padding: 8,
-                          alignItems: "baseline",
-                          gap: 4,
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: 8,
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "white",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.num,
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           {wine.ratings.jd}
-                        </div>
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "rgba(255, 255, 255, 0.60)",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.body1R,
-                          }}
-                        >
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           JD
-                        </div>
-                      </div>
-                      <div
+                        </span>
+                      </span>
+                      <span
                         style={{
+                          color: "white",
                           display: "flex",
-                          padding: 8,
-                          alignItems: "baseline",
-                          gap: 4,
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: 8,
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "white",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.num,
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           {wine.ratings.ws}
-                        </div>
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "rgba(255, 255, 255, 0.60)",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.body1R,
-                          }}
-                        >
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           WS
-                        </div>
-                      </div>
-                      <div
+                        </span>
+                      </span>
+                      <span
                         style={{
+                          color: "white",
                           display: "flex",
-                          padding: 8,
-                          alignItems: "baseline",
-                          gap: 4,
-                          background: "rgba(255, 255, 255, 0.10)",
-                          borderRadius: 8,
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "white",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.num,
-                          }}
-                        >
+                        <span style={{ ...typography.num, color: "white" }}>
                           {wine.ratings.abv}%
-                        </div>
-                        <div
-                          style={{
-                            justifyContent: "center",
-                            display: "flex",
-                            color: "rgba(255, 255, 255, 0.60)",
-                            wordWrap: "break-word",
-                            height: "16px",
-                            ...typography.body1R,
-                          }}
-                        >
+                        </span>
+                        <span style={{ ...typography.body1R, color: "#999999" }}>
                           ABV
-                        </div>
-                      </div>
+                        </span>
+                      </span>
                     </div>
                   </div>
                 </div>

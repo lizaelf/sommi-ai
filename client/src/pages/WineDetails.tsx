@@ -7,6 +7,7 @@ import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import WineBottleImage from "@/components/WineBottleImage";
 import USFlagImage from "@/components/USFlagImage";
+import WineRating from "@/components/WineRating";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 
@@ -262,81 +263,15 @@ export default function WineDetails() {
         </div>
 
         {/* Wine ratings section */}
-        <div
+        <WineRating
+          ratings={wine ? wine.ratings : { vn: 95, jd: 93, ws: 93, abv: 14.3 }}
           style={{
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "20px",
-            display: "flex",
-            flexWrap: "wrap",
             position: "relative",
             zIndex: 2,
             padding: "0 20px",
             marginBottom: "0",
           }}
-        >
-          <span
-            style={{
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
-            <span style={{ ...typography.num, color: "white" }}>
-              {wine ? wine.ratings.vn : 95}
-            </span>
-            <span style={{ ...typography.body1R, color: "#999999" }}>
-              VN
-            </span>
-          </span>
-          <span
-            style={{
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
-            <span style={{ ...typography.num, color: "white" }}>
-              {wine ? wine.ratings.jd : 93}
-            </span>
-            <span style={{ ...typography.body1R, color: "#999999" }}>
-              JD
-            </span>
-          </span>
-          <span
-            style={{
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
-            <span style={{ ...typography.num, color: "white" }}>
-              {wine ? wine.ratings.ws : 93}
-            </span>
-            <span style={{ ...typography.body1R, color: "#999999" }}>
-              WS
-            </span>
-          </span>
-          <span
-            style={{
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
-            <span style={{ ...typography.num, color: "white" }}>
-              {wine ? `${wine.ratings.abv}%` : '14.3%'}
-            </span>
-            <span style={{ ...typography.body1R, color: "#999999" }}>
-              ABV
-            </span>
-          </span>
-        </div>
+        />
 
         {/* Historic Heritage Section */}
         <div
