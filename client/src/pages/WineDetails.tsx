@@ -120,7 +120,7 @@ export default function WineDetails() {
   }
 
   return (
-    <div className="bg-black text-white" style={{ 
+    <div key={wine.id} className="bg-black text-white" style={{ 
       minHeight: '100vh', 
       overflowY: 'visible', 
       overflowX: 'hidden'
