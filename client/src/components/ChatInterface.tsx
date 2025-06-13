@@ -1,282 +1,379 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { apiRequest, queryClient } from '@/lib/queryClient';
-import { useToast } from '@/hooks/UseToast';
-import { useIsMobile } from '@/hooks/UseMobile';
-import ChatMessage from './ChatMessage';
-import ChatInput from './ChatInput';
-import Sidebar from './Sidebar';
-import { useConversation } from '@/hooks/UseConversation';
-import { Message, Conversation } from '@shared/schema';
+import React, { useRef, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/UseToast";
+import { useConversation } from "@/hooks/UseConversation";
+import { ClientMessage } from "@/lib/types";
+import { DataSyncManager } from "@/utils/dataSync";
+import { createStreamingClient, isStreamingSupported } from "@/lib/streamingClient";
+import typography from "@/styles/typography";
+import ChatMessageList, { Message } from "./ChatMessageList";
+import ChatInputArea from "./ChatInputArea";
+import ContactBottomSheet, { ContactFormData } from "./ContactBottomSheet";
+import ScrollToBottomButton from "./ScrollToBottomButton";
 
-const ChatInterface: React.FC = () => {
-  // Custom hooks
-  const isMobile = useIsMobile();
+// Extend Window interface to include voiceAssistant
+declare global {
+  interface Window {
+    voiceAssistant?: {
+      speakResponse: (text: string) => Promise<void>;
+      playLastAudio: () => void;
+      speakLastAssistantMessage: () => void;
+      muteAndSavePosition: () => void;
+      resumeFromMute: () => void;
+    };
+  }
+}
+
+interface SelectedWine {
+  id: number;
+  name: string;
+  image: string;
+  bottles: number;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+}
+
+interface ChatInterfaceProps {
+  showBuyButton?: boolean;
+  selectedWine?: SelectedWine | null;
+  onReady?: () => void;
+}
+
+export default function ChatInterface({ 
+  showBuyButton = false, 
+  selectedWine, 
+  onReady 
+}: ChatInterfaceProps) {
+  const [location, setLocation] = useLocation();
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isComponentReady, setIsComponentReady] = useState(false);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
+  const [showContactSheet, setShowContactSheet] = useState(false);
+  const [currentEventSource, setCurrentEventSource] = useState<EventSource | null>(null);
   const { toast } = useToast();
   
-  // State
-  const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  // Wine and conversation state
+  const [currentWine, setCurrentWine] = useState<any>(null);
+  const [showChatInput, setShowChatInput] = useState(true);
+  const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
-  // Refs
-  const welcomeSheetRef = useRef<HTMLDivElement>(null);
-  
-  // Conversation hook
   const {
-    currentConversationId,
-    setCurrentConversationId,
     messages,
     addMessage,
     conversations,
-    createNewConversation,
-    clearConversation
+    currentConversationId: hookConversationId,
+    setCurrentConversationId: setHookConversationId,
+    refetchMessages,
   } = useConversation();
 
-  // API status check
-  const { data: apiStatus } = useQuery({
-    queryKey: ['/api/status'],
-    refetchInterval: 30000,
-  });
+  // Format content for message display
+  const formatContent = (content: string) => {
+    return content.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < content.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
 
-  // Close sidebar on mobile when changing conversation
+  // Initialize conversation
   useEffect(() => {
-    if (isMobile && sidebarOpen) {
-      setSidebarOpen(false);
-    }
-  }, [currentConversationId, isMobile, sidebarOpen]);
+    const initializeConversation = async () => {
+      console.log("Initializing conversation...");
+      try {
+        const conversations = await getAllConversations();
+        
+        if (conversations && conversations.length > 0) {
+          const mostRecent = conversations[0];
+          console.log(`Using most recent conversation from backend: ${mostRecent.id}`);
+          
+          const conversationWithMessages = await getConversationById(mostRecent.id);
+          if (conversationWithMessages) {
+            setCurrentConversationId(mostRecent.id);
+            setMessages(conversationWithMessages.messages || []);
+            console.log(`Loaded ${conversationWithMessages.messages?.length || 0} messages from backend`);
+          }
+        }
+        
+        setIsComponentReady(true);
+        console.log("Chat interface ready");
+        onReady?.();
+      } catch (error) {
+        console.error("Error initializing conversation:", error);
+        setIsComponentReady(true);
+        onReady?.();
+      }
+    };
 
-  // Handle sending a message
-  const handleSendMessage = async (content: string) => {
-    if (content.trim() === '') return;
-    
-    setIsTyping(true);
-    
-    try {
-      // Create a conversation if needed
-      let conversationId = currentConversationId;
-      if (!conversationId) {
-        const newConversation = await apiRequest('POST', '/api/conversations', { 
-          title: content.slice(0, 30) + (content.length > 30 ? '...' : '') 
-        });
-        const data = await newConversation.json();
-        conversationId = data.id;
-        setCurrentConversationId(conversationId);
+    initializeConversation();
+  }, [getAllConversations, getConversationById, setMessages, onReady]);
+
+  // Wine data initialization
+  useEffect(() => {
+    const loadWineData = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const wineIdFromUrl = urlParams.get('wineId');
+        const wineIdFromPath = window.location.pathname.match(/wine-details\/(\d+)/)?.[1];
+        const wineId = wineIdFromUrl || wineIdFromPath || selectedWine?.id?.toString() || "1";
+        
+        const wineData = DataSyncManager.getWineById(parseInt(wineId));
+        if (wineData) {
+          setCurrentWine(wineData);
+        }
+      } catch (error) {
+        console.error("Error loading wine data:", error);
       }
-      
-      // Add user message to UI
-      const userMessage = {
-        id: Date.now(),
-        content,
-        role: 'user',
-        conversationId,
-        createdAt: new Date()
-      } as Message;
-      
-      addMessage(userMessage);
-      
-      // Try to send to API
-      let response = await apiRequest('POST', '/api/chat', {
-        messages: [{ role: 'user', content }],
-        conversationId
+    };
+
+    loadWineData();
+  }, [selectedWine]);
+
+  // Scroll handling
+  useEffect(() => {
+    const handleScroll = () => {
+      if (chatContainerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+        setShowScrollToBottom(!isNearBottom && scrollHeight > clientHeight);
+      }
+    };
+
+    const container = chatContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
       });
+    }
+  };
+
+  // Message handling
+  const handleSendMessage = async (messageText: string) => {
+    if (!messageText.trim() || isTyping) return;
+
+    try {
+      setIsTyping(true);
       
-      // Handle 404 conversation not found
-      if (response.status === 404) {
-        console.log('Conversation not found, creating a new one');
-        
-        // Create a new conversation
-        const newConversationRes = await apiRequest('POST', '/api/conversations', { 
-          title: content.slice(0, 30) + (content.length > 30 ? '...' : '') 
-        });
-        const newData = await newConversationRes.json();
-        const newId = newData.id;
-        setCurrentConversationId(newId);
-        
-        // Try again with new ID
-        response = await apiRequest('POST', '/api/chat', {
-          messages: [{ role: 'user', content }],
-          conversationId: newId
-        });
+      const userMessage: ClientMessage = {
+        role: "user",
+        content: messageText.trim(),
+        conversationId: currentConversationId || undefined,
+      };
+
+      addMessage(userMessage);
+
+      if (isStreamingSupported()) {
+        await handleStreamingResponse(userMessage);
+      } else {
+        await handleRegularResponse(userMessage);
       }
-      
-      // Handle successful response
-      const responseData = await response.json();
-      
-      // Add assistant response
-      const assistantMessage = {
-        id: Date.now() + 1,
-        content: responseData.message.content,
-        role: 'assistant',
-        conversationId: responseData.conversationId,
-        createdAt: new Date()
-      } as Message;
-      
-      addMessage(assistantMessage);
-      
-      // Update conversations list
-      queryClient.invalidateQueries({ queryKey: ['/api/conversations'] });
     } catch (error) {
-      console.error('Error in chat request:', error);
+      console.error("Error sending message:", error);
       toast({
         title: "Error",
-        description: `Failed to get a response: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        variant: "destructive"
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsTyping(false);
     }
   };
-  
-  // Clear conversation handler
-  const handleClearConversation = async () => {
-    if (!currentConversationId) return;
-    
+
+  const handleStreamingResponse = async (userMessage: ClientMessage) => {
+    const client = createStreamingClient();
+    let assistantMessage = "";
+
     try {
-      await apiRequest('DELETE', `/api/conversations/${currentConversationId}`);
-      clearConversation();
-      createNewConversation();
-      toast({
-        title: "Conversation cleared",
-        description: "All messages have been removed."
+      const stream = await client.sendMessage({
+        messages: [...messages, userMessage],
+        wineId: currentWine?.id,
       });
+
+      const assistantMessageObj: ClientMessage = {
+        role: "assistant",
+        content: "",
+        conversationId: currentConversationId || undefined,
+      };
+
+      addMessage(assistantMessageObj);
+
+      for await (const chunk of stream) {
+        if (chunk.content) {
+          assistantMessage += chunk.content;
+          assistantMessageObj.content = assistantMessage;
+          
+          setMessages(prev => [
+            ...prev.slice(0, -1),
+            assistantMessageObj
+          ]);
+        }
+      }
     } catch (error) {
+      console.error("Streaming error:", error);
+      throw error;
+    }
+  };
+
+  const handleRegularResponse = async (userMessage: ClientMessage) => {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [...messages, userMessage],
+        wineId: currentWine?.id,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    const assistantMessage: ClientMessage = {
+      role: "assistant",
+      content: data.content,
+      conversationId: currentConversationId || undefined,
+    };
+
+    addMessage(assistantMessage);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    handleSendMessage(suggestion);
+  };
+
+  const handleContactSubmit = async (contactData: ContactFormData) => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contactData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Contact information saved successfully!",
+        });
+      } else {
+        throw new Error("Failed to save contact information");
+      }
+    } catch (error) {
+      console.error("Error saving contact:", error);
       toast({
         title: "Error",
-        description: `Failed to clear conversation: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        variant: "destructive"
+        description: "Failed to save contact information. Please try again.",
+        variant: "destructive",
       });
     }
   };
-  
-  // Toggle sidebar
-  const toggleSidebar = () => {
-    setSidebarOpen(prev => !prev);
-  };
-  
-  // Handle creating a new conversation
-  const handleNewChat = async () => {
-    await createNewConversation();
-  };
-  
-  // Safe empty array for when conversations are not yet loaded
-  const safeConversations: Conversation[] = Array.isArray(conversations) ? conversations : [];
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (currentEventSource) {
+        currentEventSource.close();
+        setCurrentEventSource(null);
+      }
+    };
+  }, [currentEventSource]);
+
+  // Show loading state while initializing
+  if (!isComponentReady || !currentConversationId) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+          <span className="text-gray-400 text-sm">Loading chat...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)]">
+    <div className="flex flex-col h-auto mx-auto" style={{ maxWidth: "1200px" }}>
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        {sidebarOpen && (
-          <Sidebar 
-            isOpen={sidebarOpen}
-            conversations={safeConversations}
-            currentConversationId={currentConversationId}
-            onNewChat={handleNewChat}
-            onSelectConversation={setCurrentConversationId}
-          />
-        )}
-
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
-          {/* Unified scrollable container */}
-          <div className="flex-1 overflow-y-auto scrollbar-hide">
-            {/* User Image Banner - only shown when no messages */}
-            {messages.length === 0 && (
-              <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
-                <img 
-                  src="https://t3.ftcdn.net/jpg/02/22/85/16/360_F_222851624_jfoMGbJxwRi5AWGdPgXKSABMnzCQo9RN.jpg" 
-                  alt="Wine bottle collection" 
-                  className="w-full h-full object-cover"
-                />
+        <main
+          className="flex-1 flex flex-col bg-background overflow-hidden"
+          style={{
+            backgroundColor: "#0A0A0A !important",
+            backgroundImage: "none !important",
+          }}
+        >
+          {/* Scrollable container */}
+          <div
+            ref={chatContainerRef}
+            className="flex-1 overflow-y-auto scrollbar-hide"
+          >
+            {/* Conversation Content */}
+            <div>
+              {/* Chat Title */}
+              <div style={{ marginBottom: "24px" }}>
+                <h1
+                  style={{
+                    color: "white",
+                    textAlign: "left",
+                    margin: "0",
+                    ...typography.h1,
+                  }}
+                >
+                  Chat
+                </h1>
               </div>
-            )}
-            
-            {/* Chat Messages Content */}
-            <div className="px-4 py-4 space-y-4">
-              {messages.length === 0 ? (
-                <div 
-                  ref={welcomeSheetRef}
-                  className="mx-auto bg-white rounded-lg p-5 shadow-sm max-w-lg"
-                  style={{ 
-                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
-                  }}>
-                  {/* Pull handle indicator */}
-                  <div className="relative">
-                    <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 mt-0"></div>
-                  </div>
-                  
-                  <p className="text-xl font-medium mb-3 text-purple-800">
-                    Hi! I'm your personal sommelier.
-                  </p>
-                  <p className="text-gray-700 mb-4">
-                    I see you've ordered Cabernet Sauvignon. You've got excellent taste! Would you like me to tell you a short story about this wine?
-                  </p>
-                  
-                  <div className="h-16"></div> {/* Small spacer at the bottom */}
-                </div>
-              ) : (
-                <>
-                  {messages.map((message, index) => (
-                    <ChatMessage 
-                      key={message.id} 
-                      message={message} 
-                    />
-                  ))}
-                </>
-              )}
-
-              {/* Typing Indicator */}
-              {isTyping && (
-                <div className="mx-auto max-w-2xl">
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <div className="text-gray-700">
-                      <div className="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Input Area */}
-          <div className="bg-white p-3 shadow-lg border-t border-gray-100 z-50">
-            {/* Suggestion chips */}
-            <div className="scrollbar-hide overflow-x-auto mb-3 pb-1 -mt-1 flex gap-2 w-full">
-              <button 
-                onClick={() => handleSendMessage("Tasting notes")}
-                className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
-              >
-                Tasting notes
-              </button>
-              <button 
-                onClick={() => handleSendMessage("Simple recipes for this wine")}
-                className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
-              >
-                Simple recipes
-              </button>
-              <button 
-                onClick={() => handleSendMessage("Where is this wine from?")}
-                className="whitespace-nowrap py-2 px-4 bg-transparent text-[#6A53E7] rounded-full border border-[#6A53E7] text-sm font-medium hover:bg-purple-50 transition-colors"
-              >
-                Where it's from
-              </button>
-            </div>
-            
-            <div className="relative flex items-center gap-2">
-              <ChatInput 
-                onSendMessage={handleSendMessage} 
-                isProcessing={isTyping}
+              
+              <ChatMessageList
+                messages={messages as Message[]}
+                isTyping={isTyping}
+                formatContent={formatContent}
               />
             </div>
+
+            {/* Extra space at the bottom */}
+            <div style={{ height: "80px" }}></div>
           </div>
+
+          <ChatInputArea
+            showBuyButton={showBuyButton}
+            showChatInput={showChatInput}
+            currentWine={currentWine}
+            onSendMessage={handleSendMessage}
+            isTyping={isTyping}
+            onKeyboardFocus={setIsKeyboardFocused}
+            onSuggestionClick={handleSuggestionClick}
+          />
         </main>
+
+        <ScrollToBottomButton
+          visible={showScrollToBottom}
+          onClick={scrollToBottom}
+        />
       </div>
+
+      <ContactBottomSheet
+        isOpen={showContactSheet}
+        onClose={() => setShowContactSheet(false)}
+        onSubmit={handleContactSubmit}
+      />
     </div>
   );
-};
+}
 
-export default ChatInterface;
+export type { SelectedWine };

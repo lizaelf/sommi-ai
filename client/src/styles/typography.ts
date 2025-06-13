@@ -13,16 +13,8 @@
  */
 
 const typography = {
-  // H1 Heading styles using Lora font (section header standard)
+  // H1 Heading styles using Lora font
   h1: {
-    fontSize: "32px",
-    lineHeight: "40px",
-    fontFamily: "Lora, serif",
-    fontWeight: "700", // Bold weight
-  },
-  
-  // H1 Alternative (smaller heading)
-  h1Small: {
     fontSize: "24px",
     lineHeight: "32px",
     fontFamily: "Lora, serif",
