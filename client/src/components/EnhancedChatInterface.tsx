@@ -741,6 +741,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           >
             {/* Conversation Content */}
             <div className="px-6 pt-6">
+              {/* Chat Title */}
+              <div style={{ marginBottom: "24px" }}>
+                <h1
+                  style={{
+                    color: "white",
+                    fontFamily: "Lora, serif",
+                    fontSize: "24px",
+                    fontWeight: "700",
+                    lineHeight: "1.2",
+                    textAlign: "center",
+                    margin: "0",
+                  }}
+                >
+                  Chat with your sommelier
+                </h1>
+              </div>
+              
               <div id="conversation" className="space-y-4 mb-96">
                 {messages.length > 0 ? (
                   <>
