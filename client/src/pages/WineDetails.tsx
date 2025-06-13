@@ -261,52 +261,25 @@ export default function WineDetails() {
             Want more?
           </h2>
           
-          {wine?.buyAgainLink ? (
-            <a 
-              href={wine.buyAgainLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "none" }}
-            >
-              <button style={{
-                width: "100%",
-                backgroundColor: "white",
-                color: "black",
-                border: "none",
-                borderRadius: "32px",
-                padding: "16px 24px",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#f5f5f5";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "white";
-              }}
-              >
-                Buy again
-              </button>
-            </a>
-          ) : (
-            <div style={{
-              width: "100%",
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              color: "white",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: "32px",
-              padding: "16px 24px",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              textAlign: "center"
-            }}>
-              Explore our collection
-            </div>
-          )}
+          {(() => {
+            console.log("buyAgainLink:", wine?.buyAgainLink);
+            console.log("Full wine data:", wine);
+            return null;
+          })()}
+          
+          <div style={{ 
+            width: "100%",
+            backgroundColor: "red", // Just for visibility test
+            color: "white",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            borderRadius: "32px",
+            padding: "16px 24px",
+            fontSize: "16px",
+            fontWeight: 500,
+            textAlign: "center"
+          }}>
+            I am the Want More section
+          </div>
         </div>
 
         {/* We recommend Section */}
