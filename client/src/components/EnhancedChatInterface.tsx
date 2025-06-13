@@ -29,6 +29,7 @@ interface SelectedWine {
     ws: number;
     abv: number;
   };
+  buyAgainLink?: string;
 }
 
 interface EnhancedChatInterfaceProps {
@@ -37,7 +38,7 @@ interface EnhancedChatInterfaceProps {
   onReady?: () => void;
 }
 
-export function EnhancedChatInterface({
+function EnhancedChatInterface({
   showBuyButton = false,
   selectedWine,
   onReady,
@@ -66,14 +67,14 @@ export function EnhancedChatInterface({
   });
 
   useEffect(() => {
-    if (conversations && conversations.length > 0) {
+    if (conversations && Array.isArray(conversations) && conversations.length > 0) {
       const mostRecent = conversations[0];
       setCurrentConversationId(mostRecent.id);
     }
   }, [conversations]);
 
   useEffect(() => {
-    if (conversationMessages) {
+    if (conversationMessages && Array.isArray(conversationMessages)) {
       setMessages(conversationMessages);
     }
   }, [conversationMessages]);
@@ -120,7 +121,7 @@ export function EnhancedChatInterface({
         content,
         role: "user",
         conversationId: currentConversationId || 0,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
       };
 
       setMessages(prev => [...prev, tempUserMessage]);
@@ -148,7 +149,7 @@ export function EnhancedChatInterface({
         content: data.content,
         role: "assistant",
         conversationId: currentConversationId || 0,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -191,7 +192,7 @@ export function EnhancedChatInterface({
     }
   }, [onReady]);
 
-  if (!currentConversationId && conversations?.length === 0) {
+  if (!currentConversationId && (!conversations || !Array.isArray(conversations) || conversations.length === 0)) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-gray-400">Loading conversation...</p>
@@ -244,8 +245,8 @@ export function EnhancedChatInterface({
           >
             {showBuyButton && showChatInput && (
               <Button
-                variant="default"
-                onClick={() => window.open(currentWine?.buyAgainLink || currentWine?.buyAgainLink)}
+                variant="primary"
+                onClick={() => window.open(currentWine?.buyAgainLink)}
                 className="w-full mb-4 bg-white text-black hover:bg-gray-200"
               >
                 Buy Again
@@ -277,11 +278,13 @@ export function EnhancedChatInterface({
 
             <ChatInput
               onSendMessage={handleSendMessage}
+              isProcessing={isTyping}
               onFocus={() => setIsKeyboardFocused(true)}
               onBlur={() => setIsKeyboardFocused(false)}
             />
             <VoiceAssistant
               onSendMessage={handleSendMessage}
+              isProcessing={isTyping}
             />
           </div>
         </main>
@@ -299,3 +302,5 @@ export function EnhancedChatInterface({
     </div>
   );
 }
+
+export default EnhancedChatInterface;
