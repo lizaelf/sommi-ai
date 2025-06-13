@@ -3,7 +3,8 @@ import { ArrowLeft, MoreHorizontal, Trash2, X } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { createPortal } from "react-dom";
 import ChatInput from "./ChatInput";
-// Remove unused imports
+import Button from "./Button";
+import WineBottleImage from "./WineBottleImage";
 import { saveMessageToDB, getChatHistory } from "../lib/indexedDB";
 
 // Typography system
@@ -113,9 +114,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country>(US_COUNTRY);
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    company: "",
     phone: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -210,11 +211,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -223,8 +223,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     
     const newErrors: { [key: string]: string } = {};
     
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
     }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -244,9 +247,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          fullName: formData.fullName,
+          fullName: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
-          company: formData.company,
           phone: formData.phone ? `${selectedCountry.dial_code}${formData.phone}` : "",
         }),
       });
@@ -353,26 +355,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     >
                       <div
                         style={{
-                          maxWidth: "85%",
-                          padding: "16px 20px",
-                          borderRadius: "20px",
-                          background: message.role === "user" 
-                            ? "linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3))"
-                            : "linear-gradient(135deg, rgba(55, 65, 81, 0.5), rgba(75, 85, 99, 0.5))",
-                          border: message.role === "user"
-                            ? "1px solid rgba(59, 130, 246, 0.4)"
-                            : "1px solid rgba(75, 85, 99, 0.4)",
-                          backdropFilter: "blur(20px)",
-                          WebkitBackdropFilter: "blur(20px)",
+                          maxWidth: "80%",
+                          padding: "12px 16px",
+                          borderRadius: "16px",
+                          backgroundColor: message.role === "user" ? "#333" : "#1a1a1a",
                           color: "white",
                           ...typography.body,
                           wordWrap: "break-word",
-                          boxShadow: message.role === "user"
-                            ? "0 4px 15px rgba(59, 130, 246, 0.2)"
-                            : "0 4px 15px rgba(0, 0, 0, 0.1)",
                         }}
                       >
-                        {formatContent(message.content)}
+                        {message.content}
                       </div>
                     </div>
                   ))
@@ -402,17 +394,26 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               left: 0,
               right: 0,
               borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-              backgroundColor: "#0A0A0A",
             }}
           >
             {/* Show chat input only if showBuyButton is false or showChatInput is true */}
             {(!showBuyButton || showChatInput) && (
-              <ChatInput
-                onSendMessage={handleSendMessage}
-                isProcessing={isTyping}
-                onFocus={() => setIsKeyboardFocused(true)}
-                onBlur={() => setIsKeyboardFocused(false)}
-              />
+              <>
+                {currentWine ? (
+                  <ChatInput
+                    currentWine={currentWine}
+                    onSendMessage={handleSendMessage}
+                    disabled={isTyping}
+                    onFocus={() => setIsKeyboardFocused(true)}
+                    onBlur={() => setIsKeyboardFocused(false)}
+                  />
+                ) : (
+                  <ChatInput
+                    onSendMessage={handleSendMessage}
+                    disabled={isTyping}
+                  />
+                )}
+              </>
             )}
           </div>
         </main>
@@ -603,6 +604,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       type="tel"
                       name="phone"
                       value={formData.phone}
+                      placeholder={selectedCountry.placeholder}
                       onChange={handleInputChange}
                       style={{
                         flex: 1,
@@ -628,7 +630,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   }}
                 >
                   <button
-                    type="submit"
+                    onClick={handleSubmit}
                     className="save-button"
                     style={{
                       width: "100%",

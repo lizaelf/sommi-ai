@@ -124,6 +124,57 @@ export default function WineDetails() {
       <div className="w-full overflow-y-visible">
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/">
+              <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                <ArrowLeft size={24} />
+              </button>
+            </Link>
+            
+            <div className="relative">
+              <button 
+                onClick={() => setShowActions(!showActions)}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <MoreHorizontal size={24} />
+              </button>
+              
+              {showActions && (
+                <div className="absolute right-0 top-full mt-2 bg-white/10 backdrop-blur-sm rounded-lg p-2 min-w-[120px] z-10">
+                  <button 
+                    onClick={async () => {
+                      console.log('Clear chat history action');
+                      setShowActions(false);
+                      
+                      try {
+                        // Clear chat history for this wine
+                        const response = await fetch('/api/conversations', {
+                          method: 'DELETE',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          }
+                        });
+                        
+                        if (response.ok) {
+                          console.log('Chat history cleared successfully');
+                          // Trigger a refresh of the chat interface
+                          window.dispatchEvent(new CustomEvent('chat-history-cleared'));
+                        } else {
+                          console.error('Failed to clear chat history');
+                        }
+                      } catch (error) {
+                        console.error('Error clearing chat history:', error);
+                      }
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-white/10 rounded-md transition-colors"
+                  >
+                    <Trash2 size={16} />
+                    Clear Chat
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="text-center mb-8">
             <div className="relative mx-auto mb-6" style={{ width: "280px", height: "400px" }}>
@@ -229,18 +280,12 @@ export default function WineDetails() {
               rel="noopener noreferrer"
               className="block"
             >
-              <button 
-                className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100"
-                style={{ fontFamily: "Inter, sans-serif" }}
-              >
+              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-base font-medium cursor-pointer transition-colors hover:bg-gray-100">
                 Buy again
               </button>
             </a>
           ) : (
-            <div 
-              className="w-full bg-white/15 text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium text-center"
-              style={{ fontFamily: "Inter, sans-serif" }}
-            >
+            <div className="w-full bg-white/15 text-white border border-white/30 rounded-full py-4 px-6 text-base font-medium text-center">
               Explore our collection
             </div>
           )}
@@ -254,112 +299,48 @@ export default function WineDetails() {
           
           <div className="flex gap-4 overflow-x-auto pb-4">
             {/* Wine Recommendation 1 - Estate Chardonnay */}
-            <div 
-              className="flex-none w-56 border rounded-2xl p-4"
-              style={{ 
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
-                borderColor: "rgba(255, 255, 255, 0.12)",
-                borderRadius: "16px"
-              }}
-            >
+            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
               <div 
-                className="w-full h-44 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
                 style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
                   backgroundImage: "url('/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1748949884152.jpeg')"
                 }}
               />
-              <h3 
-                className="text-lg text-white mb-4 text-center leading-tight"
-                style={{ 
-                  fontFamily: "Lora, serif",
-                  fontWeight: "600"
-                }}
-              >
+              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
                 2022 Estate Chardonnay
               </h3>
               <div className="flex gap-2 justify-center flex-wrap">
-                <span 
-                  className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm"
-                  style={{ 
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: "600"
-                  }}
-                >
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
                   95 <span className="opacity-70">VN</span>
                 </span>
-                <span 
-                  className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm"
-                  style={{ 
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: "600"
-                  }}
-                >
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
                   93 <span className="opacity-70">JD</span>
                 </span>
-                <span 
-                  className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm"
-                  style={{ 
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: "600"
-                  }}
-                >
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
                   93 <span className="opacity-70">WS</span>
                 </span>
               </div>
             </div>
 
             {/* Wine Recommendation 2 - Monte Bello */}
-            <div 
-              className="flex-none w-56 border rounded-2xl p-4"
-              style={{ 
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
-                borderColor: "rgba(255, 255, 255, 0.12)",
-                borderRadius: "16px"
-              }}
-            >
+            <div className="flex-none w-56 bg-white/8 border border-white/12 rounded-2xl p-4">
               <div 
-                className="w-full h-44 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
+                className="w-full h-44 bg-white/5 rounded-xl mb-4 flex items-center justify-center bg-cover bg-center bg-no-repeat"
                 style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
                   backgroundImage: "url('/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png')"
                 }}
               />
-              <h3 
-                className="text-lg text-white mb-4 text-center leading-tight"
-                style={{ 
-                  fontFamily: "Lora, serif",
-                  fontWeight: "600"
-                }}
-              >
+              <h3 className="text-lg font-semibold text-white mb-4 text-center leading-tight">
                 2021 Monte Bello Cabernet Sauvignon
               </h3>
               <div className="flex gap-2 justify-center flex-wrap">
-                <span 
-                  className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm"
-                  style={{ 
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: "600"
-                  }}
-                >
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
                   95 <span className="opacity-70">VN</span>
                 </span>
-                <span 
-                  className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm"
-                  style={{ 
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: "600"
-                  }}
-                >
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
                   93 <span className="opacity-70">JD</span>
                 </span>
-                <span 
-                  className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm"
-                  style={{ 
-                    fontFamily: "Inter, sans-serif",
-                    fontWeight: "600"
-                  }}
-                >
+                <span className="bg-white/15 text-white px-3 py-1.5 rounded-full text-sm font-semibold">
                   93 <span className="opacity-70">WS</span>
                 </span>
               </div>
