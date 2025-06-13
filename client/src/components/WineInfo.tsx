@@ -79,7 +79,6 @@ export const WineInfo: React.FC<WineInfoProps> = ({ wine }) => {
         style={{
           position: "relative",
           zIndex: 2,
-          padding: "0 20px",
           marginBottom: "20px",
         }}
       />
