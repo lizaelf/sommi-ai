@@ -723,8 +723,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
   return (
     <div
-      className="flex flex-col h-auto mx-auto"
-      style={{ maxWidth: "1200px" }}
+      className="flex flex-col h-auto"
+      style={{ width: "100%" }}
     >
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
@@ -734,6 +734,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           style={{
             backgroundColor: "#0A0A0A !important",
             backgroundImage: "none !important",
+            width: "100%",
           }}
         >
           {/* Scrollable container */}
@@ -811,7 +812,29 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       </div>
                     ))}
                   </>
-                ) : null}
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "200px",
+                      width: "100%",
+                    }}
+                  >
+                    <p
+                      style={{
+                        color: "rgba(255, 255, 255, 0.6)",
+                        fontFamily: "Inter, system-ui, sans-serif",
+                        fontSize: "16px",
+                        textAlign: "center",
+                        margin: "0",
+                      }}
+                    >
+                      Ask a question to see chat history
+                    </p>
+                  </div>
+                )}
 
                 {/* Typing Indicator */}
                 {isTyping && (
