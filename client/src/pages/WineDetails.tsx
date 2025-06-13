@@ -1186,7 +1186,7 @@ export default function WineDetails() {
         </div>
 
         {/* Chat Interface */}
-        <div className="mt-0 pb-10">
+        <div className="mt-0 pb-10" style={{ backgroundColor: "transparent" }}>
           <div
             className="flex flex-col h-auto"
             style={{ width: "100%" }}
