@@ -120,10 +120,7 @@ export default function WineDetails() {
       <AppHeader />
       <HeaderSpacer />
       
-      {/* TEST MARKER AT TOP - This should be visible */}
-      <div className="w-full bg-red-600 p-4 text-center text-white text-2xl font-bold">
-        🔴 TOP MARKER - IF YOU SEE THIS, RENDERING WORKS 🔴
-      </div>
+
       
       {/* Main Content Container - Completely removed height constraints */}
       <div className="w-full" style={{ height: 'auto', overflow: 'visible' }}>
@@ -273,11 +270,11 @@ export default function WineDetails() {
         </div>
 
         {/* Want more? and We recommend sections */}
-        <div className="px-6 bg-yellow-400 border-8 border-red-500">
+        <div className="px-6 py-8">
           {/* Want more? Section */}
-          <div className="pb-6 mt-8 bg-green-400 p-4">
-            <h2 className="text-3xl font-normal mb-6 text-black bg-white p-4" style={{ fontFamily: "Lora, serif" }}>
-              WANT MORE SECTION HERE
+          <div className="pb-8">
+            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+              Want more?
             </h2>
             
             {wine?.buyAgainLink ? (
@@ -299,9 +296,9 @@ export default function WineDetails() {
           </div>
 
           {/* We recommend Section */}
-          <div className="pb-6 mt-8 bg-blue-400 p-4">
-            <h2 className="text-3xl font-normal mb-6 text-black bg-white p-4" style={{ fontFamily: "Lora, serif" }}>
-              WE RECOMMEND SECTION HERE
+          <div className="pb-6">
+            <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+              We recommend
             </h2>
             
             <div className="flex gap-4 overflow-x-auto pb-4">
@@ -371,10 +368,7 @@ export default function WineDetails() {
         </div>
       </div>
 
-      {/* TEST MARKER OUTSIDE CONTAINER */}
-      <div className="w-full bg-purple-600 p-8 text-center text-white text-3xl font-bold">
-        🟣 OUTSIDE CONTAINER MARKER 🟣
-      </div>
+
       
       {/* QR Scan Modal */}
       <QRScanModal
