@@ -12,7 +12,7 @@ interface WineRatingProps {
   gap?: number;
   className?: string;
   style?: React.CSSProperties;
-  align?: "left" | "center";
+  align?: "center" | "left";
 }
 
 export default function WineRating({
@@ -33,6 +33,7 @@ export default function WineRating({
             alignItems: "center",
             gap: `${gap / 2}px`,
             flexWrap: "wrap" as const,
+            justifyContent: align === "left" ? "flex-start" : "center",
           },
           ratingItem: {
             color: "white",
@@ -58,6 +59,7 @@ export default function WineRating({
             alignItems: "center",
             gap: `${gap / 4}px`,
             flexWrap: "wrap" as const,
+            justifyContent: align === "left" ? "flex-start" : "center",
           },
           ratingItem: {
             color: "white",
