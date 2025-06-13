@@ -16,9 +16,10 @@ export const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({
   return (
     <AppHeader
       rightContent={
-        <IconButton onClick={onToggleActions}>
-          <MoreHorizontal size={20} />
-        </IconButton>
+        <IconButton 
+          icon={MoreHorizontal} 
+          onClick={onToggleActions} 
+        />
       }
     />
   );

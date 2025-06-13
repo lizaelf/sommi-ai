@@ -164,7 +164,9 @@ export const WineChatSection: React.FC<WineChatSectionProps> = ({
           }}
         >
           <ChatInput
-            onSendMessage={onSendMessage}
+            onSendMessage={async (message: string) => {
+              await onSendMessage(message);
+            }}
             isProcessing={isTyping}
             onFocus={() => onKeyboardFocus(true)}
             onBlur={() => onKeyboardFocus(false)}

@@ -1,0 +1,75 @@
+import React from "react";
+import WineRating from "@/components/WineRating";
+import typography from "@/styles/typography";
+
+interface Wine {
+  id: number;
+  name: string;
+  year: number;
+  bottles: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+  buyAgainLink?: string;
+  qrCode?: string;
+  qrLink?: string;
+}
+
+interface WineCardProps {
+  wine: Wine;
+  onClick: (wineId: number) => void;
+}
+
+export const WineCard: React.FC<WineCardProps> = ({ wine, onClick }) => {
+  return (
+    <div
+      className="rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5"
+      style={{
+        border: "1px solid #494949",
+      }}
+      onClick={() => onClick(wine.id)}
+    >
+      <div className="flex items-start gap-4">
+        {/* Wine Bottle Image */}
+        <div className="flex items-center justify-center">
+          <img
+            src={wine.image}
+            alt="Wine Bottle"
+            style={{
+              height: "170px",
+              width: "auto",
+            }}
+          />
+        </div>
+
+        {/* Wine Info */}
+        <div className="flex-1">
+          <h4
+            className="font-medium mb-1"
+            style={{
+              ...typography.h2,
+            }}
+          >
+            {wine.year} {wine.name}
+          </h4>
+          <p
+            className="text-white/60 text-sm mb-3"
+            style={{
+              ...typography.body1R,
+              color: "#999999",
+            }}
+          >
+            {wine.bottles} bottle{wine.bottles !== 1 ? "s" : ""}
+          </p>
+
+          {/* Wine Ratings */}
+          <WineRating ratings={wine.ratings} variant="compact" />
+        </div>
+      </div>
+    </div>
+  );
+};
