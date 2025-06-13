@@ -277,7 +277,7 @@ export default function WineDetails() {
         <div
           style={{
             width: "100%",
-            padding: "0 20px",
+            padding: "0",
             marginTop: "48px",
             marginBottom: "20px",
           }}
@@ -286,6 +286,10 @@ export default function WineDetails() {
             style={{
               color: "white",
               marginBottom: "16px",
+              paddingLeft: "0",
+              paddingRight: "0",
+              marginLeft: "0",
+              marginRight: "0",
               ...typography.body,
             }}
           >
@@ -297,7 +301,7 @@ export default function WineDetails() {
         <div
           style={{
             width: "100%",
-            padding: "0 20px",
+            padding: "0",
             marginBottom: "20px",
           }}
         >
@@ -307,6 +311,10 @@ export default function WineDetails() {
               color: "white",
               marginBottom: "24px",
               textAlign: "left",
+              paddingLeft: "0",
+              paddingRight: "0",
+              marginLeft: "0",
+              marginRight: "0",
             }}
           >
             Food pairing
@@ -677,7 +685,7 @@ export default function WineDetails() {
         <div
           style={{
             width: "100%",
-            padding: "0 20px",
+            padding: "0",
             marginBottom: "20px",
           }}
         >
@@ -687,6 +695,10 @@ export default function WineDetails() {
               color: "white",
               marginBottom: "24px",
               textAlign: "left",
+              paddingLeft: "0",
+              paddingRight: "0",
+              marginLeft: "0",
+              marginRight: "0",
             }}
           >
             Want more?
@@ -714,7 +726,7 @@ export default function WineDetails() {
         <div
           style={{
             width: "100%",
-            padding: "0 20px",
+            padding: "0",
             marginBottom: "20px",
           }}
         >
