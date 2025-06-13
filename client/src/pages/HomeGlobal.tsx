@@ -31,16 +31,8 @@ const HomeGlobal = () => {
   const [wines, setWines] = useState<Wine[]>([]);
 
   const handleWineClick = (wineId: number) => {
-    if (wineId === 1) {
-      setLocation('/');
-    } else {
-      // Store wine data in localStorage for the Scanned page to use
-      const selectedWine = wines.find(w => w.id === wineId);
-      if (selectedWine) {
-        localStorage.setItem('selectedWine', JSON.stringify(selectedWine));
-      }
-      setLocation('/');
-    }
+    // Navigate to wine details page for any wine
+    setLocation(`/wine-details/${wineId}`);
   };
 
   useEffect(() => {

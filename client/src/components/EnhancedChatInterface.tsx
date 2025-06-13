@@ -1764,7 +1764,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         onClick={() => {
                           // Navigate to wine details page
                           if (wine.id) {
-                            setLocation(`/?wine=${wine.id}`);
+                            setLocation(`/wine-details/${wine.id}`);
                           }
                         }}
                       >
