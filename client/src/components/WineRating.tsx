@@ -25,6 +25,13 @@ export default function WineRating({
   align = "center",
   hideAbv = false,
 }: WineRatingProps) {
+  // Check if there are any ratings to display
+  const hasRatings = ratings.vn || ratings.jd || ratings.ws || (ratings.abv && !hideAbv);
+  
+  // If no ratings to display, return null
+  if (!hasRatings) {
+    return null;
+  }
   // Define styles based on variant
   const getVariantStyles = () => {
     switch (variant) {
