@@ -48,8 +48,6 @@ const WineBottleImage: React.FC<WineBottleImageProps> = ({
         style={{
           height: "280px",
           zIndex: 2,
-          // Add a subtle drop shadow instead of blur
-          filter: "drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2))",
         }}
         onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
         onError={(e) => {
