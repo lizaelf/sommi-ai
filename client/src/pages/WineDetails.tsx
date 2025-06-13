@@ -47,7 +47,7 @@ export default function WineDetails() {
       const wineIdFromQuery = urlParams.get('wine');
       const wineId = id || wineIdFromQuery || '1'; // Default to wine ID 1 if none provided
       
-      console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId, location });
+      console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId });
       
       if (wineId) {
         const wineData = DataSyncManager.getWineById(parseInt(wineId));
@@ -70,8 +70,6 @@ export default function WineDetails() {
           };
           setWine(transformedWine);
           console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
-          
-          // Wine data loaded successfully
         } else if (mounted) {
           console.log('WineDetails: Wine not found for ID:', wineId);
         }
@@ -83,7 +81,7 @@ export default function WineDetails() {
     return () => {
       mounted = false;
     };
-  }, [id, location]);
+  }, [id]); // Remove 'location' dependency to prevent unnecessary re-renders
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
