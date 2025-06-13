@@ -12,6 +12,7 @@ interface WineRatingProps {
   gap?: number;
   className?: string;
   style?: React.CSSProperties;
+  align?: "left" | "center";
 }
 
 export default function WineRating({
@@ -20,6 +21,7 @@ export default function WineRating({
   gap = 20,
   className = "",
   style = {},
+  align = "center",
 }: WineRatingProps) {
   // Define styles based on variant
   const getVariantStyles = () => {
@@ -81,7 +83,7 @@ export default function WineRating({
             alignItems: "center",
             gap: `${gap}px`,
             flexWrap: "wrap" as const,
-            justifyContent: "center",
+            justifyContent: align === "left" ? "flex-start" : "center",
           },
           ratingItem: {
             color: "white",

@@ -76,6 +76,7 @@ export const WineInfo: React.FC<WineInfoProps> = ({ wine }) => {
       {/* Wine ratings section */}
       <WineRating
         ratings={wine.ratings}
+        align="left"
         style={{
           position: "relative",
           zIndex: 2,
