@@ -26,7 +26,7 @@ export default function WineRating({
   hideAbv = false,
 }: WineRatingProps) {
   // Check if there are any ratings to display
-  const hasRatings = ratings.vn || ratings.jd || ratings.ws || (ratings.abv && !hideAbv);
+  const hasRatings = ratings && (ratings.vn || ratings.jd || ratings.ws || (ratings.abv && !hideAbv));
   
   // If no ratings to display, return null
   if (!hasRatings) {

@@ -499,7 +499,7 @@ export default function WineDetails() {
           }}
         >
           <WineRating 
-            wine={wine} 
+            ratings={wine?.ratings || {}} 
             variant="default" 
           />
         </div>
