@@ -489,6 +489,21 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [currentWine, messages, clearConversation]);
 
+  // Listen for chat history clearing events
+  useEffect(() => {
+    const handleChatHistoryCleared = () => {
+      console.log('Chat history cleared event received');
+      clearConversation();
+      createNewConversation();
+    };
+
+    window.addEventListener('chat-history-cleared', handleChatHistoryCleared);
+    
+    return () => {
+      window.removeEventListener('chat-history-cleared', handleChatHistoryCleared);
+    };
+  }, [clearConversation, createNewConversation]);
+
   // Basic states
   const [isTyping, setIsTyping] = useState(false);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);

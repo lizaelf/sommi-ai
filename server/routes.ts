@@ -406,6 +406,20 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Clear all conversations (chat history)
+  app.delete("/api/conversations", async (_req, res) => {
+    try {
+      const conversations = await storage.getAllConversations();
+      for (const conversation of conversations) {
+        await storage.deleteConversation(conversation.id);
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error clearing all conversations:", error);
+      res.status(500).json({ message: "Failed to clear chat history" });
+    }
+  });
+
   // Get messages for a conversation
   app.get("/api/conversations/:id/messages", async (req, res) => {
     try {
