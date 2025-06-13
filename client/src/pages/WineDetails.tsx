@@ -150,7 +150,7 @@ export default function WineDetails() {
 
           {/* Wine Image */}
           <div className="text-center mb-6">
-            <div className="relative inline-block bg-white rounded-lg p-4">
+            <div className="relative inline-block bg-gray-800 rounded-lg p-4">
               <img
                 ref={imageRef}
                 src={wine.image}
