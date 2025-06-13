@@ -33,6 +33,7 @@ export default function WineDetails() {
   const isQRScan = new URLSearchParams(window.location.search).has('wine');
   const isScannedPage = location === '/scanned';
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -67,8 +68,11 @@ export default function WineDetails() {
         };
         setWine(transformedWine);
         console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
+        // Add a small delay to ensure smooth rendering
+        setTimeout(() => setIsLoading(false), 100);
       } else {
         console.log('WineDetails: Wine not found for ID:', wineId);
+        setIsLoading(false);
       }
     }
   }, [id, wine, location]);
@@ -98,17 +102,25 @@ export default function WineDetails() {
     console.log('Wine image loaded successfully:', wine?.image);
   };
 
-  if (!wine) {
+  // Show loading screen to prevent UI flash
+  if (isLoading || !wine) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
-          <Link href="/">
-            <button className="bg-white text-black px-6 py-2 rounded-full">
-              Return Home
-            </button>
-          </Link>
-        </div>
+        {isLoading ? (
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-white/70">Loading wine details...</p>
+          </div>
+        ) : (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
+            <Link href="/">
+              <button className="bg-white text-black px-6 py-2 rounded-full">
+                Return Home
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
     );
   }
