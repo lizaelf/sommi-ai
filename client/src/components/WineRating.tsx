@@ -166,7 +166,16 @@ export default function WineRating({
         </span>
       )}
 
-
+      {ratings.abv && (
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
+            {variant === "compact" || variant === "minimal"
+              ? `ABV: ${ratings.abv}%`
+              : `${ratings.abv}%`}
+          </span>
+          {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
+        </span>
+      )}
 
     </div>
   );
