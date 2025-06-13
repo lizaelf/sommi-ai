@@ -1352,12 +1352,6 @@ export default function WineDetails() {
                         isProcessing={isTyping}
                         onFocus={() => setIsKeyboardFocused(true)}
                         onBlur={() => setIsKeyboardFocused(false)}
-                        voiceButtonComponent={
-                          <VoiceAssistant
-                            onSendMessage={handleSendMessage}
-                            isProcessing={isTyping}
-                          />
-                        }
                       />
                     </>
                   </div>
