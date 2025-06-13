@@ -33,6 +33,8 @@ export default function WineDetails() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
   const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
+  const [allComponentsReady, setAllComponentsReady] = useState(false);
+  const [chatReady, setChatReady] = useState(false);
   const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isQRScan = urlParams.has('wine');
   const isScannedPage = location === '/scanned';
@@ -120,27 +122,32 @@ export default function WineDetails() {
     };
   }, []);
 
+  // Track when all components are ready
+  useEffect(() => {
+    if (wine && loadingState === 'loaded') {
+      // Add a small delay to ensure all components are initialized
+      const timer = setTimeout(() => {
+        setAllComponentsReady(true);
+      }, 50);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [wine, loadingState]);
+
+  // Track when chat interface is ready
+  useEffect(() => {
+    if (wine) {
+      // Simulate chat interface initialization
+      setChatReady(true);
+    }
+  }, [wine]);
+
   const handleImageLoad = () => {
     setImageLoaded(true);
     console.log('Wine image loaded successfully:', wine?.image);
   };
 
-  // Memoized chat interface to prevent unnecessary re-renders
-  const MemoizedChatInterface = useMemo(() => {
-    if (!wine) return null;
-    return (
-      <EnhancedChatInterface 
-        showBuyButton={true} 
-        selectedWine={{
-          id: wine.id,
-          name: wine.name,
-          image: wine.image,
-          bottles: wine.bottles,
-          ratings: wine.ratings
-        }} 
-      />
-    );
-  }, [wine]);
+
 
   // Loading component
   const LoadingComponent = () => (
@@ -176,8 +183,8 @@ export default function WineDetails() {
     return <ErrorComponent />;
   }
 
-  // Ensure wine is loaded before rendering
-  if (!wine) {
+  // Update loading condition to use component readiness states
+  if (loadingState === 'loading' || !wine || !chatReady || !allComponentsReady) {
     return <LoadingComponent />;
   }
 
@@ -325,7 +332,16 @@ export default function WineDetails() {
 
         {/* Chat Interface */}
         <div className="mt-0 pb-10">
-          {MemoizedChatInterface}
+          <EnhancedChatInterface 
+            showBuyButton={true} 
+            selectedWine={wine ? {
+              id: wine.id,
+              name: wine.name,
+              image: wine.image,
+              bottles: wine.bottles,
+              ratings: wine.ratings
+            } : null} 
+          />
         </div>
       </div>
 
