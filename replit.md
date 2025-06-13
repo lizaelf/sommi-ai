@@ -114,6 +114,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - Applied consistent typography to food pairing sections, wine recommendations, and error states
 - Updated chat interface title from "Chat with your sommelier" to "Chat" with left alignment
 - Removed excessive left and right paddings from chat interface while maintaining proper message spacing
+- Made header completely transparent by default (no background or blur) with smooth transitions when scrolling
 - Implemented comprehensive typography system using Lora serif for headings and Inter for body text
 - All text elements now follow established design library standards for visual consistency
 

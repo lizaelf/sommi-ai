@@ -70,12 +70,12 @@ export function AppHeader({
   }, []);
 
   const headerStyles = {
-    backgroundColor: scrolled ? "rgba(10, 10, 10, 0.85)" : "rgba(10, 10, 10, 0)",
-    backdropFilter: "blur(8px)",
-    WebkitBackdropFilter: "blur(8px)",
+    backgroundColor: scrolled ? "rgba(10, 10, 10, 0.85)" : "transparent",
+    backdropFilter: scrolled ? "blur(8px)" : "none",
+    WebkitBackdropFilter: scrolled ? "blur(8px)" : "none",
     borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.08)" : "none",
-    transition: "background-color 0.3s ease, border-bottom 0.3s ease",
-    willChange: "background-color, border-bottom",
+    transition: "background-color 0.3s ease, border-bottom 0.3s ease, backdrop-filter 0.3s ease",
+    willChange: "background-color, border-bottom, backdrop-filter",
   };
 
   console.log("Header render - scrolled:", scrolled, "styles:", headerStyles);
