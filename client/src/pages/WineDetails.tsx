@@ -150,12 +150,12 @@ export default function WineDetails() {
 
           {/* Wine Image */}
           <div className="text-center mb-6">
-            <div className="relative inline-block">
+            <div className="relative inline-block" style={{ background: 'none' }}>
               <img
                 ref={imageRef}
                 src={wine.image}
                 alt={wine.name}
-                className="h-48 w-auto mx-auto object-contain"
+                className="max-h-48 w-auto mx-auto object-contain"
                 onLoad={handleImageLoad}
                 style={{
                   filter: imageLoaded ? 'none' : 'blur(10px)',
