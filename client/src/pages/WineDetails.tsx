@@ -1138,7 +1138,7 @@ export default function WineDetails() {
                       ...typography.buttonPlus1,
                       color: "white",
                       textAlign: "center",
-                      margin: "0 0 16px 0",
+                      margin: "0 0 12px 0",
                       height: "50px",
                       display: "flex",
                       alignItems: "center",
@@ -1146,6 +1146,7 @@ export default function WineDetails() {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
+                      width: "100%",
                     }}
                   >
                     {recommendedWine.year ? `${recommendedWine.year} ` : ""}{recommendedWine.name}
@@ -1156,6 +1157,7 @@ export default function WineDetails() {
                     <WineRating 
                       ratings={recommendedWine.ratings}
                       gap={15}
+                      hideAbv={true}
                     />
                   )}
                 </div>
