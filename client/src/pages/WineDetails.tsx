@@ -24,6 +24,8 @@ interface SelectedWine {
 }
 
 export default function WineDetails() {
+  console.log('🍷 WineDetails rendering at:', new Date().toISOString());
+  
   const [location] = useLocation();
   const { id } = useParams();
   const [wine, setWine] = useState<SelectedWine | null>(null);
@@ -179,16 +181,20 @@ export default function WineDetails() {
     return <LoadingComponent />;
   }
 
+  // Debug styling to identify component mounting issues
+  const debugStyle = {
+    minHeight: '100vh',
+    overflowY: 'visible' as const,
+    overflowX: 'hidden' as const,
+    border: '3px solid red', // TEMP: to identify this component
+    animationDelay: '100ms'
+  };
+
   return (
     <div 
       key={wine.id} 
       className="bg-black text-white opacity-0 animate-fade-in" 
-      style={{ 
-        minHeight: '100vh', 
-        overflowY: 'visible', 
-        overflowX: 'hidden',
-        animationDelay: '100ms' // Wait for styles to load
-      }}>
+      style={debugStyle}>
       <AppHeader />
       <HeaderSpacer />
 

@@ -24,7 +24,9 @@ function Router() {
       <Route path="/cellar" component={Cellar} />
       <Route path="/home-global" component={HomeGlobal} />
       <Route path="/wine/conversation" component={ConversationDialog} />
-      <Route path="/wine-details/:id" component={WineDetails} />
+      <Route path="/wine-details/:id" component={() => 
+        <WineDetails key={`wine-${Date.now()}`} />
+      } />
       <Route path="/tenants/:tenantSlug/admin" component={TenantAdmin} />
       <Route path="/winery-tenant-admin" component={TenantAdmin} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />

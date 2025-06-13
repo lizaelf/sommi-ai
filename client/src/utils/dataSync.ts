@@ -131,7 +131,7 @@ const MASTER_WINE_DATA: UnifiedWineData[] = [
 
 const STORAGE_KEY = 'unified-wine-data';
 const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '2.2.6';
+const CURRENT_VERSION = '2.2.7';
 
 export class DataSyncManager {
   
