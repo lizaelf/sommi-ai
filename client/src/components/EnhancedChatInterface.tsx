@@ -1066,7 +1066,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   width: "100%",
                   justifyContent: "center",
                   alignItems: "center",
-                  gap: "8px",
+                  gap: "20px",
                   display: "flex",
                   flexWrap: "wrap",
                   position: "relative",
@@ -1086,7 +1086,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   <span style={{ ...typography.num, color: "white" }}>
                     {currentWine ? currentWine.ratings.vn : 95}
                   </span>
-                  <span style={{ ...typography.body1R, color: "white" }}>
+                  <span style={{ ...typography.body1R, color: "#999999" }}>
                     VN
                   </span>
                 </span>
@@ -1101,7 +1101,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   <span style={{ ...typography.num, color: "white" }}>
                     {currentWine ? currentWine.ratings.jd : 93}
                   </span>
-                  <span style={{ ...typography.body1R, color: "white" }}>
+                  <span style={{ ...typography.body1R, color: "#999999" }}>
                     JD
                   </span>
                 </span>
@@ -1116,7 +1116,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   <span style={{ ...typography.num, color: "white" }}>
                     {currentWine ? currentWine.ratings.ws : 93}
                   </span>
-                  <span style={{ ...typography.body1R, color: "white" }}>
+                  <span style={{ ...typography.body1R, color: "#999999" }}>
                     WS
                   </span>
                 </span>
@@ -1131,7 +1131,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   <span style={{ ...typography.num, color: "white" }}>
                     {currentWine ? `${currentWine.ratings.abv}%` : '14.3%'}
                   </span>
-                  <span style={{ ...typography.body1R, color: "white" }}>
+                  <span style={{ ...typography.body1R, color: "#999999" }}>
                     ABV
                   </span>
                 </span>
