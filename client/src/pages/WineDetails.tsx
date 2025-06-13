@@ -48,35 +48,33 @@ export default function WineDetails() {
     
     if (wineId && !wine) {
       const wineData = DataSyncManager.getWineById(parseInt(wineId));
-      console.log(`WineDetails: Looking for wine ID ${wineId}, found:`, wineData);
       if (wineData) {
-        setWine(wineData);
-        console.log('WineDetails: Wine loaded successfully:', wineData.name);
+        console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
+        const transformedWine = {
+          id: wineData.id,
+          name: wineData.name,
+          year: wineData.year,
+          bottles: wineData.bottles,
+          image: wineData.image,
+          ratings: wineData.ratings,
+          buyAgainLink: wineData.buyAgainLink,
+          qrCode: wineData.qrCode,
+          qrLink: wineData.qrLink,
+          location: wineData.location,
+          description: wineData.description,
+          foodPairing: wineData.foodPairing,
+          conversationHistory: wineData.conversationHistory || []
+        };
+        setWine(transformedWine);
+        console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
+      } else {
+        console.log('WineDetails: Wine not found for ID:', wineId);
       }
     }
   }, [id, wine, location]);
 
-  useEffect(() => {
-    console.log('🔍 QR Debug:', {
-      location,
-      isScannedPage,
-      interactionChoiceMade,
-      isQRScan,
-      showQRModal,
-      wine: wine ? 'loaded' : 'not loaded',
-      wineId: wine?.id,
-      urlParams: new URLSearchParams(window.location.search).get('wine')
-    });
-
-    if (isScannedPage && !interactionChoiceMade) {
-      setShowQRModal(true);
-    }
-  }, [location, isScannedPage, interactionChoiceMade, isQRScan, wine]);
-
   const handleQRReset = (event: Event) => {
-    console.log('🔄 QR Reset triggered');
     const detail = (event as CustomEvent).detail;
-    
     if (detail?.action === 'voice') {
       console.log('🎤 Voice interaction selected');
       setInteractionChoiceMade(true);
@@ -99,8 +97,6 @@ export default function WineDetails() {
     setImageLoaded(true);
     console.log('Wine image loaded successfully:', wine?.image);
   };
-
-
 
   if (!wine) {
     return (
@@ -128,97 +124,74 @@ export default function WineDetails() {
         <div className="px-6 pb-6">
           <div className="flex items-center justify-between mb-6">
             <Link href="/">
-              <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                <ArrowLeft size={24} />
-              </button>
+              <ArrowLeft className="w-6 h-6 text-white cursor-pointer" />
             </Link>
-            
             <div className="relative">
-              <button 
+              <MoreHorizontal 
+                className="w-6 h-6 text-white cursor-pointer" 
                 onClick={() => setShowActions(!showActions)}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <MoreHorizontal size={24} />
-              </button>
-              
+              />
               {showActions && (
-                <div className="absolute right-0 top-full mt-2 bg-white/10 backdrop-blur-sm rounded-lg p-2 min-w-[120px] z-10">
+                <div className="absolute right-0 top-8 bg-gray-800 rounded-lg shadow-lg p-2 min-w-[120px] z-10">
                   <button 
-                    onClick={async () => {
-                      console.log('Clear chat history action');
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700 rounded"
+                    onClick={() => {
+                      // Handle delete action
                       setShowActions(false);
-                      
-                      try {
-                        // Clear chat history for this wine
-                        const response = await fetch('/api/conversations', {
-                          method: 'DELETE',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          }
-                        });
-                        
-                        if (response.ok) {
-                          console.log('Chat history cleared successfully');
-                          // Trigger a refresh of the chat interface
-                          window.dispatchEvent(new CustomEvent('chat-history-cleared'));
-                        } else {
-                          console.error('Failed to clear chat history');
-                        }
-                      } catch (error) {
-                        console.error('Error clearing chat history:', error);
-                      }
                     }}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-white/10 rounded-md transition-colors"
                   >
-                    <Trash2 size={16} />
-                    Clear Chat
+                    <Trash2 className="w-4 h-4" />
+                    Delete
                   </button>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="text-center mb-8">
-            <div className="relative mx-auto mb-6" style={{ width: "280px", height: "400px" }}>
+          {/* Wine Image */}
+          <div className="text-center mb-6">
+            <div className="relative inline-block">
               <img
                 ref={imageRef}
                 src={wine.image}
                 alt={wine.name}
+                className="h-48 w-auto mx-auto object-contain"
                 onLoad={handleImageLoad}
-                className={`w-full h-full object-contain transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                style={{ 
-                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))',
-                  objectPosition: 'center'
+                style={{
+                  filter: imageLoaded ? 'none' : 'blur(10px)',
+                  transition: 'filter 0.3s ease'
                 }}
               />
-              {!imageLoaded && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                </div>
-              )}
             </div>
-            
-            <h1 className="text-2xl font-bold mb-2" style={{ fontFamily: "Lora, serif" }}>
-              {wine.name}
-            </h1>
-            
-            <p className="text-lg text-gray-300 mb-4">
-              {wine.bottles} bottles remaining
-            </p>
-            
-            <div className="flex justify-center gap-3 mb-6">
-              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
-                {wine.ratings.vn} VN
-              </span>
-              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
-                {wine.ratings.jd} JD
-              </span>
-              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
-                {wine.ratings.ws} WS
-              </span>
-              <span className="bg-white/10 px-3 py-1 rounded-full text-sm">
-                {wine.ratings.abv}% ABV
-              </span>
+          </div>
+
+          {/* Wine Name and Year */}
+          <h1 className="text-2xl font-bold text-center mb-2" style={{ fontFamily: "Lora, serif" }}>
+            2021 {wine.name}
+          </h1>
+
+          {/* Bottle Count */}
+          <div className="text-center text-gray-300 mb-6">
+            {wine.bottles} bottles
+          </div>
+
+          {/* Wine Ratings */}
+          <div className="flex justify-between text-center mb-6">
+            <div>
+              <div className="text-lg font-bold text-yellow-400">{wine.ratings.vn}</div>
+              <div className="text-xs text-gray-400">VN</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-yellow-400">{wine.ratings.jd}</div>
+              <div className="text-xs text-gray-400">JD</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-yellow-400">{wine.ratings.ws}</div>
+              <div className="text-xs text-gray-400">WS</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-yellow-400">{wine.ratings.abv}%</div>
+              <div className="text-xs text-gray-400">ABV</div>
             </div>
           </div>
         </div>
@@ -269,31 +242,7 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* Want more? Section */}
-        <div className="px-6 py-8 bg-gray-600 border-t-2 border-white/30 min-h-[200px] relative z-10">
-          <h2 className="text-3xl font-normal mb-6 text-white font-serif">
-            Want more?
-          </h2>
-          
-          {wine?.buyAgainLink ? (
-            <a 
-              href={wine.buyAgainLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
-            >
-              <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
-                Buy again
-              </button>
-            </a>
-          ) : (
-            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
-              Explore our collection
-            </button>
-          )}
-        </div>
-
-        {/* Chat Interface - MOVED AFTER Want More section */}
+        {/* Chat Interface */}
         <div className="mt-0 pb-10">
           <EnhancedChatInterface 
             showBuyButton={true} 
@@ -308,8 +257,30 @@ export default function WineDetails() {
         </div>
       </div>
 
+      {/* Want more? Section - OUTSIDE main container to avoid overlay issues */}
+      <div className="px-6 py-8 bg-gray-600 border-t-2 border-white/30 min-h-[200px] relative z-50">
+        <h2 className="text-3xl font-normal mb-6 text-white font-serif">
+          Want more?
+        </h2>
+        
+        {wine?.buyAgainLink ? (
+          <a 
+            href={wine.buyAgainLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+              Buy again
+            </button>
+          </a>
+        ) : (
+          <button className="w-full bg-white text-black border-none rounded-full py-4 px-6 text-lg font-medium cursor-pointer transition-colors hover:bg-gray-100">
+            Explore our collection
+          </button>
+        )}
+      </div>
 
-      
       {/* QR Scan Modal */}
       <QRScanModal
         isOpen={showQRModal}
