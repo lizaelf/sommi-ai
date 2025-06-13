@@ -1140,13 +1140,12 @@ export default function WineDetails() {
                       textAlign: "center",
                       margin: "0 0 12px 0",
                       height: "50px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
                       width: "100%",
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 3,
+                      lineHeight: "1.2",
                     }}
                   >
                     {recommendedWine.year ? `${recommendedWine.year} ` : ""}{recommendedWine.name}
