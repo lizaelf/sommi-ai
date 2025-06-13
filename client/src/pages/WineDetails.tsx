@@ -271,8 +271,8 @@ export default function WineDetails() {
         </div>
 
         {/* Want more? Section */}
-        <div className="px-6 py-8">
-          <h2 className="text-3xl font-normal mb-6 text-white" style={{ fontFamily: "Lora, serif" }}>
+        <div className="px-6 py-8 bg-gray-900 border-t border-white/10">
+          <h2 className="text-3xl font-normal mb-6 text-white font-serif">
             Want more?
           </h2>
           
