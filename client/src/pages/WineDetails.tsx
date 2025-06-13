@@ -316,63 +316,6 @@ export default function WineDetails() {
         </div>
       </div>
 
-      {/* Want more? Section */}
-      <div style={{ 
-        marginTop: "48px",
-        paddingLeft: "24px", 
-        paddingRight: "24px"
-      }}>
-        <h2 style={{
-          fontFamily: "Lora, serif",
-          fontSize: "32px",
-          fontWeight: 400,
-          color: "white",
-          marginBottom: "24px"
-        }}>
-          Want more?
-        </h2>
-
-        {wine?.buyAgainLink ? (
-          <a 
-            href={wine.buyAgainLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <button style={{
-              width: "100%",
-              backgroundColor: "white",
-              color: "black",
-              border: "none",
-              borderRadius: "32px",
-              padding: "16px 24px",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              cursor: "pointer",
-              transition: "all 0.2s ease"
-            }}>
-              Buy again
-            </button>
-          </a>
-        ) : (
-          <div style={{
-            width: "100%",
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            color: "white",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            borderRadius: "32px",
-            padding: "16px 24px",
-            fontFamily: "Inter, sans-serif",
-            fontSize: "16px",
-            fontWeight: 500,
-            textAlign: "center"
-          }}>
-            Explore our collection
-          </div>
-        )}
-      </div>
-
       {/* We recommend Section */}
       <div style={{ 
         marginTop: "48px",
