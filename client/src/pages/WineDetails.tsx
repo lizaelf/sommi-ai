@@ -267,7 +267,7 @@ export default function WineDetails() {
           )}
         </div>
 
-        {/* Want more? and We recommend sections container */}
+        {/* Want more? and We recommend sections */}
         <div className="px-6 bg-purple-600 border-4 border-yellow-300" style={{ minHeight: '400px' }}>
           {/* Want more? Section */}
           <div className="pb-6 mt-8 bg-red-400 border-2 border-white" style={{ minHeight: '150px' }}>
