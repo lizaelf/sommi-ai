@@ -271,8 +271,10 @@ export default function WineDetails() {
         </div>
 
         {/* Want more? Section */}
-        <div className="px-6 py-8 bg-red-500 border-t border-white/10" style={{ minHeight: '200px' }}>
-          {console.log('Want more section is rendering')}
+        <div 
+          className="px-6 py-8 bg-white/10 border-t-2 border-white/30" 
+          style={{ minHeight: '200px', backgroundColor: '#4B5563' }}
+        >
           <h2 className="text-3xl font-normal mb-6 text-white font-serif">
             Want more?
           </h2>
