@@ -1634,8 +1634,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     // Get wines from admin panel (localStorage)
                     const adminWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
                     
-                    // If no admin wines, show a message
-                    if (adminWines.length === 0) {
+                    // Filter out the current wine being viewed
+                    const currentWineId = currentWine?.id;
+                    const filteredWines = adminWines.filter((wine: any) => wine.id !== currentWineId);
+                    
+                    // If no wines to recommend after filtering, show a message
+                    if (filteredWines.length === 0) {
                       return (
                         <div
                           style={{
@@ -1656,21 +1660,21 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             fontFamily: "Inter, sans-serif",
                             marginBottom: "8px"
                           }}>
-                            No wines available
+                            No other wines available
                           </span>
                           <span style={{ 
                             color: "rgba(255, 255, 255, 0.6)", 
                             fontSize: "14px",
                             fontFamily: "Inter, sans-serif"
                           }}>
-                            Add wines in the admin panel to see recommendations
+                            Add more wines in the admin panel to see recommendations
                           </span>
                         </div>
                       );
                     }
                     
-                    // Show wines from admin panel
-                    return adminWines.map((wine: any) => (
+                    // Show filtered wines from admin panel
+                    return filteredWines.map((wine: any) => (
                       <div
                         key={wine.id}
                         style={{
