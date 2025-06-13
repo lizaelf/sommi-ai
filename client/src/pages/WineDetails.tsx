@@ -122,6 +122,13 @@ export default function WineDetails() {
       
 
       
+      {/* TEST SECTIONS AT TOP */}
+      <div style={{ padding: '24px', backgroundColor: '#ff0000', margin: '16px 0', border: '4px solid #00ff00' }}>
+        <h2 style={{ color: 'white', fontSize: '32px', fontWeight: 'bold' }}>
+          TOP TEST SECTION - SHOULD BE VISIBLE
+        </h2>
+      </div>
+
       {/* Main Content Container - Completely removed height constraints */}
       <div className="w-full min-h-screen" style={{ height: 'auto', overflow: 'visible' }}>
         {/* Wine Hero Section */}
