@@ -241,6 +241,14 @@ export class DataSyncManager {
     this.saveUnifiedWineData([...MASTER_WINE_DATA]);
     console.log('Reset to master wine data');
   }
+
+  // Clear all stored data to fix corrupted references
+  static clearStoredData(): void {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(SYNC_VERSION_KEY);
+    localStorage.removeItem('admin-wines');
+    console.log('Cleared all stored wine data');
+  }
   
   // Add or update a wine
   static addOrUpdateWine(wine: UnifiedWineData): void {
