@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, MoreHorizontal, Trash2, RotateCcw } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { IconButton } from "@/components/ui/IconButton";
-import { useLocation } from "wouter";
 
 interface AppHeaderProps {
   title?: string;
@@ -23,12 +22,7 @@ export function AppHeader({
 }: AppHeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [location] = useLocation();
-  
-  // Show Reset button only on the main page (root "/" route)
-  const showResetButton = location === "/";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -97,9 +91,9 @@ export function AppHeader({
   return (
     <div style={headerStyle}>
       <div className="mx-auto" style={{ maxWidth: "1200px", height: "75px", paddingLeft: "16px", paddingRight: "16px", paddingTop: "16px", paddingBottom: "16px" }}>
-        <div className="relative flex items-center justify-between h-full">
-          {/* Left side - Back button or Logo + Title */}
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex items-center justify-between h-full">
+          {/* Left side - Logo or Back button */}
+          <div className="flex items-center">
             {showBackButton && onBack ? (
               <IconButton
                 icon={ArrowLeft}
@@ -111,124 +105,44 @@ export function AppHeader({
             ) : (
               <Logo />
             )}
-            {title && (
-              <h1 
-                className="absolute left-1/2 transform -translate-x-1/2 text-white text-[18px] font-medium truncate whitespace-nowrap text-center"
-              >
-                {title}
-              </h1>
-            )}
           </div>
           
-          {/* Right side - Custom content */}
+          {/* Center - Title */}
+          {title && (
+            <h1 className="text-white text-lg font-medium text-center flex-1">
+              {title}
+            </h1>
+          )}
+          
+          {/* Right side - Menu or custom content */}
           <div className="flex items-center gap-3">
-            {/* Enhanced Reset QR button with visual feedback - Only show on main page */}
-            {showResetButton && (
-              <button
-                onClick={async () => {
-                  if (isResetting) return;
-                  
-                  try {
-                    setIsResetting(true);
-                    console.log('Starting QR reset process...');
-                    
-                    localStorage.removeItem('interaction_choice_made');
-                    console.log('LocalStorage cleared successfully');
-                    
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    const resetEvent = new CustomEvent('qrReset', {
-                      detail: {
-                        timestamp: Date.now(),
-                        source: 'header-button',
-                        success: true
-                      },
-                      bubbles: true
-                    });
-                    window.dispatchEvent(resetEvent);
-                    console.log('QR reset event dispatched successfully');
-                    
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                    
-                  } catch (error) {
-                    console.error('QR reset failed:', error);
-                  } finally {
-                    setIsResetting(false);
-                  }
-                }}
-                disabled={isResetting}
-                style={{
-                  background: isResetting 
-                    ? "rgba(34, 197, 94, 0.2)" 
-                    : "rgba(255, 255, 255, 0.15)",
-                  border: isResetting 
-                    ? "1px solid rgba(34, 197, 94, 0.4)" 
-                    : "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "20px",
-                  color: "white",
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  padding: "8px 12px",
-                  cursor: isResetting ? "not-allowed" : "pointer",
-                  transition: "all 0.2s ease",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  opacity: isResetting ? 0.8 : 1
-                }}
-                onMouseEnter={(e) => {
-                  if (!isResetting) {
-                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isResetting) {
-                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                  }
-                }}
-                title={isResetting ? "Resetting QR state..." : "Reset QR scan state"}
-              >
-                <RotateCcw 
-                  size={14} 
-                  style={{
-                    animation: isResetting ? "spin 1s linear infinite" : "none"
-                  }}
-                />
-                {isResetting ? "Resetting..." : "Reset"}
-              </button>
+            {rightContent || (
+              <IconButton
+                icon={MoreHorizontal}
+                onClick={() => setShowDropdown(!showDropdown)}
+                variant="headerIcon"
+                size="md"
+                title="More options"
+              />
             )}
             
-            {rightContent || (
-              <div className="relative" ref={dropdownRef}>
-                <IconButton
-                  icon={MoreHorizontal}
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  variant="headerIcon"
-                  size="md"
-                  title="More options"
-                />
-                
-                {showDropdown && onDeleteTenant && (
-                  <div className="absolute right-0 top-full mt-2 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg min-w-[160px] z-50">
-                    <button
-                      onClick={() => {
-                        setShowDropdown(false);
-                        if (confirm('Are you sure you want to delete this tenant? This action cannot be undone.')) {
-                          onDeleteTenant();
-                        }
-                      }}
-                      className="w-full px-4 py-3 text-left text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors flex items-center gap-2 rounded-lg"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete Tenant
-                    </button>
-                  </div>
-                )}
+            {showDropdown && onDeleteTenant && (
+              <div className="absolute right-4 top-16 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg min-w-[160px] z-50">
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    if (confirm('Are you sure you want to delete this tenant? This action cannot be undone.')) {
+                      onDeleteTenant();
+                    }
+                  }}
+                  className="w-full px-4 py-3 text-left text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors flex items-center gap-2 rounded-lg"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Tenant
+                </button>
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
