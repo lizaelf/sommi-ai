@@ -735,6 +735,82 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     };
   }, [currentConversationId, addMessage]);
 
+  // Handle suggestion button clicks - text-only response without audio or bottom sheet
+  const handleSuggestionClick = async (content: string) => {
+    if (content.trim() === "" || !currentConversationId) return;
+
+    // Hide suggestions after sending a message
+    setHideSuggestions(true);
+    setIsTyping(true);
+
+    try {
+      // Add user message to UI immediately
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        content,
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Add message to the conversation
+      await addMessage(tempUserMessage);
+
+      // Make the API request for text-only response
+      const requestBody = {
+        messages: [
+          { role: "user", content },
+        ],
+        conversationId: currentConversationId,
+        wineData: currentWine,
+        optimize_for_speed: true,
+        text_only: true, // Flag to indicate text-only response needed
+      };
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "X-Priority": "high",
+        },
+        body: JSON.stringify(requestBody),
+        credentials: 'same-origin',
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      // Add the assistant's response to the UI (text only)
+      if (responseData.message && responseData.message.content) {
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1,
+          content: responseData.message.content,
+          role: "assistant",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+
+        await addMessage(assistantMessage);
+      }
+
+      // Refresh all messages
+      refetchMessages();
+    } catch (error) {
+      console.error("Error in suggestion request:", error);
+      toast({
+        title: "Error",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
@@ -2363,7 +2439,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   {/* Suggestion chips - always visible above input */}
                   <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                     <Button
-                      onClick={() => handleSendMessage("Tasting notes")}
+                      onClick={() => handleSuggestionClick("Tasting notes")}
                       variant="secondary"
                       style={{ height: "32px" }}
                     >
@@ -2371,7 +2447,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     </Button>
                     <Button
                       onClick={() =>
-                        handleSendMessage("Simple recipes for this wine")
+                        handleSuggestionClick("Simple recipes for this wine")
                       }
                       variant="secondary"
                       style={{ height: "32px" }}
@@ -2380,7 +2456,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     </Button>
                     <Button
                       onClick={() =>
-                        handleSendMessage("Where is this wine from?")
+                        handleSuggestionClick("Where is this wine from?")
                       }
                       variant="secondary"
                       style={{ height: "32px" }}
