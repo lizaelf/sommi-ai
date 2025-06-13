@@ -8,6 +8,7 @@ import { DataSyncManager } from "@/utils/dataSync";
 import WineBottleImage from "@/components/WineBottleImage";
 import USFlagImage from "@/components/USFlagImage";
 import Button from "@/components/ui/Button";
+import typography from "@/styles/typography";
 
 interface SelectedWine {
   id: number;
@@ -38,46 +39,6 @@ export default function WineDetails() {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
-
-  // Typography constants from the original design
-  const typography = {
-    h1: {
-      fontSize: "32px",
-      fontWeight: "700",
-      lineHeight: "1.2",
-      fontFamily: "Lora, serif",
-    },
-    h2: {
-      fontSize: "20px",
-      fontWeight: "600",
-      lineHeight: "1.4",
-      fontFamily: "Inter, sans-serif",
-    },
-    body: {
-      fontSize: "16px",
-      fontWeight: "400",
-      lineHeight: "1.5",
-      fontFamily: "Inter, sans-serif",
-    },
-    body1R: {
-      fontSize: "14px",
-      fontWeight: "400",
-      lineHeight: "1.4",
-      fontFamily: "Inter, sans-serif",
-    },
-    num: {
-      fontSize: "18px",
-      fontWeight: "700",
-      lineHeight: "1.2",
-      fontFamily: "Inter, sans-serif",
-    },
-    buttonPlus1: {
-      fontSize: "14px",
-      fontWeight: "600",
-      lineHeight: "1.2",
-      fontFamily: "Inter, sans-serif",
-    },
-  };
 
   // Helper functions for wine data
   const getWineHistory = () => {
@@ -524,8 +485,8 @@ export default function WineDetails() {
                 <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
                   {getFoodPairingContent().dishes.map((dish: string, index: number) => (
                     <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                      <span style={{ fontSize: "16px" }}>🥩</span>
-                      <span>{dish}</span>
+                      <span style={{ ...typography.body }}>🥩</span>
+                      <span style={{ ...typography.body }}>{dish}</span>
                     </div>
                   ))}
                 </div>
@@ -878,16 +839,14 @@ export default function WineDetails() {
                   >
                     <span style={{ 
                       color: "rgba(255, 255, 255, 0.8)", 
-                      fontSize: "16px",
-                      fontFamily: "Inter, sans-serif",
-                      marginBottom: "8px"
+                      marginBottom: "8px",
+                      ...typography.body
                     }}>
                       No other wines available
                     </span>
                     <span style={{ 
                       color: "rgba(255, 255, 255, 0.6)", 
-                      fontSize: "14px",
-                      fontFamily: "Inter, sans-serif"
+                      ...typography.body1R
                     }}>
                       Add more wines in the admin panel to see recommendations
                     </span>
@@ -942,9 +901,8 @@ export default function WineDetails() {
                     {!recommendedWine.image && (
                       <span style={{ 
                         color: "rgba(255, 255, 255, 0.6)", 
-                        fontSize: "12px",
                         textAlign: "center",
-                        fontFamily: "Inter, sans-serif"
+                        ...typography.body1M
                       }}>
                         No Image
                       </span>
