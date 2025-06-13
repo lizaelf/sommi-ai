@@ -1064,11 +1064,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               <div
                 style={{
                   width: "100%",
-                  height: "100%",
                   justifyContent: "center",
                   alignItems: "center",
-                  gap: 20,
+                  gap: "8px",
                   display: "flex",
+                  flexWrap: "wrap",
                   position: "relative",
                   zIndex: 2,
                   padding: "0 20px",
@@ -1077,131 +1077,115 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               >
                 <div
                   style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "16px",
+                    padding: "6px 12px",
                     display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <div
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
                       color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
+                      fontSize: "16px",
+                      fontWeight: "bold",
                     }}
                   >
                     {currentWine ? currentWine.ratings.vn : 95}
-                  </div>
-                  <div
+                  </span>
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
+                      color: "rgba(255, 255, 255, 0.7)",
+                      fontSize: "14px",
                     }}
                   >
                     VN
-                  </div>
+                  </span>
                 </div>
                 <div
                   style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "16px",
+                    padding: "6px 12px",
                     display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <div
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
                       color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
+                      fontSize: "16px",
+                      fontWeight: "bold",
                     }}
                   >
                     {currentWine ? currentWine.ratings.jd : 93}
-                  </div>
-                  <div
+                  </span>
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
+                      color: "rgba(255, 255, 255, 0.7)",
+                      fontSize: "14px",
                     }}
                   >
                     JD
-                  </div>
+                  </span>
                 </div>
                 <div
                   style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "16px",
+                    padding: "6px 12px",
                     display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <div
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
                       color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
+                      fontSize: "16px",
+                      fontWeight: "bold",
                     }}
                   >
                     {currentWine ? currentWine.ratings.ws : 93}
-                  </div>
-                  <div
+                  </span>
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
+                      color: "rgba(255, 255, 255, 0.7)",
+                      fontSize: "14px",
                     }}
                   >
                     WS
-                  </div>
+                  </span>
                 </div>
                 <div
                   style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "16px",
+                    padding: "6px 12px",
                     display: "flex",
-                    alignItems: "baseline",
-                    gap: 4,
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <div
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
                       color: "white",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.num,
+                      fontSize: "16px",
+                      fontWeight: "bold",
                     }}
                   >
                     {currentWine ? `${currentWine.ratings.abv}%` : '14.3%'}
-                  </div>
-                  <div
+                  </span>
+                  <span
                     style={{
-                      justifyContent: "center",
-                      display: "flex",
-                      color: "rgba(255, 255, 255, 0.60)",
-                      wordWrap: "break-word",
-                      height: "16px",
-                      ...typography.body1R,
+                      color: "rgba(255, 255, 255, 0.7)",
+                      fontSize: "14px",
                     }}
                   >
                     ABV
-                  </div>
+                  </span>
                 </div>
               </div>
 
