@@ -740,7 +740,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             className="flex-1 overflow-y-auto scrollbar-hide"
           >
             {/* Conversation Content */}
-            <div className="pt-6">
+            <div>
               {/* Chat Title */}
               <div style={{ marginBottom: "24px", paddingLeft: "20px", paddingRight: "20px" }}>
                 <h1
