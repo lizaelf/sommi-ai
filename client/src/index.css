@@ -20,8 +20,6 @@
 
 .wine-recommendations-container > div {
   scroll-snap-align: start; /* Optional: snap alignment */
-  background: none !important;
-  background-color: transparent !important;
 }
 
 /* Keyframe animations */
