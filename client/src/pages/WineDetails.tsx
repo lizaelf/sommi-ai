@@ -175,16 +175,12 @@ export default function WineDetails() {
   );
 
   // Handle loading states
-  if (loadingState === 'loading') {
-    return <LoadingComponent />;
-  }
-
   if (loadingState === 'error') {
     return <ErrorComponent />;
   }
 
-  // Update loading condition to use component readiness states
-  if (loadingState === 'loading' || !wine || !chatReady || !allComponentsReady) {
+  // Component readiness loading condition
+  if (loadingState !== 'loaded' || !wine || !chatReady || !allComponentsReady) {
     return <LoadingComponent />;
   }
 
