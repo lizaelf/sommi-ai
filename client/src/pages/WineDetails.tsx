@@ -124,57 +124,6 @@ export default function WineDetails() {
       <div className="w-full overflow-y-visible">
         {/* Wine Hero Section */}
         <div className="px-6 pb-6">
-          <div className="flex items-center justify-between mb-6">
-            <Link href="/">
-              <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                <ArrowLeft size={24} />
-              </button>
-            </Link>
-            
-            <div className="relative">
-              <button 
-                onClick={() => setShowActions(!showActions)}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <MoreHorizontal size={24} />
-              </button>
-              
-              {showActions && (
-                <div className="absolute right-0 top-full mt-2 bg-white/10 backdrop-blur-sm rounded-lg p-2 min-w-[120px] z-10">
-                  <button 
-                    onClick={async () => {
-                      console.log('Clear chat history action');
-                      setShowActions(false);
-                      
-                      try {
-                        // Clear chat history for this wine
-                        const response = await fetch('/api/conversations', {
-                          method: 'DELETE',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          }
-                        });
-                        
-                        if (response.ok) {
-                          console.log('Chat history cleared successfully');
-                          // Trigger a refresh of the chat interface
-                          window.dispatchEvent(new CustomEvent('chat-history-cleared'));
-                        } else {
-                          console.error('Failed to clear chat history');
-                        }
-                      } catch (error) {
-                        console.error('Error clearing chat history:', error);
-                      }
-                    }}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-white/10 rounded-md transition-colors"
-                  >
-                    <Trash2 size={16} />
-                    Clear Chat
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
 
           <div className="text-center mb-8">
             <div className="relative mx-auto mb-6" style={{ width: "280px", height: "400px" }}>
