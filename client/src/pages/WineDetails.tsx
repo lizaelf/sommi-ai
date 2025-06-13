@@ -4,6 +4,7 @@ import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import QRScanModal from '@/components/QRScanModal';
 import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
+import WineDetailsSkeleton from '@/components/WineDetailsSkeleton';
 import { DataSyncManager } from '@/utils/dataSync';
 
 interface SelectedWine {
@@ -121,11 +122,11 @@ export default function WineDetails() {
     console.log('Wine image loaded successfully:', wine?.image);
   };
 
-  // Show loading screen to prevent UI flash - don't render content until ready
+  // Show skeleton loading to prevent UI flash
   if (!isReady || !wine) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        {!wine && !isLoading ? (
+    if (!wine && !isLoading) {
+      return (
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Wine not found</h2>
             <Link href="/">
@@ -134,14 +135,10 @@ export default function WineDetails() {
               </button>
             </Link>
           </div>
-        ) : (
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-            <p className="text-white/70">Loading wine details...</p>
-          </div>
-        )}
-      </div>
-    );
+        </div>
+      );
+    }
+    return <WineDetailsSkeleton />;
   }
 
   return (
