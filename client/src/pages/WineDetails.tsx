@@ -269,6 +269,11 @@ export default function WineDetails() {
           )}
         </div>
 
+        {/* TEST: Simple visible element */}
+        <div className="w-full h-20 bg-red-500 flex items-center justify-center">
+          <span className="text-white text-2xl font-bold">TEST SECTION VISIBLE</span>
+        </div>
+
         {/* Want more? and We recommend sections */}
         <div className="px-6 py-8">
           {/* Want more? Section */}
