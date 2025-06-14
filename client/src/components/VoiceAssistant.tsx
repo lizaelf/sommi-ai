@@ -50,7 +50,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Speak the welcome message immediately
       const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
       
-      // Use the global voice script function directly
+      // Always use the global voice script function for consistency
       if ((window as any).speakResponse) {
         console.log("QR SCAN: Using global speakResponse function");
         (window as any).speakResponse(welcomeMessage);
@@ -62,58 +62,42 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           console.log("QR SCAN: Welcome message completed");
         }, 4000); // Approximate duration
       } else {
-        console.log("QR SCAN: Fallback - using locked male voice directly");
+        // If global function not available, use OpenAI TTS for consistency
+        console.log("QR SCAN: Fallback - using OpenAI TTS");
         
-        // Force use locked male voice
-        const voices = window.speechSynthesis.getVoices();
-        const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
-        let selectedVoice = null;
-        
-        if (lockedVoiceURI) {
-          selectedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
-          console.log("QR SCAN: Found locked voice:", selectedVoice?.name);
-        }
-        
-        if (!selectedVoice) {
-          // Emergency male voice selection
-          selectedVoice = voices.find(voice => voice.name === 'Google UK English Male') ||
-                         voices.find(voice => voice.name === 'Google US English Male') ||
-                         voices.find(voice => voice.name.toLowerCase().includes('male'));
-          console.log("QR SCAN: Emergency male voice:", selectedVoice?.name);
-        }
-        
-        const utterance = new SpeechSynthesisUtterance(welcomeMessage);
-        utterance.lang = 'en-US';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-          console.log("QR SCAN: Using voice:", selectedVoice.name);
-        }
-        
-        utterance.onstart = () => {
-          console.log("QR SCAN: Speech started");
-        };
-        
-        utterance.onend = () => {
+        fetch('/api/text-to-speech', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: welcomeMessage })
+        })
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+          const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          
+          audio.onended = () => {
+            setIsResponding(false);
+            setShowAskButton(true);
+            URL.revokeObjectURL(audioUrl);
+            console.log("QR SCAN: Welcome message completed");
+          };
+          
+          audio.onerror = () => {
+            setIsResponding(false);
+            setShowAskButton(true);
+            URL.revokeObjectURL(audioUrl);
+            console.error("QR SCAN: Audio playback error");
+          };
+          
+          audio.play();
+          console.log("QR SCAN: Playing welcome message via TTS");
+        })
+        .catch(error => {
+          console.error("QR SCAN: TTS error:", error);
           setIsResponding(false);
           setShowAskButton(true);
-          console.log("QR SCAN: Welcome message completed");
-        };
-        
-        utterance.onerror = (error) => {
-          console.error("QR SCAN: Speech error:", error);
-          setIsResponding(false);
-          setShowAskButton(true);
-        };
-        
-        // Cancel any existing speech and speak
-        window.speechSynthesis.cancel();
-        setTimeout(() => {
-          window.speechSynthesis.speak(utterance);
-          console.log("QR SCAN: Speaking welcome message");
-        }, 100);
+        });
       }
     };
 

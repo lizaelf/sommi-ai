@@ -51,8 +51,9 @@ export default function QRDemo() {
       if (response.ok) {
         const data = await response.json();
         // Store the assistant's response for unmute button
-        (window as any).lastAssistantMessageText = data.content;
-        console.log("QR Demo: Assistant response stored for unmute:", data.content?.substring(0, 50) + "...");
+        const assistantContent = data.message?.content || data.content;
+        (window as any).lastAssistantMessageText = assistantContent;
+        console.log("QR Demo: Assistant response stored for unmute:", assistantContent?.substring(0, 50) + "...");
       }
     } catch (error) {
       console.error("QR Demo: Chat API error:", error);
