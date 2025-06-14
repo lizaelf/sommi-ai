@@ -92,8 +92,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     };
 
     // Custom audio playback handler for suggestion responses
-    const handlePlayAudioResponse = async (event: CustomEvent) => {
-      const { audioBuffers } = event.detail;
+    const handlePlayAudioResponse = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { audioBuffers } = customEvent.detail;
       if (audioBuffers && audioBuffers.length > 0) {
         setIsResponding(true);
         setShowUnmuteButton(false);
@@ -125,13 +126,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     window.addEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
     window.addEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
     window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
-    window.addEventListener('playAudioResponse', handlePlayAudioResponse as unknown as EventListener);
+    window.addEventListener('playAudioResponse', handlePlayAudioResponse);
     
     return () => {
       window.removeEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
       window.removeEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
       window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
-      window.removeEventListener('playAudioResponse', handlePlayAudioResponse as unknown as EventListener);
+      window.removeEventListener('playAudioResponse', handlePlayAudioResponse);
     };
   }, []);
   
