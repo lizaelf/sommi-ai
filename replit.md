@@ -48,6 +48,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **UI Simplification**: Removed "View chat history" button and registration prompts
 - **Original Flow**: Chat messages display directly when available, maintaining original user experience
 
+### UI Component Updates (June 14, 2025)
+- **WineCollection Padding**: Added 16px left and right padding to wine collection container
+- **WineRating Standardization**: Updated WineCard to use same WineRating implementation as WineDetails page
+- **Voice Button Restoration**: Fixed missing microphone button in ChatInput component by adding VoiceAssistant integration
+- **Rating Display Consistency**: Wine cards now show ratings with left alignment and default variant matching WineDetails
+
 ## Previous Changes (June 13, 2025)
 
 ### Component Refactoring Architecture Overhaul (June 13, 2025 - Late Evening)
