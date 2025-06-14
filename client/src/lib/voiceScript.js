@@ -423,22 +423,46 @@ async function speakResponse(text) {
       GUARANTEED_MALE_VOICE.name,
     );
 
-    // DEPLOYMENT ENVIRONMENT CHECK
+    // DEPLOYMENT ENVIRONMENT CHECK - AGGRESSIVE FEMALE VOICE BLOCKING
     const isDeployment = window.location.hostname.includes('.replit.app') || 
                         window.location.hostname.includes('.repl.co') ||
                         window.location.hostname !== 'localhost';
     
     if (isDeployment) {
-      console.log("🚀 DEPLOYMENT MODE: Extra male voice enforcement");
-      // In deployment, double-check our voice selection
+      console.log("🚀 DEPLOYMENT MODE: Aggressive male voice enforcement");
+      
+      // Force re-lock voice every time in deployment
       const voices = window.speechSynthesis.getVoices();
-      const currentVoice = voices.find(v => v.voiceURI === GUARANTEED_MALE_VOICE.voiceURI);
-      if (!currentVoice) {
-        console.log("⚠️ DEPLOYMENT: Voice changed, re-locking");
+      
+      // Check if current voice might be female
+      const currentVoiceName = GUARANTEED_MALE_VOICE?.name?.toLowerCase() || '';
+      const femaleIndicators = ['female', 'woman', 'samantha', 'susan', 'karen', 'zira', 'hazel', 'alice', 'fiona', 'jessica', 'elena', 'claire', 'moira', 'kate', 'ava', 'nicky', 'tessa', 'vicki', 'joanna', 'kendra', 'salli', 'ivy'];
+      
+      const likelyFemale = femaleIndicators.some(indicator => currentVoiceName.includes(indicator));
+      
+      if (likelyFemale || !GUARANTEED_MALE_VOICE) {
+        console.log("🚨 DEPLOYMENT: BLOCKING FEMALE VOICE - FORCE RE-LOCK");
         FORCE_MALE_VOICE_LOCK();
-        setTimeout(() => speakResponse(text), 300);
+        
+        // Wait longer and try again
+        setTimeout(() => speakResponse(text), 500);
         return;
       }
+      
+      // Extra verification: ensure we have a known male voice
+      const isMaleVoice = MALE_VOICE_NAMES.includes(GUARANTEED_MALE_VOICE.name) ||
+                         GUARANTEED_MALE_VOICE.name.toLowerCase().includes('male') ||
+                         GUARANTEED_MALE_VOICE.name.toLowerCase().includes('david') ||
+                         GUARANTEED_MALE_VOICE.name.toLowerCase().includes('mark');
+      
+      if (!isMaleVoice) {
+        console.log("🚨 DEPLOYMENT: UNVERIFIED VOICE - FORCE MALE SELECTION");
+        FORCE_MALE_VOICE_LOCK();
+        setTimeout(() => speakResponse(text), 500);
+        return;
+      }
+      
+      console.log("✅ DEPLOYMENT: Verified male voice:", GUARANTEED_MALE_VOICE.name);
     }
 
     // STEP 2: FORCE CANCEL ANY EXISTING SPEECH
