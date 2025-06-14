@@ -32,8 +32,13 @@ export default function QRDemo() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: message,
-          conversationId: null, // QR demo doesn't need conversation persistence
+          messages: [
+            {
+              role: "user",
+              content: message
+            }
+          ],
+          conversationId: undefined, // QR demo doesn't need conversation persistence
           wineData: {
             id: 1,
             name: "Ridge Lytton Springs Dry Creek Zinfandel",

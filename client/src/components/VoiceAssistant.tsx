@@ -833,6 +833,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleMute = () => {
+    // Stop all audio playback
     if ((window as any).currentOpenAIAudio) {
       // Stopping OpenAI TTS audio
       (window as any).currentOpenAIAudio.pause();
@@ -856,9 +857,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Stopping speech synthesis
     }
 
+    // Stop any ongoing recording
+    stopListening();
+
+    // Reset all states to show Ask button
     setIsResponding(false);
+    setIsThinking(false);
+    setIsListening(false);
     setShowUnmuteButton(false);
     setShowAskButton(true);
+    setShowBottomSheet(false);
+
+    // Emit stop event for wine bottle animation
+    window.dispatchEvent(
+      new CustomEvent("mic-status", {
+        detail: { status: "stopped" },
+      }),
+    );
   };
 
   const handleUnmute = async () => {
