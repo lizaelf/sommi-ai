@@ -67,6 +67,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
 
   // Handle status change events
   useEffect(() => {
+    // Test that event listeners are properly attached
+    console.log('🎤 CircleAnimation: Setting up event listeners');
+    
     const handleAudioStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
       console.log('🎵 Audio status:', status);
@@ -119,11 +122,20 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       }, 10);
     };
 
+    // Test event listener attachment
+    const testListener = (event: Event) => {
+      console.log('🎤 CircleAnimation: Global event captured:', event.type, (event as CustomEvent).detail);
+    };
+    
+    window.addEventListener('mic-status', testListener);
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
     window.addEventListener('mic-status', handleMicStatusChange as EventListener);
     window.addEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
 
+    console.log('🎤 CircleAnimation: Event listeners attached');
+
     return () => {
+      window.removeEventListener('mic-status', testListener);
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
       window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
