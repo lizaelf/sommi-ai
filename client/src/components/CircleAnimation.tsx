@@ -148,7 +148,6 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       )}
     </div>
   );
-}th 0.1s ease-out, height 0.1s ease-out',
         }}
       />
       
