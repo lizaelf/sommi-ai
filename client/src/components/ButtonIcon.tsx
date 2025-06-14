@@ -67,12 +67,39 @@ export function ButtonIcon({
       });
 
       if (response.ok) {
-        // Clear local storage
-        localStorage.removeItem('conversation_history');
-        localStorage.removeItem('current_conversation_id');
+        // Clear all localStorage items related to the app
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (
+            key.includes('conversation') || 
+            key.includes('wine') || 
+            key.includes('chat') ||
+            key.includes('hasSharedContact') ||
+            key.startsWith('wine_assistant_')
+          )) {
+            keysToRemove.push(key);
+          }
+        }
         
-        // Reload the page to reset state
-        window.location.reload();
+        // Remove all identified keys
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        // Clear IndexedDB data
+        try {
+          const indexedDBRequest = indexedDB.deleteDatabase('WineAssistantDB');
+          indexedDBRequest.onsuccess = () => {
+            console.log('IndexedDB cleared successfully');
+          };
+          indexedDBRequest.onerror = () => {
+            console.log('IndexedDB clear failed, but continuing...');
+          };
+        } catch (idbError) {
+          console.log('IndexedDB clear error:', idbError);
+        }
+        
+        // Don't reload immediately, let the user choose interaction type
+        console.log('Account data cleared successfully');
       } else {
         console.error('Failed to clear chat history from backend');
         toast({
@@ -118,22 +145,32 @@ export function ButtonIcon({
 
   // Function to handle text interaction choice
   const handleTextChoice = () => {
-    console.log("💬 Text interaction selected after account deletion");
+    console.log("Text interaction selected after account deletion");
     closeBottomSheet();
     toast({
       title: "Account Reset",
       description: "Chat history cleared. You can start a new conversation.",
     });
+    
+    // Reload page after short delay to ensure fresh state
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
   // Function to handle voice interaction choice
   const handleVoiceChoice = () => {
-    console.log("🎤 Voice interaction selected after account deletion");
+    console.log("Voice interaction selected after account deletion");
     closeBottomSheet();
     toast({
       title: "Account Reset",
       description: "Chat history cleared. You can start a new conversation with voice.",
     });
+    
+    // Reload page after short delay to ensure fresh state
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
   // Portal setup effect
