@@ -298,10 +298,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }),
     );
     
-    // Debug: Log volume dispatch more frequently to test
-    if (Math.random() < 0.3) { // 30% of volume updates for better testing
-      console.log('🎤 VoiceAssistant: Dispatching voice-volume:', { average, max, isActive: isCurrentlyActive });
-    }
+    // Debug: Log ALL volume dispatches to understand the data range
+    console.log('🎤 VoiceAssistant: Dispatching voice-volume:', { 
+      average, 
+      max, 
+      isActive: isCurrentlyActive,
+      threshold: voiceThreshold,
+      bufferLength
+    });
 
     // Minimal debug logging only on errors
     if (average === 0 && max === 0 && timeAverage === 128 && consecutiveSilenceCountRef.current % 100 === 0) {

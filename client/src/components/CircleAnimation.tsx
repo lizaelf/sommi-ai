@@ -28,24 +28,26 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     
     setVoiceVolume(volume);
     
+    // Debug all volume events to understand the data range
+    console.log('🎤 Voice volume event:', { volume, maxVolume, isActive, isListening: currentState.isListening });
+    
     // ONLY update size if currently listening
     if (currentState.isListening) {
       const baseSize = currentState.size;
       let scale = 1.0;
       
-      // More responsive voice scaling
-      if (volume > 3) {
-        // Use exponential scaling for better visual feedback
-        const normalizedVolume = Math.min(volume / 40, 1.0);
-        const volumeScale = Math.pow(normalizedVolume, 0.6) * 2.0;
+      // Much more sensitive scaling - respond to any voice input
+      if (volume > 0.5) {
+        // Linear scaling that's immediately visible
+        const volumeScale = Math.min(volume / 15, 2.0); // Very sensitive scaling
         scale = 1.0 + volumeScale;
       }
       
       const newSize = baseSize * scale;
       setSize(newSize);
-      setOpacity(isActive && volume > 2 ? 0.9 : 0.7);
+      setOpacity(volume > 0.5 ? 0.9 : 0.7);
       
-      console.log('🎤 Voice scaling:', { volume, scale, newSize });
+      console.log('🎤 Voice scaling applied:', { volume, scale, newSize, baseSize });
     }
   }, []);
 
