@@ -1179,6 +1179,96 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Tenant management endpoints
+  app.get("/api/tenants", async (_req, res) => {
+    try {
+      const tenants = await storage.getAllTenants();
+      res.json(tenants);
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+      res.status(500).json({ message: "Failed to fetch tenants" });
+    }
+  });
+
+  app.get("/api/tenants/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid tenant ID" });
+      }
+      
+      const tenant = await storage.getTenant(id);
+      if (!tenant) {
+        return res.status(404).json({ message: "Tenant not found" });
+      }
+      
+      res.json(tenant);
+    } catch (error) {
+      console.error("Error fetching tenant:", error);
+      res.status(500).json({ message: "Failed to fetch tenant" });
+    }
+  });
+
+  app.get("/api/tenants/slug/:slug", async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const tenant = await storage.getTenantBySlug(slug);
+      
+      if (!tenant) {
+        return res.status(404).json({ message: "Tenant not found" });
+      }
+      
+      res.json(tenant);
+    } catch (error) {
+      console.error("Error fetching tenant by slug:", error);
+      res.status(500).json({ message: "Failed to fetch tenant" });
+    }
+  });
+
+  app.post("/api/tenants", async (req, res) => {
+    try {
+      const tenant = await storage.createTenant(req.body);
+      res.status(201).json(tenant);
+    } catch (error) {
+      console.error("Error creating tenant:", error);
+      res.status(500).json({ message: "Failed to create tenant" });
+    }
+  });
+
+  app.put("/api/tenants/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid tenant ID" });
+      }
+      
+      const tenant = await storage.updateTenant(id, req.body);
+      if (!tenant) {
+        return res.status(404).json({ message: "Tenant not found" });
+      }
+      
+      res.json(tenant);
+    } catch (error) {
+      console.error("Error updating tenant:", error);
+      res.status(500).json({ message: "Failed to update tenant" });
+    }
+  });
+
+  app.delete("/api/tenants/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid tenant ID" });
+      }
+      
+      await storage.deleteTenant(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting tenant:", error);
+      res.status(500).json({ message: "Failed to delete tenant" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
