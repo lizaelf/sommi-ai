@@ -30,7 +30,7 @@ const SuggestionButtons: React.FC<SuggestionButtonsProps> = ({
         justifyContent: 'flex-start',
         alignItems: 'center',
         flexWrap: 'nowrap',
-        overflowX: 'auto'
+        overflow: 'hidden'
       }}>
         {suggestions.map((suggestion, index) => (
           <button
