@@ -586,6 +586,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               setShowBottomSheet(false);
             }
             // Emit microphone status event for wine bottle animation
+            console.log('🎤 VoiceAssistant: Dispatching mic-status "stopped" event');
             window.dispatchEvent(
               new CustomEvent("mic-status", {
                 detail: { status: "stopped" },
@@ -620,6 +621,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentMicrophoneStream = stream;
       
       // Emit microphone status event for wine bottle animation
+      console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event');
       window.dispatchEvent(
         new CustomEvent("mic-status", {
           detail: { status: "listening", stream: stream },
@@ -745,6 +747,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setIsThinking(true);
     
     // Emit microphone status event for wine bottle animation
+    console.log('🎤 VoiceAssistant: Dispatching mic-status "processing" event');
     window.dispatchEvent(
       new CustomEvent("mic-status", {
         detail: { status: "processing" },
