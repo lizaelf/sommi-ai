@@ -14,7 +14,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
   const [isPlaying, setIsPlaying] = useState(false);
   const animationRef = useRef<number>(0);
 
-  // Simple animation loop with basic pulse effects
+  // Animation loop that only runs when there's an active state
   useEffect(() => {
     const animate = () => {
       const baseSize = size;
@@ -47,11 +47,20 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       setSize(newSize);
       setOpacity(hasActivity ? 0.8 : 0.6);
 
-      animationRef.current = requestAnimationFrame(animate);
+      // Only continue animation if there's still activity
+      if (hasActivity) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
     };
 
-    if (isAnimating || isListening || isProcessing || isPlaying) {
+    // Only start animation if there's an active state
+    const shouldAnimate = isAnimating || isListening || isProcessing || isPlaying;
+    if (shouldAnimate) {
       animationRef.current = requestAnimationFrame(animate);
+    } else {
+      // Reset to default state when no animation is active
+      setSize(size);
+      setOpacity(0.6);
     }
 
     return () => {
