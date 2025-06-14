@@ -182,19 +182,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
   };
 
-  // Add global promise rejection handler for production stability
-  useEffect(() => {
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.log("Caught unhandled rejection:", event.reason);
-      event.preventDefault(); // Prevent console error
-    };
-
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
-    return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, []);
+  // Removed global promise rejection handler - fixing rejections at source instead
   
   // Voice activity detection state
   const [isVoiceActive, setIsVoiceActive] = useState(false);
@@ -221,6 +209,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       if (audioContextRef.current.state === 'suspended') {
         audioContextRef.current.resume().then(() => {
           // Audio context resumed
+        }).catch(() => {
+          // Audio context resume failed - ignore
         });
       }
       
@@ -363,9 +353,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       silenceTimerRef.current = null;
     }
     
-    // Close audio context
+    // Close audio context safely
     if (audioContextRef.current) {
-      audioContextRef.current.close();
+      audioContextRef.current.close().catch(() => {
+        // Audio context close failed - ignore
+      });
       audioContextRef.current = null;
     }
     
