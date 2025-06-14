@@ -21,6 +21,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  
+  // Share state globally for CircleAnimation
+  useEffect(() => {
+    (window as any).voiceAssistantState = {
+      isListening,
+      isProcessing: isThinking,
+      isResponding,
+      showBottomSheet
+    };
+    console.log('🎤 VoiceAssistant: Global state updated:', {
+      isListening,
+      isProcessing: isThinking,
+      isResponding,
+      showBottomSheet
+    });
+  }, [isListening, isThinking, isResponding, showBottomSheet]);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
   const [isManuallyClosedRef, setIsManuallyClosedRef] = useState(false);
@@ -488,11 +504,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     
     // Dispatch listening event immediately to ensure CircleAnimation responds
     console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event (early)');
-    window.dispatchEvent(
-      new CustomEvent("mic-status", {
-        detail: { status: "listening" },
-      }),
-    );
+    const micEvent = new CustomEvent("mic-status", {
+      detail: { status: "listening" },
+    });
+    console.log('🎤 VoiceAssistant: Created event:', micEvent, 'detail:', micEvent.detail);
+    window.dispatchEvent(micEvent);
 
     // Check deployment environment
     const isDeployment = window.location.hostname.includes('.replit.app') || window.location.hostname.includes('.repl.co');

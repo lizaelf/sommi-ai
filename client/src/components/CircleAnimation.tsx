@@ -65,83 +65,65 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     };
   }, [isAnimating, isProcessing, isPlaying, size, isListening]);
 
-  // Handle status change events
+  // Direct communication with VoiceAssistant - check global state
   useEffect(() => {
-    // Test that event listeners are properly attached
-    console.log('🎤 CircleAnimation: Setting up event listeners');
-    
-    const handleAudioStatusChange = (event: CustomEvent) => {
-      const status = event.detail?.status;
-      console.log('🎵 Audio status:', status);
-      
-      if (status === 'playing') {
-        setIsPlaying(true);
-        setIsProcessing(false);
-        setIsListening(false);
-      } else if (status === 'stopped' || status === 'paused') {
-        setIsPlaying(false);
+    const checkVoiceAssistantState = () => {
+      // Access VoiceAssistant state directly if events aren't working
+      const voiceAssistant = (window as any).voiceAssistantState;
+      if (voiceAssistant) {
+        console.log('🎤 CircleAnimation: Direct state check:', voiceAssistant);
+        if (voiceAssistant.isListening && !isListening) {
+          console.log('🎤 CircleAnimation: Direct state - ENTERING LISTENING MODE');
+          setIsListening(true);
+          setIsProcessing(false);
+          setIsPlaying(false);
+        } else if (voiceAssistant.isProcessing && !isProcessing) {
+          console.log('🎤 CircleAnimation: Direct state - ENTERING PROCESSING MODE');
+          setIsListening(false);
+          setIsProcessing(true);
+          setIsPlaying(false);
+        } else if (!voiceAssistant.isListening && !voiceAssistant.isProcessing) {
+          console.log('🎤 CircleAnimation: Direct state - ENTERING IDLE MODE');
+          setIsListening(false);
+          setIsProcessing(false);
+          setIsPlaying(false);
+        }
       }
     };
 
+    // Check state every 100ms for real-time updates
+    const stateChecker = setInterval(checkVoiceAssistantState, 100);
+
+    // Also keep event listeners as backup
     const handleMicStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
-      console.log('🎤 CircleAnimation: Mic status event received:', status, 'at', new Date().toLocaleTimeString());
-      console.log('🎤 CircleAnimation: Event detail:', event.detail);
-      console.log('🎤 CircleAnimation: Current states before change:', { isListening, isProcessing, isPlaying });
+      console.log('🎤 CircleAnimation: Event received:', status, event.detail);
       
       if (status === 'listening') {
-        console.log('🎤 CircleAnimation: *** ENTERING LISTENING MODE - Voice control activated ***');
         setIsListening(true);
         setIsProcessing(false);
         setIsPlaying(false);
-        // Stop any ongoing timer animation
-        cancelAnimationFrame(animationRef.current);
       } else if (status === 'processing') {
-        console.log('🎤 CircleAnimation: ENTERING PROCESSING MODE');
         setIsListening(false);
         setIsProcessing(true);
         setIsPlaying(false);
       } else if (status === 'stopped') {
-        console.log('🎤 CircleAnimation: ENTERING STOPPED MODE');
         setIsListening(false);
         setIsProcessing(false);
         setIsPlaying(false);
         setVoiceVolume(0);
-        // Reset to base size
-        setSize(size);
-        setOpacity(0.6);
       }
-      
-      // Log the new state after change
-      setTimeout(() => {
-        console.log('🎤 CircleAnimation: New states after change:', { 
-          isListening: stateRef.current.isListening, 
-          isProcessing: stateRef.current.isProcessing, 
-          isPlaying: stateRef.current.isPlaying 
-        });
-      }, 10);
     };
 
-    // Test event listener attachment
-    const testListener = (event: Event) => {
-      console.log('🎤 CircleAnimation: Global event captured:', event.type, (event as CustomEvent).detail);
-    };
-    
-    window.addEventListener('mic-status', testListener);
-    window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
     window.addEventListener('mic-status', handleMicStatusChange as EventListener);
     window.addEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
 
-    console.log('🎤 CircleAnimation: Event listeners attached');
-
     return () => {
-      window.removeEventListener('mic-status', testListener);
-      window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
+      clearInterval(stateChecker);
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
       window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
-      cancelAnimationFrame(animationRef.current);
     };
-  }, [handleVoiceVolumeChange, size]);
+  }, [handleVoiceVolumeChange]);
 
   return (
     <div className="relative flex items-center justify-center">
