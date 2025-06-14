@@ -46,14 +46,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ### Voice System & UI Improvements (June 14, 2025 - Latest)
 - **Permanent Close Behavior**: Close button now prevents all future interactions until page refresh
 - **OpenAI Voice Integration**: Switched from browser speech synthesis to OpenAI TTS for consistent voice quality
-- **Enhanced Circle Animation**: Improved voice responsiveness with lower threshold (3 vs 5) and increased scaling (40% vs 30%)
-- **Performance Enhancement**: Replaced inefficient 100ms setInterval polling with optimized requestAnimationFrame
+- **Circle Animation Restoration**: Reverted to working version with proper voice volume scaling and visual ring effects
+- **Voice Responsiveness**: Circle scales with voice input (threshold >5, max 30% scaling) plus green visual ring
+- **Debug Overlay**: Real-time voice volume and size display during listening mode
+- **Simplified State Management**: Uses proven setInterval-based state sync (250ms) instead of requestAnimationFrame
+- **Visual Effects**: Added green border ring with glow effects that scale with voice volume
 - **Type Safety Implementation**: Added proper TypeScript interfaces for MicStatusEvent and VoiceVolumeEvent
-- **Smart State Synchronization**: Implemented conditional polling that only runs when VoiceAssistant is active
-- **Debug Overlay Control**: Added showDebug prop with automatic development/production detection
-- **Resource Management**: Improved cleanup with proper animation frame cancellation and memory management
-- **Event-Driven Architecture**: Enhanced event handling with type-safe custom event interfaces
-- **Production Optimization**: Debug overlay automatically hidden in production builds
+- **Resource Management**: Proper cleanup with interval clearing and event listener removal
 
 ### Syntax Error Resolution (June 14, 2025)
 - **VoiceAssistant.tsx Fixed**: Corrected mismatched braces in nested try-catch blocks throughout handleUnmute function
