@@ -894,35 +894,7 @@ const Cellar = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
             <button
               className="profile-menu-item"
-              onClick={() => {
-                setShowProfileMenu(false);
-                // Load existing contact data if available
-                const savedContactData = localStorage.getItem("contactData");
-                console.log("Loading saved contact data:", savedContactData);
-                if (savedContactData) {
-                  try {
-                    const contactData = JSON.parse(savedContactData);
-                    console.log("Parsed contact data:", contactData);
-                    setFormData({
-                      firstName: contactData.firstName || "",
-                      lastName: contactData.lastName || "",
-                      email: contactData.email || "",
-                      phone: contactData.phone || "",
-                    });
-                    // Also set the country if saved
-                    if (contactData.country) {
-                      setSelectedCountry(contactData.country);
-                    }
-                  } catch (error) {
-                    console.error("Error parsing saved contact data:", error);
-                  }
-                } else {
-                  console.log("No saved contact data found");
-                }
-                setShowModal(true);
-                setAnimationState("opening");
-                setTimeout(() => setAnimationState("open"), 50);
-              }}
+              disabled
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -933,17 +905,12 @@ const Cellar = () => {
                 color: "white",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "16px",
-                cursor: "pointer",
+                cursor: "not-allowed",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
                 borderBottom: "1px solid #373737",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
+                opacity: "0.5",
               }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -956,10 +923,7 @@ const Cellar = () => {
             </button>
             <button
               className="profile-menu-item"
-              onClick={() => {
-                setShowProfileMenu(false);
-                setShowNotificationsModal(true);
-              }}
+              disabled
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -970,17 +934,12 @@ const Cellar = () => {
                 color: "white",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "16px",
-                cursor: "pointer",
+                cursor: "not-allowed",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
                 borderBottom: "1px solid #373737",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
+                opacity: "0.5",
               }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
