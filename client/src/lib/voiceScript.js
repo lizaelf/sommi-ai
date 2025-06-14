@@ -221,20 +221,22 @@ async function speakResponse(text) {
       currentUtterance = new SpeechSynthesisUtterance(text);
       currentUtterance.lang = 'en-US';
       
-      // CRITICAL: Use the globally locked voice for absolute consistency
-      if (window.selectedVoice) {
-        currentUtterance.voice = window.selectedVoice;
-        console.log("Using locked voice:", window.selectedVoice.name);
+      // CRITICAL: Use centralized voice manager for absolute consistency
+      if (window.voiceManager) {
+        const lockedVoice = window.voiceManager.getLockedVoice();
+        if (lockedVoice) {
+          currentUtterance.voice = lockedVoice;
+          console.log("Using locked voice from VoiceManager:", lockedVoice.name);
+        }
       } else {
-        // If somehow no voice is locked, use stored URI
+        // Fallback to localStorage if VoiceManager not available
         const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
         if (lockedVoiceURI) {
           const voices = window.speechSynthesis.getVoices();
           const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
           if (lockedVoice) {
             currentUtterance.voice = lockedVoice;
-            window.selectedVoice = lockedVoice; // Re-lock it
-            console.log("Restored locked voice from storage:", lockedVoice.name);
+            console.log("Fallback: Using locked voice from storage:", lockedVoice.name);
           }
         }
       }

@@ -50,40 +50,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
       
       try {
-        // Use the browser's speech synthesis for immediate response
-        if ('speechSynthesis' in window) {
-          // Cancel any ongoing speech
-          window.speechSynthesis.cancel();
-          
-          const utterance = new SpeechSynthesisUtterance(welcomeMessage);
-          utterance.lang = 'en-US';
-          utterance.rate = 1.0;
-          utterance.pitch = 1.0;
-          
-          // Try to use consistent voice
-          const voices = window.speechSynthesis.getVoices();
-          const preferredVoice = voices.find(voice => 
-            voice.name.includes('Google UK English Male') ||
-            voice.name.includes('Google US English Male') ||
-            voice.name.includes('Male')
-          );
-          
-          if (preferredVoice) {
-            utterance.voice = preferredVoice;
+        // CRITICAL: Use centralized voice manager for consistent male voice
+        const { voiceManager } = await import('@/lib/voiceManager');
+        
+        voiceManager.speak(
+          welcomeMessage,
+          () => {
+            setIsResponding(false);
+            setShowAskButton(true);
+          },
+          () => {
+            setIsResponding(false);
+            setShowAskButton(true);
           }
-          
-          utterance.onend = () => {
-            setIsResponding(false);
-            setShowAskButton(true);
-          };
-          
-          utterance.onerror = () => {
-            setIsResponding(false);
-            setShowAskButton(true);
-          };
-          
-          window.speechSynthesis.speak(utterance);
-        }
+        );
       } catch (error) {
         console.error('Error playing welcome message:', error);
         setIsResponding(false);
