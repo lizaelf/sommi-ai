@@ -1182,204 +1182,204 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             
             // Priority 1: Use LOCKED voice URI for absolute consistency
             const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
-          if (lockedVoiceURI) {
-            const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
-            if (lockedVoice) {
-              utterance.voice = lockedVoice;
-              console.log("USING LOCKED VOICE:", lockedVoice.name, "URI:", lockedVoice.voiceURI);
-              return;
+            if (lockedVoiceURI) {
+              const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
+              if (lockedVoice) {
+                utterance.voice = lockedVoice;
+                console.log("USING LOCKED VOICE:", lockedVoice.name, "URI:", lockedVoice.voiceURI);
+                return;
+              }
             }
-          }
-          
-          // Priority 2: Google UK English Male (exact match)
-          let preferredVoice = voices.find(voice => 
-            voice.name === 'Google UK English Male');
-          
-          // Priority 3: Google US English Male (exact match)
-          if (!preferredVoice) {
-            preferredVoice = voices.find(voice => 
-              voice.name === 'Google US English Male');
-          }
-          
-          // Priority 4: Any Google male voice with English
-          if (!preferredVoice) {
-            preferredVoice = voices.find(voice => 
-              voice.name.includes('Google') && voice.name.includes('Male') && voice.lang.startsWith('en'));
-          }
-          
-          // Priority 5: First available English male voice
-          if (!preferredVoice) {
-            preferredVoice = voices.find(voice => 
-              voice.name.includes('Male') && voice.lang.startsWith('en'));
-          }
-          
-          if (preferredVoice) {
-            utterance.voice = preferredVoice;
-            // Lock this voice for consistent reuse
-            localStorage.setItem('LOCKED_VOICE_URI', preferredVoice.voiceURI);
-            localStorage.setItem('LOCKED_VOICE_NAME', preferredVoice.name);
-            console.log("LOCKED VOICE FOR CONSISTENCY:", preferredVoice.name, "URI:", preferredVoice.voiceURI);
-          }
-        };
-        
-        // Handle voice loading
-        if (speechSynthesis.getVoices().length > 0) {
-          selectVoice();
-        } else {
-          speechSynthesis.onvoiceschanged = () => {
-            selectVoice();
-            speechSynthesis.onvoiceschanged = null;
+            
+            // Priority 2: Google UK English Male (exact match)
+            let preferredVoice = voices.find(voice => 
+              voice.name === 'Google UK English Male');
+            
+            // Priority 3: Google US English Male (exact match)
+            if (!preferredVoice) {
+              preferredVoice = voices.find(voice => 
+                voice.name === 'Google US English Male');
+            }
+            
+            // Priority 4: Any Google male voice with English
+            if (!preferredVoice) {
+              preferredVoice = voices.find(voice => 
+                voice.name.includes('Google') && voice.name.includes('Male') && voice.lang.startsWith('en'));
+            }
+            
+            // Priority 5: First available English male voice
+            if (!preferredVoice) {
+              preferredVoice = voices.find(voice => 
+                voice.name.includes('Male') && voice.lang.startsWith('en'));
+            }
+            
+            if (preferredVoice) {
+              utterance.voice = preferredVoice;
+              // Lock this voice for consistent reuse
+              localStorage.setItem('LOCKED_VOICE_URI', preferredVoice.voiceURI);
+              localStorage.setItem('LOCKED_VOICE_NAME', preferredVoice.name);
+              console.log("LOCKED VOICE FOR CONSISTENCY:", preferredVoice.name, "URI:", preferredVoice.voiceURI);
+            }
           };
+          
+          // Handle voice loading
+          if (speechSynthesis.getVoices().length > 0) {
+            selectVoice();
+          } else {
+            speechSynthesis.onvoiceschanged = () => {
+              selectVoice();
+              speechSynthesis.onvoiceschanged = null;
+            };
+          }
+
+          utterance.onstart = () => {
+            setIsResponding(true);
+            setShowUnmuteButton(false);
+            setShowAskButton(false);
+            console.log("Browser TTS playback started");
+          };
+
+          utterance.onend = () => {
+            // Browser TTS completed
+            setIsResponding(false);
+            setShowUnmuteButton(false);
+            setShowAskButton(true);
+            // TTS state updated
+            console.log("Browser TTS playback completed - Ask button enabled");
+          };
+
+          utterance.onerror = () => {
+            setIsResponding(false);
+            setShowUnmuteButton(false);
+            setShowAskButton(true);
+            console.error("Browser TTS playback error");
+          };
+
+          speechSynthesis.speak(utterance);
+          console.log("Browser TTS initiated successfully");
+          return; // Exit early for browser TTS
         }
 
-        utterance.onstart = () => {
+        // Store reference for stop functionality
+        (window as any).currentOpenAIAudio = audio;
+
+        audio.onplay = () => {
           setIsResponding(true);
           setShowUnmuteButton(false);
           setShowAskButton(false);
-          console.log("Browser TTS playback started");
+          console.log("Manual unmute TTS playback started successfully");
         };
 
-        utterance.onend = () => {
-          // Browser TTS completed
+        audio.onended = () => {
+          // Server TTS completed
           setIsResponding(false);
           setShowUnmuteButton(false);
           setShowAskButton(true);
-          // TTS state updated
-          console.log("Browser TTS playback completed - Ask button enabled");
+          // Server TTS state updated
+          if (audioUrl) {
+            URL.revokeObjectURL(audioUrl);
+          }
+          (window as any).currentOpenAIAudio = null;
+          console.log("Manual unmute TTS playback completed successfully - Ask button enabled");
         };
 
-        utterance.onerror = () => {
+        audio.onerror = (e) => {
+          console.error("Manual unmute TTS playback error:", e);
+          console.error("Audio error details:", {
+            error: audio.error?.message,
+            code: audio.error?.code,
+            networkState: audio.networkState,
+            readyState: audio.readyState,
+          });
           setIsResponding(false);
           setShowUnmuteButton(false);
           setShowAskButton(true);
-          console.error("Browser TTS playback error");
+          if (audioUrl) {
+            URL.revokeObjectURL(audioUrl);
+          }
+          (window as any).currentOpenAIAudio = null;
+
+          toast({
+            description: (
+              <span
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "16px",
+                  fontWeight: 500,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Failed to play audio - please try again
+              </span>
+            ),
+            duration: 3000,
+            className: "bg-white text-black border-none",
+            style: {
+              position: "fixed",
+              top: "74px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "auto",
+              maxWidth: "none",
+              padding: "8px 24px",
+              borderRadius: "32px",
+              boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+              zIndex: 9999,
+            },
+          });
         };
 
-        speechSynthesis.speak(utterance);
-        console.log("Browser TTS initiated successfully");
-        return; // Exit early for browser TTS
-      }
+        audio.onabort = () => {
+          console.log("Manual unmute audio playback aborted");
+          if (audioUrl) {
+            URL.revokeObjectURL(audioUrl);
+          }
+          (window as any).currentOpenAIAudio = null;
+        };
 
-      // Store reference for stop functionality
-      (window as any).currentOpenAIAudio = audio;
+        // Set audio properties for better compatibility
+        audio.preload = "auto";
+        audio.volume = 0.8;
 
-      audio.onplay = () => {
-        setIsResponding(true);
-        setShowUnmuteButton(false);
-        setShowAskButton(false);
-        console.log("Manual unmute TTS playback started successfully");
-      };
+        console.log("Attempting to play manual unmute audio...");
 
-      audio.onended = () => {
-        // Server TTS completed
-        setIsResponding(false);
-        setShowUnmuteButton(false);
-        setShowAskButton(true);
-        // Server TTS state updated
-        if (audioUrl) {
-          URL.revokeObjectURL(audioUrl);
+        // Ensure audio context is ready for user-initiated playback
+        if (typeof (window as any).initAudioContext === "function") {
+          await (window as any).initAudioContext();
         }
-        (window as any).currentOpenAIAudio = null;
-        console.log("Manual unmute TTS playback completed successfully - Ask button enabled");
-      };
 
-      audio.onerror = (e) => {
-        console.error("Manual unmute TTS playback error:", e);
-        console.error("Audio error details:", {
-          error: audio.error?.message,
-          code: audio.error?.code,
-          networkState: audio.networkState,
-          readyState: audio.readyState,
-        });
-        setIsResponding(false);
-        setShowUnmuteButton(false);
-        setShowAskButton(true);
-        if (audioUrl) {
-          URL.revokeObjectURL(audioUrl);
-        }
-        (window as any).currentOpenAIAudio = null;
+        const playPromise = audio.play();
 
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Failed to play audio - please try again
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
-      };
+        if (playPromise !== undefined) {
+          try {
+            await playPromise;
+            console.log("Manual unmute audio play promise resolved successfully");
+          } catch (playError: any) {
+            console.error("Manual unmute audio play failed:", playError);
 
-      audio.onabort = () => {
-        console.log("Manual unmute audio playback aborted");
-        if (audioUrl) {
-          URL.revokeObjectURL(audioUrl);
-        }
-        (window as any).currentOpenAIAudio = null;
-      };
-
-      // Set audio properties for better compatibility
-      audio.preload = "auto";
-      audio.volume = 0.8;
-
-      console.log("Attempting to play manual unmute audio...");
-
-      // Ensure audio context is ready for user-initiated playback
-      if (typeof (window as any).initAudioContext === "function") {
-        await (window as any).initAudioContext();
-      }
-
-      const playPromise = audio.play();
-
-      if (playPromise !== undefined) {
-        try {
-          await playPromise;
-          console.log("Manual unmute audio play promise resolved successfully");
-        } catch (playError: any) {
-          console.error("Manual unmute audio play failed:", playError);
-
-          if (playError.name === "NotAllowedError") {
-            console.error("Manual audio playback blocked by browser");
-            throw new Error(
-              "Audio playback blocked - please check browser settings",
-            );
-          } else {
-            throw playError;
+            if (playError.name === "NotAllowedError") {
+              console.error("Manual audio playback blocked by browser");
+              throw new Error(
+                "Audio playback blocked - please check browser settings",
+              );
+            } else {
+              throw playError;
+            }
           }
         }
-      }
 
-      audio.onerror = (e) => {
-        console.error("Manual unmute TTS playback error:", e);
-        setIsResponding(false);
-        setShowUnmuteButton(false);
-        setShowAskButton(true);
-        URL.revokeObjectURL(audioUrl);
-        (window as any).currentOpenAIAudio = null;
-      };
+        audio.onerror = (e) => {
+          console.error("Manual unmute TTS playback error:", e);
+          setIsResponding(false);
+          setShowUnmuteButton(false);
+          setShowAskButton(true);
+          URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
+        };
 
-      // Audio is already playing from the promise above
-      console.log("Manual unmute TTS playback initiated successfully");
-    } catch (error) {
+        // Audio is already playing from the promise above
+        console.log("Manual unmute TTS playback initiated successfully");
+      } catch (error) {
       console.error("Failed to generate or play unmute TTS audio:", error);
       setIsResponding(false);
       setShowUnmuteButton(false);
