@@ -244,7 +244,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
   useEffect(() => {
     // Function to handle audio playback status change
     const handleAudioStatusChange = (event: CustomEvent) => {
-      console.log('WineImage: Audio status changed:', event.detail?.status);
+      console.log('CircleAnimation: Audio status changed:', event.detail?.status);
       if (event.detail?.status === 'playing') {
         setIsPlaying(true);
         
