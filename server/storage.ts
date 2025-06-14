@@ -179,6 +179,18 @@ export class DatabaseStorage implements IStorage {
       .delete(tenants)
       .where(eq(tenants.id, id));
   }
+
+  async getUsedSuggestionPills(wineKey: string): Promise<UsedSuggestionPill[]> {
+    return await db.select().from(usedSuggestionPills).where(eq(usedSuggestionPills.wineKey, wineKey));
+  }
+
+  async markSuggestionPillUsed(pill: InsertUsedSuggestionPill): Promise<UsedSuggestionPill> {
+    const [insertedPill] = await db
+      .insert(usedSuggestionPills)
+      .values(pill)
+      .returning();
+    return insertedPill;
+  }
 }
 
 export const storage = new DatabaseStorage();

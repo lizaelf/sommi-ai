@@ -1,0 +1,108 @@
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import Button from "@/components/ui/Button";
+
+interface SuggestionPill {
+  id: string;
+  text: string;
+  prompt: string;
+}
+
+interface SuggestionPillsProps {
+  wineKey: string;
+  onSuggestionClick: (prompt: string, pillId: string) => void;
+  isDisabled?: boolean;
+}
+
+export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled = false }: SuggestionPillsProps) {
+  const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
+
+  // Fetch available suggestion pills for this wine
+  const { data: suggestionsData, isLoading, refetch } = useQuery({
+    queryKey: ['/api/suggestion-pills', wineKey],
+    queryFn: async () => {
+      const response = await fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch suggestion pills');
+      }
+      return response.json();
+    },
+    enabled: !!wineKey,
+  });
+
+  const handlePillClick = async (pill: SuggestionPill) => {
+    if (isDisabled || usedPills.has(pill.id)) return;
+
+    try {
+      // Mark pill as used in database
+      const response = await fetch('/api/suggestion-pills/used', {
+        method: 'POST',
+        body: JSON.stringify({
+          wineKey,
+          suggestionId: pill.id,
+          userId: null, // Optional user tracking
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark pill as used');
+      }
+
+      // Update local state to hide the pill immediately
+      setUsedPills(prev => new Set(Array.from(prev).concat(pill.id)));
+
+      // Trigger the suggestion with the prompt
+      onSuggestionClick(pill.prompt, pill.id);
+
+      // Refetch to get updated available pills
+      refetch();
+    } catch (error) {
+      console.error('Error marking pill as used:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex gap-2 flex-wrap animate-pulse">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-8 bg-gray-200 rounded-full px-4 py-2 w-24"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const availablePills = suggestionsData?.suggestions || [];
+  const visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id));
+
+  if (visiblePills.length === 0) {
+    return (
+      <div className="text-gray-500 text-sm italic">
+        All suggestions explored for this wine
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex gap-2 flex-wrap">
+      {visiblePills.map((pill: SuggestionPill) => (
+        <Button
+          key={pill.id}
+          variant="outline"
+          size="sm"
+          onClick={() => handlePillClick(pill)}
+          disabled={isDisabled || usedPills.has(pill.id)}
+          className="h-auto py-2 px-3 text-sm whitespace-nowrap hover:bg-gray-50 transition-colors"
+        >
+          {pill.text}
+        </Button>
+      ))}
+    </div>
+  );
+}

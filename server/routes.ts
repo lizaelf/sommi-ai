@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech, generateConversationSummary, ParallelTTSProcessor } from "./openai";
-import { chatCompletionRequestSchema, type ChatCompletionRequest } from "@shared/schema";
+import { chatCompletionRequestSchema, type ChatCompletionRequest, insertUsedSuggestionPillSchema } from "@shared/schema";
+import suggestionPillsData from "@shared/suggestionPills.json";
 import { z } from "zod";
 import { google } from "googleapis";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
@@ -838,6 +839,39 @@ Format: Return only the description text, no quotes or additional formatting.`;
         message: "Failed to generate chat completion",
         error: error?.message || "Unknown error" 
       });
+    }
+  });
+
+  // Get available suggestion pills for a wine (excluding used ones)
+  app.get("/api/suggestion-pills/:wineKey", async (req, res) => {
+    try {
+      const { wineKey } = req.params;
+      
+      // Get used pills for this wine
+      const usedPills = await storage.getUsedSuggestionPills(wineKey);
+      const usedPillIds = usedPills.map(pill => pill.suggestionId);
+      
+      // Filter out used pills from available suggestions
+      const availablePills = suggestionPillsData.suggestions.filter(
+        suggestion => !usedPillIds.includes(suggestion.id)
+      );
+      
+      res.json({ suggestions: availablePills });
+    } catch (error) {
+      console.error("Error fetching suggestion pills:", error);
+      res.status(500).json({ error: "Failed to fetch suggestion pills" });
+    }
+  });
+
+  // Mark a suggestion pill as used
+  app.post("/api/suggestion-pills/used", async (req, res) => {
+    try {
+      const validatedData = insertUsedSuggestionPillSchema.parse(req.body);
+      const usedPill = await storage.markSuggestionPillUsed(validatedData);
+      res.json(usedPill);
+    } catch (error) {
+      console.error("Error marking suggestion pill as used:", error);
+      res.status(500).json({ error: "Failed to mark suggestion pill as used" });
     }
   });
 

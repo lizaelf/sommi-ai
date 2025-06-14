@@ -13,6 +13,7 @@ import WineRating from "@/components/WineRating";
 import Button from "@/components/ui/Button";
 import ChatInput from "@/components/ChatInput";
 import VoiceAssistant from "@/components/VoiceAssistant";
+import SuggestionPills from "@/components/SuggestionPills";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import { ShiningText } from "@/components/ShiningText";
