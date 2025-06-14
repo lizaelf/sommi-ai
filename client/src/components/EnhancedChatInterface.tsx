@@ -1112,11 +1112,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   onChange={(value) => handleInputChange("email", value)}
                   error={errors.email}
                 />
-                    }}
-                  >
-                    {errors.email}
-                  </div>
-                )}
 
                 {/* Phone number with country selector */}
                 <div style={{ position: "relative" }}>
@@ -1161,40 +1156,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         </span>
                       </div>
                     </div>
-                    <input
+                    <FormInput
                       type="tel"
+                      name="phone"
                       placeholder="Phone number"
                       value={formData.phone}
-                      onChange={(e) =>
-                        handleInputChange("phone", e.target.value)
-                      }
-                      className="contact-form-input"
+                      onChange={(value) => handleInputChange("phone", value)}
+                      error={errors.phone}
+                      className="flex-1"
                       style={{
-                        display: "flex",
-                        height: "56px",
-                        padding: "16px 24px",
-                        alignItems: "center",
                         flex: 1,
-                        color: "white",
-                        fontFamily: "Inter, sans-serif",
-                        fontSize: "16px",
-                        outline: "none",
-                        boxSizing: "border-box",
+                        height: "56px",
+                        border: "none",
+                        borderRadius: "0",
+                        backgroundColor: "transparent",
                       }}
                     />
                   </div>
-                  {errors.phone && (
-                    <div
-                      style={{
-                        color: "#ff4444",
-                        fontSize: "14px",
-                        marginTop: "4px",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      {errors.phone}
-                    </div>
-                  )}
                 </div>
 
                 {/* Save Button */}

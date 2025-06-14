@@ -3,6 +3,7 @@ import { Upload, Save, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import typography from "@/styles/typography";
+import { FormInput } from "@/components/ui/FormInput";
 
 interface WineEditFormProps {
   wine: {
@@ -120,19 +121,11 @@ export const WineEditForm: React.FC<WineEditFormProps> = ({
         <label style={{ ...typography.body1R, display: "block", marginBottom: "8px" }}>
           Wine Name
         </label>
-        <input
+        <FormInput
           type="text"
+          name="wineName"
           value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          style={{
-            width: "100%",
-            padding: "12px 16px",
-            backgroundColor: "#1A1A1A",
-            border: "1px solid #333",
-            borderRadius: "8px",
-            color: "#FFFFFF",
-            ...typography.body,
-          }}
+          onChange={(value) => setFormData({ ...formData, name: value })}
         />
       </div>
 
@@ -142,38 +135,22 @@ export const WineEditForm: React.FC<WineEditFormProps> = ({
           <label style={{ ...typography.body1R, display: "block", marginBottom: "8px" }}>
             Year
           </label>
-          <input
+          <FormInput
             type="number"
-            value={formData.year}
-            onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              backgroundColor: "#1A1A1A",
-              border: "1px solid #333",
-              borderRadius: "8px",
-              color: "#FFFFFF",
-              ...typography.body,
-            }}
+            name="year"
+            value={formData.year.toString()}
+            onChange={(value) => setFormData({ ...formData, year: parseInt(value) || 0 })}
           />
         </div>
         <div style={{ flex: 1 }}>
           <label style={{ ...typography.body1R, display: "block", marginBottom: "8px" }}>
             Bottles
           </label>
-          <input
+          <FormInput
             type="number"
-            value={formData.bottles}
-            onChange={(e) => setFormData({ ...formData, bottles: parseInt(e.target.value) })}
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              backgroundColor: "#1A1A1A",
-              border: "1px solid #333",
-              borderRadius: "8px",
-              color: "#FFFFFF",
-              ...typography.body,
-            }}
+            name="bottles"
+            value={formData.bottles.toString()}
+            onChange={(value) => setFormData({ ...formData, bottles: parseInt(value) || 0 })}
           />
         </div>
       </div>
