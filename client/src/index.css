@@ -407,8 +407,8 @@ button.header-icon-button svg,
 /* Voice Assistant Suggestion buttons with forced styling and conflict resolution */
 button.suggestion-button,
 .suggestion-button {
-  background: red !important;
-  background-color: red !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
   color: white !important;
   border: none !important;
   border-radius: 32px !important;
@@ -439,7 +439,7 @@ button.suggestion-button:hover,
 
 /* Suggestion buttons container fixes */
 .suggestion-buttons-container {
-  width: 100%;
+  width: 100% !important;
   position: relative !important;
   z-index: 5 !important;
 }

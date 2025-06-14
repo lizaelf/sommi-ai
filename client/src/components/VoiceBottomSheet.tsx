@@ -396,8 +396,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   marginBottom: '16px',
                   justifyContent: 'center',
                   width: '100%',
-                  maxWidth: '320px',
-                  paddingLeft: '16px'
+                  paddingLeft: '16px',
+                  paddingRight: '16px'
                 }}>
                   {/* All Suggestions in One Row */}
                   <SuggestionButtons
