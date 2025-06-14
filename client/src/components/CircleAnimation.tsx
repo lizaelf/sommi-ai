@@ -28,15 +28,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         scale = 1.0 + Math.sin(time) * 0.1;
         hasActivity = true;
       } else if (isListening) {
-        // Pure voice volume response - no time-based animation
-        if (voiceVolume > 0.1) {
-          // Only scale based on actual voice volume
-          const volumeScale = Math.min(voiceVolume / 2, 5.0); // Very sensitive direct voice scaling
-          scale = 1.0 + volumeScale;
-        } else {
-          // Minimal base state when no voice detected
-          scale = 1.0;
-        }
+        // Pure voice volume response - no time-based animation at all
+        // Scale is handled entirely by voice volume events, not by animation loop
+        scale = 1.0; // Base scale, actual scaling happens in voice volume handler
         hasActivity = true;
       } else if (isPlaying) {
         // Playing pulse animation
@@ -54,9 +48,8 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       setSize(newSize);
       setOpacity(hasActivity ? 0.8 : 0.6);
 
-      // Only continue animation if there's still activity
-      // Only continue animation loop for time-based animations (processing/playing)
-      // For listening state, we update on voice volume changes only
+      // Only continue animation loop for time-based animations (processing/playing/general)
+      // For listening state, we rely entirely on voice volume events, no continuous animation
       if (hasActivity && !isListening) {
         animationRef.current = requestAnimationFrame(animate);
       }
@@ -114,25 +107,29 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     };
 
     const handleVoiceVolumeChange = (event: CustomEvent) => {
-      const { volume } = event.detail;
+      const { volume, maxVolume, isActive } = event.detail;
       setVoiceVolume(volume);
       
       // Immediately update size based on voice volume when listening
       if (isListening) {
         const baseSize = size;
         let scale = 1.0;
-        if (volume > 0.1) {
-          const volumeScale = Math.min(volume / 2, 5.0);
+        
+        // Use a more sensitive and responsive scaling based on actual voice input
+        if (volume > 5) {
+          // Scale based on volume with better visual feedback
+          const volumeScale = Math.min(volume / 50, 3.0); // More sensitive scaling
           scale = 1.0 + volumeScale;
         }
+        
         const newSize = baseSize * scale;
-        setCurrentSize(newSize);
-        setOpacity(0.8);
+        setSize(newSize);
+        setOpacity(isActive ? 0.9 : 0.7);
       }
       
       // Debug: Log volume changes more frequently to test
-      if (Math.random() < 0.05) { // 5% of volume updates
-        console.log('🎤 CircleAnimation: Voice volume received:', volume, 'isListening:', isListening);
+      if (Math.random() < 0.1) { // 10% of volume updates for better testing
+        console.log('🎤 CircleAnimation: Voice volume received:', { volume, maxVolume, isActive, isListening });
       }
     };
 
@@ -146,7 +143,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
       cancelAnimationFrame(animationRef.current);
     };
-  }, []);
+  }, [isListening, size]); // Add dependencies so voice volume handler has access to current state
 
   return (
     <div className="relative flex items-center justify-center">
