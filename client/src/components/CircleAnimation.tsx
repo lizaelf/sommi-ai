@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-interface WineImageProps {
+interface CircleAnimationProps {
   isAnimating?: boolean;
   size?: number;
 }
@@ -27,7 +27,7 @@ interface WineImageProps {
  * Wine glass visualization with sound-reactive animation
  * Only animates when actively listening or playing audio
  */
-const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initialSize = 180 }) => {
+const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, size: initialSize = 180 }) => {
   const [size, setSize] = useState(initialSize);
   const [opacity, setOpacity] = useState(0.2);
   const [isListening, setIsListening] = useState(false);
@@ -464,4 +464,4 @@ const WineImage: React.FC<WineImageProps> = ({ isAnimating = false, size: initia
   );
 };
 
-export default WineImage;
+export default CircleAnimation;
