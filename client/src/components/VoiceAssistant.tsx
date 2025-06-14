@@ -23,6 +23,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [isThinking, setIsThinking] = useState(false);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
+  const [isManuallyClosedRef, setIsManuallyClosedRef] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -43,6 +44,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     const handleTriggerVoiceAssistant = async () => {
       console.log("QR SCAN: Voice assistant triggered");
+      // Don't reopen if manually closed
+      if (isManuallyClosedRef) {
+        console.log("QR SCAN: Voice assistant manually closed, ignoring trigger");
+        return;
+      }
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsResponding(true);
@@ -781,7 +787,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleCloseBottomSheet = () => {
-    // Closing bottom sheet and stopping audio
+    console.log("VoiceAssistant: Manual close triggered - setting flag to prevent reopening");
+    
+    // Set flag to prevent automatic reopening
+    setIsManuallyClosedRef(true);
     
     // Abort any ongoing conversation processing
     window.dispatchEvent(new CustomEvent('abortConversation'));
@@ -791,7 +800,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
-      // OpenAI TTS audio stopped
     }
     
     // Stop any autoplay audio
@@ -799,13 +807,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
-      // Autoplay audio stopped
     }
     
     // Stop browser speech synthesis
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
-      // Browser speech synthesis stopped
     }
     
     setShowBottomSheet(false);
@@ -814,6 +820,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setShowUnmuteButton(false);
     setShowAskButton(false);
     stopListening();
+    
+    // Reset the flag after a brief delay to allow future opens
+    setTimeout(() => {
+      setIsManuallyClosedRef(false);
+      console.log("VoiceAssistant: Manual close flag reset - voice assistant can be triggered again");
+    }, 2000);
   };
 
   const handleMute = () => {
