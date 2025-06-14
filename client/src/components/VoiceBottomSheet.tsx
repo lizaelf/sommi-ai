@@ -448,43 +448,23 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   paddingLeft: '16px',
                   paddingRight: '16px'
                 }}>
-                  <button
+                  <Button
                     onClick={onUnmute}
+                    variant="secondary"
                     style={{
                       width: '100%',
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      border: 'none',
-                      borderRadius: '24px',
-                      padding: '8px 16px',
-                      color: 'white',
-                      fontSize: '16px',
-                      fontWeight: 500,
-                      fontFamily: 'Inter, sans-serif',
-                      cursor: 'pointer',
-                      outline: 'none',
-                      transition: 'all 0.2s ease',
-                      textAlign: 'center',
-                      whiteSpace: 'nowrap',
-                      boxSizing: 'border-box',
                       height: '56px',
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      gap: '8px',
-                      minWidth: 'fit-content'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                      gap: '8px'
                     }}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
                       <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
                     </svg>
                     Unmute
-                  </button>
+                  </Button>
                 </div>
               )}
 
