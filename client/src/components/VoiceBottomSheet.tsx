@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import CircleAnimation from './CircleAnimation';
+import WineImage from './WineImage';
 import { ShiningText } from './ShiningText';
 import Button from '@/components/ui/Button';
 import SuggestionButtons from './SuggestionButtons';
@@ -282,7 +282,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             alignItems: 'center',
             position: 'relative'
           }}>
-            <CircleAnimation isAnimating={isListening || isResponding} size={156} />
+            <WineImage isAnimating={isListening || isResponding} size={156} />
           </div>
 
           {/* Status Content */}
