@@ -397,7 +397,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowBottomSheet(true);
       setIsThinking(true);
       setShowUnmuteButton(false);
-      console.log("Keeping bottom sheet open during processing");
+      // Keeping bottom sheet open
     } else {
       setIsThinking(false);
       // Show unmute button when response is ready
@@ -427,7 +427,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     // Stop microphone when user leaves the page/tab
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        console.log("Page hidden - stopping microphone access");
+        // Page hidden - stopping microphone
         stopListening();
         setShowBottomSheet(false);
 
@@ -851,13 +851,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
-      console.log("Autoplay TTS audio stopped successfully");
+      // Autoplay stopped
     }
 
     // Stop browser speech synthesis
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
-      console.log("Stop button clicked - stopping browser speech synthesis");
+      // Stopping speech synthesis
     }
 
     setIsResponding(false);
