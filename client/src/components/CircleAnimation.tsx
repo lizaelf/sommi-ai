@@ -33,9 +33,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       const baseSize = currentState.size;
       let scale = 1.0;
       
-      // Reduced scaling sensitivity for more subtle voice response
-      if (volume > 2) {
-        const volumeScale = Math.min(volume / 50, 1.0); // Much less sensitive scaling
+      // Very subtle scaling for minimal voice response
+      if (volume > 5) {
+        const volumeScale = Math.min(volume / 100, 0.3); // Minimal scaling
         scale = 1.0 + volumeScale;
       }
       
@@ -120,8 +120,6 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
           width: `${currentSize}px`,
           height: `${currentSize}px`,
           opacity: opacity,
-          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'}) brightness(${isListening ? Math.min(1 + voiceVolume / 20, 2.5) : 1}) saturate(${isListening ? Math.min(1 + voiceVolume / 25, 2) : 1}) contrast(${isListening ? Math.min(1 + voiceVolume / 30, 1.8) : 1})`,
-          boxShadow: isListening && voiceVolume > 3 ? `0 0 ${voiceVolume * 2}px rgba(255, 255, 255, ${Math.min(voiceVolume / 50, 0.6)})` : 'none',
         }}
       />
       
