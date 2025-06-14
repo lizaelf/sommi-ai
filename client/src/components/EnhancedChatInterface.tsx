@@ -1198,7 +1198,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               </div>
             </div>
           </div>,
-          portalElement,
+          portalElement || document.body
         )}
     </div>
   );
