@@ -42,6 +42,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 14, 2025)
 
+### Wine Recommendation Persistence (June 14, 2025)
+- **Always Show Recommendations**: Wine recommendations now always visible, regardless of account deletion status
+- **Selective Data Clearing**: Account deletion now only clears chat history while preserving wine collection data
+- **Enhanced IndexedDB Management**: Added clearChatHistory() method to preserve wine data during account reset
+- **localStorage Protection**: Modified account deletion to exclude wine-related data keys from removal
+- **DataSyncManager Preservation**: Wine collection and admin data remain intact through account deletion process
+
 ### Chat History Rollback (June 14, 2025)
 - **Registration Gate Removal**: Rolled back registration-gated chat history functionality
 - **Direct Chat Access**: Restored immediate access to chat history without user registration requirement
