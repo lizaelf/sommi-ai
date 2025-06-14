@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/Toaster";
 import { TooltipProvider } from "@/components/ui/Tooltip";
 import NotFound from "@/pages/NotFound";
-import WineDetailsRefactored from "@/pages/WineDetailsRefactored";
+import WineDetails from "@/pages/WineDetails";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
 import HomeGlobalRefactored from "@/pages/HomeGlobalRefactored";
@@ -20,11 +20,11 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomeGlobalRefactored} />
-      <Route path="/scanned" component={WineDetailsRefactored} />
+      <Route path="/scanned" component={WineDetails} />
       <Route path="/cellar" component={Cellar} />
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={() => 
-        <WineDetailsRefactored key={`wine-${Date.now()}`} />
+        <WineDetails key={`wine-${Date.now()}`} />
       } />
       <Route path="/tenants/:tenantSlug/admin" component={TenantAdminRefactored} />
       <Route path="/winery-tenant-admin" component={TenantAdminRefactored} />

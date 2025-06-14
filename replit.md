@@ -43,13 +43,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 13, 2025)
 
 ### Component Refactoring Architecture Overhaul (June 13, 2025 - Late Evening)
-- **Comprehensive Component Refactoring**: Broke down all major page components into smaller, focused functional components
-- **WineDetails Page Refactoring**: Split 1449-line component into 5 specialized components:
-  - WineDetailsHeader.tsx - Navigation and actions
-  - WineHeroSection.tsx - Wine image and information display
-  - WineChatSection.tsx - Chat interface and messaging
-  - WineLoadingState.tsx - Loading state management
-  - WineErrorState.tsx - Error state handling
+- **Selective Component Refactoring**: Refactored HomeGlobal, TenantAdmin, and WineEdit pages into smaller, focused functional components
+- **WineDetails Page Rollback**: Restored original single-file WineDetails component structure after UI issues with refactored version
 - **HomeGlobal Page Refactoring**: Modularized into 3 components:
   - WelcomeSection.tsx - Logo and welcome messaging
   - WineCard.tsx - Individual wine card component
