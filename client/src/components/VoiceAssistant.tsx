@@ -514,86 +514,96 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
-          console.log(`Audio data chunk: ${event.data.size} bytes`);
+          // Audio data chunk received
         }
       };
       
-      mediaRecorder.onstop = async () => {
-        console.log("Audio recording stopped, processing...");
-        
-        // Create audio blob from recorded chunks
-        const audioBlob = new Blob(audioChunksRef.current, { 
-          type: 'audio/webm;codecs=opus' 
-        });
-        
-        // Audio blob created
-        
-        // Check if audio blob has sufficient data
-        if (audioBlob.size < 1000) { // Less than 1KB indicates no meaningful audio
-          console.warn("Audio blob too small, skipping transcription");
+      mediaRecorder.onstop = () => {
+        // Wrap the async operation to prevent unhandled rejections
+        (async () => {
+          try {
+            // Audio recording stopped, processing
+            
+            // Create audio blob from recorded chunks
+            const audioBlob = new Blob(audioChunksRef.current, { 
+              type: 'audio/webm;codecs=opus' 
+            });
+            
+            // Audio blob created
+            
+            // Check if audio blob has sufficient data
+            if (audioBlob.size < 1000) { // Less than 1KB indicates no meaningful audio
+              console.warn("Audio blob too small, skipping transcription");
+              setIsThinking(false);
+              // Don't close bottom sheet automatically - let user try again
+              setShowAskButton(true);
+              setIsListening(false);
+              return;
+            }
+            
+            // Send audio to Whisper transcription endpoint with timeout
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.webm');
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000); // 12-second client timeout
+            
+            const response = await fetch('/api/transcribe', {
+              method: 'POST',
+              body: formData,
+              signal: controller.signal,
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}));
+              throw new Error(errorData.error || `Transcription failed: ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            // Transcription completed
+            
+            // Handle fallback responses
+            if (result.fallback) {
+              // Using fallback transcription
+              onSendMessage(result.text.trim());
+              return;
+            }
+            
+            if (result.text && result.text.trim()) {
+              onSendMessage(result.text.trim());
+            } else {
+              console.warn("No transcription text received - using fallback");
+              // Use fallback question instead of showing error
+              onSendMessage("Tell me about this wine");
+            }
+          } catch (error) {
+            console.error("Transcription error:", error);
+            
+            // Use fallback question instead of showing error
+            // Using fallback question due to transcription error
+            onSendMessage("Tell me about this wine");
+          } finally {
+            setIsThinking(false);
+            if (!isProcessing) {
+              setShowBottomSheet(false);
+            }
+            // Emit microphone status event for wine bottle animation
+            window.dispatchEvent(
+              new CustomEvent("mic-status", {
+                detail: { status: "stopped" },
+              }),
+            );
+          }
+        })().catch(error => {
+          console.error("Caught unhandled rejection:", error);
+          // Final fallback to prevent any unhandled promise rejections
+          onSendMessage("Tell me about this wine");
           setIsThinking(false);
-          // Don't close bottom sheet automatically - let user try again
           setShowAskButton(true);
           setIsListening(false);
-          return;
-        }
-        
-        try {
-          // Send audio to Whisper transcription endpoint with timeout
-          const formData = new FormData();
-          formData.append('audio', audioBlob, 'recording.webm');
-          
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 12000); // 12-second client timeout
-          
-          const response = await fetch('/api/transcribe', {
-            method: 'POST',
-            body: formData,
-            signal: controller.signal,
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `Transcription failed: ${response.statusText}`);
-          }
-          
-          const result = await response.json();
-          // Transcription completed
-          
-          // Handle fallback responses
-          if (result.fallback) {
-            // Using fallback transcription
-            onSendMessage(result.text.trim());
-            return;
-          }
-          
-          if (result.text && result.text.trim()) {
-            onSendMessage(result.text.trim());
-          } else {
-            console.warn("No transcription text received - using fallback");
-            // Use fallback question instead of showing error
-            onSendMessage("Tell me about this wine");
-          }
-        } catch (error) {
-          console.error("Transcription error:", error);
-          
-          // Use fallback question instead of showing error
-          console.log("Using fallback question due to transcription error");
-          onSendMessage("Tell me about this wine");
-        } finally {
-          setIsThinking(false);
-          if (!isProcessing) {
-            setShowBottomSheet(false);
-          }
-          // Emit microphone status event for wine bottle animation
-          window.dispatchEvent(
-            new CustomEvent("mic-status", {
-              detail: { status: "stopped" },
-            }),
-          );
-        }
+        });
       };
       
       // Recording state already set in startListening, just update UI
@@ -635,7 +645,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Primary backup: stop after 4 seconds regardless of voice detection
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          console.log("Primary backup auto-stop after 4 seconds");
+          // Primary backup auto-stop
           stopListening();
         }
       }, 4000);
