@@ -119,26 +119,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         }}
       />
 
-      {/* Voice visual ring */}
-      {isListening && voiceVolume > 10 && (
-        <div 
-          className="absolute inset-0 rounded-full border-2 border-green-400"
-          style={{
-            width: `${currentSize * (1 + Math.min(voiceVolume / 80, 0.5))}px`,
-            height: `${currentSize * (1 + Math.min(voiceVolume / 80, 0.5))}px`,
-            opacity: Math.min(voiceVolume / 60, 0.6),
-            boxShadow: `0 0 ${voiceVolume * 0.8}px rgba(34, 197, 94, 0.4)`,
-            transition: 'width 0.08s ease-out, height 0.08s ease-out',
-          }}
-        />
-      )}
 
-      {/* Debug (optional) */}
-      {isListening && (
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded z-50 font-mono">
-          <div>Voice: {voiceVolume.toFixed(0)} | Size: {currentSize.toFixed(0)}px</div>
-        </div>
-      )}
     </div>
   );
 }
