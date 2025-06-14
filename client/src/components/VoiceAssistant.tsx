@@ -303,30 +303,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const now = Date.now();
     const recordingDuration = now - recordingStartTimeRef.current;
     
-    // Enhanced debug logging every 500ms
-    if (consecutiveSilenceCountRef.current % 20 === 0) {
-      console.log(`🔊 VOICE DEBUG: FreqAvg=${average.toFixed(1)}, FreqMax=${max}, NonZero=${nonZeroValues}, TimeAvg=${timeAverage.toFixed(1)}, TimeMax=${timeMax}, Threshold=${currentThreshold}, Active=${isCurrentlyActive}, Duration=${recordingDuration}ms`);
-      
-      // Additional debugging for persistent zero levels
-      if (average === 0 && max === 0 && timeAverage === 128) {
-        console.log(`🎧 AUDIO DEBUG: No audio input detected - checking stream and context state`);
-        console.log(`🎧 AUDIO DEBUG: Audio context state: ${audioContextRef.current?.state}`);
-        console.log(`🎧 AUDIO DEBUG: Analyser connected: ${analyserRef.current ? 'YES' : 'NO'}`);
-        if (streamRef.current) {
-          const tracks = streamRef.current.getTracks();
-          // Enable all audio tracks explicitly
-          tracks.forEach(track => {
-            if (track.kind === 'audio' && !track.enabled) {
-              track.enabled = true;
-              console.log(`🎧 AUDIO DEBUG: Enabled audio track: ${track.label}`);
-            }
-          });
-          console.log(`🎧 AUDIO DEBUG: Stream tracks: ${tracks.length}, Active tracks: ${tracks.filter(t => t.readyState === 'live' && t.enabled).length}`);
-          tracks.forEach(track => {
-            console.log(`🎧 TRACK DEBUG: ${track.kind} - enabled:${track.enabled}, readyState:${track.readyState}, label:${track.label}`);
-          });
-        }
-      }
+    // Minimal debug logging only on errors
+    if (average === 0 && max === 0 && timeAverage === 128 && consecutiveSilenceCountRef.current % 100 === 0) {
+      console.log("Audio input issue detected");
     }
     
     if (isCurrentlyActive) {
@@ -334,25 +313,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       consecutiveSilenceCountRef.current = 0;
       
       if (!isVoiceActive) {
-        console.log(`🔊 Voice detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(true);
         
         // Clear any existing silence timer
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
           silenceTimerRef.current = null;
-          console.log("🔕 Silence timer cleared - voice detected");
         }
       }
     } else {
       consecutiveSilenceCountRef.current++;
       
       if (isVoiceActive) {
-        console.log(`🔕 Silence detected - Level: ${average.toFixed(2)}, threshold: ${currentThreshold}`);
         setIsVoiceActive(false);
         
         // Start silence timer with extended delay for natural speech patterns
-        console.log(`⏱️ Starting 3-second silence countdown (recorded for ${recordingDuration}ms)`);
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
         }
@@ -363,22 +338,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           const currentRecordingDuration = Date.now() - recordingStartTimeRef.current;
           
           if (canStopEarly && currentRecordingDuration > 1500) {
-            console.log("⏰ 3 seconds of silence completed - stopping recording now");
             stopListening();
           } else {
-            console.log("⏰ Silence detected but minimum recording time not reached - extending...");
             // Give more time if minimum duration not met
             silenceTimerRef.current = setTimeout(() => {
-              console.log("⏰ Final silence timeout - stopping recording");
               stopListening();
             }, 2000);
           }
         }, 3000);
-      } else {
-        // Log ongoing silence detection
-        if (consecutiveSilenceCountRef.current % 40 === 0) { // Every 1 second
-          console.log(`🔕 Ongoing silence - Level: ${average.toFixed(2)}, Duration: ${recordingDuration}ms, Count: ${consecutiveSilenceCountRef.current}`);
-        }
       }
       
       // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 3 seconds
@@ -387,7 +354,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           now - recordingStartTimeRef.current > 3000 && // Must be recording for at least 3 seconds
           now - lastVoiceDetectedRef.current > 5000 && 
           consecutiveSilenceCountRef.current > 200) { // 200 * 25ms = 5 seconds
-        console.log("Fallback silence detection - forcing stop after 5 seconds of silence");
         stopListening();
       }
     }
@@ -651,23 +617,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Ensure stream stays active by preventing browser from terminating it
       stream.getAudioTracks().forEach((track: MediaStreamTrack) => {
         track.enabled = true;
-        console.log("🎤 DEPLOY DEBUG: Track enabled:", track.kind, track.readyState, track.label);
       });
       
       mediaRecorder.start(250); // Request data every 250ms for stability
-      console.log("Audio recording started");
-      
-      // Verify stream is still active after starting recording
-      setTimeout(() => {
-        const tracks = stream.getAudioTracks();
-        if (tracks.length > 0) {
-          console.log("🎤 DEPLOY DEBUG: Stream status after start:", {
-            trackCount: tracks.length,
-            firstTrackState: tracks[0].readyState,
-            recordingState: mediaRecorderRef.current?.state
-          });
-        }
-      }, 100);
       
       // Start voice activity detection
       startVoiceDetection(stream);
@@ -809,34 +761,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       streamRef.current = null;
     }
     
-    console.log("Audio recording stopped immediately");
+    // Audio recording stopped
   };
 
   const toggleListening = async () => {
-    console.log("🎤 DEPLOY DEBUG: toggleListening called", {
-      isProcessing,
-      isListening,
-      showBottomSheet,
-      userAgent: navigator.userAgent,
-      location: window.location.href
-    });
-
     if (isProcessing) {
-      console.log("🎤 DEPLOY DEBUG: Blocking - processing in progress");
       return;
     }
 
     if (isListening) {
-      console.log("🎤 DEPLOY DEBUG: Stopping listening and closing bottom sheet");
       stopListening();
       setShowBottomSheet(false);
     } else {
-      console.log("🎤 DEPLOY DEBUG: Starting listening - will show bottom sheet");
       try {
         await startListening();
-        console.log("🎤 DEPLOY DEBUG: startListening completed successfully");
       } catch (error) {
-        console.error("🎤 DEPLOY DEBUG: startListening failed:", error);
+        console.error("Microphone access failed:", error);
         setShowBottomSheet(false);
         setIsListening(false);
       }
