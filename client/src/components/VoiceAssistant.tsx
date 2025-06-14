@@ -452,12 +452,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const startListening = async () => {
     console.log("🎤 DEPLOY DEBUG: Starting audio recording for Whisper transcription");
 
-    // Check if manually closed - don't reopen if so
-    if (isManuallyClosedRef) {
-      console.log("🎤 DEPLOY DEBUG: Voice assistant manually closed, ignoring startListening");
-      return;
-    }
-
     // Immediately show bottom sheet and listening state for instant feedback
     console.log("🎤 DEPLOY DEBUG: Setting UI states - showBottomSheet: true, isListening: true");
     setShowBottomSheet(true);
@@ -836,11 +830,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setShowAskButton(false);
     stopListening();
     
-    // Reset the flag after a longer delay to prevent immediate reopening
+    // Reset the flag after a brief delay to allow future opens
     setTimeout(() => {
       setIsManuallyClosedRef(false);
       console.log("VoiceAssistant: Manual close flag reset - voice assistant can be triggered again");
-    }, 10000); // Extended to 10 seconds to prevent accidental reopening
+    }, 2000);
   };
 
   const handleMute = () => {
@@ -1368,12 +1362,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleAsk = async () => {
     // Ask button clicked
-    
-    // Check if manually closed - don't reopen if so
-    if (isManuallyClosedRef) {
-      console.log("Voice assistant manually closed, ignoring ask button");
-      return;
-    }
     
     // Prevent multiple rapid clicks
     if (isListening || isProcessing) {
