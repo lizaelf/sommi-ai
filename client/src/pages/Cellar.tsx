@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import Button from "@/components/ui/Button";
+import { FormInput } from "@/components/ui/FormInput";
 
 // Default wine image removed - only authentic uploaded images will be displayed
 import usFlagImage from "@assets/US-flag.png";
@@ -1650,105 +1651,32 @@ const Cellar = () => {
                     marginBottom: "24px",
                   }}
                 >
-                  <input
+                  <FormInput
                     type="text"
+                    name="firstName"
                     placeholder="First name"
                     value={formData.firstName}
-                    onChange={(e) =>
-                      handleInputChange("firstName", e.target.value)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      display: "flex",
-                      height: "64px",
-                      padding: "16px 24px",
-                      alignItems: "center",
-                      width: "100%",
-                      color: "white",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
+                    onChange={(value) => handleInputChange("firstName", value)}
+                    error={errors.firstName}
                   />
-                  {errors.firstName && (
-                    <div
-                      style={{
-                        color: "#ff4444",
-                        fontSize: "14px",
-                        marginTop: "4px",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      {errors.firstName}
-                    </div>
-                  )}
 
-                  <input
+                  <FormInput
                     type="text"
+                    name="lastName"
                     placeholder="Last name"
                     value={formData.lastName}
-                    onChange={(e) =>
-                      handleInputChange("lastName", e.target.value)
-                    }
-                    className="contact-form-input"
-                    style={{
-                      display: "flex",
-                      height: "64px",
-                      padding: "16px 24px",
-                      alignItems: "center",
-                      width: "100%",
-                      color: "white",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
+                    onChange={(value) => handleInputChange("lastName", value)}
+                    error={errors.lastName}
                   />
-                  {errors.lastName && (
-                    <div
-                      style={{
-                        color: "#ff4444",
-                        fontSize: "14px",
-                        marginTop: "4px",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      {errors.lastName}
-                    </div>
-                  )}
 
-                  <input
+                  <FormInput
                     type="email"
+                    name="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="contact-form-input"
-                    style={{
-                      display: "flex",
-                      height: "64px",
-                      padding: "16px 24px",
-                      alignItems: "center",
-                      width: "100%",
-                      color: "white",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
+                    onChange={(value) => handleInputChange("email", value)}
+                    error={errors.email}
                   />
-                  {errors.email && (
-                    <div
-                      style={{
-                        color: "#ff4444",
-                        fontSize: "14px",
-                        marginTop: "4px",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      {errors.email}
-                    </div>
-                  )}
 
                   {/* Phone Input Row - Country Selector + Phone Input */}
                   <div style={{ display: "flex", gap: "8px", width: "100%" }}>

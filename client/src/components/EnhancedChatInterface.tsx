@@ -8,6 +8,7 @@ import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceAssistant from "./VoiceAssistant";
 import Button from "./ui/Button";
+import { FormInput } from "./ui/FormInput";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import { DataSyncManager } from "@/utils/dataSync";
@@ -1085,102 +1086,32 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   marginBottom: "24px",
                 }}
               >
-                <input
+                <FormInput
                   type="text"
+                  name="firstName"
                   placeholder="First name"
                   value={formData.firstName}
-                  onChange={(e) =>
-                    handleInputChange("firstName", e.target.value)
-                  }
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    background: "transparent !important",
-                    backgroundColor: "transparent !important",
-                    color: "white !important",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
+                  onChange={(value) => handleInputChange("firstName", value)}
+                  error={errors.firstName}
                 />
-                {errors.firstName && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.firstName}
-                  </div>
-                )}
 
-                <input
+                <FormInput
                   type="text"
+                  name="lastName"
                   placeholder="Last name"
                   value={formData.lastName}
-                  onChange={(e) =>
-                    handleInputChange("lastName", e.target.value)
-                  }
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white !important",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
+                  onChange={(value) => handleInputChange("lastName", value)}
+                  error={errors.lastName}
                 />
-                {errors.lastName && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  >
-                    {errors.lastName}
-                  </div>
-                )}
 
-                <input
+                <FormInput
                   type="email"
+                  name="email"
                   placeholder="Email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="contact-form-input"
-                  style={{
-                    display: "flex",
-                    height: "64px",
-                    padding: "16px 24px",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
+                  onChange={(value) => handleInputChange("email", value)}
+                  error={errors.email}
                 />
-                {errors.email && (
-                  <div
-                    style={{
-                      color: "#ff4444",
-                      fontSize: "14px",
-                      marginTop: "-12px",
-                      fontFamily: "Inter, sans-serif",
                     }}
                   >
                     {errors.email}
