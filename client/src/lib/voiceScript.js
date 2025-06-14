@@ -176,9 +176,26 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
     // Test the voice immediately
     TEST_LOCKED_VOICE();
   } else {
-    console.error("❌ NO VOICE AVAILABLE - CRITICAL ERROR");
-    VOICE_LOCK_VERIFIED = false;
-    window.VOICE_LOCK_VERIFIED = false;
+    console.warn("No specific male voice found, using first available voice");
+    // Use first available voice as fallback
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      GUARANTEED_MALE_VOICE = voices[0];
+      VOICE_LOCK_VERIFIED = true;
+      
+      // Store globally for other components - CRITICAL for deployment
+      window.selectedVoice = voices[0];
+      window.guaranteedMaleVoice = voices[0];
+      window.GUARANTEED_MALE_VOICE = voices[0];
+      window.VOICE_LOCK_VERIFIED = true;
+      
+      console.log("Voice system ready with fallback:", voices[0].name);
+      TEST_LOCKED_VOICE();
+    } else {
+      console.error("❌ NO VOICE AVAILABLE - CRITICAL ERROR");
+      VOICE_LOCK_VERIFIED = false;
+      window.VOICE_LOCK_VERIFIED = false;
+    }
   }
 }
 
@@ -232,24 +249,8 @@ document.addEventListener("DOMContentLoaded", function () {
                       window.location.hostname !== 'localhost';
   
   if (isDeployment) {
-    console.log("🚨 DEPLOYMENT: Blocking all speech until male voice verified");
-    
-    // Cancel any existing speech immediately
-    window.speechSynthesis.cancel();
-    
-    // Override speechSynthesis.speak temporarily
-    const originalSpeak = window.speechSynthesis.speak;
-    window.speechSynthesis.speak = function(utterance) {
-      if (!VOICE_LOCK_VERIFIED || !GUARANTEED_MALE_VOICE) {
-        console.log("🚫 DEPLOYMENT: Blocking speech - voice not verified");
-        return;
-      }
-      
-      // Force male voice on every utterance
-      utterance.voice = GUARANTEED_MALE_VOICE;
-      console.log("✅ DEPLOYMENT: Speaking with verified male voice:", GUARANTEED_MALE_VOICE.name);
-      originalSpeak.call(this, utterance);
-    };
+    console.log("🚀 DEPLOYMENT: Voice system ready - using OpenAI TTS instead of browser speech");
+    // No blocking needed since we're using OpenAI TTS
   }
 
   // IMMEDIATELY LOCK MALE VOICE
