@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import WineImage from './WineImage';
 import { ShiningText } from './ShiningText';
 import Button from '@/components/ui/Button';
+import SuggestionButtons from './SuggestionButtons';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -391,30 +392,28 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
-                  gap: '8px',
+                  gap: '12px',
                   marginBottom: '16px',
                   justifyContent: 'center',
                   width: '100%',
                   maxWidth: '320px',
                   paddingLeft: '16px'
                 }}>
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '8px',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center'
-                  }}>
-                    {suggestions.map((suggestion, index) => (
-                      <button
-                        key={index}
-                        className="suggestion-button"
-                        onClick={() => handleSuggestionClick(suggestion)}
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
+                  {/* Text + Voice Response Suggestions */}
+                  <SuggestionButtons
+                    suggestions={suggestions.slice(0, 2)}
+                    onSuggestionClick={handleSuggestionClick}
+                    responseMode="text-voice"
+                  />
+                  
+                  {/* Text Only Response Suggestions */}
+                  {suggestions.length > 2 && (
+                    <SuggestionButtons
+                      suggestions={suggestions.slice(2)}
+                      onSuggestionClick={handleSuggestionClick}
+                      responseMode="text-only"
+                    />
+                  )}
                 </div>
               )}
 
