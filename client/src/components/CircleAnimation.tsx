@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import wineCircleImage from '@assets/wine-circle.png';
 
 interface CircleAnimationProps {
@@ -10,9 +10,12 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
   const [currentSize, setSize] = useState(size);
   const [opacity, setOpacity] = useState(0.6);
   const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [voiceVolume, setVoiceVolume] = useState(0);
+  const animationRef = useRef<number>(0);
 
-  // Voice volume handler - only thing that changes the circle size
+  // Voice volume handler - only affects size during listening
   const handleVoiceVolumeChange = useCallback((event: CustomEvent) => {
     const { volume, maxVolume, isActive } = event.detail;
     
@@ -38,27 +41,87 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     }
   }, [isListening, size]);
 
-  // Handle microphone status changes
+  // Timer-based animations for processing/playing states
+  useEffect(() => {
+    // Only run timer animations for processing/playing, never for listening
+    if (isListening) {
+      return; // Voice volume events handle listening state
+    }
+
+    const animate = () => {
+      const baseSize = size;
+      let scale = 1.0;
+      let newOpacity = 0.6;
+      let shouldContinue = false;
+
+      if (isProcessing) {
+        const time = Date.now() * 0.003;
+        scale = 1.0 + Math.sin(time) * 0.1;
+        newOpacity = 0.8;
+        shouldContinue = true;
+      } else if (isPlaying) {
+        const time = Date.now() * 0.002;
+        scale = 1.0 + Math.sin(time) * 0.08;
+        newOpacity = 0.8;
+        shouldContinue = true;
+      } else if (isAnimating) {
+        const time = Date.now() * 0.004;
+        scale = 1.0 + Math.sin(time) * 0.12;
+        newOpacity = 0.7;
+        shouldContinue = true;
+      }
+
+      if (shouldContinue) {
+        const newSize = baseSize * scale;
+        setSize(newSize);
+        setOpacity(newOpacity);
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        // Reset to default when idle
+        setSize(size);
+        setOpacity(0.6);
+      }
+    };
+
+    // Start animation for processing/playing/general animation states
+    if (isProcessing || isPlaying || isAnimating) {
+      animationRef.current = requestAnimationFrame(animate);
+    } else {
+      // Reset to base when completely idle
+      setSize(size);
+      setOpacity(0.6);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationRef.current);
+    };
+  }, [isProcessing, isPlaying, isAnimating, size, isListening]);
+
+  // Handle status change events
   useEffect(() => {
     const handleMicStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
       console.log('🎤 Mic status change:', status, 'at', new Date().toLocaleTimeString());
       
       if (status === 'listening') {
-        console.log('🎤 ENTERING LISTENING MODE - Voice control activated');
+        console.log('🎤 ENTERING LISTENING MODE - Voice responsive');
         setIsListening(true);
-        setOpacity(0.7);
+        setIsProcessing(false);
+        setIsPlaying(false);
+        // Cancel any ongoing timer animation
+        cancelAnimationFrame(animationRef.current);
       } else if (status === 'processing') {
-        console.log('🎤 ENTERING PROCESSING MODE - Static display');
+        console.log('🎤 ENTERING PROCESSING MODE - Timer animation');
         setIsListening(false);
-        setSize(size); // Reset to base size
-        setOpacity(0.8);
-      } else if (status === 'stopped') {
-        console.log('🎤 ENTERING STOPPED MODE - Static display');
-        setIsListening(false);
+        setIsProcessing(true);
+        setIsPlaying(false);
         setVoiceVolume(0);
-        setSize(size); // Reset to base size
-        setOpacity(0.6);
+      } else if (status === 'stopped') {
+        console.log('🎤 ENTERING STOPPED MODE - Static');
+        setIsListening(false);
+        setIsProcessing(false);
+        setIsPlaying(false);
+        setVoiceVolume(0);
       }
     };
 
@@ -68,11 +131,10 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       
       if (status === 'playing') {
         setIsListening(false);
-        setSize(size); // Reset to base size
-        setOpacity(0.8);
+        setIsProcessing(false);
+        setIsPlaying(true);
       } else if (status === 'stopped' || status === 'paused') {
-        setSize(size); // Reset to base size
-        setOpacity(0.6);
+        setIsPlaying(false);
       }
     };
 
@@ -84,8 +146,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
       window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
+      cancelAnimationFrame(animationRef.current);
     };
-  }, [handleVoiceVolumeChange, size]);
+  }, [handleVoiceVolumeChange]);
 
   return (
     <div className="relative flex items-center justify-center">
@@ -97,7 +160,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
           width: `${currentSize}px`,
           height: `${currentSize}px`,
           opacity: opacity,
-          filter: `blur(${isListening ? '5px' : '0px'}) brightness(${isListening ? Math.min(1 + voiceVolume / 20, 2.5) : 1}) saturate(${isListening ? Math.min(1 + voiceVolume / 25, 2) : 1}) contrast(${isListening ? Math.min(1 + voiceVolume / 30, 1.8) : 1})`,
+          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'}) brightness(${isListening ? Math.min(1 + voiceVolume / 20, 2.5) : 1}) saturate(${isListening ? Math.min(1 + voiceVolume / 25, 2) : 1}) contrast(${isListening ? Math.min(1 + voiceVolume / 30, 1.8) : 1})`,
           boxShadow: isListening && voiceVolume > 3 ? `0 0 ${voiceVolume * 2}px rgba(255, 255, 255, ${Math.min(voiceVolume / 50, 0.6)})` : 'none',
         }}
       />
@@ -115,14 +178,12 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         />
       )}
       
-      {/* Debug overlay - only shows when listening */}
-      {isListening && (
-        <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-xs px-3 py-2 rounded z-50 font-mono">
-          <div>LISTENING MODE - Voice Responsive</div>
-          <div>Voice: {voiceVolume.toFixed(1)} | Size: {currentSize.toFixed(0)}px</div>
-          <div>Base: {size}px | Scale: {(currentSize / size).toFixed(2)}x</div>
-        </div>
-      )}
+      {/* Debug overlay - shows current mode */}
+      <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-xs px-3 py-2 rounded z-50 font-mono">
+        <div>Mode: {isListening ? 'LISTENING' : isProcessing ? 'PROCESSING' : isPlaying ? 'PLAYING' : 'IDLE'}</div>
+        <div>Voice: {voiceVolume.toFixed(1)} | Size: {currentSize.toFixed(0)}px</div>
+        <div>Base: {size}px | Opacity: {opacity.toFixed(2)}</div>
+      </div>
     </div>
   );
 }
