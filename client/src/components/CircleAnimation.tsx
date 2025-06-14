@@ -12,10 +12,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [voiceVolume, setVoiceVolume] = useState(0);
   const animationRef = useRef<number>(0);
 
-  // Animation loop that only runs when there's an active state
+  // Simple animation loop with basic pulse effects
   useEffect(() => {
     const animate = () => {
       const baseSize = size;
@@ -28,15 +27,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         scale = 1.0 + Math.sin(time) * 0.1;
         hasActivity = true;
       } else if (isListening) {
-        // Pure voice volume response - no time-based animation
-        if (voiceVolume > 0.1) {
-          // Only scale based on actual voice volume
-          const volumeScale = Math.min(voiceVolume / 2, 5.0); // Very sensitive direct voice scaling
-          scale = 1.0 + volumeScale;
-        } else {
-          // Minimal base state when no voice detected
-          scale = 1.0;
-        }
+        // Listening pulse animation
+        const time = Date.now() * 0.003;
+        scale = 1.0 + Math.sin(time) * 0.15;
         hasActivity = true;
       } else if (isPlaying) {
         // Playing pulse animation
@@ -54,22 +47,11 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       setSize(newSize);
       setOpacity(hasActivity ? 0.8 : 0.6);
 
-      // Only continue animation if there's still activity
-      // Only continue animation loop for time-based animations (processing/playing)
-      // For listening state, we update on voice volume changes only
-      if (hasActivity && !isListening) {
-        animationRef.current = requestAnimationFrame(animate);
-      }
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    // Only start animation if there's an active state
-    const shouldAnimate = isAnimating || isListening || isProcessing || isPlaying;
-    if (shouldAnimate) {
+    if (isAnimating || isListening || isProcessing || isPlaying) {
       animationRef.current = requestAnimationFrame(animate);
-    } else {
-      // Reset to default state when no animation is active
-      setSize(size);
-      setOpacity(0.6);
     }
 
     return () => {
@@ -92,58 +74,27 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
 
     const handleMicStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
-      console.log('🎤 CircleAnimation: Received mic-status event:', status);
-      
       if (status === 'listening') {
-        console.log('🎤 CircleAnimation: Setting listening state');
         setIsListening(true);
         setIsProcessing(false);
         setIsPlaying(false);
       } else if (status === 'processing') {
-        console.log('🎤 CircleAnimation: Setting processing state');
         setIsListening(false);
         setIsProcessing(true);
         setIsPlaying(false);
       } else if (status === 'stopped') {
-        console.log('🎤 CircleAnimation: Setting stopped state');
         setIsListening(false);
         setIsProcessing(false);
         setIsPlaying(false);
-        setVoiceVolume(0); // Reset volume on stop
-      }
-    };
-
-    const handleVoiceVolumeChange = (event: CustomEvent) => {
-      const { volume } = event.detail;
-      setVoiceVolume(volume);
-      
-      // Immediately update size based on voice volume when listening
-      if (isListening) {
-        const baseSize = size;
-        let scale = 1.0;
-        if (volume > 0.1) {
-          const volumeScale = Math.min(volume / 2, 5.0);
-          scale = 1.0 + volumeScale;
-        }
-        const newSize = baseSize * scale;
-        setCurrentSize(newSize);
-        setOpacity(0.8);
-      }
-      
-      // Debug: Log volume changes more frequently to test
-      if (Math.random() < 0.05) { // 5% of volume updates
-        console.log('🎤 CircleAnimation: Voice volume received:', volume, 'isListening:', isListening);
       }
     };
 
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
     window.addEventListener('mic-status', handleMicStatusChange as EventListener);
-    window.addEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
 
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
-      window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
       cancelAnimationFrame(animationRef.current);
     };
   }, []);
@@ -153,33 +104,14 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       <img
         src={wineCircleImage}
         alt="Wine Circle"
-        className="transition-none"
+        className="transition-all duration-200 ease-in-out"
         style={{
           width: `${currentSize}px`,
           height: `${currentSize}px`,
           opacity: opacity,
-          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'}) brightness(${isListening ? Math.min(1 + voiceVolume / 3, 4) : 1}) saturate(${isListening ? Math.min(1 + voiceVolume / 5, 3) : 1}) contrast(${isListening ? Math.min(1 + voiceVolume / 8, 2.5) : 1})`,
-          boxShadow: isListening && voiceVolume > 1 ? `0 0 ${voiceVolume * 4}px rgba(255, 255, 255, ${Math.min(voiceVolume / 30, 0.8)})` : 'none',
+          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'})`,
         }}
       />
-      {/* Voice volume visual indicator */}
-      {isListening && voiceVolume > 1 && (
-        <div 
-          className="absolute inset-0 rounded-full border-4 border-green-400 animate-pulse"
-          style={{
-            width: `${currentSize * Math.min(voiceVolume / 10, 2)}px`,
-            height: `${currentSize * Math.min(voiceVolume / 10, 2)}px`,
-            opacity: Math.min(voiceVolume / 20, 0.8),
-            boxShadow: `0 0 ${voiceVolume * 2}px rgba(34, 197, 94, 0.6)`,
-          }}
-        />
-      )}
-      {/* Temporary debug overlay for voice volume */}
-      {isListening && (
-        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-sm px-2 py-1 rounded z-50">
-          Voice: {voiceVolume.toFixed(2)} | Listening: {isListening ? 'YES' : 'NO'}
-        </div>
-      )}
     </div>
   );
 }
