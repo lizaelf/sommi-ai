@@ -410,7 +410,7 @@ button.suggestion-button,
   background: rgba(255, 255, 255, 0.08) !important;
   background-color: rgba(255, 255, 255, 0.10) !important;
   color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: none !important;
   border-radius: 32px !important;
   padding: 12px 16px !important;
   font-size: 14px !important;
@@ -432,41 +432,9 @@ button.suggestion-button:hover,
 .suggestion-button:hover {
   background: rgba(255, 255, 255, 0.16) !important;
   background-color: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-/* Text-only suggestion buttons */
-button.suggestion-button[data-response-mode="text-only"],
-.suggestion-button[data-response-mode="text-only"] {
-  background: rgba(255, 255, 255, 0.05) !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: rgba(255, 255, 255, 0.8) !important;
-}
 
-button.suggestion-button[data-response-mode="text-only"]:hover,
-.suggestion-button[data-response-mode="text-only"]:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  color: white !important;
-}
-
-/* Text+voice suggestion buttons */
-button.suggestion-button[data-response-mode="text-voice"],
-.suggestion-button[data-response-mode="text-voice"] {
-  background: rgba(255, 255, 255, 0.12) !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
-}
-
-button.suggestion-button[data-response-mode="text-voice"]:hover,
-.suggestion-button[data-response-mode="text-voice"]:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  background-color: rgba(255, 255, 255, 0.2) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-}
 
 /* Suggestion buttons container */
 .suggestion-buttons-container {

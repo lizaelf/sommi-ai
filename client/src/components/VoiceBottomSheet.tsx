@@ -399,21 +399,12 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   maxWidth: '320px',
                   paddingLeft: '16px'
                 }}>
-                  {/* Text + Voice Response Suggestions */}
+                  {/* All Suggestions in One Row */}
                   <SuggestionButtons
-                    suggestions={suggestions.slice(0, 2)}
+                    suggestions={suggestions}
                     onSuggestionClick={handleSuggestionClick}
                     responseMode="text-voice"
                   />
-                  
-                  {/* Text Only Response Suggestions */}
-                  {suggestions.length > 2 && (
-                    <SuggestionButtons
-                      suggestions={suggestions.slice(2)}
-                      onSuggestionClick={handleSuggestionClick}
-                      responseMode="text-only"
-                    />
-                  )}
                 </div>
               )}
 

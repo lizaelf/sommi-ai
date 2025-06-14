@@ -29,7 +29,8 @@ const SuggestionButtons: React.FC<SuggestionButtonsProps> = ({
         gap: '8px',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        flexWrap: 'wrap'
+        flexWrap: 'nowrap',
+        overflowX: 'auto'
       }}>
         {suggestions.map((suggestion, index) => (
           <button
@@ -37,14 +38,7 @@ const SuggestionButtons: React.FC<SuggestionButtonsProps> = ({
             className="suggestion-button"
             onClick={() => handleSuggestionClick(suggestion)}
             data-response-mode={responseMode}
-            title={responseMode === 'text-only' ? 'Text response only' : 'Text + voice response'}
           >
-            {responseMode === 'text-only' && (
-              <span style={{ marginRight: '4px', fontSize: '12px' }}>💬</span>
-            )}
-            {responseMode === 'text-voice' && (
-              <span style={{ marginRight: '4px', fontSize: '12px' }}>🔊</span>
-            )}
             {suggestion}
           </button>
         ))}
