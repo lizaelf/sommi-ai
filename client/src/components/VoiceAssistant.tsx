@@ -801,7 +801,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleCloseBottomSheet = () => {
-    console.log("Closing bottom sheet - aborting conversation and stopping audio");
+    // Closing bottom sheet and stopping audio
     
     // Abort any ongoing conversation processing
     window.dispatchEvent(new CustomEvent('abortConversation'));
@@ -811,7 +811,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
-      console.log("Stopped OpenAI TTS audio on close");
+      // OpenAI TTS audio stopped
     }
     
     // Stop any autoplay audio
@@ -819,13 +819,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
-      console.log("Stopped autoplay audio on close");
+      // Autoplay audio stopped
     }
     
     // Stop browser speech synthesis
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
-      console.log("Stopped browser speech synthesis on close");
+      // Browser speech synthesis stopped
     }
     
     setShowBottomSheet(false);
@@ -838,16 +838,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleMute = () => {
     if ((window as any).currentOpenAIAudio) {
-      console.log("Stop button clicked - stopping OpenAI TTS audio playback");
+      // Stopping OpenAI TTS audio
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
-      console.log("OpenAI TTS audio stopped successfully");
+      // Audio stopped
     }
 
     // Stop autoplay audio as well
     if ((window as any).currentAutoplayAudio) {
-      console.log("Stop button clicked - stopping autoplay TTS audio");
+      // Stopping autoplay audio
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
