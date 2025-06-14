@@ -28,6 +28,11 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     
     setVoiceVolume(volume);
     
+    // Debug: Log voice events when listening
+    if (currentState.isListening && volume > 0) {
+      console.log('🎯 Circle: Voice event during LISTENING', { volume, isListening: currentState.isListening });
+    }
+    
     // ONLY update size if currently listening
     if (currentState.isListening) {
       const baseSize = currentState.size;
@@ -37,6 +42,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       if (volume > 5) {
         const volumeScale = Math.min(volume / 100, 0.3); // Minimal scaling
         scale = 1.0 + volumeScale;
+        console.log('🎯 Circle: Scaling applied', { volume, scale, newSize: baseSize * scale });
       }
       
       const newSize = baseSize * scale;
