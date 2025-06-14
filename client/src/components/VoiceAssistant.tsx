@@ -478,20 +478,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     // Check deployment environment
     const isDeployment = window.location.hostname.includes('.replit.app') || window.location.hostname.includes('.repl.co');
-    console.log("🎤 DEPLOY DEBUG: Environment check", {
-      hostname: window.location.hostname,
-      isDeployment,
-      protocol: window.location.protocol,
-      isSecure: window.location.protocol === 'https:'
-    });
+    // Environment check completed
 
     // Direct stream request without intermediate permission check
-    console.log("🎤 DEPLOY DEBUG: Starting direct stream request for recording");
+    // Starting stream request
     return setupRecording();
   };
 
   const setupRecording = async () => {
-    console.log("🎤 DEPLOY DEBUG: setupRecording started");
+    // Setup recording started
     
     try {
       // Clean up any existing streams first
@@ -540,7 +535,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           type: 'audio/webm;codecs=opus' 
         });
         
-        console.log(`Audio blob created: ${Math.round(audioBlob.size / 1024)}KB`);
+        // Audio blob created
         
         // Check if audio blob has sufficient data
         if (audioBlob.size < 1000) { // Less than 1KB indicates no meaningful audio
@@ -574,11 +569,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }
           
           const result = await response.json();
-          console.log("Whisper transcription result:", result.text);
+          // Transcription completed
           
           // Handle fallback responses
           if (result.fallback) {
-            console.log("Using fallback transcription:", result.text);
+            // Using fallback transcription
             onSendMessage(result.text.trim());
             return;
           }
@@ -637,7 +632,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       setTimeout(() => {
         canStopEarly = true;
-        console.log("Minimum recording time reached - early stopping now allowed");
+        // Minimum recording time reached
       }, minimumRecordingTime);
       
       // Store the canStopEarly flag globally for voice detection
