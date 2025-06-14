@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WineImage from './WineImage';
 import { ShiningText } from './ShiningText';
+import Button from '@/components/ui/Button';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;

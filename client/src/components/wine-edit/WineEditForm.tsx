@@ -284,7 +284,7 @@ export const WineEditForm: React.FC<WineEditFormProps> = ({
         <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
-        <Button variant="primary" onClick={() => handleSubmit({} as React.FormEvent)}>
+        <Button variant="secondary" onClick={() => handleSubmit({} as React.FormEvent)}>
           <Save size={16} />
           Save Changes
         </Button>

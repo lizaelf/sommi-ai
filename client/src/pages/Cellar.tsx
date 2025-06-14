@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
+import Button from "@/components/ui/Button";
 
 // Default wine image removed - only authentic uploaded images will be displayed
 import usFlagImage from "@assets/US-flag.png";
@@ -2029,44 +2030,19 @@ const Cellar = () => {
                     width: "100%",
                   }}
                 >
-                  <div
+                  <Button
                     onClick={handleSave}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.16)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
-                    }}
-                    onMouseDown={(e) => {
-                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.16)";
-                    }}
-                    onMouseUp={(e) => {
-                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.16)";
-                    }}
+                    variant="secondary"
                     style={{
                       width: "100%",
                       height: "56px",
-                      padding: "0 16px",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      fontWeight: 400,
-                      cursor: "pointer",
-                      boxSizing: "border-box",
-                      userSelect: "none",
-
-                      /* Simple styling without backgroundImage */
-                      borderRadius: "24px",
-                      background: "rgba(255, 255, 255, 0.04)",
-                      border: "1px solid rgba(255, 255, 255, 0.12)",
-                      transition: "background 0.2s ease"
+                      justifyContent: "center"
                     }}
                   >
                     Save
-                  </div>
+                  </Button>
                 </div>
               </div>
             </div>,
