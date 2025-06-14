@@ -29,10 +29,10 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         hasActivity = true;
       } else if (isListening) {
         // Listening pulse animation with voice volume response
-        const time = Date.now() * 0.002;
-        const volumeScale = Math.min(voiceVolume / 5, 3.0); // Even more sensitive to voice
-        const basePulse = Math.sin(time) * 0.05; // Minimal base pulse
-        const volumePulse = volumeScale * 0.8; // Extremely dramatic voice scaling
+        const time = Date.now() * 0.001;
+        const volumeScale = Math.min(voiceVolume / 2, 5.0); // Ultra sensitive to voice
+        const basePulse = Math.sin(time) * 0.02; // Very minimal base pulse
+        const volumePulse = volumeScale * 1.2; // Maximum dramatic voice scaling
         scale = 1.0 + basePulse + volumePulse;
         hasActivity = true;
       } else if (isPlaying) {
@@ -134,18 +134,31 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       <img
         src={wineCircleImage}
         alt="Wine Circle"
-        className="transition-all duration-200 ease-in-out"
+        className="transition-none"
         style={{
           width: `${currentSize}px`,
           height: `${currentSize}px`,
           opacity: opacity,
-          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'}) brightness(${isListening ? Math.min(1 + voiceVolume / 10, 2.5) : 1}) saturate(${isListening ? Math.min(1 + voiceVolume / 15, 2) : 1})`,
+          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'}) brightness(${isListening ? Math.min(1 + voiceVolume / 3, 4) : 1}) saturate(${isListening ? Math.min(1 + voiceVolume / 5, 3) : 1}) contrast(${isListening ? Math.min(1 + voiceVolume / 8, 2.5) : 1})`,
+          boxShadow: isListening && voiceVolume > 1 ? `0 0 ${voiceVolume * 4}px rgba(255, 255, 255, ${Math.min(voiceVolume / 30, 0.8)})` : 'none',
         }}
       />
+      {/* Voice volume visual indicator */}
+      {isListening && voiceVolume > 1 && (
+        <div 
+          className="absolute inset-0 rounded-full border-4 border-green-400 animate-pulse"
+          style={{
+            width: `${currentSize * Math.min(voiceVolume / 10, 2)}px`,
+            height: `${currentSize * Math.min(voiceVolume / 10, 2)}px`,
+            opacity: Math.min(voiceVolume / 20, 0.8),
+            boxShadow: `0 0 ${voiceVolume * 2}px rgba(34, 197, 94, 0.6)`,
+          }}
+        />
+      )}
       {/* Temporary debug overlay for voice volume */}
-      {isListening && voiceVolume > 0 && (
-        <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-white text-xs p-1 rounded">
-          Voice: {voiceVolume.toFixed(2)}
+      {isListening && (
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-sm px-2 py-1 rounded z-50">
+          Voice: {voiceVolume.toFixed(2)} | Listening: {isListening ? 'YES' : 'NO'}
         </div>
       )}
     </div>
