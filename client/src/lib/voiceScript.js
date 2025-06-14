@@ -53,18 +53,7 @@ function FORCE_MALE_VOICE_LOCK() {
 }
 
 function SELECT_GUARANTEED_MALE_VOICE(voices) {
-  console.log(
-    "🔍 SELECTING GUARANTEED MALE VOICE from",
-    voices.length,
-    "voices",
-  );
-
-  // Log all available voices
-  voices.forEach((voice, i) => {
-    console.log(
-      `Voice ${i}: ${voice.name} (${voice.lang}) - ${voice.voiceURI}`,
-    );
-  });
+  console.log(`Selecting male voice from ${voices.length} available voices`);
 
   let selectedVoice = null;
 
@@ -72,7 +61,7 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
   for (const maleName of MALE_VOICE_NAMES) {
     selectedVoice = voices.find((voice) => voice.name === maleName);
     if (selectedVoice) {
-      console.log("✅ FOUND EXACT MALE VOICE:", maleName);
+      console.log("Voice locked:", maleName);
       break;
     }
   }
@@ -88,7 +77,7 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
         voice.name.toLowerCase().includes("daniel"),
     );
     if (selectedVoice) {
-      console.log("✅ FOUND MALE-LIKE VOICE:", selectedVoice.name);
+      console.log("Male voice found:", selectedVoice.name);
     }
   }
 
@@ -106,14 +95,14 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
         !voice.name.toLowerCase().includes("hazel"),
     );
     if (selectedVoice) {
-      console.log("✅ FOUND NON-FEMALE ENGLISH VOICE:", selectedVoice.name);
+      console.log("English voice selected:", selectedVoice.name);
     }
   }
 
   // STRATEGY 4: Use first available as absolute fallback
   if (!selectedVoice && voices.length > 0) {
     selectedVoice = voices[0];
-    console.log("⚠️ FALLBACK TO FIRST VOICE:", selectedVoice.name);
+    console.log("Using fallback voice:", selectedVoice.name);
   }
 
   if (selectedVoice) {
@@ -124,8 +113,7 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
     window.selectedVoice = selectedVoice;
     window.guaranteedMaleVoice = selectedVoice;
 
-    console.log("🔒 VOICE LOCKED:", selectedVoice.name);
-    console.log("🔒 Voice URI:", selectedVoice.voiceURI);
+    console.log("Voice system ready:", selectedVoice.name);
 
     // Test the voice immediately
     TEST_LOCKED_VOICE();
