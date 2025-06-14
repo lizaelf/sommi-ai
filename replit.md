@@ -43,7 +43,10 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 14, 2025)
 
-### CircleAnimation Component Optimization (June 14, 2025 - Latest)
+### Voice System & UI Improvements (June 14, 2025 - Latest)
+- **Permanent Close Behavior**: Close button now prevents all future interactions until page refresh
+- **OpenAI Voice Integration**: Switched from browser speech synthesis to OpenAI TTS for consistent voice quality
+- **Enhanced Circle Animation**: Improved voice responsiveness with lower threshold (3 vs 5) and increased scaling (40% vs 30%)
 - **Performance Enhancement**: Replaced inefficient 100ms setInterval polling with optimized requestAnimationFrame
 - **Type Safety Implementation**: Added proper TypeScript interfaces for MicStatusEvent and VoiceVolumeEvent
 - **Smart State Synchronization**: Implemented conditional polling that only runs when VoiceAssistant is active

@@ -110,55 +110,47 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Speak the welcome message immediately
       const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
       
-      // Always use the global voice script function for consistency
-      if ((window as any).speakResponse) {
-        console.log("QR SCAN: Using global speakResponse function");
-        (window as any).speakResponse(welcomeMessage);
+      // Always use OpenAI TTS instead of browser speech synthesis
+      console.log("QR SCAN: Using OpenAI TTS for welcome message");
+      
+      fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: welcomeMessage })
+      })
+      .then(response => response.arrayBuffer())
+      .then(buffer => {
+        const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
         
-        // Set up completion handler
-        setTimeout(() => {
+        // Store reference for potential stopping
+        (window as any).currentOpenAIAudio = audio;
+        
+        audio.onended = () => {
           setIsResponding(false);
           setShowAskButton(true);
+          URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
           console.log("QR SCAN: Welcome message completed");
-        }, 4000); // Approximate duration
-      } else {
-        // If global function not available, use OpenAI TTS for consistency
-        console.log("QR SCAN: Fallback - using OpenAI TTS");
+        };
         
-        fetch('/api/text-to-speech', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: welcomeMessage })
-        })
-        .then(response => response.arrayBuffer())
-        .then(buffer => {
-          const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const audio = new Audio(audioUrl);
-          
-          audio.onended = () => {
-            setIsResponding(false);
-            setShowAskButton(true);
-            URL.revokeObjectURL(audioUrl);
-            console.log("QR SCAN: Welcome message completed");
-          };
-          
-          audio.onerror = () => {
-            setIsResponding(false);
-            setShowAskButton(true);
-            URL.revokeObjectURL(audioUrl);
-            console.error("QR SCAN: Audio playback error");
-          };
-          
-          audio.play();
-          console.log("QR SCAN: Playing welcome message via TTS");
-        })
-        .catch(error => {
-          console.error("QR SCAN: TTS error:", error);
+        audio.onerror = () => {
           setIsResponding(false);
           setShowAskButton(true);
-        });
-      }
+          URL.revokeObjectURL(audioUrl);
+          (window as any).currentOpenAIAudio = null;
+          console.error("QR SCAN: Audio playback error");
+        };
+        
+        audio.play();
+        console.log("QR SCAN: Playing welcome message via OpenAI TTS");
+      })
+      .catch(error => {
+        console.error("QR SCAN: TTS error:", error);
+        setIsResponding(false);
+        setShowAskButton(true);
+      });
     };
 
     // Custom audio playback handler for suggestion responses
@@ -931,11 +923,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setShowAskButton(false);
     stopListening();
     
-    // Reset the flag after a longer delay to prevent immediate reopening
-    setTimeout(() => {
-      setIsManuallyClosedRef(false);
-      console.log("VoiceAssistant: Manual close flag reset - voice assistant can be triggered again");
-    }, 10000); // Extended to 10 seconds to prevent accidental reopening
+    // PERMANENT CLOSE: Never reset the flag - user must refresh page to reopen
+    console.log("VoiceAssistant: Permanently closed - no automatic reopening until page refresh");
   };
 
   const handleMute = () => {
