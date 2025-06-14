@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { PageLayout } from "@/components/shared/PageLayout";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { WelcomeSection } from "@/components/home-global/WelcomeSection";
 import { WineCollection } from "@/components/home-global/WineCollection";
 
@@ -39,14 +39,16 @@ const HomeGlobalRefactored = () => {
   }, []);
 
   return (
-    <PageLayout>
+    <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
+      <AppHeader />
+      <HeaderSpacer />
       <WelcomeSection />
       <WineCollection 
         wines={wines}
         onWineClick={handleWineClick}
         isLoading={isLoading}
       />
-    </PageLayout>
+    </div>
   );
 };
 

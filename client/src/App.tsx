@@ -4,13 +4,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/Toaster";
 import { TooltipProvider } from "@/components/ui/Tooltip";
 import NotFound from "@/pages/NotFound";
-import WineDetails from "@/pages/WineDetails";
+import WineDetailsRefactored from "@/pages/WineDetailsRefactored";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
-import HomeGlobal from "@/pages/HomeGlobal";
+import HomeGlobalRefactored from "@/pages/HomeGlobalRefactored";
 import WineScan from "@/pages/WineScan";
-import WineEdit from "@/pages/WineEdit";
-import TenantAdmin from "@/pages/TenantAdmin";
+import WineEditRefactored from "@/pages/WineEditRefactored";
+import TenantAdminRefactored from "@/pages/TenantAdminRefactored";
 import SommTenantAdmin from "@/pages/SommTenantAdmin";
 import TenantCreate from "@/pages/TenantCreate";
 import QRCodes from "@/pages/QRCodes";
@@ -19,19 +19,19 @@ import QRCodes from "@/pages/QRCodes";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={HomeGlobal} />
-      <Route path="/scanned" component={WineDetails} />
+      <Route path="/" component={HomeGlobalRefactored} />
+      <Route path="/scanned" component={WineDetailsRefactored} />
       <Route path="/cellar" component={Cellar} />
       <Route path="/wine/conversation" component={ConversationDialog} />
       <Route path="/wine-details/:id" component={() => 
-        <WineDetails key={`wine-${Date.now()}`} />
+        <WineDetailsRefactored key={`wine-${Date.now()}`} />
       } />
-      <Route path="/tenants/:tenantSlug/admin" component={TenantAdmin} />
-      <Route path="/winery-tenant-admin" component={TenantAdmin} />
+      <Route path="/tenants/:tenantSlug/admin" component={TenantAdminRefactored} />
+      <Route path="/winery-tenant-admin" component={TenantAdminRefactored} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
       <Route path="/tenant-create" component={TenantCreate} />
 
-      <Route path="/wine-edit/:id" component={WineEdit} />
+      <Route path="/wine-edit/:id" component={WineEditRefactored} />
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route path="/qr-codes" component={QRCodes} />
       <Route component={NotFound} />

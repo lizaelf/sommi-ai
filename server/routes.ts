@@ -432,6 +432,48 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Add a message to a conversation
+  app.post("/api/messages", async (req, res) => {
+    try {
+      const { content, role, conversationId } = req.body;
+      
+      // Validate required fields
+      if (!content || !role || !conversationId) {
+        return res.status(400).json({ 
+          message: "Missing required fields",
+          required: ["content", "role", "conversationId"]
+        });
+      }
+      
+      // Validate role
+      if (!["user", "assistant", "system"].includes(role)) {
+        return res.status(400).json({ 
+          message: "Invalid role. Must be user, assistant, or system"
+        });
+      }
+      
+      // Check if conversation exists
+      const conversation = await storage.getConversation(conversationId);
+      if (!conversation) {
+        return res.status(404).json({ 
+          message: "Conversation not found"
+        });
+      }
+      
+      // Create the message
+      const message = await storage.createMessage({
+        content,
+        role,
+        conversationId
+      });
+      
+      res.status(201).json(message);
+    } catch (error) {
+      console.error("Error adding message:", error);
+      res.status(500).json({ message: "Failed to add message" });
+    }
+  });
+
   // Chat completion endpoint
   app.post("/api/chat", async (req, res) => {
     // Define here so it's accessible in the catch block

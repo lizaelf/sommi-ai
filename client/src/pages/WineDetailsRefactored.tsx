@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import QRScanModal from "@/components/QRScanModal";
-import { PageLayout } from "@/components/shared/PageLayout";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
@@ -260,18 +260,12 @@ export default function WineDetailsRefactored() {
   }
 
   return (
-    <PageLayout 
-      header={
-        <>
-          <WineDetailsHeader 
-            showActions={showActions}
-            onToggleActions={() => setShowActions(!showActions)}
-          />
-          <div style={{ height: "75px" }} />
-        </>
-      }
-      showDefaultHeader={false}
-    >
+    <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
+      <WineDetailsHeader 
+        showActions={showActions}
+        onToggleActions={() => setShowActions(!showActions)}
+      />
+      <HeaderSpacer />
 
       {/* Wine Hero Section */}
       <WineHeroSection
@@ -314,6 +308,6 @@ export default function WineDetailsRefactored() {
           setShowQRModal(false);
         }}
       />
-    </PageLayout>
+    </div>
   );
 }
