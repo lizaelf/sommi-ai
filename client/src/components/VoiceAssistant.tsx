@@ -473,6 +473,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("🎤 DEPLOY DEBUG: Setting UI states - showBottomSheet: true, isListening: true");
     setShowBottomSheet(true);
     setIsListening(true);
+    
+    // Dispatch listening event immediately to ensure CircleAnimation responds
+    console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event (early)');
+    window.dispatchEvent(
+      new CustomEvent("mic-status", {
+        detail: { status: "listening" },
+      }),
+    );
 
     // Check deployment environment
     const isDeployment = window.location.hostname.includes('.replit.app') || window.location.hostname.includes('.repl.co');

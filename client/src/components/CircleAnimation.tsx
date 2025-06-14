@@ -30,9 +30,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       } else if (isListening) {
         // Listening pulse animation with voice volume response
         const time = Date.now() * 0.003;
-        const volumeScale = Math.min(voiceVolume / 50, 1.0); // Normalize volume to 0-1
-        const basePulse = Math.sin(time) * 0.1;
-        const volumePulse = volumeScale * 0.2; // Voice-responsive scaling
+        const volumeScale = Math.min(voiceVolume / 30, 1.5); // More sensitive to voice
+        const basePulse = Math.sin(time) * 0.15; // Larger base pulse
+        const volumePulse = volumeScale * 0.3; // More dramatic voice scaling
         scale = 1.0 + basePulse + volumePulse;
         hasActivity = true;
       } else if (isPlaying) {
