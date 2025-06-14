@@ -37,6 +37,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
   const [frequencyData, setFrequencyData] = useState<number[]>([]);
   const animationRef = useRef<number>(0);
   const frameCount = useRef(0);
+  const currentScale = useRef<number>(1.0);
   const baseSize = initialSize; // Base size in pixels from props
   const animationSpeed = 3; // 3x smoother animation as requested
   
@@ -63,7 +64,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
   const animate = () => {
     frameCount.current += 1;
     
-    let scale = 1.0; // Default size
+    let scale = currentScale.current; // Use persistent scale
     let hasAudioActivity = false;
     
     // Try to get real audio data
@@ -95,8 +96,9 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
             console.log("CircleAnimation: Audio detected - volume:", volume.toFixed(3), "scale:", scale.toFixed(3));
           }
         } else {
-          // No audio activity - use base scale
-          scale = 1.0;
+          // No audio activity - smoothly return to base scale
+          const lerpFactor = 0.15;
+          scale = scale + (1.0 - scale) * lerpFactor;
         }
       } catch (error) {
         // If audio fails and we're processing, use gentle pulse
@@ -119,6 +121,9 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
       scale = 1.0;
       hasAudioActivity = false;
     }
+    
+    // Update persistent scale reference
+    currentScale.current = scale;
     
     const newSize = baseSize * scale;
     setSize(newSize);
