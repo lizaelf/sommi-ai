@@ -1380,51 +1380,52 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         // Audio is already playing from the promise above
         console.log("Manual unmute TTS playback initiated successfully");
       } catch (error) {
-      console.error("Failed to generate or play unmute TTS audio:", error);
-      setIsResponding(false);
-      setShowUnmuteButton(false);
-      setShowAskButton(true);
+        console.error("Failed to generate or play unmute TTS audio:", error);
+        setIsResponding(false);
+        setShowUnmuteButton(false);
+        setShowAskButton(true);
 
-      // Provide more specific error messages
-      let errorMessage = "Failed to play audio";
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = "Audio generation timed out - please try again";
-        } else if (error.message.includes('timeout')) {
-          errorMessage = "Audio service is slow - please try again";
-        } else if (error.message.includes('500')) {
-          errorMessage = "Audio service unavailable - please try again";
+        // Provide more specific error messages
+        let errorMessage = "Failed to play audio";
+        if (error instanceof Error) {
+          if (error.name === 'AbortError') {
+            errorMessage = "Audio generation timed out - please try again";
+          } else if (error.message.includes('timeout')) {
+            errorMessage = "Audio service is slow - please try again";
+          } else if (error.message.includes('500')) {
+            errorMessage = "Audio service unavailable - please try again";
+          }
         }
-      }
 
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {errorMessage}
-          </span>
-        ),
-        duration: 3000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {errorMessage}
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+      }
     } catch (globalError) {
       console.error("Unhandled error in handleUnmute:", globalError);
       setIsResponding(false);

@@ -148,10 +148,4 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       )}
     </div>
   );
-        }}
-      />
-      
-
-    </div>
-  );
 }
