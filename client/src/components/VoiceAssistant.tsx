@@ -496,7 +496,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
       
       // Request fresh microphone stream
-      console.log("🎤 DEPLOY DEBUG: Requesting fresh microphone stream");
+      // Requesting microphone stream
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -507,7 +507,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         } 
       });
       
-      console.log("🎤 DEPLOY DEBUG: Stream created successfully");
+      // Stream created successfully
       streamRef.current = stream;
 
       // Initialize MediaRecorder with optimal settings for Whisper
@@ -1145,11 +1145,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         };
 
         utterance.onend = () => {
-          console.log("🔍 DEBUG: Browser TTS playback completed");
+          // Browser TTS completed
           setIsResponding(false);
           setShowUnmuteButton(false);
           setShowAskButton(true);
-          console.log("🔍 DEBUG: State after TTS end - isResponding: false, showUnmuteButton: false, showAskButton: true");
+          // TTS state updated
           console.log("Browser TTS playback completed - Ask button enabled");
         };
 
@@ -1176,11 +1176,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       };
 
       audio.onended = () => {
-        console.log("🔍 DEBUG: Server TTS playback completed");
+        // Server TTS completed
         setIsResponding(false);
         setShowUnmuteButton(false);
         setShowAskButton(true);
-        console.log("🔍 DEBUG: State after server TTS end - isResponding: false, showUnmuteButton: false, showAskButton: true");
+        // Server TTS state updated
         if (audioUrl) {
           URL.revokeObjectURL(audioUrl);
         }
@@ -1340,11 +1340,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleAsk = async () => {
-    console.log("🔍 DEBUG: Ask button clicked - starting voice recording");
+    // Ask button clicked
     
     // Prevent multiple rapid clicks
     if (isListening || isProcessing) {
-      console.log("🔍 DEBUG: Already processing, ignoring click");
+      // Already processing
       return;
     }
     
