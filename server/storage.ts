@@ -2,7 +2,8 @@ import {
   users, type User, type InsertUser,
   messages, type Message, type InsertMessage,
   conversations, type Conversation, type InsertConversation,
-  tenants, type Tenant, type InsertTenant
+  tenants, type Tenant, type InsertTenant,
+  usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -34,6 +35,10 @@ export interface IStorage {
   createTenant(tenant: InsertTenant): Promise<Tenant>;
   updateTenant(id: number, tenant: Partial<InsertTenant>): Promise<Tenant | undefined>;
   deleteTenant(id: number): Promise<void>;
+  
+  // Suggestion pills operations
+  getUsedSuggestionPills(wineKey: string): Promise<UsedSuggestionPill[]>;
+  markSuggestionPillUsed(pill: InsertUsedSuggestionPill): Promise<UsedSuggestionPill>;
 }
 
 // Database storage implementation

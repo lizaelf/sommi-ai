@@ -96,3 +96,21 @@ export const insertTenantSchema = createInsertSchema(tenants).pick({
 
 export type InsertTenant = z.infer<typeof insertTenantSchema>;
 export type Tenant = typeof tenants.$inferSelect;
+
+// Suggestion pills tracking table
+export const usedSuggestionPills = pgTable("used_suggestion_pills", {
+  id: serial("id").primaryKey(),
+  wineKey: text("wine_key").notNull(), // wine_name + wine_year
+  suggestionId: text("suggestion_id").notNull(), // ID from suggestionPills.json
+  userId: integer("user_id"), // Optional user tracking
+  usedAt: timestamp("used_at").defaultNow().notNull(),
+});
+
+export const insertUsedSuggestionPillSchema = createInsertSchema(usedSuggestionPills).pick({
+  wineKey: true,
+  suggestionId: true,
+  userId: true,
+});
+
+export type InsertUsedSuggestionPill = z.infer<typeof insertUsedSuggestionPillSchema>;
+export type UsedSuggestionPill = typeof usedSuggestionPills.$inferSelect;
