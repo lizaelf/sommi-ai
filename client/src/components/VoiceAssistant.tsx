@@ -610,12 +610,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Start voice activity detection
       startVoiceDetection(stream);
       
+      // Store stream globally for CircleAnimation access
+      (window as any).currentMicrophoneStream = stream;
+      
       // Emit microphone status event for wine bottle animation
       window.dispatchEvent(
         new CustomEvent("mic-status", {
           detail: { status: "listening", stream: stream },
         }),
       );
+      
+      console.log('VoiceAssistant: Dispatched mic-status event with stream:', {
+        hasStream: !!stream,
+        streamId: stream.id,
+        audioTracks: stream.getAudioTracks().length
+      });
       
       // Minimum recording duration to ensure we capture some audio
       const minimumRecordingTime = 1500; // 1.5 seconds minimum
