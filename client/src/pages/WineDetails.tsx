@@ -241,6 +241,9 @@ export default function WineDetails() {
           createdAt: new Date().toISOString(),
         };
 
+        // Store the latest assistant message text for unmute button functionality
+        (window as any).lastAssistantMessageText = assistantMessage.content;
+
         await addMessage(assistantMessage);
 
         // Trigger voice playback for this response
@@ -250,6 +253,9 @@ export default function WineDetails() {
             detail: { audioBuffers: responseData.audioBuffers }
           }));
         }
+
+        // Dispatch event to show unmute button
+        window.dispatchEvent(new CustomEvent("showUnmuteButton"));
       }
 
       refetchMessages();
