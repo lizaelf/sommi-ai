@@ -901,6 +901,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
+    console.log("Current window.lastAssistantMessageText:", (window as any).lastAssistantMessageText);
     
     // Wrap entire function in try-catch to prevent unhandled rejections
     try {
@@ -950,11 +951,30 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     // Fallback: generate new audio if no pending audio or it failed
     const lastAssistantMessage = (window as any).lastAssistantMessageText;
+    console.log("Checking lastAssistantMessage:", lastAssistantMessage ? `"${lastAssistantMessage.substring(0, 50)}..."` : "null/undefined");
 
     if (!lastAssistantMessage) {
-      console.warn("No assistant message available to play");
-      setShowUnmuteButton(true);
-      return;
+      console.warn("No assistant message available to play - attempting fallback");
+      
+      // Try to get the last assistant message from the messages in the UI
+      const messageElements = document.querySelectorAll('[data-role="assistant"]');
+      if (messageElements.length > 0) {
+        const lastMessageElement = messageElements[messageElements.length - 1];
+        const fallbackText = lastMessageElement.textContent || lastMessageElement.innerText;
+        if (fallbackText && fallbackText.trim()) {
+          console.log("Using fallback message from UI:", fallbackText.substring(0, 50) + "...");
+          (window as any).lastAssistantMessageText = fallbackText.trim();
+          // Continue with the TTS generation using the fallback text
+        } else {
+          console.warn("No assistant message available to play and no fallback found");
+          setShowUnmuteButton(true);
+          return;
+        }
+      } else {
+        console.warn("No assistant message available to play and no message elements found");
+        setShowUnmuteButton(true);
+        return;
+      }
     }
 
     console.log(

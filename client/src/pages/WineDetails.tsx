@@ -243,6 +243,7 @@ export default function WineDetails() {
 
         // Store the latest assistant message text for unmute button functionality
         (window as any).lastAssistantMessageText = assistantMessage.content;
+        console.log("Stored assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
 
         await addMessage(assistantMessage);
 
