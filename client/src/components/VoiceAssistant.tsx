@@ -50,20 +50,88 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
       
       try {
-        // CRITICAL: Use centralized voice manager for consistent male voice
-        const { voiceManager } = await import('@/lib/voiceManager');
-        
-        voiceManager.speak(
-          welcomeMessage,
-          () => {
-            setIsResponding(false);
-            setShowAskButton(true);
-          },
-          () => {
-            setIsResponding(false);
-            setShowAskButton(true);
+        // CRITICAL: Use locked male voice with voice loading delay
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          
+          const speakWithVoice = () => {
+            const utterance = new SpeechSynthesisUtterance(welcomeMessage);
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
+            const voices = window.speechSynthesis.getVoices();
+            console.log("QR SCAN: Available voices:", voices.length);
+            
+            // Use locked voice from localStorage
+            const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
+            if (lockedVoiceURI) {
+              const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
+              if (lockedVoice) {
+                utterance.voice = lockedVoice;
+                console.log("QR SCAN: Using locked male voice:", lockedVoice.name);
+              }
+            } else {
+              // Force male voice selection if not locked yet
+              let maleVoice = voices.find(voice => voice.name === 'Google UK English Male');
+              if (!maleVoice) {
+                maleVoice = voices.find(voice => voice.name === 'Google US English Male');
+              }
+              if (!maleVoice) {
+                maleVoice = voices.find(voice => 
+                  voice.name.includes('Google') && voice.name.includes('Male') && voice.lang.startsWith('en'));
+              }
+              if (!maleVoice) {
+                maleVoice = voices.find(voice => voice.name.includes('Male') && voice.lang.startsWith('en'));
+              }
+              
+              if (maleVoice) {
+                utterance.voice = maleVoice;
+                localStorage.setItem('LOCKED_VOICE_URI', maleVoice.voiceURI);
+                localStorage.setItem('LOCKED_VOICE_NAME', maleVoice.name);
+                console.log("QR SCAN: Locked new male voice:", maleVoice.name);
+              }
+            }
+            
+            utterance.onstart = () => {
+              console.log("QR SCAN: Welcome message started");
+            };
+            
+            utterance.onend = () => {
+              setIsResponding(false);
+              setShowAskButton(true);
+              console.log("QR SCAN: Welcome message completed");
+            };
+            
+            utterance.onerror = (error) => {
+              console.error("QR SCAN: Speech error:", error);
+              setIsResponding(false);
+              setShowAskButton(true);
+            };
+            
+            console.log("QR SCAN: Starting welcome message speech");
+            window.speechSynthesis.speak(utterance);
+          };
+          
+          // Ensure voices are loaded before speaking
+          if (window.speechSynthesis.getVoices().length > 0) {
+            speakWithVoice();
+          } else {
+            // Wait for voices to load
+            const voicesChangedHandler = () => {
+              console.log("QR SCAN: Voices loaded, attempting speech");
+              speakWithVoice();
+              window.speechSynthesis.removeEventListener('voiceschanged', voicesChangedHandler);
+            };
+            window.speechSynthesis.addEventListener('voiceschanged', voicesChangedHandler);
+            
+            // Fallback timeout
+            setTimeout(() => {
+              console.log("QR SCAN: Timeout fallback, attempting speech");
+              speakWithVoice();
+            }, 500);
           }
-        );
+        }
       } catch (error) {
         console.error('Error playing welcome message:', error);
         setIsResponding(false);
