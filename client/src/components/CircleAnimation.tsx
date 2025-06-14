@@ -55,7 +55,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       setOpacity(hasActivity ? 0.8 : 0.6);
 
       // Only continue animation if there's still activity
-      if (hasActivity) {
+      // Only continue animation loop for time-based animations (processing/playing)
+      // For listening state, we update on voice volume changes only
+      if (hasActivity && !isListening) {
         animationRef.current = requestAnimationFrame(animate);
       }
     };
@@ -114,9 +116,23 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     const handleVoiceVolumeChange = (event: CustomEvent) => {
       const { volume } = event.detail;
       setVoiceVolume(volume);
+      
+      // Immediately update size based on voice volume when listening
+      if (isListening) {
+        const baseSize = size;
+        let scale = 1.0;
+        if (volume > 0.1) {
+          const volumeScale = Math.min(volume / 2, 5.0);
+          scale = 1.0 + volumeScale;
+        }
+        const newSize = baseSize * scale;
+        setCurrentSize(newSize);
+        setOpacity(0.8);
+      }
+      
       // Debug: Log volume changes more frequently to test
       if (Math.random() < 0.05) { // 5% of volume updates
-        console.log('🎤 CircleAnimation: Voice volume received:', volume);
+        console.log('🎤 CircleAnimation: Voice volume received:', volume, 'isListening:', isListening);
       }
     };
 
