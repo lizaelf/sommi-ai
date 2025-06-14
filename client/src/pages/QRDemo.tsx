@@ -20,14 +20,42 @@ export default function QRDemo() {
     setShowVoiceAssistant(true);
   };
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
     console.log("QR Demo: Message sent:", message);
     setIsProcessing(true);
     
-    // Simulate processing (in real app this would send to chat API)
-    setTimeout(() => {
+    try {
+      // Send message to chat API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          conversationId: null, // QR demo doesn't need conversation persistence
+          wineData: {
+            id: 1,
+            name: "Ridge Lytton Springs Dry Creek Zinfandel",
+            year: 2021,
+            image: "/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png"
+          }
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Store the assistant's response for unmute button
+        (window as any).lastAssistantMessageText = data.content;
+        console.log("QR Demo: Assistant response stored for unmute:", data.content?.substring(0, 50) + "...");
+      }
+    } catch (error) {
+      console.error("QR Demo: Chat API error:", error);
+      // Store fallback message
+      (window as any).lastAssistantMessageText = "I'd be happy to tell you about this wine. This is a premium Zinfandel with rich, complex flavors.";
+    } finally {
       setIsProcessing(false);
-    }, 2000);
+    }
   };
 
   return (
