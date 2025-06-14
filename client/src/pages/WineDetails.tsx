@@ -1318,7 +1318,49 @@ export default function WineDetails() {
                         paddingRight: "16px",
                       }}
                     >
-                      {messages.length > 0 ? (
+                      {!hasSharedContact ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            minHeight: "200px",
+                            width: "100%",
+                            textAlign: "center",
+                            gap: "16px",
+                          }}
+                        >
+                          <p
+                            style={{
+                              color: "rgba(255, 255, 255, 0.6)",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              fontSize: "16px",
+                              textAlign: "center",
+                              margin: "0",
+                            }}
+                          >
+                            Register to view your chat history
+                          </p>
+                          <Button
+                            onClick={() => setShowContactSheet(true)}
+                            variant="secondary"
+                            style={{
+                              backgroundColor: "rgba(255, 255, 255, 0.1)",
+                              color: "white",
+                              border: "1px solid rgba(255, 255, 255, 0.2)",
+                              padding: "12px 24px",
+                              borderRadius: "12px",
+                              fontSize: "14px",
+                              fontFamily: "Inter, system-ui, sans-serif",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            View chat history
+                          </Button>
+                        </div>
+                      ) : messages.length > 0 ? (
                         <>
                           {messages.map((message: any, index: number) => (
                             <div
