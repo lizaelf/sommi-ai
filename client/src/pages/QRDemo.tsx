@@ -6,6 +6,7 @@ import VoiceAssistant from '../components/VoiceAssistant';
 export default function QRDemo() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleTextChoice = () => {
     console.log("User chose Text option");
@@ -17,6 +18,16 @@ export default function QRDemo() {
     console.log("User chose Voice option");
     setShowQRModal(false);
     setShowVoiceAssistant(true);
+  };
+
+  const handleSendMessage = (message: string) => {
+    console.log("QR Demo: Message sent:", message);
+    setIsProcessing(true);
+    
+    // Simulate processing (in real app this would send to chat API)
+    setTimeout(() => {
+      setIsProcessing(false);
+    }, 2000);
   };
 
   return (
@@ -60,8 +71,8 @@ export default function QRDemo() {
       {/* Voice Assistant */}
       {showVoiceAssistant && (
         <VoiceAssistant
-          onClose={() => setShowVoiceAssistant(false)}
-          wineId={1}
+          onSendMessage={handleSendMessage}
+          isProcessing={isProcessing}
         />
       )}
     </div>
