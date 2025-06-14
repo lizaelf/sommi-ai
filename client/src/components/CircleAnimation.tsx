@@ -28,12 +28,15 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         scale = 1.0 + Math.sin(time) * 0.1;
         hasActivity = true;
       } else if (isListening) {
-        // Listening pulse animation with voice volume response
-        const time = Date.now() * 0.001;
-        const volumeScale = Math.min(voiceVolume / 2, 5.0); // Ultra sensitive to voice
-        const basePulse = Math.sin(time) * 0.02; // Very minimal base pulse
-        const volumePulse = volumeScale * 1.2; // Maximum dramatic voice scaling
-        scale = 1.0 + basePulse + volumePulse;
+        // Pure voice volume response - no time-based animation
+        if (voiceVolume > 0.1) {
+          // Only scale based on actual voice volume
+          const volumeScale = Math.min(voiceVolume / 2, 5.0); // Very sensitive direct voice scaling
+          scale = 1.0 + volumeScale;
+        } else {
+          // Minimal base state when no voice detected
+          scale = 1.0;
+        }
         hasActivity = true;
       } else if (isPlaying) {
         // Playing pulse animation
