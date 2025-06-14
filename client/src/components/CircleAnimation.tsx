@@ -110,12 +110,27 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         }
       }
     } else if (isProcessing) {
-      // Fallback pulse animation only during processing
+      // Fallback pulse animation for processing
       const time = Date.now() * 0.003;
       scale = 1.0 + Math.sin(time) * 0.1;
       hasAudioActivity = true;
+    } else if (isAnimating || isListening) {
+      // Fallback pulse animation for listening state (same as processing)
+      const time = Date.now() * 0.003;
+      scale = 1.0 + Math.sin(time) * 0.15; // Slightly more dynamic for listening
+      hasAudioActivity = true;
+    } else if (isPlaying) {
+      // Fallback animation for playing state
+      const time = Date.now() * 0.002;
+      scale = 1.0 + Math.sin(time) * 0.08;
+      hasAudioActivity = true;
+    } else if (showTestAnimation) {
+      // Test animation - more dynamic
+      const time = Date.now() * 0.004;
+      scale = 1.0 + Math.sin(time) * 0.2;
+      hasAudioActivity = true;
     } else {
-      // No audio source and not processing - static
+      // No audio source and not in any active state - static
       scale = 1.0;
       hasAudioActivity = false;
     }
@@ -125,7 +140,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
     setOpacity(hasAudioActivity ? 0.8 : 0.6);
     
     // Continue animation if in any active state
-    if (isListening || isProcessing || isPlaying || showTestAnimation) {
+    if (isAnimating || isListening || isProcessing || isPlaying || showTestAnimation) {
       animationRef.current = requestAnimationFrame(animate);
     } else {
       // In silence, stop animation and return to base size
@@ -134,53 +149,20 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
     }
   };
 
-  // Initialize audio context and connect microphone when listening starts
+  // Simplified audio context initialization (no microphone setup to avoid conflicts)
   useEffect(() => {
-    const setupMicrophone = async () => {
-      if (isAnimating && !source) {
+    const initializeAudioContext = () => {
+      // Only initialize audio context if needed - microphone setup handled by events
+      if (!audioContext && (isAnimating || isListening || isPlaying)) {
         try {
-          // Create audio context if it doesn't exist
-          if (!audioContext) {
-            audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            analyser.smoothingTimeConstant = 0.3;
-            dataArray = new Uint8Array(analyser.frequencyBinCount);
-          }
-
-          // Get microphone stream using saved permissions if available
-          let stream;
-          if (shouldSkipPermissionPrompt()) {
-            console.log('Using saved microphone permission for wine animation');
-            const hasPermission = await requestMicrophonePermission();
-            if (!hasPermission) {
-              console.log('Saved permission invalid for wine animation');
-              return;
-            }
-            stream = (window as any).currentMicrophoneStream;
-          } else {
-            console.log('Requesting fresh microphone permission for wine animation');
-            const hasPermission = await requestMicrophonePermission();
-            if (!hasPermission) {
-              console.log('Microphone permission denied for wine animation');
-              return;
-            }
-            stream = (window as any).currentMicrophoneStream;
-          }
-
-          if (!stream) {
-            console.warn('No microphone stream available for wine animation');
-            return;
-          }
-
-          source = audioContext.createMediaStreamSource(stream);
-          if (analyser) {
-            source.connect(analyser);
-          }
-          
-          console.log("Microphone connected to audio analyzer");
-        } catch (err) {
-          console.warn('Could not connect microphone to analyzer:', err);
+          audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.3;
+          dataArray = new Uint8Array(analyser.frequencyBinCount);
+          console.log('CircleAnimation: Audio context initialized for animation');
+        } catch (error) {
+          console.warn('CircleAnimation: Failed to initialize audio context:', error);
         }
       }
     };
@@ -210,7 +192,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
       }
     };
 
-    setupMicrophone();
+    initializeAudioContext();
 
     // Add visibility change listener
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -291,8 +273,18 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         setIsProcessing(false);
         
         // Connect to microphone stream for frequency analysis
-        if (audioContext && analyser && event.detail?.stream) {
+        if (event.detail?.stream) {
           try {
+            // Initialize audio context if needed
+            if (!audioContext) {
+              audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+              analyser = audioContext.createAnalyser();
+              analyser.fftSize = 256;
+              analyser.smoothingTimeConstant = 0.3;
+              dataArray = new Uint8Array(analyser.frequencyBinCount);
+            }
+            
+            // Disconnect existing source
             if (source) {
               source.disconnect();
             }
@@ -300,6 +292,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
             // Create source from the microphone stream
             source = audioContext.createMediaStreamSource(event.detail.stream);
             source.connect(analyser);
+            console.log('CircleAnimation: Connected to microphone stream for real-time animation');
             // Don't connect to destination to avoid feedback loop
           } catch (err) {
             console.warn('Failed to connect mic stream to analyzer:', err);
