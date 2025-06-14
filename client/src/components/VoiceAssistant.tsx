@@ -371,7 +371,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     
     analyserRef.current = null;
     setIsVoiceActive(false);
-    console.log("Voice activity detection stopped");
+    // Voice detection stopped
   };
 
   // Cleanup audio resources when component unmounts
