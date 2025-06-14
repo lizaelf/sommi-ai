@@ -39,7 +39,7 @@ export const WineHeroSection: React.FC<WineHeroSectionProps> = ({
       style={{
         position: "relative",
         width: "100%",
-        minHeight: "100vh",
+        height: "100vh",
         background: "linear-gradient(135deg, #0A0A0A 0%, #1A0A0A 100%)",
         overflow: "hidden",
       }}
@@ -47,7 +47,7 @@ export const WineHeroSection: React.FC<WineHeroSectionProps> = ({
       {/* Wine Bottle Image */}
       <div
         style={{
-          position: "fixed",
+          position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",

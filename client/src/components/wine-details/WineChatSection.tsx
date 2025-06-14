@@ -77,7 +77,7 @@ export const WineChatSection: React.FC<WineChatSectionProps> = ({
         width: "100%",
         minHeight: "100vh",
         backgroundColor: "#0A0A0A",
-        paddingTop: "75px", // Account for header
+        paddingTop: "0", // Remove extra padding since header is handled separately
       }}
     >
       {/* Chat Title */}
@@ -153,7 +153,7 @@ export const WineChatSection: React.FC<WineChatSectionProps> = ({
       {showChatInput && (
         <div
           style={{
-            position: "fixed",
+            position: "absolute",
             bottom: "0",
             left: "0",
             right: "0",

@@ -265,16 +265,15 @@ export default function WineDetailsRefactored() {
         showActions={showActions}
         onToggleActions={() => setShowActions(!showActions)}
       />
-      <HeaderSpacer />
 
-      {/* Wine Hero Section */}
+      {/* Wine Hero Section - Full screen */}
       <WineHeroSection
         wine={wine}
         imageLoaded={imageLoaded}
         onImageLoad={() => setImageLoaded(true)}
       />
 
-      {/* Chat Section */}
+      {/* Chat Section - Full screen */}
       <WineChatSection
         wine={wine}
         messages={messages}
