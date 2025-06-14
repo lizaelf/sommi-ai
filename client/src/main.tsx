@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { setupAudioContextInitialization, setupUserInteractionTracking } from "./lib/audioContext";
+import "./lib/cleanVoiceSystem";
 import { enableDarkMode } from "./utils/darkMode";
 import "@fontsource/lora"; // Import Lora font
 
