@@ -223,15 +223,42 @@ function VERIFY_MALE_VOICE_BEFORE_SPEECH() {
 
 // DOM load event to initialize everything
 document.addEventListener("DOMContentLoaded", function () {
+  // DEPLOYMENT: Block ALL speech until voice is properly locked
+  const isDeployment = window.location.hostname.includes('.replit.app') || 
+                      window.location.hostname.includes('.repl.co') ||
+                      window.location.hostname !== 'localhost';
+  
+  if (isDeployment) {
+    console.log("🚨 DEPLOYMENT: Blocking all speech until male voice verified");
+    
+    // Cancel any existing speech immediately
+    window.speechSynthesis.cancel();
+    
+    // Override speechSynthesis.speak temporarily
+    const originalSpeak = window.speechSynthesis.speak;
+    window.speechSynthesis.speak = function(utterance) {
+      if (!VOICE_LOCK_VERIFIED || !GUARANTEED_MALE_VOICE) {
+        console.log("🚫 DEPLOYMENT: Blocking speech - voice not verified");
+        return;
+      }
+      
+      // Force male voice on every utterance
+      utterance.voice = GUARANTEED_MALE_VOICE;
+      console.log("✅ DEPLOYMENT: Speaking with verified male voice:", GUARANTEED_MALE_VOICE.name);
+      originalSpeak.call(this, utterance);
+    };
+  }
+
   // IMMEDIATELY LOCK MALE VOICE
   FORCE_MALE_VOICE_LOCK();
 
-  // Set up minimal voice verification (reduced frequency)
+  // Set up aggressive voice verification for deployment
+  const checkInterval = isDeployment ? 5000 : 30000; // Every 5 seconds in deployment
   VOICE_CHECK_INTERVAL = setInterval(() => {
     if (!VOICE_LOCK_VERIFIED) {
       FORCE_MALE_VOICE_LOCK();
     }
-  }, 30000); // Check every 30 seconds instead of 5
+  }, checkInterval);
 
   // Get the microphone button and status div
   const micButton = document.getElementById("mic-button");

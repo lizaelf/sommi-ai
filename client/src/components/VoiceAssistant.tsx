@@ -59,6 +59,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log("QR SCAN: Voice assistant manually closed, ignoring trigger");
         return;
       }
+      
+      // DEPLOYMENT: Block welcome message until male voice is verified
+      const isDeployment = window.location.hostname.includes('.replit.app') || 
+                          window.location.hostname.includes('.repl.co') ||
+                          window.location.hostname !== 'localhost';
+      
+      if (isDeployment) {
+        // Check if voice is properly locked before speaking
+        const voiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
+        if (!voiceLocked) {
+          console.log("🚫 DEPLOYMENT: Blocking welcome message - voice not verified");
+          setShowBottomSheet(true);
+          setShowAskButton(true);
+          setIsResponding(false);
+          return;
+        }
+      }
+      
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsResponding(true);

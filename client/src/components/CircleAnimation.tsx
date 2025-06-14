@@ -33,9 +33,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       const baseSize = currentState.size;
       let scale = 1.0;
       
-      // Voice scaling with 50% maximum increase
-      if (volume > 5) {
-        const volumeScale = Math.min(volume / 100, 0.5); // 50% maximum scaling
+      // Voice scaling with 30% maximum increase - smoother response
+      if (volume > 3) {
+        const volumeScale = Math.min(volume / 80, 0.3); // 30% maximum scaling
         scale = 1.0 + volumeScale;
       }
       
@@ -120,6 +120,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
           width: `${currentSize}px`,
           height: `${currentSize}px`,
           opacity: opacity,
+          transition: 'width 0.1s ease-out, height 0.1s ease-out',
         }}
       />
       
