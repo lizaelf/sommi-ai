@@ -1120,54 +1120,49 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log("Browser TTS: Full text length:", lastAssistantMessage.length);
         console.log("Browser TTS: Text content:", lastAssistantMessage);
         
-        // Select the same consistent male voice using voiceURI
+        // CRITICAL: Use the same locked male voice across all components
         const selectVoice = () => {
           const voices = speechSynthesis.getVoices();
           
-          // Priority 1: Use stored voiceURI if available
-          const storedVoiceURI = localStorage.getItem('preferredVoiceURI');
-          if (storedVoiceURI) {
-            const storedVoice = voices.find(voice => voice.voiceURI === storedVoiceURI);
-            if (storedVoice) {
-              utterance.voice = storedVoice;
-              console.log("Using stored voice:", storedVoice.name, "URI:", storedVoice.voiceURI);
+          // Priority 1: Use LOCKED voice URI for absolute consistency
+          const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
+          if (lockedVoiceURI) {
+            const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
+            if (lockedVoice) {
+              utterance.voice = lockedVoice;
+              console.log("USING LOCKED VOICE:", lockedVoice.name, "URI:", lockedVoice.voiceURI);
               return;
             }
           }
           
-          // Priority 2: Google UK English Male for consistency
+          // Priority 2: Google UK English Male (exact match)
           let preferredVoice = voices.find(voice => 
-            voice.name.includes('Google UK English Male'));
+            voice.name === 'Google UK English Male');
           
-          // Priority 3: Other Google male voices
+          // Priority 3: Google US English Male (exact match)
           if (!preferredVoice) {
             preferredVoice = voices.find(voice => 
-              voice.name.includes('Google') && voice.name.includes('Male'));
+              voice.name === 'Google US English Male');
           }
           
-          // Priority 4: Any male voice
+          // Priority 4: Any Google male voice with English
           if (!preferredVoice) {
             preferredVoice = voices.find(voice => 
-              voice.name.includes('Male'));
+              voice.name.includes('Google') && voice.name.includes('Male') && voice.lang.startsWith('en'));
           }
           
-          // Priority 5: Named male voices
+          // Priority 5: First available English male voice
           if (!preferredVoice) {
             preferredVoice = voices.find(voice => 
-              voice.name.includes('David') || voice.name.includes('James') || 
-              voice.name.includes('Thomas') || voice.name.includes('Daniel'));
-          }
-          
-          // Fallback
-          if (!preferredVoice) {
-            preferredVoice = voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+              voice.name.includes('Male') && voice.lang.startsWith('en'));
           }
           
           if (preferredVoice) {
             utterance.voice = preferredVoice;
-            // Store voiceURI for consistent reuse
-            localStorage.setItem('preferredVoiceURI', preferredVoice.voiceURI);
-            console.log("Selected consistent male voice:", preferredVoice.name, "URI:", preferredVoice.voiceURI);
+            // Lock this voice for consistent reuse
+            localStorage.setItem('LOCKED_VOICE_URI', preferredVoice.voiceURI);
+            localStorage.setItem('LOCKED_VOICE_NAME', preferredVoice.name);
+            console.log("LOCKED VOICE FOR CONSISTENCY:", preferredVoice.name, "URI:", preferredVoice.voiceURI);
           }
         };
         

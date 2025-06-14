@@ -221,45 +221,22 @@ async function speakResponse(text) {
       currentUtterance = new SpeechSynthesisUtterance(text);
       currentUtterance.lang = 'en-US';
       
-      // Always use the same consistent male voice - check if we need to set it
-      if (!window.selectedVoice) {
-        const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0) {
-          // Priority 1: Google UK English Male (most consistent)
-          window.selectedVoice = voices.find(voice => 
-            voice.name.includes('Google UK English Male'));
-          
-          // Priority 2: Other Google male voices
-          if (!window.selectedVoice) {
-            window.selectedVoice = voices.find(voice => 
-              voice.name.includes('Google') && voice.name.includes('Male'));
-          }
-          
-          // Priority 3: Any male voice
-          if (!window.selectedVoice) {
-            window.selectedVoice = voices.find(voice => 
-              voice.name.includes('Male'));
-          }
-          
-          // Priority 4: Named male voices
-          if (!window.selectedVoice) {
-            window.selectedVoice = voices.find(voice => 
-              voice.name.includes('David') || voice.name.includes('James') || 
-              voice.name.includes('Thomas') || voice.name.includes('Daniel'));
-          }
-          
-          // Fallback: use first available voice
-          if (!window.selectedVoice && voices.length > 0) {
-            window.selectedVoice = voices[0];
-          }
-          
-          console.log("Locked to consistent male voice:", window.selectedVoice?.name || "Default");
-        }
-      }
-      
-      // Always use the same voice for consistency
+      // CRITICAL: Use the globally locked voice for absolute consistency
       if (window.selectedVoice) {
         currentUtterance.voice = window.selectedVoice;
+        console.log("Using locked voice:", window.selectedVoice.name);
+      } else {
+        // If somehow no voice is locked, use stored URI
+        const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
+        if (lockedVoiceURI) {
+          const voices = window.speechSynthesis.getVoices();
+          const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
+          if (lockedVoice) {
+            currentUtterance.voice = lockedVoice;
+            window.selectedVoice = lockedVoice; // Re-lock it
+            console.log("Restored locked voice from storage:", lockedVoice.name);
+          }
+        }
       }
       
       // Add speech rate and pitch for better quality
@@ -449,44 +426,57 @@ function processTextForSpeech(content) {
   return processedText;
 }
 
-// Initialize voices list early to make sure it's populated
-// This is needed because browsers load voices asynchronously
+// CRITICAL: Initialize and lock to the same male voice across all systems
 if ('speechSynthesis' in window) {
-  // Load voices list early 
+  // Force voice loading
   window.speechSynthesis.getVoices();
   
-  // Add event listener for when voices are loaded
-  if (window.speechSynthesis.onvoiceschanged !== undefined) {
-    window.speechSynthesis.onvoiceschanged = function() {
-      // Cache the voices list when they become available
-      if (!window.selectedVoice) {
-        const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0) {
-          // Try to find a male voice with good quality
+  // LOCKED voice selection function
+  const lockConsistentMaleVoice = () => {
+    if (!window.selectedVoice) {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        // PRIORITY 1: Google UK English Male (most consistent)
+        window.selectedVoice = voices.find(voice => 
+          voice.name === 'Google UK English Male');
+        
+        // PRIORITY 2: Google US English Male
+        if (!window.selectedVoice) {
           window.selectedVoice = voices.find(voice => 
-            (voice.name.includes('Google') && voice.name.includes('Male')) || 
-            (voice.name.includes('David') || voice.name.includes('James') || 
-             voice.name.includes('Thomas') || voice.name.includes('Daniel')) ||
-            (voice.name.includes('US') && voice.name.includes('Male')));
-            
-          // If no specific male voice found, find the latest male voice
-          if (!window.selectedVoice) {
-            const allMaleVoices = voices.filter(voice => 
-              voice.name.includes('Male'));
-            if (allMaleVoices.length > 0) {
-              window.selectedVoice = allMaleVoices[allMaleVoices.length - 1];
-            }
-          }
-            
-          // If still no preferred voice found, use the first available
-          if (!window.selectedVoice && voices.length > 0) {
-            window.selectedVoice = voices[0];
-          }
+            voice.name === 'Google US English Male');
+        }
+        
+        // PRIORITY 3: Any Google male voice with English
+        if (!window.selectedVoice) {
+          window.selectedVoice = voices.find(voice => 
+            voice.name.includes('Google') && voice.name.includes('Male') && voice.lang.startsWith('en'));
+        }
+        
+        // PRIORITY 4: First available English male voice
+        if (!window.selectedVoice) {
+          window.selectedVoice = voices.find(voice => 
+            voice.name.includes('Male') && voice.lang.startsWith('en'));
+        }
+        
+        // LOCK the selection globally
+        if (window.selectedVoice) {
+          localStorage.setItem('LOCKED_VOICE_URI', window.selectedVoice.voiceURI);
+          localStorage.setItem('LOCKED_VOICE_NAME', window.selectedVoice.name);
+          console.log("Voice loaded and cached for consistent playback:", window.selectedVoice.name);
           
-          console.log("Voice loaded and cached for consistent playback:", window.selectedVoice?.name || "Default");
+          // Make globally accessible
+          window.getLockedVoice = () => window.selectedVoice;
         }
       }
-    };
+    }
+  };
+
+  // Lock voice immediately if available
+  lockConsistentMaleVoice();
+  
+  // Also lock when voices change
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = lockConsistentMaleVoice;
   }
 }
 

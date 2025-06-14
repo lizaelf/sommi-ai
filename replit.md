@@ -42,6 +42,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 14, 2025)
 
+### Voice Assistant Consistency Fix (June 14, 2025 - Critical)
+- **Locked Male Voice Selection**: Implemented consistent male voice across all components with priority hierarchy
+- **Google UK English Male Priority**: Primary voice selection for maximum consistency and quality
+- **Voice URI Locking**: Added localStorage voice URI persistence to maintain same voice across sessions
+- **Global Voice Coordination**: Synchronized voice selection between VoiceAssistant component and voiceScript
+- **Fallback Chain**: Established clear fallback priorities (Google UK > Google US > Google Male > English Male)
+- **Critical Importance**: Voice consistency is now guaranteed across all text-to-speech functionality
+
 ### Wine Recommendation Persistence (June 14, 2025)
 - **Always Show Recommendations**: Wine recommendations now always visible, regardless of account deletion status
 - **Selective Data Clearing**: Account deletion now only clears chat history while preserving wine collection data
