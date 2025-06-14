@@ -23,6 +23,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [isThinking, setIsThinking] = useState(false);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
+  const [isManuallyClosedRef, setIsManuallyClosedRef] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -43,6 +44,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     const handleTriggerVoiceAssistant = async () => {
       console.log("QR SCAN: Voice assistant triggered");
+      // Don't reopen if manually closed
+      if (isManuallyClosedRef) {
+        console.log("QR SCAN: Voice assistant manually closed, ignoring trigger");
+        return;
+      }
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsResponding(true);
@@ -198,13 +204,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   // Voice activity detection functions
   const startVoiceDetection = (stream: MediaStream) => {
     try {
+      console.log('🎤 Setting up voice detection...');
+      
       // Create audio context for voice activity detection
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      console.log('🎤 Audio context created, state:', audioContextRef.current.state);
       
       // Resume audio context if suspended (required for some browsers)
       if (audioContextRef.current.state === 'suspended') {
         audioContextRef.current.resume().then(() => {
-          // Audio context resumed
+          console.log('🎤 Audio context resumed');
         });
       }
       
@@ -219,15 +229,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       source.connect(analyserRef.current);
       
-      // Debug the audio stream
-      // Stream tracks and audio context initialized
+      console.log('🎤 Audio pipeline connected, starting monitoring...');
       
       // Start monitoring voice activity with high frequency for immediate response
       voiceDetectionIntervalRef.current = setInterval(() => {
         checkVoiceActivity();
       }, 25); // Check every 25ms for maximum responsiveness
       
-      // Voice detection started
+      console.log('🎤 Voice detection started successfully');
     } catch (error) {
       console.error("Failed to start voice detection:", error);
     }
@@ -278,6 +287,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const now = Date.now();
     const recordingDuration = now - recordingStartTimeRef.current;
     
+    // Dispatch real-time volume data for CircleAnimation
+    window.dispatchEvent(
+      new CustomEvent("voice-volume", {
+        detail: { 
+          volume: average,
+          maxVolume: max,
+          isActive: isCurrentlyActive
+        },
+      }),
+    );
+    
+    // Debug: Log ALL volume dispatches to understand the data range
+    console.log('🎤 VoiceAssistant: Dispatching voice-volume:', { 
+      average, 
+      max, 
+      isActive: isCurrentlyActive,
+      threshold: voiceThreshold,
+      bufferLength
+    });
+
     // Minimal debug logging only on errors
     if (average === 0 && max === 0 && timeAverage === 128 && consecutiveSilenceCountRef.current % 100 === 0) {
       console.log("Audio input issue detected");
@@ -446,10 +475,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const startListening = async () => {
     console.log("🎤 DEPLOY DEBUG: Starting audio recording for Whisper transcription");
 
+    // Check if manually closed - don't reopen if so
+    if (isManuallyClosedRef) {
+      console.log("🎤 DEPLOY DEBUG: Voice assistant manually closed, ignoring startListening");
+      return;
+    }
+
     // Immediately show bottom sheet and listening state for instant feedback
     console.log("🎤 DEPLOY DEBUG: Setting UI states - showBottomSheet: true, isListening: true");
     setShowBottomSheet(true);
     setIsListening(true);
+    
+    // Dispatch listening event immediately to ensure CircleAnimation responds
+    console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event (early)');
+    window.dispatchEvent(
+      new CustomEvent("mic-status", {
+        detail: { status: "listening" },
+      }),
+    );
 
     // Check deployment environment
     const isDeployment = window.location.hostname.includes('.replit.app') || window.location.hostname.includes('.repl.co');
@@ -574,6 +617,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               setShowBottomSheet(false);
             }
             // Emit microphone status event for wine bottle animation
+            console.log('🎤 VoiceAssistant: Dispatching mic-status "stopped" event');
             window.dispatchEvent(
               new CustomEvent("mic-status", {
                 detail: { status: "stopped" },
@@ -601,18 +645,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       mediaRecorder.start(250); // Request data every 250ms for stability
       
-      // Start voice activity detection
+      // Start voice activity detection immediately
+      console.log('🎤 VoiceAssistant: Starting voice detection with stream');
       startVoiceDetection(stream);
       
+      // Store stream globally for CircleAnimation access
+      (window as any).currentMicrophoneStream = stream;
+      
+      // Force dispatch a second listening event to ensure CircleAnimation receives it
+      setTimeout(() => {
+        console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event (confirmation)');
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "listening" },
+          }),
+        );
+      }, 100);
+      
       // Emit microphone status event for wine bottle animation
+      console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event');
       window.dispatchEvent(
         new CustomEvent("mic-status", {
           detail: { status: "listening", stream: stream },
         }),
       );
       
-      // Minimum recording duration to ensure we capture some audio
-      const minimumRecordingTime = 1500; // 1.5 seconds minimum
+      console.log('VoiceAssistant: Dispatched mic-status event with stream:', {
+        hasStream: !!stream,
+        streamId: stream.id,
+        audioTracks: stream.getAudioTracks().length
+      });
+      
+      // Minimum recording duration to ensure we capture some audio and allow voice detection
+      const minimumRecordingTime = 3000; // 3 seconds minimum to allow proper voice detection
       let canStopEarly = false;
       
       setTimeout(() => {
@@ -626,13 +691,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).canStopEarly = true;
       }, minimumRecordingTime);
       
-      // Primary backup: stop after 4 seconds regardless of voice detection
+      // Primary backup: stop after 8 seconds to allow more time for voice detection
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          // Primary backup auto-stop
+          console.log("Primary backup auto-stop after 8 seconds");
           stopListening();
         }
-      }, 4000);
+      }, 8000);
       
       // Secondary backup: stop after 10 seconds if silence detection completely fails
       setTimeout(() => {
@@ -724,6 +789,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setIsThinking(true);
     
     // Emit microphone status event for wine bottle animation
+    console.log('🎤 VoiceAssistant: Dispatching mic-status "processing" event');
     window.dispatchEvent(
       new CustomEvent("mic-status", {
         detail: { status: "processing" },
@@ -781,7 +847,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const handleCloseBottomSheet = () => {
-    // Closing bottom sheet and stopping audio
+    console.log("VoiceAssistant: Manual close triggered - setting flag to prevent reopening");
+    
+    // Set flag to prevent automatic reopening
+    setIsManuallyClosedRef(true);
     
     // Abort any ongoing conversation processing
     window.dispatchEvent(new CustomEvent('abortConversation'));
@@ -791,7 +860,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
-      // OpenAI TTS audio stopped
     }
     
     // Stop any autoplay audio
@@ -799,13 +867,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
-      // Autoplay audio stopped
     }
     
     // Stop browser speech synthesis
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
-      // Browser speech synthesis stopped
     }
     
     setShowBottomSheet(false);
@@ -814,6 +880,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setShowUnmuteButton(false);
     setShowAskButton(false);
     stopListening();
+    
+    // Reset the flag after a longer delay to prevent immediate reopening
+    setTimeout(() => {
+      setIsManuallyClosedRef(false);
+      console.log("VoiceAssistant: Manual close flag reset - voice assistant can be triggered again");
+    }, 10000); // Extended to 10 seconds to prevent accidental reopening
   };
 
   const handleMute = () => {
@@ -1341,6 +1413,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleAsk = async () => {
     // Ask button clicked
+    
+    // Check if manually closed - don't reopen if so
+    if (isManuallyClosedRef) {
+      console.log("Voice assistant manually closed, ignoring ask button");
+      return;
+    }
     
     // Prevent multiple rapid clicks
     if (isListening || isProcessing) {

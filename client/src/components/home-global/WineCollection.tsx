@@ -32,15 +32,15 @@ export const WineCollection: React.FC<WineCollectionProps> = ({
 }) => {
   return (
     <div className="mb-6" style={{ paddingLeft: "16px", paddingRight: "16px" }}>
-      <h3
+      <h1
         className="text-xl font-medium"
         style={{
-          ...typography.h2,
+          ...typography.h1,
           marginBottom: "24px",
         }}
       >
         Your wines
-      </h3>
+      </h1>
 
       {/* Wine Cards */}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
