@@ -165,6 +165,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     // Custom audio playback handler for suggestion responses
     const handlePlayAudioResponse = async (event: Event) => {
+      if (isManuallyClosedRef) return;
+      
       const customEvent = event as CustomEvent;
       const { audioBuffers } = customEvent.detail;
       if (audioBuffers && audioBuffers.length > 0) {
@@ -189,8 +191,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         } catch (error) {
           console.error('Error playing suggestion audio:', error);
         } finally {
-          setIsResponding(false);
-          setShowAskButton(true);
+          if (!isManuallyClosedRef) {
+            setIsResponding(false);
+            setShowAskButton(true);
+          }
         }
       }
     };
