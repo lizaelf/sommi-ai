@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface FormInputProps {
   type?: "text" | "email" | "password" | "number" | "tel" | "url";
@@ -12,6 +12,8 @@ interface FormInputProps {
   className?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  name?: string;
+  autocomplete?: string;
 }
 
 export function FormInput({
@@ -26,22 +28,58 @@ export function FormInput({
   className = "",
   leftIcon,
   rightIcon,
+  name,
+  autocomplete,
 }: FormInputProps) {
+  const [isFocused, setIsFocused] = useState(false);
+  const isFilled = value.length > 0;
+
+  // Email validation
+  const validateEmail = (email: string): string | undefined => {
+    if (!email) return undefined;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    return undefined;
+  };
+
+  // Phone validation
+  const validatePhone = (phone: string): string | undefined => {
+    if (!phone) return undefined;
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    if (!phoneRegex.test(cleanPhone) || cleanPhone.length < 7) {
+      return "Please enter a valid phone number";
+    }
+    return undefined;
+  };
+
+  // Auto-validation based on type
+  const getValidationError = (): string | undefined => {
+    if (error) return error;
+    if (type === "email") return validateEmail(value);
+    if (type === "tel") return validatePhone(value);
+    return undefined;
+  };
+
+  const validationError = getValidationError();
+
   const inputStyles = {
     width: "100%",
     height: "48px",
     padding: leftIcon ? "0 16px 0 48px" : rightIcon ? "0 48px 0 16px" : "0 16px",
     borderRadius: "12px",
-    border: error 
+    border: validationError 
       ? "1px solid #FF6B6B" 
       : "1px solid rgba(255, 255, 255, 0.12)",
-    background: "transparent",
+    background: (isFocused || isFilled) ? "rgba(255, 255, 255, 0.08)" : "transparent",
     color: "white",
     fontSize: "16px",
     fontFamily: "Inter, sans-serif",
     outline: "none",
     transition: "all 0.2s ease",
-    ...(!error && {
+    ...(!validationError && {
       backgroundImage: 
         "linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)",
       backgroundOrigin: "border-box",
@@ -50,14 +88,39 @@ export function FormInput({
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (!error) {
+    setIsFocused(true);
+    if (!validationError) {
       e.target.style.borderColor = "rgba(255, 255, 255, 0.3)";
     }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (!error) {
+    setIsFocused(false);
+    if (!validationError) {
       e.target.style.borderColor = "rgba(255, 255, 255, 0.12)";
+    }
+  };
+
+  // Auto-complete mapping
+  const getAutocomplete = (): string => {
+    if (autocomplete) return autocomplete;
+    
+    switch (type) {
+      case "email":
+        return "email";
+      case "tel":
+        return "tel";
+      default:
+        if (name?.toLowerCase().includes('firstname') || placeholder?.toLowerCase().includes('first')) {
+          return "given-name";
+        }
+        if (name?.toLowerCase().includes('lastname') || placeholder?.toLowerCase().includes('last')) {
+          return "family-name";
+        }
+        if (name?.toLowerCase().includes('name') && !name?.toLowerCase().includes('first') && !name?.toLowerCase().includes('last')) {
+          return "name";
+        }
+        return "off";
     }
   };
 
@@ -97,6 +160,7 @@ export function FormInput({
         
         <input
           type={type}
+          name={name}
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -104,6 +168,7 @@ export function FormInput({
           onBlur={handleBlur}
           disabled={disabled}
           required={required}
+          autoComplete={getAutocomplete()}
           style={inputStyles}
         />
         
@@ -123,7 +188,7 @@ export function FormInput({
         )}
       </div>
       
-      {error && (
+      {validationError && (
         <div
           style={{
             color: "#FF6B6B",
@@ -132,7 +197,7 @@ export function FormInput({
             marginTop: "4px",
           }}
         >
-          {error}
+          {validationError}
         </div>
       )}
     </div>

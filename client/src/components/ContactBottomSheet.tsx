@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import Button from "./ui/Button";
+import { FormInput } from "./ui/FormInput";
 
 export interface ContactFormData {
   firstName: string;
@@ -156,76 +157,48 @@ export default function ContactBottomSheet({
           <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "24px" }}>
             {/* First Name & Last Name Row */}
             <div style={{ display: "flex", gap: "12px" }}>
-              <input
-                type="text"
-                placeholder="First name"
-                value={formData.firstName}
-                onChange={(e) => handleInputChange("firstName", e.target.value)}
-                required
-                style={{
-                  flex: 1,
-                  padding: "16px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255, 255, 255, 0.20)",
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  color: "white",
-                  fontSize: "16px",
-                  fontFamily: "Inter, sans-serif",
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Last name"
-                value={formData.lastName}
-                onChange={(e) => handleInputChange("lastName", e.target.value)}
-                required
-                style={{
-                  flex: 1,
-                  padding: "16px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255, 255, 255, 0.20)",
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  color: "white",
-                  fontSize: "16px",
-                  fontFamily: "Inter, sans-serif",
-                }}
-              />
+              <div style={{ flex: 1 }}>
+                <FormInput
+                  type="text"
+                  name="firstName"
+                  placeholder="First name"
+                  value={formData.firstName}
+                  onChange={(value) => handleInputChange("firstName", value)}
+                  required
+                  className=""
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <FormInput
+                  type="text"
+                  name="lastName"
+                  placeholder="Last name"
+                  value={formData.lastName}
+                  onChange={(value) => handleInputChange("lastName", value)}
+                  required
+                  className=""
+                />
+              </div>
             </div>
 
             {/* Email */}
-            <input
+            <FormInput
               type="email"
+              name="email"
               placeholder="Email"
               value={formData.email}
-              onChange={(e) => handleInputChange("email", e.target.value)}
+              onChange={(value) => handleInputChange("email", value)}
               required
-              style={{
-                padding: "16px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255, 255, 255, 0.20)",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                color: "white",
-                fontSize: "16px",
-                fontFamily: "Inter, sans-serif",
-              }}
             />
 
             {/* Phone */}
-            <input
+            <FormInput
               type="tel"
+              name="phone"
               placeholder="Phone"
               value={formData.phone}
-              onChange={(e) => handleInputChange("phone", e.target.value)}
+              onChange={(value) => handleInputChange("phone", value)}
               required
-              style={{
-                padding: "16px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255, 255, 255, 0.20)",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                color: "white",
-                fontSize: "16px",
-                fontFamily: "Inter, sans-serif",
-              }}
             />
           </div>
 
