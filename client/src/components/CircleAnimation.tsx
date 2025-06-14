@@ -1,19 +1,37 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import wineCircleImage from '@assets/wine-circle.png';
 
+// Type-safe event interfaces
+interface MicStatusEvent extends CustomEvent<{ 
+  status: 'listening' | 'processing' | 'stopped';
+  stream?: MediaStream;
+}> {}
+
+interface VoiceVolumeEvent extends CustomEvent<{
+  volume: number;
+  maxVolume: number;
+  isActive: boolean;
+}> {}
+
 interface CircleAnimationProps {
   isAnimating?: boolean;
   size?: number;
+  showDebug?: boolean; // Control debug overlay visibility
 }
 
-export default function CircleAnimation({ isAnimating = false, size = 300 }: CircleAnimationProps) {
+export default function CircleAnimation({ 
+  isAnimating = false, 
+  size = 300, 
+  showDebug = process.env.NODE_ENV === 'development' 
+}: CircleAnimationProps) {
   const [currentSize, setSize] = useState(size);
   const [opacity, setOpacity] = useState(1.0);
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [voiceVolume, setVoiceVolume] = useState(0);
-  const animationRef = useRef<number>(0);
+  const animationFrameRef = useRef<number | null>(null);
+  const statePollingRef = useRef<number | null>(null);
 
   // Store refs to current state for event handlers
   const stateRef = useRef({ isListening, isProcessing, isPlaying, size });
@@ -21,8 +39,8 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     stateRef.current = { isListening, isProcessing, isPlaying, size };
   }, [isListening, isProcessing, isPlaying, size]);
 
-  // Voice volume handler that updates size immediately
-  const handleVoiceVolumeChange = useCallback((event: CustomEvent) => {
+  // Voice volume handler with proper typing
+  const handleVoiceVolumeChange = useCallback((event: VoiceVolumeEvent) => {
     const { volume, maxVolume, isActive } = event.detail;
     const currentState = stateRef.current;
 
@@ -44,6 +62,38 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     }
   }, []);
 
+  // Optimized state synchronization using requestAnimationFrame
+  const syncVoiceAssistantState = useCallback(() => {
+    const voiceAssistant = (window as any).voiceAssistantState;
+    if (voiceAssistant) {
+      let stateChanged = false;
+
+      if (voiceAssistant.isListening && !isListening) {
+        setIsListening(true);
+        setIsProcessing(false);
+        setIsPlaying(false);
+        stateChanged = true;
+      } else if (voiceAssistant.isProcessing && !isProcessing) {
+        setIsListening(false);
+        setIsProcessing(true);
+        setIsPlaying(false);
+        stateChanged = true;
+      } else if (!voiceAssistant.isListening && !voiceAssistant.isProcessing && (isListening || isProcessing)) {
+        setIsListening(false);
+        setIsProcessing(false);
+        setIsPlaying(false);
+        stateChanged = true;
+      }
+
+      // Continue polling only if VoiceAssistant is active
+      if (voiceAssistant.showBottomSheet || voiceAssistant.isListening || voiceAssistant.isProcessing) {
+        animationFrameRef.current = requestAnimationFrame(syncVoiceAssistantState);
+      } else {
+        animationFrameRef.current = null;
+      }
+    }
+  }, [isListening, isProcessing, isPlaying]);
+
   // Keep circle static for all non-listening states
   useEffect(() => {
     // Only allow voice-responsive scaling during listening
@@ -51,42 +101,21 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       setSize(size); // Always keep base size
       setOpacity(1.0); // Full opacity always
     }
-
-    return () => {
-      cancelAnimationFrame(animationRef.current);
-    };
   }, [isAnimating, isProcessing, isPlaying, size, isListening]);
 
-  // Communication with VoiceAssistant
+  // Optimized communication with VoiceAssistant
   useEffect(() => {
-    const checkVoiceAssistantState = () => {
-      const voiceAssistant = (window as any).voiceAssistantState;
-      if (voiceAssistant) {
-        if (voiceAssistant.isListening && !isListening) {
-          setIsListening(true);
-          setIsProcessing(false);
-          setIsPlaying(false);
-        } else if (voiceAssistant.isProcessing && !isProcessing) {
-          setIsListening(false);
-          setIsProcessing(true);
-          setIsPlaying(false);
-        } else if (!voiceAssistant.isListening && !voiceAssistant.isProcessing) {
-          setIsListening(false);
-          setIsProcessing(false);
-          setIsPlaying(false);
-        }
-      }
-    };
-
-    const stateChecker = setInterval(checkVoiceAssistantState, 100);
-
-    const handleMicStatusChange = (event: CustomEvent) => {
+    const handleMicStatusChange = (event: MicStatusEvent) => {
       const status = event.detail?.status;
 
       if (status === 'listening') {
         setIsListening(true);
         setIsProcessing(false);
         setIsPlaying(false);
+        // Start optimized state sync when listening begins
+        if (!animationFrameRef.current) {
+          animationFrameRef.current = requestAnimationFrame(syncVoiceAssistantState);
+        }
       } else if (status === 'processing') {
         setIsListening(false);
         setIsProcessing(true);
@@ -97,18 +126,37 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         setIsPlaying(false);
         setVoiceVolume(0);
         setOpacity(1.0);
+        // Stop state sync when stopped
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = null;
+        }
       }
     };
+
+    // Initial state sync - only start if VoiceAssistant is active
+    const voiceAssistant = (window as any).voiceAssistantState;
+    if (voiceAssistant && (voiceAssistant.showBottomSheet || voiceAssistant.isListening || voiceAssistant.isProcessing)) {
+      animationFrameRef.current = requestAnimationFrame(syncVoiceAssistantState);
+    }
 
     window.addEventListener('mic-status', handleMicStatusChange as EventListener);
     window.addEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
 
     return () => {
-      clearInterval(stateChecker);
+      // Cleanup animation frame and polling
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      if (statePollingRef.current) {
+        clearInterval(statePollingRef.current);
+        statePollingRef.current = null;
+      }
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
       window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
     };
-  }, [handleVoiceVolumeChange]);
+  }, [handleVoiceVolumeChange, syncVoiceAssistantState]);
 
   return (
     <div className="relative flex items-center justify-center">
@@ -140,8 +188,8 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         />
       )}
 
-      {/* Debug overlay - shows when listening */}
-      {isListening && (
+      {/* Debug overlay - only shows in development or when explicitly enabled */}
+      {showDebug && isListening && (
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded z-50 font-mono">
           <div>Voice: {voiceVolume.toFixed(0)} | Size: {currentSize.toFixed(0)}px</div>
         </div>
