@@ -273,8 +273,16 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         setIsProcessing(false);
         
         // Connect to microphone stream for frequency analysis
-        if (event.detail?.stream) {
+        console.log('CircleAnimation: Attempting to connect microphone stream');
+        console.log('CircleAnimation: Stream available:', !!event.detail?.stream);
+        
+        // Try to get stream from multiple sources
+        let micStream = event.detail?.stream || (window as any).currentMicrophoneStream;
+        
+        if (micStream) {
           try {
+            console.log('CircleAnimation: Microphone stream found, setting up audio analysis');
+            
             // Initialize audio context if needed
             if (!audioContext) {
               audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -282,21 +290,34 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
               analyser.fftSize = 256;
               analyser.smoothingTimeConstant = 0.3;
               dataArray = new Uint8Array(analyser.frequencyBinCount);
+              console.log('CircleAnimation: Audio context initialized');
             }
             
             // Disconnect existing source
             if (source) {
               source.disconnect();
+              console.log('CircleAnimation: Disconnected previous audio source');
             }
             
             // Create source from the microphone stream
-            source = audioContext.createMediaStreamSource(event.detail.stream);
+            source = audioContext.createMediaStreamSource(micStream);
             source.connect(analyser);
-            console.log('CircleAnimation: Connected to microphone stream for real-time animation');
-            // Don't connect to destination to avoid feedback loop
+            console.log('CircleAnimation: Connected microphone stream to audio analyser for real-time animation');
+            
+            // Verify connection is working
+            setTimeout(() => {
+              if (analyser && dataArray) {
+                analyser.getByteFrequencyData(dataArray);
+                const sum = dataArray.reduce((a, b) => a + b, 0);
+                console.log('CircleAnimation: Audio data test - sum:', sum);
+              }
+            }, 100);
+            
           } catch (err) {
-            console.warn('Failed to connect mic stream to analyzer:', err);
+            console.error('CircleAnimation: Failed to connect mic stream to analyzer:', err);
           }
+        } else {
+          console.warn('CircleAnimation: No microphone stream available for audio analysis');
         }
         
         // Reset frame counter for smooth animation start
