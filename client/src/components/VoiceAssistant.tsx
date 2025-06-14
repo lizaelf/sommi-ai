@@ -62,13 +62,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           console.log("QR SCAN: Welcome message completed");
         }, 4000); // Approximate duration
       } else {
-        console.log("QR SCAN: Fallback to direct speech synthesis");
+        console.log("QR SCAN: Fallback - using locked male voice directly");
         
-        // Direct speech synthesis fallback
+        // Force use locked male voice
+        const voices = window.speechSynthesis.getVoices();
+        const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
+        let selectedVoice = null;
+        
+        if (lockedVoiceURI) {
+          selectedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
+          console.log("QR SCAN: Found locked voice:", selectedVoice?.name);
+        }
+        
+        if (!selectedVoice) {
+          // Emergency male voice selection
+          selectedVoice = voices.find(voice => voice.name === 'Google UK English Male') ||
+                         voices.find(voice => voice.name === 'Google US English Male') ||
+                         voices.find(voice => voice.name.toLowerCase().includes('male'));
+          console.log("QR SCAN: Emergency male voice:", selectedVoice?.name);
+        }
+        
         const utterance = new SpeechSynthesisUtterance(welcomeMessage);
         utterance.lang = 'en-US';
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
+        
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+          console.log("QR SCAN: Using voice:", selectedVoice.name);
+        }
+        
+        utterance.onstart = () => {
+          console.log("QR SCAN: Speech started");
+        };
         
         utterance.onend = () => {
           setIsResponding(false);
@@ -82,7 +108,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           setShowAskButton(true);
         };
         
-        window.speechSynthesis.speak(utterance);
+        // Cancel any existing speech and speak
+        window.speechSynthesis.cancel();
+        setTimeout(() => {
+          window.speechSynthesis.speak(utterance);
+          console.log("QR SCAN: Speaking welcome message");
+        }, 100);
       }
     };
 
