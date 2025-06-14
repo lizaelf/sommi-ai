@@ -67,16 +67,21 @@ export function ButtonIcon({
       });
 
       if (response.ok) {
-        // Clear all localStorage items related to the app
+        // Clear only chat-related localStorage items, preserve wine data
         const keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (key && (
             key.includes('conversation') || 
-            key.includes('wine') || 
             key.includes('chat') ||
             key.includes('hasSharedContact') ||
-            key.startsWith('wine_assistant_')
+            key.startsWith('wine_assistant_') ||
+            // Only remove specific wine-related keys that are chat-related
+            (key.includes('wine') && (
+              key.includes('conversation') ||
+              key.includes('chat') ||
+              key.includes('history')
+            ))
           )) {
             keysToRemove.push(key);
           }
@@ -85,17 +90,13 @@ export function ButtonIcon({
         // Remove all identified keys
         keysToRemove.forEach(key => localStorage.removeItem(key));
         
-        // Clear IndexedDB data
+        // Clear only chat history from IndexedDB, preserve wine data
         try {
-          const indexedDBRequest = indexedDB.deleteDatabase('WineAssistantDB');
-          indexedDBRequest.onsuccess = () => {
-            console.log('IndexedDB cleared successfully');
-          };
-          indexedDBRequest.onerror = () => {
-            console.log('IndexedDB clear failed, but continuing...');
-          };
+          const { default: indexedDBService } = await import('../lib/indexedDB');
+          await indexedDBService.clearChatHistory();
+          console.log('Chat history cleared from IndexedDB, wine data preserved');
         } catch (idbError) {
-          console.log('IndexedDB clear error:', idbError);
+          console.log('IndexedDB chat history clear error:', idbError);
         }
         
         // Don't reload immediately, let the user choose interaction type

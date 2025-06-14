@@ -469,6 +469,31 @@ class IndexedDBService {
     }
   }
 
+  // Clear only chat history from IndexedDB, preserve wine data
+  public async clearChatHistory(): Promise<void> {
+    try {
+      const db = await this.initDB();
+      const transaction = db.transaction([CONVERSATION_STORE], 'readwrite');
+      
+      const conversationStore = transaction.objectStore(CONVERSATION_STORE);
+      
+      await new Promise<void>((resolve, reject) => {
+        const request = conversationStore.clear();
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+      
+      // Reset current user ID to force creation of new user session
+      this.currentUserId = null;
+      localStorage.removeItem(SESSION_ID_KEY);
+      
+      console.log('Cleared chat history from IndexedDB, preserved wine data');
+    } catch (error) {
+      console.error('Error clearing chat history from IndexedDB:', error);
+      throw error;
+    }
+  }
+
   // Clear all data from IndexedDB
   public async clearAllData(): Promise<void> {
     try {
