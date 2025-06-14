@@ -76,8 +76,8 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         const average = sum / dataArray.length;
         let volume = Math.min(average / 128, 1.0); // Normalize 0-1
         
-        // Check if there's actual audio activity (above silence threshold)
-        hasAudioActivity = volume > 0.05; // Only animate if volume is above 5%
+        // Check if there's actual audio activity (lower threshold for better sensitivity)
+        hasAudioActivity = volume > 0.01; // More sensitive threshold for user speech
         
         if (hasAudioActivity) {
           // Apply multiple smoothing layers for ultra-smooth animation
@@ -90,9 +90,9 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
           const lerpFactor = 0.08; // Much slower, smoother transitions
           scale = scale + (targetScale - scale) * lerpFactor;
           
-          // Only log occasionally to reduce console spam
+          // Log audio activity for debugging speech detection
           if (frameCount.current % 30 === 0) {
-            console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
+            console.log("CircleAnimation: Audio detected - volume:", volume.toFixed(3), "scale:", scale.toFixed(3));
           }
         } else {
           // No audio activity - use base scale
@@ -125,7 +125,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
     setOpacity(hasAudioActivity ? 0.8 : 0.6);
     
     // Continue animation if in any active state
-    if (isListening || isProcessing || isPlaying || showTestAnimation) {
+    if (isAnimating || isListening || isProcessing || isPlaying || showTestAnimation) {
       animationRef.current = requestAnimationFrame(animate);
     } else {
       // In silence, stop animation and return to base size
@@ -148,21 +148,14 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
             dataArray = new Uint8Array(analyser.frequencyBinCount);
           }
 
-          // Get microphone stream using saved permissions if available
-          let stream;
-          if (shouldSkipPermissionPrompt()) {
-            console.log('Using saved microphone permission for wine animation');
+          // Check for existing microphone stream first
+          let stream = (window as any).currentMicrophoneStream;
+          
+          if (!stream) {
+            console.log('CircleAnimation: Requesting microphone permission');
             const hasPermission = await requestMicrophonePermission();
             if (!hasPermission) {
-              console.log('Saved permission invalid for wine animation');
-              return;
-            }
-            stream = (window as any).currentMicrophoneStream;
-          } else {
-            console.log('Requesting fresh microphone permission for wine animation');
-            const hasPermission = await requestMicrophonePermission();
-            if (!hasPermission) {
-              console.log('Microphone permission denied for wine animation');
+              console.log('CircleAnimation: Microphone permission denied');
               return;
             }
             stream = (window as any).currentMicrophoneStream;
@@ -176,9 +169,8 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
           source = audioContext.createMediaStreamSource(stream);
           if (analyser) {
             source.connect(analyser);
+            console.log("CircleAnimation: Connected to microphone stream for real-time animation");
           }
-          
-          console.log("Microphone connected to audio analyzer");
         } catch (err) {
           console.warn('Could not connect microphone to analyzer:', err);
         }
