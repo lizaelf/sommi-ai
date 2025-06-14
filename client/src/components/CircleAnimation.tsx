@@ -29,10 +29,10 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         hasActivity = true;
       } else if (isListening) {
         // Listening pulse animation with voice volume response
-        const time = Date.now() * 0.003;
-        const volumeScale = Math.min(voiceVolume / 30, 1.5); // More sensitive to voice
-        const basePulse = Math.sin(time) * 0.15; // Larger base pulse
-        const volumePulse = volumeScale * 0.3; // More dramatic voice scaling
+        const time = Date.now() * 0.002;
+        const volumeScale = Math.min(voiceVolume / 5, 3.0); // Even more sensitive to voice
+        const basePulse = Math.sin(time) * 0.05; // Minimal base pulse
+        const volumePulse = volumeScale * 0.8; // Extremely dramatic voice scaling
         scale = 1.0 + basePulse + volumePulse;
         hasActivity = true;
       } else if (isPlaying) {
@@ -139,9 +139,15 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
           width: `${currentSize}px`,
           height: `${currentSize}px`,
           opacity: opacity,
-          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'})`,
+          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'}) brightness(${isListening ? Math.min(1 + voiceVolume / 10, 2.5) : 1}) saturate(${isListening ? Math.min(1 + voiceVolume / 15, 2) : 1})`,
         }}
       />
+      {/* Temporary debug overlay for voice volume */}
+      {isListening && voiceVolume > 0 && (
+        <div className="absolute top-0 left-0 bg-black bg-opacity-70 text-white text-xs p-1 rounded">
+          Voice: {voiceVolume.toFixed(2)}
+        </div>
+      )}
     </div>
   );
 }
