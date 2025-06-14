@@ -9,20 +9,196 @@ let pausedText = "";
 let currentPosition = 0;
 let wasMuted = false;
 
-// CRITICAL: Voice locking variables
-let isVoiceLocked = false;
-let lockedMaleVoice = null;
-let voiceInitializationAttempts = 0;
-const MAX_VOICE_INIT_ATTEMPTS = 10;
+// AGGRESSIVE VOICE CONTROL VARIABLES
+let GUARANTEED_MALE_VOICE = null;
+let VOICE_LOCK_VERIFIED = false;
+let VOICE_CHECK_INTERVAL = null;
+let MALE_VOICE_NAMES = [
+  "Google UK English Male",
+  "Google US English Male",
+  "Microsoft David - English (United States)",
+  "Microsoft Mark - English (United States)",
+  "Alex", // macOS male voice
+  "Daniel", // UK male voice
+  "Fred", // US male voice
+];
+
+// FORCE VOICE LOADING AND LOCK IMMEDIATELY
+function FORCE_MALE_VOICE_LOCK() {
+  console.log("🔒 FORCING MALE VOICE LOCK");
+
+  // Cancel any existing speech to reset state
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+
+  // Force voice list refresh
+  let voices = window.speechSynthesis.getVoices();
+
+  // If no voices, force refresh and wait
+  if (voices.length === 0) {
+    // Trigger voice loading
+    const dummyUtterance = new SpeechSynthesisUtterance("");
+    window.speechSynthesis.speak(dummyUtterance);
+    window.speechSynthesis.cancel();
+
+    // Wait and try again
+    setTimeout(() => {
+      voices = window.speechSynthesis.getVoices();
+      SELECT_GUARANTEED_MALE_VOICE(voices);
+    }, 100);
+  } else {
+    SELECT_GUARANTEED_MALE_VOICE(voices);
+  }
+}
+
+function SELECT_GUARANTEED_MALE_VOICE(voices) {
+  console.log(
+    "🔍 SELECTING GUARANTEED MALE VOICE from",
+    voices.length,
+    "voices",
+  );
+
+  // Log all available voices
+  voices.forEach((voice, i) => {
+    console.log(
+      `Voice ${i}: ${voice.name} (${voice.lang}) - ${voice.voiceURI}`,
+    );
+  });
+
+  let selectedVoice = null;
+
+  // STRATEGY 1: Find exact match from known male voices
+  for (const maleName of MALE_VOICE_NAMES) {
+    selectedVoice = voices.find((voice) => voice.name === maleName);
+    if (selectedVoice) {
+      console.log("✅ FOUND EXACT MALE VOICE:", maleName);
+      break;
+    }
+  }
+
+  // STRATEGY 2: Find any voice with "male" in name (case insensitive)
+  if (!selectedVoice) {
+    selectedVoice = voices.find(
+      (voice) =>
+        voice.name.toLowerCase().includes("male") ||
+        voice.name.toLowerCase().includes("david") ||
+        voice.name.toLowerCase().includes("mark") ||
+        voice.name.toLowerCase().includes("alex") ||
+        voice.name.toLowerCase().includes("daniel"),
+    );
+    if (selectedVoice) {
+      console.log("✅ FOUND MALE-LIKE VOICE:", selectedVoice.name);
+    }
+  }
+
+  // STRATEGY 3: Exclude known female voices and pick English
+  if (!selectedVoice) {
+    selectedVoice = voices.find(
+      (voice) =>
+        voice.lang.startsWith("en") &&
+        !voice.name.toLowerCase().includes("female") &&
+        !voice.name.toLowerCase().includes("woman") &&
+        !voice.name.toLowerCase().includes("samantha") &&
+        !voice.name.toLowerCase().includes("susan") &&
+        !voice.name.toLowerCase().includes("karen") &&
+        !voice.name.toLowerCase().includes("zira") &&
+        !voice.name.toLowerCase().includes("hazel"),
+    );
+    if (selectedVoice) {
+      console.log("✅ FOUND NON-FEMALE ENGLISH VOICE:", selectedVoice.name);
+    }
+  }
+
+  // STRATEGY 4: Use first available as absolute fallback
+  if (!selectedVoice && voices.length > 0) {
+    selectedVoice = voices[0];
+    console.log("⚠️ FALLBACK TO FIRST VOICE:", selectedVoice.name);
+  }
+
+  if (selectedVoice) {
+    GUARANTEED_MALE_VOICE = selectedVoice;
+    VOICE_LOCK_VERIFIED = true;
+
+    // Store globally for other components
+    window.selectedVoice = selectedVoice;
+    window.guaranteedMaleVoice = selectedVoice;
+
+    console.log("🔒 VOICE LOCKED:", selectedVoice.name);
+    console.log("🔒 Voice URI:", selectedVoice.voiceURI);
+
+    // Test the voice immediately
+    TEST_LOCKED_VOICE();
+  } else {
+    console.error("❌ NO VOICE AVAILABLE - CRITICAL ERROR");
+    VOICE_LOCK_VERIFIED = false;
+  }
+}
+
+// Test the locked voice to ensure it's male
+function TEST_LOCKED_VOICE() {
+  if (!GUARANTEED_MALE_VOICE) return;
+
+  console.log("🧪 TESTING LOCKED VOICE:", GUARANTEED_MALE_VOICE.name);
+
+  const testUtterance = new SpeechSynthesisUtterance("test");
+  testUtterance.voice = GUARANTEED_MALE_VOICE;
+  testUtterance.volume = 0; // Silent test
+  testUtterance.rate = 10; // Super fast
+
+  testUtterance.onstart = () => {
+    console.log("✅ VOICE TEST PASSED:", GUARANTEED_MALE_VOICE.name);
+  };
+
+  testUtterance.onerror = (event) => {
+    console.error("❌ VOICE TEST FAILED:", event.error);
+    // Try to find alternative
+    FORCE_MALE_VOICE_LOCK();
+  };
+
+  window.speechSynthesis.speak(testUtterance);
+}
+
+// VERIFY VOICE BEFORE EVERY SPEECH
+function VERIFY_MALE_VOICE_BEFORE_SPEECH() {
+  if (!VOICE_LOCK_VERIFIED || !GUARANTEED_MALE_VOICE) {
+    console.log("⚠️ VOICE NOT VERIFIED - FORCING LOCK");
+    FORCE_MALE_VOICE_LOCK();
+    return false;
+  }
+
+  // Double check the voice still exists
+  const currentVoices = window.speechSynthesis.getVoices();
+  const voiceStillExists = currentVoices.find(
+    (v) => v.voiceURI === GUARANTEED_MALE_VOICE.voiceURI,
+  );
+
+  if (!voiceStillExists) {
+    console.log("⚠️ LOCKED VOICE NO LONGER EXISTS - RE-LOCKING");
+    FORCE_MALE_VOICE_LOCK();
+    return false;
+  }
+
+  console.log("✅ VOICE VERIFIED:", GUARANTEED_MALE_VOICE.name);
+  return true;
+}
 
 // DOM load event to initialize everything
 document.addEventListener("DOMContentLoaded", function () {
+  // IMMEDIATELY LOCK MALE VOICE
+  FORCE_MALE_VOICE_LOCK();
+
+  // Set up continuous voice verification
+  VOICE_CHECK_INTERVAL = setInterval(() => {
+    if (!VOICE_LOCK_VERIFIED) {
+      console.log("🔄 PERIODIC VOICE CHECK - RE-LOCKING");
+      FORCE_MALE_VOICE_LOCK();
+    }
+  }, 5000); // Check every 5 seconds
+
   // Get the microphone button and status div
   const micButton = document.getElementById("mic-button");
   statusDiv = document.getElementById("status");
-
-  // Initialize voice system FIRST
-  initializeVoiceSystem();
 
   // Speech recognition setup
   let recognition = null;
@@ -167,219 +343,28 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// CRITICAL: Robust voice system initialization
-function initializeVoiceSystem() {
-  console.log("🎙️ VOICE INIT: Starting voice system initialization");
-
-  if (!("speechSynthesis" in window)) {
-    console.error("🎙️ VOICE ERROR: Speech synthesis not supported");
-    return;
-  }
-
-  // Attempt to lock voice with retry mechanism
-  const attemptVoiceLock = () => {
-    voiceInitializationAttempts++;
-    console.log(
-      `🎙️ VOICE INIT: Attempt ${voiceInitializationAttempts}/${MAX_VOICE_INIT_ATTEMPTS}`,
-    );
-
-    const voices = window.speechSynthesis.getVoices();
-
-    if (voices.length === 0) {
-      console.log("🎙️ VOICE INIT: No voices loaded yet, waiting...");
-
-      if (voiceInitializationAttempts < MAX_VOICE_INIT_ATTEMPTS) {
-        setTimeout(attemptVoiceLock, 100);
-      } else {
-        console.error(
-          "🎙️ VOICE ERROR: Failed to load voices after maximum attempts",
-        );
-      }
-      return;
-    }
-
-    // Successfully got voices, now lock the male voice
-    lockMaleVoice(voices);
-  };
-
-  // Start initial attempt
-  attemptVoiceLock();
-
-  // Also set up the voices changed event as backup
-  window.speechSynthesis.onvoiceschanged = () => {
-    if (!isVoiceLocked) {
-      console.log(
-        "🎙️ VOICE EVENT: Voices changed, attempting to lock male voice",
-      );
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        lockMaleVoice(voices);
-      }
-    }
-  };
-}
-
-// CRITICAL: Lock male voice with absolute priority
-function lockMaleVoice(voices) {
-  if (isVoiceLocked) {
-    console.log("🎙️ VOICE: Already locked, skipping");
-    return;
-  }
-
-  console.log("🎙️ VOICE LOCK: Starting male voice selection");
-  console.log(`🎙️ VOICE LOCK: Found ${voices.length} total voices`);
-
-  // Debug: List all voices
-  voices.forEach((voice, index) => {
-    console.log(
-      `🎙️ VOICE ${index}: ${voice.name} (${voice.lang}) - ${voice.voiceURI}`,
-    );
-  });
-
-  let selectedVoice = null;
-
-  // PRIORITY 1: Google UK English Male (most consistent)
-  selectedVoice = voices.find(
-    (voice) => voice.name === "Google UK English Male",
-  );
-  if (selectedVoice) {
-    console.log("🎙️ VOICE SELECTED: Google UK English Male (Priority 1)");
-  }
-
-  // PRIORITY 2: Google US English Male
-  if (!selectedVoice) {
-    selectedVoice = voices.find(
-      (voice) => voice.name === "Google US English Male",
-    );
-    if (selectedVoice) {
-      console.log("🎙️ VOICE SELECTED: Google US English Male (Priority 2)");
-    }
-  }
-
-  // PRIORITY 3: Any Google voice with "Male"
-  if (!selectedVoice) {
-    selectedVoice = voices.find(
-      (voice) =>
-        voice.name.includes("Google") &&
-        voice.name.toLowerCase().includes("male"),
-    );
-    if (selectedVoice) {
-      console.log(
-        "🎙️ VOICE SELECTED: Google Male voice (Priority 3):",
-        selectedVoice.name,
-      );
-    }
-  }
-
-  // PRIORITY 4: Any voice with "Male" in name
-  if (!selectedVoice) {
-    selectedVoice = voices.find((voice) =>
-      voice.name.toLowerCase().includes("male"),
-    );
-    if (selectedVoice) {
-      console.log(
-        "🎙️ VOICE SELECTED: Any Male voice (Priority 4):",
-        selectedVoice.name,
-      );
-    }
-  }
-
-  // PRIORITY 5: Default English voice (avoid female)
-  if (!selectedVoice) {
-    selectedVoice = voices.find(
-      (voice) =>
-        voice.lang.startsWith("en") &&
-        !voice.name.toLowerCase().includes("female") &&
-        !voice.name.toLowerCase().includes("woman"),
-    );
-    if (selectedVoice) {
-      console.log(
-        "🎙️ VOICE SELECTED: Default English (Priority 5):",
-        selectedVoice.name,
-      );
-    }
-  }
-
-  // FINAL FALLBACK: First voice
-  if (!selectedVoice) {
-    selectedVoice = voices[0];
-    console.log(
-      "🎙️ VOICE FALLBACK: Using first available voice:",
-      selectedVoice.name,
-    );
-  }
-
-  if (selectedVoice) {
-    lockedMaleVoice = selectedVoice;
-    isVoiceLocked = true;
-
-    // Store globally
-    window.selectedVoice = selectedVoice;
-
-    console.log("🎙️ ✅ VOICE LOCKED:", selectedVoice.name);
-    console.log("🎙️ ✅ Voice URI:", selectedVoice.voiceURI);
-    console.log("🎙️ ✅ Voice Lang:", selectedVoice.lang);
-
-    // Test the voice to ensure it works
-    testLockedVoice();
-  } else {
-    console.error("🎙️ ❌ VOICE ERROR: No suitable voice found!");
-  }
-}
-
-// Test the locked voice
-function testLockedVoice() {
-  if (!lockedMaleVoice) return;
-
-  console.log("🎙️ TEST: Testing locked voice");
-  const testUtterance = new SpeechSynthesisUtterance("Voice test");
-  testUtterance.voice = lockedMaleVoice;
-  testUtterance.volume = 0.1; // Very quiet test
-  testUtterance.rate = 2.0; // Fast test
-
-  testUtterance.onstart = () => {
-    console.log("🎙️ ✅ TEST: Voice working correctly");
-  };
-
-  testUtterance.onerror = (event) => {
-    console.error("🎙️ ❌ TEST: Voice test failed:", event.error);
-    // Try to find alternative voice
-    isVoiceLocked = false;
-    setTimeout(() => {
-      const voices = window.speechSynthesis.getVoices();
-      lockMaleVoice(voices);
-    }, 100);
-  };
-
-  window.speechSynthesis.speak(testUtterance);
-}
-
-// UPDATED: speakResponse function with guaranteed male voice
+// AGGRESSIVE speakResponse function with guaranteed male voice
 async function speakResponse(text) {
   try {
-    // Ensure voice is locked before speaking
-    if (!isVoiceLocked || !lockedMaleVoice) {
-      console.log("🎙️ SPEAK: Voice not locked, initializing...");
-      initializeVoiceSystem();
+    console.log("🎤 SPEAK REQUEST:", text?.substring(0, 50) + "...");
 
-      // Wait a bit for voice to lock
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      if (!lockedMaleVoice) {
-        console.error("🎙️ SPEAK ERROR: Could not lock voice");
-        return;
-      }
+    // STEP 1: VERIFY MALE VOICE IS LOCKED
+    if (!VERIFY_MALE_VOICE_BEFORE_SPEECH()) {
+      console.log("⏳ WAITING FOR VOICE LOCK...");
+      // Wait for voice lock and try again
+      setTimeout(() => speakResponse(text), 200);
+      return;
     }
 
     // Check if this is a resume from mute
     if (wasMuted && pausedText) {
       text = pausedText;
       wasMuted = false;
-      console.log("🎙️ SPEAK: Resuming speech from muted position");
+      console.log("🔄 Resuming speech from muted position");
     } else {
       // Validate text input
       if (!text || typeof text !== "string" || text.trim().length === 0) {
-        console.warn("🎙️ SPEAK: Empty or invalid text provided");
+        console.warn("⚠️ Empty or invalid text provided");
         return;
       }
 
@@ -387,7 +372,7 @@ async function speakResponse(text) {
       text = processTextForSpeech(text);
 
       if (!text || text.trim().length === 0) {
-        console.warn("🎙️ SPEAK: Text became empty after processing");
+        console.warn("⚠️ Text became empty after processing");
         return;
       }
 
@@ -397,84 +382,118 @@ async function speakResponse(text) {
     }
 
     console.log(
-      "🎙️ SPEAK: Speaking with locked male voice:",
-      lockedMaleVoice.name,
+      "🎤 SPEAKING WITH GUARANTEED MALE VOICE:",
+      GUARANTEED_MALE_VOICE.name,
     );
 
-    // Use browser's speech synthesis with LOCKED voice
-    if ("speechSynthesis" in window) {
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
+    // STEP 2: FORCE CANCEL ANY EXISTING SPEECH
+    window.speechSynthesis.cancel();
 
-      // Create utterance with LOCKED male voice
-      currentUtterance = new SpeechSynthesisUtterance(text);
-      currentUtterance.voice = lockedMaleVoice; // ✅ ALWAYS use locked voice
-      currentUtterance.lang = "en-US";
-      currentUtterance.rate = 1.0;
-      currentUtterance.pitch = 1.0;
+    // STEP 3: CREATE UTTERANCE WITH LOCKED MALE VOICE
+    currentUtterance = new SpeechSynthesisUtterance(text);
 
-      // Verify voice is correctly set
-      if (currentUtterance.voice !== lockedMaleVoice) {
-        console.error("🎙️ ❌ SPEAK ERROR: Voice assignment failed!");
-        currentUtterance.voice = lockedMaleVoice; // Force again
+    // CRITICAL: SET VOICE BEFORE ANY OTHER PROPERTIES
+    currentUtterance.voice = GUARANTEED_MALE_VOICE;
+
+    // STEP 4: VERIFY VOICE WAS SET CORRECTLY
+    if (
+      !currentUtterance.voice ||
+      currentUtterance.voice.name !== GUARANTEED_MALE_VOICE.name
+    ) {
+      console.error("❌ VOICE ASSIGNMENT FAILED!");
+      console.error("Expected:", GUARANTEED_MALE_VOICE.name);
+      console.error("Got:", currentUtterance.voice?.name || "null");
+
+      // FORCE VOICE ASSIGNMENT AGAIN
+      currentUtterance.voice = GUARANTEED_MALE_VOICE;
+
+      // If still fails, re-lock voice and try again
+      if (
+        !currentUtterance.voice ||
+        currentUtterance.voice.name !== GUARANTEED_MALE_VOICE.name
+      ) {
+        console.error("❌ CRITICAL: VOICE LOCK FAILED - RE-LOCKING");
+        FORCE_MALE_VOICE_LOCK();
+        setTimeout(() => speakResponse(text), 300);
+        return;
+      }
+    }
+
+    // Set other properties AFTER voice is confirmed
+    currentUtterance.lang = "en-US";
+    currentUtterance.rate = 1.0;
+    currentUtterance.pitch = 1.0;
+    currentUtterance.volume = 1.0;
+
+    console.log("✅ FINAL VOICE CHECK:", currentUtterance.voice.name);
+    console.log("✅ VOICE URI:", currentUtterance.voice.voiceURI);
+
+    // STEP 5: ADD EVENT LISTENERS WITH VOICE VERIFICATION
+    currentUtterance.onstart = () => {
+      console.log("🎤 ▶️ SPEECH STARTED");
+      console.log("🎤 ✅ CONFIRMED VOICE:", currentUtterance.voice.name);
+
+      isAudioPlaying = true;
+      wasMuted = false;
+      document.dispatchEvent(new CustomEvent("audioPlaying"));
+
+      const audioEvent = new CustomEvent("audio-status", {
+        detail: { status: "playing", voice: currentUtterance.voice.name },
+      });
+      window.dispatchEvent(audioEvent);
+    };
+
+    currentUtterance.onboundary = (event) => {
+      if (event.name === "word") {
+        currentPosition = event.charIndex;
+      }
+    };
+
+    currentUtterance.onend = () => {
+      console.log("🎤 ⏹️ SPEECH ENDED");
+      isAudioPlaying = false;
+      currentPosition = 0;
+      pausedText = "";
+      wasMuted = false;
+      document.dispatchEvent(new CustomEvent("audioPaused"));
+
+      const audioEvent = new CustomEvent("audio-status", {
+        detail: { status: "stopped" },
+      });
+      window.dispatchEvent(audioEvent);
+    };
+
+    currentUtterance.onerror = (event) => {
+      console.error("🎤 ❌ SPEECH ERROR:", event.error);
+      isAudioPlaying = false;
+      wasMuted = false;
+
+      // If error is related to voice, try to re-lock
+      if (event.error === "voice-unavailable" || event.error === "network") {
+        console.log("🔄 RE-LOCKING VOICE DUE TO ERROR");
+        FORCE_MALE_VOICE_LOCK();
       }
 
-      console.log("🎙️ SPEAK: Using voice:", currentUtterance.voice.name);
+      const audioEvent = new CustomEvent("audio-status", {
+        detail: { status: "stopped", reason: "error", error: event.error },
+      });
+      window.dispatchEvent(audioEvent);
+    };
 
-      // Add event listeners
-      currentUtterance.onstart = () => {
-        console.log(
-          "🎙️ ▶️ SPEAK: Started with voice:",
-          currentUtterance.voice.name,
-        );
-        isAudioPlaying = true;
-        wasMuted = false;
-        document.dispatchEvent(new CustomEvent("audioPlaying"));
-
-        const audioEvent = new CustomEvent("audio-status", {
-          detail: { status: "playing" },
-        });
-        window.dispatchEvent(audioEvent);
-      };
-
-      currentUtterance.onboundary = (event) => {
-        if (event.name === "word") {
-          currentPosition = event.charIndex;
-        }
-      };
-
-      currentUtterance.onend = () => {
-        console.log("🎙️ ⏹️ SPEAK: Speech ended");
-        isAudioPlaying = false;
-        currentPosition = 0;
-        pausedText = "";
-        wasMuted = false;
-        document.dispatchEvent(new CustomEvent("audioPaused"));
-
-        const audioEvent = new CustomEvent("audio-status", {
-          detail: { status: "stopped" },
-        });
-        window.dispatchEvent(audioEvent);
-      };
-
-      currentUtterance.onerror = (event) => {
-        console.error("🎙️ ❌ SPEAK ERROR:", event.error);
-        isAudioPlaying = false;
-        wasMuted = false;
-
-        const audioEvent = new CustomEvent("audio-status", {
-          detail: { status: "stopped", reason: "error" },
-        });
-        window.dispatchEvent(audioEvent);
-      };
-
-      // Speak with locked voice
-      window.speechSynthesis.speak(currentUtterance);
-    } else {
-      console.warn("🎙️ SPEAK: Browser speech synthesis not available");
-    }
+    // STEP 6: SPEAK WITH GUARANTEED MALE VOICE
+    console.log("🎤 🗣️ STARTING SPEECH...");
+    window.speechSynthesis.speak(currentUtterance);
   } catch (error) {
-    console.error("🎙️ SPEAK ERROR:", error.message || error);
+    console.error("🎤 ❌ CRITICAL SPEECH ERROR:", error);
+
+    // Last resort fallback
+    try {
+      const fallbackUtterance = new SpeechSynthesisUtterance(text);
+      fallbackUtterance.voice = GUARANTEED_MALE_VOICE;
+      window.speechSynthesis.speak(fallbackUtterance);
+    } catch (fallbackError) {
+      console.error("🎤 ❌ FALLBACK ALSO FAILED:", fallbackError);
+    }
   }
 }
 
@@ -585,7 +604,7 @@ function muteAndSavePosition() {
     if (currentPosition > 0 && lastPlayedText) {
       pausedText = lastPlayedText.substring(currentPosition);
       wasMuted = true;
-      console.log("🎙️ MUTE: Speech muted at position:", currentPosition);
+      console.log("🔇 Speech muted at position:", currentPosition);
     }
 
     window.speechSynthesis.cancel();
@@ -602,6 +621,21 @@ function resumeFromMute() {
   }
 }
 
+// Handle voice changes (browser might reload voices)
+if (window.speechSynthesis) {
+  window.speechSynthesis.addEventListener("voiceschanged", () => {
+    console.log("🔄 VOICES CHANGED - RE-LOCKING MALE VOICE");
+    FORCE_MALE_VOICE_LOCK();
+  });
+}
+
+// Cleanup on page unload
+window.addEventListener("beforeunload", () => {
+  if (VOICE_CHECK_INTERVAL) {
+    clearInterval(VOICE_CHECK_INTERVAL);
+  }
+});
+
 // Expose functions to the global scope
 window.voiceAssistant = {
   speakResponse: speakResponse,
@@ -609,4 +643,8 @@ window.voiceAssistant = {
   speakLastAssistantMessage: speakLastAssistantMessage,
   muteAndSavePosition: muteAndSavePosition,
   resumeFromMute: resumeFromMute,
+  // Debug functions
+  forceReLockVoice: FORCE_MALE_VOICE_LOCK,
+  getCurrentVoice: () => GUARANTEED_MALE_VOICE,
+  isVoiceLocked: () => VOICE_LOCK_VERIFIED,
 };

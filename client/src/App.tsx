@@ -14,6 +14,7 @@ import TenantAdminRefactored from "@/pages/TenantAdminRefactored";
 import SommTenantAdmin from "@/pages/SommTenantAdmin";
 import TenantCreate from "@/pages/TenantCreate";
 import QRCodes from "@/pages/QRCodes";
+import QRDemo from "@/pages/QRDemo";
 
 
 function Router() {
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/wine-edit/:id" component={WineEditRefactored} />
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route path="/qr-codes" component={QRCodes} />
+      <Route path="/qr-demo" component={QRDemo} />
       <Route component={NotFound} />
     </Switch>
   );
