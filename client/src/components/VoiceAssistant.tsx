@@ -964,224 +964,224 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     try {
       // Check if there's pending autoplay audio from mobile autoplay blocking
       const pendingAudio = (window as any).pendingAutoplayAudio;
-    if (pendingAudio) {
-      console.log("Playing pending autoplay audio that was blocked");
+      if (pendingAudio) {
+        console.log("Playing pending autoplay audio that was blocked");
 
-      // Use the already generated audio
-      (window as any).currentOpenAIAudio = pendingAudio;
-      (window as any).pendingAutoplayAudio = null;
+        // Use the already generated audio
+        (window as any).currentOpenAIAudio = pendingAudio;
+        (window as any).pendingAutoplayAudio = null;
 
-      setIsResponding(true);
-
-      // Set up event handlers for the pending audio
-      pendingAudio.onplay = () => {
         setIsResponding(true);
-        setShowUnmuteButton(false);
-        setShowAskButton(false);
-        console.log("Pending audio playback started successfully");
-      };
 
-      pendingAudio.onended = () => {
-        setIsResponding(false);
-        setShowUnmuteButton(false);
-        setShowAskButton(true);
-        console.log("Pending audio playback completed successfully - Ask button enabled");
-      };
-
-      pendingAudio.onerror = (e: any) => {
-        console.error("Pending audio playback error:", e);
-        setIsResponding(false);
-        setShowUnmuteButton(false);
-        setShowAskButton(true);
-      };
-
-      try {
-        await pendingAudio.play();
-        console.log("Pending audio started playing successfully");
-        return;
-      } catch (error) {
-        console.error("Failed to play pending audio:", error);
-        // Fall through to generate new audio
-      }
-    }
-
-    // Fallback: generate new audio if no pending audio or it failed
-    const lastAssistantMessage = (window as any).lastAssistantMessageText;
-    console.log("Checking lastAssistantMessage:", lastAssistantMessage ? `"${lastAssistantMessage.substring(0, 50)}..."` : "null/undefined");
-
-    if (!lastAssistantMessage) {
-      console.warn("No assistant message available to play - attempting fallback");
-      
-      // Try to get the last assistant message from the messages in the UI
-      const messageElements = document.querySelectorAll('[data-role="assistant"]');
-      if (messageElements.length > 0) {
-        const lastMessageElement = messageElements[messageElements.length - 1];
-        const fallbackText = lastMessageElement.textContent || lastMessageElement.innerText;
-        if (fallbackText && fallbackText.trim()) {
-          console.log("Using fallback message from UI:", fallbackText.substring(0, 50) + "...");
-          (window as any).lastAssistantMessageText = fallbackText.trim();
-          // Continue with the TTS generation using the fallback text
-        } else {
-          console.warn("No assistant message available to play and no fallback found");
-          setShowUnmuteButton(true);
-          return;
-        }
-      } else {
-        console.warn("No assistant message available to play and no message elements found");
-        setShowUnmuteButton(true);
-        return;
-      }
-    }
-
-    console.log(
-      "Generating new TTS audio for:",
-      lastAssistantMessage.substring(0, 50) + "...",
-    );
-
-    setIsResponding(true);
-
-    try {
-      // Stop any existing audio first
-      if ((window as any).currentOpenAIAudio) {
-        (window as any).currentOpenAIAudio.pause();
-        (window as any).currentOpenAIAudio = null;
-      }
-      if ((window as any).currentAutoplayAudio) {
-        (window as any).currentAutoplayAudio.pause();
-        (window as any).currentAutoplayAudio = null;
-      }
-
-      // Check for cached audio first to minimize fallback usage
-      const cachedAudio = getCachedAudio(lastAssistantMessage);
-      if (cachedAudio) {
-        console.log("Using cached TTS audio");
-        const audioUrl = URL.createObjectURL(cachedAudio);
-        const audio = new Audio(audioUrl);
-        
-        // Store reference for stop functionality
-        (window as any).currentOpenAIAudio = audio;
-
-        audio.onplay = () => {
+        // Set up event handlers for the pending audio
+        pendingAudio.onplay = () => {
           setIsResponding(true);
           setShowUnmuteButton(false);
           setShowAskButton(false);
-          console.log("Cached TTS playback started successfully");
+          console.log("Pending audio playback started successfully");
         };
 
-        audio.onended = () => {
+        pendingAudio.onended = () => {
           setIsResponding(false);
           setShowUnmuteButton(false);
           setShowAskButton(true);
-          URL.revokeObjectURL(audioUrl);
-          console.log("Cached TTS playback completed - Ask button enabled");
+          console.log("Pending audio playback completed successfully - Ask button enabled");
         };
 
-        audio.onerror = () => {
+        pendingAudio.onerror = (e: any) => {
+          console.error("Pending audio playback error:", e);
           setIsResponding(false);
           setShowUnmuteButton(false);
           setShowAskButton(true);
-          URL.revokeObjectURL(audioUrl);
-          console.error("Cached TTS playback error");
         };
 
-        await audio.play();
-        console.log("Cached audio play promise resolved successfully");
-        return;
+        try {
+          await pendingAudio.play();
+          console.log("Pending audio started playing successfully");
+          return;
+        } catch (error) {
+          console.error("Failed to play pending audio:", error);
+          // Fall through to generate new audio
+        }
       }
 
-      // Try server TTS with optimized timeout, fallback to browser TTS
-      console.log("Generating unmute TTS audio...");
-      let audio: HTMLAudioElement | null = null;
-      let audioUrl: string | null = null;
-      let timeoutId: NodeJS.Timeout | null = null;
-      
-      try {
-        // Create a safer Promise wrapper that prevents unhandled rejections
-        const safeTimeout = (ms: number) => {
-          return new Promise<never>((_, reject) => {
-            timeoutId = setTimeout(() => {
-              console.log("TTS request timeout reached");
-              reject(new Error('TTS_TIMEOUT'));
-            }, ms);
-          });
-        };
+      // Fallback: generate new audio if no pending audio or it failed
+      const lastAssistantMessage = (window as any).lastAssistantMessageText;
+      console.log("Checking lastAssistantMessage:", lastAssistantMessage ? `"${lastAssistantMessage.substring(0, 50)}..."` : "null/undefined");
 
-        const safeFetch = async () => {
-          const response = await fetch("/api/text-to-speech", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: lastAssistantMessage }),
-          });
-          
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
+      if (!lastAssistantMessage) {
+        console.warn("No assistant message available to play - attempting fallback");
+        
+        // Try to get the last assistant message from the messages in the UI
+        const messageElements = document.querySelectorAll('[data-role="assistant"]');
+        if (messageElements.length > 0) {
+          const lastMessageElement = messageElements[messageElements.length - 1];
+          const fallbackText = lastMessageElement.textContent || lastMessageElement.innerText;
+          if (fallbackText && fallbackText.trim()) {
+            console.log("Using fallback message from UI:", fallbackText.substring(0, 50) + "...");
+            (window as any).lastAssistantMessageText = fallbackText.trim();
+            // Continue with the TTS generation using the fallback text
+          } else {
+            console.warn("No assistant message available to play and no fallback found");
+            setShowUnmuteButton(true);
+            return;
           }
-          
-          return response;
-        };
-
-        // Race between fetch and timeout with extended timeout for stability
-        let response;
-        try {
-          response = await Promise.race([
-            safeFetch().catch(err => {
-              throw err;
-            }),
-            safeTimeout(60000).catch(err => {
-              throw err;
-            })
-          ]);
-        } catch (raceError) {
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-          }
-          throw raceError;
-        }
-
-        if (response.ok) {
-          const audioBuffer = await response.arrayBuffer();
-          const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-          
-          // Cache the successful audio response to minimize future fallbacks
-          setCachedAudio(lastAssistantMessage, audioBlob);
-          
-          audioUrl = URL.createObjectURL(audioBlob);
-          audio = new Audio(audioUrl);
-          console.log("Using server TTS audio");
         } else {
-          throw new Error(`TTS API error: ${response.status}`);
+          console.warn("No assistant message available to play and no message elements found");
+          setShowUnmuteButton(true);
+          return;
         }
-      } catch (serverError) {
-        console.log("Server TTS failed, using browser speech synthesis");
-        console.log("Server error details:", {
-          name: serverError instanceof Error ? serverError.name : 'Unknown',
-          message: serverError instanceof Error ? serverError.message : String(serverError)
-        });
-        
-        // Clear the timeout to prevent unhandled rejection
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-          timeoutId = null;
+      }
+
+      console.log(
+        "Generating new TTS audio for:",
+        lastAssistantMessage.substring(0, 50) + "...",
+      );
+
+      setIsResponding(true);
+
+      try {
+        // Stop any existing audio first
+        if ((window as any).currentOpenAIAudio) {
+          (window as any).currentOpenAIAudio.pause();
+          (window as any).currentOpenAIAudio = null;
         }
-        
-        // Use browser's built-in speech synthesis as immediate fallback
-        const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
-        utterance.rate = 0.9; // Slightly slower for better clarity
-        utterance.pitch = 1.0;
-        utterance.volume = 0.8;
-        
-        // Log the full text being spoken for debugging
-        console.log("Browser TTS: Full text length:", lastAssistantMessage.length);
-        console.log("Browser TTS: Text content:", lastAssistantMessage);
-        
-        // CRITICAL: Use the same locked male voice across all components
-        const selectVoice = () => {
-          const voices = speechSynthesis.getVoices();
+        if ((window as any).currentAutoplayAudio) {
+          (window as any).currentAutoplayAudio.pause();
+          (window as any).currentAutoplayAudio = null;
+        }
+
+        // Check for cached audio first to minimize fallback usage
+        const cachedAudio = getCachedAudio(lastAssistantMessage);
+        if (cachedAudio) {
+          console.log("Using cached TTS audio");
+          const audioUrl = URL.createObjectURL(cachedAudio);
+          const audio = new Audio(audioUrl);
           
-          // Priority 1: Use LOCKED voice URI for absolute consistency
-          const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
+          // Store reference for stop functionality
+          (window as any).currentOpenAIAudio = audio;
+
+          audio.onplay = () => {
+            setIsResponding(true);
+            setShowUnmuteButton(false);
+            setShowAskButton(false);
+            console.log("Cached TTS playback started successfully");
+          };
+
+          audio.onended = () => {
+            setIsResponding(false);
+            setShowUnmuteButton(false);
+            setShowAskButton(true);
+            URL.revokeObjectURL(audioUrl);
+            console.log("Cached TTS playback completed - Ask button enabled");
+          };
+
+          audio.onerror = () => {
+            setIsResponding(false);
+            setShowUnmuteButton(false);
+            setShowAskButton(true);
+            URL.revokeObjectURL(audioUrl);
+            console.error("Cached TTS playback error");
+          };
+
+          await audio.play();
+          console.log("Cached audio play promise resolved successfully");
+          return;
+        }
+
+        // Try server TTS with optimized timeout, fallback to browser TTS
+        console.log("Generating unmute TTS audio...");
+        let audio: HTMLAudioElement | null = null;
+        let audioUrl: string | null = null;
+        let timeoutId: NodeJS.Timeout | null = null;
+        
+        try {
+          // Create a safer Promise wrapper that prevents unhandled rejections
+          const safeTimeout = (ms: number) => {
+            return new Promise<never>((_, reject) => {
+              timeoutId = setTimeout(() => {
+                console.log("TTS request timeout reached");
+                reject(new Error('TTS_TIMEOUT'));
+              }, ms);
+            });
+          };
+
+          const safeFetch = async () => {
+            const response = await fetch("/api/text-to-speech", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: lastAssistantMessage }),
+            });
+            
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+              timeoutId = null;
+            }
+            
+            return response;
+          };
+
+          // Race between fetch and timeout with extended timeout for stability
+          let response;
+          try {
+            response = await Promise.race([
+              safeFetch().catch(err => {
+                throw err;
+              }),
+              safeTimeout(60000).catch(err => {
+                throw err;
+              })
+            ]);
+          } catch (raceError) {
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+              timeoutId = null;
+            }
+            throw raceError;
+          }
+
+          if (response.ok) {
+            const audioBuffer = await response.arrayBuffer();
+            const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+            
+            // Cache the successful audio response to minimize future fallbacks
+            setCachedAudio(lastAssistantMessage, audioBlob);
+            
+            audioUrl = URL.createObjectURL(audioBlob);
+            audio = new Audio(audioUrl);
+            console.log("Using server TTS audio");
+          } else {
+            throw new Error(`TTS API error: ${response.status}`);
+          }
+        } catch (serverError) {
+          console.log("Server TTS failed, using browser speech synthesis");
+          console.log("Server error details:", {
+            name: serverError instanceof Error ? serverError.name : 'Unknown',
+            message: serverError instanceof Error ? serverError.message : String(serverError)
+          });
+          
+          // Clear the timeout to prevent unhandled rejection
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+          
+          // Use browser's built-in speech synthesis as immediate fallback
+          const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
+          utterance.rate = 0.9; // Slightly slower for better clarity
+          utterance.pitch = 1.0;
+          utterance.volume = 0.8;
+          
+          // Log the full text being spoken for debugging
+          console.log("Browser TTS: Full text length:", lastAssistantMessage.length);
+          console.log("Browser TTS: Text content:", lastAssistantMessage);
+          
+          // CRITICAL: Use the same locked male voice across all components
+          const selectVoice = () => {
+            const voices = speechSynthesis.getVoices();
+            
+            // Priority 1: Use LOCKED voice URI for absolute consistency
+            const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
           if (lockedVoiceURI) {
             const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
             if (lockedVoice) {
