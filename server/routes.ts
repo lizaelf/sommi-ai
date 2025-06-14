@@ -394,12 +394,27 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Delete a conversation
+  // Delete a conversation or clear all conversations
   app.delete("/api/conversations/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      await storage.deleteConversation(id);
-      res.status(204).send();
+      const idParam = req.params.id;
+      
+      if (idParam === "clear-all") {
+        // Delete all conversations
+        const conversations = await storage.getAllConversations();
+        for (const conversation of conversations) {
+          await storage.deleteConversation(conversation.id);
+        }
+        res.json({ message: "All conversations cleared successfully" });
+      } else {
+        // Delete specific conversation
+        const id = parseInt(idParam);
+        if (isNaN(id)) {
+          return res.status(400).json({ message: "Invalid conversation ID" });
+        }
+        await storage.deleteConversation(id);
+        res.status(204).send();
+      }
     } catch (error) {
       console.error("Error deleting conversation:", error);
       res.status(500).json({ message: "Failed to delete conversation" });
