@@ -1531,35 +1531,13 @@ export default function WineDetails() {
                 >
                   <div className="max-w-3xl mx-auto">
                     <>
-                      {/* Suggestion chips - Text Only */}
-                      <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                        <Button
-                          onClick={() => handleSuggestionClick("Tasting notes")}
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          💬 Tasting notes
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            handleSuggestionClick(
-                              "Simple recipes for this wine",
-                            )
-                          }
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          💬 Simple recipes
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            handleSuggestionClick("Where is this wine from?")
-                          }
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          💬 Where it's from
-                        </Button>
+                      {/* Dynamic Suggestion Pills - Wine-specific */}
+                      <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 w-full">
+                        <SuggestionPills
+                          wineKey={wine ? `${wine.name}_${wine.year || ''}` : ''}
+                          onSuggestionClick={(prompt, pillId) => handleSuggestionClick(prompt)}
+                          isDisabled={isTyping}
+                        />
                       </div>
                       <ChatInput
                         onSendMessage={handleSendMessage}

@@ -94,11 +94,10 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
       {visiblePills.map((pill: SuggestionPill) => (
         <Button
           key={pill.id}
-          variant="outline"
-          size="sm"
+          variant="secondary"
           onClick={() => handlePillClick(pill)}
           disabled={isDisabled || usedPills.has(pill.id)}
-          className="h-auto py-2 px-3 text-sm whitespace-nowrap hover:bg-gray-50 transition-colors"
+          className="h-auto py-2 px-3 text-sm whitespace-nowrap hover:bg-gray-50 transition-colors border border-gray-300 rounded-full"
         >
           {pill.text}
         </Button>
