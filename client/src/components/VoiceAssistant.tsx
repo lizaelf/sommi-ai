@@ -962,9 +962,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     
     // Wrap entire function in try-catch to prevent unhandled rejections
     try {
-
-    // Check if there's pending autoplay audio from mobile autoplay blocking
-    const pendingAudio = (window as any).pendingAutoplayAudio;
+      // Check if there's pending autoplay audio from mobile autoplay blocking
+      const pendingAudio = (window as any).pendingAutoplayAudio;
     if (pendingAudio) {
       console.log("Playing pending autoplay audio that was blocked");
 
@@ -1426,7 +1425,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           zIndex: 9999,
         },
       });
-    }
     } catch (globalError) {
       console.error("Unhandled error in handleUnmute:", globalError);
       setIsResponding(false);
