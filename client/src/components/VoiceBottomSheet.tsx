@@ -410,35 +410,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                         key={index}
                         className="suggestion-button"
                         onClick={() => handleSuggestionClick(suggestion)}
-                        style={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
-                          borderRadius: '32px',
-                          padding: '12px 16px',
-                          color: 'white',
-                          fontSize: '14px',
-                          fontWeight: 500,
-                          fontFamily: 'Inter, sans-serif',
-                          cursor: 'pointer',
-                          outline: 'none',
-                          transition: 'all 0.2s ease',
-                          textAlign: 'center',
-                          whiteSpace: 'nowrap',
-                          boxSizing: 'border-box',
-                          minWidth: 'fit-content',
-                          height: '44px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-                        }}
                       >
                         {suggestion}
                       </button>
