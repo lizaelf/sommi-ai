@@ -28,26 +28,19 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     
     setVoiceVolume(volume);
     
-    // Debug all volume events to understand the data range
-    console.log('🎤 Voice volume event:', { volume, maxVolume, isActive, isListening: currentState.isListening });
-    
     // ONLY update size if currently listening
     if (currentState.isListening) {
       const baseSize = currentState.size;
       let scale = 1.0;
       
-      // Much more sensitive scaling - respond to any voice input
-      if (volume > 0.5) {
-        // Linear scaling that's immediately visible
-        const volumeScale = Math.min(volume / 15, 2.0); // Very sensitive scaling
+      // Reduced scaling sensitivity for more subtle voice response
+      if (volume > 2) {
+        const volumeScale = Math.min(volume / 50, 1.0); // Much less sensitive scaling
         scale = 1.0 + volumeScale;
       }
       
       const newSize = baseSize * scale;
       setSize(newSize);
-      // Keep opacity constant - no changes based on voice
-      
-      console.log('🎤 Voice scaling applied:', { volume, scale, newSize, baseSize });
     }
   }, []);
 
@@ -55,7 +48,6 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
   useEffect(() => {
     // Only allow voice-responsive scaling during listening
     if (!isListening) {
-      console.log('🎤 Non-listening mode: Circle size locked to base');
       setSize(size); // Always keep base size
       setOpacity(1.0); // Full opacity always
     }
@@ -65,25 +57,20 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     };
   }, [isAnimating, isProcessing, isPlaying, size, isListening]);
 
-  // Direct communication with VoiceAssistant - check global state
+  // Communication with VoiceAssistant
   useEffect(() => {
     const checkVoiceAssistantState = () => {
-      // Access VoiceAssistant state directly if events aren't working
       const voiceAssistant = (window as any).voiceAssistantState;
       if (voiceAssistant) {
-        console.log('🎤 CircleAnimation: Direct state check:', voiceAssistant);
         if (voiceAssistant.isListening && !isListening) {
-          console.log('🎤 CircleAnimation: Direct state - ENTERING LISTENING MODE');
           setIsListening(true);
           setIsProcessing(false);
           setIsPlaying(false);
         } else if (voiceAssistant.isProcessing && !isProcessing) {
-          console.log('🎤 CircleAnimation: Direct state - ENTERING PROCESSING MODE');
           setIsListening(false);
           setIsProcessing(true);
           setIsPlaying(false);
         } else if (!voiceAssistant.isListening && !voiceAssistant.isProcessing) {
-          console.log('🎤 CircleAnimation: Direct state - ENTERING IDLE MODE');
           setIsListening(false);
           setIsProcessing(false);
           setIsPlaying(false);
@@ -91,13 +78,10 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       }
     };
 
-    // Check state every 100ms for real-time updates
     const stateChecker = setInterval(checkVoiceAssistantState, 100);
 
-    // Also keep event listeners as backup
     const handleMicStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
-      console.log('🎤 CircleAnimation: Event received:', status, event.detail);
       
       if (status === 'listening') {
         setIsListening(true);
@@ -141,26 +125,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         }}
       />
       
-      {/* Voice volume visual ring */}
-      {isListening && voiceVolume > 3 && (
-        <div 
-          className="absolute inset-0 rounded-full border-2 border-green-400"
-          style={{
-            width: `${currentSize * (1 + Math.min(voiceVolume / 30, 1.2))}px`,
-            height: `${currentSize * (1 + Math.min(voiceVolume / 30, 1.2))}px`,
-            opacity: Math.min(voiceVolume / 40, 0.7),
-            boxShadow: `0 0 ${voiceVolume * 1.5}px rgba(34, 197, 94, 0.5)`,
-            animation: voiceVolume > 15 ? 'pulse 0.3s ease-in-out' : 'none',
-          }}
-        />
-      )}
-      
-      {/* Enhanced debug overlay - shows actual state */}
-      <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-xs px-3 py-2 rounded z-50 font-mono">
-        <div>Mode: {isListening ? 'LISTENING' : isProcessing ? 'PROCESSING' : isPlaying ? 'PLAYING' : 'IDLE'}</div>
-        <div>Voice: {voiceVolume.toFixed(1)} | Size: {currentSize.toFixed(0)}px</div>
-        <div>Base: {size}px | Opacity: {opacity.toFixed(2)}</div>
-      </div>
+
     </div>
   );
 }

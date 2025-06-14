@@ -30,12 +30,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       isResponding,
       showBottomSheet
     };
-    console.log('🎤 VoiceAssistant: Global state updated:', {
-      isListening,
-      isProcessing: isThinking,
-      isResponding,
-      showBottomSheet
-    });
   }, [isListening, isThinking, isResponding, showBottomSheet]);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
@@ -314,14 +308,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }),
     );
     
-    // Debug: Log ALL volume dispatches to understand the data range
-    console.log('🎤 VoiceAssistant: Dispatching voice-volume:', { 
-      average, 
-      max, 
-      isActive: isCurrentlyActive,
-      threshold: voiceThreshold,
-      bufferLength
-    });
+    // Reduced debug logging
+    if (Math.random() < 0.01) { // 1% of volume updates
+      console.log('🎤 Voice volume:', { average, max, isActive: isCurrentlyActive });
+    }
 
     // Minimal debug logging only on errors
     if (average === 0 && max === 0 && timeAverage === 128 && consecutiveSilenceCountRef.current % 100 === 0) {

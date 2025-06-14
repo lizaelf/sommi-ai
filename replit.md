@@ -42,6 +42,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 14, 2025)
 
+### Voice-Responsive Circle Animation Implementation (June 14, 2025 - Latest)
+- **Real Voice Level Detection**: Circle animation now responds to actual microphone input levels instead of timer-based animations
+- **Global State Communication**: Implemented dual communication system between VoiceAssistant and CircleAnimation components
+- **State-Specific Behavior**: Circle remains static during IDLE/PROCESSING/PLAYING states, only scales during LISTENING mode
+- **Reduced Scaling Sensitivity**: Voice scaling threshold increased (volume > 2) with reduced scale factor (volume/50) for subtle response
+- **Full Opacity Maintenance**: Removed all opacity changes - circle maintains consistent full opacity across all states
+- **Debug Cleanup**: Removed debug overlays and reduced console logging for production-ready implementation
+- **Enhanced Voice Flow**: Fixed timing issues to ensure proper LISTENING state detection during voice input
+
 ### Voice Assistant Consistency Fix (June 14, 2025 - Critical)
 - **Locked Male Voice Selection**: Implemented consistent male voice across all components with priority hierarchy
 - **Google UK English Male Priority**: Primary voice selection for maximum consistency and quality
