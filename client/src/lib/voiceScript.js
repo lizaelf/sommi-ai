@@ -185,32 +185,8 @@ async function speakResponse(text) {
     // Log for debugging
     console.log("Speaking text response using browser synthesis...");
     
-    // Force reload voices to get fresh list
-    const voices = window.speechSynthesis.getVoices();
-    console.log("Available voices:", voices.length);
-    
-    // Look for male voices - prioritize specific high-quality male voices
-    const preferredMaleVoices = voices.filter(voice => 
-      voice.name.includes('Google UK English Male') || 
-      voice.name.includes('Google US English Male') ||
-      voice.name.includes('David') || 
-      voice.name.includes('James'));
-    
-    const fallbackMaleVoices = voices.filter(voice => 
-      voice.name.includes('Male') && !preferredMaleVoices.includes(voice));
-    
-    console.log("Preferred male voices available:", preferredMaleVoices.length);
-    console.log("Fallback male voices available:", fallbackMaleVoices.length);
-    
-    // Always use the same voice - prefer Google UK English Male for consistency
-    if (preferredMaleVoices.length > 0) {
-      const ukMaleVoice = preferredMaleVoices.find(v => v.name.includes('UK English Male'));
-      window.selectedVoice = ukMaleVoice || preferredMaleVoices[0];
-      console.log("Selected consistent male voice:", window.selectedVoice.name);
-    } else if (fallbackMaleVoices.length > 0) {
-      window.selectedVoice = fallbackMaleVoices[0];
-      console.log("Selected fallback male voice:", window.selectedVoice.name);
-    }
+    // CRITICAL: Use the already locked male voice - DO NOT override
+    console.log("Using globally locked male voice for speech synthesis");
     
     // Use browser's built-in speech synthesis
     if ('speechSynthesis' in window) {
@@ -221,23 +197,23 @@ async function speakResponse(text) {
       currentUtterance = new SpeechSynthesisUtterance(text);
       currentUtterance.lang = 'en-US';
       
-      // CRITICAL: Use centralized voice manager for absolute consistency
-      if (window.voiceManager) {
-        const lockedVoice = window.voiceManager.getLockedVoice();
-        if (lockedVoice) {
-          currentUtterance.voice = lockedVoice;
-          console.log("Using locked voice from VoiceManager:", lockedVoice.name);
-        }
+      // CRITICAL: Force use of locked male voice - absolute priority
+      if (window.selectedVoice) {
+        currentUtterance.voice = window.selectedVoice;
+        console.log("SPEECH: Using globally selected voice:", window.selectedVoice.name);
       } else {
-        // Fallback to localStorage if VoiceManager not available
-        const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
-        if (lockedVoiceURI) {
-          const voices = window.speechSynthesis.getVoices();
-          const lockedVoice = voices.find(voice => voice.voiceURI === lockedVoiceURI);
-          if (lockedVoice) {
-            currentUtterance.voice = lockedVoice;
-            console.log("Fallback: Using locked voice from storage:", lockedVoice.name);
-          }
+        // Emergency fallback - force male voice selection
+        const voices = window.speechSynthesis.getVoices();
+        const maleVoice = voices.find(voice => voice.name === 'Google UK English Male') ||
+                         voices.find(voice => voice.name === 'Google US English Male') ||
+                         voices.find(voice => voice.name.toLowerCase().includes('male'));
+        
+        if (maleVoice) {
+          currentUtterance.voice = maleVoice;
+          window.selectedVoice = maleVoice; // Store for consistency
+          console.log("SPEECH: Emergency male voice selection:", maleVoice.name);
+        } else {
+          console.error("SPEECH: NO MALE VOICE AVAILABLE - USING DEFAULT");
         }
       }
       
@@ -433,42 +409,65 @@ if ('speechSynthesis' in window) {
   // Force voice loading
   window.speechSynthesis.getVoices();
   
-  // LOCKED voice selection function
+  // CRITICAL: Force male voice selection with complete debugging
   const lockConsistentMaleVoice = () => {
-    if (!window.selectedVoice) {
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        // PRIORITY 1: Google UK English Male (most consistent)
-        window.selectedVoice = voices.find(voice => 
-          voice.name === 'Google UK English Male');
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      console.log("VOICE DEBUG: All available voices:");
+      voices.forEach((voice, index) => {
+        console.log(`${index}: ${voice.name} (${voice.lang}) - Male: ${voice.name.toLowerCase().includes('male')} - URI: ${voice.voiceURI}`);
+      });
+      
+      // FORCE reset every time to prevent caching issues
+      window.selectedVoice = null;
+      localStorage.removeItem('LOCKED_VOICE_URI');
+      localStorage.removeItem('LOCKED_VOICE_NAME');
+      
+      // PRIORITY 1: Google UK English Male (exact match)
+      let selectedVoice = voices.find(voice => 
+        voice.name === 'Google UK English Male');
+      
+      // PRIORITY 2: Google US English Male (exact match)
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => 
+          voice.name === 'Google US English Male');
+      }
+      
+      // PRIORITY 3: Any Google voice with "Male" in name
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => 
+          voice.name.includes('Google') && voice.name.includes('Male'));
+      }
+      
+      // PRIORITY 4: Any voice with "Male" in name (case insensitive)
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => 
+          voice.name.toLowerCase().includes('male'));
+      }
+      
+      // PRIORITY 5: Exclude known female voices
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => 
+          !voice.name.toLowerCase().includes('female') && 
+          !voice.name.toLowerCase().includes('woman') &&
+          voice.lang.startsWith('en'));
+      }
+      
+      if (selectedVoice) {
+        window.selectedVoice = selectedVoice;
+        localStorage.setItem('LOCKED_VOICE_URI', selectedVoice.voiceURI);
+        localStorage.setItem('LOCKED_VOICE_NAME', selectedVoice.name);
+        console.log("FORCED MALE VOICE SELECTION:", selectedVoice.name);
+        console.log("Voice URI:", selectedVoice.voiceURI);
         
-        // PRIORITY 2: Google US English Male
-        if (!window.selectedVoice) {
-          window.selectedVoice = voices.find(voice => 
-            voice.name === 'Google US English Male');
-        }
-        
-        // PRIORITY 3: Any Google male voice with English
-        if (!window.selectedVoice) {
-          window.selectedVoice = voices.find(voice => 
-            voice.name.includes('Google') && voice.name.includes('Male') && voice.lang.startsWith('en'));
-        }
-        
-        // PRIORITY 4: First available English male voice
-        if (!window.selectedVoice) {
-          window.selectedVoice = voices.find(voice => 
-            voice.name.includes('Male') && voice.lang.startsWith('en'));
-        }
-        
-        // LOCK the selection globally
-        if (window.selectedVoice) {
-          localStorage.setItem('LOCKED_VOICE_URI', window.selectedVoice.voiceURI);
-          localStorage.setItem('LOCKED_VOICE_NAME', window.selectedVoice.name);
-          console.log("Voice loaded and cached for consistent playback:", window.selectedVoice.name);
-          
-          // Make globally accessible
-          window.getLockedVoice = () => window.selectedVoice;
-        }
+        // Make globally accessible
+        window.getLockedVoice = () => window.selectedVoice;
+      } else {
+        console.error("NO SUITABLE VOICE FOUND! Using first voice as fallback");
+        window.selectedVoice = voices[0];
+        localStorage.setItem('LOCKED_VOICE_URI', voices[0].voiceURI);
+        localStorage.setItem('LOCKED_VOICE_NAME', voices[0].name);
+        console.log("FALLBACK VOICE:", voices[0].name);
       }
     }
   };
