@@ -40,7 +40,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Response Mode**: Text-only suggestions without audio/bottom sheet
 - **Loading States**: Comprehensive flash prevention system
 
-## Recent Changes (June 13, 2025)
+## Recent Changes (June 14, 2025)
+
+### Chat History Rollback (June 14, 2025)
+- **Registration Gate Removal**: Rolled back registration-gated chat history functionality
+- **Direct Chat Access**: Restored immediate access to chat history without user registration requirement
+- **UI Simplification**: Removed "View chat history" button and registration prompts
+- **Original Flow**: Chat messages display directly when available, maintaining original user experience
+
+## Previous Changes (June 13, 2025)
 
 ### Component Refactoring Architecture Overhaul (June 13, 2025 - Late Evening)
 - **Selective Component Refactoring**: Refactored HomeGlobal, TenantAdmin, and WineEdit pages into smaller, focused functional components
