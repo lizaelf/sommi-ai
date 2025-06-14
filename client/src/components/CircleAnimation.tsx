@@ -33,9 +33,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       const baseSize = currentState.size;
       let scale = 1.0;
       
-      // Very subtle scaling for minimal voice response
+      // Voice scaling with 50% maximum increase
       if (volume > 5) {
-        const volumeScale = Math.min(volume / 100, 0.3); // Minimal scaling
+        const volumeScale = Math.min(volume / 100, 0.5); // 50% maximum scaling
         scale = 1.0 + volumeScale;
       }
       
