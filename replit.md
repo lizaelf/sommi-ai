@@ -58,7 +58,10 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Voice URI Locking**: Added localStorage voice URI persistence to maintain same voice across sessions
 - **Global Voice Coordination**: Synchronized voice selection between VoiceAssistant component and voiceScript
 - **Fallback Chain**: Established clear fallback priorities (Google UK > Google US > Google Male > English Male)
-- **Critical Importance**: Voice consistency is now guaranteed across all text-to-speech functionality
+- **Deployment-Specific Enforcement**: Added production environment detection with aggressive male voice filtering
+- **Extended Female Voice Exclusion**: Comprehensive list of female voice names to prevent selection in deployed version
+- **Runtime Voice Verification**: Double-checking voice selection before each speech synthesis in production
+- **Critical Importance**: Voice consistency is now guaranteed across all text-to-speech functionality in both development and production
 
 ### Wine Recommendation Persistence (June 14, 2025)
 - **Always Show Recommendations**: Wine recommendations now always visible, regardless of account deletion status

@@ -15,12 +15,16 @@ let VOICE_LOCK_VERIFIED = false;
 let VOICE_CHECK_INTERVAL = null;
 let MALE_VOICE_NAMES = [
   "Google UK English Male",
-  "Google US English Male",
+  "Google US English Male", 
+  "Microsoft David Desktop - English (United States)",
   "Microsoft David - English (United States)",
   "Microsoft Mark - English (United States)",
   "Alex", // macOS male voice
   "Daniel", // UK male voice
   "Fred", // US male voice
+  "Tom", // US male voice
+  "Bruce", // US male voice
+  "Ralph", // US male voice
 ];
 
 // FORCE VOICE LOADING AND LOCK IMMEDIATELY
@@ -95,14 +99,63 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
         !voice.name.toLowerCase().includes("susan") &&
         !voice.name.toLowerCase().includes("karen") &&
         !voice.name.toLowerCase().includes("zira") &&
-        !voice.name.toLowerCase().includes("hazel"),
+        !voice.name.toLowerCase().includes("hazel") &&
+        !voice.name.toLowerCase().includes("alice") &&
+        !voice.name.toLowerCase().includes("fiona") &&
+        !voice.name.toLowerCase().includes("kyoko") &&
+        !voice.name.toLowerCase().includes("paulina") &&
+        !voice.name.toLowerCase().includes("jessica") &&
+        !voice.name.toLowerCase().includes("elena") &&
+        !voice.name.toLowerCase().includes("claire") &&
+        !voice.name.toLowerCase().includes("joanna") &&
+        !voice.name.toLowerCase().includes("kendra") &&
+        !voice.name.toLowerCase().includes("salli") &&
+        !voice.name.toLowerCase().includes("ivy") &&
+        !voice.name.toLowerCase().includes("lupe") &&
+        !voice.name.toLowerCase().includes("carmit") &&
+        !voice.name.toLowerCase().includes("tessa") &&
+        !voice.name.toLowerCase().includes("vicki") &&
+        !voice.name.toLowerCase().includes("veena") &&
+        !voice.name.toLowerCase().includes("amelie") &&
+        !voice.name.toLowerCase().includes("ava") &&
+        !voice.name.toLowerCase().includes("nicky") &&
+        !voice.name.toLowerCase().includes("moira") &&
+        !voice.name.toLowerCase().includes("kate"),
     );
     if (selectedVoice) {
       console.log("English voice selected:", selectedVoice.name);
     }
   }
 
-  // STRATEGY 4: Use first available as absolute fallback
+  // STRATEGY 4: Deployment-specific override for production environments
+  if (!selectedVoice) {
+    // Force male voice selection in deployed environments
+    const isDeployment = window.location.hostname.includes('.replit.app') || 
+                        window.location.hostname.includes('.repl.co') ||
+                        window.location.hostname !== 'localhost';
+    
+    if (isDeployment) {
+      // In deployment, be more aggressive about male voice selection
+      selectedVoice = voices.find(voice => 
+        voice.lang.startsWith("en") && 
+        (voice.name.toLowerCase().includes("male") ||
+         voice.name.toLowerCase().includes("david") ||
+         voice.name.toLowerCase().includes("mark") ||
+         voice.name.toLowerCase().includes("alex") ||
+         voice.name.toLowerCase().includes("daniel") ||
+         voice.name.toLowerCase().includes("tom") ||
+         voice.name.toLowerCase().includes("bruce") ||
+         voice.name.toLowerCase().includes("ralph") ||
+         voice.name.toLowerCase().includes("fred"))
+      );
+      
+      if (selectedVoice) {
+        console.log("DEPLOYMENT: Selected male voice:", selectedVoice.name);
+      }
+    }
+  }
+
+  // STRATEGY 5: Use first available as absolute fallback
   if (!selectedVoice && voices.length > 0) {
     selectedVoice = voices[0];
     console.log("Using fallback voice:", selectedVoice.name);
@@ -369,6 +422,24 @@ async function speakResponse(text) {
       "🎤 SPEAKING WITH GUARANTEED MALE VOICE:",
       GUARANTEED_MALE_VOICE.name,
     );
+
+    // DEPLOYMENT ENVIRONMENT CHECK
+    const isDeployment = window.location.hostname.includes('.replit.app') || 
+                        window.location.hostname.includes('.repl.co') ||
+                        window.location.hostname !== 'localhost';
+    
+    if (isDeployment) {
+      console.log("🚀 DEPLOYMENT MODE: Extra male voice enforcement");
+      // In deployment, double-check our voice selection
+      const voices = window.speechSynthesis.getVoices();
+      const currentVoice = voices.find(v => v.voiceURI === GUARANTEED_MALE_VOICE.voiceURI);
+      if (!currentVoice) {
+        console.log("⚠️ DEPLOYMENT: Voice changed, re-locking");
+        FORCE_MALE_VOICE_LOCK();
+        setTimeout(() => speakResponse(text), 300);
+        return;
+      }
+    }
 
     // STEP 2: FORCE CANCEL ANY EXISTING SPEECH
     window.speechSynthesis.cancel();
