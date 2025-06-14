@@ -1164,13 +1164,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       onChange={(value) => handleInputChange("phone", value)}
                       error={errors.phone}
                       className="flex-1"
-                      style={{
-                        flex: 1,
-                        height: "56px",
-                        border: "none",
-                        borderRadius: "0",
-                        backgroundColor: "transparent",
-                      }}
                     />
                   </div>
                 </div>

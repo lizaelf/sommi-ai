@@ -165,92 +165,56 @@ export const WineEditForm: React.FC<WineEditFormProps> = ({
             <label style={{ ...typography.body1R, display: "block", marginBottom: "8px" }}>
               Vinous (VN)
             </label>
-            <input
+            <FormInput
               type="number"
-              step="0.1"
-              value={formData.ratings.vn}
-              onChange={(e) => setFormData({
+              name="vnRating"
+              value={formData.ratings.vn.toString()}
+              onChange={(value) => setFormData({
                 ...formData,
-                ratings: { ...formData.ratings, vn: parseFloat(e.target.value) }
+                ratings: { ...formData.ratings, vn: parseFloat(value) || 0 }
               })}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #333",
-                borderRadius: "8px",
-                color: "#FFFFFF",
-                ...typography.body,
-              }}
             />
           </div>
           <div>
             <label style={{ ...typography.body1R, display: "block", marginBottom: "8px" }}>
               James Delucca (JD)
             </label>
-            <input
+            <FormInput
               type="number"
-              step="0.1"
-              value={formData.ratings.jd}
-              onChange={(e) => setFormData({
+              name="jdRating"
+              value={formData.ratings.jd.toString()}
+              onChange={(value) => setFormData({
                 ...formData,
-                ratings: { ...formData.ratings, jd: parseFloat(e.target.value) }
+                ratings: { ...formData.ratings, jd: parseFloat(value) || 0 }
               })}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #333",
-                borderRadius: "8px",
-                color: "#FFFFFF",
-                ...typography.body,
-              }}
             />
           </div>
           <div>
             <label style={{ ...typography.body1R, display: "block", marginBottom: "8px" }}>
               Wine Spectator (WS)
             </label>
-            <input
+            <FormInput
               type="number"
-              step="0.1"
-              value={formData.ratings.ws}
-              onChange={(e) => setFormData({
+              name="wsRating"
+              value={formData.ratings.ws.toString()}
+              onChange={(value) => setFormData({
                 ...formData,
-                ratings: { ...formData.ratings, ws: parseFloat(e.target.value) }
+                ratings: { ...formData.ratings, ws: parseFloat(value) || 0 }
               })}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #333",
-                borderRadius: "8px",
-                color: "#FFFFFF",
-                ...typography.body,
-              }}
             />
           </div>
           <div>
             <label style={{ ...typography.body1R, display: "block", marginBottom: "8px" }}>
               ABV (%)
             </label>
-            <input
+            <FormInput
               type="number"
-              step="0.1"
-              value={formData.ratings.abv}
-              onChange={(e) => setFormData({
+              name="abvRating"
+              value={formData.ratings.abv.toString()}
+              onChange={(value) => setFormData({
                 ...formData,
-                ratings: { ...formData.ratings, abv: parseFloat(e.target.value) }
+                ratings: { ...formData.ratings, abv: parseFloat(value) || 0 }
               })}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #333",
-                borderRadius: "8px",
-                color: "#FFFFFF",
-                ...typography.body,
-              }}
             />
           </div>
         </div>
