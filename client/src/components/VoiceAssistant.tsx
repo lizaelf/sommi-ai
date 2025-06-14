@@ -33,7 +33,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   }, [isListening, isThinking, isResponding, showBottomSheet]);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
-  const [isManuallyClosedRef, setIsManuallyClosedRef] = useState(false);
+  const isManuallyClosedRef = useRef(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -41,7 +41,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   // Listen for suggestion playback events to show Stop button
   useEffect(() => {
     const handleSuggestionPlayback = () => {
-      if (!isManuallyClosedRef) {
+      if (!isManuallyClosedRef.current) {
         setIsResponding(true);
         setShowUnmuteButton(false);
         setShowAskButton(false);
@@ -49,7 +49,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     };
 
     const handleSuggestionPlaybackEnded = () => {
-      if (!isManuallyClosedRef) {
+      if (!isManuallyClosedRef.current) {
         setIsResponding(false);
         setShowUnmuteButton(false);
         setShowAskButton(true);
@@ -59,7 +59,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const handleTriggerVoiceAssistant = async () => {
       console.log("QR SCAN: Voice assistant triggered");
       // Don't reopen if manually closed
-      if (isManuallyClosedRef) {
+      if (isManuallyClosedRef.current) {
         console.log("QR SCAN: Voice assistant manually closed, ignoring trigger");
         return;
       }
@@ -132,7 +132,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).currentOpenAIAudio = audio;
         
         audio.onended = () => {
-          if (!isManuallyClosedRef) {
+          if (!isManuallyClosedRef.current) {
             setIsResponding(false);
             setShowAskButton(true);
           }
@@ -142,7 +142,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         };
         
         audio.onerror = () => {
-          if (!isManuallyClosedRef) {
+          if (!isManuallyClosedRef.current) {
             setIsResponding(false);
             setShowAskButton(true);
           }
@@ -156,7 +156,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       })
       .catch(error => {
         console.error("QR SCAN: TTS error:", error);
-        if (!isManuallyClosedRef) {
+        if (!isManuallyClosedRef.current) {
           setIsResponding(false);
           setShowAskButton(true);
         }
@@ -165,7 +165,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
     // Custom audio playback handler for suggestion responses
     const handlePlayAudioResponse = async (event: Event) => {
-      if (isManuallyClosedRef) return;
+      if (isManuallyClosedRef.current) return;
       
       const customEvent = event as CustomEvent;
       const { audioBuffers } = customEvent.detail;
