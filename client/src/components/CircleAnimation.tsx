@@ -37,7 +37,6 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
   const [frequencyData, setFrequencyData] = useState<number[]>([]);
   const animationRef = useRef<number>(0);
   const frameCount = useRef(0);
-  const currentScale = useRef<number>(1.0);
   const baseSize = initialSize; // Base size in pixels from props
   const animationSpeed = 3; // 3x smoother animation as requested
   
@@ -64,11 +63,11 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
   const animate = () => {
     frameCount.current += 1;
     
-    let scale = currentScale.current; // Use persistent scale
+    let scale = 1.0; // Default size
     let hasAudioActivity = false;
     
     // Try to get real audio data
-    if (analyser && dataArray && (isAnimating || isListening)) {
+    if (analyser && dataArray) {
       try {
         analyser.getByteFrequencyData(dataArray);
         
@@ -77,28 +76,27 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         const average = sum / dataArray.length;
         let volume = Math.min(average / 128, 1.0); // Normalize 0-1
         
-        // Check if there's actual audio activity (very sensitive for speech)
-        hasAudioActivity = volume > 0.005; // Ultra-sensitive threshold
+        // Check if there's actual audio activity (above silence threshold)
+        hasAudioActivity = volume > 0.05; // Only animate if volume is above 5%
         
         if (hasAudioActivity) {
           // Apply multiple smoothing layers for ultra-smooth animation
-          volume = Math.pow(volume, 0.4); // Better sensitivity curve
+          volume = Math.pow(volume, 0.3); // Enhance sensitivity
           
-          // Convert to scale: 1.0 (silence) to 2.5 (loud) - dramatic but not excessive
-          const targetScale = 1.0 + (volume * 1.5);
+          // Convert to scale: 1.0 (silence) to 3.0 (loud) - extremely dramatic 200% size increase
+          const targetScale = 1.0 + (volume * 2.0);
           
-          // Faster response for more immediate visual feedback
-          const lerpFactor = 0.2; // Faster response to audio
+          // Ultra-smooth interpolation with momentum-based smoothing
+          const lerpFactor = 0.08; // Much slower, smoother transitions
           scale = scale + (targetScale - scale) * lerpFactor;
           
-          // Log audio activity for debugging speech detection
-          if (frameCount.current % 20 === 0) {
-            console.log("CircleAnimation: ACTIVE - volume:", volume.toFixed(3), "scale:", scale.toFixed(3));
+          // Only log occasionally to reduce console spam
+          if (frameCount.current % 30 === 0) {
+            console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
           }
         } else {
-          // No audio activity - smoothly return to base scale
-          const lerpFactor = 0.1;
-          scale = scale + (1.0 - scale) * lerpFactor;
+          // No audio activity - use base scale
+          scale = 1.0;
         }
       } catch (error) {
         // If audio fails and we're processing, use gentle pulse
@@ -111,27 +109,23 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
           hasAudioActivity = false;
         }
       }
-    } else if (isProcessing || (isAnimating && !analyser)) {
-      // Fallback pulse animation during processing or when no audio analyzer
+    } else if (isProcessing) {
+      // Fallback pulse animation only during processing
       const time = Date.now() * 0.003;
-      scale = 1.0 + Math.sin(time) * 0.15;
+      scale = 1.0 + Math.sin(time) * 0.1;
       hasAudioActivity = true;
     } else {
-      // No audio source and not processing - return to base
-      const lerpFactor = 0.1;
-      scale = scale + (1.0 - scale) * lerpFactor;
+      // No audio source and not processing - static
+      scale = 1.0;
       hasAudioActivity = false;
     }
-    
-    // Update persistent scale reference
-    currentScale.current = scale;
     
     const newSize = baseSize * scale;
     setSize(newSize);
     setOpacity(hasAudioActivity ? 0.8 : 0.6);
     
     // Continue animation if in any active state
-    if (isAnimating || isListening || isProcessing || isPlaying || showTestAnimation) {
+    if (isListening || isProcessing || isPlaying || showTestAnimation) {
       animationRef.current = requestAnimationFrame(animate);
     } else {
       // In silence, stop animation and return to base size
@@ -154,14 +148,21 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
             dataArray = new Uint8Array(analyser.frequencyBinCount);
           }
 
-          // Check for existing microphone stream first
-          let stream = (window as any).currentMicrophoneStream;
-          
-          if (!stream) {
-            console.log('CircleAnimation: Requesting microphone permission');
+          // Get microphone stream using saved permissions if available
+          let stream;
+          if (shouldSkipPermissionPrompt()) {
+            console.log('Using saved microphone permission for wine animation');
             const hasPermission = await requestMicrophonePermission();
             if (!hasPermission) {
-              console.log('CircleAnimation: Microphone permission denied');
+              console.log('Saved permission invalid for wine animation');
+              return;
+            }
+            stream = (window as any).currentMicrophoneStream;
+          } else {
+            console.log('Requesting fresh microphone permission for wine animation');
+            const hasPermission = await requestMicrophonePermission();
+            if (!hasPermission) {
+              console.log('Microphone permission denied for wine animation');
               return;
             }
             stream = (window as any).currentMicrophoneStream;
@@ -175,8 +176,9 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
           source = audioContext.createMediaStreamSource(stream);
           if (analyser) {
             source.connect(analyser);
-            console.log("CircleAnimation: Connected to microphone stream for real-time animation");
           }
+          
+          console.log("Microphone connected to audio analyzer");
         } catch (err) {
           console.warn('Could not connect microphone to analyzer:', err);
         }
@@ -310,8 +312,15 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         setIsListening(false);
         setIsProcessing(true);
         
-        // Keep microphone connected during processing for continuous animation
-        // Don't disconnect source to maintain audio analysis during speech processing
+        // Disconnect source when processing
+        if (source) {
+          try {
+            source.disconnect();
+          } catch (e) {
+            // Ignore disconnection errors
+          }
+          source = null;
+        }
         
         // Reset frame counter for smooth animation start
         frameCount.current = 0;
