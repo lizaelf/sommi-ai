@@ -284,6 +284,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     const now = Date.now();
     const recordingDuration = now - recordingStartTimeRef.current;
     
+    // Dispatch real-time volume data for CircleAnimation
+    window.dispatchEvent(
+      new CustomEvent("voice-volume", {
+        detail: { 
+          volume: average,
+          maxVolume: max,
+          isActive: isCurrentlyActive
+        },
+      }),
+    );
+
     // Minimal debug logging only on errors
     if (average === 0 && max === 0 && timeAverage === 128 && consecutiveSilenceCountRef.current % 100 === 0) {
       console.log("Audio input issue detected");

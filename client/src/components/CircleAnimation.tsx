@@ -12,6 +12,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [voiceVolume, setVoiceVolume] = useState(0);
   const animationRef = useRef<number>(0);
 
   // Animation loop that only runs when there's an active state
@@ -27,9 +28,12 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         scale = 1.0 + Math.sin(time) * 0.1;
         hasActivity = true;
       } else if (isListening) {
-        // Listening pulse animation
+        // Listening pulse animation with voice volume response
         const time = Date.now() * 0.003;
-        scale = 1.0 + Math.sin(time) * 0.15;
+        const volumeScale = Math.min(voiceVolume / 50, 1.0); // Normalize volume to 0-1
+        const basePulse = Math.sin(time) * 0.1;
+        const volumePulse = volumeScale * 0.2; // Voice-responsive scaling
+        scale = 1.0 + basePulse + volumePulse;
         hasActivity = true;
       } else if (isPlaying) {
         // Playing pulse animation
@@ -100,15 +104,27 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         setIsListening(false);
         setIsProcessing(false);
         setIsPlaying(false);
+        setVoiceVolume(0); // Reset volume on stop
+      }
+    };
+
+    const handleVoiceVolumeChange = (event: CustomEvent) => {
+      const { volume } = event.detail;
+      setVoiceVolume(volume);
+      // Debug: Log volume changes periodically
+      if (Math.random() < 0.01) { // 1% of volume updates
+        console.log('🎤 CircleAnimation: Voice volume:', volume);
       }
     };
 
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
     window.addEventListener('mic-status', handleMicStatusChange as EventListener);
+    window.addEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
 
     return () => {
       window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
+      window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
       cancelAnimationFrame(animationRef.current);
     };
   }, []);
