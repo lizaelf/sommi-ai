@@ -92,7 +92,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               // Proceed with welcome message
               const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
               setTimeout(() => {
-                window.currentResponseAudio = null;
+                (window as any).currentResponseAudio = null;
                 setIsResponding(false);
                 setShowAskButton(true);
               }, 100);
@@ -191,7 +191,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         } catch (error) {
           console.error('Error playing suggestion audio:', error);
         } finally {
-          if (!isManuallyClosedRef) {
+          if (!isManuallyClosedRef.current) {
             setIsResponding(false);
             setShowAskButton(true);
           }
@@ -906,7 +906,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("VoiceAssistant: Manual close triggered - setting flag to prevent reopening");
     
     // Set flag to prevent automatic reopening
-    setIsManuallyClosedRef(true);
+    isManuallyClosedRef.current = true;
     
     // Abort any ongoing conversation processing
     window.dispatchEvent(new CustomEvent('abortConversation'));
@@ -1045,7 +1045,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         const messageElements = document.querySelectorAll('[data-role="assistant"]');
         if (messageElements.length > 0) {
           const lastMessageElement = messageElements[messageElements.length - 1];
-          const fallbackText = lastMessageElement.textContent || lastMessageElement.innerText;
+          const fallbackText = lastMessageElement.textContent || (lastMessageElement as HTMLElement).innerText;
           if (fallbackText && fallbackText.trim()) {
             console.log("Using fallback message from UI:", fallbackText.substring(0, 50) + "...");
             (window as any).lastAssistantMessageText = fallbackText.trim();
