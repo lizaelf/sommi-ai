@@ -860,13 +860,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     // Stop any ongoing recording
     stopListening();
 
-    // Reset all states to show Ask button
+    // Reset all states to show Ask button but keep bottom sheet open
     setIsResponding(false);
     setIsThinking(false);
     setIsListening(false);
     setShowUnmuteButton(false);
     setShowAskButton(true);
-    setShowBottomSheet(false);
+    // Keep setShowBottomSheet(true) to maintain voice assistant interface
 
     // Emit stop event for wine bottle animation
     window.dispatchEvent(
