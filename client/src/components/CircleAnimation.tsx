@@ -1,115 +1,73 @@
-import React, { useRef, useState, useEffect } from 'react';
-import wineCircleImage from '@assets/wine-circle.png';
+import React from "react";
+import placeholderImage from "@assets/Placeholder.png";
+import ridgeWineImage from "@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png";
+
+import _2021_Monte_Bello_Cabernet_Sauvignon from "@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png";
 
 interface CircleAnimationProps {
   isAnimating?: boolean;
   size?: number;
+  image?: string;
+  wineName?: string;
 }
 
-export default function CircleAnimation({ isAnimating = false, size = 300 }: CircleAnimationProps) {
-  const [currentSize, setSize] = useState(size);
-  const [opacity, setOpacity] = useState(0.6);
-  const [isListening, setIsListening] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const animationRef = useRef<number>(0);
-
-  // Simple animation loop with basic pulse effects
-  useEffect(() => {
-    const animate = () => {
-      const baseSize = size;
-      let scale = 1.0;
-      let hasActivity = false;
-
-      if (isProcessing) {
-        // Processing pulse animation
-        const time = Date.now() * 0.003;
-        scale = 1.0 + Math.sin(time) * 0.1;
-        hasActivity = true;
-      } else if (isListening) {
-        // Listening pulse animation
-        const time = Date.now() * 0.003;
-        scale = 1.0 + Math.sin(time) * 0.15;
-        hasActivity = true;
-      } else if (isPlaying) {
-        // Playing pulse animation
-        const time = Date.now() * 0.002;
-        scale = 1.0 + Math.sin(time) * 0.08;
-        hasActivity = true;
-      } else if (isAnimating) {
-        // General animation
-        const time = Date.now() * 0.004;
-        scale = 1.0 + Math.sin(time) * 0.12;
-        hasActivity = true;
-      }
-    
-      const newSize = baseSize * scale;
-      setSize(newSize);
-      setOpacity(hasActivity ? 0.8 : 0.6);
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    if (isAnimating || isListening || isProcessing || isPlaying) {
-      animationRef.current = requestAnimationFrame(animate);
-    }
-
-    return () => {
-      cancelAnimationFrame(animationRef.current);
-    };
-  }, [isAnimating, isListening, isProcessing, isPlaying, size]);
-
-  // Handle audio and microphone status events
-  useEffect(() => {
-    const handleAudioStatusChange = (event: CustomEvent) => {
-      const status = event.detail?.status;
-      if (status === 'playing') {
-        setIsPlaying(true);
-        setIsProcessing(false);
-        setIsListening(false);
-      } else if (status === 'stopped' || status === 'paused') {
-        setIsPlaying(false);
-      }
-    };
-
-    const handleMicStatusChange = (event: CustomEvent) => {
-      const status = event.detail?.status;
-      if (status === 'listening') {
-        setIsListening(true);
-        setIsProcessing(false);
-        setIsPlaying(false);
-      } else if (status === 'processing') {
-        setIsListening(false);
-        setIsProcessing(true);
-        setIsPlaying(false);
-      } else if (status === 'stopped') {
-        setIsListening(false);
-        setIsProcessing(false);
-        setIsPlaying(false);
-      }
-    };
-
-    window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
-    window.addEventListener('mic-status', handleMicStatusChange as EventListener);
-
-    return () => {
-      window.removeEventListener('audio-status', handleAudioStatusChange as EventListener);
-      window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
-      cancelAnimationFrame(animationRef.current);
-    };
-  }, []);
-
+export default function CircleAnimation({
+  isAnimating = false,
+  size = 300,
+  image,
+  wineName,
+}: CircleAnimationProps) {
   return (
-    <div className="relative flex items-center justify-center">
-      <img
-        src={wineCircleImage}
-        alt="Wine Circle"
-        className="transition-all duration-200 ease-in-out"
+    <div
+      className="wine-bottle-image"
+      style={{
+        position: "relative",
+        marginBottom: "40px",
+        marginTop: "20px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "transparent",
+      }}
+    >
+      {/* Blurred circle background - positioned at the top */}
+      <div
         style={{
-          width: `${currentSize}px`,
-          height: `${currentSize}px`,
-          opacity: opacity,
-          filter: `blur(${isListening || isProcessing || isPlaying ? '5px' : '0px'})`,
+          position: "absolute",
+          width: "180px",
+          height: "180px",
+          borderRadius: "50%",
+          backgroundColor: "#8E8E8E",
+          filter: "blur(60px)",
+          opacity: 0.7,
+          zIndex: 1,
+          top: "0px",
+          left: "50%",
+          transform: "translateX(-50%)",
+        }}
+      />
+      <img
+        src={image || ridgeWineImage}
+        alt={wineName || "Wine bottle"}
+        style={{
+          height: "280px",
+          zIndex: 2,
+        }}
+        onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          console.error(`Wine bottle image failed to load: ${wineName}, attempted URL: ${target.src}`);
+          
+          // Try fallback images in order
+          if (target.src !== ridgeWineImage) {
+            console.log(`Falling back to Ridge wine image: ${ridgeWineImage}`);
+            target.src = ridgeWineImage;
+          } else if (target.src !== placeholderImage) {
+            console.log(`Falling back to placeholder image: ${placeholderImage}`);
+            target.src = placeholderImage;
+          } else {
+            console.error('All fallback images failed to load');
+          }
         }}
       />
     </div>
