@@ -53,7 +53,10 @@ function FORCE_MALE_VOICE_LOCK() {
 }
 
 function SELECT_GUARANTEED_MALE_VOICE(voices) {
-  console.log(`Selecting male voice from ${voices.length} available voices`);
+  // Skip logging if already initialized
+  if (VOICE_LOCK_VERIFIED && GUARANTEED_MALE_VOICE) {
+    return;
+  }
 
   let selectedVoice = null;
 
@@ -127,21 +130,15 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
 function TEST_LOCKED_VOICE() {
   if (!GUARANTEED_MALE_VOICE) return;
 
-  console.log("🧪 TESTING LOCKED VOICE:", GUARANTEED_MALE_VOICE.name);
-
   const testUtterance = new SpeechSynthesisUtterance("test");
   testUtterance.voice = GUARANTEED_MALE_VOICE;
   testUtterance.volume = 0; // Silent test
   testUtterance.rate = 10; // Super fast
 
-  testUtterance.onstart = () => {
-    console.log("✅ VOICE TEST PASSED:", GUARANTEED_MALE_VOICE.name);
-  };
-
   testUtterance.onerror = (event) => {
-    console.error("❌ VOICE TEST FAILED:", event.error);
-    // Try to find alternative
-    FORCE_MALE_VOICE_LOCK();
+    if (event.error !== "interrupted") {
+      console.warn("Voice test failed:", event.error);
+    }
   };
 
   window.speechSynthesis.speak(testUtterance);
@@ -176,13 +173,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // IMMEDIATELY LOCK MALE VOICE
   FORCE_MALE_VOICE_LOCK();
 
-  // Set up continuous voice verification
+  // Set up minimal voice verification (reduced frequency)
   VOICE_CHECK_INTERVAL = setInterval(() => {
     if (!VOICE_LOCK_VERIFIED) {
-      console.log("🔄 PERIODIC VOICE CHECK - RE-LOCKING");
       FORCE_MALE_VOICE_LOCK();
     }
-  }, 5000); // Check every 5 seconds
+  }, 30000); // Check every 30 seconds instead of 5
 
   // Get the microphone button and status div
   const micButton = document.getElementById("mic-button");
