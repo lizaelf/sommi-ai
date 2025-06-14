@@ -310,23 +310,27 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       }
       
       // Always store in IndexedDB for offline access
-      await indexedDBService.addMessageToConversation(
-        currentConversationId, 
-        adaptMessageToIDBMessage(message)
-      );
-      
-      // Update conversation's last activity timestamp
-      const conversation = await indexedDBService.getConversation(currentConversationId);
-      if (conversation) {
-        conversation.lastActivity = new Date();
-        await indexedDBService.updateConversation(conversation);
+      try {
+        await indexedDBService.addMessageToConversation(
+          currentConversationId, 
+          adaptMessageToIDBMessage(message)
+        );
+        
+        // Update conversation's last activity timestamp
+        const conversation = await indexedDBService.getConversation(currentConversationId);
+        if (conversation) {
+          conversation.lastActivity = new Date();
+          await indexedDBService.updateConversation(conversation);
+        }
+        
+        // Refresh conversations list to update timestamps
+        const allConversations = await indexedDBService.getAllConversations();
+        setLocalConversations(adaptIDBConversationsToConversations(allConversations));
+      } catch (idbError) {
+        console.error("Error storing message in IndexedDB:", idbError);
       }
-      
-      // Refresh conversations list to update timestamps
-      const allConversations = await indexedDBService.getAllConversations();
-      setLocalConversations(adaptIDBConversationsToConversations(allConversations));
     } catch (error) {
-      console.error("Error adding message", error);
+      console.error("Error adding message to conversation", currentConversationId, ":", error);
     }
   }, [currentConversationId]);
   
