@@ -68,11 +68,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       if (isDeployment) {
         // Check if voice is properly locked before speaking
         const voiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
+        console.log("🔍 DEPLOYMENT: Voice verification check:", {
+          VOICE_LOCK_VERIFIED: (window as any).VOICE_LOCK_VERIFIED,
+          GUARANTEED_MALE_VOICE: (window as any).GUARANTEED_MALE_VOICE?.name,
+          voiceLocked
+        });
+        
         if (!voiceLocked) {
           console.log("🚫 DEPLOYMENT: Blocking welcome message - voice not verified");
-          setShowBottomSheet(true);
-          setShowAskButton(true);
-          setIsResponding(false);
+          // Wait a moment for voice system to initialize, then try again
+          setTimeout(() => {
+            const retryVoiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
+            if (retryVoiceLocked) {
+              console.log("✅ DEPLOYMENT: Voice verified on retry, showing welcome");
+              setShowBottomSheet(true);
+              setShowAskButton(false);
+              setIsResponding(true);
+              
+              // Proceed with welcome message
+              const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+              setTimeout(() => {
+                window.currentResponseAudio = null;
+                setIsResponding(false);
+                setShowAskButton(true);
+              }, 100);
+            } else {
+              console.log("🚫 DEPLOYMENT: Voice still not verified after retry");
+              setShowBottomSheet(true);
+              setShowAskButton(true);
+              setIsResponding(false);
+            }
+          }, 500);
           return;
         }
       }

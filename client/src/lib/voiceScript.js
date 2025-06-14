@@ -165,9 +165,11 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
     GUARANTEED_MALE_VOICE = selectedVoice;
     VOICE_LOCK_VERIFIED = true;
 
-    // Store globally for other components
+    // Store globally for other components - CRITICAL for deployment
     window.selectedVoice = selectedVoice;
     window.guaranteedMaleVoice = selectedVoice;
+    window.GUARANTEED_MALE_VOICE = selectedVoice; // Match VoiceAssistant check
+    window.VOICE_LOCK_VERIFIED = true; // Match VoiceAssistant check
 
     console.log("Voice system ready:", selectedVoice.name);
 
@@ -176,6 +178,7 @@ function SELECT_GUARANTEED_MALE_VOICE(voices) {
   } else {
     console.error("❌ NO VOICE AVAILABLE - CRITICAL ERROR");
     VOICE_LOCK_VERIFIED = false;
+    window.VOICE_LOCK_VERIFIED = false;
   }
 }
 
