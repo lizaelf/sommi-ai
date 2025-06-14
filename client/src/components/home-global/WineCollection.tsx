@@ -31,7 +31,7 @@ export const WineCollection: React.FC<WineCollectionProps> = ({
   isLoading,
 }) => {
   return (
-    <div className="mb-6">
+    <div className="mb-6" style={{ paddingLeft: "16px", paddingRight: "16px" }}>
       <h3
         className="text-xl font-medium"
         style={{
