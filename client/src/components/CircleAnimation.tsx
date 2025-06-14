@@ -137,7 +137,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
   // Initialize audio context and connect microphone when listening starts
   useEffect(() => {
     const setupMicrophone = async () => {
-      if (isListening && !source) {
+      if (isAnimating && !source) {
         try {
           // Create audio context if it doesn't exist
           if (!audioContext) {
@@ -219,8 +219,8 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
       // Remove visibility change listener
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       
-      // Cleanup when not listening
-      if (!isListening && source) {
+      // Cleanup when not animating
+      if (!isAnimating && source) {
         // Stop microphone stream
         const stream = (window as any).currentMicrophoneStream;
         if (stream) {
@@ -238,7 +238,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         source = null;
       }
     };
-  }, [isListening]);
+  }, [isAnimating]);
 
   // Monitor global window events for audio status and connect to audio sources
   useEffect(() => {
@@ -383,8 +383,8 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
 
   // Start/stop animation when listening, processing, or playing changes
   useEffect(() => {
-    console.log('WineImage: Animation state changed - listening:', isListening, 'processing:', isProcessing, 'playing:', isPlaying, 'test:', showTestAnimation);
-    if (isListening || isProcessing || isPlaying || showTestAnimation) {
+    console.log('CircleAnimation: Animation state changed - animating:', isAnimating, 'listening:', isListening, 'processing:', isProcessing, 'playing:', isPlaying, 'test:', showTestAnimation);
+    if (isAnimating || isListening || isProcessing || isPlaying || showTestAnimation) {
       console.log('WineImage: Starting animation');
       // Only start a new animation if there isn't one already running
       if (!animationRef.current) {
@@ -423,7 +423,7 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
     return () => {
       cancelAnimationFrame(animationRef.current);
     };
-  }, [isListening, isProcessing, isPlaying]);
+  }, [isAnimating, isListening, isProcessing, isPlaying]);
 
   // Dynamic gradient color based on frequency data
   const getGradient = () => {
