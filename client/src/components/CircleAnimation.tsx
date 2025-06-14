@@ -42,13 +42,12 @@ export default function CircleAnimation({
   // Voice volume handler with proper typing and enhanced sensitivity
   const handleVoiceVolumeChange = useCallback((event: VoiceVolumeEvent) => {
     const { volume, maxVolume, isActive } = event.detail;
-    const currentState = stateRef.current;
-
+    
     setVoiceVolume(volume);
 
     // ONLY update size if currently listening - enhanced sensitivity
-    if (currentState.isListening) {
-      const baseSize = currentState.size;
+    if (isListening) {
+      const baseSize = 200; // Fixed base size
       let scale = 1.0;
 
       // Enhanced voice scaling with lower threshold and better responsiveness
@@ -60,12 +59,10 @@ export default function CircleAnimation({
       const newSize = baseSize * scale;
       setSize(newSize);
       
-      // Debug output for voice responsiveness
-      if (showDebug && volume > 3) {
-        console.log('CircleAnimation: Voice scaling', { volume, scale, newSize });
-      }
+      // Debug output for voice responsiveness (always show for debugging)
+      console.log('CircleAnimation: Voice scaling', { volume, scale, newSize, isListening });
     }
-  }, [showDebug]);
+  }, [showDebug, isListening, size]);
 
   // Optimized state synchronization using requestAnimationFrame
   const syncVoiceAssistantState = useCallback(() => {
@@ -101,12 +98,13 @@ export default function CircleAnimation({
 
   // Keep circle static for all non-listening states
   useEffect(() => {
-    // Only allow voice-responsive scaling during listening
+    // Reset to base size when not listening
     if (!isListening) {
-      setSize(size); // Always keep base size
+      setSize(200); // Reset to base size
       setOpacity(1.0); // Full opacity always
+      setVoiceVolume(0); // Reset voice volume
     }
-  }, [isAnimating, isProcessing, isPlaying, size, isListening]);
+  }, [isListening]);
 
   // Optimized communication with VoiceAssistant
   useEffect(() => {
