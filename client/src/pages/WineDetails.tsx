@@ -119,6 +119,7 @@ export default function WineDetails() {
     }
   };
 
+  // Text-only suggestion handler
   const handleSuggestionClick = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
 
@@ -174,6 +175,7 @@ export default function WineDetails() {
       }
 
       refetchMessages();
+
     } catch (error) {
       console.error("Error in suggestion request:", error);
       toast({
@@ -183,6 +185,84 @@ export default function WineDetails() {
       });
     } finally {
       setIsTyping(false);
+      setHideSuggestions(false);
+    }
+  };
+
+  // Text + Voice suggestion handler
+  const handleSuggestionWithVoiceClick = async (content: string) => {
+    if (content.trim() === "" || !currentConversationId) return;
+
+    setHideSuggestions(true);
+    setIsTyping(true);
+
+    try {
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        content,
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      await addMessage(tempUserMessage);
+
+      const requestBody = {
+        messages: [{ role: "user", content }],
+        conversationId: currentConversationId,
+        wineData: wine,
+        optimize_for_speed: false,
+        text_only: false,
+      };
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Priority": "high",
+        },
+        body: JSON.stringify(requestBody),
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      if (responseData.message && responseData.message.content) {
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1,
+          content: responseData.message.content,
+          role: "assistant",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+
+        await addMessage(assistantMessage);
+
+        // Trigger voice playback for this response
+        if (responseData.audioBuffers && responseData.audioBuffers.length > 0) {
+          // Voice assistant will handle audio playback
+          window.dispatchEvent(new CustomEvent('playAudioResponse', {
+            detail: { audioBuffers: responseData.audioBuffers }
+          }));
+        }
+      }
+
+      refetchMessages();
+    } catch (error) {
+      console.error("Error in suggestion request:", error);
+      toast({
+        title: "Error",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsTyping(false);
+      setHideSuggestions(false);
     }
   };
 
@@ -1443,14 +1523,14 @@ export default function WineDetails() {
                 >
                   <div className="max-w-3xl mx-auto">
                     <>
-                      {/* Suggestion chips */}
+                      {/* Suggestion chips - Text Only */}
                       <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
                         <Button
                           onClick={() => handleSuggestionClick("Tasting notes")}
                           variant="secondary"
                           style={{ height: "32px" }}
                         >
-                          Tasting notes
+                          💬 Tasting notes
                         </Button>
                         <Button
                           onClick={() =>
@@ -1461,7 +1541,7 @@ export default function WineDetails() {
                           variant="secondary"
                           style={{ height: "32px" }}
                         >
-                          Simple recipes
+                          💬 Simple recipes
                         </Button>
                         <Button
                           onClick={() =>
@@ -1470,7 +1550,38 @@ export default function WineDetails() {
                           variant="secondary"
                           style={{ height: "32px" }}
                         >
-                          Where it's from
+                          💬 Where it's from
+                        </Button>
+                      </div>
+                      
+                      {/* Suggestion chips - Text + Voice */}
+                      <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
+                        <Button
+                          onClick={() => handleSuggestionWithVoiceClick("Tasting notes")}
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          🎤 Tasting notes
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleSuggestionWithVoiceClick(
+                              "Simple recipes for this wine",
+                            )
+                          }
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          🎤 Simple recipes
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleSuggestionWithVoiceClick("Where is this wine from?")
+                          }
+                          variant="secondary"
+                          style={{ height: "32px" }}
+                        >
+                          🎤 Where it's from
                         </Button>
                       </div>
                       <ChatInput

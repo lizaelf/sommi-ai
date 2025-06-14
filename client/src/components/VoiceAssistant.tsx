@@ -91,14 +91,47 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     };
 
+    // Custom audio playback handler for suggestion responses
+    const handlePlayAudioResponse = async (event: CustomEvent) => {
+      const { audioBuffers } = event.detail;
+      if (audioBuffers && audioBuffers.length > 0) {
+        setIsResponding(true);
+        setShowUnmuteButton(false);
+        setShowAskButton(false);
+        
+        try {
+          for (const buffer of audioBuffers) {
+            const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            
+            await new Promise((resolve, reject) => {
+              audio.onended = resolve;
+              audio.onerror = reject;
+              audio.play();
+            });
+            
+            URL.revokeObjectURL(audioUrl);
+          }
+        } catch (error) {
+          console.error('Error playing suggestion audio:', error);
+        } finally {
+          setIsResponding(false);
+          setShowAskButton(true);
+        }
+      }
+    };
+
     window.addEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
     window.addEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
     window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+    window.addEventListener('playAudioResponse', handlePlayAudioResponse as unknown as EventListener);
     
     return () => {
       window.removeEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
       window.removeEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
       window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+      window.removeEventListener('playAudioResponse', handlePlayAudioResponse as unknown as EventListener);
     };
   }, []);
   
