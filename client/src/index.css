@@ -404,11 +404,11 @@ button.header-icon-button svg,
   stroke-width: 2 !important;
 }
 
-/* Voice Assistant Suggestion buttons with forced styling */
+/* Voice Assistant Suggestion buttons with forced styling and conflict resolution */
 button.suggestion-button,
 .suggestion-button {
-  background: rgba(255, 255, 255, 0.08) !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background: red !important;
+  background-color: red !important;
   color: white !important;
   border: none !important;
   border-radius: 32px !important;
@@ -426,12 +426,29 @@ button.suggestion-button,
   justify-content: center !important;
   box-sizing: border-box !important;
   min-width: fit-content !important;
+  position: relative !important;
+  z-index: 10 !important;
+  width: auto !important;
 }
 
 button.suggestion-button:hover,
 .suggestion-button:hover {
   background: rgba(255, 255, 255, 0.16) !important;
   background-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Suggestion buttons container fixes */
+.suggestion-buttons-container {
+  width: 100%;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* Override any conflicting parent styles */
+.voice-bottom-sheet * button.suggestion-button,
+div * button.suggestion-button {
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 
