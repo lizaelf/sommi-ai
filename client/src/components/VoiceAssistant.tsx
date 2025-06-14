@@ -41,15 +41,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   // Listen for suggestion playback events to show Stop button
   useEffect(() => {
     const handleSuggestionPlayback = () => {
-      setIsResponding(true);
-      setShowUnmuteButton(false);
-      setShowAskButton(false);
+      if (!isManuallyClosedRef) {
+        setIsResponding(true);
+        setShowUnmuteButton(false);
+        setShowAskButton(false);
+      }
     };
 
     const handleSuggestionPlaybackEnded = () => {
-      setIsResponding(false);
-      setShowUnmuteButton(false);
-      setShowAskButton(true);
+      if (!isManuallyClosedRef) {
+        setIsResponding(false);
+        setShowUnmuteButton(false);
+        setShowAskButton(true);
+      }
     };
 
     const handleTriggerVoiceAssistant = async () => {
@@ -128,16 +132,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).currentOpenAIAudio = audio;
         
         audio.onended = () => {
-          setIsResponding(false);
-          setShowAskButton(true);
+          if (!isManuallyClosedRef) {
+            setIsResponding(false);
+            setShowAskButton(true);
+          }
           URL.revokeObjectURL(audioUrl);
           (window as any).currentOpenAIAudio = null;
           console.log("QR SCAN: Welcome message completed");
         };
         
         audio.onerror = () => {
-          setIsResponding(false);
-          setShowAskButton(true);
+          if (!isManuallyClosedRef) {
+            setIsResponding(false);
+            setShowAskButton(true);
+          }
           URL.revokeObjectURL(audioUrl);
           (window as any).currentOpenAIAudio = null;
           console.error("QR SCAN: Audio playback error");
@@ -148,8 +156,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       })
       .catch(error => {
         console.error("QR SCAN: TTS error:", error);
-        setIsResponding(false);
-        setShowAskButton(true);
+        if (!isManuallyClosedRef) {
+          setIsResponding(false);
+          setShowAskButton(true);
+        }
       });
     };
 
