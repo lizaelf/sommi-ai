@@ -8,7 +8,7 @@ interface CircleAnimationProps {
 
 export default function CircleAnimation({ isAnimating = false, size = 300 }: CircleAnimationProps) {
   const [currentSize, setSize] = useState(size);
-  const [opacity, setOpacity] = useState(0.6);
+  const [opacity, setOpacity] = useState(1.0);
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -45,7 +45,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       
       const newSize = baseSize * scale;
       setSize(newSize);
-      setOpacity(volume > 0.5 ? 0.9 : 0.7);
+      // Keep opacity constant - no changes based on voice
       
       console.log('🎤 Voice scaling applied:', { volume, scale, newSize, baseSize });
     }
@@ -57,7 +57,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     if (!isListening) {
       console.log('🎤 Non-listening mode: Circle size locked to base');
       setSize(size); // Always keep base size
-      setOpacity(0.6); // Standard opacity
+      setOpacity(1.0); // Full opacity always
     }
 
     return () => {
@@ -112,6 +112,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         setIsProcessing(false);
         setIsPlaying(false);
         setVoiceVolume(0);
+        setOpacity(1.0);
       }
     };
 
