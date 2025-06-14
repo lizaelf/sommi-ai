@@ -76,8 +76,13 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
         const average = sum / dataArray.length;
         let volume = Math.min(average / 128, 1.0); // Normalize 0-1
         
-        // Check if there's actual audio activity (above silence threshold)
-        hasAudioActivity = volume > 0.05; // Only animate if volume is above 5%
+        // Debug audio data every 60 frames (about 1 second)
+        if (frameCount.current % 60 === 0) {
+          console.log("CircleAnimation: Audio debug - sum:", sum, "average:", average, "volume:", volume.toFixed(3), "analyser connected:", !!source);
+        }
+        
+        // Check if there's actual audio activity (lowered threshold for better sensitivity)
+        hasAudioActivity = volume > 0.02; // Lowered from 0.05 to 0.02 for better sensitivity
         
         if (hasAudioActivity) {
           // Apply multiple smoothing layers for ultra-smooth animation
@@ -90,10 +95,11 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
           const lerpFactor = 0.08; // Much slower, smoother transitions
           scale = scale + (targetScale - scale) * lerpFactor;
           
-          // Only log occasionally to reduce console spam
-          if (frameCount.current % 30 === 0) {
-            console.log("Audio volume:", volume.toFixed(3), "Scale:", scale.toFixed(3));
-          }
+          // Log when audio activity is detected
+          console.log("CircleAnimation: VOICE DETECTED - volume:", volume.toFixed(3), "scale:", scale.toFixed(3));
+          
+          // Audio-driven opacity
+          setOpacity(0.7 + volume * 0.3);
         } else {
           // No audio activity - use base scale
           scale = 1.0;
@@ -109,30 +115,38 @@ const CircleAnimation: React.FC<CircleAnimationProps> = ({ isAnimating = false, 
           hasAudioActivity = false;
         }
       }
-    } else if (isProcessing) {
-      // Fallback pulse animation for processing
-      const time = Date.now() * 0.003;
-      scale = 1.0 + Math.sin(time) * 0.1;
-      hasAudioActivity = true;
-    } else if (isAnimating || isListening) {
-      // Fallback pulse animation for listening state (same as processing)
-      const time = Date.now() * 0.003;
-      scale = 1.0 + Math.sin(time) * 0.15; // Slightly more dynamic for listening
-      hasAudioActivity = true;
-    } else if (isPlaying) {
-      // Fallback animation for playing state
-      const time = Date.now() * 0.002;
-      scale = 1.0 + Math.sin(time) * 0.08;
-      hasAudioActivity = true;
-    } else if (showTestAnimation) {
-      // Test animation - more dynamic
-      const time = Date.now() * 0.004;
-      scale = 1.0 + Math.sin(time) * 0.2;
-      hasAudioActivity = true;
     } else {
-      // No audio source and not in any active state - static
-      scale = 1.0;
-      hasAudioActivity = false;
+      // Debug why audio analysis isn't available
+      if (frameCount.current % 120 === 0) {
+        console.log("CircleAnimation: Audio analysis not available - analyser:", !!analyser, "dataArray:", !!dataArray, "source:", !!source);
+      }
+      
+      if (isProcessing) {
+        // Fallback pulse animation for processing
+        const time = Date.now() * 0.003;
+        scale = 1.0 + Math.sin(time) * 0.1;
+        hasAudioActivity = true;
+      } else if (isAnimating || isListening) {
+        // Fallback pulse animation for listening state (same as processing)
+        const time = Date.now() * 0.003;
+        scale = 1.0 + Math.sin(time) * 0.15; // Slightly more dynamic for listening
+        hasAudioActivity = true;
+        console.log("CircleAnimation: Using fallback animation for listening (no audio analyser)");
+      } else if (isPlaying) {
+        // Fallback animation for playing state
+        const time = Date.now() * 0.002;
+        scale = 1.0 + Math.sin(time) * 0.08;
+        hasAudioActivity = true;
+      } else if (showTestAnimation) {
+        // Test animation - more dynamic
+        const time = Date.now() * 0.004;
+        scale = 1.0 + Math.sin(time) * 0.2;
+        hasAudioActivity = true;
+      } else {
+        // No audio source and not in any active state - static
+        scale = 1.0;
+        hasAudioActivity = false;
+      }
     }
     
     const newSize = baseSize * scale;
