@@ -397,9 +397,8 @@ const TenantAdmin: React.FC = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search wines..."
-                  className="contact-form-input"
                   style={{
-                    color: "white !important",
+                    color: "white",
                     height: "56px",
                     width: "100%",
                     fontSize: "16px",
@@ -407,6 +406,20 @@ const TenantAdmin: React.FC = () => {
                     paddingLeft: "40px",
                     paddingRight: "40px",
                     boxSizing: "border-box",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    background: "transparent",
+                    fontFamily: "Inter, sans-serif",
+                    outline: "none",
+                    transition: "all 0.2s ease",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                    e.target.style.background = "transparent";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "rgba(255, 255, 255, 0.12)";
+                    e.target.style.background = "transparent";
                   }}
                 />
                 {searchTerm && (

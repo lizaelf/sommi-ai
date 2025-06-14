@@ -38,12 +38,24 @@ export const CellarSearch: React.FC<CellarSearchProps> = ({
           style={{
             width: "100%",
             padding: "12px 16px 12px 48px",
-            backgroundColor: "#1A1A1A",
-            border: "1px solid #333",
+            backgroundColor: "transparent",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
             borderRadius: "12px",
             color: "#FFFFFF",
-            ...typography.body,
+            fontFamily: "Inter, sans-serif",
+            fontSize: "16px",
+            fontWeight: "400",
+            outline: "none",
+            transition: "all 0.2s ease",
             paddingRight: searchTerm ? "48px" : "16px",
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "rgba(255, 255, 255, 0.3)";
+            e.target.style.backgroundColor = "transparent";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "rgba(255, 255, 255, 0.12)";
+            e.target.style.backgroundColor = "transparent";
           }}
         />
         {searchTerm && (

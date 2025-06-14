@@ -69,6 +69,15 @@ export function SearchInterface({
             fontSize: "16px",
             fontFamily: "Inter, sans-serif",
             outline: "none",
+            transition: "all 0.2s ease",
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = "rgba(255, 255, 255, 0.3)";
+            e.target.style.background = "transparent";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "rgba(255, 255, 255, 0.12)";
+            e.target.style.background = "transparent";
           }}
         />
         

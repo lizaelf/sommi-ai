@@ -808,12 +808,14 @@ const Cellar = () => {
                 boxSizing: "border-box",
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = "white";
-                e.target.style.boxShadow = "0 0 0 2px rgba(255, 255, 255, 0.2)";
+                e.target.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                e.target.style.background = "transparent";
+                e.target.style.boxShadow = "none";
                 setIsSearchActive(true);
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = "rgba(255, 255, 255, 0.12)";
+                e.target.style.background = "transparent";
                 e.target.style.boxShadow = "none";
                 setIsSearchActive(false);
               }}
