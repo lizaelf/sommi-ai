@@ -56,7 +56,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Scroll Position Fix**: Removed forced scroll-to-top in conversation initialization to prevent page jumping during wine recommendation interactions
 - **Error Handling Enhancement**: Improved IndexedDB error handling with better error messages and isolation
 - **Delete Account Fix**: Enhanced account deletion to properly clear all localStorage, IndexedDB data, and backend conversations with user interaction choice workflow
-- **Split Suggestion Components**: Implemented dual suggestion behaviors with text-only (💬) and text+voice (🎤) response modes
+- **Suggestion Interface Simplification**: Removed dual suggestion modes, now using text-only (💬) response suggestions for cleaner UI
 
 ## Previous Changes (June 13, 2025)
 

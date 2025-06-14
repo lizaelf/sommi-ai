@@ -1553,37 +1553,6 @@ export default function WineDetails() {
                           💬 Where it's from
                         </Button>
                       </div>
-                      
-                      {/* Suggestion chips - Text + Voice */}
-                      <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                        <Button
-                          onClick={() => handleSuggestionWithVoiceClick("Tasting notes")}
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          🎤 Tasting notes
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            handleSuggestionWithVoiceClick(
-                              "Simple recipes for this wine",
-                            )
-                          }
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          🎤 Simple recipes
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            handleSuggestionWithVoiceClick("Where is this wine from?")
-                          }
-                          variant="secondary"
-                          style={{ height: "32px" }}
-                        >
-                          🎤 Where it's from
-                        </Button>
-                      </div>
                       <ChatInput
                         onSendMessage={handleSendMessage}
                         isProcessing={isTyping}
