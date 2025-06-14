@@ -158,8 +158,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
       
       console.log("Initializing conversation...");
       
-      // Force scroll to top on initialization
-      window.scrollTo(0, 0);
+      // Skip forced scroll to prevent interrupting user navigation
       
       try {
         // First, try to load conversations from backend (for deployment persistence)
