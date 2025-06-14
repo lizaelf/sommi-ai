@@ -6,7 +6,29 @@ export const WelcomeSection: React.FC = () => {
   return (
     <div className="px-4">
       {/* Ridge Vineyards Logo */}
-      <div className="text-center" style={{ marginBottom: "32px" }}>
+      <div 
+        className="text-center" 
+        style={{ 
+          marginBottom: "32px",
+          position: "relative",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {/* Blurred circle background */}
+        <div
+          style={{
+            position: "absolute",
+            width: "120px",
+            height: "120px",
+            borderRadius: "50%",
+            backgroundColor: "#8E8E8E",
+            filter: "blur(60px)",
+            opacity: 0.7,
+            zIndex: 1,
+          }}
+        />
         <img
           src={wineryLogoPath}
           alt="Ridge Vineyards"
@@ -14,6 +36,8 @@ export const WelcomeSection: React.FC = () => {
           style={{
             height: "54px",
             width: "auto",
+            position: "relative",
+            zIndex: 2,
           }}
         />
       </div>
