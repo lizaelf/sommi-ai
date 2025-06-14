@@ -312,9 +312,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               maxWidth: '320px', 
               height: '56px', 
               display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              gap: '12px'
+              justifyContent: 'center', 
+              alignItems: 'center'
             }}>
               <div style={{
                 color: '#CECECE',
@@ -323,30 +322,10 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 fontWeight: 'normal',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                flex: 1,
-                justifyContent: 'center'
+                gap: '8px'
               }}>
                 <ShiningText text="Thinking..." />
               </div>
-              <Button
-                onClick={onMute}
-                variant="secondary"
-                className="voice-bottom-sheet-button-white"
-                style={{
-                  backgroundColor: 'white',
-                  color: 'black',
-                  borderRadius: '28px',
-                  padding: '12px 16px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  height: '44px',
-                  minWidth: '60px',
-                  border: 'none'
-                }}
-              >
-                Stop
-              </Button>
             </div>
           ) : isLoadingAudio ? (
             <div style={{ 
@@ -429,15 +408,16 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     {suggestions.map((suggestion, index) => (
                       <button
                         key={index}
+                        className="suggestion-button"
                         onClick={() => handleSuggestionClick(suggestion)}
                         style={{
                           backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                          border: 'none',
-                          borderRadius: '24px',
-                          padding: '8px 12px',
+                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                          borderRadius: '32px',
+                          padding: '12px 16px',
                           color: 'white',
-                          fontSize: '13px',
-                          fontWeight: 400,
+                          fontSize: '14px',
+                          fontWeight: 500,
                           fontFamily: 'Inter, sans-serif',
                           cursor: 'pointer',
                           outline: 'none',
@@ -445,13 +425,19 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                           textAlign: 'center',
                           whiteSpace: 'nowrap',
                           boxSizing: 'border-box',
-                          minWidth: 'fit-content'
+                          minWidth: 'fit-content',
+                          height: '44px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
                         }}
                       >
                         {suggestion}
