@@ -220,7 +220,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Resume audio context if suspended (required for some browsers)
       if (audioContextRef.current.state === 'suspended') {
         audioContextRef.current.resume().then(() => {
-          console.log("🎧 DEBUG: Audio context resumed");
+          // Audio context resumed
         });
       }
       
@@ -236,23 +236,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       source.connect(analyserRef.current);
       
       // Debug the audio stream
-      console.log("🎧 DEBUG: Stream tracks:", stream.getTracks().map(track => ({
-        kind: track.kind,
-        enabled: track.enabled,
-        muted: track.muted,
-        readyState: track.readyState,
-        label: track.label
-      })));
-      
-      console.log("🎧 DEBUG: Audio context state:", audioContextRef.current.state);
-      console.log("🎧 DEBUG: Sample rate:", audioContextRef.current.sampleRate);
+      // Stream tracks and audio context initialized
       
       // Start monitoring voice activity with high frequency for immediate response
       voiceDetectionIntervalRef.current = setInterval(() => {
         checkVoiceActivity();
       }, 25); // Check every 25ms for maximum responsiveness
       
-      console.log("Voice activity detection started");
+      // Voice detection started
     } catch (error) {
       console.error("Failed to start voice detection:", error);
     }
@@ -1392,7 +1383,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       });
       
-      console.log("🔍 DEBUG: Microphone stream obtained");
+      // Microphone stream obtained
       streamRef.current = stream;
       
       // Setup recording immediately
@@ -1456,7 +1447,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       // Start recording
       mediaRecorder.start(250);
-      console.log("🔍 DEBUG: Recording started");
+      // Recording started
       
       // Start voice detection
       startVoiceDetection(stream);
@@ -1469,7 +1460,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }, 4000);
       
     } catch (error) {
-      console.error("🔍 DEBUG: Microphone access failed:", error);
+      console.error("Microphone access failed:", error);
       setIsListening(false);
       setShowAskButton(true);
       
