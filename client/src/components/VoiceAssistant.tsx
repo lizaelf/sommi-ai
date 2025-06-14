@@ -299,7 +299,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     );
     
     // Debug: Log volume dispatch more frequently to test
-    if (Math.random() < 0.1) { // 10% of volume updates for testing
+    if (Math.random() < 0.3) { // 30% of volume updates for better testing
       console.log('🎤 VoiceAssistant: Dispatching voice-volume:', { average, max, isActive: isCurrentlyActive });
     }
 
@@ -641,12 +641,22 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       mediaRecorder.start(250); // Request data every 250ms for stability
       
-      // Start voice activity detection
+      // Start voice activity detection immediately
       console.log('🎤 VoiceAssistant: Starting voice detection with stream');
       startVoiceDetection(stream);
       
       // Store stream globally for CircleAnimation access
       (window as any).currentMicrophoneStream = stream;
+      
+      // Force dispatch a second listening event to ensure CircleAnimation receives it
+      setTimeout(() => {
+        console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event (confirmation)');
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "listening" },
+          }),
+        );
+      }, 100);
       
       // Emit microphone status event for wine bottle animation
       console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event');
@@ -662,8 +672,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         audioTracks: stream.getAudioTracks().length
       });
       
-      // Minimum recording duration to ensure we capture some audio
-      const minimumRecordingTime = 1500; // 1.5 seconds minimum
+      // Minimum recording duration to ensure we capture some audio and allow voice detection
+      const minimumRecordingTime = 3000; // 3 seconds minimum to allow proper voice detection
       let canStopEarly = false;
       
       setTimeout(() => {
@@ -677,13 +687,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         (window as any).canStopEarly = true;
       }, minimumRecordingTime);
       
-      // Primary backup: stop after 4 seconds regardless of voice detection
+      // Primary backup: stop after 8 seconds to allow more time for voice detection
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          // Primary backup auto-stop
+          console.log("Primary backup auto-stop after 8 seconds");
           stopListening();
         }
-      }, 4000);
+      }, 8000);
       
       // Secondary backup: stop after 10 seconds if silence detection completely fails
       setTimeout(() => {
