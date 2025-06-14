@@ -204,13 +204,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   // Voice activity detection functions
   const startVoiceDetection = (stream: MediaStream) => {
     try {
+      console.log('🎤 Setting up voice detection...');
+      
       // Create audio context for voice activity detection
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      console.log('🎤 Audio context created, state:', audioContextRef.current.state);
       
       // Resume audio context if suspended (required for some browsers)
       if (audioContextRef.current.state === 'suspended') {
         audioContextRef.current.resume().then(() => {
-          // Audio context resumed
+          console.log('🎤 Audio context resumed');
         });
       }
       
@@ -225,15 +229,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       
       source.connect(analyserRef.current);
       
-      // Debug the audio stream
-      // Stream tracks and audio context initialized
+      console.log('🎤 Audio pipeline connected, starting monitoring...');
       
       // Start monitoring voice activity with high frequency for immediate response
       voiceDetectionIntervalRef.current = setInterval(() => {
         checkVoiceActivity();
       }, 25); // Check every 25ms for maximum responsiveness
       
-      // Voice detection started
+      console.log('🎤 Voice detection started successfully');
     } catch (error) {
       console.error("Failed to start voice detection:", error);
     }
@@ -294,6 +297,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         },
       }),
     );
+    
+    // Debug: Log volume dispatch more frequently to test
+    if (Math.random() < 0.1) { // 10% of volume updates for testing
+      console.log('🎤 VoiceAssistant: Dispatching voice-volume:', { average, max, isActive: isCurrentlyActive });
+    }
 
     // Minimal debug logging only on errors
     if (average === 0 && max === 0 && timeAverage === 128 && consecutiveSilenceCountRef.current % 100 === 0) {
@@ -634,6 +642,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       mediaRecorder.start(250); // Request data every 250ms for stability
       
       // Start voice activity detection
+      console.log('🎤 VoiceAssistant: Starting voice detection with stream');
       startVoiceDetection(stream);
       
       // Store stream globally for CircleAnimation access

@@ -111,9 +111,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     const handleVoiceVolumeChange = (event: CustomEvent) => {
       const { volume } = event.detail;
       setVoiceVolume(volume);
-      // Debug: Log volume changes periodically
-      if (Math.random() < 0.01) { // 1% of volume updates
-        console.log('🎤 CircleAnimation: Voice volume:', volume);
+      // Debug: Log volume changes more frequently to test
+      if (Math.random() < 0.05) { // 5% of volume updates
+        console.log('🎤 CircleAnimation: Voice volume received:', volume);
       }
     };
 
