@@ -51,59 +51,19 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     }
   }, []);
 
-  // SEPARATE timer-based animation loop - NEVER runs during listening
+  // Keep circle static for all non-listening states
   useEffect(() => {
-    // Don't start any timer animation if listening
-    if (isListening) {
-      console.log('🎤 Listening mode: Timer animations disabled');
-      return;
-    }
-
-    const animate = () => {
-      const baseSize = size;
-      let scale = 1.0;
-      let shouldContinue = false;
-
-      if (isProcessing) {
-        const time = Date.now() * 0.003;
-        scale = 1.0 + Math.sin(time) * 0.1;
-        shouldContinue = true;
-      } else if (isPlaying) {
-        const time = Date.now() * 0.002;
-        scale = 1.0 + Math.sin(time) * 0.08;
-        shouldContinue = true;
-      } else if (isAnimating) {
-        const time = Date.now() * 0.004;
-        scale = 1.0 + Math.sin(time) * 0.12;
-        shouldContinue = true;
-      }
-
-      if (shouldContinue) {
-        const newSize = baseSize * scale;
-        setSize(newSize);
-        setOpacity(0.8);
-        animationRef.current = requestAnimationFrame(animate);
-      } else {
-        // Reset to default when no timer animation
-        setSize(size);
-        setOpacity(0.6);
-      }
-    };
-
-    // Start timer animation only for non-listening states
-    if (isProcessing || isPlaying || isAnimating) {
-      console.log('🎤 Starting timer animation for:', { isProcessing, isPlaying, isAnimating });
-      animationRef.current = requestAnimationFrame(animate);
-    } else {
-      // No animation needed, reset to base
-      setSize(size);
-      setOpacity(0.6);
+    // Only allow voice-responsive scaling during listening
+    if (!isListening) {
+      console.log('🎤 Non-listening mode: Circle size locked to base');
+      setSize(size); // Always keep base size
+      setOpacity(0.6); // Standard opacity
     }
 
     return () => {
       cancelAnimationFrame(animationRef.current);
     };
-  }, [isAnimating, isProcessing, isPlaying, size, isListening]); // Include isListening as dependency
+  }, [isAnimating, isProcessing, isPlaying, size, isListening]);
 
   // Handle status change events
   useEffect(() => {
@@ -122,22 +82,24 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
 
     const handleMicStatusChange = (event: CustomEvent) => {
       const status = event.detail?.status;
-      console.log('🎤 Mic status change:', status, 'at', new Date().toLocaleTimeString());
+      console.log('🎤 CircleAnimation: Mic status event received:', status, 'at', new Date().toLocaleTimeString());
+      console.log('🎤 CircleAnimation: Event detail:', event.detail);
+      console.log('🎤 CircleAnimation: Current states before change:', { isListening, isProcessing, isPlaying });
       
       if (status === 'listening') {
-        console.log('🎤 ENTERING LISTENING MODE - Voice control activated');
+        console.log('🎤 CircleAnimation: *** ENTERING LISTENING MODE - Voice control activated ***');
         setIsListening(true);
         setIsProcessing(false);
         setIsPlaying(false);
         // Stop any ongoing timer animation
         cancelAnimationFrame(animationRef.current);
       } else if (status === 'processing') {
-        console.log('🎤 ENTERING PROCESSING MODE');
+        console.log('🎤 CircleAnimation: ENTERING PROCESSING MODE');
         setIsListening(false);
         setIsProcessing(true);
         setIsPlaying(false);
       } else if (status === 'stopped') {
-        console.log('🎤 ENTERING STOPPED MODE');
+        console.log('🎤 CircleAnimation: ENTERING STOPPED MODE');
         setIsListening(false);
         setIsProcessing(false);
         setIsPlaying(false);
@@ -146,6 +108,15 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         setSize(size);
         setOpacity(0.6);
       }
+      
+      // Log the new state after change
+      setTimeout(() => {
+        console.log('🎤 CircleAnimation: New states after change:', { 
+          isListening: stateRef.current.isListening, 
+          isProcessing: stateRef.current.isProcessing, 
+          isPlaying: stateRef.current.isPlaying 
+        });
+      }, 10);
     };
 
     window.addEventListener('audio-status', handleAudioStatusChange as EventListener);
