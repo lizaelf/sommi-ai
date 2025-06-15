@@ -92,18 +92,8 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
           marginBottom: '8px',
           lineHeight: '1.2'
         }}>
-          {wine.name}
+          {wine.year ? `${wine.year} ${wine.name}` : wine.name}
         </h1>
-        {wine.year && (
-          <p style={{
-            ...typography.body1R,
-            color: '#999',
-            textAlign: 'center',
-            margin: 0
-          }}>
-            {wine.year}
-          </p>
-        )}
       </div>
 
       {/* Location */}

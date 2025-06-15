@@ -58,6 +58,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Wine Image Enhancement**: Updated wine image container to 240px height with circle glow background effect using radial gradient
 - **History Section Redesign**: Renamed Heritage to History, changed to H1 typography, removed background/padding/radius, left-aligned text
 - **US Flag Path Fix**: Corrected country flag image path from `/US-flag.png` to `/us-flag.png` to match public directory asset
+- **Wine Title Format**: Updated wine title to display as "year name" format in single line instead of separate year display
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
 - **Code Organization**: Improved maintainability with smaller, focused components following React composition patterns
