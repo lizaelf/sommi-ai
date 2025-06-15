@@ -17,6 +17,7 @@ import SuggestionPills from "@/components/SuggestionPills";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import { ShiningText } from "@/components/ShiningText";
+import { suggestionCache } from "@/utils/suggestionCache";
 import {
   createStreamingClient,
   isStreamingSupported,
@@ -140,76 +141,99 @@ export default function WineDetails() {
 
       await addMessage(tempUserMessage);
 
-      const requestBody = {
-        messages: [{ role: "user", content }],
-        conversationId: currentConversationId,
-        wineData: wine,
-        optimize_for_speed: true,
-        text_only: true,
-      };
+      // Generate suggestion ID for caching
+      const suggestionId = content.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const wineKey = wine?.id ? `wine_${wine.id}` : 'default_wine';
 
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "X-Priority": "high",
-        },
-        body: JSON.stringify(requestBody),
-        credentials: "same-origin",
-      });
+      // Check cache first
+      console.log(`Checking cache for suggestion: ${suggestionId} (wine: ${wineKey})`);
+      const cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
 
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
+      let assistantContent: string;
 
-      const responseData = await response.json();
-
-      if (responseData.message && responseData.message.content) {
-        const assistantMessage: ClientMessage = {
-          id: Date.now() + 1,
-          content: responseData.message.content,
-          role: "assistant",
+      if (cachedResponse) {
+        console.log("Using cached response for suggestion");
+        assistantContent = cachedResponse;
+        // Simulate a brief delay to show it's working
+        await new Promise(resolve => setTimeout(resolve, 300));
+      } else {
+        console.log("No cached response found, making API call");
+        const requestBody = {
+          messages: [{ role: "user", content }],
           conversationId: currentConversationId,
-          createdAt: new Date().toISOString(),
+          wineData: wine,
+          optimize_for_speed: true,
+          text_only: true,
         };
 
-        // Store the latest assistant message text for unmute button functionality
-        (window as any).lastAssistantMessageText = assistantMessage.content;
-        console.log("Stored text-only suggestion assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-Priority": "high",
+          },
+          body: JSON.stringify(requestBody),
+          credentials: "same-origin",
+        });
 
-        await addMessage(assistantMessage);
-
-        // Check if this is an error response that should show a toast
-        if (responseData.error) {
-          console.log("Server returned error for suggestion:", responseData.error);
-          
-          // Show user-friendly error toast for specific error types
-          if (responseData.error === "API_QUOTA_EXCEEDED") {
-            toast({
-              title: "Service Notice",
-              description: "The AI service is currently at capacity. Please try again later.",
-              variant: "destructive",
-            });
-          } else if (responseData.error === "API_TIMEOUT") {
-            toast({
-              title: "Response Delayed",
-              description: "The AI is taking longer than usual. Your suggestion has been received.",
-              variant: "default",
-            });
-          } else if (responseData.error?.startsWith("API_ERROR_")) {
-            toast({
-              title: "Service Issue",
-              description: "Experiencing temporary difficulties. Please try again.",
-              variant: "destructive",
-            });
-          }
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
         }
-      } else {
-        // No valid message content received
-        throw new Error("No response content received from server");
+
+        const responseData = await response.json();
+
+        if (responseData.message && responseData.message.content) {
+          assistantContent = responseData.message.content;
+          
+          // Cache the response for future use
+          await suggestionCache.cacheResponse(wineKey, suggestionId, assistantContent);
+          console.log("Response cached for future use");
+
+          // Check if this is an error response that should show a toast
+          if (responseData.error) {
+            console.log("Server returned error for suggestion:", responseData.error);
+            
+            // Show user-friendly error toast for specific error types
+            if (responseData.error === "API_QUOTA_EXCEEDED") {
+              toast({
+                title: "Service Notice",
+                description: "The AI service is currently at capacity. Please try again later.",
+                variant: "destructive",
+              });
+            } else if (responseData.error === "API_TIMEOUT") {
+              toast({
+                title: "Response Delayed",
+                description: "The AI is taking longer than usual. Your suggestion has been received.",
+                variant: "default",
+              });
+            } else if (responseData.error?.startsWith("API_ERROR_")) {
+              toast({
+                title: "Service Issue",
+                description: "Experiencing temporary difficulties. Please try again.",
+                variant: "destructive",
+              });
+            }
+          }
+        } else {
+          throw new Error("No response content received from server");
+        }
       }
 
+      // Create and add assistant message
+      const assistantMessage: ClientMessage = {
+        id: Date.now() + 1,
+        content: assistantContent,
+        role: "assistant",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Store the latest assistant message text for unmute button functionality
+      (window as any).lastAssistantMessageText = assistantMessage.content;
+      console.log("Stored text-only suggestion assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
+
+      await addMessage(assistantMessage);
       refetchMessages();
 
     } catch (error) {
