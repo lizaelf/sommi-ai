@@ -43,16 +43,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 15, 2025)
 
-### Wine-Specific Suggestion Pills Implementation (June 15, 2025 - Latest)
-- **Unique Per-Wine Tracking**: Implemented database-backed suggestion pill system that tracks usage per wine individually
-- **Dynamic Pill Generation**: Created JSON-based configuration with 10 different wine-focused suggestions
-- **Wine Key System**: Uses `wine_name + wine_year` as unique identifier for tracking pill usage
-- **Database Schema**: Added `used_suggestion_pills` table with PostgreSQL backend storage
-- **Real-time Updates**: Pills disappear immediately after use for that specific wine while remaining available for other wines
-- **API Integration**: Built RESTful endpoints for fetching available pills and marking them as used
-- **UI Enhancement**: Replaced hardcoded suggestion buttons with dynamic SuggestionPills component
-- **Clean Text Display**: Removed all emoji text from suggestion labels for cleaner presentation
-- **Error Handling**: Comprehensive error management with fallback states and loading indicators
+### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **TTS Speed Optimization**: Reduced welcome message and all TTS speed by 40% (from 1.1 to 0.79) for better comprehension
+- **Delete Account Dialog**: Replaced chat history sheet with proper confirmation dialog featuring "Don't delete" and dark red "Delete" buttons
+- **Full-Width Chat Mode**: Chat section now fills entire screen width when in empty state (no messages) for better visual balance
+- **Wine-Specific Suggestion Pills**: Implemented database-backed system tracking pill usage per wine individually with PostgreSQL storage
+- **Dynamic Pill Generation**: Created JSON configuration with 10 wine-focused suggestions that disappear permanently per wine after use
+- **Clean Text Display**: Removed all emoji text from suggestion labels and interaction buttons for minimal presentation
 
 ### Voice System & UI Improvements (June 14, 2025)
 - **Permanent Close Behavior**: Close button now prevents all future interactions until page refresh

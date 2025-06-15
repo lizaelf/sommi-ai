@@ -399,7 +399,7 @@ class VoiceConfig {
   }
   
   static get SPEED() { 
-    return parseFloat(process.env.TTS_SPEED || "1.1");
+    return parseFloat(process.env.TTS_SPEED || "0.79");
   }
   
   // Prevent instantiation - static class only
