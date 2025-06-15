@@ -55,7 +55,7 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
       // Update local state to track used pills
       setUsedPills(prev => new Set(Array.from(prev).concat(pill.id)));
 
-      // Trigger the suggestion with the prompt (always text-only for pills next to input)
+      // Trigger the suggestion with the prompt (text-only response)
       onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
 
       // Refetch to get updated available pills

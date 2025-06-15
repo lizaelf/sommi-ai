@@ -4,7 +4,6 @@ import CircleAnimation from './CircleAnimation';
 import { ShiningText } from './ShiningText';
 import Button from '@/components/ui/Button';
 import SuggestionPills from './SuggestionPills';
-import SuggestionButtons from './SuggestionButtons';
 import { suggestionCache } from '@/utils/suggestionCache';
 
 interface VoiceBottomSheetProps {
@@ -301,9 +300,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   paddingLeft: '16px',
                   paddingRight: '16px'
                 }}>
-                  {/* Wine-specific suggestion buttons with text+voice responses */}
+                  {/* Wine-specific suggestion pills with text+voice responses */}
                   <div className="scrollbar-hide overflow-x-auto">
-                    <SuggestionButtons
+                    <SuggestionPills
                       wineKey={wineKey}
                       onSuggestionClick={async (prompt, pillId, options) => {
                         console.log("Voice bottom sheet suggestion clicked:", prompt);

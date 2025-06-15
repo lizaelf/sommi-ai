@@ -44,11 +44,10 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Voice Assistant & Suggestion System Completion (June 15, 2025 - Latest)
-- **Component Separation**: Created dedicated SuggestionButtons for AI assistant (voice responses) and SuggestionPills for main chat (text-only)
-- **Cycling Suggestion System**: Both pills and buttons cycle continuously - automatically reset when all suggestions used
+- **Cycling Suggestion Pills**: Modified suggestion system to always show suggestions and automatically reset when all have been used
 - **Backend API Enhancement**: Added suggestion cycling logic that returns all suggestions when none remain unused
-- **Database Reset Functionality**: Implemented resetUsedSuggestionPills method with DELETE endpoint for seamless cycling
-- **Unified User Experience**: Voice assistant uses suggestion buttons with voice responses, main chat uses pills with text-only
+- **Database Reset Functionality**: Implemented resetUsedSuggestionPills method with DELETE endpoint for cycling
+- **Seamless User Experience**: Suggestions now cycle continuously without "All suggestions explored" dead-end state
 - **Instant Voice Response Fix**: Completed comprehensive voice assistant fix with immediate cached TTS playback
 - **Function Signature Resolution**: Fixed all component interface mismatches preventing instant voice responses
 - **State Management Enhancement**: Added proper event handling for cached response completion
