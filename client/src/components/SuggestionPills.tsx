@@ -11,7 +11,7 @@ interface SuggestionPill {
 
 interface SuggestionPillsProps {
   wineKey: string;
-  onSuggestionClick: (prompt: string, pillId: string) => void;
+  onSuggestionClick: (prompt: string, pillId: string, options?: { textOnly?: boolean }) => void;
   isDisabled?: boolean;
 }
 
@@ -55,8 +55,8 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
       // Update local state to hide the pill immediately
       setUsedPills(prev => new Set(Array.from(prev).concat(pill.id)));
 
-      // Trigger the suggestion with the prompt
-      onSuggestionClick(pill.prompt, pill.id);
+      // Trigger the suggestion with the prompt (text-only response)
+      onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
 
       // Refetch to get updated available pills
       refetch();
