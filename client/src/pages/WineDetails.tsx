@@ -173,6 +173,10 @@ export default function WineDetails() {
           createdAt: new Date().toISOString(),
         };
 
+        // Store the latest assistant message text for unmute button functionality
+        (window as any).lastAssistantMessageText = assistantMessage.content;
+        console.log("Stored text-only suggestion assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
+
         await addMessage(assistantMessage);
       }
 
@@ -325,6 +329,10 @@ export default function WineDetails() {
           conversationId: currentConversationId,
           createdAt: new Date().toISOString(),
         };
+
+        // Store the latest assistant message text for unmute button functionality
+        (window as any).lastAssistantMessageText = assistantMessage.content;
+        console.log("Stored regular chat assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
 
         await addMessage(assistantMessage);
       }
