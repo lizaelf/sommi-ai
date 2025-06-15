@@ -823,7 +823,7 @@ export default function WineDetails() {
                                       <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                                       <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce"></div>
                                     </div>
-                                    <span style={typography.body2R} className="text-zinc-400">
+                                    <span style={typography.body1R} className="text-zinc-400">
                                       Thinking...
                                     </span>
                                   </div>
@@ -839,10 +839,10 @@ export default function WineDetails() {
                         <div className="mb-4">
                           <SuggestionPills
                             onSuggestionClick={handleSuggestionClick}
-                            onSuggestionWithVoiceClick={handleSuggestionWithVoiceClick}
                             isDisabled={isTyping}
-                            isProcessing={isTyping}
                             wineKey={wine ? `wine_${wine.id}` : 'default_wine'}
+                            context="chat"
+                            preferredResponseType="text"
                           />
                         </div>
                       )}
