@@ -21,7 +21,7 @@ interface VoiceBottomSheetProps {
   isLoadingAudio?: boolean;
   isVoiceActive?: boolean;
   wineKey?: string;
-  onSuggestionClick?: (suggestion: string) => void;
+  onSuggestionClick?: (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
   onListenResponse?: () => void;
   onUnmute?: () => void;
 }
@@ -435,9 +435,22 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                           }
                         }
                         
-                        // Still call the original handler to add messages to chat
-                        if (onSuggestionClick) {
-                          onSuggestionClick(prompt);
+                        // For voice bottom sheet with cached responses, use a special handler that bypasses normal flow
+                        if (cachedResponse) {
+                          console.log("Using cached response - bypassing thinking/unmute flow");
+                          
+                          // Store for unmute functionality
+                          (window as any).lastAssistantMessageText = cachedResponse;
+                          
+                          // Call special handler for instant cached responses that adds messages without delays
+                          if (onSuggestionClick) {
+                            onSuggestionClick(prompt, '', { instantResponse: cachedResponse });
+                          }
+                        } else {
+                          // No cached response, use normal flow
+                          if (onSuggestionClick) {
+                            onSuggestionClick(prompt);
+                          }
                         }
                       }}
                       isDisabled={isListening || isResponding || isThinking}

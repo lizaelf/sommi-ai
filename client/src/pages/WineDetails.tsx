@@ -250,8 +250,43 @@ export default function WineDetails() {
   };
 
   // Text + Voice suggestion handler with caching and instant TTS
-  const handleSuggestionWithVoiceClick = async (content: string) => {
+  const handleSuggestionWithVoiceClick = async (content: string, pillId: string = '', options?: { instantResponse?: string }) => {
     if (content.trim() === "" || !currentConversationId) return;
+
+    // Handle instant cached responses without showing thinking mode
+    if (options?.instantResponse) {
+      console.log("Using instant cached response - bypassing thinking mode");
+      
+      try {
+        // Add user message
+        const tempUserMessage: ClientMessage = {
+          id: Date.now(),
+          content,
+          role: "user",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+        await addMessage(tempUserMessage);
+
+        // Add assistant message with cached response
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1,
+          content: options.instantResponse,
+          role: "assistant",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+        
+        await addMessage(assistantMessage);
+        refetchMessages();
+        
+        console.log("Instant cached response flow completed - no thinking/unmute required");
+        return;
+      } catch (error) {
+        console.error("Error in instant response flow:", error);
+        // Fall back to normal flow if instant fails
+      }
+    }
 
     setHideSuggestions(true);
     setIsTyping(true);

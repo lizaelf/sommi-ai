@@ -11,7 +11,7 @@ interface SuggestionPill {
 
 interface SuggestionPillsProps {
   wineKey: string;
-  onSuggestionClick: (prompt: string, pillId: string, options?: { textOnly?: boolean }) => void;
+  onSuggestionClick: (prompt: string, pillId: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
   isDisabled?: boolean;
 }
 
