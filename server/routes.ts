@@ -558,6 +558,10 @@ Format: Return only the description text, no quotes or additional formatting.`;
       // Get messages from request
       const { messages, conversationId, wineData } = validatedData;
       
+      // Check for text-only request flags
+      const isTextOnly = req.body.text_only === true || req.body.disable_audio === true;
+      console.log("Chat request flags:", { text_only: req.body.text_only, disable_audio: req.body.disable_audio, isTextOnly });
+      
       // Handle conversation existence - create if needed
       let actualConversationId = conversationId;
       if (conversationId) {
@@ -665,19 +669,25 @@ Format: Return only the description text, no quotes or additional formatting.`;
                 const firstTokenLatency = performance.now() - pipelineStartTime;
                 console.log(`🎯 FIRST TOKEN RECEIVED: ${firstTokenLatency.toFixed(2)}ms total latency`);
                 
-                // Start progressive TTS immediately with first token
-                console.log("🔊 Starting progressive TTS with first token");
-                await ttsProcessor.processTokens(delta);
+                // Only start TTS for non-text-only requests
+                if (!isTextOnly) {
+                  console.log("🔊 Starting progressive TTS with first token");
+                  await ttsProcessor.processTokens(delta);
+                } else {
+                  console.log("📝 Text-only request - skipping TTS processing");
+                }
                 
                 res.write(`data: ${JSON.stringify({ 
                   type: 'first_token', 
                   content: delta,
-                  start_tts: true,
+                  start_tts: !isTextOnly,
                   latency: firstTokenLatency
                 })}\n\n`);
               } else {
-                // Continue progressive TTS processing
-                await ttsProcessor.processTokens(delta);
+                // Continue progressive TTS processing only for non-text-only requests
+                if (!isTextOnly) {
+                  await ttsProcessor.processTokens(delta);
+                }
               }
               
               // Stream each token for real-time display
@@ -693,11 +703,16 @@ Format: Return only the description text, no quotes or additional formatting.`;
           const completeResponseLatency = performance.now() - pipelineStartTime;
           console.log(`✅ Complete response received: ${completeResponseLatency.toFixed(2)}ms, ${tokenCount} tokens`);
           
-          // Get all processed TTS audio buffers
-          const audioBuffers = await ttsProcessor.getAllProcessedAudio();
-          console.log(`🎵 TTS processing complete: ${audioBuffers.length} audio chunks,`, {
-            total_size: audioBuffers.reduce((sum: number, buf: Buffer) => sum + buf.length, 0)
-          });
+          // Get all processed TTS audio buffers (only for non-text-only requests)
+          let audioBuffers: Buffer[] = [];
+          if (!isTextOnly) {
+            audioBuffers = await ttsProcessor.getAllProcessedAudio();
+            console.log(`🎵 TTS processing complete: ${audioBuffers.length} audio chunks,`, {
+              total_size: audioBuffers.reduce((sum: number, buf: Buffer) => sum + buf.length, 0)
+            });
+          } else {
+            console.log(`📝 Text-only request - no audio buffers generated`);
+          }
           
           // Save messages to storage
           if (actualConversationId) {
