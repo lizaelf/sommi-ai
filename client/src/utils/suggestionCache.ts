@@ -39,12 +39,54 @@ class SuggestionCacheManager {
         });
 
         console.log(`Loaded ${this.cache.size} cached suggestion responses`);
+      } else {
+        // Initialize with default cached responses for instant suggestions
+        await this.initializeDefaultCache();
       }
     } catch (error) {
       console.error('Error loading suggestion cache:', error);
     }
 
     this.initialized = true;
+  }
+
+  /**
+   * Initialize default cached responses for common suggestions
+   */
+  private async initializeDefaultCache(): Promise<void> {
+    const defaultResponses = [
+      {
+        suggestionId: 'tell_me_about_this_wine',
+        response: 'The Ridge Lytton Springs Dry Creek Zinfandel (2021) is an exceptional wine that showcases the best of Sonoma County winemaking. This bold red wine features rich flavors of blackberry, spice, and earth, with a well-balanced structure that makes it perfect for pairing with hearty dishes or enjoying on its own.'
+      },
+      {
+        suggestionId: 'what_s_the_story_behind_this_wine',
+        response: 'Ridge Vineyards has been crafting exceptional wines since 1962, and the Lytton Springs vineyard represents a cornerstone of their legacy. Located in Dry Creek Valley, this vineyard benefits from unique terroir that produces wines of exceptional character and complexity, embodying the true spirit of California winemaking.'
+      },
+      {
+        suggestionId: 'what_food_pairs_well_with_this_wine',
+        response: 'This robust Zinfandel pairs beautifully with grilled meats, BBQ ribs, hearty pasta dishes with rich tomato sauces, and aged cheeses. The wine\'s bold flavors and balanced tannins complement spicy cuisines and dishes with complex flavor profiles.'
+      }
+    ];
+
+    const now = Date.now();
+    const wineKey = 'wine_1'; // Default wine key
+
+    for (const defaultResponse of defaultResponses) {
+      const cachedItem: CachedSuggestionResponse = {
+        wineKey,
+        suggestionId: defaultResponse.suggestionId,
+        response: defaultResponse.response,
+        timestamp: now,
+        expiresAt: now + CACHE_DURATION,
+      };
+
+      const cacheKey = this.getCacheKey(wineKey, defaultResponse.suggestionId);
+      this.cache.set(cacheKey, cachedItem);
+    }
+
+    this.saveCache();
+    console.log(`Initialized ${defaultResponses.length} default cached responses`);
   }
 
   /**
