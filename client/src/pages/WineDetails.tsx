@@ -632,33 +632,6 @@ export default function WineDetails() {
     }
   }, [messages.length]);
 
-  // Load wine data when ID changes - optimized for speed
-  useEffect(() => {
-    if (!id) {
-      setLoadingState("error");
-      return;
-    }
-
-    try {
-      // Synchronous data loading for faster response
-      const wineData = DataSyncManager.getWineById(parseInt(id));
-      
-      if (!wineData) {
-        setLoadingState("error");
-        return;
-      }
-
-      setWine(wineData);
-      setLoadingState("loaded");
-      
-      // Start pre-caching suggestion responses in background
-      preCacheSuggestionResponses(wineData);
-    } catch (error) {
-      console.error("Error loading wine data:", error);
-      setLoadingState("error");
-    }
-  }, [id, preCacheSuggestionResponses]);
-
   // Pre-cache responses for all suggestions with error handling
   const preCacheSuggestionResponses = useCallback(async (wineData: any) => {
     if (!wineData?.id) return;
@@ -669,7 +642,7 @@ export default function WineDetails() {
       // Get all available suggestions from the standard wine suggestions
       const allSuggestions = [
         "What makes this wine special?",
-        "Tell me about the vineyard",
+        "Tell me about the vineyard", 
         "What food pairs well with this?",
         "How should I serve this wine?",
         "What's the tasting profile?",
@@ -702,6 +675,33 @@ export default function WineDetails() {
       console.warn('Error starting pre-cache but continuing:', error);
     }
   }, []);
+
+  // Load wine data when ID changes - optimized for speed
+  useEffect(() => {
+    if (!id) {
+      setLoadingState("error");
+      return;
+    }
+
+    try {
+      // Synchronous data loading for faster response
+      const wineData = DataSyncManager.getWineById(parseInt(id));
+      
+      if (!wineData) {
+        setLoadingState("error");
+        return;
+      }
+
+      setWine(wineData);
+      setLoadingState("loaded");
+      
+      // Start pre-caching suggestion responses in background
+      preCacheSuggestionResponses(wineData);
+    } catch (error) {
+      console.error("Error loading wine data:", error);
+      setLoadingState("error");
+    }
+  }, [id, preCacheSuggestionResponses]);
 
   // Optimized scrolling initialization
   useEffect(() => {
