@@ -1477,7 +1477,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     // Ask button clicked
     
     // Check if manually closed - don't reopen if so
-    if (isManuallyClosedRef) {
+    if (isManuallyClosedRef.current) {
       console.log("Voice assistant manually closed, ignoring ask button");
       return;
     }
