@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowLeft, MoreHorizontal, Trash2, X } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -657,10 +657,10 @@ export default function WineDetails() {
       console.error("Error loading wine data:", error);
       setLoadingState("error");
     }
-  }, [id]);
+  }, [id, preCacheSuggestionResponses]);
 
-  // Pre-cache responses for all suggestions
-  const preCacheSuggestionResponses = async (wineData: any) => {
+  // Pre-cache responses for all suggestions with error handling
+  const preCacheSuggestionResponses = useCallback(async (wineData: any) => {
     if (!wineData?.id) return;
 
     try {
@@ -688,20 +688,20 @@ export default function WineDetails() {
         text: suggestion
       }));
 
-      // Start pre-caching in background (don't await to avoid blocking UI)
-      suggestionCache.preCacheSuggestions(wineKey, suggestionsToCache)
-        .then(() => {
-          console.log('Pre-caching completed successfully');
-          const stats = suggestionCache.getCacheStats();
-          console.log(`Cache now contains ${stats.totalEntries} entries (${stats.cacheSize})`);
-        })
-        .catch(error => {
-          console.error('Pre-caching failed:', error);
-        });
+      // Start pre-caching in background with proper error boundaries
+      try {
+        await suggestionCache.preCacheSuggestions(wineKey, suggestionsToCache);
+        console.log('Pre-caching completed successfully');
+        const stats = suggestionCache.getCacheStats();
+        console.log(`Cache now contains ${stats.totalEntries} entries (${stats.cacheSize})`);
+      } catch (cacheError) {
+        console.warn('Pre-caching failed but not blocking UI:', cacheError);
+        // Continue without caching - suggestions will work without pre-cache
+      }
     } catch (error) {
-      console.error('Error starting pre-cache:', error);
+      console.warn('Error starting pre-cache but continuing:', error);
     }
-  };
+  }, []);
 
   // Optimized scrolling initialization
   useEffect(() => {
