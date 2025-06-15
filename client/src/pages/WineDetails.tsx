@@ -973,54 +973,8 @@ export default function WineDetails() {
           >
             Chat
           </h1>
-          <div
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.08)",
-              borderRadius: "16px",
-              padding: "20px",
-              minHeight: "400px",
-            }}
-          >
-            <EnhancedChatInterface
-              showBuyButton={false}
-              selectedWine={
-                wine
-                  ? {
-                      id: wine.id,
-                      name: wine.name,
-                      image: wine.image,
-                      bottles: wine.bottles,
-                      ratings: wine.ratings,
-                    }
-                  : null
-              }
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Enhanced Chat Interface - Full Screen */}
-      <div
-        style={{
-          width: "100vw",
-          minHeight: "100vh",
-          backgroundColor: "#000000",
-          marginLeft: "calc(-50vw + 50%)",
-          marginRight: "calc(-50vw + 50%)",
-          paddingTop: "40px",
-          paddingBottom: "40px",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "100%",
-            margin: "0 auto",
-            padding: "0 20px",
-          }}
-        >
           <EnhancedChatInterface
-            showBuyButton={true}
+            showBuyButton={false}
             selectedWine={
               wine
                 ? {
