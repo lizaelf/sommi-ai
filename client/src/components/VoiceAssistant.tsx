@@ -1043,36 +1043,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const handleSuggestionClick = (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
     console.log("VoiceAssistant: Suggestion clicked:", suggestion, "with options:", options);
     
-    // If this is a text-only request, don't handle it in VoiceAssistant - pass through directly
+    // If this is a text-only request, don't handle it in VoiceAssistant
     if (options?.textOnly && !options?.instantResponse) {
-      console.log("VoiceAssistant: Text-only suggestion detected - passing through without voice states");
+      console.log("VoiceAssistant: Text-only suggestion - passing through without voice states");
       onSendMessage(suggestion, pillId, options);
-      return; // Exit early - no voice processing needed
+      return;
     }
     
-    // Handle instant cached responses - bypass normal flow entirely
+    // CRITICAL: If there's an instant response, DON'T show voice assistant states
+    // The SuggestionPills component already handled the audio playback
     if (options?.instantResponse) {
-      console.log("VoiceAssistant: Instant cached response detected - setting playback states");
-      
-      // Set states for immediate voice playback
-      setIsResponding(true);
-      setShowUnmuteButton(false);
-      setShowAskButton(false);
-      setIsThinking(false);
-      
-      // Store the response text for potential unmute functionality
-      (window as any).lastAssistantMessageText = options.instantResponse;
-      
-      console.log("VoiceAssistant: Ready for instant response playback");
-      // Keep bottom sheet open for cached responses - don't close it
-      return; // Exit early - VoiceBottomSheet handles everything else
+      console.log("🚀 VoiceAssistant: Cached response detected - NO voice states needed!");
+      // Don't set any voice assistant states - audio is already playing
+      // Don't call onSendMessage - messages already added by SuggestionPills
+      return;
     }
     
-    // For non-cached suggestions, use normal flow and close bottom sheet
+    // Only for non-cached suggestions, use normal flow
     console.log("VoiceAssistant: No cached response, using normal API flow");
     onSendMessage(suggestion, pillId, options);
     setShowBottomSheet(false);
-  };
+  };;
 
   const handleCloseBottomSheet = () => {
     console.log("VoiceAssistant: Manual close triggered - setting flag to prevent reopening");

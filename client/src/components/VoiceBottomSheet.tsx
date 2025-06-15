@@ -304,93 +304,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   <div className="scrollbar-hide overflow-x-auto">
                     <SuggestionPills
                       wineKey={wineKey}
-                      onSuggestionClick={async (prompt, pillId, options) => {
-                        console.log("Voice bottom sheet suggestion clicked:", prompt);
+                      onSuggestionClick={(prompt, pillId, options) => {
+                        console.log("VoiceBottomSheet: Suggestion clicked:", prompt);
                         
-                        // Check cache immediately
-                        const suggestionId = prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-                        const currentWineKey = wineKey || 'default_wine';
-                        const cachedResponse = await suggestionCache.getCachedResponse(currentWineKey, suggestionId);
-                        
-                        if (cachedResponse) {
-                          console.log("Using cached response - playing immediately");
-                          
-                          // 1. Add messages to chat immediately
-                          const userMessage = {
-                            role: "user" as const,
-                            content: prompt,
-                            id: Date.now(),
-                            timestamp: new Date().toISOString(),
-                            conversationId: 0
-                          };
-                          
-                          window.dispatchEvent(new CustomEvent('immediateResponse', {
-                            detail: { message: userMessage, audio: null }
-                          }));
-                          
-                          setTimeout(() => {
-                            const assistantMessage = {
-                              role: "assistant" as const,
-                              content: cachedResponse,
-                              id: Date.now() + 1,
-                              timestamp: new Date().toISOString(),
-                              conversationId: 0
-                            };
-                            
-                            window.dispatchEvent(new CustomEvent('immediateResponse', {
-                              detail: { message: assistantMessage, audio: null }
-                            }));
-                          }, 100);
-                          
-                          // 2. Play TTS immediately
-                          if (typeof speechSynthesis !== 'undefined') {
-                            const utterance = new SpeechSynthesisUtterance(cachedResponse);
-                            
-                            // Use consistent male voice
-                            const voices = speechSynthesis.getVoices();
-                            const maleVoice = voices.find(voice => 
-                              voice.name.includes('Google UK English Male') ||
-                              voice.name.includes('Google US English Male') ||
-                              (voice.name.includes('Male') && voice.lang.startsWith('en'))
-                            ) || voices[0];
-                            
-                            if (maleVoice) utterance.voice = maleVoice;
-                            
-                            utterance.rate = 1.0;
-                            utterance.pitch = 1.0;
-                            utterance.volume = 1.0;
-                            
-                            speechSynthesis.cancel(); // Clear any existing speech
-                            
-                            utterance.onstart = () => {
-                              console.log("Cached TTS started");
-                            };
-                            
-                            utterance.onend = () => {
-                              console.log("Cached TTS ended");
-                              window.dispatchEvent(new CustomEvent('cachedResponseEnded'));
-                            };
-                            
-                            utterance.onerror = (error) => {
-                              console.error("Cached TTS error:", error);
-                              window.dispatchEvent(new CustomEvent('cachedResponseEnded'));
-                            };
-                            
-                            speechSynthesis.speak(utterance);
-                          }
-                          
-                          // 3. Notify VoiceAssistant about instant response
-                          if (onSuggestionClick) {
-                            onSuggestionClick(prompt, '', { instantResponse: cachedResponse });
-                          }
-                          
-                          return; // Don't proceed to normal flow
-                        }
-                        
-                        // No cache - use normal flow
-                        console.log("No cached response - using normal flow");
+                        // Let SuggestionPills handle everything for cached responses
+                        // Just pass through to the parent onSuggestionClick
                         if (onSuggestionClick) {
-                          onSuggestionClick(prompt);
+                          onSuggestionClick(prompt, pillId, options);
                         }
                       }}
                       isDisabled={isListening || isResponding || isThinking}
