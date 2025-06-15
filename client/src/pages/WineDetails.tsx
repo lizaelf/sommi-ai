@@ -219,6 +219,7 @@ export default function WineDetails() {
         className="w-full flex flex-col items-center justify-center py-8 relative"
         style={{
           minHeight: "100vh", // Make the div full screen height
+          marginBottom: "24px",
         }}
       >
         {/* Wine bottle image - THIS CONTAINS THE BLURRED CIRCLE/GLOW EFFECT */}
