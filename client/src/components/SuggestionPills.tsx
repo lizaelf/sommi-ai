@@ -95,109 +95,129 @@ export default function SuggestionPills({
       let instantResponse = null;
       const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
       
-      // Check cache for responses
       instantResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
-      console.log("💾 Using cached response:", !!instantResponse);
+      console.log("💾 Cached response found:", !!instantResponse, "Context:", context);
 
-      // FOR VOICE CONTEXT WITH INSTANT RESPONSE: Handle completely independently
-      if (context === "voice-assistant" && instantResponse) {
-        console.log("🚀 VOICE + CACHED: Playing immediately without voice assistant");
+      // CHAT CONTEXT: Handle text-only, no audio
+      if (context === "chat") {
+        console.log("💬 CHAT CONTEXT: Processing suggestion for chat interface");
         
-        // Add messages to chat using the working event system
-        const userMessage = {
-          id: Date.now(),
-          content: pill.prompt,
-          role: "user" as const,
-          conversationId: conversationId || 0,
-          createdAt: new Date().toISOString(),
-        };
-        
-        const assistantMessage = {
-          id: Date.now() + 1,
-          content: instantResponse,
-          role: "assistant" as const,
-          conversationId: conversationId || 0,
-          createdAt: new Date().toISOString(),
-        };
-        
-        // Use the working addChatMessage event
-        window.dispatchEvent(new CustomEvent('addChatMessage', { 
-          detail: { userMessage, assistantMessage } 
-        }));
-        
-        // Simple browser TTS (most reliable)
-        const utterance = new SpeechSynthesisUtterance(instantResponse);
-        
-        // Use consistent male voice
-        const voices = speechSynthesis.getVoices();
-        const maleVoice = voices.find(voice => 
-          voice.name.includes('Google UK English Male') ||
-          voice.name.includes('Google US English Male') ||
-          (voice.name.includes('Male') && voice.lang.startsWith('en'))
-        ) || voices[0];
-        
-        if (maleVoice) utterance.voice = maleVoice;
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-        
-        utterance.onstart = () => {
-          console.log("✅ VOICE + CACHED: Audio started");
-        };
-        
-        utterance.onend = () => {
-          console.log("✅ VOICE + CACHED: Audio ended - no voice states needed");
-        };
-        
-        speechSynthesis.cancel(); // Clear any existing speech
-        speechSynthesis.speak(utterance);
-        
-        console.log("✅ VOICE + CACHED: Complete bypass - no voice assistant involved");
-        
-        // Mark as used in background
-        try {
-          await fetch('/api/suggestion-pills/used', {
-            method: 'POST',
-            body: JSON.stringify({
-              wineKey,
-              suggestionId: pill.id,
-              userId: null,
-            }),
-            headers: { 'Content-Type': 'application/json' },
+        if (instantResponse) {
+          console.log("💬 CHAT: Using cached response - adding to chat WITHOUT audio");
+          
+          // Add messages to chat using the event system
+          const userMessage = {
+            id: Date.now(),
+            content: pill.prompt,
+            role: "user" as const,
+            conversationId: conversationId || 0,
+            createdAt: new Date().toISOString(),
+          };
+          
+          const assistantMessage = {
+            id: Date.now() + 1,
+            content: instantResponse,
+            role: "assistant" as const,
+            conversationId: conversationId || 0,
+            createdAt: new Date().toISOString(),
+          };
+          
+          // Use chat event system - NO AUDIO
+          window.dispatchEvent(new CustomEvent('addChatMessage', { 
+            detail: { userMessage, assistantMessage } 
+          }));
+          
+          console.log("💬 CHAT: Messages added to chat - NO AUDIO PLAYED");
+        } else {
+          console.log("💬 CHAT: No cache - using normal API flow");
+          // No cached response - let chat handle API call
+          onSuggestionClick(pill.prompt, pill.id, {
+            textOnly: true,
+            conversationId,
           });
-          refetch();
-        } catch (error) {
-          console.error('Error marking pill as used:', error);
         }
         
-        return; // EXIT EARLY - Don't call parent callback!
+        // Mark as used in background for chat context
+        markPillAsUsed(pill.id);
+        return; // EXIT EARLY - Chat context handled
       }
 
-      // For chat context or non-cached responses, use normal flow
-      const options = {
+      // VOICE CONTEXT: Handle with audio
+      if (context === "voice-assistant") {
+        console.log("🎤 VOICE CONTEXT: Processing suggestion for voice assistant");
+        
+        if (instantResponse) {
+          console.log("🎤 VOICE: Using cached response - playing audio");
+          
+          // Add messages to chat
+          const userMessage = {
+            id: Date.now(),
+            content: pill.prompt,
+            role: "user" as const,
+            conversationId: conversationId || 0,
+            createdAt: new Date().toISOString(),
+          };
+          
+          const assistantMessage = {
+            id: Date.now() + 1,
+            content: instantResponse,
+            role: "assistant" as const,
+            conversationId: conversationId || 0,
+            createdAt: new Date().toISOString(),
+          };
+          
+          // Use chat event system
+          window.dispatchEvent(new CustomEvent('addChatMessage', { 
+            detail: { userMessage, assistantMessage } 
+          }));
+          
+          // Play audio for voice context
+          const utterance = new SpeechSynthesisUtterance(instantResponse);
+          
+          // Use consistent male voice
+          const voices = speechSynthesis.getVoices();
+          const maleVoice = voices.find(voice => 
+            voice.name.includes('Google UK English Male') ||
+            voice.name.includes('Google US English Male') ||
+            (voice.name.includes('Male') && voice.lang.startsWith('en'))
+          ) || voices[0];
+          
+          if (maleVoice) utterance.voice = maleVoice;
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+          
+          utterance.onstart = () => {
+            console.log("🎤 VOICE: Audio started playing");
+          };
+          
+          utterance.onend = () => {
+            console.log("🎤 VOICE: Audio finished playing");
+          };
+          
+          speechSynthesis.cancel(); // Clear any existing speech
+          speechSynthesis.speak(utterance);
+          
+          console.log("🎤 VOICE: Audio playback initiated");
+        } else {
+          console.log("🎤 VOICE: No cache - using normal voice assistant flow");
+          // No cached response - let voice assistant handle API call
+          onSuggestionClick(pill.prompt, pill.id, {
+            conversationId,
+          });
+        }
+        
+        // Mark as used in background for voice context
+        markPillAsUsed(pill.id);
+        return; // EXIT EARLY - Voice context handled
+      }
+
+      // Fallback for unknown context
+      console.warn("⚠️ Unknown context:", context, "- using default behavior");
+      onSuggestionClick(pill.prompt, pill.id, {
         textOnly: context === "chat",
-        instantResponse: context === "chat" ? (instantResponse || undefined) : undefined,
         conversationId,
-      };
-
-      // Only call parent for non-cached voice or any chat context
-      onSuggestionClick(pill.prompt, pill.id, options);
-
-      // Mark as used in background
-      try {
-        await fetch('/api/suggestion-pills/used', {
-          method: 'POST',
-          body: JSON.stringify({
-            wineKey,
-            suggestionId: pill.id,
-            userId: null,
-          }),
-          headers: { 'Content-Type': 'application/json' },
-        });
-        refetch();
-      } catch (error) {
-        console.error('Error marking pill as used:', error);
-      }
+      });
 
     } catch (error) {
       // Rollback optimistic update on error
@@ -207,6 +227,24 @@ export default function SuggestionPills({
         return newSet;
       });
       console.error('Error handling pill click:', error);
+    }
+  };
+
+  // Helper function to mark pill as used
+  const markPillAsUsed = async (pillId: string) => {
+    try {
+      await fetch('/api/suggestion-pills/used', {
+        method: 'POST',
+        body: JSON.stringify({
+          wineKey,
+          suggestionId: pillId,
+          userId: null,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error marking pill as used:', error);
     }
   };
 

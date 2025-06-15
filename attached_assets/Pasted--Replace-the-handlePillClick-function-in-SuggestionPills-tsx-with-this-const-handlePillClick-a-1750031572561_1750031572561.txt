@@ -1,0 +1,169 @@
+// Replace the handlePillClick function in SuggestionPills.tsx with this:
+
+const handlePillClick = async (pill: SuggestionPill) => {
+  if (isDisabled) return;
+
+  // Optimistically mark as used
+  setUsedPills(prev => {
+    const newSet = new Set(prev);
+    newSet.add(pill.id);
+    return newSet;
+  });
+
+  try {
+    // Check for instant response (cached)
+    let instantResponse = null;
+    const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    
+    instantResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+    console.log("💾 Cached response found:", !!instantResponse, "Context:", context);
+
+    // CHAT CONTEXT: Handle text-only, no audio
+    if (context === "chat") {
+      console.log("💬 CHAT CONTEXT: Processing suggestion for chat interface");
+      
+      if (instantResponse) {
+        console.log("💬 CHAT: Using cached response - adding to chat WITHOUT audio");
+        
+        // Add messages to chat using the event system
+        const userMessage = {
+          id: Date.now(),
+          content: pill.prompt,
+          role: "user" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        const assistantMessage = {
+          id: Date.now() + 1,
+          content: instantResponse,
+          role: "assistant" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Use chat event system - NO AUDIO
+        window.dispatchEvent(new CustomEvent('addChatMessage', { 
+          detail: { userMessage, assistantMessage } 
+        }));
+        
+        console.log("💬 CHAT: Messages added to chat - NO AUDIO PLAYED");
+      } else {
+        console.log("💬 CHAT: No cache - using normal API flow");
+        // No cached response - let chat handle API call
+        onSuggestionClick(pill.prompt, pill.id, {
+          textOnly: true,
+          conversationId,
+        });
+      }
+      
+      // Mark as used in background for chat context
+      markPillAsUsed(pill.id);
+      return; // EXIT EARLY - Chat context handled
+    }
+
+    // VOICE CONTEXT: Handle with audio
+    if (context === "voice-assistant") {
+      console.log("🎤 VOICE CONTEXT: Processing suggestion for voice assistant");
+      
+      if (instantResponse) {
+        console.log("🎤 VOICE: Using cached response - playing audio");
+        
+        // Add messages to chat
+        const userMessage = {
+          id: Date.now(),
+          content: pill.prompt,
+          role: "user" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        const assistantMessage = {
+          id: Date.now() + 1,
+          content: instantResponse,
+          role: "assistant" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Use chat event system
+        window.dispatchEvent(new CustomEvent('addChatMessage', { 
+          detail: { userMessage, assistantMessage } 
+        }));
+        
+        // Play audio for voice context
+        const utterance = new SpeechSynthesisUtterance(instantResponse);
+        
+        // Use consistent male voice
+        const voices = speechSynthesis.getVoices();
+        const maleVoice = voices.find(voice => 
+          voice.name.includes('Google UK English Male') ||
+          voice.name.includes('Google US English Male') ||
+          (voice.name.includes('Male') && voice.lang.startsWith('en'))
+        ) || voices[0];
+        
+        if (maleVoice) utterance.voice = maleVoice;
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        utterance.onstart = () => {
+          console.log("🎤 VOICE: Audio started playing");
+        };
+        
+        utterance.onend = () => {
+          console.log("🎤 VOICE: Audio finished playing");
+        };
+        
+        speechSynthesis.cancel(); // Clear any existing speech
+        speechSynthesis.speak(utterance);
+        
+        console.log("🎤 VOICE: Audio playback initiated");
+      } else {
+        console.log("🎤 VOICE: No cache - using normal voice assistant flow");
+        // No cached response - let voice assistant handle API call
+        onSuggestionClick(pill.prompt, pill.id, {
+          conversationId,
+        });
+      }
+      
+      // Mark as used in background for voice context
+      markPillAsUsed(pill.id);
+      return; // EXIT EARLY - Voice context handled
+    }
+
+    // Fallback for unknown context
+    console.warn("⚠️ Unknown context:", context, "- using default behavior");
+    onSuggestionClick(pill.prompt, pill.id, {
+      textOnly: context === "chat",
+      conversationId,
+    });
+
+  } catch (error) {
+    // Rollback optimistic update on error
+    setUsedPills(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(pill.id);
+      return newSet;
+    });
+    console.error('Error handling pill click:', error);
+  }
+};
+
+// Helper function to mark pill as used
+const markPillAsUsed = async (pillId: string) => {
+  try {
+    await fetch('/api/suggestion-pills/used', {
+      method: 'POST',
+      body: JSON.stringify({
+        wineKey,
+        suggestionId: pillId,
+        userId: null,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    refetch();
+  } catch (error) {
+    console.error('Error marking pill as used:', error);
+  }
+};
