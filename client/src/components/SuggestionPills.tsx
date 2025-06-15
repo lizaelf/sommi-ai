@@ -17,41 +17,22 @@ interface SuggestionPillsProps {
 
 export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled = false }: SuggestionPillsProps) {
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
-  
-  console.log("🔍 SuggestionPills DEBUG:", {
-    wineKey,
-    isDisabled,
-    usedPillsCount: usedPills.size,
-    usedPillsArray: Array.from(usedPills)
-  });
 
   // Fetch available suggestion pills for this wine
   const { data: suggestionsData, isLoading, refetch } = useQuery({
     queryKey: ['/api/suggestion-pills', wineKey],
     queryFn: async () => {
-      console.log("🔍 Fetching suggestions for wineKey:", wineKey);
       const response = await fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}`);
       if (!response.ok) {
-        console.error("❌ Failed to fetch suggestion pills:", response.status, response.statusText);
         throw new Error('Failed to fetch suggestion pills');
       }
-      const data = await response.json();
-      console.log("✓ Suggestions fetched:", data);
-      return data;
+      return response.json();
     },
     enabled: !!wineKey,
   });
 
   const handlePillClick = async (pill: SuggestionPill) => {
     if (isDisabled) return;
-
-    console.log("🔍 Pill Click DEBUG:", {
-      pillId: pill.id,
-      pillText: pill.text,
-      wineKey,
-      isDisabled,
-      currentUsedPills: Array.from(usedPills)
-    });
 
     try {
       // Mark pill as used in database
@@ -71,14 +52,8 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
         throw new Error('Failed to mark pill as used');
       }
 
-      console.log("✓ Pill marked as used in database:", pill.id);
-
       // Update local state to track used pills
-      setUsedPills(prev => {
-        const newSet = new Set(Array.from(prev).concat(pill.id));
-        console.log("✓ Updated local used pills:", Array.from(newSet));
-        return newSet;
-      });
+      setUsedPills(prev => new Set(Array.from(prev).concat(pill.id)));
 
       // Trigger the suggestion with the prompt (text-only response)
       onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
@@ -86,7 +61,7 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
       // Refetch to get updated available pills
       refetch();
     } catch (error) {
-      console.error('❌ Error marking pill as used:', error);
+      console.error('Error marking pill as used:', error);
     }
   };
 
@@ -106,17 +81,9 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
   const availablePills = suggestionsData?.suggestions || [];
   let visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id)).slice(0, 3);
   
-  console.log("🔍 Pills Filter DEBUG:", {
-    totalAvailable: availablePills.length,
-    afterFilter: visiblePills.length,
-    availablePillIds: availablePills.map((p: any) => p.id),
-    visiblePillIds: visiblePills.map((p: any) => p.id),
-    usedPillsSet: Array.from(usedPills)
-  });
-  
   // If no unused pills available, reset and show all pills again
   if (visiblePills.length === 0 && availablePills.length > 0) {
-    console.log("🔄 All suggestions used - resetting cycle for wine:", wineKey);
+    console.log("All suggestions used - resetting cycle for wine:", wineKey);
     
     // Reset the used pills in the database to allow cycling
     fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
@@ -125,8 +92,6 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
     
     setUsedPills(new Set()); // Reset local state
     visiblePills = availablePills.slice(0, 3); // Show first 3 pills again
-    
-    console.log("🔄 After reset - showing pills:", visiblePills.map((p: any) => p.id));
   }
 
   // Always show at least some suggestions if available
