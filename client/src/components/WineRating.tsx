@@ -138,66 +138,53 @@ export default function WineRating({
     <div
       className={className}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
+        ...styles.container,
         ...style,
       }}
     >
-      {/* Main ratings row */}
-      <div
-        style={{
-          ...styles.container,
-        }}
-      >
-        {ratings.vn && (
-          <span style={styles.ratingItem}>
-            <span style={styles.valueStyle}>
-              {variant === "compact" || variant === "minimal"
-                ? `VN: ${ratings.vn}`
-                : ratings.vn}
-            </span>
-            {variant === "default" && <span style={styles.labelStyle}>VN</span>}
+      {ratings.vn && (
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
+            {variant === "compact" || variant === "minimal"
+              ? `VN: ${ratings.vn}`
+              : ratings.vn}
           </span>
-        )}
-
-        {ratings.jd && (
-          <span style={styles.ratingItem}>
-            <span style={styles.valueStyle}>
-              {variant === "compact" || variant === "minimal"
-                ? `JD: ${ratings.jd}`
-                : ratings.jd}
-            </span>
-            {variant === "default" && <span style={styles.labelStyle}>JD</span>}
-          </span>
-        )}
-
-        {ratings.ws && (
-          <span style={styles.ratingItem}>
-            <span style={styles.valueStyle}>
-              {variant === "compact" || variant === "minimal"
-                ? `WS: ${ratings.ws}`
-                : ratings.ws}
-            </span>
-            {variant === "default" && <span style={styles.labelStyle}>WS</span>}
-          </span>
-        )}
-      </div>
-
-      {/* ABV row below */}
-      {ratings.abv && !hideAbv && (
-        <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-          <span style={styles.ratingItem}>
-            <span style={styles.valueStyle}>
-              {variant === "compact" || variant === "minimal"
-                ? `ABV: ${ratings.abv}%`
-                : `${ratings.abv}%`}
-            </span>
-            {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
-          </span>
-        </div>
+          {variant === "default" && <span style={styles.labelStyle}>VN</span>}
+        </span>
       )}
 
+      {ratings.jd && (
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
+            {variant === "compact" || variant === "minimal"
+              ? `JD: ${ratings.jd}`
+              : ratings.jd}
+          </span>
+          {variant === "default" && <span style={styles.labelStyle}>JD</span>}
+        </span>
+      )}
+
+      {ratings.ws && (
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
+            {variant === "compact" || variant === "minimal"
+              ? `WS: ${ratings.ws}`
+              : ratings.ws}
+          </span>
+          {variant === "default" && <span style={styles.labelStyle}>WS</span>}
+        </span>
+      )}
+
+      {ratings.abv && !hideAbv && (
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
+            {variant === "compact" || variant === "minimal"
+              ? `ABV: ${ratings.abv}%`
+              : `${ratings.abv}%`}
+          </span>
+          {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
+        </span>
+      )}
     </div>
   );
 }

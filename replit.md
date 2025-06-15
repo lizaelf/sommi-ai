@@ -77,6 +77,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - "We recommend" section with horizontal scrolling wine cards
   - Enhanced typography system using Lora serif for headings and Inter for body text
   - Standardized header matching HomeGlobal page with Logo, "My cellar" button, and ButtonIcon dropdown
+  - Full-width "Buy again" button for improved mobile accessibility
+  - Single-line WineRating component displaying all ratings (VN, JD, WS, ABV) horizontally
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
 - **Code Organization**: Improved maintainability with smaller, focused components following React composition patterns

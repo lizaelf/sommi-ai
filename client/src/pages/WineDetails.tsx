@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
-import { Link, useLocation, useParams } from 'wouter';
-import EnhancedChatInterface from '@/components/EnhancedChatInterface';
-import QRScanModal from '@/components/QRScanModal';
-import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
-import { DataSyncManager } from '@/utils/dataSync';
-import WineBottleImage from '@/components/WineBottleImage';
-import USFlagImage from '@/components/USFlagImage';
-import WineRating from '@/components/WineRating';
-import Button from '@/components/ui/Button';
-import typography from '@/styles/typography';
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
+import { Link, useLocation, useParams } from "wouter";
+import EnhancedChatInterface from "@/components/EnhancedChatInterface";
+import QRScanModal from "@/components/QRScanModal";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import { DataSyncManager } from "@/utils/dataSync";
+import WineBottleImage from "@/components/WineBottleImage";
+import USFlagImage from "@/components/USFlagImage";
+import WineRating from "@/components/WineRating";
+import Button from "@/components/ui/Button";
+import typography from "@/styles/typography";
 
 interface SelectedWine {
   id: number;
@@ -43,8 +43,8 @@ export default function WineDetails() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const isQRScan = new URLSearchParams(window.location.search).has('wine');
-  const isScannedPage = location === '/scanned';
+  const isQRScan = new URLSearchParams(window.location.search).has("wine");
+  const isScannedPage = location === "/scanned";
 
   // Helper functions for wine data
   const getWineHistory = () => {
@@ -96,18 +96,28 @@ export default function WineDetails() {
   useEffect(() => {
     // Initialize data sync manager
     DataSyncManager.initialize();
-    
+
     // Get wine ID from URL params (either route param or query param)
     const urlParams = new URLSearchParams(window.location.search);
-    const wineIdFromQuery = urlParams.get('wine');
-    const wineId = id || wineIdFromQuery || '1'; // Default to wine ID 1 if none provided
-    
-    console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId, location });
-    
+    const wineIdFromQuery = urlParams.get("wine");
+    const wineId = id || wineIdFromQuery || "1"; // Default to wine ID 1 if none provided
+
+    console.log("WineDetails: Checking for wine ID:", {
+      id,
+      wineIdFromQuery,
+      wineId,
+      location,
+    });
+
     if (wineId && !wine) {
       const wineData = DataSyncManager.getWineById(parseInt(wineId));
       if (wineData) {
-        console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
+        console.log(
+          "WineDetails: Looking for wine ID",
+          wineId,
+          "found:",
+          wineData,
+        );
         const transformedWine = {
           id: wineData.id,
           name: wineData.name,
@@ -121,12 +131,15 @@ export default function WineDetails() {
           location: wineData.location,
           description: wineData.description,
           foodPairing: wineData.foodPairing,
-          conversationHistory: wineData.conversationHistory || []
+          conversationHistory: wineData.conversationHistory || [],
         };
         setWine(transformedWine);
-        console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
+        console.log(
+          "WineDetails: Wine loaded successfully:",
+          transformedWine.name,
+        );
       } else {
-        console.log('WineDetails: Wine not found for ID:', wineId);
+        console.log("WineDetails: Wine not found for ID:", wineId);
       }
     }
   }, [id, wine, location]);
@@ -151,27 +164,27 @@ export default function WineDetails() {
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
-    if (detail?.action === 'voice') {
-      console.log('🎤 Voice interaction selected');
+    if (detail?.action === "voice") {
+      console.log("🎤 Voice interaction selected");
       setInteractionChoiceMade(true);
       setShowQRModal(false);
-    } else if (detail?.action === 'text') {
-      console.log('💬 Text interaction selected');
+    } else if (detail?.action === "text") {
+      console.log("💬 Text interaction selected");
       setInteractionChoiceMade(true);
       setShowQRModal(false);
     }
   };
 
   useEffect(() => {
-    window.addEventListener('qr-reset', handleQRReset);
+    window.addEventListener("qr-reset", handleQRReset);
     return () => {
-      window.removeEventListener('qr-reset', handleQRReset);
+      window.removeEventListener("qr-reset", handleQRReset);
     };
   }, []);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
-    console.log('Wine image loaded successfully:', wine?.image);
+    console.log("Wine image loaded successfully:", wine?.image);
   };
 
   // Optimized scrolling initialization
@@ -240,7 +253,9 @@ export default function WineDetails() {
             ...typography.h1,
           }}
         >
-          {wine ? `${wine.year ? wine.year + ' ' : '2021 '}${wine.name}` : `2021 Wine Name`}
+          {wine
+            ? `${wine.year ? wine.year + " " : "2021 "}${wine.name}`
+            : `2021 Wine Name`}
         </div>
 
         {/* Wine region with typography styling and flag */}
@@ -681,7 +696,9 @@ export default function WineDetails() {
                 xmlns="http://www.w3.org/2000/svg"
                 style={{
                   transform:
-                    expandedItem === "avoid" ? "rotate(180deg)" : "rotate(0deg)",
+                    expandedItem === "avoid"
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
                   transition: "transform 0.3s ease",
                 }}
               >
@@ -936,18 +953,41 @@ export default function WineDetails() {
             })()}
           </div>
         </div>
+      </div>
 
-        {/* Enhanced Chat Interface */}
-        <div className="mt-0 pb-10">
-          <EnhancedChatInterface 
-            showBuyButton={true} 
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings
-            } : null} 
+      {/* Enhanced Chat Interface - Full Screen */}
+      <div
+        style={{
+          width: "100vw",
+          minHeight: "100vh",
+          backgroundColor: "#000000",
+          marginLeft: "calc(-50vw + 50%)",
+          marginRight: "calc(-50vw + 50%)",
+          paddingTop: "40px",
+          paddingBottom: "40px",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "100%",
+            margin: "0 auto",
+            padding: "0 20px",
+          }}
+        >
+          <EnhancedChatInterface
+            showBuyButton={true}
+            selectedWine={
+              wine
+                ? {
+                    id: wine.id,
+                    name: wine.name,
+                    image: wine.image,
+                    bottles: wine.bottles,
+                    ratings: wine.ratings,
+                  }
+                : null
+            }
           />
         </div>
       </div>
