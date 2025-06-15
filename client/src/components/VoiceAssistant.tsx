@@ -64,6 +64,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         return;
       }
       
+      // Check if text/voice bottom sheet has already been shown in this session
+      const hasShownBottomSheet = sessionStorage.getItem('voice_bottom_sheet_shown');
+      if (hasShownBottomSheet) {
+        console.log("QR SCAN: Bottom sheet already shown in this session, skipping");
+        return;
+      }
+      
       // DEPLOYMENT: Block welcome message until male voice is verified
       const isDeployment = window.location.hostname.includes('.replit.app') || 
                           window.location.hostname.includes('.repl.co') ||
@@ -86,6 +93,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             if (retryVoiceLocked) {
               console.log("✅ DEPLOYMENT: Voice verified on retry, showing welcome");
               setShowBottomSheet(true);
+              sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
               setShowAskButton(false);
               setIsResponding(true);
               
@@ -99,6 +107,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             } else {
               console.log("🚫 DEPLOYMENT: Voice still not verified after retry");
               setShowBottomSheet(true);
+              sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
               setShowAskButton(true);
               setIsResponding(false);
             }
@@ -108,6 +117,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
       
       setShowBottomSheet(true);
+      sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
       setShowAskButton(false);
       setIsResponding(true);
       

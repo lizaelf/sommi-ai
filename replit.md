@@ -44,6 +44,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **Session-Based Bottom Sheet**: Text/voice choice bottom sheet now shows only once per user session using sessionStorage tracking
 - **TTS Speed Optimization**: Reduced welcome message and all TTS speed by 40% (from 1.1 to 0.79) for better comprehension
 - **Delete Account Dialog**: Replaced chat history sheet with proper confirmation dialog featuring "Don't delete" and dark red "Delete" buttons
 - **Full-Width Chat Mode**: Chat section now fills entire screen width when in empty state (no messages) for better visual balance
