@@ -84,7 +84,11 @@ export default function SuggestionPills({
     if (isDisabled) return;
 
     // Optimistically mark as used
-    setUsedPills(prev => new Set([...prev, pill.id]));
+    setUsedPills(prev => {
+      const newSet = new Set(Array.from(prev));
+      newSet.add(pill.id);
+      return newSet;
+    });
 
     try {
       // Check cache for instant responses

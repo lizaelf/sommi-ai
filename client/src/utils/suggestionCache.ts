@@ -72,20 +72,26 @@ class SuggestionCacheManager {
   async getCachedResponse(wineKey: string, suggestionId: string): Promise<string | null> {
     await this.initializeCache();
 
-    const cacheKey = this.getCacheKey(wineKey, suggestionId);
+    // Normalize wine key - ensure it's not empty
+    const normalizedWineKey = wineKey || 'wine_1'; // Default to wine_1 if empty
+    const cacheKey = this.getCacheKey(normalizedWineKey, suggestionId);
     const cached = this.cache.get(cacheKey);
+
+    console.log(`Cache lookup: wineKey="${normalizedWineKey}", suggestionId="${suggestionId}", cacheKey="${cacheKey}"`);
 
     if (cached) {
       const now = Date.now();
       if (cached.expiresAt > now) {
-        console.log(`Cache hit for suggestion: ${suggestionId} (wine: ${wineKey})`);
+        console.log(`Cache hit for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
         return cached.response;
       } else {
         // Remove expired entry
         this.cache.delete(cacheKey);
         this.saveCache();
-        console.log(`Cache expired for suggestion: ${suggestionId} (wine: ${wineKey})`);
+        console.log(`Cache expired for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
       }
+    } else {
+      console.log(`Cache miss for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
     }
 
     return null;
@@ -98,10 +104,11 @@ class SuggestionCacheManager {
     await this.initializeCache();
 
     const now = Date.now();
-    const cacheKey = this.getCacheKey(wineKey, suggestionId);
+    const normalizedWineKey = wineKey || 'wine_1'; // Default to wine_1 if empty
+    const cacheKey = this.getCacheKey(normalizedWineKey, suggestionId);
 
     const cachedItem: CachedSuggestionResponse = {
-      wineKey,
+      wineKey: normalizedWineKey,
       suggestionId,
       response,
       timestamp: now,
@@ -111,7 +118,7 @@ class SuggestionCacheManager {
     this.cache.set(cacheKey, cachedItem);
     this.saveCache();
 
-    console.log(`Cached response for suggestion: ${suggestionId} (wine: ${wineKey})`);
+    console.log(`Cached response for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
   }
 
   /**
