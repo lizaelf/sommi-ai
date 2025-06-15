@@ -46,15 +46,26 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
       paddingLeft: '20px',
       paddingRight: '20px',
     }}>
-      {/* Wine Image */}
+      {/* Wine Image with Circle Glow */}
       <div style={{ 
         position: 'relative',
-        width: '180px',
-        height: '180px',
+        width: '240px',
+        height: '240px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
       }}>
+        {/* Circle Glow Background */}
+        <div style={{
+          position: 'absolute',
+          width: '200px',
+          height: '200px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(139, 69, 19, 0.3) 0%, rgba(139, 69, 19, 0.1) 40%, transparent 70%)',
+          filter: 'blur(20px)',
+          zIndex: 1
+        }} />
+        
         <img
           ref={imageRef}
           src={wine.image}
@@ -66,6 +77,8 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
             objectFit: 'contain',
             opacity: imageLoaded ? 1 : 0,
             transition: 'opacity 0.3s ease',
+            position: 'relative',
+            zIndex: 2
           }}
         />
       </div>
