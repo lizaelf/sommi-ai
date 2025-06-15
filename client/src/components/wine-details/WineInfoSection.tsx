@@ -145,20 +145,7 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         </p>
       </div>
 
-      {/* Bottles Count */}
-      <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: '12px',
-        padding: '16px 24px',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
-      }}>
-        <span style={{
-          ...typography.body1R,
-          color: '#999'
-        }}>
-          Collection: {wine.bottles} bottle{wine.bottles !== 1 ? 's' : ''}
-        </span>
-      </div>
+
     </div>
   );
 };
