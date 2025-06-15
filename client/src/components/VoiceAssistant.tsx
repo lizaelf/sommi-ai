@@ -95,12 +95,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         return;
       }
       
-      // Check if text/voice bottom sheet has already been shown in this session
-      const hasShownBottomSheet = sessionStorage.getItem('voice_bottom_sheet_shown');
-      if (hasShownBottomSheet) {
-        console.log("QR SCAN: Bottom sheet already shown in this session, skipping");
-        return;
-      }
+      // QR scan voice button should always work - don't block based on session storage
+      console.log("QR SCAN: Voice button clicked - proceeding with voice assistant");
       
       // DEPLOYMENT: Block welcome message until male voice is verified
       const isDeployment = window.location.hostname.includes('.replit.app') || 
