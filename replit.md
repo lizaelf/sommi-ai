@@ -43,7 +43,18 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 15, 2025)
 
-### Component Architecture Modernization & Performance Enhancement (June 15, 2025 - Latest)
+### Voice/Chat Context Separation Implementation Complete (June 15, 2025 - Latest)
+- **Comprehensive Context-Aware Suggestion System**: Implemented complete separation between chat and voice assistant contexts with independent response handling
+- **Backend Text-Only Flag Detection**: Added server-side text-only request detection to prevent TTS generation for chat suggestions
+- **Enhanced SuggestionPills Component**: Complete context awareness with early exit patterns for chat vs voice contexts
+- **Chat Context Behavior**: Silent operation using cached responses with event-driven message addition, no audio interference
+- **Voice Context Behavior**: Full audio playback with browser TTS using consistent male voice selection for cached responses
+- **VoiceAssistant Safety Check**: Added context leak detection to prevent chat suggestions from triggering voice assistant behavior
+- **Consistent 3-Pill Display**: Always shows exactly 3 suggestion pills across all contexts for uniform interface
+- **Independent Response Caching**: Context-aware cache management with separate handling for text-only and voice+text responses
+- **Complete Audio Prevention**: Chat suggestions now completely bypass voice assistant and TTS generation at all levels
+
+### Component Architecture Modernization & Performance Enhancement (June 15, 2025)
 - **WineDetails Component Refactoring**: Successfully split monolithic component into focused, maintainable modules:
   - WineDetailsHeader: Header with actions dropdown and navigation
   - WineInfoSection: Wine image display, name, ratings, and location information
