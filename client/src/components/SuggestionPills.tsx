@@ -157,14 +157,9 @@ export default function SuggestionPills({
           variant="secondary"
           onClick={() => handlePillClick(pill)}
           disabled={isDisabled || usedPills.has(pill.id)}
-          className="h-auto py-2 px-4 text-sm whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit text-only-pill"
-          style={{
-            backgroundColor: context === "chat" ? "#f5f5f5" : undefined,
-            color: context === "chat" ? "#333" : undefined,
-            border: context === "chat" ? "1px solid #ddd" : undefined
-          }}
+          className="h-auto py-2 px-4 text-sm whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit"
         >
-          {context === "chat" ? "💬 " : ""}{pill.text}
+          {pill.text}
         </Button>
       ))}
     </div>
