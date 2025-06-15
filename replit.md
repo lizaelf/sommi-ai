@@ -62,6 +62,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Bottles Count Removal**: Removed bottles count section from wine details page for cleaner layout
 - **Food Pairing Section Update**: Changed title to H1 typography, left-aligned title, reduced spacing to 8px between blocks
 - **WineDetails Rollback**: Restored original single-file WineDetails component structure before refactoring, replacing modular components with simple integrated layout
+- **WineRating Layout Update**: Modified WineRating component to display ABV rating below other scores (VN, JD, WS) instead of inline
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
 - **Code Organization**: Improved maintainability with smaller, focused components following React composition patterns
