@@ -76,9 +76,10 @@ export default function SuggestionPills({
 
       // Handle based on context and cache availability
       if (context === "chat") {
+        console.log("SuggestionPills - Chat context detected, cached response:", !!cachedResponse);
         if (cachedResponse) {
           // Use instant cached response for chat too!
-          console.log("Chat context - using cached response for instant display");
+          console.log("Chat context - using cached response for instant display:", cachedResponse.substring(0, 50) + "...");
           onSuggestionClick(pill.prompt, pill.id, { instantResponse: cachedResponse });
         } else {
           // No cache - use text-only API call
