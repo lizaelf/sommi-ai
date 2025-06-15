@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Test</title>
+</head>
+<body>
+    <h1>Voice System Test</h1>
+    <button onclick="testVoice()">Test Voice</button>
+    <button onclick="listVoices()">List Available Voices</button>
+    <div id="output"></div>
+
+    <script>
+        function testVoice() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Testing voice...</p>';
+            
+            try {
+                const utterance = new SpeechSynthesisUtterance("Hello, this is a voice test.");
+                
+                utterance.onstart = () => {
+                    output.innerHTML += '<p>✓ Voice started playing</p>';
+                };
+                
+                utterance.onend = () => {
+                    output.innerHTML += '<p>✓ Voice finished playing</p>';
+                };
+                
+                utterance.onerror = (error) => {
+                    output.innerHTML += '<p>✗ Voice error: ' + error.error + '</p>';
+                };
+                
+                speechSynthesis.speak(utterance);
+                output.innerHTML += '<p>Voice command sent to browser</p>';
+                
+            } catch (error) {
+                output.innerHTML += '<p>✗ Error: ' + error.message + '</p>';
+            }
+        }
+        
+        function listVoices() {
+            const output = document.getElementById('output');
+            const voices = speechSynthesis.getVoices();
+            
+            if (voices.length === 0) {
+                output.innerHTML = '<p>No voices available - trying to load...</p>';
+                speechSynthesis.addEventListener('voiceschanged', listVoices);
+                return;
+            }
+            
+            let html = '<h3>Available Voices:</h3><ul>';
+            voices.forEach((voice, index) => {
+                html += `<li>${index}: ${voice.name} (${voice.lang}) - ${voice.gender || 'unknown gender'}</li>`;
+            });
+            html += '</ul>';
+            output.innerHTML = html;
+        }
+        
+        // Auto-load voices when page loads
+        window.addEventListener('load', () => {
+            setTimeout(listVoices, 100);
+        });
+    </script>
+</body>
+</html>

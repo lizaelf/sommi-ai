@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice System Diagnostic</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px; 
+        }
+        button { 
+            padding: 12px 24px; 
+            margin: 10px 5px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            background: #2196F3; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+        }
+        button:hover { background: #1976D2; }
+        #output { 
+            background: #f5f5f5; 
+            padding: 20px; 
+            border-radius: 5px; 
+            margin-top: 20px; 
+            max-height: 400px; 
+            overflow-y: auto; 
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <h1>Voice System Diagnostic</h1>
+    <p>This will help identify why you're not hearing voice responses.</p>
+    
+    <div>
+        <button onclick="testBasicVoice()">Test Basic Voice</button>
+        <button onclick="testAdvancedVoice()">Test Advanced Voice</button>
+        <button onclick="listVoices()">List Available Voices</button>
+        <button onclick="runFullDiagnostic()">Run Full Diagnostic</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function testBasicVoice() {
+            log('Testing basic voice...');
+            
+            if (typeof speechSynthesis === 'undefined') {
+                log('Speech synthesis not supported in this browser', 'error');
+                return;
+            }
+            
+            const utterance = new SpeechSynthesisUtterance('Hello, this is a voice test. Can you hear me?');
+            
+            utterance.onstart = () => log('Voice started playing', 'success');
+            utterance.onend = () => log('Voice finished playing', 'success');
+            utterance.onerror = (error) => log(`Voice error: ${error.error}`, 'error');
+            
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+        }
+        
+        function testAdvancedVoice() {
+            log('Testing advanced voice with male voice selection...');
+            
+            const voices = speechSynthesis.getVoices();
+            const utterance = new SpeechSynthesisUtterance('This is an advanced voice test. Testing male voice selection.');
+            
+            const maleVoice = voices.find(voice => 
+                voice.name.includes('Google UK English Male') ||
+                voice.name.includes('Male') ||
+                voice.name.includes('David')
+            );
+            
+            if (maleVoice) {
+                utterance.voice = maleVoice;
+                log(`Using voice: ${maleVoice.name}`, 'success');
+            }
+            
+            utterance.onstart = () => log('Advanced voice started', 'success');
+            utterance.onend = () => log('Advanced voice finished', 'success');
+            utterance.onerror = (error) => log(`Advanced voice error: ${error.error}`, 'error');
+            
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+        }
+        
+        function listVoices() {
+            log('Listing available voices...');
+            
+            let voices = speechSynthesis.getVoices();
+            
+            if (voices.length === 0) {
+                log('No voices loaded, forcing reload...', 'warning');
+                speechSynthesis.addEventListener('voiceschanged', () => {
+                    voices = speechSynthesis.getVoices();
+                    log(`Voices loaded: ${voices.length}`, 'success');
+                    voices.forEach((voice, index) => {
+                        log(`${index + 1}. ${voice.name} (${voice.lang})`);
+                    });
+                });
+            } else {
+                log(`Found ${voices.length} voices:`, 'success');
+                voices.forEach((voice, index) => {
+                    log(`${index + 1}. ${voice.name} (${voice.lang})`);
+                });
+            }
+        }
+        
+        function runFullDiagnostic() {
+            output.innerHTML = '';
+            
+            log('Starting full diagnostic...', 'success');
+            log(`Browser: ${navigator.userAgent}`);
+            log(`Platform: ${navigator.platform}`);
+            
+            if (typeof speechSynthesis === 'undefined') {
+                log('Speech synthesis NOT supported', 'error');
+                return;
+            }
+            
+            log('Speech synthesis supported', 'success');
+            
+            setTimeout(() => listVoices(), 500);
+            setTimeout(() => testBasicVoice(), 1500);
+            setTimeout(() => testAdvancedVoice(), 3000);
+            
+            setTimeout(() => {
+                log('=== DIAGNOSTIC COMPLETE ===', 'success');
+                log('If you heard the tests, your system works correctly.');
+                log('If not, check: system volume, browser permissions, speakers/headphones');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
