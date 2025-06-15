@@ -834,10 +834,86 @@ Format: Return only the description text, no quotes or additional formatting.`;
         });
       }
       
-      // Handle other errors
-      res.status(500).json({ 
-        message: "Failed to generate chat completion",
-        error: error?.message || "Unknown error" 
+      // Handle timeout errors
+      if (error?.message?.includes('timeout')) {
+        const timeoutMessage = "I'm taking a moment to think about your question. Please try asking again.";
+        
+        // Save timeout message if we have conversation context
+        const conversationId = validatedData?.conversationId;
+        if (conversationId && validatedData?.messages && validatedData.messages.length > 0) {
+          try {
+            const userMessage = validatedData.messages[validatedData.messages.length - 1];
+            if (userMessage) {
+              await storage.createMessage({
+                content: userMessage.content,
+                role: 'user',
+                conversationId
+              });
+              
+              await storage.createMessage({
+                content: timeoutMessage,
+                role: 'assistant',
+                conversationId
+              });
+            }
+          } catch (storageError) {
+            console.error("Error saving timeout message:", storageError);
+          }
+        }
+        
+        return res.json({
+          message: {
+            role: 'assistant',
+            content: timeoutMessage
+          },
+          error: "API_TIMEOUT",
+          conversationId
+        });
+      }
+      
+      // Handle network errors
+      if (error?.code === 'ENOTFOUND' || error?.code === 'ECONNREFUSED') {
+        const networkMessage = "I'm having trouble connecting right now. Please check your internet connection and try again.";
+        
+        return res.json({
+          message: {
+            role: 'assistant',
+            content: networkMessage
+          },
+          error: "NETWORK_ERROR"
+        });
+      }
+      
+      // Handle OpenAI API errors
+      if (error?.status) {
+        let apiErrorMessage = "I'm experiencing technical difficulties. Please try again in a moment.";
+        
+        if (error.status === 429) {
+          apiErrorMessage = "I'm currently busy with other requests. Please wait a moment and try again.";
+        } else if (error.status === 503) {
+          apiErrorMessage = "The AI service is temporarily unavailable. Please try again in a few minutes.";
+        } else if (error.status >= 400 && error.status < 500) {
+          apiErrorMessage = "There was an issue with your request. Please try rephrasing your question.";
+        }
+        
+        return res.json({
+          message: {
+            role: 'assistant',
+            content: apiErrorMessage
+          },
+          error: `API_ERROR_${error.status}`
+        });
+      }
+      
+      // Generic fallback error with user-friendly message
+      const fallbackMessage = "I encountered an unexpected issue. Please try asking your question again.";
+      
+      res.status(500).json({
+        message: {
+          role: 'assistant',
+          content: fallbackMessage
+        },
+        error: error?.message || "Unknown error"
       });
     }
   });

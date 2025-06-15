@@ -179,6 +179,35 @@ export default function WineDetails() {
         console.log("Stored text-only suggestion assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
 
         await addMessage(assistantMessage);
+
+        // Check if this is an error response that should show a toast
+        if (responseData.error) {
+          console.log("Server returned error for suggestion:", responseData.error);
+          
+          // Show user-friendly error toast for specific error types
+          if (responseData.error === "API_QUOTA_EXCEEDED") {
+            toast({
+              title: "Service Notice",
+              description: "The AI service is currently at capacity. Please try again later.",
+              variant: "destructive",
+            });
+          } else if (responseData.error === "API_TIMEOUT") {
+            toast({
+              title: "Response Delayed",
+              description: "The AI is taking longer than usual. Your suggestion has been received.",
+              variant: "default",
+            });
+          } else if (responseData.error?.startsWith("API_ERROR_")) {
+            toast({
+              title: "Service Issue",
+              description: "Experiencing temporary difficulties. Please try again.",
+              variant: "destructive",
+            });
+          }
+        }
+      } else {
+        // No valid message content received
+        throw new Error("No response content received from server");
       }
 
       refetchMessages();
@@ -336,6 +365,35 @@ export default function WineDetails() {
         console.log("Stored regular chat assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
 
         await addMessage(assistantMessage);
+
+        // Check if this is an error response that should show a toast
+        if (responseData.error) {
+          console.log("Server returned error:", responseData.error);
+          
+          // Show user-friendly error toast for specific error types
+          if (responseData.error === "API_QUOTA_EXCEEDED") {
+            toast({
+              title: "Service Notice",
+              description: "The AI service is currently at capacity. Please try again later.",
+              variant: "destructive",
+            });
+          } else if (responseData.error === "API_TIMEOUT") {
+            toast({
+              title: "Response Delayed",
+              description: "The AI is taking longer than usual. Your message has been received.",
+              variant: "default",
+            });
+          } else if (responseData.error?.startsWith("API_ERROR_")) {
+            toast({
+              title: "Service Issue",
+              description: "Experiencing temporary difficulties. Please try again.",
+              variant: "destructive",
+            });
+          }
+        }
+      } else {
+        // No valid message content received
+        throw new Error("No response content received from server");
       }
 
       refetchMessages();
