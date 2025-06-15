@@ -953,6 +953,50 @@ export default function WineDetails() {
             })()}
           </div>
         </div>
+
+        {/* Chat Section - Integrated within wine container */}
+        <div
+          style={{
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "40px",
+            marginTop: "40px",
+          }}
+        >
+          <h1
+            style={{
+              ...typography.h1,
+              color: "white",
+              marginBottom: "24px",
+              textAlign: "left",
+            }}
+          >
+            Chat
+          </h1>
+          <div
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              borderRadius: "16px",
+              padding: "20px",
+              minHeight: "400px",
+            }}
+          >
+            <EnhancedChatInterface
+              showBuyButton={false}
+              selectedWine={
+                wine
+                  ? {
+                      id: wine.id,
+                      name: wine.name,
+                      image: wine.image,
+                      bottles: wine.bottles,
+                      ratings: wine.ratings,
+                    }
+                  : null
+              }
+            />
+          </div>
+        </div>
       </div>
 
       {/* Enhanced Chat Interface - Full Screen */}
