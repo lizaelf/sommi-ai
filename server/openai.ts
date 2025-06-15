@@ -178,7 +178,7 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
     const enableStreaming = process.env.ENABLE_STREAMING !== 'false';
     
     // Call OpenAI API with timeout protection and optimizations
-    let finalResponse;
+    let finalResponse: any;
     
     // Create timeout promise to prevent hanging
     const timeoutPromise = new Promise((_, reject) => {
@@ -646,7 +646,7 @@ export async function textToSpeech(text: string): Promise<Buffer> {
           model: 'tts-1',
           voice: 'onyx', // Keep consistent voice
           speed: 1.2,
-          input: cleanText.slice(0, 500),
+          input: text.slice(0, 500),
         }, {
           timeout: 25000
         });
