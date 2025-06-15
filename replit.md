@@ -61,7 +61,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Wine Title Format**: Updated wine title to display as "year name" format in single line instead of separate year display
 - **Bottles Count Removal**: Removed bottles count section from wine details page for cleaner layout
 - **Food Pairing Section Update**: Changed title to H1 typography, left-aligned title, reduced spacing to 8px between blocks
-- **WineDetails Rollback**: Restored original single-file WineDetails component structure before refactoring, replacing modular components with simple integrated layout
+- **WineDetails Complete Rollback**: Restored WineDetails to advanced state with comprehensive chat interface, voice integration, contact forms, and enhanced UI interactions
 - **WineRating Layout Update**: Modified WineRating component to display ABV rating below other scores (VN, JD, WS) instead of inline
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components

@@ -234,6 +234,11 @@ export class DataSyncManager {
     return wines.find(w => w.id === id);
   }
 
+  // Get all wines - required for WineDetails component
+  static getAllWines(): UnifiedWineData[] {
+    return this.getUnifiedWineData();
+  }
+
   // Reset to master data
   static resetToMasterData(): void {
     this.saveUnifiedWineData([...MASTER_WINE_DATA]);
