@@ -918,7 +918,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Get available suggestion pills for a wine (excluding used ones)
+  // Get available suggestion pills for a wine (cycling when all used)
   app.get("/api/suggestion-pills/:wineKey", async (req, res) => {
     try {
       const { wineKey } = req.params;
@@ -928,9 +928,16 @@ Format: Return only the description text, no quotes or additional formatting.`;
       const usedPillIds = usedPills.map(pill => pill.suggestionId);
       
       // Filter out used pills from available suggestions
-      const availablePills = suggestionPillsData.suggestions.filter(
+      let availablePills = suggestionPillsData.suggestions.filter(
         suggestion => !usedPillIds.includes(suggestion.id)
       );
+      
+      // If all suggestions have been used, reset by returning all suggestions
+      // This allows cycling through the suggestions again
+      if (availablePills.length === 0 && suggestionPillsData.suggestions.length > 0) {
+        console.log(`All suggestions used for wine ${wineKey} - cycling back to start`);
+        availablePills = suggestionPillsData.suggestions;
+      }
       
       res.json({ suggestions: availablePills });
     } catch (error) {
@@ -948,6 +955,18 @@ Format: Return only the description text, no quotes or additional formatting.`;
     } catch (error) {
       console.error("Error marking suggestion pill as used:", error);
       res.status(500).json({ error: "Failed to mark suggestion pill as used" });
+    }
+  });
+
+  // Reset used suggestion pills for a wine (when cycling)
+  app.delete("/api/suggestion-pills/:wineKey/reset", async (req, res) => {
+    try {
+      const { wineKey } = req.params;
+      await storage.resetUsedSuggestionPills(wineKey);
+      res.json({ message: "Used suggestion pills reset successfully" });
+    } catch (error) {
+      console.error("Error resetting suggestion pills:", error);
+      res.status(500).json({ error: "Failed to reset suggestion pills" });
     }
   });
 

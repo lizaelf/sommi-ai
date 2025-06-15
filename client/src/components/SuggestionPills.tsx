@@ -32,7 +32,7 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
   });
 
   const handlePillClick = async (pill: SuggestionPill) => {
-    if (isDisabled || usedPills.has(pill.id)) return;
+    if (isDisabled) return;
 
     try {
       // Mark pill as used in database
@@ -52,7 +52,7 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
         throw new Error('Failed to mark pill as used');
       }
 
-      // Update local state to hide the pill immediately
+      // Update local state to track used pills
       setUsedPills(prev => new Set(Array.from(prev).concat(pill.id)));
 
       // Trigger the suggestion with the prompt (text-only response)
@@ -79,12 +79,26 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
   }
 
   const availablePills = suggestionsData?.suggestions || [];
-  const visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id)).slice(0, 3);
+  let visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id)).slice(0, 3);
+  
+  // If no unused pills available, reset and show all pills again
+  if (visiblePills.length === 0 && availablePills.length > 0) {
+    console.log("All suggestions used - resetting cycle for wine:", wineKey);
+    
+    // Reset the used pills in the database to allow cycling
+    fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
+      method: 'DELETE'
+    }).catch(error => console.error('Failed to reset suggestion pills:', error));
+    
+    setUsedPills(new Set()); // Reset local state
+    visiblePills = availablePills.slice(0, 3); // Show first 3 pills again
+  }
 
-  if (visiblePills.length === 0) {
+  // Always show at least some suggestions if available
+  if (visiblePills.length === 0 && availablePills.length === 0) {
     return (
       <div className="text-gray-500 text-sm italic">
-        All suggestions explored for this wine
+        Loading suggestions...
       </div>
     );
   }

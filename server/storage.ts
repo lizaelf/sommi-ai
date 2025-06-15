@@ -39,6 +39,7 @@ export interface IStorage {
   // Suggestion pills operations
   getUsedSuggestionPills(wineKey: string): Promise<UsedSuggestionPill[]>;
   markSuggestionPillUsed(pill: InsertUsedSuggestionPill): Promise<UsedSuggestionPill>;
+  resetUsedSuggestionPills(wineKey: string): Promise<void>;
 }
 
 // Database storage implementation
@@ -190,6 +191,12 @@ export class DatabaseStorage implements IStorage {
       .values(pill)
       .returning();
     return insertedPill;
+  }
+
+  async resetUsedSuggestionPills(wineKey: string): Promise<void> {
+    await db
+      .delete(usedSuggestionPills)
+      .where(eq(usedSuggestionPills.wineKey, wineKey));
   }
 }
 
