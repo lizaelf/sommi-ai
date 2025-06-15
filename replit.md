@@ -61,7 +61,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Wine Title Format**: Updated wine title to display as "year name" format in single line instead of separate year display
 - **Bottles Count Removal**: Removed bottles count section from wine details page for cleaner layout
 - **Food Pairing Section Update**: Changed title to H1 typography, left-aligned title, reduced spacing to 8px between blocks
-- **Section Rollback Confirmation**: Verified removal of "Want more?" and "We recommend" sections - wine details page maintains clean, minimal design
+- **Sections Restoration**: Added back "Want more?" section with Buy again button and "We recommend" section with horizontal scrolling wine cards, both using H1 typography and left alignment
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
 - **Code Organization**: Improved maintainability with smaller, focused components following React composition patterns

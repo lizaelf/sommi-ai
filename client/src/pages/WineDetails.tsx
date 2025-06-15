@@ -1004,6 +1004,114 @@ function WineDetails() {
         onToggleExpanded={toggleExpanded}
       />
 
+      {/* Want more? Section */}
+      <div style={{
+        padding: '0 20px',
+        marginBottom: '32px'
+      }}>
+        <h1 style={{
+          ...typography.h1,
+          color: 'white',
+          textAlign: 'left',
+          marginBottom: '16px'
+        }}>
+          Want more?
+        </h1>
+        {wine?.buyAgainLink && (
+          <a
+            href={wine.buyAgainLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              backgroundColor: '#8B4513',
+              color: 'white',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              ...typography.body,
+              fontWeight: 500,
+              transition: 'background-color 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#A0522D';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#8B4513';
+            }}
+          >
+            Buy again
+          </a>
+        )}
+      </div>
+
+      {/* We recommend Section */}
+      <div style={{
+        padding: '0 20px',
+        marginBottom: '32px'
+      }}>
+        <h1 style={{
+          ...typography.h1,
+          color: 'white',
+          textAlign: 'left',
+          marginBottom: '16px'
+        }}>
+          We recommend
+        </h1>
+        <div style={{
+          display: 'flex',
+          overflowX: 'auto',
+          gap: '16px',
+          paddingBottom: '8px'
+        }}>
+          {/* Sample wine recommendations - you can replace with actual data */}
+          {[
+            { id: 2, name: "Monte Bello Cabernet Sauvignon", year: 2020, image: "/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png" },
+            { id: 3, name: "Geyserville Zinfandel", year: 2021, image: "/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png" },
+            { id: 4, name: "East Bench Zinfandel", year: 2019, image: "/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png" }
+          ].map((recommendedWine) => (
+            <div
+              key={recommendedWine.id}
+              onClick={() => setLocation(`/wine-details/${recommendedWine.id}`)}
+              style={{
+                minWidth: '200px',
+                backgroundColor: '#191919',
+                borderRadius: '12px',
+                padding: '16px',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.02)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              <img
+                src={recommendedWine.image}
+                alt={recommendedWine.name}
+                style={{
+                  width: '100%',
+                  height: '120px',
+                  objectFit: 'contain',
+                  marginBottom: '12px'
+                }}
+              />
+              <h3 style={{
+                ...typography.body,
+                color: 'white',
+                fontWeight: 500,
+                marginBottom: '4px'
+              }}>
+                {recommendedWine.year} {recommendedWine.name}
+              </h3>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <ChatInterface
         wine={wine}
         messages={messages}
