@@ -4,6 +4,7 @@ import CircleAnimation from './CircleAnimation';
 import { ShiningText } from './ShiningText';
 import Button from '@/components/ui/Button';
 import SuggestionPills from './SuggestionPills';
+import { suggestionCache } from '@/utils/suggestionCache';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -303,8 +304,48 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   <div className="scrollbar-hide overflow-x-auto">
                     <SuggestionPills
                       wineKey={wineKey}
-                      onSuggestionClick={(prompt, pillId, options) => {
-                        // For voice bottom sheet, we want text+voice response (ignore textOnly option)
+                      onSuggestionClick={async (prompt, pillId, options) => {
+                        // For voice bottom sheet, play cached TTS instantly without unmute button
+                        console.log("Voice bottom sheet suggestion clicked:", prompt);
+                        
+                        // Generate suggestion ID and check cache immediately
+                        const suggestionId = prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                        const currentWineKey = wineKey || 'default_wine';
+                        
+                        console.log(`Checking cache for instant voice: ${suggestionId} (wine: ${currentWineKey})`);
+                        const cachedResponse = await suggestionCache.getCachedResponse(currentWineKey, suggestionId);
+                        
+                        if (cachedResponse) {
+                          // Play cached response instantly
+                          console.log("Playing instant TTS from cache for voice suggestion");
+                          try {
+                            const utterance = new SpeechSynthesisUtterance(cachedResponse);
+                            
+                            // Apply male voice settings
+                            const voices = speechSynthesis.getVoices();
+                            const maleVoice = voices.find(voice => 
+                              voice.name.includes('Google UK English Male') ||
+                              voice.name.includes('Male') ||
+                              voice.name.includes('masculine')
+                            );
+                            
+                            if (maleVoice) {
+                              utterance.voice = maleVoice;
+                              console.log("Using male voice for instant cached TTS:", maleVoice.name);
+                            }
+                            
+                            utterance.rate = 1.0;
+                            utterance.pitch = 1.0;
+                            utterance.volume = 1.0;
+                            
+                            speechSynthesis.speak(utterance);
+                            console.log("Instant cached TTS started for voice bottom sheet suggestion");
+                          } catch (error) {
+                            console.error("Instant cached TTS failed:", error);
+                          }
+                        }
+                        
+                        // Still call the original handler to add messages to chat
                         if (onSuggestionClick) {
                           onSuggestionClick(prompt);
                         }
