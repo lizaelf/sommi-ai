@@ -83,9 +83,32 @@ export default function SuggestionPills({
       if (context === "chat") {
         console.log("SuggestionPills - Chat context detected, cached response:", !!cachedResponse);
         if (cachedResponse) {
-          // Use instant cached response for chat too!
-          console.log("Chat context - using cached response for instant display:", cachedResponse.substring(0, 50) + "...");
-          onSuggestionClick(pill.prompt, pill.id, { instantResponse: cachedResponse });
+          // For chat context with cached response - bypass VoiceAssistant entirely
+          console.log("Chat context - instant cached display, bypassing voice system");
+          
+          // Directly add messages to conversation without voice processing
+          const userMessage = {
+            id: Date.now(),
+            content: pill.prompt,
+            role: "user" as const,
+            conversationId: 20, // Use current conversation
+            createdAt: new Date().toISOString(),
+          };
+          
+          const assistantMessage = {
+            id: Date.now() + 1,
+            content: cachedResponse,
+            role: "assistant" as const,
+            conversationId: 20,
+            createdAt: new Date().toISOString(),
+          };
+          
+          // Use window messaging to add messages directly
+          window.dispatchEvent(new CustomEvent('addChatMessage', { 
+            detail: { userMessage, assistantMessage } 
+          }));
+          
+          return; // Skip voice system entirely
         } else {
           // No cache - use text-only API call
           console.log("Chat context - no cache, using text-only API");

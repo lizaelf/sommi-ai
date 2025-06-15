@@ -97,6 +97,38 @@ export default function WineDetails() {
   const { messages, currentConversationId, addMessage, refetchMessages } =
     useConversation();
 
+  // Listen for direct chat message addition (bypassing voice system)
+  useEffect(() => {
+    const handleDirectChatMessage = async (event: CustomEvent) => {
+      const { userMessage, assistantMessage } = event.detail;
+      console.log("Direct chat message received - adding to conversation");
+      
+      try {
+        await addMessage(userMessage);
+        await addMessage(assistantMessage);
+        
+        // Auto-scroll to show the new messages
+        setTimeout(() => {
+          const chatSection = document.querySelector('[data-chat-section="true"]');
+          if (chatSection) {
+            const lastMessage = chatSection.lastElementChild;
+            if (lastMessage) {
+              lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+          }
+        }, 100);
+      } catch (error) {
+        console.error('Error adding direct chat message:', error);
+      }
+    };
+
+    window.addEventListener('addChatMessage', handleDirectChatMessage as EventListener);
+    
+    return () => {
+      window.removeEventListener('addChatMessage', handleDirectChatMessage as EventListener);
+    };
+  }, [addMessage]);
+
   // API status check - reduced frequency for faster loading
   const { data: apiStatus } = useQuery({
     queryKey: ["/api/status"],
