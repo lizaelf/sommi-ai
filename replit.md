@@ -44,6 +44,9 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **Console Error Resolution**: Fixed IndexedDB conversation errors by auto-creating missing conversations and improved error handling
+- **Unmute Button Message Fix**: Corrected variable reference issue causing default fallback message instead of actual assistant responses
+- **Message Storage Implementation**: Added proper assistant message storage across all response types (text-only, voice, regular chat)
 - **Circle Animation Speed Increase**: Doubled animation speed (listening: 0.1s→0.05s, default: 0.3s→0.15s) for more responsive visual feedback
 - **Unmute Button Deployment Fix**: Enhanced fallback system with 4-level strategy to ensure unmute works reliably in deployed environments
 - **Microphone Button Fix**: Fixed missing .current reference that was blocking microphone button functionality

@@ -385,10 +385,25 @@ class IndexedDBService {
   // Add a message to a conversation
   public async addMessageToConversation(conversationId: number, message: IDBMessage): Promise<void> {
     try {
-      const conversation = await this.getConversation(conversationId);
+      let conversation = await this.getConversation(conversationId);
       
       if (!conversation) {
-        throw new Error(`Conversation with ID ${conversationId} not found`);
+        // Auto-create conversation if it doesn't exist to prevent errors
+        console.log(`Conversation ${conversationId} not found in IndexedDB, creating automatically`);
+        
+        // Ensure we have a user ID
+        const userId = await this.ensureUser();
+        
+        conversation = {
+          id: conversationId,
+          userId: userId,
+          title: `Wine Conversation ${new Date().toLocaleString()}`,
+          createdAt: new Date(),
+          messages: []
+        };
+        
+        // Save the new conversation to IndexedDB using updateConversation
+        await this.updateConversation(conversation);
       }
       
       // Add the message
@@ -409,7 +424,7 @@ class IndexedDBService {
       await this.updateConversation(conversation);
     } catch (error) {
       console.error(`Error adding message to conversation ${conversationId}:`, error);
-      throw error;
+      // Don't throw the error to prevent UI disruption
     }
   }
 
