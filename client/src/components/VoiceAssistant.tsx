@@ -1106,7 +1106,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       const lastAssistantMessage = (window as any).lastAssistantMessageText;
       console.log("Checking lastAssistantMessage:", lastAssistantMessage ? `"${lastAssistantMessage.substring(0, 50)}..."` : "null/undefined");
 
-      if (!lastAssistantMessage) {
+      if (!lastAssistantMessage || !lastAssistantMessage.trim()) {
         console.warn("No assistant message available to play - attempting comprehensive fallback");
         
         // Multiple fallback strategies for deployed environments
@@ -1196,7 +1196,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
 
         // Check for cached audio first to minimize fallback usage
-        const cachedAudio = getCachedAudio(lastAssistantMessage);
+        const cachedAudio = getCachedAudio(finalMessageText);
         if (cachedAudio) {
           console.log("Using cached TTS audio");
           const audioUrl = URL.createObjectURL(cachedAudio);
