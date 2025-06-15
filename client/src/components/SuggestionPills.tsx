@@ -163,11 +163,26 @@ export default function SuggestionPills({
     visiblePills = availablePills.slice(0, 3); // Show first 3 pills again
   }
 
-  // Always show at least some suggestions if available
-  if (visiblePills.length === 0 && availablePills.length === 0) {
+  // Ensure we always show 3 suggestions if any are available
+  if (visiblePills.length < 3 && availablePills.length >= 3) {
+    // Fill up to 3 suggestions, cycling if needed
+    const remainingSlots = 3 - visiblePills.length;
+    const additionalPills = availablePills
+      .filter((pill: SuggestionPill) => !visiblePills.some((vp: SuggestionPill) => vp.id === pill.id))
+      .slice(0, remainingSlots);
+    visiblePills = [...visiblePills, ...additionalPills];
+  }
+
+  // Only show loading state if we have no data at all
+  if (availablePills.length === 0) {
     return (
-      <div className="text-gray-500 text-sm italic">
-        Loading suggestions...
+      <div className="flex gap-2 flex-wrap animate-pulse">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-8 bg-gray-200 rounded-full px-4 py-2 w-24"
+          />
+        ))}
       </div>
     );
   }

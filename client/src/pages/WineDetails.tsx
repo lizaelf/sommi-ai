@@ -122,10 +122,10 @@ export default function WineDetails() {
       }
     };
 
-    window.addEventListener('addChatMessage', handleDirectChatMessage as EventListener);
+    window.addEventListener('addChatMessage', handleDirectChatMessage as any);
     
     return () => {
-      window.removeEventListener('addChatMessage', handleDirectChatMessage as EventListener);
+      window.removeEventListener('addChatMessage', handleDirectChatMessage as any);
     };
   }, [addMessage]);
 
