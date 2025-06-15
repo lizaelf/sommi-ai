@@ -600,7 +600,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("🎤 DEPLOY DEBUG: Starting audio recording for Whisper transcription");
 
     // Check if manually closed - don't reopen if so
-    if (isManuallyClosedRef) {
+    if (isManuallyClosedRef.current) {
       console.log("🎤 DEPLOY DEBUG: Voice assistant manually closed, ignoring startListening");
       return;
     }
