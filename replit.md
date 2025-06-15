@@ -44,8 +44,9 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **Limited Suggestion Display**: Suggestion pills now show 3 at once instead of all available suggestions for cleaner interface
+- **TTS Speed Normalization**: Restored TTS speed to 1.0 (normal rate) for optimal user experience
 - **Session-Based Bottom Sheet**: Text/voice choice bottom sheet now shows only once per user session using sessionStorage tracking
-- **TTS Speed Optimization**: Reduced welcome message and all TTS speed by 40% (from 1.1 to 0.79) for better comprehension
 - **Delete Account Dialog**: Replaced chat history sheet with proper confirmation dialog featuring "Don't delete" and dark red "Delete" buttons
 - **Full-Width Chat Mode**: Chat section now fills entire screen width when in empty state (no messages) for better visual balance
 - **Wine-Specific Suggestion Pills**: Implemented database-backed system tracking pill usage per wine individually with PostgreSQL storage

@@ -79,7 +79,7 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
   }
 
   const availablePills = suggestionsData?.suggestions || [];
-  const visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id));
+  const visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id)).slice(0, 3);
 
   if (visiblePills.length === 0) {
     return (
