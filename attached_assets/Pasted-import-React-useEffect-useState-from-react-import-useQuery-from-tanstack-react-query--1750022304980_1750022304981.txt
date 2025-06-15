@@ -67,7 +67,7 @@ export default function SuggestionPills({
         },
       }).then(() => {
         // Update local state to track used pills
-        setUsedPills(prev => new Set([...prev, pill.id]));
+        setUsedPills(prev => new Set(Array.from(prev).concat(pill.id)));
         // Refetch to get updated available pills
         refetch();
       }).catch(error => console.error('Error marking pill as used:', error));
