@@ -479,10 +479,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [messages.length]);
 
-  // Handle suggestion button clicks
+  // Handle suggestion button clicks - TEXT ONLY responses
   const handleSuggestionClick = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
 
+    console.log("EnhancedChatInterface: Handling text-only suggestion:", content);
+    
     setHideSuggestions(true);
     setIsTyping(true);
 
@@ -502,8 +504,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         conversationId: currentConversationId,
         wineData: currentWine,
         optimize_for_speed: true,
-        text_only: true,
+        text_only: true, // Ensure text-only response
+        disable_audio: true, // Explicitly disable any audio processing
       };
+
+      console.log("EnhancedChatInterface: Sending text-only request:", requestBody);
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -532,6 +537,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         };
 
         await addMessage(assistantMessage);
+        console.log("EnhancedChatInterface: Text-only response added successfully");
       }
 
       refetchMessages();
