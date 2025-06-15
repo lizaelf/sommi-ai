@@ -78,7 +78,20 @@ export default function SuggestionButtons({ wineKey, onSuggestionClick, isDisabl
   }
 
   const availableButtons = suggestionsData?.suggestions || [];
-  let visibleButtons = availableButtons.slice(0, 3); // Always show 3 buttons for voice assistant
+  let visibleButtons = availableButtons.filter((button: SuggestionButton) => !usedButtons.has(button.id)).slice(0, 3);
+  
+  // If no unused buttons available, reset and show all buttons again
+  if (visibleButtons.length === 0 && availableButtons.length > 0) {
+    console.log("All voice suggestions used - resetting cycle for wine:", wineKey);
+    
+    // Reset the used buttons in the database to allow cycling
+    fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
+      method: 'DELETE'
+    }).catch(error => console.error('Failed to reset suggestion buttons:', error));
+    
+    setUsedButtons(new Set()); // Reset local state
+    visibleButtons = availableButtons.slice(0, 3); // Show first 3 buttons again
+  }
 
   // Always show buttons - cycle through all suggestions for voice assistant
   if (visibleButtons.length === 0 && availableButtons.length === 0) {
