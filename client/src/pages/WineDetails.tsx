@@ -450,6 +450,14 @@ export default function WineDetails() {
         await addMessage(assistantMessage);
         refetchMessages();
         
+        // Scroll to show the question for text-only suggestions
+        setTimeout(() => {
+          const chatSection = document.querySelector('[data-chat-section="true"]');
+          if (chatSection) {
+            chatSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+        
         console.log("✅ Instant response flow completed - no API call needed!");
         return; // Exit early - no thinking state!
       } catch (error) {
@@ -1659,6 +1667,7 @@ export default function WineDetails() {
                     <div
                       id="conversation"
                       className="space-y-4 mb-96"
+                      data-chat-section="true"
                       style={{
                         paddingLeft: "16px",
                         paddingRight: "16px",
