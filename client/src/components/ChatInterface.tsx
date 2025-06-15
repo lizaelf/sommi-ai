@@ -350,6 +350,7 @@ export default function ChatInterface({
             isTyping={isTyping}
             onKeyboardFocus={setIsKeyboardFocused}
             onSuggestionClick={handleSuggestionClick}
+            conversationId={currentConversationId?.toString()}
           />
         </main>
 
