@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Button from "@/components/ui/Button";
+import { suggestionCache } from "@/utils/suggestionCache";
 
 interface SuggestionButton {
   id: string;
@@ -33,8 +34,14 @@ export default function SuggestionButtons({ wineKey, onSuggestionClick, isDisabl
   const handleButtonClick = async (button: SuggestionButton) => {
     if (isDisabled) return;
 
+    console.log("Voice suggestion button clicked:", button.text);
+
     try {
-      // Mark button as used in database for tracking (but don't hide it)
+      // Check cache immediately for instant voice response
+      const suggestionId = button.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+      
+      // Mark button as used in database for tracking
       const response = await fetch('/api/suggestion-pills/used', {
         method: 'POST',
         body: JSON.stringify({
@@ -54,13 +61,21 @@ export default function SuggestionButtons({ wineKey, onSuggestionClick, isDisabl
       // Update local state to track usage
       setUsedButtons(prev => new Set(Array.from(prev).concat(button.id)));
 
-      // Trigger the suggestion with voice response (voice assistant buttons never use textOnly)
-      onSuggestionClick(button.prompt, button.id);
+      // Call the voice assistant with cached response if available
+      if (cachedResponse) {
+        console.log("Voice button - using cached response for instant playback");
+        onSuggestionClick(button.prompt, button.id, { instantResponse: cachedResponse });
+      } else {
+        console.log("Voice button - no cache, using normal API flow");
+        onSuggestionClick(button.prompt, button.id);
+      }
 
       // Refetch to get updated data
       refetch();
     } catch (error) {
-      console.error('Error marking button as used:', error);
+      console.error('Error with suggestion button:', error);
+      // Fallback to normal flow if there's an error
+      onSuggestionClick(button.prompt, button.id);
     }
   };
 
