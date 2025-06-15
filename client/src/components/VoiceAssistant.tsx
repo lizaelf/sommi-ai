@@ -37,6 +37,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+  const welcomeAudioCacheRef = useRef<string | null>(null);
+  
+  // Pre-cache welcome message for immediate playback
+  useEffect(() => {
+    const cacheWelcomeMessage = async () => {
+      if (welcomeAudioCacheRef.current) return; // Already cached
+      
+      try {
+        const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+        const response = await fetch('/api/text-to-speech', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: welcomeMessage })
+        });
+        
+        if (response.ok) {
+          const buffer = await response.arrayBuffer();
+          const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          welcomeAudioCacheRef.current = audioUrl;
+          console.log("Welcome message audio cached for immediate playback");
+        }
+      } catch (error) {
+        console.error("Failed to cache welcome message:", error);
+      }
+    };
+    
+    cacheWelcomeMessage();
+  }, []);
   
   // Listen for suggestion playback events to show Stop button
   useEffect(() => {
@@ -121,22 +150,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowAskButton(false);
       setIsResponding(true);
       
-      // Speak the welcome message immediately
-      const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
-      
-      // Always use OpenAI TTS instead of browser speech synthesis
-      console.log("QR SCAN: Using OpenAI TTS for welcome message");
-      
-      fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: welcomeMessage })
-      })
-      .then(response => response.arrayBuffer())
-      .then(buffer => {
-        const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
+      // Play cached welcome message immediately
+      if (welcomeAudioCacheRef.current) {
+        console.log("QR SCAN: Playing cached welcome message immediately");
+        const audio = new Audio(welcomeAudioCacheRef.current);
         
         // Store reference for potential stopping
         (window as any).currentOpenAIAudio = audio;
@@ -146,9 +163,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             setIsResponding(false);
             setShowAskButton(true);
           }
-          URL.revokeObjectURL(audioUrl);
           (window as any).currentOpenAIAudio = null;
-          console.log("QR SCAN: Welcome message completed");
+          console.log("QR SCAN: Cached welcome message completed");
         };
         
         audio.onerror = () => {
@@ -156,21 +172,61 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             setIsResponding(false);
             setShowAskButton(true);
           }
-          URL.revokeObjectURL(audioUrl);
           (window as any).currentOpenAIAudio = null;
-          console.error("QR SCAN: Audio playback error");
+          console.error("QR SCAN: Cached audio playback error");
         };
         
         audio.play();
-        console.log("QR SCAN: Playing welcome message via OpenAI TTS");
-      })
-      .catch(error => {
-        console.error("QR SCAN: TTS error:", error);
-        if (!isManuallyClosedRef.current) {
-          setIsResponding(false);
-          setShowAskButton(true);
-        }
-      });
+      } else {
+        // Fallback to generating audio if cache is not ready
+        console.log("QR SCAN: Cache not ready, generating welcome message");
+        const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+        
+        fetch('/api/text-to-speech', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: welcomeMessage })
+        })
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+          const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          
+          // Store reference for potential stopping
+          (window as any).currentOpenAIAudio = audio;
+          
+          audio.onended = () => {
+            if (!isManuallyClosedRef.current) {
+              setIsResponding(false);
+              setShowAskButton(true);
+            }
+            URL.revokeObjectURL(audioUrl);
+            (window as any).currentOpenAIAudio = null;
+            console.log("QR SCAN: Welcome message completed");
+          };
+          
+          audio.onerror = () => {
+            if (!isManuallyClosedRef.current) {
+              setIsResponding(false);
+              setShowAskButton(true);
+            }
+            URL.revokeObjectURL(audioUrl);
+            (window as any).currentOpenAIAudio = null;
+            console.error("QR SCAN: Audio playback error");
+          };
+          
+          audio.play();
+          console.log("QR SCAN: Playing welcome message via OpenAI TTS");
+        })
+        .catch(error => {
+          console.error("QR SCAN: TTS error:", error);
+          if (!isManuallyClosedRef.current) {
+            setIsResponding(false);
+            setShowAskButton(true);
+          }
+        });
+      }
     };
 
     // Custom audio playback handler for suggestion responses

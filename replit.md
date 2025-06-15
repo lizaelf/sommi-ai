@@ -44,6 +44,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **Horizontal Suggestion Layout**: Suggestion pills display in single scrollable horizontal line for cleaner interface
+- **Welcome Message Caching**: Pre-cached welcome audio for immediate playback without TTS generation delay
 - **Ask Button Fix**: Resolved reference error preventing Ask button functionality in voice assistant interface
 - **Limited Suggestion Display**: Suggestion pills now show 3 at once instead of all available suggestions for cleaner interface
 - **TTS Speed Normalization**: Restored TTS speed to 1.0 (normal rate) for optimal user experience
