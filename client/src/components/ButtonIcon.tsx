@@ -174,6 +174,25 @@ export function ButtonIcon({
     }, 1500);
   };
 
+  // Function to handle confirmed delete action
+  const handleConfirmDelete = async () => {
+    console.log("Account deletion confirmed");
+    closeBottomSheet();
+    
+    // Clear chat history
+    await clearChatHistory();
+    
+    toast({
+      title: "Account Deleted",
+      description: "Your account has been deleted and chat history cleared.",
+    });
+    
+    // Reload page after short delay to ensure fresh state
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  };
+
   // Portal setup effect
   useEffect(() => {
     let element = document.getElementById("profile-menu-portal");
@@ -428,17 +447,8 @@ export function ButtonIcon({
                   ...typography.h2,
                 }}
               >
-                Chat history cleared
+                Delete account?
               </h2>
-              <p
-                style={{
-                  color: "#CECECE",
-                  margin: "0",
-                  ...typography.body,
-                }}
-              >
-                How would you like to continue?
-              </p>
             </div>
 
             {/* Action Buttons */}
@@ -450,20 +460,7 @@ export function ButtonIcon({
               }}
             >
               <Button
-                onClick={handleTextChoice}
-                variant="primary"
-                style={{
-                  width: "100%",
-                  height: "56px",
-                  ...typography.body,
-                  fontWeight: "600",
-                }}
-              >
-                Continue with Text
-              </Button>
-              
-              <Button
-                onClick={handleVoiceChoice}
+                onClick={closeBottomSheet}
                 variant="secondary"
                 style={{
                   width: "100%",
@@ -472,8 +469,32 @@ export function ButtonIcon({
                   fontWeight: "600",
                 }}
               >
-                🎤 Continue with Voice
+                Don't delete
               </Button>
+              
+              <button
+                onClick={handleConfirmDelete}
+                style={{
+                  width: "100%",
+                  height: "56px",
+                  backgroundColor: "#8B0000",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s ease",
+                  ...typography.body,
+                  fontWeight: "600",
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = "#A52A2A";
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = "#8B0000";
+                }}
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>,
