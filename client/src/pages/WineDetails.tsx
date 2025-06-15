@@ -312,6 +312,10 @@ export default function WineDetails() {
   const handleSendMessage = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
 
+    console.log("=== STARTING CHAT MESSAGE ===");
+    console.log("Content:", content);
+    console.log("Conversation ID:", currentConversationId);
+
     setHideSuggestions(true);
     setIsTyping(true);
 
@@ -325,6 +329,7 @@ export default function WineDetails() {
       };
 
       await addMessage(tempUserMessage);
+      console.log("User message added successfully");
 
       const requestBody = {
         messages: [{ role: "user", content }],
@@ -333,6 +338,8 @@ export default function WineDetails() {
         optimize_for_speed: true,
         text_only: true,
       };
+
+      console.log("Request body:", requestBody);
 
       const response = await fetch("/api/chat", {
         method: "POST",
