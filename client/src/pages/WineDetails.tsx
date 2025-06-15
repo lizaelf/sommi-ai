@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
-import { Link, useLocation, useParams } from 'wouter';
-import EnhancedChatInterface from '@/components/EnhancedChatInterface';
-import QRScanModal from '@/components/QRScanModal';
-import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
-import { DataSyncManager } from '@/utils/dataSync';
-import WineBottleImage from '@/components/WineBottleImage';
-import USFlagImage from '@/components/USFlagImage';
-import WineRating from '@/components/WineRating';
-import Button from '@/components/ui/Button';
-import typography from '@/styles/typography';
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
+import { Link, useLocation, useParams } from "wouter";
+import EnhancedChatInterface from "@/components/EnhancedChatInterface";
+import QRScanModal from "@/components/QRScanModal";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import { DataSyncManager } from "@/utils/dataSync";
+import WineBottleImage from "@/components/WineBottleImage";
+import USFlagImage from "@/components/USFlagImage";
+import WineRating from "@/components/WineRating";
+import Button from "@/components/ui/Button";
+import typography from "@/styles/typography";
 
 interface SelectedWine {
   id: number;
@@ -43,8 +43,8 @@ export default function WineDetails() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const isQRScan = new URLSearchParams(window.location.search).has('wine');
-  const isScannedPage = location === '/scanned';
+  const isQRScan = new URLSearchParams(window.location.search).has("wine");
+  const isScannedPage = location === "/scanned";
 
   // Helper functions for wine data
   const getWineHistory = () => {
@@ -99,15 +99,25 @@ export default function WineDetails() {
 
     // Get wine ID from URL params (either route param or query param)
     const urlParams = new URLSearchParams(window.location.search);
-    const wineIdFromQuery = urlParams.get('wine');
-    const wineId = id || wineIdFromQuery || '1'; // Default to wine ID 1 if none provided
+    const wineIdFromQuery = urlParams.get("wine");
+    const wineId = id || wineIdFromQuery || "1"; // Default to wine ID 1 if none provided
 
-    console.log('WineDetails: Checking for wine ID:', { id, wineIdFromQuery, wineId, location });
+    console.log("WineDetails: Checking for wine ID:", {
+      id,
+      wineIdFromQuery,
+      wineId,
+      location,
+    });
 
     if (wineId && !wine) {
       const wineData = DataSyncManager.getWineById(parseInt(wineId));
       if (wineData) {
-        console.log('WineDetails: Looking for wine ID', wineId, 'found:', wineData);
+        console.log(
+          "WineDetails: Looking for wine ID",
+          wineId,
+          "found:",
+          wineData,
+        );
         const transformedWine = {
           id: wineData.id,
           name: wineData.name,
@@ -121,12 +131,15 @@ export default function WineDetails() {
           location: wineData.location,
           description: wineData.description,
           foodPairing: wineData.foodPairing,
-          conversationHistory: wineData.conversationHistory || []
+          conversationHistory: wineData.conversationHistory || [],
         };
         setWine(transformedWine);
-        console.log('WineDetails: Wine loaded successfully:', transformedWine.name);
+        console.log(
+          "WineDetails: Wine loaded successfully:",
+          transformedWine.name,
+        );
       } else {
-        console.log('WineDetails: Wine not found for ID:', wineId);
+        console.log("WineDetails: Wine not found for ID:", wineId);
       }
     }
   }, [id, wine, location]);
@@ -151,27 +164,27 @@ export default function WineDetails() {
 
   const handleQRReset = (event: Event) => {
     const detail = (event as CustomEvent).detail;
-    if (detail?.action === 'voice') {
-      console.log('🎤 Voice interaction selected');
+    if (detail?.action === "voice") {
+      console.log("🎤 Voice interaction selected");
       setInteractionChoiceMade(true);
       setShowQRModal(false);
-    } else if (detail?.action === 'text') {
-      console.log('💬 Text interaction selected');
+    } else if (detail?.action === "text") {
+      console.log("💬 Text interaction selected");
       setInteractionChoiceMade(true);
       setShowQRModal(false);
     }
   };
 
   useEffect(() => {
-    window.addEventListener('qr-reset', handleQRReset);
+    window.addEventListener("qr-reset", handleQRReset);
     return () => {
-      window.removeEventListener('qr-reset', handleQRReset);
+      window.removeEventListener("qr-reset", handleQRReset);
     };
   }, []);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
-    console.log('Wine image loaded successfully:', wine?.image);
+    console.log("Wine image loaded successfully:", wine?.image);
   };
 
   // Optimized scrolling initialization
@@ -219,7 +232,6 @@ export default function WineDetails() {
         className="w-full flex flex-col items-center justify-center py-8 relative"
         style={{
           minHeight: "100vh", // Make the div full screen height
-          marginBottom: "24px",
         }}
       >
         {/* Wine bottle image - THIS CONTAINS THE BLURRED CIRCLE/GLOW EFFECT */}
@@ -241,7 +253,9 @@ export default function WineDetails() {
             ...typography.h1,
           }}
         >
-          {wine ? `${wine.year ? wine.year + ' ' : '2021 '}${wine.name}` : `2021 Wine Name`}
+          {wine
+            ? `${wine.year ? wine.year + " " : "2021 "}${wine.name}`
+            : `2021 Wine Name`}
         </div>
 
         {/* Wine region with typography styling and flag */}
@@ -269,96 +283,17 @@ export default function WineDetails() {
           </span>
         </div>
 
-        {/* Wine ratings section - Inline display */}
-        <div
+        {/* Wine ratings section */}
+        <WineRating
+          ratings={wine ? wine.ratings : { vn: 95, jd: 93, ws: 93, abv: 14.3 }}
+          align="left"
           style={{
             position: "relative",
             zIndex: 2,
             padding: "0 20px",
             marginBottom: "32px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "24px",
-            flexWrap: "wrap",
           }}
-        >
-          {/* VN Rating */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ 
-              color: "#FFD700", 
-              fontSize: "18px", 
-              fontWeight: "bold",
-              ...typography.h3 
-            }}>
-              {wine?.ratings?.vn || 95}
-            </div>
-            <div style={{ 
-              color: "rgba(255, 255, 255, 0.6)", 
-              fontSize: "12px",
-              ...typography.caption 
-            }}>
-              VN
-            </div>
-          </div>
-
-          {/* JD Rating */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ 
-              color: "#FFD700", 
-              fontSize: "18px", 
-              fontWeight: "bold",
-              ...typography.h3 
-            }}>
-              {wine?.ratings?.jd || 93}
-            </div>
-            <div style={{ 
-              color: "rgba(255, 255, 255, 0.6)", 
-              fontSize: "12px",
-              ...typography.caption 
-            }}>
-              JD
-            </div>
-          </div>
-
-          {/* WS Rating */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ 
-              color: "#FFD700", 
-              fontSize: "18px", 
-              fontWeight: "bold",
-              ...typography.h3 
-            }}>
-              {wine?.ratings?.ws || 93}
-            </div>
-            <div style={{ 
-              color: "rgba(255, 255, 255, 0.6)", 
-              fontSize: "12px",
-              ...typography.caption 
-            }}>
-              WS
-            </div>
-          </div>
-
-          {/* ABV */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ 
-              color: "#FFD700", 
-              fontSize: "18px", 
-              fontWeight: "bold",
-              ...typography.h3 
-            }}>
-              {wine?.ratings?.abv || 14.3}%
-            </div>
-            <div style={{ 
-              color: "rgba(255, 255, 255, 0.6)", 
-              fontSize: "12px",
-              ...typography.caption 
-            }}>
-              ABV
-            </div>
-          </div>
-        </div>
+        />
 
         {/* Historic Heritage Section - Moved below ratings */}
         <div
@@ -761,7 +696,9 @@ export default function WineDetails() {
                 xmlns="http://www.w3.org/2000/svg"
                 style={{
                   transform:
-                    expandedItem === "avoid" ? "rotate(180deg)" : "rotate(0deg)",
+                    expandedItem === "avoid"
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
                   transition: "transform 0.3s ease",
                 }}
               >
@@ -1016,32 +953,42 @@ export default function WineDetails() {
             })()}
           </div>
         </div>
-      </div>
 
-        {/* Enhanced Chat Interface - With background override */}
+        {/* Chat Section - Integrated within wine container */}
         <div
-          className="chat-interface-wrapper"
           style={{
-            backgroundColor: "transparent",
+            width: "100%",
+            padding: "0 20px",
+            marginBottom: "40px",
+            marginTop: "40px",
           }}
         >
-          <style>{`
-            .chat-interface-wrapper * {
-              background-color: transparent !important;
-              background: transparent !important;
+          <h1
+            style={{
+              ...typography.h1,
+              color: "white",
+              marginBottom: "24px",
+              textAlign: "left",
+            }}
+          >
+            Chat
+          </h1>
+          <EnhancedChatInterface
+            showBuyButton={false}
+            selectedWine={
+              wine
+                ? {
+                    id: wine.id,
+                    name: wine.name,
+                    image: wine.image,
+                    bottles: wine.bottles,
+                    ratings: wine.ratings,
+                  }
+                : null
             }
-          `}</style>
-          <EnhancedChatInterface 
-            showBuyButton={true} 
-            selectedWine={wine ? {
-              id: wine.id,
-              name: wine.name,
-              image: wine.image,
-              bottles: wine.bottles,
-              ratings: wine.ratings
-            } : null} 
           />
         </div>
+      </div>
 
       {/* QR Modal */}
       <QRScanModal
