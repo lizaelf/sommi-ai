@@ -48,6 +48,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Backend API Enhancement**: Added suggestion cycling logic that returns all suggestions when none remain unused
 - **Database Reset Functionality**: Implemented resetUsedSuggestionPills method with DELETE endpoint for cycling
 - **Seamless User Experience**: Suggestions now cycle continuously without "All suggestions explored" dead-end state
+- **Voice Assistant Suggestions Always Visible**: Changed showSuggestions default to true in VoiceBottomSheet for consistent availability
+- **Code Cleanup**: Removed unused SuggestionButtons component, keeping only active SuggestionPills component
 - **Instant Voice Response Fix**: Completed comprehensive voice assistant fix with immediate cached TTS playback
 - **Function Signature Resolution**: Fixed all component interface mismatches preventing instant voice responses
 - **State Management Enhancement**: Added proper event handling for cached response completion
