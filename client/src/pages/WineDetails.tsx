@@ -417,6 +417,55 @@ export default function WineDetails() {
     }
   };
 
+  // Dedicated text-only handler for chat suggestions - bypasses VoiceAssistant
+  const handleTextOnlySuggestion = async (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
+    console.log("Chat context - handling text-only suggestion:", suggestion, "with options:", options);
+    
+    // Handle instant cached responses for text-only context
+    if (options?.instantResponse) {
+      console.log("Chat context - using cached response for instant text display");
+      
+      // Add user message
+      const userMessage = {
+        id: Date.now(),
+        content: suggestion,
+        role: "user" as const,
+        conversationId: currentConversationId || 0,
+        createdAt: new Date().toISOString(),
+      };
+      
+      // Add assistant message with cached response
+      const assistantMessage = {
+        id: Date.now() + 1,
+        content: options.instantResponse,
+        role: "assistant" as const,
+        conversationId: currentConversationId || 0,
+        createdAt: new Date().toISOString(),
+      };
+      
+      // Add both messages to conversation
+      await addMessage(userMessage);
+      await addMessage(assistantMessage);
+      
+      // Auto-scroll to show the question
+      setTimeout(() => {
+        const chatSection = document.querySelector('[data-chat-section="true"]');
+        if (chatSection) {
+          const lastMessage = chatSection.lastElementChild;
+          if (lastMessage) {
+            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }
+        }
+      }, 100);
+      
+      return;
+    }
+    
+    // For non-cached suggestions, use regular text-only API call
+    console.log("Chat context - no cache, making text-only API call");
+    handleSendMessage(suggestion, pillId, { textOnly: true });
+  };
+
   const handleSendMessage = async (content: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
     if (content.trim() === "" || !currentConversationId) return;
 
@@ -1802,7 +1851,7 @@ export default function WineDetails() {
                       <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 w-full">
                         <SuggestionPills
                           wineKey={wine ? `wine_${wine.id}` : 'default_wine'}
-                          onSuggestionClick={handleSendMessage}
+                          onSuggestionClick={handleTextOnlySuggestion}
                           isDisabled={isTyping}
                           preferredResponseType="text"
                           context="chat"
