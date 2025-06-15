@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import CircleAnimation from './CircleAnimation';
 import { ShiningText } from './ShiningText';
 import Button from '@/components/ui/Button';
-import SuggestionButtons from './SuggestionButtons';
+import SuggestionPills from './SuggestionPills';
 
 interface VoiceBottomSheetProps {
   isOpen: boolean;
@@ -19,23 +19,13 @@ interface VoiceBottomSheetProps {
   showUnmuteButton?: boolean;
   isLoadingAudio?: boolean;
   isVoiceActive?: boolean;
+  wineKey?: string;
   onSuggestionClick?: (suggestion: string) => void;
   onListenResponse?: () => void;
   onUnmute?: () => void;
 }
 
-// Precomputed response cache for suggestions
-const SUGGESTION_CACHE = new Map<string, { response: string; audio?: Blob }>([
-  ["Food pairing", {
-    response: "Ridge \"Lytton Springs\" Dry Creek Zinfandel pairs beautifully with grilled lamb, BBQ ribs, aged cheddar, and dark chocolate desserts. The wine's bold tannins and peppery spice complement rich, savory dishes perfectly."
-  }],
-  ["Tasting notes", {
-    response: "This 2021 Ridge \"Lytton Springs\" Dry Creek Zinfandel exhibits rich blackberry and raspberry notes with peppery spice typical of the varietal. Matured in American oak, it has well-structured tannins and a finish that resonates with Dry Creek Valley minerality."
-  }],
-  ["Serving", {
-    response: "Serve Ridge \"Lytton Springs\" Dry Creek Zinfandel at 60-65°F (15-18°C). Decant for 30 minutes to an hour to open up its complex aromas. Use a large-bowled glass to concentrate the wine's bouquet for optimal tasting experience."
-  }]
-]);
+
 
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   isOpen,
@@ -51,106 +41,16 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   showUnmuteButton = false,
   isLoadingAudio = false,
   isVoiceActive = false,
+  wineKey = '',
   onSuggestionClick,
   onListenResponse,
   onUnmute
 }) => {
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-  const suggestions = ["Food pairing", "Tasting notes", "Serving"];
-  const [precomputingCache, setPrecomputingCache] = useState(false);
 
-  // Precompute audio for all cached responses
-  useEffect(() => {
-    if (!precomputingCache && isOpen) {
-      setPrecomputingCache(true);
-      precomputeSuggestionAudio();
-    }
-  }, [isOpen, precomputingCache]);
 
-  const precomputeSuggestionAudio = async () => {
-    console.log("Precomputing audio for suggestion responses...");
-    
-    const entries = Array.from(SUGGESTION_CACHE.entries());
-    for (const [suggestion, cached] of entries) {
-      if (!cached.audio) {
-        try {
-          const response = await fetch('/api/text-to-speech', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: cached.response })
-          });
-          
-          if (response.ok) {
-            const audioBuffer = await response.arrayBuffer();
-            const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-            cached.audio = audioBlob;
-            console.log(`Precomputed audio for: ${suggestion}`);
-          }
-        } catch (error) {
-          console.warn(`Failed to precompute audio for ${suggestion}:`, error);
-        }
-      }
-    }
-  };
 
-  const handleSuggestionClick = async (suggestion: string) => {
-    const cached = SUGGESTION_CACHE.get(suggestion);
-    
-    if (cached) {
-      console.log(`Using precomputed response for: ${suggestion}`);
-      
-      // Stop any currently playing audio first
-      if ((window as any).currentOpenAIAudio) {
-        (window as any).currentOpenAIAudio.pause();
-        (window as any).currentOpenAIAudio.currentTime = 0;
-        (window as any).currentOpenAIAudio = null;
-      }
-      
-      // Stop browser speech synthesis
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-      
-      // Add user message first
-      const userMessage = {
-        role: "user" as const,
-        content: suggestion,
-        id: Date.now(),
-        timestamp: new Date().toISOString(),
-        conversationId: 0
-      };
-      
-      // Dispatch user message first
-      window.dispatchEvent(new CustomEvent('immediateResponse', {
-        detail: { message: userMessage, audio: null }
-      }));
-      
-      // Then dispatch assistant response with slight delay
-      setTimeout(() => {
-        const assistantMessage = {
-          role: "assistant" as const,
-          content: cached.response,
-          id: Date.now() + 1,
-          timestamp: new Date().toISOString(),
-          conversationId: 0
-        };
-        
-        window.dispatchEvent(new CustomEvent('immediateResponse', {
-          detail: { message: assistantMessage, audio: cached.audio }
-        }));
-        
-        // Trigger mute state to show Stop button instead of Ask
-        window.dispatchEvent(new CustomEvent('suggestionPlaybackStarted'));
-      }, 100);
-      
-      return; // Exit early to prevent fallback API call
-    }
-    
-    // Fallback to original handler if no cache
-    if (onSuggestionClick) {
-      onSuggestionClick(suggestion);
-    }
-  };
+
 
   useEffect(() => {
     let element = document.getElementById('voice-bottom-sheet-portal');
@@ -399,12 +299,19 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   paddingLeft: '16px',
                   paddingRight: '16px'
                 }}>
-                  {/* All Suggestions in One Row */}
-                  <SuggestionButtons
-                    suggestions={suggestions}
-                    onSuggestionClick={handleSuggestionClick}
-                    responseMode="text-voice"
-                  />
+                  {/* Wine-specific suggestion pills with text+voice responses */}
+                  <div className="scrollbar-hide overflow-x-auto">
+                    <SuggestionPills
+                      wineKey={wineKey}
+                      onSuggestionClick={(prompt, pillId, options) => {
+                        // For voice bottom sheet, we want text+voice response (ignore textOnly option)
+                        if (onSuggestionClick) {
+                          onSuggestionClick(prompt);
+                        }
+                      }}
+                      isDisabled={isListening || isResponding || isThinking}
+                    />
+                  </div>
                 </div>
               )}
 
