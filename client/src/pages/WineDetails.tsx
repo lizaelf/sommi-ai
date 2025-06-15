@@ -1,22 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { ArrowLeft, MoreHorizontal, Trash2, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import QRScanModal from "@/components/QRScanModal";
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
-import WineBottleImage from "@/components/WineBottleImage";
-import USFlagImage from "@/components/USFlagImage";
-import WineRating from "@/components/WineRating";
 import Button from "@/components/ui/Button";
-import ChatInput from "@/components/ChatInput";
-import VoiceAssistant from "@/components/VoiceAssistant";
-import SuggestionPills from "@/components/SuggestionPills";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
-import { ShiningText } from "@/components/ShiningText";
 import { suggestionCache } from "@/utils/suggestionCache";
 import {
   createStreamingClient,
@@ -26,6 +19,13 @@ import ContactBottomSheet, {
   ContactFormData,
 } from "@/components/ContactBottomSheet";
 import typography from "@/styles/typography";
+import {
+  WineDetailsHeader,
+  WineInfoSection,
+  FoodPairingSection,
+  ChatInterface,
+  VoiceAssistantContainer
+} from "@/components/wine-details";
 
 interface SelectedWine {
   id: number;
@@ -980,116 +980,67 @@ export default function WineDetails() {
       className="bg-black text-white"
       style={{ minHeight: "100vh", overflowY: "auto", overflowX: "hidden" }}
     >
-      <AppHeader />
+      <WineDetailsHeader
+        showActions={showActions}
+        onToggleActions={() => setShowActions(!showActions)}
+        onDeleteAccount={handleDeleteAccount}
+      />
       <HeaderSpacer />
 
-      {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
-      <div
-        className="w-full flex flex-col items-center justify-center py-8 relative"
-        style={{
-          minHeight: "100vh", // Make the div full screen height
+      <WineInfoSection
+        wine={wine}
+        onImageLoad={handleImageLoad}
+        imageLoaded={imageLoaded}
+      />
+
+      <FoodPairingSection
+        expandedItem={expandedItem}
+        onToggleExpanded={toggleExpanded}
+      />
+
+      <ChatInterface
+        wine={wine}
+        messages={messages}
+        isTyping={isTyping}
+        isKeyboardFocused={isKeyboardFocused}
+        showScrollToBottom={showScrollToBottom}
+        onSendMessage={handleSendMessage}
+        onTextOnlySuggestion={handleTextOnlySuggestion}
+        onScrollToBottom={scrollToBottom}
+        onFocus={() => setIsKeyboardFocused(true)}
+        onBlur={() => setIsKeyboardFocused(false)}
+        voiceButtonComponent={
+          <VoiceAssistantContainer
+            wine={wine}
+            isTyping={isTyping}
+            onSendMessage={handleSendMessage}
+          />
+        }
+      />
+
+      <ContactBottomSheet
+        isOpen={animationState !== "closed"}
+        onClose={handleCloseContactSheet}
+        onSubmit={handleSubmit}
+      />
+
+      <QRScanModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        onTextChoice={() => {
+          setInteractionChoiceMade(true);
+          setShowQRModal(false);
         }}
-      >
-        {/* Wine bottle image - THIS CONTAINS THE BLURRED CIRCLE/GLOW EFFECT */}
-        <WineBottleImage image={wine?.image} wineName={wine?.name} />
+        onVoiceChoice={() => {
+          setInteractionChoiceMade(true);
+          setShowQRModal(false);
+        }}
+      />
+    </div>
+  );
+}
 
-        {/* Wine name with typography styling */}
-        <div
-          style={{
-            width: "100%",
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            color: "white",
-            wordWrap: "break-word",
-            position: "relative",
-            zIndex: 2,
-            padding: "0 20px",
-            marginBottom: "20px",
-            ...typography.h1,
-          }}
-        >
-          {wine ? `2021 ${wine.name}` : `2021 Wine Name`}
-        </div>
-
-        {/* Wine region with typography styling and flag */}
-        <div
-          style={{
-            textAlign: "left",
-            justifyContent: "flex-start",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            color: "rgba(255, 255, 255, 0.60)",
-            wordWrap: "break-word",
-            position: "relative",
-            zIndex: 2,
-            padding: "0 20px",
-            gap: "6px",
-            marginBottom: "20px",
-            ...typography.body1R,
-          }}
-        >
-          <USFlagImage />
-          <span>
-            {wine?.location ||
-              "Santa Cruz Mountains | California | United States"}
-          </span>
-        </div>
-
-        {/* Wine ratings section */}
-        <WineRating
-          ratings={wine ? wine.ratings : { vn: 95, jd: 93, ws: 93, abv: 14.3 }}
-          align="left"
-          style={{
-            position: "relative",
-            zIndex: 2,
-            padding: "0 20px",
-            marginBottom: "32px",
-          }}
-        />
-
-        {/* Historic Heritage Section - Moved below ratings */}
-        <div
-          style={{
-            width: "100%",
-            padding: "0 20px",
-            marginBottom: "32px",
-          }}
-        >
-          <p
-            style={{
-              color: "white",
-              textAlign: "left",
-              marginBottom: "16px",
-              ...typography.body,
-            }}
-          >
-            {getWineHistory()}
-          </p>
-        </div>
-
-        {/* Food Pairing Section */}
-        <div
-          style={{
-            width: "100%",
-            padding: "0 20px",
-            marginBottom: "20px",
-          }}
-        >
-          <h1
-            style={{
-              ...typography.h1,
-              color: "white",
-              marginBottom: "24px",
-              textAlign: "left",
-            }}
-          >
-            Food pairing
-          </h1>
-
-          {/* Red Meat Pairing - Expandable */}
-          <div
+export default WineDetails;
             onClick={() => {
               setExpandedItem(expandedItem === "redMeat" ? null : "redMeat");
             }}
