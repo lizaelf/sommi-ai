@@ -107,9 +107,9 @@ export default function SuggestionPills({
         console.log("💾 Using cached response:", !!instantResponse);
       }
 
-      // FOR VOICE CONTEXT WITH INSTANT RESPONSE: Handle completely independently
+      // FOR VOICE CONTEXT WITH INSTANT RESPONSE: Handle with voice + text
       if (context === "voice-assistant" && instantResponse) {
-        console.log("🚀 VOICE + CACHED: Playing immediately without voice assistant");
+        console.log("🚀 VOICE + CACHED: Playing voice + text response");
         
         // Add messages to chat using the working event system
         const userMessage = {
@@ -133,7 +133,7 @@ export default function SuggestionPills({
           detail: { userMessage, assistantMessage } 
         }));
         
-        // Simple browser TTS (most reliable)
+        // Simple browser TTS for voice assistant context
         const utterance = new SpeechSynthesisUtterance(instantResponse);
         
         // Use consistent male voice
@@ -150,17 +150,17 @@ export default function SuggestionPills({
         utterance.volume = 1.0;
         
         utterance.onstart = () => {
-          console.log("✅ VOICE + CACHED: Audio started");
+          console.log("✅ VOICE CONTEXT: Audio started");
         };
         
         utterance.onend = () => {
-          console.log("✅ VOICE + CACHED: Audio ended - no voice states needed");
+          console.log("✅ VOICE CONTEXT: Audio ended");
         };
         
         speechSynthesis.cancel(); // Clear any existing speech
         speechSynthesis.speak(utterance);
         
-        console.log("✅ VOICE + CACHED: Complete bypass - no voice assistant involved");
+        console.log("✅ VOICE CONTEXT: Voice + text response completed");
         
         // Mark as used in background
         try {
@@ -181,14 +181,61 @@ export default function SuggestionPills({
         return; // EXIT EARLY - Don't call parent callback!
       }
 
-      // For chat context or non-cached responses, use normal flow
+      // FOR CHAT CONTEXT WITH INSTANT RESPONSE: Handle text-only
+      if (context === "chat" && instantResponse) {
+        console.log("💬 CHAT + CACHED: Text-only response");
+        
+        // Add messages to chat using the working event system
+        const userMessage = {
+          id: Date.now(),
+          content: pill.prompt,
+          role: "user" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        const assistantMessage = {
+          id: Date.now() + 1,
+          content: instantResponse,
+          role: "assistant" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Use the working addChatMessage event
+        window.dispatchEvent(new CustomEvent('addChatMessage', { 
+          detail: { userMessage, assistantMessage } 
+        }));
+        
+        console.log("💬 CHAT CONTEXT: Text-only response completed (no voice)");
+        
+        // Mark as used in background
+        try {
+          await fetch('/api/suggestion-pills/used', {
+            method: 'POST',
+            body: JSON.stringify({
+              wineKey,
+              suggestionId: pill.id,
+              userId: null,
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          });
+          refetch();
+        } catch (error) {
+          console.error('Error marking pill as used:', error);
+        }
+        
+        return; // Complete exit - everything handled
+      }
+
+      // For non-cached responses, use normal flow
       const options = {
         textOnly: context === "chat",
-        instantResponse: context === "chat" ? instantResponse : undefined,
+        instantResponse: undefined,
         conversationId,
       };
 
-      // Only call parent for non-cached voice or any chat context
+      // Call parent for non-cached responses
       onSuggestionClick(pill.prompt, pill.id, options);
 
       // Mark as used in background
