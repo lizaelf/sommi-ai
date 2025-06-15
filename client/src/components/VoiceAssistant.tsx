@@ -1050,13 +1050,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       return;
     }
     
-    // CRITICAL: If there's an instant response, DON'T show voice assistant states
-    // The SuggestionPills component already handled the audio playback
+    // CRITICAL: If there's an instant response, the SuggestionPills already handled everything
+    // Don't do ANYTHING - no states, no API calls, no audio - SuggestionPills did it all
     if (options?.instantResponse) {
-      console.log("🚀 VoiceAssistant: Cached response detected - NO voice states needed!");
-      // Don't set any voice assistant states - audio is already playing
-      // Don't call onSendMessage - messages already added by SuggestionPills
-      return;
+      console.log("🚀 VoiceAssistant: Cached response detected - SuggestionPills handled everything!");
+      console.log("🚀 VoiceAssistant: NO action needed - audio already playing, messages already added");
+      return; // Complete early exit - don't interfere at all
     }
     
     // Only for non-cached suggestions, use normal flow

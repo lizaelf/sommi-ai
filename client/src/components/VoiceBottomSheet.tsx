@@ -305,10 +305,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     <SuggestionPills
                       wineKey={wineKey}
                       onSuggestionClick={(prompt, pillId, options) => {
-                        console.log("VoiceBottomSheet: Suggestion clicked:", prompt);
+                        console.log("VoiceBottomSheet: Suggestion clicked:", prompt, "options:", options);
                         
-                        // Let SuggestionPills handle everything for cached responses
-                        // Just pass through to the parent onSuggestionClick
+                        // Just pass everything through to VoiceAssistant - let SuggestionPills handle cached responses
                         if (onSuggestionClick) {
                           onSuggestionClick(prompt, pillId, options);
                         }
