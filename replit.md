@@ -83,6 +83,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - Simplified chat integration removing complex full-screen wrapper and background conflicts
   - Isolated chat interface with black background and negative margin for seamless wine-to-chat transition
   - Enhanced suggestion buttons to work as text-only responses with explicit audio disabled
+  - Replaced hardcoded suggestion buttons with SuggestionPills component using parsed table data for dynamic wine-specific suggestions
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
 - **Code Organization**: Improved maintainability with smaller, focused components following React composition patterns

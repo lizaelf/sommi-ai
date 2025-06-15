@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceAssistant from "./VoiceAssistant";
+import SuggestionPills from "./SuggestionPills";
 import Button from "./ui/Button";
 import { FormInput } from "./ui/FormInput";
 import { useConversation } from "@/hooks/UseConversation";
@@ -899,33 +900,19 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 </Button>
               ) : (
                 <>
-                  {/* Suggestion chips */}
+                  {/* Suggestion Pills from parsed table */}
                   <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                    <Button
-                      onClick={() => handleSuggestionClick("Tasting notes")}
-                      variant="secondary"
-                      style={{ height: "32px" }}
-                    >
-                      Tasting notes
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        handleSuggestionClick("Simple recipes for this wine")
-                      }
-                      variant="secondary"
-                      style={{ height: "32px" }}
-                    >
-                      Simple recipes
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        handleSuggestionClick("Where is this wine from?")
-                      }
-                      variant="secondary"
-                      style={{ height: "32px" }}
-                    >
-                      Where it's from
-                    </Button>
+                    <SuggestionPills
+                      wineKey={currentWine ? `wine_${currentWine.id}` : "default"}
+                      conversationId={currentConversationId?.toString()}
+                      onSuggestionClick={(prompt, pillId, options) => {
+                        console.log("EnhancedChatInterface: SuggestionPills clicked:", prompt);
+                        handleSuggestionClick(prompt);
+                      }}
+                      isDisabled={isTyping}
+                      preferredResponseType="text"
+                      context="chat"
+                    />
                   </div>
                   <ChatInput
                     onSendMessage={handleSendMessage}
