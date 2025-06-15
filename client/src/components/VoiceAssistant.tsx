@@ -11,11 +11,13 @@ import {
 interface VoiceAssistantProps {
   onSendMessage: (message: string) => void;
   isProcessing: boolean;
+  wineKey?: string;
 }
 
 const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   onSendMessage,
   isProcessing,
+  wineKey = '',
 }) => {
   const [isListening, setIsListening] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
@@ -1822,6 +1824,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         isResponding={isResponding}
         isThinking={isThinking}
         isVoiceActive={isVoiceActive}
+        wineKey={wineKey}
         showSuggestions={showAskButton && !isListening && !isResponding && !isThinking}
         showUnmuteButton={
           showUnmuteButton && !isListening && !isResponding && !isThinking

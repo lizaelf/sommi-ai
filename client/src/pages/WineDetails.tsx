@@ -1549,6 +1549,7 @@ export default function WineDetails() {
                           <VoiceAssistant
                             onSendMessage={handleSendMessage}
                             isProcessing={isTyping}
+                            wineKey={wine ? `${wine.name}_${wine.year || ''}` : ''}
                           />
                         }
                       />
