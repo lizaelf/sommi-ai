@@ -54,7 +54,7 @@ export default function SuggestionButtons({ wineKey, onSuggestionClick, isDisabl
       // Update local state to track usage
       setUsedButtons(prev => new Set(Array.from(prev).concat(button.id)));
 
-      // Trigger the suggestion with voice response (no textOnly flag for voice assistant)
+      // Trigger the suggestion with voice response (voice assistant buttons never use textOnly)
       onSuggestionClick(button.prompt, button.id);
 
       // Refetch to get updated data
@@ -98,12 +98,11 @@ export default function SuggestionButtons({ wineKey, onSuggestionClick, isDisabl
       }}
     >
       {visibleButtons.map((button: SuggestionButton) => (
-        <Button
+        <button
           key={button.id}
-          variant="secondary"
           onClick={() => handleButtonClick(button)}
           disabled={isDisabled}
-          className="whitespace-nowrap flex-shrink-0 text-white border-white/20 hover:bg-white/10 bg-transparent"
+          className="whitespace-nowrap flex-shrink-0 text-white border border-white/20 hover:bg-white/10 bg-transparent disabled:opacity-50"
           style={{
             minWidth: 'fit-content',
             padding: '6px 12px',
@@ -114,7 +113,7 @@ export default function SuggestionButtons({ wineKey, onSuggestionClick, isDisabl
           }}
         >
           {button.text}
-        </Button>
+        </button>
       ))}
     </div>
   );
