@@ -1107,32 +1107,79 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       console.log("Checking lastAssistantMessage:", lastAssistantMessage ? `"${lastAssistantMessage.substring(0, 50)}..."` : "null/undefined");
 
       if (!lastAssistantMessage) {
-        console.warn("No assistant message available to play - attempting fallback");
+        console.warn("No assistant message available to play - attempting comprehensive fallback");
         
-        // Try to get the last assistant message from the messages in the UI
-        const messageElements = document.querySelectorAll('[data-role="assistant"]');
-        if (messageElements.length > 0) {
-          const lastMessageElement = messageElements[messageElements.length - 1];
-          const fallbackText = lastMessageElement.textContent || (lastMessageElement as HTMLElement).innerText;
-          if (fallbackText && fallbackText.trim()) {
-            console.log("Using fallback message from UI:", fallbackText.substring(0, 50) + "...");
-            (window as any).lastAssistantMessageText = fallbackText.trim();
-            // Continue with the TTS generation using the fallback text
-          } else {
-            console.warn("No assistant message available to play and no fallback found");
-            setShowUnmuteButton(true);
-            return;
+        // Multiple fallback strategies for deployed environments
+        let fallbackText = null;
+        
+        // Strategy 1: Look for data-role="assistant" elements
+        const assistantElements = document.querySelectorAll('[data-role="assistant"]');
+        if (assistantElements.length > 0) {
+          const lastElement = assistantElements[assistantElements.length - 1];
+          fallbackText = lastElement.textContent || (lastElement as HTMLElement).innerText;
+        }
+        
+        // Strategy 2: Look for assistant message containers with specific classes
+        if (!fallbackText || !fallbackText.trim()) {
+          const messageContainers = document.querySelectorAll('.message-assistant, .assistant-message, [class*="assistant"]');
+          for (let i = messageContainers.length - 1; i >= 0; i--) {
+            const container = messageContainers[i];
+            const text = container.textContent || (container as HTMLElement).innerText;
+            if (text && text.trim() && text.length > 10) {
+              fallbackText = text;
+              break;
+            }
           }
+        }
+        
+        // Strategy 3: Look for any message that looks like an assistant response
+        if (!fallbackText || !fallbackText.trim()) {
+          const allMessages = document.querySelectorAll('[class*="message"], [data-message], .prose');
+          for (let i = allMessages.length - 1; i >= 0; i--) {
+            const msg = allMessages[i];
+            const text = msg.textContent || (msg as HTMLElement).innerText;
+            // Skip user messages (typically shorter and start with questions)
+            if (text && text.trim().length > 50 && !text.startsWith('?') && !text.startsWith('How') && !text.startsWith('What') && !text.startsWith('Tell me')) {
+              fallbackText = text;
+              break;
+            }
+          }
+        }
+        
+        // Strategy 4: Use cached conversation data if available
+        if (!fallbackText || !fallbackText.trim()) {
+          try {
+            const cachedMessages = localStorage.getItem('recent_messages');
+            if (cachedMessages) {
+              const messages = JSON.parse(cachedMessages);
+              const assistantMessages = messages.filter((m: any) => m.role === 'assistant');
+              if (assistantMessages.length > 0) {
+                fallbackText = assistantMessages[assistantMessages.length - 1].content;
+              }
+            }
+          } catch (e) {
+            console.log("Cache fallback failed:", e);
+          }
+        }
+        
+        if (fallbackText && fallbackText.trim()) {
+          console.log("Using fallback message from comprehensive search:", fallbackText.substring(0, 50) + "...");
+          (window as any).lastAssistantMessageText = fallbackText.trim();
+          // Continue with the TTS generation using the fallback text
         } else {
-          console.warn("No assistant message available to play and no message elements found");
-          setShowUnmuteButton(true);
-          return;
+          console.warn("No assistant message available to play - all fallback strategies failed");
+          // Instead of returning, use a default welcome message for unmute
+          const defaultMessage = "I'm here to help you explore this wine. What would you like to know?";
+          console.log("Using default unmute message");
+          (window as any).lastAssistantMessageText = defaultMessage;
         }
       }
 
+      // Get the final message text after fallback processing
+      const finalMessageText = (window as any).lastAssistantMessageText;
       console.log(
         "Generating new TTS audio for:",
-        lastAssistantMessage.substring(0, 50) + "...",
+        finalMessageText ? finalMessageText.substring(0, 50) + "..." : "No message available",
       );
 
       setIsResponding(true);
@@ -1207,7 +1254,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             const response = await fetch("/api/text-to-speech", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ text: lastAssistantMessage }),
+              body: JSON.stringify({ text: finalMessageText }),
             });
             
             if (timeoutId) {
@@ -1242,7 +1289,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
             
             // Cache the successful audio response to minimize future fallbacks
-            setCachedAudio(lastAssistantMessage, audioBlob);
+            setCachedAudio(finalMessageText, audioBlob);
             
             audioUrl = URL.createObjectURL(audioBlob);
             audio = new Audio(audioUrl);
@@ -1264,14 +1311,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }
           
           // Use browser's built-in speech synthesis as immediate fallback
-          const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
+          const utterance = new SpeechSynthesisUtterance(finalMessageText);
           utterance.rate = 0.9; // Slightly slower for better clarity
           utterance.pitch = 1.0;
           utterance.volume = 0.8;
           
           // Log the full text being spoken for debugging
-          console.log("Browser TTS: Full text length:", lastAssistantMessage.length);
-          console.log("Browser TTS: Text content:", lastAssistantMessage);
+          console.log("Browser TTS: Full text length:", finalMessageText.length);
+          console.log("Browser TTS: Text content:", finalMessageText);
           
           // CRITICAL: Use the same locked male voice across all components
           const selectVoice = () => {

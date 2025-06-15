@@ -44,6 +44,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **Unmute Button Deployment Fix**: Enhanced fallback system with 4-level strategy to ensure unmute works reliably in deployed environments
 - **Microphone Button Fix**: Fixed missing .current reference that was blocking microphone button functionality
 - **Voice Window Wine-Specific Pills**: Implemented same wine-specific suggestion logic in voice bottom sheet with text+voice response behavior
 - **Text-Only Suggestion Responses**: Suggestion pills now trigger text-only responses without voice playback while preserving button appearance
