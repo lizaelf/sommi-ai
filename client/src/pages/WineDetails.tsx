@@ -352,13 +352,23 @@ export default function WineDetails() {
         credentials: "same-origin",
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        const errorText = await response.text();
+        console.error("Response error text:", errorText);
+        throw new Error(`API request failed with status ${response.status}: ${errorText}`);
       }
 
       const responseData = await response.json();
+      console.log("=== RESPONSE DATA ===");
+      console.log("Full response:", JSON.stringify(responseData, null, 2));
+      console.log("Has message:", !!responseData.message);
+      console.log("Has message.content:", !!(responseData.message && responseData.message.content));
 
       if (responseData.message && responseData.message.content) {
+        console.log("Processing assistant message...");
         const assistantMessage: ClientMessage = {
           id: Date.now() + 1,
           content: responseData.message.content,
@@ -367,11 +377,15 @@ export default function WineDetails() {
           createdAt: new Date().toISOString(),
         };
 
+        console.log("Assistant message created:", assistantMessage);
+
         // Store the latest assistant message text for unmute button functionality
         (window as any).lastAssistantMessageText = assistantMessage.content;
         console.log("Stored regular chat assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
 
+        console.log("Adding assistant message to conversation...");
         await addMessage(assistantMessage);
+        console.log("Assistant message added successfully!");
 
         // Check if this is an error response that should show a toast
         if (responseData.error) {
