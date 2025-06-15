@@ -1061,10 +1061,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).lastAssistantMessageText = options.instantResponse;
       
       console.log("VoiceAssistant: Ready for instant response playback");
+      // Keep bottom sheet open for cached responses - don't close it
       return; // Exit early - VoiceBottomSheet handles everything else
     }
     
-    // For non-cached suggestions, use normal flow
+    // For non-cached suggestions, use normal flow and close bottom sheet
     console.log("VoiceAssistant: No cached response, using normal API flow");
     onSendMessage(suggestion, pillId, options);
     setShowBottomSheet(false);
