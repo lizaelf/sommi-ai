@@ -9,7 +9,7 @@ import {
 } from "@/utils/microphonePermissions";
 
 interface VoiceAssistantProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
   isProcessing: boolean;
   wineKey?: string;
 }

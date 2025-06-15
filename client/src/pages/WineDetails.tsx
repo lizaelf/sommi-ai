@@ -417,8 +417,46 @@ export default function WineDetails() {
     }
   };
 
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (content: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
     if (content.trim() === "" || !currentConversationId) return;
+
+    // Handle instant cached responses from voice assistant
+    if (options?.instantResponse) {
+      console.log("Received instant response from voice assistant - bypassing normal flow");
+      
+      try {
+        // Add user message
+        const tempUserMessage: ClientMessage = {
+          id: Date.now(),
+          content,
+          role: "user",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+        await addMessage(tempUserMessage);
+
+        // Add assistant message with cached response
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1,
+          content: options.instantResponse,
+          role: "assistant",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Store for unmute functionality
+        (window as any).lastAssistantMessageText = options.instantResponse;
+        
+        await addMessage(assistantMessage);
+        refetchMessages();
+        
+        console.log("Instant voice response flow completed successfully");
+        return;
+      } catch (error) {
+        console.error("Error in instant response flow:", error);
+        // Fall back to normal flow if instant fails
+      }
+    }
 
     console.log("=== STARTING CHAT MESSAGE ===");
     console.log("Content:", content);
