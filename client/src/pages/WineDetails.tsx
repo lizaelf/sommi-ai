@@ -461,6 +461,7 @@ export default function WineDetails() {
     console.log("=== STARTING CHAT MESSAGE ===");
     console.log("Content:", content);
     console.log("Conversation ID:", currentConversationId);
+    console.log("Text-only mode:", options?.textOnly);
 
     setHideSuggestions(true);
     setIsTyping(true);
@@ -482,7 +483,7 @@ export default function WineDetails() {
         conversationId: currentConversationId,
         wineData: wine,
         optimize_for_speed: true,
-        text_only: true,
+        text_only: options?.textOnly || true, // Force text-only for suggestion pills
       };
 
       console.log("Request body:", requestBody);
@@ -525,9 +526,15 @@ export default function WineDetails() {
 
         console.log("Assistant message created:", assistantMessage);
 
-        // Store the latest assistant message text for unmute button functionality
-        (window as any).lastAssistantMessageText = assistantMessage.content;
-        console.log("Stored regular chat assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
+        // For text-only responses (suggestion pills), don't store for voice functionality
+        if (options?.textOnly) {
+          console.log("Text-only suggestion - no voice storage:", assistantMessage.content.substring(0, 100) + "...");
+          // Don't store in lastAssistantMessageText to prevent voice responses
+        } else {
+          // For regular chat, store for unmute button functionality
+          (window as any).lastAssistantMessageText = assistantMessage.content;
+          console.log("Stored regular chat assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
+        }
 
         console.log("Adding assistant message to conversation...");
         await addMessage(assistantMessage);
