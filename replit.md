@@ -41,9 +41,20 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Loading States**: Comprehensive flash prevention system
 - **Code Management**: CircleAnimation component under code freeze - require permission before changes (finalized June 14, 2025)
 
-## Recent Changes (June 14, 2025)
+## Recent Changes (June 15, 2025)
 
-### Voice System & UI Improvements (June 14, 2025 - Latest)
+### Wine-Specific Suggestion Pills Implementation (June 15, 2025 - Latest)
+- **Unique Per-Wine Tracking**: Implemented database-backed suggestion pill system that tracks usage per wine individually
+- **Dynamic Pill Generation**: Created JSON-based configuration with 10 different wine-focused suggestions
+- **Wine Key System**: Uses `wine_name + wine_year` as unique identifier for tracking pill usage
+- **Database Schema**: Added `used_suggestion_pills` table with PostgreSQL backend storage
+- **Real-time Updates**: Pills disappear immediately after use for that specific wine while remaining available for other wines
+- **API Integration**: Built RESTful endpoints for fetching available pills and marking them as used
+- **UI Enhancement**: Replaced hardcoded suggestion buttons with dynamic SuggestionPills component
+- **Clean Text Display**: Removed all emoji text from suggestion labels for cleaner presentation
+- **Error Handling**: Comprehensive error management with fallback states and loading indicators
+
+### Voice System & UI Improvements (June 14, 2025)
 - **Permanent Close Behavior**: Close button now prevents all future interactions until page refresh
 - **OpenAI Voice Integration**: Switched from browser speech synthesis to OpenAI TTS for consistent voice quality
 - **Circle Animation Finalization**: Clean voice-responsive scaling without visual overlays or debug elements

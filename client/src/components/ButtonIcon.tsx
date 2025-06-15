@@ -459,7 +459,7 @@ export function ButtonIcon({
                   fontWeight: "600",
                 }}
               >
-                💬 Continue with Text
+                Continue with Text
               </Button>
               
               <Button
