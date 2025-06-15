@@ -116,8 +116,8 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
           height: `${currentSize}px`,
           opacity: opacity,
           transition: isListening 
-            ? 'width 0.1s ease-out, height 0.1s ease-out' 
-            : 'width 0.3s ease-out, height 0.3s ease-out',
+            ? 'width 0.05s ease-out, height 0.05s ease-out' 
+            : 'width 0.15s ease-out, height 0.15s ease-out',
         }}
       />
 
