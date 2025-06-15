@@ -1001,6 +1001,7 @@ function WineDetails() {
         wine={wine!}
         onImageLoad={handleImageLoad}
         imageLoaded={imageLoaded}
+        imageRef={imageRef}
       />
 
       <FoodPairingSection
