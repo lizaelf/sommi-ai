@@ -1381,11 +1381,52 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         audio.onerror = (e) => {
           console.error("Manual unmute TTS playback error:", e);
           console.error("Audio error details:", {
-            error: audio.error?.message,
-            code: audio.error?.code,
-            networkState: audio.networkState,
-            readyState: audio.readyState,
+            error: audio?.error?.message,
+            code: audio?.error?.code,
+            networkState: audio?.networkState,
+            readyState: audio?.readyState,
           });
+          
+          // Deployment-specific fallback to browser TTS for reliability
+          console.log("DEPLOYMENT FIX: OpenAI audio failed, using browser TTS as fallback");
+          
+          const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          utterance.volume = 0.8;
+          
+          // Use locked male voice for consistency
+          const voices = speechSynthesis.getVoices();
+          const maleVoice = voices.find(voice => 
+            voice.name === 'Google UK English Male' || 
+            voice.name === 'Google US English Male' ||
+            (voice.name.includes('Male') && voice.lang.startsWith('en'))
+          );
+          if (maleVoice) {
+            utterance.voice = maleVoice;
+          }
+          
+          utterance.onstart = () => {
+            console.log("DEPLOYMENT FIX: Browser TTS fallback started");
+          };
+          
+          utterance.onend = () => {
+            setIsResponding(false);
+            setShowUnmuteButton(false);
+            setShowAskButton(true);
+            console.log("DEPLOYMENT FIX: Browser TTS fallback completed - Ask button enabled");
+          };
+          
+          utterance.onerror = () => {
+            setIsResponding(false);
+            setShowUnmuteButton(false);
+            setShowAskButton(true);
+            console.error("DEPLOYMENT FIX: Browser TTS fallback also failed");
+          };
+          
+          speechSynthesis.speak(utterance);
+          
+          // Clean up failed OpenAI audio
           setIsResponding(false);
           setShowUnmuteButton(false);
           setShowAskButton(true);
@@ -1452,14 +1493,52 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           } catch (playError: any) {
             console.error("Manual unmute audio play failed:", playError);
 
-            if (playError.name === "NotAllowedError") {
-              console.error("Manual audio playback blocked by browser");
-              throw new Error(
-                "Audio playback blocked - please check browser settings",
-              );
-            } else {
-              throw playError;
+            // DEPLOYMENT FIX: If OpenAI audio fails, immediately use browser TTS fallback
+            console.log("DEPLOYMENT FIX: OpenAI audio play failed, using browser TTS fallback");
+            
+            const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 0.8;
+            
+            // Use locked male voice for consistency
+            const voices = speechSynthesis.getVoices();
+            const maleVoice = voices.find(voice => 
+              voice.name === 'Google UK English Male' || 
+              voice.name === 'Google US English Male' ||
+              (voice.name.includes('Male') && voice.lang.startsWith('en'))
+            );
+            if (maleVoice) {
+              utterance.voice = maleVoice;
             }
+            
+            utterance.onstart = () => {
+              console.log("DEPLOYMENT FIX: Browser TTS fallback started for play error");
+            };
+            
+            utterance.onend = () => {
+              setIsResponding(false);
+              setShowUnmuteButton(false);
+              setShowAskButton(true);
+              console.log("DEPLOYMENT FIX: Browser TTS fallback completed - Ask button enabled");
+            };
+            
+            utterance.onerror = () => {
+              setIsResponding(false);
+              setShowUnmuteButton(false);
+              setShowAskButton(true);
+              console.error("DEPLOYMENT FIX: Browser TTS fallback also failed");
+            };
+            
+            speechSynthesis.speak(utterance);
+            
+            // Clean up failed OpenAI audio
+            if (audioUrl) {
+              URL.revokeObjectURL(audioUrl);
+            }
+            (window as any).currentOpenAIAudio = null;
+            
+            return; // Exit early since we're using browser TTS
           }
         }
 

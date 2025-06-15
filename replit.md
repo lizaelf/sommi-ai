@@ -44,6 +44,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **Unmute Button Deployment Fix**: Added comprehensive fallback system to ensure unmute button works reliably in deployed version using browser TTS when OpenAI audio fails
 - **Horizontal Suggestion Layout**: Suggestion pills display in single scrollable horizontal line for cleaner interface
 - **Welcome Message Caching**: Pre-cached welcome audio for immediate playback without TTS generation delay
 - **Ask Button Fix**: Resolved reference error preventing Ask button functionality in voice assistant interface
