@@ -1,0 +1,230 @@
+// ===== 1. Fix WineDetails.tsx - Standardize Wine Key =====
+
+// Update SuggestionPills usage in WineDetails:
+<SuggestionPills
+  wineKey={wine ? `wine_${wine.id}` : 'default_wine'}  // ✅ Use consistent format
+  onSuggestionClick={handleSendMessage}
+  isDisabled={isTyping}
+  preferredResponseType="text"
+  context="chat"
+/>
+
+// Also update VoiceAssistant to match:
+<VoiceAssistant
+  onSendMessage={handleSendMessage}
+  isProcessing={isTyping}
+  wineKey={wine ? `wine_${wine.id}` : 'default_wine'}  // ✅ Same format
+/>
+
+// ===== 2. Fix SuggestionPills.tsx - Add Cache Check for Chat Context =====
+
+const handlePillClick = async (pill: SuggestionPill) => {
+  if (isDisabled) return;
+
+  try {
+    console.log(`Pill clicked: ${pill.text} in context: ${context}`);
+
+    // ✅ CHECK CACHE FOR BOTH CONTEXTS (not just voice-assistant)
+    let cachedResponse = null;
+    const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+    console.log(`Cache check for ${pill.text}:`, cachedResponse ? 'Found' : 'Not found');
+
+    // Mark pill as used in database (background operation)
+    fetch('/api/suggestion-pills/used', {
+      method: 'POST',
+      body: JSON.stringify({
+        wineKey,
+        suggestionId: pill.id,
+        userId: null,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(() => {
+      setUsedPills(prev => {
+        const newSet = new Set(prev);
+        newSet.add(pill.id);
+        return newSet;
+      });
+      refetch();
+    }).catch(error => console.error('Error marking pill as used:', error));
+
+    // Handle based on context and cache availability
+    if (context === "chat") {
+      if (cachedResponse) {
+        // ✅ Use instant cached response for chat too!
+        console.log("Chat context - using cached response for instant display");
+        onSuggestionClick(pill.prompt, pill.id, { instantResponse: cachedResponse });
+      } else {
+        // No cache - use text-only API call
+        console.log("Chat context - no cache, using text-only API");
+        onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
+      }
+    } else if (context === "voice-assistant") {
+      if (cachedResponse) {
+        // Use cached response for instant voice playback
+        console.log("Voice assistant context - using cached response for instant voice");
+        onSuggestionClick(pill.prompt, pill.id, { instantResponse: cachedResponse });
+      } else {
+        // No cache available - use API + TTS (will show thinking state)
+        console.log("Voice assistant context - no cache, using API + TTS");
+        onSuggestionClick(pill.prompt, pill.id, { textOnly: false });
+      }
+    } else {
+      // Default behavior - text only
+      onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
+    }
+
+  } catch (error) {
+    console.error('Error handling pill click:', error);
+  }
+};
+
+// ===== 3. Update WineDetails handleSendMessage for instant chat responses =====
+
+const handleSendMessage = async (content: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
+  if (content.trim() === "" || !currentConversationId) return;
+
+  // ✅ Handle instant cached responses for BOTH chat and voice contexts
+  if (options?.instantResponse) {
+    console.log("🚀 Using instant cached response - no thinking state!");
+    
+    try {
+      // Add user message
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        content,
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+      await addMessage(tempUserMessage);
+
+      // Add assistant message with cached response
+      const assistantMessage: ClientMessage = {
+        id: Date.now() + 1,
+        content: options.instantResponse,
+        role: "assistant",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+      
+      // Store for potential voice functionality (but won't be used in chat context)
+      (window as any).lastAssistantMessageText = options.instantResponse;
+      
+      await addMessage(assistantMessage);
+      refetchMessages();
+      
+      console.log("✅ Instant response flow completed - no API call needed!");
+      return; // ✅ Exit early - no thinking state!
+    } catch (error) {
+      console.error("Error in instant response flow:", error);
+      // Fall back to normal flow if instant fails
+    }
+  }
+
+  // Normal API flow for non-cached suggestions
+  console.log("📡 Making API call (no cache available)");
+  setHideSuggestions(true);
+  setIsTyping(true); // This shows the thinking state
+
+  try {
+    const tempUserMessage: ClientMessage = {
+      id: Date.now(),
+      content,
+      role: "user",
+      conversationId: currentConversationId,
+      createdAt: new Date().toISOString(),
+    };
+
+    await addMessage(tempUserMessage);
+
+    const requestBody = {
+      messages: [{ role: "user", content }],
+      conversationId: currentConversationId,
+      wineData: wine,
+      optimize_for_speed: true,
+      text_only: options?.textOnly ?? true, // Default to text-only
+    };
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Priority": "high",
+      },
+      body: JSON.stringify(requestBody),
+      credentials: "same-origin",
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const responseData = await response.json();
+
+    if (responseData.message && responseData.message.content) {
+      const assistantMessage: ClientMessage = {
+        id: Date.now() + 1,
+        content: responseData.message.content,
+        role: "assistant",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Only store for voice if not text-only
+      if (!options?.textOnly) {
+        (window as any).lastAssistantMessageText = assistantMessage.content;
+      }
+
+      await addMessage(assistantMessage);
+      
+      // ✅ Cache the response for future instant use
+      if (wine?.id && content) {
+        const wineKey = `wine_${wine.id}`;
+        const suggestionId = content.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        await suggestionCache.cacheResponse(wineKey, suggestionId, assistantMessage.content);
+        console.log("✅ Response cached for future instant use");
+      }
+    }
+
+    refetchMessages();
+  } catch (error) {
+    console.error("Error in chat request:", error);
+    toast({
+      title: "Error",
+      description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
+      variant: "destructive",
+    });
+  } finally {
+    setIsTyping(false);
+  }
+};
+
+// ===== 4. Summary of Complete Fix =====
+
+/*
+Key Changes Made:
+
+1. ✅ Standardized wine key format to `wine_${wine.id}` everywhere
+2. ✅ Added cache checking for chat context (not just voice-assistant)  
+3. ✅ Instant responses now work for BOTH chat and voice contexts
+4. ✅ Cache responses after API calls for future instant use
+5. ✅ Early exit for cached responses prevents thinking state
+
+Expected Results:
+
+CACHED suggestions in chat context:
+Click → Instant text response (no thinking state) ✅
+
+NON-CACHED suggestions in chat context: 
+Click → Thinking state → Text response → Cached for next time ✅
+
+CACHED suggestions in voice context:
+Click → Instant voice response (no thinking state) ✅
+
+NON-CACHED suggestions in voice context:
+Click → Thinking state → Voice response → Cached for next time ✅
+*/

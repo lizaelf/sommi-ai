@@ -43,12 +43,20 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 15, 2025)
 
-### Voice Assistant & Suggestion System Completion (June 15, 2025 - Latest)
+### Context-Aware Suggestion System with Instant Responses (June 15, 2025 - Latest)
+- **Standardized Wine Keys**: Updated to consistent `wine_${wine.id}` format across all components for proper cache management
+- **Universal Cache Integration**: Both chat and voice assistant contexts now check cache before making API calls
+- **Instant Text Responses**: Chat interface suggestions use cached responses for immediate display without thinking state
+- **Instant Voice Responses**: Voice assistant suggestions leverage cached responses for immediate TTS playback
+- **Response Caching**: All API responses are automatically cached for future instant use across both contexts
+- **Context-Aware Behavior**: Complete separation between text-only chat and voice-enabled assistant contexts
+- **Performance Optimization**: Cached suggestions bypass API calls entirely, eliminating loading states for repeated interactions
+
+### Voice Assistant & Suggestion System Completion (June 15, 2025)
 - **Cycling Suggestion Pills**: Modified suggestion system to always show suggestions and automatically reset when all have been used
 - **Backend API Enhancement**: Added suggestion cycling logic that returns all suggestions when none remain unused
 - **Database Reset Functionality**: Implemented resetUsedSuggestionPills method with DELETE endpoint for cycling
 - **Seamless User Experience**: Suggestions now cycle continuously without "All suggestions explored" dead-end state
-- **Instant Voice Response Fix**: Completed comprehensive voice assistant fix with immediate cached TTS playback
 - **Function Signature Resolution**: Fixed all component interface mismatches preventing instant voice responses
 - **State Management Enhancement**: Added proper event handling for cached response completion
 

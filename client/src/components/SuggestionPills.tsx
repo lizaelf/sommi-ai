@@ -46,13 +46,11 @@ export default function SuggestionPills({
     try {
       console.log(`Pill clicked: ${pill.text} in context: ${context}`);
 
-      // Check for cached response if in voice-assistant context
+      // Check cache for BOTH contexts (not just voice-assistant)
       let cachedResponse = null;
-      if (context === "voice-assistant") {
-        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-        cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
-        console.log(`Cache check for ${pill.text}:`, cachedResponse ? 'Found' : 'Not found');
-      }
+      const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+      console.log(`Cache check for ${pill.text}:`, cachedResponse ? 'Found' : 'Not found');
 
       // Mark pill as used in database (background operation)
       fetch('/api/suggestion-pills/used', {
@@ -76,27 +74,27 @@ export default function SuggestionPills({
         refetch();
       }).catch(error => console.error('Error marking pill as used:', error));
 
-      // Handle differently based on context
+      // Handle based on context and cache availability
       if (context === "chat") {
-        // Chat interface: Call with just the prompt for text-only response
-        console.log("Chat context - calling with prompt only for text-only response");
-        onSuggestionClick(pill.prompt, undefined, { textOnly: true });
+        if (cachedResponse) {
+          // Use instant cached response for chat too!
+          console.log("Chat context - using cached response for instant display");
+          onSuggestionClick(pill.prompt, pill.id, { instantResponse: cachedResponse });
+        } else {
+          // No cache - use text-only API call
+          console.log("Chat context - no cache, using text-only API");
+          onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
+        }
       } else if (context === "voice-assistant") {
-        // Voice assistant: Use full signature with options
-        const options: { textOnly?: boolean; instantResponse?: string } = {};
-        
         if (cachedResponse) {
           // Use cached response for instant voice playback
-          console.log("Using cached response for instant voice playback");
-          options.instantResponse = cachedResponse;
+          console.log("Voice assistant context - using cached response for instant voice");
+          onSuggestionClick(pill.prompt, pill.id, { instantResponse: cachedResponse });
         } else {
           // No cache available - use API + TTS (will show thinking state)
-          console.log("No cache available - using API + TTS");
-          options.textOnly = false;
+          console.log("Voice assistant context - no cache, using API + TTS");
+          onSuggestionClick(pill.prompt, pill.id, { textOnly: false });
         }
-        
-        console.log("Voice assistant context - calling with full options:", options);
-        onSuggestionClick(pill.prompt, pill.id, options);
       } else {
         // Default behavior - text only
         onSuggestionClick(pill.prompt, pill.id, { textOnly: true });

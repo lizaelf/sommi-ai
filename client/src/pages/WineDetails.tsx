@@ -420,9 +420,9 @@ export default function WineDetails() {
   const handleSendMessage = async (content: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
     if (content.trim() === "" || !currentConversationId) return;
 
-    // Handle instant cached responses from voice assistant
+    // Handle instant cached responses for BOTH chat and voice contexts
     if (options?.instantResponse) {
-      console.log("Received instant response from voice assistant - bypassing normal flow");
+      console.log("🚀 Using instant cached response - no thinking state!");
       
       try {
         // Add user message
@@ -444,14 +444,14 @@ export default function WineDetails() {
           createdAt: new Date().toISOString(),
         };
         
-        // Store for unmute functionality
+        // Store for potential voice functionality (but won't be used in chat context)
         (window as any).lastAssistantMessageText = options.instantResponse;
         
         await addMessage(assistantMessage);
         refetchMessages();
         
-        console.log("Instant voice response flow completed successfully");
-        return;
+        console.log("✅ Instant response flow completed - no API call needed!");
+        return; // Exit early - no thinking state!
       } catch (error) {
         console.error("Error in instant response flow:", error);
         // Fall back to normal flow if instant fails
@@ -483,7 +483,7 @@ export default function WineDetails() {
         conversationId: currentConversationId,
         wineData: wine,
         optimize_for_speed: true,
-        text_only: options?.textOnly || true, // Force text-only for suggestion pills
+        text_only: options?.textOnly ?? true, // Default to text-only
       };
 
       console.log("Request body:", requestBody);
@@ -526,19 +526,20 @@ export default function WineDetails() {
 
         console.log("Assistant message created:", assistantMessage);
 
-        // For text-only responses (suggestion pills), don't store for voice functionality
-        if (options?.textOnly) {
-          console.log("Text-only suggestion - no voice storage:", assistantMessage.content.substring(0, 100) + "...");
-          // Don't store in lastAssistantMessageText to prevent voice responses
-        } else {
-          // For regular chat, store for unmute button functionality
+        // Only store for voice if not text-only
+        if (!options?.textOnly) {
           (window as any).lastAssistantMessageText = assistantMessage.content;
-          console.log("Stored regular chat assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
         }
 
-        console.log("Adding assistant message to conversation...");
         await addMessage(assistantMessage);
-        console.log("Assistant message added successfully!");
+        
+        // Cache the response for future instant use
+        if (wine?.id && content) {
+          const wineKey = `wine_${wine.id}`;
+          const suggestionId = content.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+          await suggestionCache.cacheResponse(wineKey, suggestionId, assistantMessage.content);
+          console.log("✅ Response cached for future instant use");
+        }
 
         // Check if this is an error response that should show a toast
         if (responseData.error) {
@@ -1791,7 +1792,7 @@ export default function WineDetails() {
                       {/* Dynamic Suggestion Pills - Wine-specific */}
                       <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 w-full">
                         <SuggestionPills
-                          wineKey={wine ? `${wine.name}_${wine.year || ''}` : ''}
+                          wineKey={wine ? `wine_${wine.id}` : 'default_wine'}
                           onSuggestionClick={handleSendMessage}
                           isDisabled={isTyping}
                           preferredResponseType="text"
@@ -1807,7 +1808,7 @@ export default function WineDetails() {
                           <VoiceAssistant
                             onSendMessage={handleSendMessage}
                             isProcessing={isTyping}
-                            wineKey={wine ? `${wine.name}_${wine.year || ''}` : ''}
+                            wineKey={wine ? `wine_${wine.id}` : 'default_wine'}
                           />
                         }
                       />
