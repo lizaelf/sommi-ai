@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import QRScanModal from "@/components/QRScanModal";
-import { HeaderSpacer } from "@/components/AppHeader";
+import { AppHeader, HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import Button from "@/components/ui/Button";
 import { useConversation } from "@/hooks/UseConversation";
@@ -20,7 +20,6 @@ import ContactBottomSheet, {
 } from "@/components/ContactBottomSheet";
 import typography from "@/styles/typography";
 import {
-  WineDetailsHeader,
   WineInfoSection,
   FoodPairingSection,
   ChatInterface,
@@ -990,11 +989,7 @@ function WineDetails() {
       className="bg-black text-white"
       style={{ minHeight: "100vh", overflowY: "auto", overflowX: "hidden" }}
     >
-      <WineDetailsHeader
-        showActions={showActions}
-        onToggleActions={() => setShowActions(!showActions)}
-        onDeleteAccount={handleDeleteAccount}
-      />
+      <AppHeader />
       <HeaderSpacer />
 
       <WineInfoSection
