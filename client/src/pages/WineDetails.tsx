@@ -198,7 +198,7 @@ export default function WineDetails() {
           {/* Location with Flag */}
           <div className="flex items-center justify-center gap-2 mb-6" style={typography.body}>
             <img 
-              src={usFlagImage} 
+              src="/us-flag.png" 
               alt="US Flag" 
               className="w-5 h-4"
             />
@@ -335,22 +335,21 @@ export default function WineDetails() {
             </div>
           )}
 
-          {/* Food Pairing */}
-          {wine.foodPairing && wine.foodPairing.length > 0 && (
+          {/* Want more? Section */}
+          {wine.buyAgainLink && (
             <div>
-              <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: "Lora, serif" }}>
-                Perfect Pairings
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {wine.foodPairing.map((pairing, index) => (
-                  <span 
-                    key={index}
-                    className="bg-white/10 px-3 py-1 rounded-full text-sm"
-                  >
-                    {pairing}
-                  </span>
-                ))}
-              </div>
+              <h1 className="text-left mb-4" style={typography.h1}>
+                Want more?
+              </h1>
+              <a
+                href={wine.buyAgainLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-white text-black px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                style={typography.buttonPlus1}
+              >
+                Buy again
+              </a>
             </div>
           )}
         </div>
