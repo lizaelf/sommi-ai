@@ -316,7 +316,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                         const cachedResponse = await suggestionCache.getCachedResponse(currentWineKey, suggestionId);
                         
                         if (cachedResponse) {
-                          // Play cached response instantly
+                          // Play cached response instantly using browser TTS for reliability
                           console.log("Playing instant TTS from cache for voice suggestion");
                           try {
                             const utterance = new SpeechSynthesisUtterance(cachedResponse);
@@ -331,17 +331,27 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                             
                             if (maleVoice) {
                               utterance.voice = maleVoice;
-                              console.log("Using male voice for instant cached TTS:", maleVoice.name);
+                              console.log("Using male voice for instant TTS:", maleVoice.name);
                             }
                             
                             utterance.rate = 1.0;
                             utterance.pitch = 1.0;
                             utterance.volume = 1.0;
                             
+                            // Play immediately without waiting
                             speechSynthesis.speak(utterance);
-                            console.log("Instant cached TTS started for voice bottom sheet suggestion");
+                            console.log("Instant browser TTS started for voice suggestion");
+                            
+                            utterance.onstart = () => {
+                              console.log("Voice playback started successfully");
+                            };
+                            
+                            utterance.onerror = (error) => {
+                              console.error("Voice playback error:", error);
+                            };
+                            
                           } catch (error) {
-                            console.error("Instant cached TTS failed:", error);
+                            console.error("Instant TTS failed:", error);
                           }
                         }
                         
