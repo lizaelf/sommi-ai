@@ -44,6 +44,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 15, 2025)
 
 ### Latest UI & Voice Improvements (June 15, 2025 - Latest)
+- **TTS Speed Normalization**: Fixed welcome voice speed from 1.2 to 1.0 (normal rate) by correcting TTS_SPEED environment variable
 - **Unmute Button Deployment Fix**: Added comprehensive fallback system to ensure unmute button works reliably in deployed version using browser TTS when OpenAI audio fails
 - **Horizontal Suggestion Layout**: Suggestion pills display in single scrollable horizontal line for cleaner interface
 - **Welcome Message Caching**: Pre-cached welcome audio for immediate playback without TTS generation delay
