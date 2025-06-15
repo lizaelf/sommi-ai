@@ -755,6 +755,7 @@ export default function WineDetails() {
               border: "none",
               padding: "16px 32px",
               borderRadius: "12px",
+              width: "100%",
               ...typography.buttonPlus1,
             }}
           >
