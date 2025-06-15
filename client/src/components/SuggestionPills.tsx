@@ -210,7 +210,7 @@ export default function SuggestionPills({
     }
   };
 
-  // Memoize visible pills calculation
+  // Always show exactly 3 pills
   const visiblePills = useMemo(() => {
     const availablePills = suggestionsData?.suggestions || [];
     
@@ -218,18 +218,19 @@ export default function SuggestionPills({
       return defaultSuggestions.slice(0, 3);
     }
 
-    let pills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id)).slice(0, 3);
+    // Start with unused pills
+    let pills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id));
     
-    // Fill up to 3 suggestions if we have fewer
-    if (pills.length < 3 && availablePills.length >= 3) {
-      const remainingSlots = 3 - pills.length;
-      const additionalPills = availablePills
-        .filter((pill: SuggestionPill) => !pills.some((p: SuggestionPill) => p.id === pill.id))
-        .slice(0, remainingSlots);
-      pills = [...pills, ...additionalPills];
+    // If we don't have enough unused pills, add used ones to reach 3
+    if (pills.length < 3) {
+      const usedPillsToAdd = availablePills
+        .filter((pill: SuggestionPill) => usedPills.has(pill.id))
+        .slice(0, 3 - pills.length);
+      pills = [...pills, ...usedPillsToAdd];
     }
-
-    return pills;
+    
+    // Always return exactly 3 pills (slice to ensure exactly 3)
+    return pills.slice(0, 3);
   }, [suggestionsData, usedPills, isLoading]);
 
   return (
