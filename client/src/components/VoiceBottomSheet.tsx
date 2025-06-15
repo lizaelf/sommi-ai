@@ -305,152 +305,92 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     <SuggestionPills
                       wineKey={wineKey}
                       onSuggestionClick={async (prompt, pillId, options) => {
-                        // For voice bottom sheet, play cached TTS instantly without unmute button
                         console.log("Voice bottom sheet suggestion clicked:", prompt);
                         
-                        // Generate suggestion ID and check cache immediately
+                        // Check cache immediately
                         const suggestionId = prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
                         const currentWineKey = wineKey || 'default_wine';
-                        
-                        console.log(`Checking cache for instant voice: ${suggestionId} (wine: ${currentWineKey})`);
                         const cachedResponse = await suggestionCache.getCachedResponse(currentWineKey, suggestionId);
                         
                         if (cachedResponse) {
-                          // Play cached response instantly using browser TTS for reliability
-                          console.log("Playing instant TTS from cache for voice suggestion");
-                          console.log("Cached response text:", cachedResponse.substring(0, 100) + "...");
+                          console.log("Using cached response - playing immediately");
                           
-                          // Add visual feedback immediately
-                          const audioAlert = document.createElement('div');
-                          audioAlert.style.cssText = `
-                            position: fixed; top: 20px; right: 20px; z-index: 10000;
-                            background: #2196F3; color: white; padding: 12px 16px;
-                            border-radius: 8px; font-size: 14px; font-weight: 500;
-                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                          `;
-                          audioAlert.textContent = '🔊 Playing voice response - check your volume';
-                          document.body.appendChild(audioAlert);
+                          // 1. Add messages to chat immediately
+                          const userMessage = {
+                            role: "user" as const,
+                            content: prompt,
+                            id: Date.now(),
+                            timestamp: new Date().toISOString(),
+                            conversationId: 0
+                          };
                           
-                          try {
-                            // Check browser compatibility first
-                            if (typeof speechSynthesis === 'undefined') {
-                              console.error("Speech synthesis not supported");
-                              audioAlert.textContent = '⚠️ Voice not supported in this browser';
-                              audioAlert.style.background = '#f44336';
-                              setTimeout(() => document.body.removeChild(audioAlert), 5000);
-                              return;
-                            }
-
-                            // Force voices to load
-                            let voices = speechSynthesis.getVoices();
-                            if (voices.length === 0) {
-                              console.log("Loading voices...");
-                              speechSynthesis.addEventListener('voiceschanged', () => {
-                                voices = speechSynthesis.getVoices();
-                                console.log("Voices loaded:", voices.length);
-                              });
-                            }
-
+                          window.dispatchEvent(new CustomEvent('immediateResponse', {
+                            detail: { message: userMessage, audio: null }
+                          }));
+                          
+                          setTimeout(() => {
+                            const assistantMessage = {
+                              role: "assistant" as const,
+                              content: cachedResponse,
+                              id: Date.now() + 1,
+                              timestamp: new Date().toISOString(),
+                              conversationId: 0
+                            };
+                            
+                            window.dispatchEvent(new CustomEvent('immediateResponse', {
+                              detail: { message: assistantMessage, audio: null }
+                            }));
+                          }, 100);
+                          
+                          // 2. Play TTS immediately
+                          if (typeof speechSynthesis !== 'undefined') {
                             const utterance = new SpeechSynthesisUtterance(cachedResponse);
                             
-                            // Find best male voice with extensive fallbacks
+                            // Use consistent male voice
+                            const voices = speechSynthesis.getVoices();
                             const maleVoice = voices.find(voice => 
-                              voice.name.includes('Google UK English Male')
-                            ) || voices.find(voice => 
-                              voice.name.includes('Google US English Male')
-                            ) || voices.find(voice => 
-                              voice.name.includes('Male') && voice.lang.startsWith('en')
-                            ) || voices.find(voice => 
-                              voice.name.includes('David') || voice.name.includes('Daniel')
-                            ) || voices.find(voice => 
-                              voice.lang.startsWith('en') && !voice.name.toLowerCase().includes('female')
+                              voice.name.includes('Google UK English Male') ||
+                              voice.name.includes('Google US English Male') ||
+                              (voice.name.includes('Male') && voice.lang.startsWith('en'))
                             ) || voices[0];
                             
-                            if (maleVoice) {
-                              utterance.voice = maleVoice;
-                              console.log("Selected voice:", maleVoice.name, "Lang:", maleVoice.lang);
-                            } else {
-                              console.log("Using default voice");
-                            }
+                            if (maleVoice) utterance.voice = maleVoice;
                             
                             utterance.rate = 1.0;
                             utterance.pitch = 1.0;
                             utterance.volume = 1.0;
-                            utterance.lang = 'en-US';
                             
-                            // Clear any existing speech
-                            speechSynthesis.cancel();
+                            speechSynthesis.cancel(); // Clear any existing speech
                             
-                            // Comprehensive event handlers
                             utterance.onstart = () => {
-                              console.log("✓ Voice playback STARTED");
-                              audioAlert.textContent = '🔊 Voice playing now';
-                              audioAlert.style.background = '#4CAF50';
+                              console.log("Cached TTS started");
                             };
                             
                             utterance.onend = () => {
-                              console.log("✓ Voice playback COMPLETED");
-                              audioAlert.textContent = '✓ Voice finished';
-                              setTimeout(() => {
-                                if (document.body.contains(audioAlert)) {
-                                  document.body.removeChild(audioAlert);
-                                }
-                              }, 2000);
+                              console.log("Cached TTS ended");
+                              window.dispatchEvent(new CustomEvent('cachedResponseEnded'));
                             };
                             
                             utterance.onerror = (error) => {
-                              console.error("✗ Voice ERROR:", error.error);
-                              audioAlert.textContent = `⚠️ Voice error: ${error.error}`;
-                              audioAlert.style.background = '#f44336';
-                              setTimeout(() => {
-                                if (document.body.contains(audioAlert)) {
-                                  document.body.removeChild(audioAlert);
-                                }
-                              }, 5000);
+                              console.error("Cached TTS error:", error);
+                              window.dispatchEvent(new CustomEvent('cachedResponseEnded'));
                             };
                             
-                            // Start playback
-                            console.log("Starting speech synthesis...");
                             speechSynthesis.speak(utterance);
-                            
-                            // Fallback timeout check
-                            setTimeout(() => {
-                              if (audioAlert.textContent && audioAlert.textContent.includes('Playing voice response')) {
-                                console.warn("Voice may not be playing - no start event received");
-                                audioAlert.textContent = '⚠️ Voice may be muted - check system volume';
-                                audioAlert.style.background = '#ff9800';
-                              }
-                            }, 1000);
-                            
-                          } catch (error) {
-                            console.error("TTS setup failed:", error);
-                            const errorMessage = error instanceof Error ? error.message : String(error);
-                            audioAlert.textContent = `⚠️ Voice error: ${errorMessage}`;
-                            audioAlert.style.background = '#f44336';
-                            setTimeout(() => {
-                              if (document.body.contains(audioAlert)) {
-                                document.body.removeChild(audioAlert);
-                              }
-                            }, 5000);
                           }
-                        }
-                        
-                        // For voice bottom sheet with cached responses, use a special handler that bypasses normal flow
-                        if (cachedResponse) {
-                          console.log("Using cached response - bypassing thinking/unmute flow");
                           
-                          // Store for unmute functionality
-                          (window as any).lastAssistantMessageText = cachedResponse;
-                          
-                          // Call special handler for instant cached responses that adds messages without delays
+                          // 3. Notify VoiceAssistant about instant response
                           if (onSuggestionClick) {
                             onSuggestionClick(prompt, '', { instantResponse: cachedResponse });
                           }
-                        } else {
-                          // No cached response, use normal flow
-                          if (onSuggestionClick) {
-                            onSuggestionClick(prompt);
-                          }
+                          
+                          return; // Don't proceed to normal flow
+                        }
+                        
+                        // No cache - use normal flow
+                        console.log("No cached response - using normal flow");
+                        if (onSuggestionClick) {
+                          onSuggestionClick(prompt);
                         }
                       }}
                       isDisabled={isListening || isResponding || isThinking}

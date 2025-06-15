@@ -267,16 +267,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     };
 
+    const handleCachedResponseEnded = () => {
+      console.log("Cached response playback ended - resetting to Ask button");
+      if (!isManuallyClosedRef.current) {
+        setIsResponding(false);
+        setShowUnmuteButton(false);
+        setShowAskButton(true);
+        setIsThinking(false);
+      }
+    };
+
     window.addEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
     window.addEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
     window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
     window.addEventListener('playAudioResponse', handlePlayAudioResponse);
+    window.addEventListener('cachedResponseEnded', handleCachedResponseEnded);
     
     return () => {
       window.removeEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
       window.removeEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
       window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
       window.removeEventListener('playAudioResponse', handlePlayAudioResponse);
+      window.removeEventListener('cachedResponseEnded', handleCachedResponseEnded);
     };
   }, []);
   
@@ -1035,22 +1047,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const handleSuggestionClick = (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
     console.log("Suggestion clicked:", suggestion, "with options:", options);
     
-    // Handle instant cached responses from VoiceBottomSheet
+    // Handle instant cached responses - bypass normal flow entirely
     if (options?.instantResponse) {
-      console.log("VoiceAssistant received instant response, forwarding to WineDetails");
-      onSendMessage(suggestion, pillId, options);
-      return;
+      console.log("VoiceAssistant: Instant cached response detected - setting playback states");
+      
+      // Set states for immediate voice playback
+      setIsResponding(true);
+      setShowUnmuteButton(false);
+      setShowAskButton(false);
+      setIsThinking(false);
+      
+      // Store the response text for potential unmute functionality
+      (window as any).lastAssistantMessageText = options.instantResponse;
+      
+      console.log("VoiceAssistant: Ready for instant response playback");
+      return; // Exit early - VoiceBottomSheet handles everything else
     }
     
-    // Check if this is a precomputed suggestion - if so, don't trigger API call
-    const precomputedSuggestions = ["Food pairing", "Tasting notes", "Serving"];
-    const isPrecomputed = precomputedSuggestions.includes(suggestion);
-    
-    if (!isPrecomputed) {
-      // Only call API for non-precomputed suggestions
-      onSendMessage(suggestion, pillId, options);
-    }
-    
+    // For non-cached suggestions, use normal flow
+    console.log("VoiceAssistant: No cached response, using normal API flow");
+    onSendMessage(suggestion, pillId, options);
     setShowBottomSheet(false);
   };
 
