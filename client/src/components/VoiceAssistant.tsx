@@ -1032,8 +1032,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
 
 
-  const handleSuggestionClick = (suggestion: string) => {
-    console.log("Suggestion clicked:", suggestion);
+  const handleSuggestionClick = (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
+    console.log("Suggestion clicked:", suggestion, "with options:", options);
+    
+    // Handle instant cached responses from VoiceBottomSheet
+    if (options?.instantResponse) {
+      console.log("VoiceAssistant received instant response, forwarding to WineDetails");
+      onSendMessage(suggestion, pillId, options);
+      return;
+    }
     
     // Check if this is a precomputed suggestion - if so, don't trigger API call
     const precomputedSuggestions = ["Food pairing", "Tasting notes", "Serving"];
@@ -1041,7 +1048,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     
     if (!isPrecomputed) {
       // Only call API for non-precomputed suggestions
-      onSendMessage(suggestion);
+      onSendMessage(suggestion, pillId, options);
     }
     
     setShowBottomSheet(false);
