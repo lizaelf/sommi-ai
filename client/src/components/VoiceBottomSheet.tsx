@@ -435,9 +435,10 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                           }
                         }
                         
-                        // For voice bottom sheet with cached responses, use a special handler that bypasses normal flow
+                        // For voice bottom sheet with cached responses, only call handler if we have cached response
+                        // This prevents normal autoplay flow when we have instant TTS
                         if (cachedResponse) {
-                          console.log("Using cached response - bypassing thinking/unmute flow");
+                          console.log("Using cached response - bypassing normal suggestion flow completely");
                           
                           // Store for unmute functionality
                           (window as any).lastAssistantMessageText = cachedResponse;
@@ -446,6 +447,9 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                           if (onSuggestionClick) {
                             onSuggestionClick(prompt, '', { instantResponse: cachedResponse });
                           }
+                          
+                          // IMPORTANT: Return early to prevent any other flows from triggering
+                          return;
                         } else {
                           // No cached response, use normal flow
                           if (onSuggestionClick) {
