@@ -29,11 +29,15 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
   const { data: suggestionsData, isLoading, refetch } = useQuery({
     queryKey: ['/api/suggestion-pills', wineKey],
     queryFn: async () => {
+      console.log("🔍 Fetching suggestions for wineKey:", wineKey);
       const response = await fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}`);
       if (!response.ok) {
+        console.error("❌ Failed to fetch suggestion pills:", response.status, response.statusText);
         throw new Error('Failed to fetch suggestion pills');
       }
-      return response.json();
+      const data = await response.json();
+      console.log("✓ Suggestions fetched:", data);
+      return data;
     },
     enabled: !!wineKey,
   });

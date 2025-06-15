@@ -1784,7 +1784,7 @@ export default function WineDetails() {
                       {/* Dynamic Suggestion Pills - Wine-specific */}
                       <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 w-full">
                         <SuggestionPills
-                          wineKey={wine ? `${wine.name}_${wine.year || ''}` : ''}
+                          wineKey={wine?.id ? `wine_${wine.id}` : 'default_wine'}
                           onSuggestionClick={(prompt, pillId, options) => {
                             // Always use text-only responses for main interface suggestion pills
                             handleSuggestionClick(prompt);
@@ -1801,7 +1801,7 @@ export default function WineDetails() {
                           <VoiceAssistant
                             onSendMessage={handleSendMessage}
                             isProcessing={isTyping}
-                            wineKey={wine ? `${wine.name}_${wine.year || ''}` : ''}
+                            wineKey={wine?.id ? `wine_${wine.id}` : 'default_wine'}
                           />
                         }
                       />
