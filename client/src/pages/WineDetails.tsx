@@ -29,6 +29,7 @@ import typography from "@/styles/typography";
 interface SelectedWine {
   id: number;
   name: string;
+  year?: number;
   image: string;
   bottles: number;
   ratings: {
