@@ -249,7 +249,7 @@ export default function WineDetails() {
     }
   };
 
-  // Text + Voice suggestion handler
+  // Text + Voice suggestion handler with caching and instant TTS
   const handleSuggestionWithVoiceClick = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
 
@@ -267,61 +267,110 @@ export default function WineDetails() {
 
       await addMessage(tempUserMessage);
 
-      const requestBody = {
-        messages: [{ role: "user", content }],
-        conversationId: currentConversationId,
-        wineData: wine,
-        optimize_for_speed: false,
-        text_only: false,
-      };
+      // Generate suggestion ID for caching
+      const suggestionId = content.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const wineKey = wine?.id ? `wine_${wine.id}` : 'default_wine';
 
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "X-Priority": "high",
-        },
-        body: JSON.stringify(requestBody),
-        credentials: "same-origin",
-      });
+      // Check cache first for text content
+      console.log(`Checking cache for voice suggestion: ${suggestionId} (wine: ${wineKey})`);
+      const cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
 
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
+      let assistantContent: string;
 
-      const responseData = await response.json();
-
-      if (responseData.message && responseData.message.content) {
-        const assistantMessage: ClientMessage = {
-          id: Date.now() + 1,
-          content: responseData.message.content,
-          role: "assistant",
+      if (cachedResponse) {
+        console.log("Using cached response for voice suggestion - instant TTS");
+        assistantContent = cachedResponse;
+        // Simulate brief delay for UI feedback
+        await new Promise(resolve => setTimeout(resolve, 300));
+      } else {
+        console.log("No cached response found, making API call for voice suggestion");
+        const requestBody = {
+          messages: [{ role: "user", content }],
           conversationId: currentConversationId,
-          createdAt: new Date().toISOString(),
+          wineData: wine,
+          optimize_for_speed: false,
+          text_only: false,
         };
 
-        // Store the latest assistant message text for unmute button functionality
-        (window as any).lastAssistantMessageText = assistantMessage.content;
-        console.log("Stored assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-Priority": "high",
+          },
+          body: JSON.stringify(requestBody),
+          credentials: "same-origin",
+        });
 
-        await addMessage(assistantMessage);
-
-        // Trigger voice playback for this response
-        if (responseData.audioBuffers && responseData.audioBuffers.length > 0) {
-          // Voice assistant will handle audio playback
-          window.dispatchEvent(new CustomEvent('playAudioResponse', {
-            detail: { audioBuffers: responseData.audioBuffers }
-          }));
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
         }
 
-        // Dispatch event to show unmute button
+        const responseData = await response.json();
+
+        if (responseData.message && responseData.message.content) {
+          assistantContent = responseData.message.content;
+          
+          // Cache the response for future use
+          await suggestionCache.cacheResponse(wineKey, suggestionId, assistantContent);
+          console.log("Voice suggestion response cached for future use");
+        } else {
+          throw new Error("No response content received from server");
+        }
+      }
+
+      // Create and add assistant message
+      const assistantMessage: ClientMessage = {
+        id: Date.now() + 1,
+        content: assistantContent,
+        role: "assistant",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Store the latest assistant message text for unmute button functionality
+      (window as any).lastAssistantMessageText = assistantMessage.content;
+      console.log("Stored voice suggestion assistant message for unmute:", assistantMessage.content.substring(0, 100) + "...");
+
+      await addMessage(assistantMessage);
+
+      // Play TTS immediately for voice suggestions without requiring unmute
+      console.log("Playing instant TTS for voice suggestion response");
+      try {
+        // Use browser TTS for instant voice playback
+        const utterance = new SpeechSynthesisUtterance(assistantMessage.content);
+        
+        // Apply voice settings to match the male voice system
+        const voices = speechSynthesis.getVoices();
+        const maleVoice = voices.find(voice => 
+          voice.name.includes('Google UK English Male') ||
+          voice.name.includes('Male') ||
+          voice.name.includes('masculine')
+        );
+        
+        if (maleVoice) {
+          utterance.voice = maleVoice;
+          console.log("Using male voice for instant TTS:", maleVoice.name);
+        }
+        
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        speechSynthesis.speak(utterance);
+        console.log("Instant TTS started for voice suggestion");
+      } catch (ttsError) {
+        console.error("Instant TTS failed for voice suggestion:", ttsError);
+        
+        // Fallback to unmute button system if TTS fails
         window.dispatchEvent(new CustomEvent("showUnmuteButton"));
       }
 
       refetchMessages();
+
     } catch (error) {
-      console.error("Error in suggestion request:", error);
+      console.error("Error in voice suggestion request:", error);
       toast({
         title: "Error",
         description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
