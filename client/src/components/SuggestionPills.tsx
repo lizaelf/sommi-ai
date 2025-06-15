@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
 import Button from "@/components/ui/Button";
+import wineResponses from "@shared/wineResponses.json";
 
 interface SuggestionPill {
   id: string;
@@ -91,19 +92,100 @@ export default function SuggestionPills({
     });
 
     try {
-      // Check cache for instant responses
-      let cachedResponse = null;
+      // First check pre-populated wine responses for immediate TTS
+      let instantResponse = null;
       const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-      cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+      
+      // Check pre-populated wine responses first
+      const wineData = (wineResponses as any)[wineKey] || (wineResponses as any)['default_wine'];
+      if (wineData && wineData.responses && wineData.responses[suggestionId]) {
+        instantResponse = wineData.responses[suggestionId];
+        console.log("Using pre-populated wine response for instant TTS:", suggestionId);
+      } else {
+        // Fallback to cache
+        instantResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+      }
+
+      // For voice context, trigger immediate TTS playback
+      if (context === "voice-assistant" && instantResponse) {
+        console.log("Playing instant TTS for voice context");
+        
+        // Add messages immediately
+        const userMessage = {
+          role: "user" as const,
+          content: pill.prompt,
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
+          conversationId: conversationId || 0
+        };
+        
+        window.dispatchEvent(new CustomEvent('immediateResponse', {
+          detail: { message: userMessage, audio: null }
+        }));
+        
+        setTimeout(() => {
+          const assistantMessage = {
+            role: "assistant" as const,
+            content: instantResponse,
+            id: Date.now() + 1,
+            timestamp: new Date().toISOString(),
+            conversationId: conversationId || 0
+          };
+          
+          window.dispatchEvent(new CustomEvent('immediateResponse', {
+            detail: { message: assistantMessage, audio: null }
+          }));
+        }, 100);
+        
+        // Play TTS immediately using OpenAI
+        try {
+          const ttsResponse = await fetch('/api/text-to-speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: instantResponse })
+          });
+          
+          if (ttsResponse.ok) {
+            const audioBuffer = await ttsResponse.arrayBuffer();
+            const audioContext = new AudioContext();
+            const decodedAudio = await audioContext.decodeAudioData(audioBuffer);
+            const source = audioContext.createBufferSource();
+            source.buffer = decodedAudio;
+            source.connect(audioContext.destination);
+            source.start();
+            
+            source.onended = () => {
+              window.dispatchEvent(new CustomEvent('cachedResponseEnded'));
+            };
+          }
+        } catch (audioError) {
+          console.error('TTS playback error:', audioError);
+          // Fallback to browser TTS
+          const utterance = new SpeechSynthesisUtterance(instantResponse);
+          const voices = speechSynthesis.getVoices();
+          const maleVoice = voices.find(voice => 
+            voice.name.includes('Google UK English Male') ||
+            voice.name.includes('Google US English Male') ||
+            (voice.name.includes('Male') && voice.lang.startsWith('en'))
+          );
+          if (maleVoice) utterance.voice = maleVoice;
+          utterance.rate = 1.0;
+          speechSynthesis.speak(utterance);
+          
+          utterance.onend = () => {
+            window.dispatchEvent(new CustomEvent('cachedResponseEnded'));
+          };
+        }
+      }
 
       // Prepare options for parent
       const options = {
         textOnly: context === "chat",
-        instantResponse: cachedResponse || undefined,
+        instantResponse: instantResponse || undefined,
         conversationId,
       };
 
-      // Always use the parent callback - no bypassing!
+      // Always use the parent callback
       onSuggestionClick(pill.prompt, pill.id, options);
 
       // Mark as used in background
