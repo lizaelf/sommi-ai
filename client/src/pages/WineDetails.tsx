@@ -210,36 +210,9 @@ export default function WineDetails() {
       className="bg-black text-white"
       style={{ minHeight: "100vh", overflowY: "auto", overflowX: "hidden" }}
     >
-      {/* Header with Actions */}
-      <div className="relative">
-        <AppHeader
-          rightContent={
-            <div className="relative">
-              <button
-                onClick={() => setShowActions(!showActions)}
-                className="p-2 rounded-full hover:bg-white/10 transition-colors"
-              >
-                <MoreHorizontal size={24} color="white" />
-              </button>
-              {showActions && (
-                <div className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-lg min-w-[200px] z-50">
-                  <button
-                    onClick={() => {
-                      // Handle delete account
-                      setShowActions(false);
-                    }}
-                    className="w-full px-4 py-3 text-left text-red-600 hover:bg-gray-50 flex items-center gap-2"
-                  >
-                    <Trash2 size={16} />
-                    Delete account
-                  </button>
-                </div>
-              )}
-            </div>
-          }
-        />
-        <HeaderSpacer />
-      </div>
+      {/* Header - Same as HomeGlobal */}
+      <AppHeader />
+      <HeaderSpacer />
 
       {/* Wine bottle image with fixed size and glow effect - fullscreen height from top */}
       <div
