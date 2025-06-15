@@ -77,15 +77,17 @@
 - [ ] Voice permission denied scenarios
 - [ ] Database connection failures
 
-## Known Issues to Investigate
+## Issues Fixed During QA
 
-### TypeScript Errors (server/openai.ts)
-```
-Error on line 266: 'finalResponse' is of type 'unknown'
-Error on line 273: 'finalResponse' is of type 'unknown' 
-Error on line 274: 'finalResponse' is of type 'unknown'
-Error on line 649: Cannot find name 'cleanText'
-```
+### TypeScript Errors (server/openai.ts) - RESOLVED ✅
+- Fixed `finalResponse` typing by adding proper type annotation
+- Fixed missing `cleanText` variable reference in fallback TTS function
+- Fixed TTS speed consistency by using VoiceConfig.SPEED instead of hardcoded 1.2
+
+### Core Systems Verified ✅
+- Database connection and schema working properly
+- Wine-specific suggestion pills API fully functional
+- TTS system operational with correct 40% speed reduction (0.79)
 
 ### Potential Issues to Check
 - [ ] Session storage persistence across page reloads

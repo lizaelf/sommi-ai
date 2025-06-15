@@ -645,7 +645,7 @@ export async function textToSpeech(text: string): Promise<Buffer> {
         const fallbackResponse = await openai.audio.speech.create({
           model: 'tts-1',
           voice: 'onyx', // Keep consistent voice
-          speed: 1.2,
+          speed: VoiceConfig.SPEED,
           input: text.slice(0, 500),
         }, {
           timeout: 25000
