@@ -44,18 +44,18 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      gap: '16px',
+      gap: '8px',
       padding: '0 20px',
       marginBottom: '32px'
     }}>
-      <h2 style={{
-        ...typography.h2,
+      <h1 style={{
+        ...typography.h1,
         color: 'white',
-        textAlign: 'center',
+        textAlign: 'left',
         marginBottom: '8px'
       }}>
         Food Pairing
-      </h2>
+      </h1>
 
       {pairingData.map((pairing) => (
         <div
@@ -66,7 +66,7 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
             borderRadius: "16px",
             padding: "0 20px",
             minHeight: "64px",
-            marginBottom: "8px",
+
             display: "flex",
             flexDirection: "column",
             gap: "10px",
