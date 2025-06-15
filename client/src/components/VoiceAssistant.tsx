@@ -1043,11 +1043,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const handleSuggestionClick = (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
     console.log("VoiceAssistant: Suggestion clicked:", suggestion, "with options:", options);
     
-    // If this is a text-only request, don't handle it in VoiceAssistant
-    if (options?.textOnly && !options?.instantResponse) {
-      console.log("VoiceAssistant: Text-only suggestion - passing through without voice states");
-      onSendMessage(suggestion, pillId, options);
-      return;
+    // If this is a text-only request, don't handle it in VoiceAssistant AT ALL
+    if (options?.textOnly) {
+      console.log("VoiceAssistant: Text-only suggestion - completely ignoring in voice assistant");
+      return; // Complete early exit - don't touch voice assistant for chat suggestions
     }
     
     // CRITICAL: If there's an instant response, the SuggestionPills already handled everything
