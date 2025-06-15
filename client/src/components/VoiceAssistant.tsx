@@ -935,42 +935,59 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const toggleListening = async () => {
-    console.log('🎤 VoiceAssistant: toggleListening called', {
+    console.log('🎤 VOICE BUTTON: Toggle clicked', {
       isProcessing,
       isListening,
-      isManuallyClosedRef: isManuallyClosedRef.current
+      isManuallyClosedRef: isManuallyClosedRef.current,
+      currentState: {
+        isThinking,
+        isResponding,
+        showUnmuteButton,
+        showAskButton,
+        showBottomSheet
+      }
     });
     
     if (isProcessing) {
-      console.log('🎤 VoiceAssistant: Ignoring toggle - currently processing');
+      console.log('🎤 VOICE BUTTON: Blocked - currently processing');
       return;
     }
 
     // Reset manually closed flag when user actively clicks the button
     if (isManuallyClosedRef.current) {
-      console.log('🎤 VoiceAssistant: Resetting manually closed flag on user interaction');
+      console.log('🎤 VOICE BUTTON: Resetting manually closed flag');
       isManuallyClosedRef.current = false;
     }
 
     if (isListening) {
-      console.log('🎤 VoiceAssistant: Stopping listening');
+      console.log('🎤 VOICE BUTTON: Stopping current listening session');
       stopListening();
       setShowBottomSheet(false);
     } else {
-      console.log('🎤 VoiceAssistant: Starting listening');
+      console.log('🎤 VOICE BUTTON: Starting new listening session');
+      
+      // Reset all states immediately for responsive UI
+      setIsListening(false);
+      setIsThinking(false);
+      setIsResponding(false);
+      setShowUnmuteButton(false);
+      setShowAskButton(false);
+      
       try {
-        // Reset all error states before attempting to start
-        setIsListening(false);
-        setIsThinking(false);
-        setIsResponding(false);
-        setShowUnmuteButton(false);
-        setShowAskButton(false);
+        // Test microphone access first
+        console.log('🎤 VOICE BUTTON: Testing microphone access...');
+        const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        testStream.getTracks().forEach(track => track.stop());
+        console.log('🎤 VOICE BUTTON: Microphone test successful');
         
+        // Start the actual listening session
         await startListening();
-      } catch (error) {
-        console.error("🎤 VoiceAssistant: Microphone access failed:", error);
+        console.log('🎤 VOICE BUTTON: Start listening completed successfully');
         
-        // Comprehensive error state reset
+      } catch (error) {
+        console.error("🎤 VOICE BUTTON: Failed to start:", error);
+        
+        // Reset all states on error
         setShowBottomSheet(false);
         setIsListening(false);
         setIsThinking(false);
@@ -978,16 +995,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         setShowUnmuteButton(false);
         setShowAskButton(false);
         
-        // Show error toast based on error type
+        // Determine error type for user feedback
         const isPermissionError = error instanceof Error && 
           (error.name === "NotAllowedError" || error.message.includes("Permission"));
+        
+        const errorMessage = isPermissionError 
+          ? "Microphone access required for voice input"
+          : `Failed to start voice recording: ${error instanceof Error ? error.message : 'Unknown error'}`;
+        
+        console.log('🎤 VOICE BUTTON: Showing error toast:', errorMessage);
         
         toast({
           description: (
             <span style={{ fontFamily: "Inter, sans-serif", fontSize: "16px", fontWeight: 500 }}>
-              {isPermissionError 
-                ? "Microphone access required for voice input" 
-                : "Failed to start voice recording"}
+              {errorMessage}
             </span>
           ),
           duration: 3000,
