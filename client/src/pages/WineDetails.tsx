@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, MoreHorizontal, Trash2 } from 'lucide-react';
+import { ArrowLeft, MoreHorizontal, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import QRScanModal from '@/components/QRScanModal';
 import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
+import WineRating from '@/components/WineRating';
 import { DataSyncManager } from '@/utils/dataSync';
+import typography from '@/styles/typography';
+import wineCircleImage from '@assets/wine-circle.png';
 
 interface SelectedWine {
   id: number;
   name: string;
+  year?: number;
   image: string;
   bottles: number;
   ratings: {
@@ -34,6 +38,16 @@ export default function WineDetails() {
   const isScannedPage = location === '/scanned';
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
+  
+  // Food pairing section states
+  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
+  
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   useEffect(() => {
     // Initialize data sync manager
@@ -142,11 +156,19 @@ export default function WineDetails() {
         <HeaderSpacer />
       </div>
 
-      {/* Wine Image and Basic Info */}
+      {/* Enhanced Wine Display */}
       <div className="px-6 pt-4 pb-6">
         <div className="text-center mb-6">
-          {/* Wine Image */}
-          <div className="mx-auto mb-6 relative" style={{ width: '200px', height: '300px' }}>
+          {/* Wine Image with Circle Glow */}
+          <div 
+            className="mx-auto mb-6 relative flex items-center justify-center"
+            style={{ 
+              width: '240px', 
+              height: '240px',
+              background: `radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%)`,
+              borderRadius: '50%'
+            }}
+          >
             <img
               ref={imageRef}
               src={wine.image}
@@ -155,48 +177,151 @@ export default function WineDetails() {
               className={`w-full h-full object-contain transition-opacity duration-300 ${
                 imageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
+              style={{ maxWidth: '180px', maxHeight: '220px' }}
             />
           </div>
 
-          {/* Wine Name */}
-          <h1 className="text-2xl font-bold mb-2" style={{ fontFamily: "Lora, serif" }}>
-            {wine.name}
+          {/* Wine Name with Year */}
+          <h1 className="text-2xl font-bold mb-4" style={typography.h1}>
+            {wine.year ? `${wine.year} ${wine.name}` : wine.name}
           </h1>
 
-          {/* Wine Ratings */}
-          <div className="flex justify-between text-center mb-6">
-            <div>
-              <div className="text-lg font-bold text-yellow-400">{wine.ratings.vn}</div>
-              <div className="text-xs text-gray-400">VN</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-yellow-400">{wine.ratings.jd}</div>
-              <div className="text-xs text-gray-400">JD</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-yellow-400">{wine.ratings.ws}</div>
-              <div className="text-xs text-gray-400">WS</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-yellow-400">{wine.ratings.abv}%</div>
-              <div className="text-xs text-gray-400">ABV</div>
-            </div>
+          {/* Wine Ratings using WineRating Component */}
+          <div className="mb-6">
+            <WineRating 
+              ratings={wine.ratings} 
+              variant="default"
+              align="center"
+            />
+          </div>
+
+          {/* Location with Flag */}
+          <div className="flex items-center justify-center gap-2 mb-6" style={typography.body}>
+            <img 
+              src={usFlagImage} 
+              alt="US Flag" 
+              className="w-5 h-4"
+            />
+            <span className="text-gray-300">
+              {wine.location || "Santa Cruz Mountains | California | United States"}
+            </span>
           </div>
         </div>
 
-        {/* Wine Details Section */}
-        <div className="px-6 pb-6 space-y-6">
-          {/* Location */}
-          {wine.location && (
+        {/* Enhanced Wine Details Section */}
+        <div className="space-y-8">
+          {/* History Section */}
+          {wine.description && (
             <div>
-              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "Lora, serif" }}>
-                Origin
-              </h3>
-              <p className="text-gray-300">
-                {wine.location}
+              <h1 className="text-left mb-4" style={typography.h1}>
+                History
+              </h1>
+              <p className="text-gray-300 text-left" style={typography.body}>
+                {wine.description}
               </p>
             </div>
           )}
+
+          {/* Food Pairing Section */}
+          <div>
+            <h1 className="text-left mb-2" style={typography.h1}>
+              Food Pairing
+            </h1>
+            <div className="space-y-2">
+              {/* Red Meat Section */}
+              <div className="bg-gray-900 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => toggleSection('redMeat')}
+                  className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span style={typography.buttonPlus1}>Red Meat</span>
+                    <span className="bg-green-600 text-white px-2 py-1 rounded text-xs">
+                      Perfect match
+                    </span>
+                  </div>
+                  {expandedSections.redMeat ? (
+                    <ChevronUp size={16} className="text-gray-400" />
+                  ) : (
+                    <ChevronDown size={16} className="text-gray-400" />
+                  )}
+                </button>
+                {expandedSections.redMeat && (
+                  <div className="px-4 pb-3 space-y-2">
+                    <p className="text-gray-300" style={typography.body}>
+                      Grilled lamb, BBQ ribs, beef steaks with bold flavors
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Cheese Pairings */}
+              <div className="bg-gray-900 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => toggleSection('cheese')}
+                  className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800 transition-colors"
+                >
+                  <span style={typography.buttonPlus1}>Cheese Pairings</span>
+                  {expandedSections.cheese ? (
+                    <ChevronUp size={16} className="text-gray-400" />
+                  ) : (
+                    <ChevronDown size={16} className="text-gray-400" />
+                  )}
+                </button>
+                {expandedSections.cheese && (
+                  <div className="px-4 pb-3 space-y-2">
+                    <p className="text-gray-300" style={typography.body}>
+                      Aged cheddar, Gouda, Blue cheese, Manchego
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Vegetarian Options */}
+              <div className="bg-gray-900 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => toggleSection('vegetarian')}
+                  className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800 transition-colors"
+                >
+                  <span style={typography.buttonPlus1}>Vegetarian Options</span>
+                  {expandedSections.vegetarian ? (
+                    <ChevronUp size={16} className="text-gray-400" />
+                  ) : (
+                    <ChevronDown size={16} className="text-gray-400" />
+                  )}
+                </button>
+                {expandedSections.vegetarian && (
+                  <div className="px-4 pb-3 space-y-2">
+                    <p className="text-gray-300" style={typography.body}>
+                      Grilled portobello mushrooms, roasted eggplant, hearty legume dishes
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Avoid Section */}
+              <div className="bg-gray-900 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => toggleSection('avoid')}
+                  className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800 transition-colors"
+                >
+                  <span style={typography.buttonPlus1}>Avoid</span>
+                  {expandedSections.avoid ? (
+                    <ChevronUp size={16} className="text-gray-400" />
+                  ) : (
+                    <ChevronDown size={16} className="text-gray-400" />
+                  )}
+                </button>
+                {expandedSections.avoid && (
+                  <div className="px-4 pb-3 space-y-2">
+                    <p className="text-gray-300" style={typography.body}>
+                      Delicate fish, light salads, very spicy cuisines
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Description */}
           {wine.description && (
