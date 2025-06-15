@@ -1529,7 +1529,7 @@ export default function WineDetails() {
                     borderTop: "1px solid rgba(255, 255, 255, 0.2)",
                   }}
                 >
-                  <div className="max-w-3xl mx-auto">
+                  <div className={messages.length > 0 ? "max-w-3xl mx-auto" : "w-full"}>
                     <>
                       {/* Dynamic Suggestion Pills - Wine-specific */}
                       <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 w-full">
