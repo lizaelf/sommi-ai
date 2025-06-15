@@ -26,8 +26,15 @@ export default function SuggestionPills({
   context = "chat" 
 }: SuggestionPillsProps) {
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
+  
+  // Default suggestions to show immediately while API loads
+  const defaultSuggestions: SuggestionPill[] = [
+    { id: "default-1", text: "Tell me about this wine", prompt: "Tell me about this wine" },
+    { id: "default-2", text: "What's the story behind it?", prompt: "What's the story behind this wine?" },
+    { id: "default-3", text: "Food pairing suggestions", prompt: "What food pairs well with this wine?" }
+  ];
 
-  // Fetch available suggestion pills for this wine
+  // Fetch available suggestion pills for this wine with faster loading
   const { data: suggestionsData, isLoading, refetch } = useQuery({
     queryKey: ['/api/suggestion-pills', wineKey],
     queryFn: async () => {
@@ -38,6 +45,8 @@ export default function SuggestionPills({
       return response.json();
     },
     enabled: !!wineKey,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   const handlePillClick = async (pill: SuggestionPill) => {
@@ -134,57 +143,39 @@ export default function SuggestionPills({
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex gap-2 flex-wrap animate-pulse">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-8 bg-gray-200 rounded-full px-4 py-2 w-24"
-          />
-        ))}
-      </div>
-    );
-  }
-
+  // Always show suggestions immediately - use API data if available, otherwise show defaults
   const availablePills = suggestionsData?.suggestions || [];
-  let visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id)).slice(0, 3);
+  let visiblePills: SuggestionPill[] = [];
   
-  // If no unused pills available, reset and show all pills again
-  if (visiblePills.length === 0 && availablePills.length > 0) {
-    console.log("All suggestions used - resetting cycle for wine:", wineKey);
+  if (isLoading || availablePills.length === 0) {
+    // Show default suggestions while loading or if no API suggestions available
+    visiblePills = defaultSuggestions.slice(0, 3);
+  } else {
+    // Use API suggestions when available
+    visiblePills = availablePills.filter((pill: SuggestionPill) => !usedPills.has(pill.id)).slice(0, 3);
     
-    // Reset the used pills in the database to allow cycling
-    fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
-      method: 'DELETE'
-    }).catch(error => console.error('Failed to reset suggestion pills:', error));
-    
-    setUsedPills(new Set()); // Reset local state
-    visiblePills = availablePills.slice(0, 3); // Show first 3 pills again
-  }
+    // If no unused pills available, reset and show all pills again
+    if (visiblePills.length === 0 && availablePills.length > 0) {
+      console.log("All suggestions used - resetting cycle for wine:", wineKey);
+      
+      // Reset the used pills in the database to allow cycling
+      fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
+        method: 'DELETE'
+      }).catch(error => console.error('Failed to reset suggestion pills:', error));
+      
+      setUsedPills(new Set()); // Reset local state
+      visiblePills = availablePills.slice(0, 3); // Show first 3 pills again
+    }
 
-  // Ensure we always show 3 suggestions if any are available
-  if (visiblePills.length < 3 && availablePills.length >= 3) {
-    // Fill up to 3 suggestions, cycling if needed
-    const remainingSlots = 3 - visiblePills.length;
-    const additionalPills = availablePills
-      .filter((pill: SuggestionPill) => !visiblePills.some((vp: SuggestionPill) => vp.id === pill.id))
-      .slice(0, remainingSlots);
-    visiblePills = [...visiblePills, ...additionalPills];
-  }
-
-  // Only show loading state if we have no data at all
-  if (availablePills.length === 0) {
-    return (
-      <div className="flex gap-2 flex-wrap animate-pulse">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-8 bg-gray-200 rounded-full px-4 py-2 w-24"
-          />
-        ))}
-      </div>
-    );
+    // Ensure we always show 3 suggestions if any are available
+    if (visiblePills.length < 3 && availablePills.length >= 3) {
+      // Fill up to 3 suggestions, cycling if needed
+      const remainingSlots = 3 - visiblePills.length;
+      const additionalPills = availablePills
+        .filter((pill: SuggestionPill) => !visiblePills.some((vp: SuggestionPill) => vp.id === pill.id))
+        .slice(0, remainingSlots);
+      visiblePills = [...visiblePills, ...additionalPills];
+    }
   }
 
   return (
