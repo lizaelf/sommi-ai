@@ -12,7 +12,7 @@ interface SuggestionPill {
 
 interface SuggestionPillsProps {
   wineKey: string;
-  onSuggestionClick: (prompt: string, pillId: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
+  onSuggestionClick: (prompt: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
   isDisabled?: boolean;
   preferredResponseType?: "text" | "voice";
   context?: "chat" | "voice-assistant";
@@ -67,19 +67,24 @@ export default function SuggestionPills({
         },
       }).then(() => {
         // Update local state to track used pills
-        setUsedPills(prev => new Set([...prev, pill.id]));
+        setUsedPills(prev => {
+          const newSet = new Set(prev);
+          newSet.add(pill.id);
+          return newSet;
+        });
         // Refetch to get updated available pills
         refetch();
       }).catch(error => console.error('Error marking pill as used:', error));
 
-      // Determine response options based on context and cache availability
-      const options: { textOnly?: boolean; instantResponse?: string } = {};
-      
+      // Handle differently based on context
       if (context === "chat") {
-        // Chat interface always uses text-only responses
-        console.log("Using text-only response for chat context");
-        options.textOnly = true;
+        // Chat interface: Call with just the prompt for text-only response
+        console.log("Chat context - calling with prompt only for text-only response");
+        onSuggestionClick(pill.prompt, undefined, { textOnly: true });
       } else if (context === "voice-assistant") {
+        // Voice assistant: Use full signature with options
+        const options: { textOnly?: boolean; instantResponse?: string } = {};
+        
         if (cachedResponse) {
           // Use cached response for instant voice playback
           console.log("Using cached response for instant voice playback");
@@ -89,9 +94,13 @@ export default function SuggestionPills({
           console.log("No cache available - using API + TTS");
           options.textOnly = false;
         }
+        
+        console.log("Voice assistant context - calling with full options:", options);
+        onSuggestionClick(pill.prompt, pill.id, options);
+      } else {
+        // Default behavior - text only
+        onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
       }
-      
-      onSuggestionClick(pill.prompt, pill.id, options);
 
     } catch (error) {
       console.error('Error handling pill click:', error);
