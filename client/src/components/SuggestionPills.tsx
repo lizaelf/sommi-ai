@@ -84,22 +84,103 @@ export default function SuggestionPills({
     if (isDisabled) return;
 
     // Optimistically mark as used
-    setUsedPills(prev => new Set([...prev, pill.id]));
+    setUsedPills(prev => {
+      const newSet = new Set(prev);
+      newSet.add(pill.id);
+      return newSet;
+    });
 
     try {
-      // Check cache for instant responses
-      let cachedResponse = null;
+      // Check for instant response (cached)
+      let instantResponse = null;
       const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-      cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+      
+      // Check cache for responses
+      instantResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
+      console.log("💾 Using cached response:", !!instantResponse);
 
-      // Prepare options for parent
+      // FOR VOICE CONTEXT WITH INSTANT RESPONSE: Handle completely independently
+      if (context === "voice-assistant" && instantResponse) {
+        console.log("🚀 VOICE + CACHED: Playing immediately without voice assistant");
+        
+        // Add messages to chat using the working event system
+        const userMessage = {
+          id: Date.now(),
+          content: pill.prompt,
+          role: "user" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        const assistantMessage = {
+          id: Date.now() + 1,
+          content: instantResponse,
+          role: "assistant" as const,
+          conversationId: conversationId || 0,
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Use the working addChatMessage event
+        window.dispatchEvent(new CustomEvent('addChatMessage', { 
+          detail: { userMessage, assistantMessage } 
+        }));
+        
+        // Simple browser TTS (most reliable)
+        const utterance = new SpeechSynthesisUtterance(instantResponse);
+        
+        // Use consistent male voice
+        const voices = speechSynthesis.getVoices();
+        const maleVoice = voices.find(voice => 
+          voice.name.includes('Google UK English Male') ||
+          voice.name.includes('Google US English Male') ||
+          (voice.name.includes('Male') && voice.lang.startsWith('en'))
+        ) || voices[0];
+        
+        if (maleVoice) utterance.voice = maleVoice;
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        utterance.onstart = () => {
+          console.log("✅ VOICE + CACHED: Audio started");
+        };
+        
+        utterance.onend = () => {
+          console.log("✅ VOICE + CACHED: Audio ended - no voice states needed");
+        };
+        
+        speechSynthesis.cancel(); // Clear any existing speech
+        speechSynthesis.speak(utterance);
+        
+        console.log("✅ VOICE + CACHED: Complete bypass - no voice assistant involved");
+        
+        // Mark as used in background
+        try {
+          await fetch('/api/suggestion-pills/used', {
+            method: 'POST',
+            body: JSON.stringify({
+              wineKey,
+              suggestionId: pill.id,
+              userId: null,
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          });
+          refetch();
+        } catch (error) {
+          console.error('Error marking pill as used:', error);
+        }
+        
+        return; // EXIT EARLY - Don't call parent callback!
+      }
+
+      // For chat context or non-cached responses, use normal flow
       const options = {
         textOnly: context === "chat",
-        instantResponse: cachedResponse || undefined,
+        instantResponse: context === "chat" ? (instantResponse || undefined) : undefined,
         conversationId,
       };
 
-      // Always use the parent callback - no bypassing!
+      // Only call parent for non-cached voice or any chat context
       onSuggestionClick(pill.prompt, pill.id, options);
 
       // Mark as used in background
