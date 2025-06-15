@@ -315,16 +315,6 @@ export default function WineDetails() {
             marginBottom: "32px",
           }}
         >
-          <h1
-            style={{
-              ...typography.h1,
-              color: "white",
-              marginBottom: "16px",
-              textAlign: "left",
-            }}
-          >
-            History
-          </h1>
           <p
             style={{
               color: "white",
@@ -660,7 +650,7 @@ export default function WineDetails() {
             )}
           </div>
 
-          {/* Dishes to Avoid - Expandable */}
+          {/* Avoid pairing with - Expandable */}
           <div
             onClick={() => {
               setExpandedItem(expandedItem === "avoid" ? null : "avoid");
@@ -695,9 +685,9 @@ export default function WineDetails() {
                   gap: "12px",
                 }}
               >
-                <span style={{ fontSize: "24px" }}>❌</span>
+                <span style={{ fontSize: "24px", color: "red" }}>❌</span>
                 <span style={{ color: "white", ...typography.body }}>
-                  Avoid
+                  Avoid pairing with
                 </span>
               </div>
               <svg
@@ -708,7 +698,9 @@ export default function WineDetails() {
                 xmlns="http://www.w3.org/2000/svg"
                 style={{
                   transform:
-                    expandedItem === "avoid" ? "rotate(180deg)" : "rotate(0deg)",
+                    expandedItem === "avoid"
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
                   transition: "transform 0.3s ease",
                 }}
               >
@@ -740,7 +732,9 @@ export default function WineDetails() {
                           marginBottom: "8px",
                         }}
                       >
-                        <span style={{ ...typography.body }}>❌</span>
+                        <span style={{ ...typography.body, color: "red" }}>
+                          ❌
+                        </span>
                         <span style={{ ...typography.body }}>{item}</span>
                       </div>
                     ),
@@ -751,24 +745,26 @@ export default function WineDetails() {
           </div>
         </div>
 
-        {/* Want more? Section */}
+        {/* More Section */}
         <div
           style={{
             width: "100%",
             padding: "0 20px",
-            marginBottom: "32px",
+            marginBottom: "20px",
           }}
         >
           <h1
             style={{
               ...typography.h1,
               color: "white",
-              marginBottom: "16px",
+              marginBottom: "24px",
               textAlign: "left",
             }}
           >
             Want more?
           </h1>
+
+          {/* Buy again button */}
           <Button
             onClick={() => {
               if (wine?.buyAgainLink) {
@@ -777,24 +773,21 @@ export default function WineDetails() {
             }}
             variant="primary"
             style={{
-              backgroundColor: "white",
-              color: "black",
-              border: "none",
-              padding: "16px 32px",
-              borderRadius: "12px",
-              ...typography.buttonPlus1,
+              margin: "0 0 24px 0",
+              width: "100%",
+              height: "56px",
             }}
           >
             Buy again
           </Button>
         </div>
 
-        {/* We recommend section */}
+        {/* We recommend Section */}
         <div
           style={{
             width: "100%",
             padding: "0 20px",
-            marginBottom: "32px",
+            marginBottom: "20px",
           }}
         >
           <h1

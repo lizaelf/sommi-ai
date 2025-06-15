@@ -62,13 +62,19 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Bottles Count Removal**: Removed bottles count section from wine details page for cleaner layout
 - **Food Pairing Section Update**: Changed title to H1 typography, left-aligned title, reduced spacing to 8px between blocks
 - **WineDetails Enhanced UI Restoration**: Rebuilt WineDetails page with complete enhanced UI structure including:
-  - 240px wine image with radial gradient circle glow effect
-  - Wine title in "year name" format using Lora typography
-  - WineRating component with ABV displayed below other scores
-  - US flag with location display using proper asset path
-  - History section with H1 typography and wine description
-  - Expandable food pairing sections (Red Meat, Cheese, Vegetarian, Avoid) with chevron animations
+  - WineBottleImage component with blurred circle/glow effect as focal point
+  - Full-screen wine image container (100vh height) for immersive experience
+  - Wine title in "year name" format using Lora typography system
+  - USFlagImage component with location display and proper asset integration
+  - WineRating component with left alignment and proper spacing
+  - History section with H1 typography and rich wine description content
+  - Expandable food pairing sections with emojis and smooth chevron animations:
+    - Red Meat pairing with "Perfect match" badge
+    - Cheese Pairings with curated selections
+    - Vegetarian Options with plant-based alternatives
+    - Avoid section with cautionary recommendations
   - "Want more?" section with functional Buy again button
+  - "We recommend" section with horizontal scrolling wine cards
   - Enhanced typography system using Lora serif for headings and Inter for body text
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
