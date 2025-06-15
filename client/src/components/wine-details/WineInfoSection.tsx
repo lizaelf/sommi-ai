@@ -131,26 +131,23 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         />
       </div>
 
-      {/* Heritage Section */}
+      {/* History Section */}
       <div style={{
-        backgroundColor: '#191919',
-        borderRadius: '16px',
-        padding: '20px',
         width: '100%',
         maxWidth: '400px'
       }}>
-        <h2 style={{
-          ...typography.h2,
+        <h1 style={{
+          ...typography.h1,
           color: 'white',
           marginBottom: '12px',
-          textAlign: 'center'
+          textAlign: 'left'
         }}>
-          Heritage
-        </h2>
+          History
+        </h1>
         <p style={{
           ...typography.body,
           color: '#ccc',
-          textAlign: 'center',
+          textAlign: 'left',
           lineHeight: '1.6',
           margin: 0
         }}>

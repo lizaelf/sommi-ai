@@ -56,6 +56,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Immediate TTS Implementation**: Integrated pre-populated wine response data from spreadsheet for instant voice playback with complete voice assistant bypass and reliable browser TTS
 - **QRScanModal Voice Button Fix**: Removed session storage restriction preventing voice assistant reopening
 - **Wine Image Enhancement**: Updated wine image container to 240px height with circle glow background effect using radial gradient
+- **History Section Redesign**: Renamed Heritage to History, changed to H1 typography, removed background/padding/radius, left-aligned text
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
 - **Code Organization**: Improved maintainability with smaller, focused components following React composition patterns
