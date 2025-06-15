@@ -85,7 +85,7 @@ export default function SuggestionPills({
 
     // Optimistically mark as used
     setUsedPills(prev => {
-      const newSet = new Set(Array.from(prev));
+      const newSet = new Set(prev);
       newSet.add(pill.id);
       return newSet;
     });
