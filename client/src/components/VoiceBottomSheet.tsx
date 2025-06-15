@@ -394,6 +394,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                         }
                       }}
                       isDisabled={isListening || isResponding || isThinking}
+                      preferredResponseType="voice"
+                      context="voice-assistant"
                     />
                   </div>
                 </div>

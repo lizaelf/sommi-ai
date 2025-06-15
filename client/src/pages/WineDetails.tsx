@@ -1792,11 +1792,10 @@ export default function WineDetails() {
                       <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 w-full">
                         <SuggestionPills
                           wineKey={wine ? `${wine.name}_${wine.year || ''}` : ''}
-                          onSuggestionClick={(prompt, pillId, options) => {
-                            // Always use text-only responses for main interface suggestion pills
-                            handleSuggestionClick(prompt);
-                          }}
+                          onSuggestionClick={handleSendMessage}
                           isDisabled={isTyping}
+                          preferredResponseType="text"
+                          context="chat"
                         />
                       </div>
                       <ChatInput

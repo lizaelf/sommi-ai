@@ -13,9 +13,17 @@ interface SuggestionPillsProps {
   wineKey: string;
   onSuggestionClick: (prompt: string, pillId: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
   isDisabled?: boolean;
+  preferredResponseType?: "text" | "voice";
+  context?: "chat" | "voice-assistant";
 }
 
-export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled = false }: SuggestionPillsProps) {
+export default function SuggestionPills({ 
+  wineKey, 
+  onSuggestionClick, 
+  isDisabled = false, 
+  preferredResponseType = "text", 
+  context = "chat" 
+}: SuggestionPillsProps) {
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
 
   // Fetch available suggestion pills for this wine
@@ -55,8 +63,20 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
       // Update local state to track used pills
       setUsedPills(prev => new Set(Array.from(prev).concat(pill.id)));
 
-      // Trigger the suggestion with the prompt (text-only response)
-      onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
+      // Handle differently based on context
+      if (context === "chat") {
+        // Chat interface: send message directly (text-only)
+        onSuggestionClick(pill.prompt);
+      } else if (context === "voice-assistant") {
+        // Voice assistant: use existing complex caching logic
+        const options: { textOnly?: boolean; instantResponse?: string } = {
+          textOnly: false
+        };
+        onSuggestionClick(pill.prompt, pill.id, options);
+      } else {
+        // Default behavior
+        onSuggestionClick(pill.prompt, pill.id, { textOnly: true });
+      }
 
       // Refetch to get updated available pills
       refetch();
