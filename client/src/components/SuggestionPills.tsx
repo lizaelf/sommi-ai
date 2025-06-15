@@ -90,14 +90,21 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
   }
 
   return (
-    <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+    <div 
+      className="flex gap-2 overflow-x-auto scrollbar-hide pb-1"
+      style={{
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+        WebkitScrollbar: 'none'
+      }}
+    >
       {visiblePills.map((pill: SuggestionPill) => (
         <Button
           key={pill.id}
           variant="secondary"
           onClick={() => handlePillClick(pill)}
           disabled={isDisabled || usedPills.has(pill.id)}
-          className="h-auto py-2 px-3 text-sm whitespace-nowrap hover:bg-gray-50 transition-colors border border-gray-300 rounded-full flex-shrink-0"
+          className="h-auto py-2 px-4 text-sm whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit"
         >
           {pill.text}
         </Button>

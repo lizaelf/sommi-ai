@@ -935,20 +935,76 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   };
 
   const toggleListening = async () => {
+    console.log('🎤 VoiceAssistant: toggleListening called', {
+      isProcessing,
+      isListening,
+      isManuallyClosedRef: isManuallyClosedRef.current
+    });
+    
     if (isProcessing) {
+      console.log('🎤 VoiceAssistant: Ignoring toggle - currently processing');
       return;
     }
 
+    // Reset manually closed flag when user actively clicks the button
+    if (isManuallyClosedRef.current) {
+      console.log('🎤 VoiceAssistant: Resetting manually closed flag on user interaction');
+      isManuallyClosedRef.current = false;
+    }
+
     if (isListening) {
+      console.log('🎤 VoiceAssistant: Stopping listening');
       stopListening();
       setShowBottomSheet(false);
     } else {
+      console.log('🎤 VoiceAssistant: Starting listening');
       try {
+        // Reset all error states before attempting to start
+        setIsListening(false);
+        setIsThinking(false);
+        setIsResponding(false);
+        setShowUnmuteButton(false);
+        setShowAskButton(false);
+        
         await startListening();
       } catch (error) {
-        console.error("Microphone access failed:", error);
+        console.error("🎤 VoiceAssistant: Microphone access failed:", error);
+        
+        // Comprehensive error state reset
         setShowBottomSheet(false);
         setIsListening(false);
+        setIsThinking(false);
+        setIsResponding(false);
+        setShowUnmuteButton(false);
+        setShowAskButton(false);
+        
+        // Show error toast based on error type
+        const isPermissionError = error instanceof Error && 
+          (error.name === "NotAllowedError" || error.message.includes("Permission"));
+        
+        toast({
+          description: (
+            <span style={{ fontFamily: "Inter, sans-serif", fontSize: "16px", fontWeight: 500 }}>
+              {isPermissionError 
+                ? "Microphone access required for voice input" 
+                : "Failed to start voice recording"}
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "74px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
       }
     }
   };
