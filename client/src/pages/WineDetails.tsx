@@ -601,11 +601,58 @@ export default function WineDetails() {
 
       setWine(wineData);
       setLoadingState("loaded");
+      
+      // Start pre-caching suggestion responses in background
+      preCacheSuggestionResponses(wineData);
     } catch (error) {
       console.error("Error loading wine data:", error);
       setLoadingState("error");
     }
   }, [id]);
+
+  // Pre-cache responses for all suggestions
+  const preCacheSuggestionResponses = async (wineData: any) => {
+    if (!wineData?.id) return;
+
+    try {
+      const wineKey = `wine_${wineData.id}`;
+      
+      // Get all available suggestions from the standard wine suggestions
+      const allSuggestions = [
+        "What makes this wine special?",
+        "Tell me about the vineyard",
+        "What food pairs well with this?",
+        "How should I serve this wine?",
+        "What's the tasting profile?",
+        "Tell me about the vintage",
+        "What's the alcohol content?",
+        "How long can I age this?",
+        "What's the best temperature?",
+        "Tell me about the winemaker"
+      ];
+      
+      console.log(`Starting pre-cache for ${allSuggestions.length} suggestions for wine: ${wineData.name}`);
+      
+      // Convert suggestions to format expected by cache manager
+      const suggestionsToCache = allSuggestions.map(suggestion => ({
+        id: suggestion.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+        text: suggestion
+      }));
+
+      // Start pre-caching in background (don't await to avoid blocking UI)
+      suggestionCache.preCacheSuggestions(wineKey, suggestionsToCache)
+        .then(() => {
+          console.log('Pre-caching completed successfully');
+          const stats = suggestionCache.getCacheStats();
+          console.log(`Cache now contains ${stats.totalEntries} entries (${stats.cacheSize})`);
+        })
+        .catch(error => {
+          console.error('Pre-caching failed:', error);
+        });
+    } catch (error) {
+      console.error('Error starting pre-cache:', error);
+    }
+  };
 
   // Optimized scrolling initialization
   useEffect(() => {
