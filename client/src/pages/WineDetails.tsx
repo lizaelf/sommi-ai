@@ -504,23 +504,12 @@ export default function WineDetails() {
     }
   }, [id]);
 
-  // Fix scrolling initialization
+  // Optimized scrolling initialization
   useEffect(() => {
-    // Force scroll restoration and ensure page is scrollable
-    const initializeScrolling = () => {
-      // Reset scroll position to enable proper scrolling
-      window.scrollTo(0, 0);
-
-      // Ensure document body has proper scroll behavior
-      document.body.style.overflow = "auto";
-      document.documentElement.style.overflow = "auto";
-
-      // Force a reflow to ensure scroll is working
-      document.body.offsetHeight;
-    };
-
-    // Run immediately
-    initializeScrolling();
+    // Streamlined scroll setup
+    window.scrollTo(0, 0);
+    document.body.style.overflow = "auto";
+    document.documentElement.style.overflow = "auto";
   }, []);
 
   // Detect QR code access and show interaction choice
