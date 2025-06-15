@@ -3,6 +3,7 @@ import { useToast } from "@/hooks/UseToast";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceAssistant from "./VoiceAssistant";
+import SuggestionPills from "./SuggestionPills";
 import Button from "./ui/Button";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
@@ -183,27 +184,17 @@ const ChatOnly: React.FC<ChatOnlyProps> = ({
         {/* Chat Input Area */}
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <Button
-              onClick={() => handleSendMessage("What are the tasting notes?")}
-              variant="secondary"
-              style={{ height: "32px" }}
-            >
-              Tasting notes
-            </Button>
-            <Button
-              onClick={() => handleSendMessage("Simple recipes for this wine")}
-              variant="secondary"
-              style={{ height: "32px" }}
-            >
-              Simple recipes
-            </Button>
-            <Button
-              onClick={() => handleSendMessage("Where is this wine from?")}
-              variant="secondary"
-              style={{ height: "32px" }}
-            >
-              Where it's from
-            </Button>
+            <SuggestionPills
+              wineKey={currentWine ? `wine_${currentWine.id}` : "default"}
+              conversationId={currentConversationId?.toString()}
+              onSuggestionClick={(prompt, pillId, options) => {
+                console.log("ChatOnly: SuggestionPills clicked:", prompt);
+                handleSendMessage(prompt);
+              }}
+              isDisabled={isTyping}
+              preferredResponseType="text"
+              context="chat"
+            />
           </div>
           <ChatInput
             onSendMessage={handleSendMessage}
