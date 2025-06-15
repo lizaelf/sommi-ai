@@ -94,8 +94,7 @@ export default function SuggestionPills({ wineKey, onSuggestionClick, isDisabled
       className="flex gap-2 overflow-x-auto scrollbar-hide pb-1"
       style={{
         scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-        WebkitScrollbar: 'none'
+        msOverflowStyle: 'none'
       }}
     >
       {visiblePills.map((pill: SuggestionPill) => (

@@ -228,12 +228,10 @@ export class DataSyncManager {
     }
   }
   
-  // Get wine by ID
+  // Get wine by ID - optimized for speed
   static getWineById(id: number): UnifiedWineData | undefined {
     const wines = this.getUnifiedWineData();
-    const wine = wines.find(w => w.id === id);
-    console.log(`DataSyncManager: Looking for wine ID ${id}, found:`, wine ? { id: wine.id, name: wine.name } : 'not found');
-    return wine;
+    return wines.find(w => w.id === id);
   }
 
   // Reset to master data

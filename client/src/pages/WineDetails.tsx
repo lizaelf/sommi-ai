@@ -96,10 +96,11 @@ export default function WineDetails() {
   const { messages, currentConversationId, addMessage, refetchMessages } =
     useConversation();
 
-  // API status check
+  // API status check - reduced frequency for faster loading
   const { data: apiStatus } = useQuery({
     queryKey: ["/api/status"],
-    refetchInterval: 30000,
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   // Chat functions
@@ -475,52 +476,32 @@ export default function WineDetails() {
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messages.length > 0) {
-      setTimeout(scrollToBottom, 100);
+      scrollToBottom();
     }
   }, [messages.length]);
 
-  // Load wine data when ID changes
+  // Load wine data when ID changes - optimized for speed
   useEffect(() => {
-    let mounted = true;
+    if (!id) {
+      setLoadingState("error");
+      return;
+    }
 
-    const loadWineData = async () => {
-      try {
-        setLoadingState("loading");
-
-        if (!id) {
-          if (mounted) {
-            setLoadingState("error");
-          }
-          return;
-        }
-
-        // Get wine from DataSyncManager
-        const wineData = DataSyncManager.getWineById(parseInt(id));
-
-        if (!wineData) {
-          if (mounted) {
-            setLoadingState("error");
-          }
-          return;
-        }
-
-        if (mounted) {
-          setWine(wineData);
-          setLoadingState("loaded");
-        }
-      } catch (error) {
-        console.error("Error loading wine data:", error);
-        if (mounted) {
-          setLoadingState("error");
-        }
+    try {
+      // Synchronous data loading for faster response
+      const wineData = DataSyncManager.getWineById(parseInt(id));
+      
+      if (!wineData) {
+        setLoadingState("error");
+        return;
       }
-    };
 
-    loadWineData();
-
-    return () => {
-      mounted = false;
-    };
+      setWine(wineData);
+      setLoadingState("loaded");
+    } catch (error) {
+      console.error("Error loading wine data:", error);
+      setLoadingState("error");
+    }
   }, [id]);
 
   // Fix scrolling initialization
@@ -538,9 +519,8 @@ export default function WineDetails() {
       document.body.offsetHeight;
     };
 
-    // Run immediately and after a small delay
+    // Run immediately
     initializeScrolling();
-    setTimeout(initializeScrolling, 100);
   }, []);
 
   // Detect QR code access and show interaction choice
