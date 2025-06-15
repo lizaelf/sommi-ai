@@ -84,6 +84,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - Streamlined chat container with minimal wrapper styling for clean component integration
   - Consistent 32px spacing between "We recommend" and chat sections for uniform layout flow
   - Added 24px bottom margin to main wine container for proper spacing before chat interface
+  - Restored original ContactBottomSheet appearance with country selector and form validation while preserving chat block transparency
 - **Performance Optimization**: Immediate display of default suggestions while API loads in background
 - **TypeScript Interface Standardization**: Consistent prop interfaces across all refactored components
 - **Code Organization**: Improved maintainability with smaller, focused components following React composition patterns

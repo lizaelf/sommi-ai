@@ -11,6 +11,26 @@ export interface ContactFormData {
   phone: string;
 }
 
+interface Country {
+  name: string;
+  dial_code: string;
+  code: string;
+  flag: string;
+}
+
+const countries: Country[] = [
+  { name: "United States", dial_code: "+1", code: "US", flag: "🇺🇸" },
+  { name: "Canada", dial_code: "+1", code: "CA", flag: "🇨🇦" },
+  { name: "United Kingdom", dial_code: "+44", code: "GB", flag: "🇬🇧" },
+  { name: "Australia", dial_code: "+61", code: "AU", flag: "🇦🇺" },
+  { name: "Germany", dial_code: "+49", code: "DE", flag: "🇩🇪" },
+  { name: "France", dial_code: "+33", code: "FR", flag: "🇫🇷" },
+  { name: "Italy", dial_code: "+39", code: "IT", flag: "🇮🇹" },
+  { name: "Spain", dial_code: "+34", code: "ES", flag: "🇪🇸" },
+  { name: "Japan", dial_code: "+81", code: "JP", flag: "🇯🇵" },
+  { name: "South Korea", dial_code: "+82", code: "KR", flag: "🇰🇷" },
+];
+
 interface ContactBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,6 +48,9 @@ export default function ContactBottomSheet({
     email: "",
     phone: "",
   });
+  const [errors, setErrors] = useState<Partial<ContactFormData>>({});
+  const [selectedCountry, setSelectedCountry] = useState<Country>(countries[0]);
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
   const portalElement = useRef<HTMLElement | null>(null);
 
@@ -51,14 +74,30 @@ export default function ContactBottomSheet({
     }
   }, [isOpen, animationState]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-    onClose();
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    
+    // Basic validation
+    const newErrors: Partial<ContactFormData> = {};
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    if (!formData.phone.trim()) newErrors.phone = "Phone is required";
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length === 0) {
+      onSubmit(formData);
+      onClose();
+    }
   };
 
   const handleInputChange = (field: keyof ContactFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
   };
 
   if (animationState === "closed" || !portalElement.current) {
@@ -152,75 +191,202 @@ export default function ContactBottomSheet({
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "24px" }}>
-            {/* First Name & Last Name Row */}
-            <div style={{ display: "flex", gap: "12px" }}>
-              <div style={{ flex: 1 }}>
-                <FormInput
-                  type="text"
-                  name="firstName"
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={(value) => handleInputChange("firstName", value)}
-                  required
-                  className=""
-                />
+        {/* Form Fields */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            marginBottom: "24px",
+          }}
+        >
+          <FormInput
+            type="text"
+            name="firstName"
+            placeholder="First name"
+            value={formData.firstName}
+            onChange={(value) => handleInputChange("firstName", value)}
+            error={errors.firstName}
+          />
+
+          <FormInput
+            type="text"
+            name="lastName"
+            placeholder="Last name"
+            value={formData.lastName}
+            onChange={(value) => handleInputChange("lastName", value)}
+            error={errors.lastName}
+          />
+
+          <FormInput
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(value) => handleInputChange("email", value)}
+            error={errors.email}
+          />
+
+          {/* Phone number with country selector */}
+          <div style={{ position: "relative" }}>
+            <div
+              style={{
+                display: "flex",
+                height: "64px",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              className="contact-form-input"
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingLeft: "24px",
+                  paddingRight: "12px",
+                  cursor: "pointer",
+                  borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+                }}
+                onClick={() => setShowCountryDropdown(true)}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <span style={{ fontSize: "16px" }}>
+                    {selectedCountry.flag}
+                  </span>
+                  <span
+                    style={{
+                      color: "white",
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {selectedCountry.dial_code}
+                  </span>
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <FormInput
-                  type="text"
-                  name="lastName"
-                  placeholder="Last name"
-                  value={formData.lastName}
-                  onChange={(value) => handleInputChange("lastName", value)}
-                  required
-                  className=""
-                />
-              </div>
+              <FormInput
+                type="tel"
+                name="phone"
+                placeholder="Phone number"
+                value={formData.phone}
+                onChange={(value) => handleInputChange("phone", value)}
+                error={errors.phone}
+                className="flex-1"
+              />
             </div>
-
-            {/* Email */}
-            <FormInput
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={(value) => handleInputChange("email", value)}
-              required
-            />
-
-            {/* Phone */}
-            <FormInput
-              type="tel"
-              name="phone"
-              placeholder="Phone"
-              value={formData.phone}
-              onChange={(value) => handleInputChange("phone", value)}
-              required
-            />
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
+          {/* Country Dropdown */}
+          {showCountryDropdown && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 10000,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => setShowCountryDropdown(false)}
+            >
+              <div
+                style={{
+                  backgroundColor: "#1C1C1C",
+                  borderRadius: "16px",
+                  padding: "24px",
+                  maxWidth: "320px",
+                  width: "90%",
+                  maxHeight: "400px",
+                  overflow: "auto",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "18px",
+                    fontWeight: 500,
+                    marginBottom: "16px",
+                  }}
+                >
+                  Select Country
+                </h3>
+                {countries.map((country) => (
+                  <div
+                    key={country.code}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      padding: "12px",
+                      cursor: "pointer",
+                      borderRadius: "8px",
+                      marginBottom: "4px",
+                      backgroundColor:
+                        selectedCountry.code === country.code
+                          ? "rgba(255, 255, 255, 0.1)"
+                          : "transparent",
+                    }}
+                    onClick={() => {
+                      setSelectedCountry(country);
+                      setShowCountryDropdown(false);
+                    }}
+                  >
+                    <span style={{ fontSize: "16px" }}>{country.flag}</span>
+                    <span
+                      style={{
+                        color: "white",
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {country.name} ({country.dial_code})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Save Button */}
+          <div
             style={{
               width: "100%",
-              backgroundColor: "white",
-              color: "black",
-              fontWeight: 500,
-              padding: "16px",
-              borderRadius: "12px",
-              border: "none",
-              fontSize: "16px",
-              fontFamily: "Inter, sans-serif",
-              cursor: "pointer",
             }}
           >
-            Submit
-          </button>
-        </form>
+            <button
+              onClick={handleSubmit}
+              className="save-button"
+              style={{
+                width: "100%",
+                height: "56px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "black",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                cursor: "pointer",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            >
+              Save
+            </button>
+          </div>
+        </div>
       </div>
     </div>,
     portalElement.current
