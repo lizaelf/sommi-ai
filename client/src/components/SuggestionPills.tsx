@@ -44,13 +44,18 @@ export default function SuggestionPills({
     if (isDisabled) return;
 
     try {
-      console.log(`Pill clicked: ${pill.text} in context: ${context}`);
+      console.log(`=== PILL CLICK DEBUG ===`);
+      console.log(`Pill clicked: ${pill.text}`);
+      console.log(`Context: ${context}`);
+      console.log(`Preferred response type: ${preferredResponseType}`);
+      console.log(`Wine key: ${wineKey}`);
 
       // Check cache for BOTH contexts (not just voice-assistant)
       let cachedResponse = null;
       const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      console.log(`Suggestion ID for cache: ${suggestionId}`);
       cachedResponse = await suggestionCache.getCachedResponse(wineKey, suggestionId);
-      console.log(`Cache check for ${pill.text}:`, cachedResponse ? 'Found' : 'Not found');
+      console.log(`Cache result for ${pill.text}:`, cachedResponse ? `Found (${cachedResponse.substring(0, 50)}...)` : 'Not found');
 
       // Mark pill as used in database (background operation)
       fetch('/api/suggestion-pills/used', {
