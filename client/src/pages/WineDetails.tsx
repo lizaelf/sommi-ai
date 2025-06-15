@@ -954,25 +954,18 @@ export default function WineDetails() {
           </div>
         </div>
 
-        {/* Chat Section - Integrated within wine container */}
+        {/* Enhanced Chat Interface - Isolated */}
         <div
           style={{
             width: "100%",
-            padding: "0 20px",
-            marginBottom: "40px",
-            marginTop: "40px",
+            background: "none", 
+            backgroundColor: "black",
+            border: "none",
+            margin: "0",
+            marginTop: "-20px", // Negative margin to pull closer
+            padding: "0",
           }}
         >
-          <h1
-            style={{
-              ...typography.h1,
-              color: "white",
-              marginBottom: "24px",
-              textAlign: "left",
-            }}
-          >
-            Chat
-          </h1>
           <EnhancedChatInterface
             showBuyButton={false}
             selectedWine={
