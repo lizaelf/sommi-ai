@@ -228,6 +228,12 @@ export default function SuggestionPills({
 
           // Play audio using OpenAI TTS for consistency with voice assistant
           console.log("🎤 VOICE: Generating TTS audio for suggestion response");
+          console.log("🎤 VOICE: Cached response text:", instantResponse);
+          
+          if (!instantResponse || instantResponse.trim() === '') {
+            console.error("🎤 VOICE: Empty cached response text, cannot generate TTS");
+            throw new Error("Empty cached response text");
+          }
           
           try {
             console.log("🎤 VOICE: Making TTS API request for cached response");
@@ -393,6 +399,13 @@ export default function SuggestionPills({
 
               // Play audio using OpenAI TTS
               console.log("🎤 VOICE: Playing audio response for API result");
+              console.log("🎤 VOICE: Response data:", data);
+              console.log("🎤 VOICE: Text to convert:", data.response);
+              
+              if (!data.response || data.response.trim() === '') {
+                console.error("🎤 VOICE: Empty response text, cannot generate TTS");
+                throw new Error("Empty response text");
+              }
               
               const ttsResponse = await fetch("/api/text-to-speech", {
                 method: "POST",
