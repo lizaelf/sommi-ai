@@ -1,6 +1,58 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Contact Input Override - Force transparent background */
+.contact-input-override {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.contact-input-override:focus {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.contact-input-override:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Override browser autofill styles */
+.contact-input-override:-webkit-autofill,
+.contact-input-override:-webkit-autofill:hover,
+.contact-input-override:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: white !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Override all possible browser input styles */
+input.contact-input-override {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+input.contact-input-override:focus,
+input.contact-input-override:active,
+input.contact-input-override:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
 /* Hide scrollbars for wine recommendation cards */
 .wine-recommendations-container {
   scrollbar-width: none; /* Firefox */

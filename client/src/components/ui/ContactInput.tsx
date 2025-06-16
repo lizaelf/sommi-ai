@@ -29,6 +29,7 @@ const ContactInput = forwardRef<HTMLInputElement, ContactInputProps>(
             "flex h-14 w-full items-center px-6 py-4 text-white font-inter text-base outline-none box-border",
             "rounded-xl border transition-all duration-200",
             "placeholder:text-[#999999]",
+            "contact-input-override",
             error 
               ? "border-[#FF6B6B]" 
               : "border-[rgba(255,255,255,0.12)]",
@@ -43,6 +44,11 @@ const ContactInput = forwardRef<HTMLInputElement, ContactInputProps>(
             backgroundImage: "none !important",
             WebkitAppearance: "none !important",
             appearance: "none !important",
+            boxShadow: "none !important",
+            WebkitBoxShadow: "none !important",
+            MozBoxShadow: "none !important",
+            WebkitTextFillColor: "white !important",
+            color: "white !important"
           }}
           ref={ref}
           onFocus={handleFocus}
