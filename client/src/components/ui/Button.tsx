@@ -3,7 +3,7 @@ import React from "react";
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: "primary" | "secondary" | "secondaryFilled" | "headerIcon" | "secondaryIcon";
+  variant?: "primary" | "secondary" | "secondaryFilled" | "headerIcon" | "secondaryIcon" | "error";
   disabled?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -65,6 +65,20 @@ const Button: React.FC<ButtonProps> = ({
     return (
       <button
         className="secondary-icon-button react-button"
+        style={style}
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  if (variant === "error") {
+    return (
+      <button
+        className="error-button react-button"
         style={style}
         onClick={disabled ? undefined : onClick}
         disabled={disabled}

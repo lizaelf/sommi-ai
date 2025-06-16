@@ -521,6 +521,38 @@ div * button.suggestion-button {
   transform: scale(0.98);
 }
 
+/* Error Button Class */
+.error-button {
+  background-color: #8B0000 !important;
+  border: 1px solid #8B0000 !important;
+  color: white !important;
+  border-radius: 32px !important;
+  padding: 8px 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: Inter, sans-serif !important;
+  cursor: pointer !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  min-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  background-image: none !important;
+}
+
+.error-button:hover {
+  background-color: #A52A2A !important;
+  border-color: #A52A2A !important;
+}
+
+.error-button:active {
+  background-color: #8B0000 !important;
+  transform: scale(0.98);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

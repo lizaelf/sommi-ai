@@ -443,22 +443,12 @@ export function ButtonIcon({
               
               <Button
                 onClick={handleConfirmDelete}
-                variant="primary"
+                variant="error"
                 style={{
                   flex: 1,
                   height: "56px",
                   fontSize: "16px",
                   fontWeight: 600,
-                  backgroundColor: "#8B0000",
-                  borderColor: "#8B0000",
-                }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = "#A52A2A";
-                  e.currentTarget.style.borderColor = "#A52A2A";
-                }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.currentTarget.style.backgroundColor = "#8B0000";
-                  e.currentTarget.style.borderColor = "#8B0000";
                 }}
               >
                 Delete
