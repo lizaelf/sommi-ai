@@ -614,61 +614,39 @@ export default function SuggestionPills({
     }
   };
 
-  // Show only unused and voice-ready pills (for voice context)
+  // Always show exactly 3 pills
   const visiblePills = useMemo(() => {
     const availablePills = suggestionsData?.suggestions || [];
-    const effectiveWineKey = wineKey || "wine_1";
 
     if (isLoading || availablePills.length === 0) {
       return defaultSuggestions.slice(0, 3);
     }
 
-    // Filter out used pills first - hide used suggestions completely
+    // Only show unused pills - never show used ones
     const unusedPills = availablePills.filter(
       (pill: SuggestionPill) => !usedPills.has(pill.id),
     );
 
-    // For voice context, only show pills that have audio ready or spreadsheet responses
-    if (context === "voice-assistant") {
-      const voiceReadyPills = unusedPills.filter((pill: SuggestionPill) => {
-        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
-        const preGenStatus = preGenerationStatus.get(cacheKey);
-        
-        // Check if audio is pre-generated and ready
-        const audioCache = (window as any).suggestionAudioCache || {};
-        const hasPreGeneratedAudio = !!audioCache[cacheKey];
-        
-        // Check if spreadsheet response exists
-        const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
-        const hasSpreadsheetResponse = !!(wineData?.responses?.[suggestionId as keyof typeof wineData.responses]);
-        
-        return preGenStatus === 'ready' || hasPreGeneratedAudio || hasSpreadsheetResponse;
-      });
-
-      console.log(`🎤 Voice context: ${voiceReadyPills.length} voice-ready pills available`);
-      return voiceReadyPills.slice(0, 3);
-    }
-
-    // For chat context, show all unused pills
+    // Always show exactly 3 unused pills if available
     if (unusedPills.length >= 3) {
       return unusedPills.slice(0, 3);
     }
 
+    // If we have some unused pills but less than 3, show what we have
     if (unusedPills.length > 0) {
       return unusedPills;
     }
 
-    // If all suggestions are used, show default suggestions
+    // If all suggestions are used, show default suggestions instead of auto-resetting
     if (unusedPills.length === 0 && availablePills.length > 0) {
       console.log("All suggestions used - showing default suggestions (no auto-reset)");
       return defaultSuggestions.slice(0, 3);
     }
 
-    // Fallback: show unused default suggestions
+    // Fallback: show unused default suggestions if no API suggestions available
     const unusedDefaults = defaultSuggestions.filter(def => !usedPills.has(def.id));
     return unusedDefaults.slice(0, 3);
-  }, [suggestionsData, usedPills, isLoading, context, preGenerationStatus, wineKey]);
+  }, [suggestionsData, usedPills, isLoading]);
 
   return (
     <div
@@ -696,6 +674,10 @@ export default function SuggestionPills({
         `}
       </style>
       {visiblePills.map((pill: SuggestionPill) => {
+        const effectiveWineKey = wineKey || "wine_1";
+        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
+        const preGenStatus = preGenerationStatus.get(cacheKey);
         const isLoading = loadingPillId === pill.id;
         const showFallback = isLoading && context === "voice-assistant";
 
@@ -715,6 +697,10 @@ export default function SuggestionPills({
               transition: "none",
               position: "relative",
               opacity: isLoading ? 0.7 : 1,
+              background: preGenStatus === 'ready' && context === "voice-assistant" 
+                ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' 
+                : undefined,
+              color: preGenStatus === 'ready' && context === "voice-assistant" ? '#ffffff' : undefined,
             }}
           >
             {showFallback ? "Loading audio..." : pill.text}
@@ -730,6 +716,19 @@ export default function SuggestionPills({
                 borderTop: "2px solid transparent",
                 borderRadius: "50%",
                 animation: "spin 1s linear infinite",
+              }} />
+            )}
+            {preGenStatus === 'ready' && context === "voice-assistant" && !isLoading && (
+              <div style={{
+                position: "absolute",
+                right: "8px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "8px",
+                height: "8px",
+                background: "#10b981",
+                borderRadius: "50%",
+                boxShadow: "0 0 4px rgba(16, 185, 129, 0.5)",
               }} />
             )}
           </Button>
