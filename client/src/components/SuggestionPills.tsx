@@ -371,81 +371,53 @@ export default function SuggestionPills({
             return;
           }
 
-          // Start TTS generation in parallel with chat message handling
-          const ttsPromise = (async () => {
+          // Fast TTS generation for immediate audio response
+          console.log("🎤 VOICE: Making fast TTS API request");
+          const response = await fetch("/api/text-to-speech", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: instantResponse }),
+            signal: currentAbortController?.signal,
+          });
+
+          if (response.ok) {
+            const audioBuffer = await response.arrayBuffer();
+            const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            
+            console.log("🎤 VOICE: TTS ready - playing immediately");
+            
+            audio.onplay = () => {
+              console.log("🎤 VOICE: ✅ Audio playback started successfully");
+              window.dispatchEvent(new CustomEvent("tts-audio-start"));
+            };
+
+            audio.onended = () => {
+              console.log("🎤 VOICE: Audio playback completed");
+              URL.revokeObjectURL(audioUrl);
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+            
+            audio.onerror = (e) => {
+              console.error("🎤 VOICE: Audio playback error:", e);
+              URL.revokeObjectURL(audioUrl);
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+
+            (window as any).currentOpenAIAudio = audio;
+            
             try {
-              console.log("🎤 VOICE: Making TTS API request (no pre-generated audio)");
-              const response = await fetch("/api/text-to-speech", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: instantResponse }),
-                signal: currentAbortController?.signal,
-              });
-
-              if (response.ok) {
-                const audioBuffer = await response.arrayBuffer();
-                const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
-                
-                console.log("🎤 VOICE: Immediate TTS ready - playing audio");
-                
-                audio.onplay = () => {
-                  console.log("🎤 VOICE: ✅ Audio playback started successfully");
-                  // Dispatch TTS audio start event for VoiceAssistant
-                  window.dispatchEvent(new CustomEvent("tts-audio-start"));
-                };
-
-                audio.onended = () => {
-                  console.log("🎤 VOICE: Audio playback completed");
-                  URL.revokeObjectURL(audioUrl);
-                  setIsProcessing(false);
-                  // Dispatch TTS audio stop event for VoiceAssistant
-                  window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-                };
-                
-                audio.onerror = (e) => {
-                  console.error("🎤 VOICE: Audio playback error:", e);
-                  URL.revokeObjectURL(audioUrl);
-                  setIsProcessing(false);
-                  // Dispatch TTS audio stop event for VoiceAssistant
-                  window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-                };
-
-                // Store reference for potential stopping
-                (window as any).currentOpenAIAudio = audio;
-                
-                try {
-                  console.log("🎤 VOICE: Attempting to play audio...");
-                  await audio.play();
-                  console.log("🎤 VOICE: ✅ Audio play() call succeeded");
-                } catch (playError) {
-                  console.error("🎤 VOICE: Audio play() failed:", playError);
-                  // Try to unlock audio context and retry
-                  if (window.AudioContext || (window as any).webkitAudioContext) {
-                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-                    if (audioContext.state === 'suspended') {
-                      await audioContext.resume();
-                      console.log("🎤 VOICE: Audio context resumed, retrying...");
-                      try {
-                        await audio.play();
-                        console.log("🎤 VOICE: ✅ Audio play() retry succeeded");
-                      } catch (retryError) {
-                        console.error("🎤 VOICE: Audio play() retry failed:", retryError);
-                      }
-                    }
-                  }
-                }
-              }
-            } catch (error: any) {
-              if (error.name === 'AbortError') {
-                console.log("🛑 VOICE: Immediate TTS aborted by user");
-              } else {
-                console.error("🎤 VOICE: Immediate TTS error:", error);
-              }
+              console.log("🎤 VOICE: Attempting to play audio...");
+              await audio.play();
+              console.log("🎤 VOICE: ✅ Audio play() call succeeded");
+            } catch (playError) {
+              console.error("🎤 VOICE: Audio play() failed:", playError);
               setIsProcessing(false);
             }
-          })();
+          }
 
           // Add messages to chat in parallel
           const userMessage = {
