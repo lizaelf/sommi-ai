@@ -523,8 +523,8 @@ div * button.suggestion-button {
 
 /* Error Button Class */
 .error-button {
-  background-color: #8B0000 !important;
-  border: 1px solid #8B0000 !important;
+  background-color: #8A332C !important;
+  border: 1px solid #8A332C !important;
   color: white !important;
   border-radius: 32px !important;
   padding: 8px 16px !important;
@@ -544,12 +544,12 @@ div * button.suggestion-button {
 }
 
 .error-button:hover {
-  background-color: #A52A2A !important;
-  border-color: #A52A2A !important;
+  background-color: #A03D35 !important;
+  border-color: #A03D35 !important;
 }
 
 .error-button:active {
-  background-color: #8B0000 !important;
+  background-color: #8A332C !important;
   transform: scale(0.98);
 }
 

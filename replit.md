@@ -47,6 +47,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 16, 2025)
 
 ### Design System Standardization Complete (June 16, 2025 - Latest)
+- **Error Button Variant Creation**: Added new error button variant with #8A332C fill color for destructive actions, replacing inline styling with centralized Button component variant
+- **Close Button Standardization**: Updated delete account dialog to use same IconButton close button as Text/Voice bottom sheet for consistent user experience
 - **Comprehensive Spacing System**: Created centralized spacing.ts file documenting all distances and spacing values throughout the platform
 - **Typography Standardization**: Applied typography.ts system across entire codebase, eliminating all inline font styling
 - **Button Icon Profile Menu Enhancement**: Updated "Edit contact info" and "Manage notifications" buttons with disabled styling using centralized color system
