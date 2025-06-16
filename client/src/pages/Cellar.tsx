@@ -1633,10 +1633,10 @@ const Cellar = () => {
                           justifyContent: "center",
                           alignItems: "center",
                           width: "100px",
-                          borderRadius: "16px",
+                          borderRadius: "12px",
                           border: "1px solid rgba(255, 255, 255, 0.12)",
-                          background: "#2A2A29 !important",
-                          backgroundColor: "#2A2A29 !important",
+                          background: "transparent",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                           boxSizing: "border-box",
                         }}
