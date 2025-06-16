@@ -48,7 +48,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           borderBottom: '1px solid transparent',
           borderLeft: '1px solid transparent',
           backgroundImage: isFocused 
-            ? 'linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), radial-gradient(circle at top center, rgba(74, 144, 226, 0.7) 0%, rgba(74, 144, 226, 0.3) 100%)'
+            ? 'linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), radial-gradient(circle at top center, rgba(74, 144, 226, 0.08) 0%, rgba(74, 144, 226, 0.08) 100%)'
             : 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 100%)',
           backgroundSize: isFocused ? 'auto' : '400% 100%',
           backgroundOrigin: 'border-box',
