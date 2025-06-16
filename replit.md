@@ -68,7 +68,9 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Pre-generation Status Tracking**: Implemented comprehensive status tracking (loading/ready/failed) with visual indicators for voice context
 - **Eager Audio Pre-generation**: Enhanced system to pre-generate audio for both API and default suggestions to improve responsiveness
 - **Enhanced UX Feedback**: Voice-ready suggestions show blue gradient background with green ready indicator, loading suggestions show fallback text
-- **Hidden Used Pills**: Updated suggestion display logic to hide used pills and show fresh alternatives instead of cycling
+- **Hidden Used Pills**: Updated suggestion display logic to hide used pills completely instead of showing green indicators
+- **Voice-Ready Filtering**: Voice context now only displays suggestions with pre-generated audio or spreadsheet responses available
+- **Clean Visual Interface**: Removed blue gradient backgrounds and green ready indicators - all visible suggestions are ready to use
 - **Improved User Experience**: Voice suggestions now use curated content for consistent, high-quality responses
 
 ### UI Component Updates (June 16, 2025)
