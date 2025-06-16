@@ -44,7 +44,17 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - SuggestionPills component and Voice Assistant system under code freeze - require permission before changes (finalized June 16, 2025)
   - Typography update applied to SuggestionPills with user permission (June 16, 2025)
 
-## Recent Changes (June 15, 2025)
+## Recent Changes (June 16, 2025)
+
+### Design System Standardization Complete (June 16, 2025 - Latest)
+- **Comprehensive Spacing System**: Created centralized spacing.ts file documenting all distances and spacing values throughout the platform
+- **Typography Standardization**: Applied typography.ts system across entire codebase, eliminating all inline font styling
+- **Button Icon Profile Menu Enhancement**: Updated "Edit contact info" and "Manage notifications" buttons with disabled styling using centralized color system
+- **Delete Account UX Improvement**: Restructured delete account flow to show bottom sheet immediately with horizontal button layout matching Text/Voice choice pattern
+- **WineDetails Layout Refinement**: Removed "History" title and bottom padding from wine description section for cleaner presentation
+- **Consistent Bottom Sheet Pattern**: Standardized all confirmation dialogs to use same layout, styling, and animation patterns for unified user experience
+
+## Previous Changes (June 15, 2025)
 
 ### Voice/Chat Context Separation Implementation Complete (June 15, 2025 - Latest)
 - **Comprehensive Context-Aware Suggestion System**: Implemented complete separation between chat and voice assistant contexts with independent response handling

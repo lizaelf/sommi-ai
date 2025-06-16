@@ -424,19 +424,18 @@ export function ButtonIcon({
             <div
               style={{
                 display: "flex",
-                flexDirection: "column",
-                gap: "16px",
+                gap: "12px",
+                width: "100%",
               }}
             >
               <Button
                 onClick={closeBottomSheet}
                 variant="secondary"
                 style={{
-                  width: "100%",
-                  padding: "16px",
-                  borderRadius: "12px",
-                  ...typography.body,
-                  fontWeight: "500",
+                  flex: 1,
+                  height: "56px",
+                  fontSize: "16px",
+                  fontWeight: 500,
                 }}
               >
                 Don't delete
@@ -445,16 +444,17 @@ export function ButtonIcon({
               <button
                 onClick={handleConfirmDelete}
                 style={{
-                  width: "100%",
+                  flex: 1,
+                  height: "56px",
                   backgroundColor: "#8B0000",
                   color: "white",
                   border: "none",
-                  borderRadius: "12px",
-                  padding: "16px",
+                  borderRadius: "8px",
                   cursor: "pointer",
                   transition: "background-color 0.2s ease",
-                  ...typography.body,
-                  fontWeight: "500",
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  fontFamily: "Inter, sans-serif",
                 }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = "#A52A2A";
