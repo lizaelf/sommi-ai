@@ -48,7 +48,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           borderBottom: '1px solid transparent',
           borderLeft: '1px solid transparent',
           backgroundImage: isFocused 
-            ? 'linear-gradient(#1C1C1C, #1C1C1C), radial-gradient(circle at top center, rgba(74, 144, 226, 0.6) 0%, rgba(74, 144, 226, 0.2) 100%)'
+            ? 'linear-gradient(rgba(74, 144, 226, 0.2), rgba(74, 144, 226, 0.2)), radial-gradient(circle at top center, rgba(74, 144, 226, 0.6) 0%, rgba(74, 144, 226, 0.2) 100%)'
             : 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 100%)',
           backgroundSize: isFocused ? 'auto' : '400% 100%',
           backgroundOrigin: 'border-box',
@@ -85,7 +85,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             alignItems: 'center',
             alignSelf: 'stretch',
             borderRadius: '24px',
-            backgroundColor: isFocused ? '#1C1C1C' : '#1C1C1C',
+            backgroundColor: isFocused ? 'rgba(74, 144, 226, 0.15)' : '#1C1C1C',
             border: 'none',
             width: '100%',
             height: '64px',
@@ -93,7 +93,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             color: 'white',
             WebkitAppearance: 'none',
             appearance: 'none',
-            background: isFocused ? '#1C1C1C' : '#1C1C1C',
             fontFamily: 'Inter, sans-serif',
             fontSize: '16px',
             lineHeight: '24px',
@@ -103,7 +102,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             left: 0,
             top: 0
           }}
-          className={`text-sm pr-12 placeholder-[#999999] flex items-center ${isFocused ? 'bg-[#1C1C1C] !bg-[#1C1C1C]' : 'bg-[#1C1C1C] !bg-[#1C1C1C]'}`}
+          className="text-sm pr-12 placeholder-[#999999] flex items-center"
           placeholder="Ask me about wine..."
           disabled={isProcessing}
           onKeyPress={(e) => {
