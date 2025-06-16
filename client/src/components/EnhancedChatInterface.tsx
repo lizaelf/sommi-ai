@@ -349,6 +349,68 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     return <>{elements}</>;
   };
 
+  // Handler for ContactBottomSheet submission
+  const handleContactSubmit = async (data: ContactFormData) => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        localStorage.setItem("hasSharedContact", "true");
+        setIsUserRegistered(true);
+        handleCloseContactSheet();
+
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Contact saved successfully!
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "91px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+      } else {
+        console.error("Failed to save contact:", result);
+        toast({
+          description: "Failed to save contact information",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast({
+        description: "Error saving contact information",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Use conversation hook
   const {
     currentConversationId,
@@ -1045,9 +1107,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       </div>
 
       <ContactBottomSheet
-        isOpen={animationState !== "closed"}
+        isOpen={showContactSheet}
         onClose={handleCloseContactSheet}
-        onSubmit={handleSubmit}
+        onSubmit={handleContactSubmit}
       />
 
       {/* Legacy Contact Bottom Sheet - keeping for reference but commented out */}
