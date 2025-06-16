@@ -33,10 +33,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               ? "border-[#FF6B6B]" 
               : "border-[rgba(255,255,255,0.12)]",
             isFocused
-              ? "bg-[rgba(255,255,255,0.08)] border-[rgba(255,255,255,0.3)]"
-              : "bg-transparent",
+              ? "border-[rgba(255,255,255,0.3)]"
+              : "",
             className
           )}
+          style={{
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            WebkitAppearance: "none !important",
+            appearance: "none !important",
+          }}
           ref={ref}
           onFocus={handleFocus}
           onBlur={handleBlur}
