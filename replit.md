@@ -53,8 +53,6 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Registration Logic Refinement**: Only wine details pages show "View chat history" button for unregistered users, scanned pages always display current session messages
 - **Duplicate Function Resolution**: Fixed syntax error by removing duplicate `handleCloseContactSheet` function declaration
 - **Component Prop Threading**: Properly threaded `isScannedPage` prop through WineDetails.tsx and ChatSection.tsx to EnhancedChatInterface for complete context awareness
-- **Codebase Cleanup**: Removed 7 unused components (FluentPerson24Regular, WineDetailsSkeleton, LogoImage, ConversationSelector, ChatOnly, WineCircleImage, Sidebar) for optimization
-- **Dropdown UI Enhancement**: Updated profile dropdown to use full screen width and removed border radius for cleaner appearance
 
 ### Design System Standardization Complete (June 16, 2025)
 - **Contact Form UI Updates**: Updated "View wine history" button to use secondary Button variant and standardized all contact form inputs (including country selector) with transparent backgrounds and consistent border styling

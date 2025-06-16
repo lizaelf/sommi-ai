@@ -221,14 +221,14 @@ export function ButtonIcon({
           style={{
             position: "fixed",
             top: "75px",
-            left: "0px",
-            right: "0px",
+            right: "16px",
             background: "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
             backdropFilter: "blur(20px)",
             border: "1px solid rgba(255, 255, 255, 0.20)",
-            borderRadius: "0px",
+            borderRadius: "12px",
             zIndex: 9999,
-            width: "100vw",
+            minWidth: "220px",
+            width: "220px",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
             overflow: "hidden",
           }}
@@ -436,6 +436,7 @@ export function ButtonIcon({
                   height: "56px",
                   fontSize: "16px",
                   fontWeight: 500,
+                  borderRadius: 0,
                 }}
               >
                 Don't delete
@@ -449,6 +450,7 @@ export function ButtonIcon({
                   height: "56px",
                   fontSize: "16px",
                   fontWeight: 600,
+                  borderRadius: 0,
                 }}
               >
                 Delete
