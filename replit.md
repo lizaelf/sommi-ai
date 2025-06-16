@@ -47,6 +47,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 16, 2025)
 
 ### Design System Standardization Complete (June 16, 2025 - Latest)
+- **Contact Form UI Updates**: Updated "View wine history" button to use secondary Button variant and made all contact form inputs have transparent backgrounds for consistent styling
 - **Welcome Message Audio Caching**: Implemented comprehensive audio caching system with global app-level initialization and component-level fallbacks for instant welcome message playback, eliminating TTS generation delays
 - **Error Button Variant Creation**: Added new error button variant with #8A332C fill color for destructive actions, replacing inline styling with centralized Button component variant
 - **Close Button Standardization**: Updated delete account dialog to use same IconButton close button as Text/Voice bottom sheet for consistent user experience
