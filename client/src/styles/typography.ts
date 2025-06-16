@@ -53,7 +53,7 @@ const typography = {
     fontFamily: "Inter, sans-serif",
     fontStyle: "normal",
     fontWeight: "300", // Regular weight
-    letterSpacing: "-0.24px",
+    letterSpacing: "-0.15px",
   },
 
   // Special body styles with modifiers for medium and regular weights
@@ -68,7 +68,7 @@ const typography = {
     fontSize: "13px",
     lineHeight: "16px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "300", // Regular weight
+    fontWeight: "400", // Regular weight
   },
 
   // Numeric text style
