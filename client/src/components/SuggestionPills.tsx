@@ -307,6 +307,10 @@ export default function SuggestionPills({
         );
         
         setIsProcessing(true);
+        
+        // Immediately dispatch TTS start event to show stop button
+        window.dispatchEvent(new CustomEvent("tts-audio-start"));
+        console.log("🎤 VOICE: Dispatched TTS start event for stop button");
 
         if (instantResponse) {
           const responseSource = instantResponse.length > 200 ? "spreadsheet" : "cache";

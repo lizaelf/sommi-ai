@@ -439,19 +439,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   // Stop audio function
   const stopAudio = () => {
+    console.log("🛑 VoiceAssistant: Stopping all audio playback");
+    
+    // Stop current audio ref
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
       currentAudioRef.current.currentTime = 0;
       currentAudioRef.current = null;
     }
+    
+    // Stop welcome audio
     if (welcomeAudioElementRef.current) {
       welcomeAudioElementRef.current.pause();
       welcomeAudioElementRef.current.currentTime = 0;
     }
+    
+    // Stop any global OpenAI audio (from suggestions)
+    if ((window as any).currentOpenAIAudio) {
+      (window as any).currentOpenAIAudio.pause();
+      (window as any).currentOpenAIAudio.currentTime = 0;
+      (window as any).currentOpenAIAudio = null;
+      console.log("🛑 VoiceAssistant: Stopped suggestion TTS audio");
+    }
+    
+    // Update states
     setIsPlayingAudio(false);
     setIsResponding(false);
     setShowAskButton(true);
-    console.log("🛑 Audio stopped by user");
+    setShowUnmuteButton(false);
+    
+    // Dispatch stop event to clean up any other audio references
+    window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+    
+    console.log("🛑 VoiceAssistant: All audio stopped");
   };
 
   // Voice activity detection functions
