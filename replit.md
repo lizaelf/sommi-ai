@@ -62,7 +62,6 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Cached Response System**: Enhanced cache lookup to use effective wine keys with "wine_1" fallback for consistent data access
 - **Stop Button Implementation**: Added stop functionality with audio playback state tracking and proper cleanup
 - **User-Controlled Suggestion Changes**: Modified suggestion system to only change when users click pills, preventing automatic cycling during page load
-- **Comprehensive Response Caching**: Implemented dual-layer caching system with local client cache and server-side cache for suggestion responses, ensuring maximum performance and reduced API calls
 - **Hidden Used Pills**: Updated suggestion display logic to hide used pills and show fresh alternatives instead of cycling
 - **Improved User Experience**: Voice suggestions now use curated content for consistent, high-quality responses
 

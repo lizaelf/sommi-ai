@@ -788,37 +788,6 @@ Format: Return only the description text, no quotes or additional formatting.`;
         });
       }
       
-      // Cache suggestion responses for future use
-      const userMessage = messages[messages.length - 1];
-      if (userMessage && response.content) {
-        // Check if this looks like a suggestion prompt (contains wine-related keywords)
-        const suggestionKeywords = ['wine', 'about', 'story', 'food', 'pair', 'special', 'vineyard', 'serve', 'tasting', 'vintage', 'alcohol', 'age'];
-        const isLikelySuggestion = suggestionKeywords.some(keyword => 
-          userMessage.content.toLowerCase().includes(keyword)
-        );
-        
-        if (isLikelySuggestion) {
-          // Cache the response for this suggestion pattern
-          const suggestionId = userMessage.content.toLowerCase()
-            .replace(/[^a-z0-9]+/g, '_')
-            .replace(/^_+|_+$/g, '');
-          
-          // Store in server-side cache (could be Redis, memory, or file-based)
-          global.suggestionResponseCache = global.suggestionResponseCache || new Map();
-          const wineKey = wineData?.id ? `wine_${wineData.id}` : 'wine_1';
-          const cacheKey = `${wineKey}:${suggestionId}`;
-          
-          global.suggestionResponseCache.set(cacheKey, {
-            response: response.content,
-            timestamp: Date.now(),
-            wineKey,
-            suggestionId
-          });
-          
-          console.log(`Cached suggestion response: ${cacheKey}`);
-        }
-      }
-
       // Return response with audio buffers (empty for text-only)
       res.json({
         message: {
@@ -978,41 +947,6 @@ Format: Return only the description text, no quotes or additional formatting.`;
         },
         error: error?.message || "Unknown error"
       });
-    }
-  });
-
-  // Get cached suggestion response
-  app.get("/api/suggestion-cache/:wineKey/:suggestionId", async (req, res) => {
-    try {
-      const { wineKey, suggestionId } = req.params;
-      
-      // Check server-side cache
-      global.suggestionResponseCache = global.suggestionResponseCache || new Map();
-      const cacheKey = `${wineKey}:${suggestionId}`;
-      const cached = global.suggestionResponseCache.get(cacheKey);
-      
-      if (cached) {
-        // Check if cache is still valid (24 hours)
-        const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-        if (Date.now() - cached.timestamp < maxAge) {
-          console.log(`Server cache hit: ${cacheKey}`);
-          res.json({ 
-            response: cached.response,
-            cached: true,
-            timestamp: cached.timestamp
-          });
-          return;
-        } else {
-          // Remove expired cache
-          global.suggestionResponseCache.delete(cacheKey);
-        }
-      }
-      
-      console.log(`Server cache miss: ${cacheKey}`);
-      res.json({ response: null, cached: false });
-    } catch (error) {
-      console.error("Error fetching cached suggestion:", error);
-      res.status(500).json({ error: "Failed to fetch cached suggestion" });
     }
   });
 

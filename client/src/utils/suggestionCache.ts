@@ -109,7 +109,7 @@ class SuggestionCacheManager {
   }
 
   /**
-   * Get cached response for a suggestion (checks both local and server cache)
+   * Get cached response for a suggestion
    */
   async getCachedResponse(wineKey: string, suggestionId: string): Promise<string | null> {
     await this.initializeCache();
@@ -121,39 +121,21 @@ class SuggestionCacheManager {
 
     console.log(`Cache lookup: wineKey="${normalizedWineKey}", suggestionId="${suggestionId}", cacheKey="${cacheKey}"`);
 
-    // Check local cache first
     if (cached) {
       const now = Date.now();
       if (cached.expiresAt > now) {
-        console.log(`Local cache hit for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
+        console.log(`Cache hit for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
         return cached.response;
       } else {
         // Remove expired entry
         this.cache.delete(cacheKey);
         this.saveCache();
-        console.log(`Local cache expired for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
+        console.log(`Cache expired for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
       }
+    } else {
+      console.log(`Cache miss for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
     }
 
-    // Check server cache if local cache miss
-    try {
-      const response = await fetch(`/api/suggestion-cache/${encodeURIComponent(normalizedWineKey)}/${encodeURIComponent(suggestionId)}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.cached && data.response) {
-          console.log(`Server cache hit for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
-          
-          // Store in local cache for faster future access
-          await this.cacheResponse(normalizedWineKey, suggestionId, data.response);
-          
-          return data.response;
-        }
-      }
-    } catch (error) {
-      console.error('Error checking server cache:', error);
-    }
-
-    console.log(`Cache miss (both local and server) for suggestion: ${suggestionId} (wine: ${normalizedWineKey})`);
     return null;
   }
 
