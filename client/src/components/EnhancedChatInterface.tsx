@@ -312,7 +312,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           elements.push(
             <div
               key={i}
-              style={{ marginBottom: "8px", whiteSpace: "pre-wrap" }}
+              style={{ 
+                marginBottom: "8px", 
+                whiteSpace: "pre-wrap",
+                color: "rgba(255, 255, 255, 0.8)",
+                ...typography.body
+              }}
             >
               {formatText(line)}
             </div>,
