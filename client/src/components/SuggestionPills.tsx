@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
 import Button from "@/components/ui/Button";
+import { typography } from "@/styles/typography";
 
 interface SuggestionPill {
   id: string;
@@ -288,6 +289,7 @@ export default function SuggestionPills({
           onClick={() => handlePillClick(pill)}
           disabled={isDisabled || usedPills.has(pill.id)}
           className="h-auto py-2 px-4 text-sm whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit"
+          style={typography.body}
         >
           {pill.text}
         </Button>
