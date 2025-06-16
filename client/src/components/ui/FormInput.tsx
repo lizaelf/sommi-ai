@@ -67,8 +67,8 @@ export function FormInput({
 
   const inputStyles = {
     width: "100%",
-    height: "48px",
-    padding: leftIcon ? "0 16px 0 48px" : rightIcon ? "0 48px 0 16px" : "0 16px",
+    height: "56px",
+    padding: leftIcon ? "16px 24px 16px 48px" : rightIcon ? "16px 48px 16px 24px" : "16px 24px",
     borderRadius: "12px",
     border: validationError 
       ? "1px solid #FF6B6B" 
@@ -79,6 +79,7 @@ export function FormInput({
     fontSize: "16px",
     fontFamily: "Inter, sans-serif",
     outline: "none",
+    boxSizing: "border-box",
     transition: "all 0.2s ease",
   };
 
