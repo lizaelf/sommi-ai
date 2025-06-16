@@ -38,6 +38,7 @@ export default function SuggestionPills({
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);
 
   // Default suggestions to show immediately while API loads
   const defaultSuggestions: SuggestionPill[] = [
@@ -105,6 +106,35 @@ export default function SuggestionPills({
         });
     }
   }, [suggestionsData, usedPills, wineKey, isResetting]);
+
+  // Listen for abort conversation events (when user closes voice assistant)
+  useEffect(() => {
+    const handleAbortConversation = () => {
+      console.log("🛑 SuggestionPills: Received abort signal - stopping all API requests");
+      
+      // Abort current API request if ongoing
+      if (currentAbortController) {
+        currentAbortController.abort();
+        setCurrentAbortController(null);
+      }
+      
+      // Reset processing state
+      setIsProcessing(false);
+      
+      // Stop any ongoing audio
+      if ((window as any).currentOpenAIAudio) {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio.currentTime = 0;
+        (window as any).currentOpenAIAudio = null;
+      }
+    };
+
+    window.addEventListener('abortConversation', handleAbortConversation);
+    
+    return () => {
+      window.removeEventListener('abortConversation', handleAbortConversation);
+    };
+  }, [currentAbortController]);
 
   const handlePillClick = async (pill: SuggestionPill) => {
     console.log("🔍 DEBUGGING: handlePillClick called with context:", context, "preferredResponseType:", preferredResponseType);
@@ -359,9 +389,14 @@ export default function SuggestionPills({
             setIsProcessing(true);
             console.log("🎤 VOICE: Making API call with wineKey:", wineKey);
             
+            // Create abort controller for this request
+            const abortController = new AbortController();
+            setCurrentAbortController(abortController);
+            
             const response = await fetch("/api/chat", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              signal: abortController.signal,
               body: JSON.stringify({
                 messages: [
                   { role: "user", content: pill.prompt }
@@ -521,9 +556,15 @@ export default function SuggestionPills({
               throw new Error("Chat API failed");
             }
           } catch (error) {
+            // Check if request was aborted by user
+            if (error instanceof Error && error.name === 'AbortError') {
+              console.log("🛑 VOICE: API request aborted by user");
+              return; // Don't log as error - this is intentional
+            }
             console.error("🎤 VOICE: API call failed:", error);
           } finally {
             setIsProcessing(false);
+            setCurrentAbortController(null);
           }
         }
 
