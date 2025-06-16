@@ -489,7 +489,7 @@ export default function SuggestionPills({
 
           if (responseText && data.audioBuffers && data.audioBuffers.length > 0) {
             // Store response in cache for future use
-            await suggestionCache.storeResponse(
+            await suggestionCache.cacheResponse(
               effectiveWineKey,
               suggestionId,
               responseText,
