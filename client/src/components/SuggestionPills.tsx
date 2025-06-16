@@ -249,11 +249,10 @@ export default function SuggestionPills({
 
           console.log("🎤 VOICE: Audio playback initiated");
         } else {
-          console.log("🎤 VOICE: No cache - using normal voice assistant flow");
-          // No cached response - let voice assistant handle API call
-          onSuggestionClick(pill.prompt, pill.id, {
-            conversationId,
-          });
+          console.log("🎤 VOICE: No cache - suggestion pills should NOT call voice assistant API");
+          console.log("🎤 VOICE: Voice context should only use cached responses to prevent bottom sheet closing");
+          // DO NOT call onSuggestionClick - it causes bottom sheet to close
+          // Voice suggestions without cache should be ignored to maintain UI state
         }
 
         // Mark as used in background for voice context

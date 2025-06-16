@@ -52,7 +52,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Input Component Architecture**: Established clear separation between contact form inputs (transparent only) and chat inputs (blue focus states allowed)
 - **ChatInput Complete Restoration**: Restored ChatInput component to yesterday's exact styling with white 15% opacity background fill, transparent input field, and enhanced blue gradient border (rgba(74, 144, 226, 0.7-0.3))
 - **Dropdown Menu Component Creation**: Created separate DropdownMenuItem component with full-width display and removed border radius for standardized dropdown behavior
-- **Voice Assistant Suggestion Fix**: Eliminated thinking states and unmute buttons during voice assistant suggestion clicks by preventing unnecessary state changes
+- **Voice Assistant Bottom Sheet Fix**: Fixed suggestion clicks closing bottom sheet by preventing SuggestionPills from calling voice assistant API without cached responses
 
 ### Context-Aware Registration System Implementation (June 16, 2025)
 - **Scanned Page vs Wine Details Differentiation**: Implemented proper context awareness where scanned pages (`/scanned?wine=1`) show current session chat history without registration requirements, while wine details pages (`/wine-details/1`) require registration for historical chat access
