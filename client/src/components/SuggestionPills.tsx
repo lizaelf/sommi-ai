@@ -483,12 +483,16 @@ export default function SuggestionPills({
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}
+      data-suggestion-context={context} // Add context identifier
     >
       {visiblePills.map((pill: SuggestionPill) => (
         <Button
-          key={pill.id}
+          key={`${context}-${pill.id}`} // Make keys unique per context
           variant="secondary"
-          onClick={() => handlePillClick(pill)}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent event bubbling
+            handlePillClick(pill);
+          }}
           disabled={isDisabled || usedPills.has(pill.id)}
           className="h-auto py-2 px-4 whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit"
           style={{
@@ -499,6 +503,7 @@ export default function SuggestionPills({
             // lineHeight: typography.body.lineHeight,
             // fontFamily: typography.body.fontFamily,
           }}
+          data-pill-context={context} // Add context data attribute
         >
           {pill.text}
         </Button>
