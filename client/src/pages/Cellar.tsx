@@ -1164,41 +1164,20 @@ const Cellar = () => {
               borderTop: "1px solid rgba(255, 255, 255, 0.2)",
             }}
           >
-            <button
+            <Button
               onClick={() => {
                 setShowModal(true);
                 setAnimationState("opening");
                 setTimeout(() => setAnimationState("open"), 50);
               }}
+              variant="secondary"
               style={{
-                height: "56px",
-                minHeight: "56px",
-                maxHeight: "56px",
-                padding: "0 24px",
-                borderRadius: "24px",
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
-                border: "none",
-                color: "white",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: "400",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
                 width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxSizing: "border-box",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.16)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+                height: "56px",
               }}
             >
               View wine history
-            </button>
+            </Button>
           </div>
         )}
 
@@ -1896,6 +1875,9 @@ const Cellar = () => {
                         fontSize: "16px",
                         outline: "none",
                         boxSizing: "border-box",
+                        background: "transparent",
+                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                        borderRadius: "12px",
                       }}
                     />
                   </div>

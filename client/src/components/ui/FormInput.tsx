@@ -73,7 +73,7 @@ export function FormInput({
     border: validationError 
       ? "1px solid #FF6B6B" 
       : "1px solid rgba(255, 255, 255, 0.12)",
-    background: (isFocused || isFilled) ? "rgba(255, 255, 255, 0.08)" : "transparent",
+    background: "transparent",
     color: "white",
     fontSize: "16px",
     fontFamily: "Inter, sans-serif",
