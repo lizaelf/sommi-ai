@@ -212,6 +212,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           if (!isManuallyClosedRef.current) {
             setIsResponding(false);
             setShowAskButton(true);
+            setShowUnmuteButton(false);
+            setIsThinking(false);
+            console.log("QR SCAN: Welcome message completed - showing suggestions");
           }
           (window as any).currentOpenAIAudio = null;
           console.log("QR SCAN: Preloaded welcome message completed");
@@ -221,6 +224,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           if (!isManuallyClosedRef.current) {
             setIsResponding(false);
             setShowAskButton(true);
+            setShowUnmuteButton(false);
+            setIsThinking(false);
+            console.log("QR SCAN: Audio error - showing suggestions");
           }
           (window as any).currentOpenAIAudio = null;
           console.error("QR SCAN: Preloaded audio playback error");
@@ -259,6 +265,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             if (!isManuallyClosedRef.current) {
               setIsResponding(false);
               setShowAskButton(true);
+              setShowUnmuteButton(false);
+              setIsThinking(false);
+              console.log("QR SCAN: Fallback welcome message completed - showing suggestions");
             }
             URL.revokeObjectURL(audioUrl);
             (window as any).currentOpenAIAudio = null;
@@ -269,6 +278,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             if (!isManuallyClosedRef.current) {
               setIsResponding(false);
               setShowAskButton(true);
+              setShowUnmuteButton(false);
+              setIsThinking(false);
+              console.log("QR SCAN: Fallback audio error - showing suggestions");
             }
             URL.revokeObjectURL(audioUrl);
             (window as any).currentOpenAIAudio = null;
@@ -283,6 +295,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           if (!isManuallyClosedRef.current) {
             setIsResponding(false);
             setShowAskButton(true);
+            setShowUnmuteButton(false);
+            setIsThinking(false);
+            console.log("QR SCAN: TTS error - showing suggestions");
           }
         });
       }
