@@ -13,7 +13,7 @@ interface SuggestionPill {
 
 interface SuggestionPillsProps {
   wineKey: string;
-  conversationId?: string;
+  conversationId?: string; // Add conversation context
   onSuggestionClick: (
     prompt: string,
     pillId?: string,
@@ -21,7 +21,6 @@ interface SuggestionPillsProps {
       textOnly?: boolean;
       instantResponse?: string;
       conversationId?: string;
-      fullPrompt?: string;
     },
   ) => void;
   isDisabled?: boolean;
@@ -40,8 +39,10 @@ export default function SuggestionPills({
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const [currentAbortController, setCurrentAbortController] =
-    useState<AbortController | null>(null);
+  const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);
+  const [preGenerationStatus, setPreGenerationStatus] = useState<Map<string, 'loading' | 'ready' | 'failed'>>(new Map());
+  const [loadingPillId, setLoadingPillId] = useState<string | null>(null);
+  const [audioLoadTimeout, setAudioLoadTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Default suggestions to show immediately while API loads
   const defaultSuggestions: SuggestionPill[] = [
@@ -79,7 +80,7 @@ export default function SuggestionPills({
       }
       return response.json();
     },
-    enabled: true,
+    enabled: true, // Always enabled since we have fallback wine key
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -87,242 +88,19 @@ export default function SuggestionPills({
     refetchInterval: false,
   });
 
-  // Critical Fix: Cleanup audio cache to prevent memory leaks
-  useEffect(() => {
-    return () => {
-      // Clean up all audio URLs to prevent memory leaks
-      const audioCache = (window as any).suggestionAudioCache || {};
-      console.log(
-        "🧹 Cleaning up",
-        Object.keys(audioCache).length,
-        "cached audio URLs",
-      );
-
-      Object.values(audioCache).forEach((url: string) => {
-        URL.revokeObjectURL(url);
-      });
-
-      // Clear the cache completely
-      (window as any).suggestionAudioCache = {};
-
-      // Stop any ongoing audio
-      if ((window as any).currentOpenAIAudio) {
-        (window as any).currentOpenAIAudio.pause();
-        (window as any).currentOpenAIAudio = null;
-      }
-
-      // Cancel speech synthesis
-      speechSynthesis.cancel();
-
-      console.log("🧹 SuggestionPills: Memory cleanup complete");
-    };
-  }, []);
-
-  // Safe spreadsheet data access with proper error handling
-  const getSpreadsheetResponse = useCallback(
-    (wineKey: string, suggestionId: string): string | null => {
-      try {
-        console.log("📊 Checking spreadsheet for:", { wineKey, suggestionId });
-
-        // Check if wine key exists
-        if (!(wineKey in wineResponses)) {
-          console.warn(
-            `📊 Wine key '${wineKey}' not found in spreadsheet data`,
-          );
-          console.log("📊 Available wine keys:", Object.keys(wineResponses));
-          return null;
-        }
-
-        const wineData = wineResponses[wineKey as keyof typeof wineResponses];
-
-        // Check if responses exist
-        if (!wineData?.responses) {
-          console.warn(`📊 No responses found for wine '${wineKey}'`);
-          return null;
-        }
-
-        // Check if specific suggestion exists
-        if (!(suggestionId in wineData.responses)) {
-          console.warn(
-            `📊 Suggestion '${suggestionId}' not found for wine '${wineKey}'`,
-          );
-          console.log(
-            "📊 Available suggestions:",
-            Object.keys(wineData.responses),
-          );
-          return null;
-        }
-
-        const response =
-          wineData.responses[suggestionId as keyof typeof wineData.responses];
-
-        if (!response || typeof response !== "string") {
-          console.warn(
-            `📊 Invalid response data for ${wineKey}/${suggestionId}`,
-          );
-          return null;
-        }
-
-        console.log(
-          `📊 ✅ Found spreadsheet response for ${suggestionId} (${response.length} chars)`,
-        );
-        return response;
-      } catch (error) {
-        console.error("📊 Error accessing spreadsheet data:", error);
-        return null;
-      }
-    },
-    [],
-  );
-
-  // Audio cache management with size limits
-  const addToAudioCache = useCallback(
-    (key: string, audioBlob: Blob): string | null => {
-      try {
-        const MAX_CACHE_SIZE = 15; // Limit to 15 audio files max
-        const audioCache = (window as any).suggestionAudioCache || {};
-
-        // Check cache size and clean up if needed
-        const cacheKeys = Object.keys(audioCache);
-        if (cacheKeys.length >= MAX_CACHE_SIZE) {
-          console.log(
-            `🧹 Audio cache full (${cacheKeys.length}/${MAX_CACHE_SIZE}), cleaning oldest entries`,
-          );
-
-          // Remove half the cache (oldest entries)
-          const keysToRemove = cacheKeys.slice(
-            0,
-            Math.floor(MAX_CACHE_SIZE / 2),
-          );
-          keysToRemove.forEach((oldKey) => {
-            URL.revokeObjectURL(audioCache[oldKey]);
-            delete audioCache[oldKey];
-          });
-
-          console.log(
-            `🧹 Removed ${keysToRemove.length} old audio cache entries`,
-          );
-        }
-
-        // Create new audio URL
-        const audioUrl = URL.createObjectURL(audioBlob);
-        audioCache[key] = audioUrl;
-        (window as any).suggestionAudioCache = audioCache;
-
-        console.log(
-          `🎤 Added audio to cache: ${key} (cache size: ${Object.keys(audioCache).length})`,
-        );
-        return audioUrl;
-      } catch (error) {
-        console.error("Error adding to audio cache:", error);
-        return null;
-      }
-    },
-    [],
-  );
-
-  // Pre-generate TTS audio for voice context suggestions with proper cache management
-  const preGenerateSuggestionAudio = useCallback(async () => {
-    if (!suggestionsData?.suggestions) return;
-
-    console.log("🎤 PRE-GEN: Starting audio pre-generation for suggestions");
-    const effectiveWineKey = wineKey || "wine_1";
-
-    // Only pre-generate for first 3 suggestions to limit memory usage
-    for (const pill of suggestionsData.suggestions.slice(0, 3)) {
-      const suggestionId = pill.prompt
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_");
-      const cacheKey = `${effectiveWineKey}_${suggestionId}`;
-
-      // Check if already cached
-      const audioCache = (window as any).suggestionAudioCache || {};
-      if (audioCache[cacheKey]) {
-        console.log(`🎤 PRE-GEN: Audio already cached for "${pill.text}"`);
-        continue;
-      }
-
-      // Get response text from spreadsheet
-      const responseText = getSpreadsheetResponse(
-        effectiveWineKey,
-        suggestionId,
-      );
-      if (!responseText) {
-        console.log(
-          `🎤 PRE-GEN: No spreadsheet response for "${pill.text}", skipping pre-generation`,
-        );
-        continue;
-      }
-
-      try {
-        console.log(
-          `🎤 PRE-GEN: Generating audio for "${pill.text}" (${responseText.length} chars)`,
-        );
-
-        const response = await fetch("/api/text-to-speech", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: responseText }),
-        });
-
-        if (response.ok) {
-          const audioBuffer = await response.arrayBuffer();
-          const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-
-          // Use the safe cache management function
-          const audioUrl = addToAudioCache(cacheKey, audioBlob);
-
-          if (audioUrl) {
-            console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
-          } else {
-            console.error(
-              `🎤 PRE-GEN: Failed to cache audio for "${pill.text}"`,
-            );
-          }
-        } else {
-          console.error(
-            `🎤 PRE-GEN: TTS API failed for "${pill.text}": ${response.status}`,
-          );
-        }
-      } catch (error) {
-        console.error(
-          `🎤 PRE-GEN: Error generating audio for "${pill.text}":`,
-          error,
-        );
-      }
-    }
-  }, [suggestionsData, wineKey, getSpreadsheetResponse, addToAudioCache]);
-
-  // Pre-generate audio for voice context
-  useEffect(() => {
-    if (
-      context === "voice-assistant" &&
-      suggestionsData?.suggestions &&
-      !isLoading
-    ) {
-      preGenerateSuggestionAudio();
-    }
-  }, [context, suggestionsData, isLoading, preGenerateSuggestionAudio]);
-
   // Manual reset function - only triggered by user interaction
   const resetSuggestionPills = useCallback(() => {
     const effectiveWineKey = wineKey || "wine_1";
-    console.log(
-      "Manually resetting suggestion cycle for wine:",
-      effectiveWineKey,
-    );
+    console.log("Manually resetting suggestion cycle for wine:", effectiveWineKey);
     setIsResetting(true);
 
-    fetch(
-      `/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`,
-      {
-        method: "DELETE",
-      },
-    )
+    fetch(`/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`, {
+      method: "DELETE",
+    })
       .then(() => {
         setUsedPills(new Set());
         setIsResetting(false);
-        refetch();
+        refetch(); // Refresh suggestions after reset
       })
       .catch((error) => {
         console.error("Failed to reset suggestion pills:", error);
@@ -330,20 +108,97 @@ export default function SuggestionPills({
       });
   }, [wineKey, refetch]);
 
-  // Listen for abort conversation events
+  // Removed automatic reset - suggestions only change when user clicks
+
+  // Eager pre-generation for all contexts to improve responsiveness
+  useEffect(() => {
+    if (context === "voice-assistant") {
+      // Pre-generate for API suggestions when available
+      if (suggestionsData?.suggestions && !isLoading) {
+        preGenerateSuggestionAudio(suggestionsData.suggestions);
+      }
+      // Always pre-generate for default suggestions
+      preGenerateSuggestionAudio(defaultSuggestions);
+    }
+  }, [context, suggestionsData, isLoading]);
+
+  // Enhanced pre-generation with status tracking and fallbacks
+  const preGenerateSuggestionAudio = async (suggestions?: SuggestionPill[]) => {
+    const pillsToProcess = suggestions || suggestionsData?.suggestions || defaultSuggestions;
+    if (!pillsToProcess?.length) return;
+
+    console.log("🎤 PRE-GEN: Starting enhanced audio pre-generation");
+    const audioCache = (window as any).suggestionAudioCache || {};
+    (window as any).suggestionAudioCache = audioCache;
+
+    const effectiveWineKey = wineKey || "wine_1";
+
+    for (const pill of pillsToProcess.slice(0, 3)) {
+      const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+      const cacheKey = `${effectiveWineKey}_${suggestionId}`;
+
+      // Update pre-generation status
+      setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'loading'));
+
+      if (audioCache[cacheKey]) {
+        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
+        console.log(`🎤 PRE-GEN: Audio already cached for "${pill.text}"`);
+        continue;
+      }
+
+      const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
+      if (wineData?.responses) {
+        const responseText = wineData.responses[suggestionId as keyof typeof wineData.responses];
+        if (responseText) {
+          try {
+            console.log(`🎤 PRE-GEN: Generating audio for "${pill.text}"`);
+            const response = await fetch("/api/text-to-speech", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: responseText }),
+            });
+
+            if (response.ok) {
+              const audioBuffer = await response.arrayBuffer();
+              const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+              const audioUrl = URL.createObjectURL(audioBlob);
+              audioCache[cacheKey] = audioUrl;
+              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
+              console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
+            } else {
+              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+              console.error(`🎤 PRE-GEN: TTS request failed for "${pill.text}"`);
+            }
+          } catch (error) {
+            setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+            console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`, error);
+          }
+        } else {
+          setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+          console.log(`🎤 PRE-GEN: No spreadsheet response for "${pill.text}", skipping pre-generation`);
+        }
+      } else {
+        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+        console.log(`🎤 PRE-GEN: No wine data found for "${effectiveWineKey}"`);
+      }
+    }
+  };
+
+  // Listen for abort conversation events (when user closes voice assistant)
   useEffect(() => {
     const handleAbortConversation = () => {
-      console.log(
-        "🛑 SuggestionPills: Received abort signal - stopping all API requests",
-      );
+      console.log("🛑 SuggestionPills: Received abort signal - stopping all API requests");
 
+      // Abort current API request if ongoing
       if (currentAbortController) {
         currentAbortController.abort();
         setCurrentAbortController(null);
       }
 
+      // Reset processing state
       setIsProcessing(false);
 
+      // Stop any ongoing audio
       if ((window as any).currentOpenAIAudio) {
         (window as any).currentOpenAIAudio.pause();
         (window as any).currentOpenAIAudio.currentTime = 0;
@@ -351,219 +206,88 @@ export default function SuggestionPills({
       }
     };
 
-    window.addEventListener("abortConversation", handleAbortConversation);
+    window.addEventListener('abortConversation', handleAbortConversation);
 
     return () => {
-      window.removeEventListener("abortConversation", handleAbortConversation);
+      window.removeEventListener('abortConversation', handleAbortConversation);
     };
   }, [currentAbortController]);
 
-  // Audio playback functions with proper cleanup
-  const playAudioFromCache = useCallback(
-    async (audioUrl: string, prompt: string, response: string) => {
-      return new Promise<void>((resolve, reject) => {
-        const audio = new Audio(audioUrl);
-
-        const cleanup = () => {
-          (window as any).currentOpenAIAudio = null;
-          window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-          setIsProcessing(false);
-        };
-
-        audio.onplay = () => {
-          console.log("🎤 Pre-generated audio started");
-          window.dispatchEvent(new CustomEvent("tts-audio-start"));
-        };
-
-        audio.onended = () => {
-          console.log("🎤 Pre-generated audio completed");
-          cleanup();
-          resolve();
-        };
-
-        audio.onerror = (e) => {
-          console.error("🎤 Pre-generated audio error:", e);
-          cleanup();
-          reject(e);
-        };
-
-        (window as any).currentOpenAIAudio = audio;
-
-        // Add messages to chat
-        addMessagesToChat(prompt, response);
-
-        audio.play().catch(reject);
-      });
-    },
-    [conversationId],
-  );
-
-  const playTTSAudio = useCallback(
-    async (text: string, prompt: string) => {
-      try {
-        const abortController = new AbortController();
-        setCurrentAbortController(abortController);
-
-        const response = await fetch("/api/text-to-speech", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
-          signal: abortController.signal,
-        });
-
-        if (!response.ok) throw new Error(`TTS failed: ${response.status}`);
-
-        const audioBuffer = await response.arrayBuffer();
-        const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-        const audioUrl = URL.createObjectURL(audioBlob);
-
-        return new Promise<void>((resolve, reject) => {
-          if (abortController.signal.aborted) {
-            URL.revokeObjectURL(audioUrl);
-            reject(new DOMException("Operation aborted", "AbortError"));
-            return;
-          }
-
-          const audio = new Audio(audioUrl);
-
-          const cleanup = () => {
-            URL.revokeObjectURL(audioUrl);
-            (window as any).currentOpenAIAudio = null;
-            window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-            setIsProcessing(false);
-            setCurrentAbortController(null);
-          };
-
-          const onAbort = () => {
-            audio.pause();
-            cleanup();
-            reject(new DOMException("Operation aborted", "AbortError"));
-          };
-
-          abortController.signal.addEventListener("abort", onAbort, {
-            once: true,
-          });
-
-          audio.onplay = () => {
-            console.log("🎤 TTS audio started");
-            window.dispatchEvent(new CustomEvent("tts-audio-start"));
-          };
-
-          audio.onended = () => {
-            console.log("🎤 TTS audio completed");
-            abortController.signal.removeEventListener("abort", onAbort);
-            cleanup();
-            resolve();
-          };
-
-          audio.onerror = (e) => {
-            console.error("🎤 TTS audio error:", e);
-            abortController.signal.removeEventListener("abort", onAbort);
-            cleanup();
-            reject(e);
-          };
-
-          (window as any).currentOpenAIAudio = audio;
-
-          // Add messages to chat
-          addMessagesToChat(prompt, text);
-
-          audio.play().catch(reject);
-        });
-      } catch (error) {
-        setIsProcessing(false);
-        setCurrentAbortController(null);
-        window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-        throw error;
-      }
-    },
-    [conversationId],
-  );
-
-  const addMessagesToChat = useCallback(
-    (prompt: string, response: string) => {
-      const userMessage = {
-        id: Date.now(),
-        content: prompt,
-        role: "user" as const,
-        conversationId: conversationId || 0,
-        createdAt: new Date().toISOString(),
-      };
-
-      const assistantMessage = {
-        id: Date.now() + 1,
-        content: response,
-        role: "assistant" as const,
-        conversationId: conversationId || 0,
-        createdAt: new Date().toISOString(),
-      };
-
-      window.dispatchEvent(
-        new CustomEvent("addChatMessage", {
-          detail: { userMessage, assistantMessage },
-        }),
-      );
-    },
-    [conversationId],
-  );
-
-  // Main pill click handler with all fixes applied
   const handlePillClick = async (pill: SuggestionPill) => {
-    console.log("🔍 Processing pill click:", { context, pill: pill.text });
-    if (isDisabled || isProcessing) return;
+    console.log("🔍 DEBUGGING: handlePillClick called with context:", context, "preferredResponseType:", preferredResponseType);
+    console.log("🔍 DEBUGGING: wineKey:", wineKey, "pill:", pill);
+    if (isDisabled) return;
 
-    // Create abort controller for this operation
-    const abortController = new AbortController();
-    setCurrentAbortController(abortController);
-
-    setUsedPills((prev) => new Set(prev).add(pill.id));
-    setIsProcessing(true);
+    // Optimistically mark as used
+    setUsedPills((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(pill.id);
+      return newSet;
+    });
 
     try {
+      // Check for instant response (cached or spreadsheet)
+      let instantResponse = null;
       const suggestionId = pill.prompt
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "_");
-      const effectiveWineKey = wineKey || "wine_1";
 
-      let instantResponse = null;
+      // Use effective wine key for cache lookup
+      const effectiveWineKey = wineKey || "wine_1"; // Default to wine_1 when wineKey is empty
+      console.log("🔍 Cache lookup using effectiveWineKey:", effectiveWineKey);
 
-      // Safe spreadsheet lookup for voice context
+      // First check spreadsheet data for voice suggestions
       if (context === "voice-assistant") {
-        instantResponse = getSpreadsheetResponse(
+        console.log("🔍 VOICE DEBUG: Looking for wine data with key:", effectiveWineKey);
+        console.log("🔍 VOICE DEBUG: Available wine keys:", Object.keys(wineResponses));
+        const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
+        console.log("🔍 VOICE DEBUG: Found wine data:", !!wineData);
+        if (wineData && wineData.responses) {
+          console.log("🔍 VOICE DEBUG: Available response keys:", Object.keys(wineData.responses));
+          console.log("🔍 VOICE DEBUG: Looking for suggestion ID:", suggestionId);
+          const spreadsheetResponse = wineData.responses[suggestionId as keyof typeof wineData.responses];
+          if (spreadsheetResponse) {
+            console.log("📊 Using spreadsheet response for voice suggestion:", suggestionId);
+            instantResponse = spreadsheetResponse;
+          } else {
+            console.log("❌ No spreadsheet response found for:", suggestionId);
+          }
+        }
+      }
+
+      // Fallback to cache lookup if no spreadsheet response
+      if (!instantResponse) {
+        instantResponse = await suggestionCache.getCachedResponse(
           effectiveWineKey,
           suggestionId,
         );
-        if (instantResponse) {
-          console.log("📊 Using spreadsheet response for voice suggestion");
-        }
       }
+      console.log(
+        "💾 Cached response found:",
+        !!instantResponse,
+        "Context:",
+        context,
+        "PillId:",
+        pill.id,
+        "PreferredType:",
+        preferredResponseType
+      );
 
-      // Fallback to cache if no spreadsheet response
-      if (!instantResponse) {
-        try {
-          instantResponse = await suggestionCache.getCachedResponse(
-            effectiveWineKey,
-            suggestionId,
-          );
-          if (instantResponse) {
-            console.log("💾 Using cached response");
-          }
-        } catch (error) {
-          console.error("Error accessing cache:", error);
-        }
-      }
-
-      // CHAT CONTEXT
+      // CHAT CONTEXT: Handle text-only, no audio
       if (context === "chat") {
         console.log(
           "💬 CHAT CONTEXT: Processing suggestion for chat interface",
         );
 
         if (instantResponse) {
-          // Add to chat without audio
+          console.log(
+            "💬 CHAT: Using cached response - adding to chat WITHOUT audio",
+          );
+
+          // Add messages to chat using the event system
           const userMessage = {
             id: Date.now(),
-            content: pill.text,
+            content: pill.text, // Use pill.text to match what's shown on the button
             role: "user" as const,
             conversationId: conversationId || 0,
             createdAt: new Date().toISOString(),
@@ -577,74 +301,288 @@ export default function SuggestionPills({
             createdAt: new Date().toISOString(),
           };
 
+          // Use chat event system - NO AUDIO
           window.dispatchEvent(
             new CustomEvent("addChatMessage", {
               detail: { userMessage, assistantMessage },
             }),
           );
 
-          console.log("💬 CHAT: Messages added - no audio");
+          console.log("💬 CHAT: Messages added to chat - NO AUDIO PLAYED");
         } else {
-          // Use callback for API call
+          console.log("💬 CHAT: No cache - using normal API flow");
+          // No cached response - let chat handle API call
+          // Send the button text to display in chat, but use the full prompt for the API
           onSuggestionClick(pill.text, pill.id, {
             textOnly: true,
             conversationId,
-            fullPrompt: pill.prompt,
+            fullPrompt: pill.prompt, // Include full prompt for API processing
           });
         }
 
-        await markPillAsUsed(pill.id);
-        return;
+        // Mark as used in background for chat context
+        markPillAsUsed(pill.id);
+        return; // EXIT EARLY - Chat context handled
       }
 
-      // VOICE CONTEXT
+      // VOICE CONTEXT: Handle with audio
       if (context === "voice-assistant") {
         console.log(
           "🎤 VOICE CONTEXT: Processing suggestion for voice assistant",
         );
+
+        setIsProcessing(true);
+
+        // Immediately dispatch TTS start event to show stop button
         window.dispatchEvent(new CustomEvent("tts-audio-start"));
+        console.log("🎤 VOICE: Dispatched TTS start event for stop button");
 
         if (instantResponse) {
-          // Check for pre-generated audio
+          const responseSource = instantResponse.length > 200 ? "spreadsheet" : "cache";
+          console.log(`🎤 VOICE: Using ${responseSource} response - starting TTS immediately`);
+
+          // Check if we have pre-generated audio for this suggestion
           const audioCache = (window as any).suggestionAudioCache || {};
           const cacheKey = `${effectiveWineKey}_${suggestionId}`;
 
           if (audioCache[cacheKey]) {
-            console.log("🎤 Using pre-generated audio");
-            await playAudioFromCache(
-              audioCache[cacheKey],
-              pill.prompt,
-              instantResponse,
+            console.log("🎤 VOICE: Using pre-generated audio for instant playback");
+            const audio = new Audio(audioCache[cacheKey]);
+
+            audio.onplay = () => {
+              console.log("🎤 VOICE: ✅ Pre-generated audio started");
+              window.dispatchEvent(new CustomEvent("tts-audio-start"));
+            };
+
+            audio.onended = () => {
+              console.log("🎤 VOICE: Pre-generated audio completed");
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+
+            audio.onerror = (e) => {
+              console.error("🎤 VOICE: Pre-generated audio error:", e);
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+
+            (window as any).currentOpenAIAudio = audio;
+            await audio.play();
+
+            // Add messages to chat
+            const userMessage = {
+              id: Date.now(),
+              content: pill.prompt,
+              role: "user" as const,
+              conversationId: conversationId || 0,
+              createdAt: new Date().toISOString(),
+            };
+
+            const assistantMessage = {
+              id: Date.now() + 1,
+              content: instantResponse,
+              role: "assistant" as const,
+              conversationId: conversationId || 0,
+              createdAt: new Date().toISOString(),
+            };
+
+            window.dispatchEvent(
+              new CustomEvent("addChatMessage", {
+                detail: { userMessage, assistantMessage },
+              }),
             );
-          } else {
-            console.log("🎤 Generating TTS on demand");
-            await playTTSAudio(instantResponse, pill.prompt);
+
+            markPillAsUsed(pill.id);
+            return;
           }
-        } else {
-          // Use callback pattern instead of direct API calls
-          console.log("🎤 No cached response - using callback");
-          setIsProcessing(false); // Reset since parent will handle
-          onSuggestionClick(pill.prompt, pill.id, {
-            conversationId,
-            textOnly: false,
+
+          // Optimized TTS generation with high priority for immediate response
+          console.log("🎤 VOICE: Making high-priority TTS request");
+          const response = await fetch("/api/text-to-speech", {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json",
+              "Cache-Control": "no-cache", // Prevent caching delays
+              "Priority": "urgent" // Request priority hint
+            },
+            body: JSON.stringify({ 
+              text: instantResponse.slice(0, 1000), // Limit text length for faster processing
+              optimize: "speed" // Server optimization hint
+            }),
+            signal: currentAbortController?.signal,
           });
+
+          if (response.ok) {
+            const audioBuffer = await response.arrayBuffer();
+            const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+
+            // Optimize for immediate playback
+            audio.preload = 'auto';
+            audio.crossOrigin = 'anonymous';
+
+            console.log("🎤 VOICE: TTS ready - starting immediate playback");
+
+            audio.onloadeddata = () => {
+              console.log("🎤 VOICE: Audio data loaded, starting playback");
+              audio.play().catch(console.error);
+            };
+
+            audio.onplay = () => {
+              console.log("🎤 VOICE: ✅ Audio playback started successfully");
+              window.dispatchEvent(new CustomEvent("tts-audio-start"));
+            };
+
+            audio.onended = () => {
+              console.log("🎤 VOICE: Audio playback completed");
+              URL.revokeObjectURL(audioUrl);
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+
+            audio.onerror = (e) => {
+              console.error("🎤 VOICE: Audio playback error:", e);
+              URL.revokeObjectURL(audioUrl);
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+
+            (window as any).currentOpenAIAudio = audio;
+
+            // Try immediate playback - audio will start when data loads
+            try {
+              console.log("🎤 VOICE: Starting immediate audio playback");
+              await audio.play();
+              console.log("🎤 VOICE: ✅ Audio playback initiated successfully");
+            } catch (playError) {
+              console.error("🎤 VOICE: Immediate playback failed:", playError);
+              // Fallback: wait for loadeddata event
+              audio.addEventListener('canplay', () => {
+                audio.play().catch(console.error);
+              });
+              setIsProcessing(false);
+            }
+          }
+
+          // Add messages to chat in parallel
+          const userMessage = {
+            id: Date.now(),
+            content: pill.prompt,
+            role: "user" as const,
+            conversationId: conversationId || 0,
+            createdAt: new Date().toISOString(),
+          };
+
+          const assistantMessage = {
+            id: Date.now() + 1,
+            content: instantResponse,
+            role: "assistant" as const,
+            conversationId: conversationId || 0,
+            createdAt: new Date().toISOString(),
+          };
+
+          // Use chat event system
+          window.dispatchEvent(
+            new CustomEvent("addChatMessage", {
+              detail: { userMessage, assistantMessage },
+            }),
+          );
+
+          // Mark pill as used and complete processing
+          markPillAsUsed(pill.id);
+          return; // Exit early - TTS already started above
+        } else {
+          // No cached response - make API call
+          console.log("🎤 VOICE: No cache - making direct API call for voice response");
+
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: [{ role: "user", content: pill.prompt }],
+              wineKey: effectiveWineKey,
+              wineData: { id: null, name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel" },
+              textOnly: false,
+            }),
+            signal: currentAbortController?.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const responseText = data.message?.content || "";
+
+          if (responseText && data.audioBuffers && data.audioBuffers.length > 0) {
+            // Store response in cache for future use
+            await suggestionCache.storeResponse(
+              effectiveWineKey,
+              suggestionId,
+              responseText,
+            );
+
+            // Add messages to chat
+            const userMessage = {
+              id: Date.now(),
+              content: pill.prompt,
+              role: "user" as const,
+              conversationId: conversationId || 0,
+              createdAt: new Date().toISOString(),
+            };
+
+            const assistantMessage = {
+              id: Date.now() + 1,
+              content: responseText,
+              role: "assistant" as const,
+              conversationId: conversationId || 0,
+              createdAt: new Date().toISOString(),
+            };
+
+            window.dispatchEvent(
+              new CustomEvent("addChatMessage", {
+                detail: { userMessage, assistantMessage },
+              }),
+            );
+
+            // Play audio from API response
+            for (const buffer of data.audioBuffers) {
+              const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+              const audioUrl = URL.createObjectURL(audioBlob);
+              const audio = new Audio(audioUrl);
+
+              await new Promise((resolve, reject) => {
+                audio.onended = () => {
+                  URL.revokeObjectURL(audioUrl);
+                  resolve(undefined);
+                };
+                audio.onerror = reject;
+                audio.play();
+              });
+            }
+          }
         }
 
-        await markPillAsUsed(pill.id);
-        return;
+        // Mark as used in background for voice context
+        markPillAsUsed(pill.id);
+        return; // EXIT EARLY - Voice context handled
       }
-    } catch (error: any) {
-      if (error.name === "AbortError") {
-        console.log("🛑 Operation aborted by user");
-      } else {
-        console.error("Error in handlePillClick:", error);
-        // Rollback optimistic update
-        setUsedPills((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(pill.id);
-          return newSet;
-        });
-      }
+
+      // Fallback for unknown context
+      console.warn("⚠️ Unknown context:", context, "- using default behavior");
+      onSuggestionClick(pill.prompt, pill.id, {
+        textOnly: context === "chat",
+        conversationId,
+      });
+    } catch (error) {
+      // Rollback optimistic update on error
+      setUsedPills((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(pill.id);
+        return newSet;
+      });
+      console.error("Error handling pill click:", error);
     } finally {
       setIsProcessing(false);
       setCurrentAbortController(null);
@@ -664,6 +602,7 @@ export default function SuggestionPills({
         }),
         headers: { "Content-Type": "application/json" },
       });
+      // Removed refetch() - suggestions stay stable until manual refresh
     } catch (error) {
       console.error("Error marking pill as used:", error);
     }
@@ -677,7 +616,7 @@ export default function SuggestionPills({
       return defaultSuggestions.slice(0, 3);
     }
 
-    // Only show unused pills
+    // Only show unused pills - never show used ones
     const unusedPills = availablePills.filter(
       (pill: SuggestionPill) => !usedPills.has(pill.id),
     );
@@ -694,16 +633,12 @@ export default function SuggestionPills({
 
     // If all suggestions are used, show default suggestions instead of auto-resetting
     if (unusedPills.length === 0 && availablePills.length > 0) {
-      console.log(
-        "All suggestions used - showing default suggestions (no auto-reset)",
-      );
+      console.log("All suggestions used - showing default suggestions (no auto-reset)");
       return defaultSuggestions.slice(0, 3);
     }
 
     // Fallback: show unused default suggestions if no API suggestions available
-    const unusedDefaults = defaultSuggestions.filter(
-      (def) => !usedPills.has(def.id),
-    );
+    const unusedDefaults = defaultSuggestions.filter(def => !usedPills.has(def.id));
     return unusedDefaults.slice(0, 3);
   }, [suggestionsData, usedPills, isLoading]);
 
