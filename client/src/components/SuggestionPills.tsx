@@ -288,7 +288,7 @@ export default function SuggestionPills({
           variant="secondary"
           onClick={() => handlePillClick(pill)}
           disabled={isDisabled || usedPills.has(pill.id)}
-          className="h-auto py-2 px-4 text-sm whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit"
+          className="h-auto py-2 px-4 whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit"
           style={typography.body}
         >
           {pill.text}
