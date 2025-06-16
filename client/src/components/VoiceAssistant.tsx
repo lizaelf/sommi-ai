@@ -1989,7 +1989,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           setIsThinking(false);
           setShowAskButton(true);
           setIsListening(false);
-          if (!isProcessing) setShowBottomSheet(false);
+          // Keep bottom sheet open for continued interaction
           return;
         }
         
@@ -2018,7 +2018,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         } finally {
           setIsThinking(false);
           setIsListening(false);
-          if (!isProcessing) setShowBottomSheet(false);
+          // Keep bottom sheet open after voice interaction
         }
       };
       
