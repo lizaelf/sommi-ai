@@ -218,36 +218,83 @@ export default function SuggestionPills({
             }),
           );
 
-          // Play audio for voice context
-          const utterance = new SpeechSynthesisUtterance(instantResponse);
+          // Play audio using OpenAI TTS for consistency with voice assistant
+          console.log("🎤 VOICE: Generating TTS audio for suggestion response");
+          
+          try {
+            const response = await fetch("/api/text-to-speech", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: instantResponse }),
+            });
 
-          // Use consistent male voice
-          const voices = speechSynthesis.getVoices();
-          const maleVoice =
-            voices.find(
-              (voice) =>
-                voice.name.includes("Google UK English Male") ||
-                voice.name.includes("Google US English Male") ||
-                (voice.name.includes("Male") && voice.lang.startsWith("en")),
+            if (response.ok) {
+              const audioBlob = await response.blob();
+              const audioUrl = URL.createObjectURL(audioBlob);
+              const audio = new Audio(audioUrl);
+
+              // Store reference for stop functionality
+              (window as any).currentOpenAIAudio = audio;
+
+              audio.onplay = () => {
+                console.log("🎤 VOICE: OpenAI TTS audio started playing");
+              };
+
+              audio.onended = () => {
+                console.log("🎤 VOICE: OpenAI TTS audio finished playing");
+                URL.revokeObjectURL(audioUrl);
+                (window as any).currentOpenAIAudio = null;
+              };
+
+              audio.onerror = () => {
+                console.error("🎤 VOICE: OpenAI TTS audio error, falling back to browser TTS");
+                URL.revokeObjectURL(audioUrl);
+                (window as any).currentOpenAIAudio = null;
+                
+                // Fallback to browser TTS
+                const utterance = new SpeechSynthesisUtterance(instantResponse);
+                const voices = speechSynthesis.getVoices();
+                const maleVoice = voices.find(voice => 
+                  voice.name.includes("Google UK English Male") ||
+                  voice.name.includes("Google US English Male") ||
+                  (voice.name.includes("Male") && voice.lang.startsWith("en"))
+                ) || voices[0];
+                
+                if (maleVoice) utterance.voice = maleVoice;
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                speechSynthesis.cancel();
+                speechSynthesis.speak(utterance);
+              };
+
+              await audio.play();
+              console.log("🎤 VOICE: OpenAI TTS audio playback initiated");
+            } else {
+              throw new Error("TTS API failed");
+            }
+          } catch (error) {
+            console.error("🎤 VOICE: TTS generation failed, using browser TTS fallback:", error);
+            
+            // Fallback to browser TTS
+            const utterance = new SpeechSynthesisUtterance(instantResponse);
+            const voices = speechSynthesis.getVoices();
+            const maleVoice = voices.find(voice => 
+              voice.name.includes("Google UK English Male") ||
+              voice.name.includes("Google US English Male") ||
+              (voice.name.includes("Male") && voice.lang.startsWith("en"))
             ) || voices[0];
-
-          if (maleVoice) utterance.voice = maleVoice;
-          utterance.rate = 1.0;
-          utterance.pitch = 1.0;
-          utterance.volume = 1.0;
-
-          utterance.onstart = () => {
-            console.log("🎤 VOICE: Audio started playing");
-          };
-
-          utterance.onend = () => {
-            console.log("🎤 VOICE: Audio finished playing");
-          };
-
-          speechSynthesis.cancel(); // Clear any existing speech
-          speechSynthesis.speak(utterance);
-
-          console.log("🎤 VOICE: Audio playback initiated");
+            
+            if (maleVoice) utterance.voice = maleVoice;
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+            console.log("🎤 VOICE: Browser TTS fallback initiated");
+          }
         } else {
           console.log("🎤 VOICE: No cache - suggestion pills should NOT call voice assistant API");
           console.log("🎤 VOICE: Voice context should only use cached responses to prevent bottom sheet closing");
