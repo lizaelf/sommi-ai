@@ -15,6 +15,7 @@ import SommTenantAdmin from "@/pages/SommTenantAdmin";
 import TenantCreate from "@/pages/TenantCreate";
 import QRCodes from "@/pages/QRCodes";
 import QRDemo from "@/pages/QRDemo";
+import { useEffect } from "react";
 
 
 function Router() {
@@ -41,7 +42,54 @@ function Router() {
   );
 }
 
+// Global welcome message cache initialization
+const initializeWelcomeAudioCache = async () => {
+  if ((window as any).globalWelcomeAudioCache) return; // Already cached
+  
+  try {
+    console.log("Initializing global welcome audio cache");
+    const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+    const response = await fetch('/api/text-to-speech', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: welcomeMessage })
+    });
+    
+    if (response.ok) {
+      const buffer = await response.arrayBuffer();
+      const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      // Create preloaded audio element
+      const audioElement = new Audio(audioUrl);
+      audioElement.preload = 'auto';
+      
+      await new Promise((resolve, reject) => {
+        audioElement.oncanplaythrough = resolve;
+        audioElement.onerror = reject;
+        audioElement.load();
+      });
+      
+      (window as any).globalWelcomeAudioCache = {
+        url: audioUrl,
+        element: audioElement
+      };
+      console.log("Global welcome audio cache ready for instant playback");
+    }
+  } catch (error) {
+    console.error("Failed to initialize global welcome audio cache:", error);
+  }
+};
+
 function App() {
+  // Initialize welcome audio cache early
+  useEffect(() => {
+    // Start caching after app initializes
+    setTimeout(() => {
+      initializeWelcomeAudioCache();
+    }, 2000);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

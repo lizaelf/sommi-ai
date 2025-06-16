@@ -40,10 +40,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const welcomeAudioCacheRef = useRef<string | null>(null);
+  const welcomeAudioElementRef = useRef<HTMLAudioElement | null>(null);
   
-  // Cache welcome message only when voice assistant is actively used
+  // Cache welcome message immediately on component mount for instant playback
   const cacheWelcomeMessage = async () => {
     if (welcomeAudioCacheRef.current) return; // Already cached
+    
+    // Check if global cache is available first
+    const globalCache = (window as any).globalWelcomeAudioCache;
+    if (globalCache && globalCache.url && globalCache.element) {
+      console.log("Using global welcome audio cache for instant playback");
+      welcomeAudioCacheRef.current = globalCache.url;
+      welcomeAudioElementRef.current = globalCache.element;
+      return;
+    }
     
     try {
       const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
@@ -57,13 +67,56 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         const buffer = await response.arrayBuffer();
         const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
         const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Pre-create audio element for instant playback
+        const audioElement = new Audio(audioUrl);
+        audioElement.preload = 'auto';
+        
+        // Wait for audio to be fully loaded
+        await new Promise((resolve, reject) => {
+          audioElement.oncanplaythrough = resolve;
+          audioElement.onerror = reject;
+          audioElement.load();
+        });
+        
         welcomeAudioCacheRef.current = audioUrl;
-        console.log("Welcome message audio cached for immediate playback");
+        welcomeAudioElementRef.current = audioElement;
+        console.log("Welcome message audio cached and preloaded for instant playback");
       }
     } catch (error) {
       console.error("Failed to cache welcome message:", error);
     }
   };
+  
+  // Cache welcome message on component mount and warm cache early
+  useEffect(() => {
+    // Immediately start caching
+    cacheWelcomeMessage();
+    
+    // Also set up global cache warming for early initialization
+    if (!(window as any).welcomeAudioGlobalCache) {
+      (window as any).welcomeAudioGlobalCache = cacheWelcomeMessage;
+      // Try to warm cache after a short delay to allow page to settle
+      setTimeout(() => {
+        if (!welcomeAudioCacheRef.current) {
+          console.log("Warming welcome audio cache early");
+          cacheWelcomeMessage();
+        }
+      }, 1000);
+    }
+    
+    // Cleanup function to revoke cached audio URLs
+    return () => {
+      if (welcomeAudioCacheRef.current) {
+        URL.revokeObjectURL(welcomeAudioCacheRef.current);
+        welcomeAudioCacheRef.current = null;
+      }
+      if (welcomeAudioElementRef.current) {
+        welcomeAudioElementRef.current.pause();
+        welcomeAudioElementRef.current = null;
+      }
+    };
+  }, []);
   
   // Listen for suggestion playback events to show Stop button
   useEffect(() => {
@@ -144,10 +197,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowAskButton(false);
       setIsResponding(true);
       
-      // Play cached welcome message immediately
-      if (welcomeAudioCacheRef.current) {
-        console.log("QR SCAN: Playing cached welcome message immediately");
-        const audio = new Audio(welcomeAudioCacheRef.current);
+      // Play preloaded welcome message instantly
+      if (welcomeAudioElementRef.current) {
+        console.log("QR SCAN: Playing preloaded welcome message instantly");
+        const audio = welcomeAudioElementRef.current;
+        
+        // Reset audio to beginning for replay
+        audio.currentTime = 0;
         
         // Store reference for potential stopping
         (window as any).currentOpenAIAudio = audio;
@@ -158,7 +214,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             setShowAskButton(true);
           }
           (window as any).currentOpenAIAudio = null;
-          console.log("QR SCAN: Cached welcome message completed");
+          console.log("QR SCAN: Preloaded welcome message completed");
         };
         
         audio.onerror = () => {
@@ -167,10 +223,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             setShowAskButton(true);
           }
           (window as any).currentOpenAIAudio = null;
-          console.error("QR SCAN: Cached audio playback error");
+          console.error("QR SCAN: Preloaded audio playback error");
         };
         
-        audio.play();
+        // Instant playback since audio is already loaded
+        audio.play().catch(error => {
+          console.error("QR SCAN: Instant playback failed:", error);
+          // Fallback to creating new audio element
+          const fallbackAudio = new Audio(welcomeAudioCacheRef.current!);
+          (window as any).currentOpenAIAudio = fallbackAudio;
+          fallbackAudio.onended = audio.onended;
+          fallbackAudio.onerror = audio.onerror;
+          fallbackAudio.play();
+        });
       } else {
         // Fallback to generating audio if cache is not ready
         console.log("QR SCAN: Cache not ready, generating welcome message");
