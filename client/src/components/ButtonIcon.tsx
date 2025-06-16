@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/UseToast";
 import Button from "@/components/ui/Button";
+import colors from "@/styles/colors";
+import typography from "@/styles/typography";
 
 interface ButtonIconProps {
   onEditContact?: () => void;
@@ -21,39 +23,7 @@ export function ButtonIcon({
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const { toast } = useToast();
 
-  // Typography constants matching the design library
-  const typography = {
-    h1: {
-      fontSize: "32px",
-      fontWeight: "700",
-      lineHeight: "1.2",
-      fontFamily: "Lora, serif",
-    },
-    h2: {
-      fontSize: "20px",
-      fontWeight: "600",
-      lineHeight: "1.4",
-      fontFamily: "Inter, sans-serif",
-    },
-    body: {
-      fontSize: "16px",
-      fontWeight: "400",
-      lineHeight: "1.5",
-      fontFamily: "Inter, sans-serif",
-    },
-    body1R: {
-      fontSize: "14px",
-      fontWeight: "400",
-      lineHeight: "1.4",
-      fontFamily: "Inter, sans-serif",
-    },
-    buttonPlus1: {
-      fontSize: "14px",
-      fontWeight: "600",
-      lineHeight: "1.2",
-      fontFamily: "Inter, sans-serif",
-    },
-  };
+
 
   // Function to clear all chat history
   const clearChatHistory = async () => {
@@ -267,10 +237,7 @@ export function ButtonIcon({
           {onEditContact && (
             <button
               className="profile-menu-item"
-              onClick={() => {
-                setShowProfileMenu(false);
-                onEditContact();
-              }}
+              disabled
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -278,19 +245,14 @@ export function ButtonIcon({
                 padding: "16px 20px",
                 backgroundColor: "transparent",
                 border: "none",
-                color: "white",
-                cursor: "pointer",
+                color: colors.button.disabledText,
+                cursor: "not-allowed",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
                 borderBottom: "1px solid #373737",
+                opacity: 0.5,
                 ...typography.body1R,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -306,10 +268,7 @@ export function ButtonIcon({
           {onManageNotifications && (
             <button
               className="profile-menu-item"
-              onClick={() => {
-                setShowProfileMenu(false);
-                onManageNotifications();
-              }}
+              disabled
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -317,19 +276,14 @@ export function ButtonIcon({
                 padding: "16px 20px",
                 backgroundColor: "transparent",
                 border: "none",
-                color: "white",
-                cursor: "pointer",
+                color: colors.button.disabledText,
+                cursor: "not-allowed",
                 transition: "all 0.2s ease",
                 width: "100%",
                 textAlign: "left",
                 borderBottom: onDeleteAccount ? "1px solid #373737" : "none",
+                opacity: 0.5,
                 ...typography.body1R,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
