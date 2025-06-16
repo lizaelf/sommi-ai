@@ -46,7 +46,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 16, 2025)
 
-### Spreadsheet Response Integration (June 16, 2025 - Latest)
+### Welcome Message Enhancement & TTS Optimization (June 16, 2025 - Latest)
+- **Dynamic Welcome Message Implementation**: Updated voice welcome message to use personalized template incorporating actual wine name and tasting data instead of generic greeting
+- **Multi-Location Welcome Message Updates**: Synchronized welcome message across all components (App.tsx, VoiceAssistant.tsx) to use consistent dynamic content
+- **TTS Response Speed Optimization**: Implemented faster TTS processing with reduced timeouts (20s/15s), faster tts-1 model, and optimized audio playback for immediate response
+- **Welcome Message Voice Caching**: Enabled server-side caching for welcome messages to prevent regeneration delays and ensure consistent instant playback
+- **Audio Pre-loading Enhancement**: Added immediate audio playback with preload optimization and fallback strategies for faster suggestion response times
+- **Cache Management Optimization**: Restored proper welcome message caching behavior while maintaining dynamic content generation for performance
+
+### Spreadsheet Response Integration (June 16, 2025)
 - **Voice Suggestion Data Source**: Updated voice assistant to use pre-populated responses from shared spreadsheet data instead of API calls
 - **Enhanced SuggestionPills Component**: Modified to prioritize spreadsheet responses over cached API responses for voice context
 - **Cached Response System**: Enhanced cache lookup to use effective wine keys with "wine_1" fallback for consistent data access
