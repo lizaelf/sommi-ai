@@ -389,7 +389,7 @@ export default function SuggestionPills({
 
               const assistantMessage = {
                 id: Date.now() + 1,
-                content: data.response,
+                content: responseText,
                 role: "assistant" as const,
                 conversationId: conversationId || 0,
                 createdAt: new Date().toISOString(),
@@ -404,10 +404,11 @@ export default function SuggestionPills({
 
               // Play audio using OpenAI TTS
               console.log("🎤 VOICE: Playing audio response for API result");
-              console.log("🎤 VOICE: Response data:", data);
-              console.log("🎤 VOICE: Text to convert:", data.response);
               
-              if (!data.response || data.response.trim() === '') {
+              const responseText = data.message?.content || data.response;
+              console.log("🎤 VOICE: Text to convert:", responseText);
+              
+              if (!responseText || responseText.trim() === '') {
                 console.error("🎤 VOICE: Empty response text, cannot generate TTS");
                 throw new Error("Empty response text");
               }
@@ -415,7 +416,7 @@ export default function SuggestionPills({
               const ttsResponse = await fetch("/api/text-to-speech", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: data.response }),
+                body: JSON.stringify({ text: responseText }),
               });
 
               console.log("🎤 VOICE: TTS API response for new request - status:", ttsResponse.status, ttsResponse.ok);
