@@ -1132,19 +1132,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       return; // Block voice assistant behavior for chat suggestions
     }
     
-    // CRITICAL: If there's an instant response, the SuggestionPills already handled everything
-    // Don't do ANYTHING - no states, no API calls, no audio - SuggestionPills did it all
-    if (options?.instantResponse) {
-      console.log("🚀 VoiceAssistant: Cached response detected - SuggestionPills handled everything!");
-      console.log("🚀 VoiceAssistant: NO action needed - audio already playing, messages already added");
-      return; // Complete early exit - don't interfere at all
-    }
+    // CRITICAL: SuggestionPills in voice context handles everything internally
+    // Voice assistant should NEVER interfere with suggestion handling
+    console.log("🚀 VoiceAssistant: SuggestionPills handles all suggestion logic - closing bottom sheet only");
     
-    // Only for non-cached suggestions, use normal flow
-    console.log("VoiceAssistant: No cached response, using normal API flow");
-    onSendMessage(suggestion, pillId, options);
+    // Only close the bottom sheet - SuggestionPills manages all audio, messages, and caching
     setShowBottomSheet(false);
-  };;
+    
+    // Don't call onSendMessage at all - this prevents thinking states and unmute buttons
+    return;
+  };
 
   const handleCloseBottomSheet = () => {
     console.log("VoiceAssistant: Manual close triggered - setting flag to prevent reopening");
