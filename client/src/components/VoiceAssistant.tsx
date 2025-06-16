@@ -41,33 +41,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
   const welcomeAudioCacheRef = useRef<string | null>(null);
   
-  // Pre-cache welcome message for immediate playback
-  useEffect(() => {
-    const cacheWelcomeMessage = async () => {
-      if (welcomeAudioCacheRef.current) return; // Already cached
-      
-      try {
-        const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
-        const response = await fetch('/api/text-to-speech', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: welcomeMessage })
-        });
-        
-        if (response.ok) {
-          const buffer = await response.arrayBuffer();
-          const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          welcomeAudioCacheRef.current = audioUrl;
-          console.log("Welcome message audio cached for immediate playback");
-        }
-      } catch (error) {
-        console.error("Failed to cache welcome message:", error);
-      }
-    };
+  // Cache welcome message only when voice assistant is actively used
+  const cacheWelcomeMessage = async () => {
+    if (welcomeAudioCacheRef.current) return; // Already cached
     
-    cacheWelcomeMessage();
-  }, []);
+    try {
+      const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: welcomeMessage })
+      });
+      
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        welcomeAudioCacheRef.current = audioUrl;
+        console.log("Welcome message audio cached for immediate playback");
+      }
+    } catch (error) {
+      console.error("Failed to cache welcome message:", error);
+    }
+  };
   
   // Listen for suggestion playback events to show Stop button
   useEffect(() => {
