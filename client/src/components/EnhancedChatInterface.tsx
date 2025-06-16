@@ -586,6 +586,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       });
     } finally {
       setIsTyping(false);
+      
+      // Disable text-only mode after processing
+      if ((window as any).voiceAssistant?.setTextOnlyMode) {
+        (window as any).voiceAssistant.setTextOnlyMode(false);
+      }
     }
   };
 
