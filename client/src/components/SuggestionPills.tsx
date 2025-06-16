@@ -366,6 +366,11 @@ export default function SuggestionPills({
                   { role: "user", content: pill.prompt }
                 ],
                 wineKey: wineKey,
+                conversationId: conversationId,
+                wineData: {
+                  id: parseInt(wineKey.replace('wine_', '')),
+                  name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel"
+                },
                 textOnly: false // Enable voice for voice assistant context
               }),
             });
