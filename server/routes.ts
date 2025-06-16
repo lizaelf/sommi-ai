@@ -964,11 +964,11 @@ Format: Return only the description text, no quotes or additional formatting.`;
         suggestion => !usedPillIds.includes(suggestion.id)
       );
       
-      // If all suggestions have been used, reset by returning all suggestions
-      // This allows cycling through the suggestions again
-      if (availablePills.length === 0 && suggestionPillsData.suggestions.length > 0) {
-        console.log(`All suggestions used for wine ${wineKey} - cycling back to start`);
-        availablePills = suggestionPillsData.suggestions;
+      // Keep suggestions stable - don't auto-cycle when all are used
+      // Users can manually reset if they want to see suggestions again
+      if (availablePills.length === 0) {
+        console.log(`All suggestions used for wine ${wineKey} - returning empty set (no auto-cycle)`);
+        availablePills = []; // Return empty array instead of cycling
       }
       
       res.json({ suggestions: availablePills });

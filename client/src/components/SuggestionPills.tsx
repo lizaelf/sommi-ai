@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
 import Button from "@/components/ui/Button";
@@ -82,33 +82,27 @@ export default function SuggestionPills({
     refetchOnWindowFocus: false,
   });
 
-  // Handle resetting pills when all are used
-  useEffect(() => {
-    const availablePills = suggestionsData?.suggestions || [];
-    if (availablePills.length === 0) return;
+  // Manual reset function - only triggered by user interaction
+  const resetSuggestionPills = useCallback(() => {
+    const effectiveWineKey = wineKey || "wine_1";
+    console.log("Manually resetting suggestion cycle for wine:", effectiveWineKey);
+    setIsResetting(true);
 
-    const unusedPills = availablePills.filter(
-      (pill: SuggestionPill) => !usedPills.has(pill.id),
-    );
-
-    if (unusedPills.length === 0 && !isResetting) {
-      const effectiveWineKey = wineKey || "wine_1";
-      console.log("All suggestions used - resetting cycle for wine:", effectiveWineKey);
-      setIsResetting(true);
-
-      fetch(`/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`, {
-        method: "DELETE",
+    fetch(`/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        setUsedPills(new Set());
+        setIsResetting(false);
+        refetch(); // Refresh suggestions after reset
       })
-        .then(() => {
-          setUsedPills(new Set());
-          setIsResetting(false);
-        })
-        .catch((error) => {
-          console.error("Failed to reset suggestion pills:", error);
-          setIsResetting(false);
-        });
-    }
-  }, [suggestionsData, usedPills, wineKey, isResetting]);
+      .catch((error) => {
+        console.error("Failed to reset suggestion pills:", error);
+        setIsResetting(false);
+      });
+  }, [wineKey, refetch]);
+
+  // Removed automatic reset - suggestions only change when user clicks
 
   // Pre-generate TTS audio for voice context suggestions
   useEffect(() => {
@@ -606,17 +600,10 @@ export default function SuggestionPills({
       return unusedPills;
     }
 
-    // If all suggestions are used, reset and start fresh
+    // If all suggestions are used, show default suggestions instead of auto-resetting
     if (unusedPills.length === 0 && availablePills.length > 0) {
-      console.log("🔄 All suggestions used - resetting to show fresh suggestions");
-      // Reset used pills and show first 3 suggestions
-      setUsedPills(new Set());
-      // Trigger a reset on the backend using effective wine key
-      const effectiveWineKey = wineKey || "wine_1";
-      fetch(`/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`, {
-        method: 'DELETE'
-      }).catch(console.error);
-      return availablePills.slice(0, 3);
+      console.log("All suggestions used - showing default suggestions (no auto-reset)");
+      return defaultSuggestions.slice(0, 3);
     }
 
     // Fallback: show unused default suggestions if no API suggestions available
