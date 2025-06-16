@@ -46,7 +46,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 16, 2025)
 
-### Design System Standardization Complete (June 16, 2025 - Latest)
+### Context-Aware Registration System Implementation (June 16, 2025 - Latest)
+- **Scanned Page vs Wine Details Differentiation**: Implemented proper context awareness where scanned pages (`/scanned?wine=1`) show current session chat history without registration requirements, while wine details pages (`/wine-details/1`) require registration for historical chat access
+- **Enhanced EnhancedChatInterface Props**: Added `isScannedPage` boolean prop to control registration behavior based on page context
+- **ChatSection Component Updates**: Updated component interface to accept and pass through `isScannedPage` prop for proper context handling
+- **Registration Logic Refinement**: Only wine details pages show "View chat history" button for unregistered users, scanned pages always display current session messages
+- **Duplicate Function Resolution**: Fixed syntax error by removing duplicate `handleCloseContactSheet` function declaration
+- **Component Prop Threading**: Properly threaded `isScannedPage` prop through WineDetails.tsx and ChatSection.tsx to EnhancedChatInterface for complete context awareness
+
+### Design System Standardization Complete (June 16, 2025)
 - **Contact Form UI Updates**: Updated "View wine history" button to use secondary Button variant and standardized all contact form inputs (including country selector) with transparent backgrounds and consistent border styling
 - **Welcome Message Audio Caching**: Implemented comprehensive audio caching system with global app-level initialization and component-level fallbacks for instant welcome message playback, eliminating TTS generation delays
 - **Error Button Variant Creation**: Added new error button variant with #8A332C fill color for destructive actions, replacing inline styling with centralized Button component variant
