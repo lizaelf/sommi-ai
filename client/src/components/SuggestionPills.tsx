@@ -616,40 +616,36 @@ export default function SuggestionPills({
       return defaultSuggestions.slice(0, 3);
     }
 
-    // Get unused pills first
+    // Only show unused pills - never show used ones
     const unusedPills = availablePills.filter(
       (pill: SuggestionPill) => !usedPills.has(pill.id),
     );
 
-    // If we have enough unused pills, show the first 3
+    // Always show exactly 3 unused pills if available
     if (unusedPills.length >= 3) {
       return unusedPills.slice(0, 3);
     }
 
-    // If all suggestions are used, reset and start over with fresh suggestions
-    if (unusedPills.length === 0) {
+    // If we have some unused pills but less than 3, show what we have
+    if (unusedPills.length > 0) {
+      return unusedPills;
+    }
+
+    // If all suggestions are used, reset and start fresh
+    if (unusedPills.length === 0 && availablePills.length > 0) {
       console.log("🔄 All suggestions used - resetting to show fresh suggestions");
       // Reset used pills and show first 3 suggestions
       setUsedPills(new Set());
       // Trigger a reset on the backend
-      if (availablePills.length > 0) {
-        fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
-          method: 'DELETE'
-        }).catch(console.error);
-      }
+      fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
+        method: 'DELETE'
+      }).catch(console.error);
       return availablePills.slice(0, 3);
     }
 
-    // Show remaining unused pills + fill with default suggestions if needed
-    const pillsToShow = [...unusedPills];
-    if (pillsToShow.length < 3) {
-      const defaultsToAdd = defaultSuggestions
-        .filter(def => !usedPills.has(def.id))
-        .slice(0, 3 - pillsToShow.length);
-      pillsToShow.push(...defaultsToAdd);
-    }
-
-    return pillsToShow.slice(0, 3);
+    // Fallback: show unused default suggestions if no API suggestions available
+    const unusedDefaults = defaultSuggestions.filter(def => !usedPills.has(def.id));
+    return unusedDefaults.slice(0, 3);
   }, [suggestionsData, usedPills, isLoading]);
 
   return (
