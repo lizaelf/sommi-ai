@@ -801,7 +801,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             {/* Conversation Content */}
             <div style={{ width: "100%" }}>
               {/* Chat Title */}
-              <div style={{ marginBottom: "24px", paddingLeft: "16px", paddingRight: "16px" }}>
+              <div style={{ marginBottom: "16px", paddingLeft: "16px", paddingRight: "16px" }}>
                 <h1
                   style={{
                     color: "white",
@@ -835,7 +835,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 ? "#DBDBDB"
                                 : "transparent",
                             borderRadius: "16px",
-                            padding: message.role === "user" ? "16px" : "16px 0",
+                            padding: message.role === "user" ? "16px" : "0 0 16px 0",
                             width:
                               message.role === "user" ? "fit-content" : "100%",
                             maxWidth: message.role === "user" ? "80%" : "100%",
