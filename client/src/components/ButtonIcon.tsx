@@ -229,8 +229,10 @@ export function ButtonIcon({
             border: "1px solid rgba(255, 255, 255, 0.20)",
             borderRadius: "12px",
             zIndex: 9999,
-            minWidth: "200px",
+            minWidth: "220px",
+            width: "220px",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+            overflow: "hidden",
           }}
           data-profile-menu
         >
@@ -249,6 +251,8 @@ export function ButtonIcon({
                 cursor: "not-allowed",
                 transition: "all 0.2s ease",
                 width: "100%",
+                boxSizing: "border-box",
+                margin: 0,
                 textAlign: "left",
                 borderBottom: "1px solid #373737",
                 opacity: 0.5,
@@ -280,6 +284,8 @@ export function ButtonIcon({
                 cursor: "not-allowed",
                 transition: "all 0.2s ease",
                 width: "100%",
+                boxSizing: "border-box",
+                margin: 0,
                 textAlign: "left",
                 borderBottom: onDeleteAccount ? "1px solid #373737" : "none",
                 opacity: 0.5,
