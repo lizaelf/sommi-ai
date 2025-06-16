@@ -39,7 +39,9 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Navigation**: Wine cards click to open details, logo clicks to home
 - **Response Mode**: Text-only suggestions without audio/bottom sheet
 - **Loading States**: Comprehensive flash prevention system
-- **Code Management**: CircleAnimation component under code freeze - require permission before changes (finalized June 14, 2025)
+- **Code Management**: 
+  - CircleAnimation component under code freeze - require permission before changes (finalized June 14, 2025)
+  - SuggestionPills component and Voice Assistant system under code freeze - require permission before changes (finalized June 16, 2025)
 
 ## Recent Changes (June 15, 2025)
 
