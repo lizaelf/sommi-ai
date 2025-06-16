@@ -104,8 +104,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [selectedWine, onReady]);
 
-  // Check if user has shared contact information
-  const [hasSharedContact, setHasSharedContact] = useState(() => {
+  // Check if user has shared contact information (is registered)
+  const [isUserRegistered, setIsUserRegistered] = useState(() => {
     return localStorage.getItem("hasSharedContact") === "true";
   });
 
@@ -218,7 +218,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
       if (data.success) {
         localStorage.setItem("hasSharedContact", "true");
-        setHasSharedContact(true);
+        setIsUserRegistered(true);
         handleCloseContactSheet();
 
         toast({
@@ -815,7 +815,41 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               </div>
               
               <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", width: "100%" }}>
-                {messages.length > 0 ? (
+{!isUserRegistered ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "200px",
+                      width: "100%",
+                      textAlign: "center",
+                      gap: "16px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        color: "rgba(255, 255, 255, 0.6)",
+                        ...typography.body,
+                        textAlign: "center",
+                        margin: "0",
+                      }}
+                    >
+                      Register to view chat history
+                    </p>
+                    <Button
+                      onClick={() => setShowContactSheet(true)}
+                      variant="secondary"
+                      style={{
+                        width: "auto",
+                        padding: "12px 24px",
+                      }}
+                    >
+                      View chat history
+                    </Button>
+                  </div>
+                ) : messages.length > 0 ? (
                   <>
                     {messages.map((message: any, index: number) => (
                       <div
