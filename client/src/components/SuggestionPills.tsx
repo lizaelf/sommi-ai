@@ -274,8 +274,43 @@ export default function SuggestionPills({
                 speechSynthesis.speak(utterance);
               };
 
-              await audio.play();
-              console.log("🎤 VOICE: OpenAI TTS audio playback initiated");
+              try {
+                await audio.play();
+                console.log("🎤 VOICE: OpenAI TTS audio playback initiated successfully");
+              } catch (playError) {
+                console.error("🎤 VOICE: Audio.play() failed for cached response:", playError);
+                // Try to unlock audio context and retry
+                if (window.AudioContext || (window as any).webkitAudioContext) {
+                  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                  if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                    console.log("🎤 VOICE: Audio context resumed, retrying cached audio play");
+                    try {
+                      await audio.play();
+                      console.log("🎤 VOICE: Cached audio play retry successful");
+                    } catch (retryError) {
+                      console.error("🎤 VOICE: Cached audio play retry failed, using browser TTS:", retryError);
+                      // Fallback to browser TTS
+                      const utterance = new SpeechSynthesisUtterance(instantResponse);
+                      const voices = speechSynthesis.getVoices();
+                      const maleVoice = voices.find(voice => 
+                        voice.name.includes("Google UK English Male") ||
+                        voice.name.includes("Google US English Male") ||
+                        (voice.name.includes("Male") && voice.lang.startsWith("en"))
+                      ) || voices[0];
+                      
+                      if (maleVoice) utterance.voice = maleVoice;
+                      utterance.rate = 1.0;
+                      utterance.pitch = 1.0;
+                      utterance.volume = 1.0;
+                      
+                      speechSynthesis.cancel();
+                      speechSynthesis.speak(utterance);
+                      console.log("🎤 VOICE: Browser TTS fallback initiated for cached response");
+                    }
+                  }
+                }
+              }
             } else {
               throw new Error("TTS API failed");
             }
@@ -396,8 +431,43 @@ export default function SuggestionPills({
                   speechSynthesis.speak(utterance);
                 };
 
-                await audio.play();
-                console.log("🎤 VOICE: OpenAI TTS audio playback initiated");
+                try {
+                  await audio.play();
+                  console.log("🎤 VOICE: OpenAI TTS audio playback initiated successfully");
+                } catch (playError) {
+                  console.error("🎤 VOICE: Audio.play() failed:", playError);
+                  // Try to unlock audio context and retry
+                  if (window.AudioContext || (window as any).webkitAudioContext) {
+                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                    if (audioContext.state === 'suspended') {
+                      await audioContext.resume();
+                      console.log("🎤 VOICE: Audio context resumed, retrying play");
+                      try {
+                        await audio.play();
+                        console.log("🎤 VOICE: Audio play retry successful");
+                      } catch (retryError) {
+                        console.error("🎤 VOICE: Audio play retry failed, using browser TTS:", retryError);
+                        // Fallback to browser TTS
+                        const utterance = new SpeechSynthesisUtterance(data.response);
+                        const voices = speechSynthesis.getVoices();
+                        const maleVoice = voices.find(voice => 
+                          voice.name.includes("Google UK English Male") ||
+                          voice.name.includes("Google US English Male") ||
+                          (voice.name.includes("Male") && voice.lang.startsWith("en"))
+                        ) || voices[0];
+                        
+                        if (maleVoice) utterance.voice = maleVoice;
+                        utterance.rate = 1.0;
+                        utterance.pitch = 1.0;
+                        utterance.volume = 1.0;
+                        
+                        speechSynthesis.cancel();
+                        speechSynthesis.speak(utterance);
+                        console.log("🎤 VOICE: Browser TTS fallback initiated");
+                      }
+                    }
+                  }
+                }
               } else {
                 throw new Error("TTS API failed");
               }
