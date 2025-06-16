@@ -141,6 +141,7 @@ export default function SuggestionPills({
 
   const handlePillClick = async (pill: SuggestionPill) => {
     console.log("🔍 DEBUGGING: handlePillClick called with context:", context, "preferredResponseType:", preferredResponseType);
+    console.log("🔍 DEBUGGING: wineKey:", wineKey, "pill:", pill);
     if (isDisabled) return;
 
     // Optimistically mark as used
@@ -163,12 +164,19 @@ export default function SuggestionPills({
 
       // First check spreadsheet data for voice suggestions
       if (context === "voice-assistant") {
+        console.log("🔍 VOICE DEBUG: Looking for wine data with key:", effectiveWineKey);
+        console.log("🔍 VOICE DEBUG: Available wine keys:", Object.keys(wineResponses));
         const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
+        console.log("🔍 VOICE DEBUG: Found wine data:", !!wineData);
         if (wineData && wineData.responses) {
+          console.log("🔍 VOICE DEBUG: Available response keys:", Object.keys(wineData.responses));
+          console.log("🔍 VOICE DEBUG: Looking for suggestion ID:", suggestionId);
           const spreadsheetResponse = wineData.responses[suggestionId as keyof typeof wineData.responses];
           if (spreadsheetResponse) {
             console.log("📊 Using spreadsheet response for voice suggestion:", suggestionId);
             instantResponse = spreadsheetResponse;
+          } else {
+            console.log("❌ No spreadsheet response found for:", suggestionId);
           }
         }
       }
