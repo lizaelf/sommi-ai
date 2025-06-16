@@ -23,6 +23,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   
   // Share state globally for CircleAnimation
   useEffect(() => {
@@ -30,9 +31,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       isListening,
       isProcessing: isThinking,
       isResponding,
-      showBottomSheet
+      showBottomSheet,
+      isPlayingAudio
     };
-  }, [isListening, isThinking, isResponding, showBottomSheet]);
+  }, [isListening, isThinking, isResponding, showBottomSheet, isPlayingAudio]);
   const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [showAskButton, setShowAskButton] = useState(false);
   const isManuallyClosedRef = useRef(false);
@@ -41,6 +43,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
   const welcomeAudioCacheRef = useRef<string | null>(null);
   const welcomeAudioElementRef = useRef<HTMLAudioElement | null>(null);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   
   // Cache welcome message immediately on component mount for instant playback
   const cacheWelcomeMessage = async () => {
@@ -257,11 +260,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
+          currentAudioRef.current = audio;
+          setIsPlayingAudio(true);
           
           // Store reference for potential stopping
           (window as any).currentOpenAIAudio = audio;
           
           audio.onended = () => {
+            setIsPlayingAudio(false);
+            currentAudioRef.current = null;
             if (!isManuallyClosedRef.current) {
               setIsResponding(false);
               setShowAskButton(true);
@@ -275,6 +282,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           };
           
           audio.onerror = () => {
+            setIsPlayingAudio(false);
+            currentAudioRef.current = null;
             if (!isManuallyClosedRef.current) {
               setIsResponding(false);
               setShowAskButton(true);
@@ -325,9 +334,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
+            currentAudioRef.current = audio;
+            
+            setIsPlayingAudio(true);
             
             await new Promise((resolve, reject) => {
-              audio.onended = resolve;
+              audio.onended = () => {
+                setIsPlayingAudio(false);
+                currentAudioRef.current = null;
+                resolve(undefined);
+              };
               audio.onerror = reject;
               audio.play();
             });
@@ -336,6 +352,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }
         } catch (error) {
           console.error('Error playing suggestion audio:', error);
+          setIsPlayingAudio(false);
+          currentAudioRef.current = null;
         } finally {
           if (!isManuallyClosedRef.current) {
             setIsResponding(false);
@@ -418,6 +436,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const { toast } = useToast();
+
+  // Stop audio function
+  const stopAudio = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+      currentAudioRef.current = null;
+    }
+    if (welcomeAudioElementRef.current) {
+      welcomeAudioElementRef.current.pause();
+      welcomeAudioElementRef.current.currentTime = 0;
+    }
+    setIsPlayingAudio(false);
+    setIsResponding(false);
+    setShowAskButton(true);
+    console.log("🛑 Audio stopped by user");
+  };
 
   // Voice activity detection functions
   const startVoiceDetection = (stream: MediaStream) => {
