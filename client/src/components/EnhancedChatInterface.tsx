@@ -51,12 +51,14 @@ interface EnhancedChatInterfaceProps {
   showBuyButton?: boolean;
   selectedWine?: SelectedWine | null;
   onReady?: () => void;
+  isScannedPage?: boolean; // true for scanned page (current session), false for wine details (historical)
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   showBuyButton = false,
   selectedWine = null,
   onReady,
+  isScannedPage = false,
 }) => {
   const [currentWine, setCurrentWine] = useState<any>(selectedWine || null);
   const [isComponentReady, setIsComponentReady] = useState(false);
@@ -877,7 +879,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               </div>
               
               <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", width: "100%" }}>
-{!isUserRegistered ? (
+{!isScannedPage && !isUserRegistered ? (
                   <div
                     style={{
                       display: "flex",

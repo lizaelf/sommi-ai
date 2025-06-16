@@ -16,12 +16,14 @@ interface ChatSectionProps {
   };
   messages?: any[];
   onReady?: () => void;
+  isScannedPage?: boolean;
 }
 
 export const ChatSection: React.FC<ChatSectionProps> = ({ 
   wine, 
   messages, 
-  onReady 
+  onReady,
+  isScannedPage = false
 }) => {
   if (!wine) return null;
 
@@ -37,6 +39,7 @@ export const ChatSection: React.FC<ChatSectionProps> = ({
           ratings: wine.ratings
         }}
         onReady={onReady}
+        isScannedPage={isScannedPage}
       />
     </div>
   );

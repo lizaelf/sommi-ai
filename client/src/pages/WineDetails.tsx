@@ -968,6 +968,7 @@ export default function WineDetails() {
                   }
                 : null
             }
+            isScannedPage={isScannedPage}
           />
         </div>
       </div>
