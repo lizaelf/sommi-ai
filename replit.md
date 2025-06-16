@@ -54,7 +54,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Dropdown Menu Component Creation**: Created separate DropdownMenuItem component with full-width display and removed border radius for standardized dropdown behavior
 - **Voice Assistant Bottom Sheet Fix**: Fixed suggestion clicks closing bottom sheet by preventing SuggestionPills from calling voice assistant API without cached responses
 - **Voice Recording Completion Fix**: Removed setShowBottomSheet(false) calls after voice recording completion to keep bottom sheet open for continued interaction
-- **Voice Assistant Suggestion Audio Fix**: Updated SuggestionPills to use OpenAI TTS for voice context responses, ensuring consistent audio playback with proper fallback to browser TTS, and implemented direct API calls for non-cached suggestions to guarantee audio playback
+- **Voice Assistant Suggestion Audio Fix**: Fixed critical bug where multiple SuggestionPills components were interfering with each other, preventing voice assistant audio playback. Implemented event.stopPropagation(), unique context-based keys, and direct API calls for voice suggestions with OpenAI TTS audio generation (verified working)
 
 ### Context-Aware Registration System Implementation (June 16, 2025)
 - **Scanned Page vs Wine Details Differentiation**: Implemented proper context awareness where scanned pages (`/scanned?wine=1`) show current session chat history without registration requirements, while wine details pages (`/wine-details/1`) require registration for historical chat access
