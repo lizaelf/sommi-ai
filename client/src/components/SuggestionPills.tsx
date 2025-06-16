@@ -227,22 +227,28 @@ export default function SuggestionPills({
           console.log("🎤 VOICE: Generating TTS audio for suggestion response");
           
           try {
+            console.log("🎤 VOICE: Making TTS API request for cached response");
             const response = await fetch("/api/text-to-speech", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ text: instantResponse }),
             });
 
+            console.log("🎤 VOICE: TTS API response status:", response.status, response.ok);
+
             if (response.ok) {
               const audioBlob = await response.blob();
+              console.log("🎤 VOICE: Audio blob created, size:", audioBlob.size);
+              
               const audioUrl = URL.createObjectURL(audioBlob);
               const audio = new Audio(audioUrl);
+              console.log("🎤 VOICE: Audio element created with URL:", audioUrl);
 
               // Store reference for stop functionality
               (window as any).currentOpenAIAudio = audio;
 
               audio.onplay = () => {
-                console.log("🎤 VOICE: OpenAI TTS audio started playing");
+                console.log("🎤 VOICE: ✅ OpenAI TTS audio started playing successfully");
               };
 
               audio.onended = () => {
@@ -251,8 +257,8 @@ export default function SuggestionPills({
                 (window as any).currentOpenAIAudio = null;
               };
 
-              audio.onerror = () => {
-                console.error("🎤 VOICE: OpenAI TTS audio error, falling back to browser TTS");
+              audio.onerror = (e) => {
+                console.error("🎤 VOICE: OpenAI TTS audio error:", e, "falling back to browser TTS");
                 URL.revokeObjectURL(audioUrl);
                 (window as any).currentOpenAIAudio = null;
                 
@@ -272,6 +278,7 @@ export default function SuggestionPills({
                 
                 speechSynthesis.cancel();
                 speechSynthesis.speak(utterance);
+                console.log("🎤 VOICE: Browser TTS fallback initiated");
               };
 
               try {
@@ -390,26 +397,31 @@ export default function SuggestionPills({
                 body: JSON.stringify({ text: data.response }),
               });
 
+              console.log("🎤 VOICE: TTS API response for new request - status:", ttsResponse.status, ttsResponse.ok);
+
               if (ttsResponse.ok) {
                 const audioBlob = await ttsResponse.blob();
+                console.log("🎤 VOICE: Audio blob created for new request, size:", audioBlob.size);
+                
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
+                console.log("🎤 VOICE: Audio element created for new request with URL:", audioUrl);
 
                 // Store reference for stop functionality
                 (window as any).currentOpenAIAudio = audio;
 
                 audio.onplay = () => {
-                  console.log("🎤 VOICE: OpenAI TTS audio started playing");
+                  console.log("🎤 VOICE: ✅ OpenAI TTS audio for new request started playing successfully");
                 };
 
                 audio.onended = () => {
-                  console.log("🎤 VOICE: OpenAI TTS audio finished playing");
+                  console.log("🎤 VOICE: OpenAI TTS audio for new request finished playing");
                   URL.revokeObjectURL(audioUrl);
                   (window as any).currentOpenAIAudio = null;
                 };
 
-                audio.onerror = () => {
-                  console.error("🎤 VOICE: OpenAI TTS audio error, falling back to browser TTS");
+                audio.onerror = (e) => {
+                  console.error("🎤 VOICE: OpenAI TTS audio error for new request:", e, "falling back to browser TTS");
                   URL.revokeObjectURL(audioUrl);
                   (window as any).currentOpenAIAudio = null;
                   
@@ -429,6 +441,7 @@ export default function SuggestionPills({
                   
                   speechSynthesis.cancel();
                   speechSynthesis.speak(utterance);
+                  console.log("🎤 VOICE: Browser TTS fallback initiated for new request");
                 };
 
                 try {
