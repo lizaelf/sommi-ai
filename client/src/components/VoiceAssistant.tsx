@@ -228,7 +228,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       if (isManuallyClosedRef.current) return;
       
       const customEvent = event as CustomEvent;
-      const { audioBuffers } = customEvent.detail;
+      const { audioBuffers, isTextOnly, context } = customEvent.detail;
+      
+      // CRITICAL: Block all text-only chat suggestions from triggering voice
+      if (isTextOnly || context === "chat") {
+        console.log("🚫 VOICE ASSISTANT: Blocking text-only/chat suggestion from triggering audio");
+        return;
+      }
       if (audioBuffers && audioBuffers.length > 0) {
         setIsResponding(true);
         setShowUnmuteButton(false);

@@ -755,6 +755,22 @@ Format: Return only the description text, no quotes or additional formatting.`;
       
       const response = await Promise.race([chatPromise, chatTimeoutPromise]) as any;
       
+      // Generate audio only if not text-only request
+      let audioBuffers: Buffer[] = [];
+      if (!isTextOnly && response.content) {
+        try {
+          console.log("🎵 Generating TTS for non-streaming response");
+          const audioBuffer = await textToSpeech(response.content);
+          audioBuffers = [audioBuffer];
+          console.log(`🎵 TTS generated: ${audioBuffer.length} bytes`);
+        } catch (ttsError) {
+          console.error("TTS generation failed for regular response:", ttsError);
+          // Continue without audio
+        }
+      } else {
+        console.log("📝 Text-only request - no audio generation for regular response");
+      }
+      
       // Save message to storage if conversation exists
       if (actualConversationId) {
         // Save user message
@@ -772,13 +788,14 @@ Format: Return only the description text, no quotes or additional formatting.`;
         });
       }
       
-      // Return response
+      // Return response with audio buffers (empty for text-only)
       res.json({
         message: {
           role: 'assistant',
           content: response.content
         },
-        conversationId: actualConversationId
+        conversationId: actualConversationId,
+        audioBuffers: audioBuffers
       });
     } catch (err) {
       const error = err as any;
