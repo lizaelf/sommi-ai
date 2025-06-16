@@ -16,9 +16,9 @@ const colors = {
   text: {
     primary: "#FFFFFF",        // Primary text (white)
     secondary: "#DBDBDB",      // Assistant messages, secondary text
+    tertiary: "#999999",         // Rating labels, subtle text
     muted: "rgba(255, 255, 255, 0.6)",  // Placeholder text, muted content
     disabled: "rgba(255, 255, 255, 0.8)", // Disabled states
-    accent: "#999999",         // Rating labels, subtle text
     error: "#FF4444",          // Error messages
   },
 

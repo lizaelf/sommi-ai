@@ -303,16 +303,6 @@ export default function WineDetails() {
             marginBottom: "32px",
           }}
         >
-          <h1
-            style={{
-              ...typography.h1,
-              color: "white",
-              marginBottom: "16px",
-              textAlign: "left",
-            }}
-          >
-            History
-          </h1>
           <p
             style={{
               color: "rgba(255, 255, 255, 0.8)",
