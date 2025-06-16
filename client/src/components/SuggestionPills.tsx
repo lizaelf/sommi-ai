@@ -36,6 +36,7 @@ export default function SuggestionPills({
   context = "chat",
 }: SuggestionPillsProps) {
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
   // Default suggestions to show immediately while API loads
@@ -195,6 +196,8 @@ export default function SuggestionPills({
         console.log(
           "🎤 VOICE CONTEXT: Processing suggestion for voice assistant",
         );
+        
+        setIsProcessing(true);
 
         if (instantResponse) {
           console.log("🎤 VOICE: Using cached response - playing audio");
@@ -347,7 +350,7 @@ export default function SuggestionPills({
           
           // Make direct API call without routing through voice assistant
           try {
-            setIsDisabled(true);
+            setIsProcessing(true);
             
             const response = await fetch("/api/chat", {
               method: "POST",
@@ -490,7 +493,7 @@ export default function SuggestionPills({
           } catch (error) {
             console.error("🎤 VOICE: API call failed:", error);
           } finally {
-            setIsDisabled(false);
+            setIsProcessing(false);
           }
         }
 
