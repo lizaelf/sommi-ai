@@ -40,9 +40,6 @@ export default function SuggestionPills({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);
-  const [preGenerationStatus, setPreGenerationStatus] = useState<Map<string, 'loading' | 'ready' | 'failed'>>(new Map());
-  const [loadingPillId, setLoadingPillId] = useState<string | null>(null);
-  const [audioLoadTimeout, setAudioLoadTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Default suggestions to show immediately while API loads
   const defaultSuggestions: SuggestionPill[] = [
@@ -110,41 +107,27 @@ export default function SuggestionPills({
 
   // Removed automatic reset - suggestions only change when user clicks
 
-  // Eager pre-generation for all contexts to improve responsiveness
+  // Pre-generate TTS audio for voice context suggestions
   useEffect(() => {
-    if (context === "voice-assistant") {
-      // Pre-generate for API suggestions when available
-      if (suggestionsData?.suggestions && !isLoading) {
-        preGenerateSuggestionAudio(suggestionsData.suggestions);
-      }
-      // Always pre-generate for default suggestions
-      preGenerateSuggestionAudio(defaultSuggestions);
+    if (context === "voice-assistant" && suggestionsData?.suggestions && !isLoading) {
+      preGenerateSuggestionAudio();
     }
   }, [context, suggestionsData, isLoading]);
 
-  // Enhanced pre-generation with status tracking and fallbacks
-  const preGenerateSuggestionAudio = async (suggestions?: SuggestionPill[]) => {
-    const pillsToProcess = suggestions || suggestionsData?.suggestions || defaultSuggestions;
-    if (!pillsToProcess?.length) return;
+  const preGenerateSuggestionAudio = async () => {
+    if (!suggestionsData?.suggestions) return;
 
-    console.log("🎤 PRE-GEN: Starting enhanced audio pre-generation");
+    console.log("🎤 PRE-GEN: Starting audio pre-generation for suggestions");
     const audioCache = (window as any).suggestionAudioCache || {};
     (window as any).suggestionAudioCache = audioCache;
 
     const effectiveWineKey = wineKey || "wine_1";
 
-    for (const pill of pillsToProcess.slice(0, 3)) {
+    for (const pill of suggestionsData.suggestions.slice(0, 3)) {
       const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
       const cacheKey = `${effectiveWineKey}_${suggestionId}`;
 
-      // Update pre-generation status
-      setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'loading'));
-
-      if (audioCache[cacheKey]) {
-        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
-        console.log(`🎤 PRE-GEN: Audio already cached for "${pill.text}"`);
-        continue;
-      }
+      if (audioCache[cacheKey]) continue;
 
       const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
       if (wineData?.responses) {
@@ -163,23 +146,12 @@ export default function SuggestionPills({
               const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
               const audioUrl = URL.createObjectURL(audioBlob);
               audioCache[cacheKey] = audioUrl;
-              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
               console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
-            } else {
-              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
-              console.error(`🎤 PRE-GEN: TTS request failed for "${pill.text}"`);
             }
           } catch (error) {
-            setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
             console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`, error);
           }
-        } else {
-          setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
-          console.log(`🎤 PRE-GEN: No spreadsheet response for "${pill.text}", skipping pre-generation`);
         }
-      } else {
-        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
-        console.log(`🎤 PRE-GEN: No wine data found for "${effectiveWineKey}"`);
       }
     }
   };
@@ -586,12 +558,6 @@ export default function SuggestionPills({
     } finally {
       setIsProcessing(false);
       setCurrentAbortController(null);
-      setLoadingPillId(null);
-      // Clear any pending timeout
-      if (audioLoadTimeout) {
-        clearTimeout(audioLoadTimeout);
-        setAudioLoadTimeout(null);
-      }
     }
   };
 
@@ -667,73 +633,27 @@ export default function SuggestionPills({
           div::-webkit-scrollbar {
             display: none;
           }
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
         `}
       </style>
-      {visiblePills.map((pill: SuggestionPill) => {
-        const effectiveWineKey = wineKey || "wine_1";
-        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
-        const preGenStatus = preGenerationStatus.get(cacheKey);
-        const isLoading = loadingPillId === pill.id;
-        const showFallback = isLoading && context === "voice-assistant";
-
-        return (
-          <Button
-            key={`${context}-${pill.id}`}
-            variant="secondary"
-            disabled={isDisabled || isProcessing}
-            onClick={() => handlePillClick(pill)}
-            style={{
-              ...typography.buttonPlus1,
-              minWidth: "fit-content",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-              borderRadius: "32px",
-              padding: "12px 20px",
-              transition: "none",
-              position: "relative",
-              opacity: isLoading ? 0.7 : 1,
-              background: preGenStatus === 'ready' && context === "voice-assistant" 
-                ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' 
-                : undefined,
-              color: preGenStatus === 'ready' && context === "voice-assistant" ? '#ffffff' : undefined,
-            }}
-          >
-            {showFallback ? "Loading audio..." : pill.text}
-            {isLoading && (
-              <div style={{
-                position: "absolute",
-                right: "8px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                width: "12px",
-                height: "12px",
-                border: "2px solid #ffffff",
-                borderTop: "2px solid transparent",
-                borderRadius: "50%",
-                animation: "spin 1s linear infinite",
-              }} />
-            )}
-            {preGenStatus === 'ready' && context === "voice-assistant" && !isLoading && (
-              <div style={{
-                position: "absolute",
-                right: "8px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                width: "8px",
-                height: "8px",
-                background: "#10b981",
-                borderRadius: "50%",
-                boxShadow: "0 0 4px rgba(16, 185, 129, 0.5)",
-              }} />
-            )}
-          </Button>
-        );
-      })}
+      {visiblePills.map((pill: SuggestionPill) => (
+        <Button
+          key={`${context}-${pill.id}`}
+          variant="secondary"
+          disabled={isDisabled || isProcessing}
+          onClick={() => handlePillClick(pill)}
+          style={{
+            ...typography.buttonPlus1,
+            minWidth: "fit-content",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+            borderRadius: "32px",
+            padding: "12px 20px",
+            transition: "none",
+          }}
+        >
+          {pill.text}
+        </Button>
+      ))}
     </div>
   );
 }
