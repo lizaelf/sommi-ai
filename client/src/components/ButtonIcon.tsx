@@ -441,30 +441,28 @@ export function ButtonIcon({
                 Don't delete
               </Button>
               
-              <button
+              <Button
                 onClick={handleConfirmDelete}
+                variant="primary"
                 style={{
                   flex: 1,
                   height: "56px",
-                  backgroundColor: "#8B0000",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s ease",
                   fontSize: "16px",
                   fontWeight: 600,
-                  fontFamily: "Inter, sans-serif",
+                  backgroundColor: "#8B0000",
+                  borderColor: "#8B0000",
                 }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = "#A52A2A";
+                  e.currentTarget.style.borderColor = "#A52A2A";
                 }}
                 onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = "#8B0000";
+                  e.currentTarget.style.borderColor = "#8B0000";
                 }}
               >
                 Delete
-              </button>
+              </Button>
             </div>
           </div>
         </div>,
