@@ -573,21 +573,40 @@ export default function SuggestionPills({
       return defaultSuggestions.slice(0, 3);
     }
 
-    // Start with unused pills
-    let pills = availablePills.filter(
+    // Get unused pills first
+    const unusedPills = availablePills.filter(
       (pill: SuggestionPill) => !usedPills.has(pill.id),
     );
 
-    // If we don't have enough unused pills, add used ones to reach 3
-    if (pills.length < 3) {
-      const usedPillsToAdd = availablePills
-        .filter((pill: SuggestionPill) => usedPills.has(pill.id))
-        .slice(0, 3 - pills.length);
-      pills = [...pills, ...usedPillsToAdd];
+    // If we have enough unused pills, show the first 3
+    if (unusedPills.length >= 3) {
+      return unusedPills.slice(0, 3);
     }
 
-    // Always return exactly 3 pills (slice to ensure exactly 3)
-    return pills.slice(0, 3);
+    // If all suggestions are used, reset and start over with fresh suggestions
+    if (unusedPills.length === 0) {
+      console.log("🔄 All suggestions used - resetting to show fresh suggestions");
+      // Reset used pills and show first 3 suggestions
+      setUsedPills(new Set());
+      // Trigger a reset on the backend
+      if (availablePills.length > 0) {
+        fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
+          method: 'DELETE'
+        }).catch(console.error);
+      }
+      return availablePills.slice(0, 3);
+    }
+
+    // Show remaining unused pills + fill with default suggestions if needed
+    const pillsToShow = [...unusedPills];
+    if (pillsToShow.length < 3) {
+      const defaultsToAdd = defaultSuggestions
+        .filter(def => !usedPills.has(def.id))
+        .slice(0, 3 - pillsToShow.length);
+      pillsToShow.push(...defaultsToAdd);
+    }
+
+    return pillsToShow.slice(0, 3);
   }, [suggestionsData, usedPills, isLoading]);
 
   return (
