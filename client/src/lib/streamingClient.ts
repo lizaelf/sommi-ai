@@ -119,6 +119,36 @@ export class StreamingChatClient {
   public stop(): void {
     this.cleanup();
   }
+
+  // Add sendMessage method for compatibility
+  async sendMessage(options: {
+    messages: { role: string; content: string }[];
+    wineId?: number;
+    conversationId?: number;
+    wineData?: any;
+  }): Promise<AsyncIterable<{ content?: string }>> {
+    const chunks: { content?: string }[] = [];
+    let resolveStream: (value: AsyncIterable<{ content?: string }>) => void;
+    
+    const streamPromise = new Promise<AsyncIterable<{ content?: string }>>(resolve => {
+      resolveStream = resolve;
+    });
+    
+    // Start streaming and collect chunks
+    await this.startStreaming(options.messages, options.conversationId, options.wineData);
+    
+    // Return async iterable
+    const asyncIterable = {
+      async *[Symbol.asyncIterator]() {
+        for (const chunk of chunks) {
+          yield chunk;
+        }
+      }
+    };
+    
+    resolveStream(asyncIterable);
+    return streamPromise;
+  }
 }
 
 // Utility function to check if streaming is supported

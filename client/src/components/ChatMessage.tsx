@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
-import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
+import { TextGenerateEffect } from '@/components/ui/TextGenerateEffect';
 
 // Ensure window.voiceAssistant type is available
 declare global {
@@ -18,6 +18,7 @@ declare global {
 
 interface ChatMessageProps {
   message: Message | ClientMessage;
+  isUserMessage?: boolean;
 }
 
 // Helper to convert Markdown-style bold text (**text**) to actual bold elements
