@@ -592,14 +592,14 @@ export async function textToSpeech(text: string): Promise<Buffer> {
       try {
         attempts++;
         
-        // Use OpenAI's Text-to-Speech API with optimized timeout
+        // Use OpenAI's Text-to-Speech API with optimized settings for speed
         const response = await openai.audio.speech.create({
-          model: VoiceConfig.MODEL,
+          model: 'tts-1', // Use faster tts-1 model instead of tts-1-hd for immediate responses
           voice: VoiceConfig.VOICE,
-          speed: VoiceConfig.SPEED,
+          speed: Math.min(VoiceConfig.SPEED * 1.1, 1.5), // Slightly faster speech for quicker delivery
           input: cleanText,
         }, {
-          timeout: attempts === 1 ? 45000 : 30000 // Longer timeout on first attempt
+          timeout: attempts === 1 ? 20000 : 15000 // Reduced timeout for faster response
         });
         
         console.log("OpenAI TTS response received");

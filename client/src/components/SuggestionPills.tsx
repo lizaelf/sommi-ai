@@ -371,12 +371,19 @@ export default function SuggestionPills({
             return;
           }
 
-          // Fast TTS generation for immediate audio response
-          console.log("🎤 VOICE: Making fast TTS API request");
+          // Optimized TTS generation with high priority for immediate response
+          console.log("🎤 VOICE: Making high-priority TTS request");
           const response = await fetch("/api/text-to-speech", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: instantResponse }),
+            headers: { 
+              "Content-Type": "application/json",
+              "Cache-Control": "no-cache", // Prevent caching delays
+              "Priority": "urgent" // Request priority hint
+            },
+            body: JSON.stringify({ 
+              text: instantResponse.slice(0, 1000), // Limit text length for faster processing
+              optimize: "speed" // Server optimization hint
+            }),
             signal: currentAbortController?.signal,
           });
 
@@ -386,7 +393,16 @@ export default function SuggestionPills({
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
             
-            console.log("🎤 VOICE: TTS ready - playing immediately");
+            // Optimize for immediate playback
+            audio.preload = 'auto';
+            audio.crossOrigin = 'anonymous';
+            
+            console.log("🎤 VOICE: TTS ready - starting immediate playback");
+            
+            audio.onloadeddata = () => {
+              console.log("🎤 VOICE: Audio data loaded, starting playback");
+              audio.play().catch(console.error);
+            };
             
             audio.onplay = () => {
               console.log("🎤 VOICE: ✅ Audio playback started successfully");
@@ -409,12 +425,17 @@ export default function SuggestionPills({
 
             (window as any).currentOpenAIAudio = audio;
             
+            // Try immediate playback - audio will start when data loads
             try {
-              console.log("🎤 VOICE: Attempting to play audio...");
+              console.log("🎤 VOICE: Starting immediate audio playback");
               await audio.play();
-              console.log("🎤 VOICE: ✅ Audio play() call succeeded");
+              console.log("🎤 VOICE: ✅ Audio playback initiated successfully");
             } catch (playError) {
-              console.error("🎤 VOICE: Audio play() failed:", playError);
+              console.error("🎤 VOICE: Immediate playback failed:", playError);
+              // Fallback: wait for loadeddata event
+              audio.addEventListener('canplay', () => {
+                audio.play().catch(console.error);
+              });
               setIsProcessing(false);
             }
           }
