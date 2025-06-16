@@ -48,7 +48,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           borderBottom: '1px solid transparent',
           borderLeft: '1px solid transparent',
           backgroundImage: isFocused 
-            ? 'linear-gradient(rgba(74, 144, 226, 0.2), rgba(74, 144, 226, 0.2)), radial-gradient(circle at top center, rgba(74, 144, 226, 0.6) 0%, rgba(74, 144, 226, 0.2) 100%)'
+            ? 'linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)'
             : 'linear-gradient(#1C1C1C, #1C1C1C), linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 100%)',
           backgroundSize: isFocused ? 'auto' : '400% 100%',
           backgroundOrigin: 'border-box',
@@ -85,7 +85,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             alignItems: 'center',
             alignSelf: 'stretch',
             borderRadius: '24px',
-            backgroundColor: isFocused ? 'rgba(74, 144, 226, 0.15)' : '#1C1C1C',
+            backgroundColor: isFocused ? 'transparent' : '#1C1C1C',
             border: 'none',
             width: '100%',
             height: '64px',
@@ -102,7 +102,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
             left: 0,
             top: 0
           }}
-          className="text-sm pr-12 placeholder-[#999999] flex items-center"
+          className={`text-sm pr-12 placeholder-[#999999] flex items-center ${isFocused ? '!bg-transparent' : 'bg-[#1C1C1C] !bg-[#1C1C1C]'}`}
           placeholder="Ask me about wine..."
           disabled={isProcessing}
           onKeyPress={(e) => {
