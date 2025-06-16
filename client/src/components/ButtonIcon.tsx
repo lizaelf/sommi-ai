@@ -221,14 +221,14 @@ export function ButtonIcon({
           style={{
             position: "fixed",
             top: "75px",
-            right: "16px",
+            left: "0px",
+            right: "0px",
             background: "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
             backdropFilter: "blur(20px)",
             border: "1px solid rgba(255, 255, 255, 0.20)",
-            borderRadius: "12px",
+            borderRadius: "0px",
             zIndex: 9999,
-            minWidth: "220px",
-            width: "220px",
+            width: "100vw",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
             overflow: "hidden",
           }}
