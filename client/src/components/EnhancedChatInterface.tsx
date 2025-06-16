@@ -313,7 +313,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             <div
               key={i}
               style={{ 
-                marginBottom: "8px", 
+                marginBottom: isUserMessage ? "0px" : "8px", 
                 whiteSpace: "pre-wrap",
                 color: isUserMessage ? "#000000" : "rgba(255, 255, 255, 0.8)",
                 ...typography.body
