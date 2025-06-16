@@ -74,17 +74,12 @@ export function FormInput({
       ? "1px solid #FF6B6B" 
       : "1px solid rgba(255, 255, 255, 0.12)",
     background: "transparent",
+    backgroundImage: "none",
     color: "white",
     fontSize: "16px",
     fontFamily: "Inter, sans-serif",
     outline: "none",
     transition: "all 0.2s ease",
-    ...(!validationError && {
-      backgroundImage: 
-        "linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)), radial-gradient(circle at top center, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 100%)",
-      backgroundOrigin: "border-box",
-      backgroundClip: "padding-box, border-box",
-    }),
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
