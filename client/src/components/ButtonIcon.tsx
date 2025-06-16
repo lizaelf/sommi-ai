@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/UseToast";
 import Button from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import colors from "@/styles/colors";
 import typography from "@/styles/typography";
 
@@ -377,23 +378,22 @@ export function ButtonIcon({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
-            <Button
-              onClick={closeBottomSheet}
-              variant="secondary"
+            <div
               style={{
                 position: "absolute",
-                top: "16px",
-                right: "16px",
+                top: "8px",
+                right: "8px",
                 zIndex: 10,
-                width: "40px",
-                height: "40px",
-                padding: "0",
-                minHeight: "40px",
-                borderRadius: "20px",
               }}
             >
-              <X size={24} color="white" />
-            </Button>
+              <IconButton
+                icon={X}
+                onClick={closeBottomSheet}
+                variant="ghost"
+                size="md"
+                title="Close"
+              />
+            </div>
 
             {/* Header */}
             <div style={{ marginBottom: "24px", marginTop: "0px" }}>
