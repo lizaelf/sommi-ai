@@ -315,7 +315,7 @@ export default function WineDetails() {
           </h1>
           <p
             style={{
-              color: "white",
+              color: "rgba(255, 255, 255, 0.8)",
               textAlign: "left",
               marginBottom: "16px",
               ...typography.body,

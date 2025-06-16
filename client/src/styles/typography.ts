@@ -18,7 +18,7 @@ const typography = {
     fontSize: "24px",
     lineHeight: "32px",
     fontFamily: "Lora, serif",
-    fontWeight: "500", // Medium weight
+    fontWeight: "400", // Medium weight
   },
 
   // H2 heading style using Inter font
@@ -26,7 +26,7 @@ const typography = {
     fontSize: "20px",
     lineHeight: "28px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "500", // Medium weight
+    fontWeight: "400", // Medium weight
   },
 
   // Button styles using Inter font
@@ -34,7 +34,7 @@ const typography = {
     fontSize: "16px",
     lineHeight: "16px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "500", // Medium weight
+    fontWeight: "400", // Medium weight
     verticalAlign: "middle",
   },
 
@@ -42,7 +42,7 @@ const typography = {
     fontSize: "14px",
     lineHeight: "16px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "500", // Medium weight
+    fontWeight: "400", // Medium weight
     verticalAlign: "middle",
   },
 
@@ -51,7 +51,9 @@ const typography = {
     fontSize: "16px",
     lineHeight: "24px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "400", // Regular weight
+    fontStyle: "normal",
+    fontWeight: "300", // Regular weight
+    letterSpacing: "-0.24px",
   },
 
   // Special body styles with modifiers for medium and regular weights
@@ -59,14 +61,14 @@ const typography = {
     fontSize: "13px",
     lineHeight: "16px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "500", // Medium weight
+    fontWeight: "400", // Medium weight
   },
 
   body1R: {
     fontSize: "13px",
     lineHeight: "16px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "400", // Regular weight
+    fontWeight: "300", // Regular weight
   },
 
   // Numeric text style
@@ -74,7 +76,7 @@ const typography = {
     fontSize: "13px",
     lineHeight: "16px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "600", // Semi-bold weight
+    fontWeight: "500", // Semi-bold weight
   },
 };
 
