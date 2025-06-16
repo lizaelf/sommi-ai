@@ -162,9 +162,11 @@ export default function ChatInterface({
       setIsTyping(true);
       
       const userMessage: ClientMessage = {
+        id: Date.now(), // Temporary ID for client-side messages
         role: "user",
         content: messageText.trim(),
-        conversationId: currentConversationId || undefined,
+        conversationId: currentConversationId || 0,
+        createdAt: new Date(),
       };
 
       addMessage(userMessage);
@@ -187,7 +189,12 @@ export default function ChatInterface({
   };
 
   const handleStreamingResponse = async (userMessage: ClientMessage) => {
-    const client = createStreamingClient();
+    const client = createStreamingClient(
+      (content) => console.log('First token:', content),
+      (content) => console.log('Token:', content),
+      (fullContent, conversationId) => console.log('Complete:', fullContent),
+      (error) => console.error('Streaming error:', error)
+    );
     let assistantMessage = "";
 
     try {
@@ -197,9 +204,11 @@ export default function ChatInterface({
       });
 
       const assistantMessageObj: ClientMessage = {
+        id: Date.now() + 1, // Temporary ID for client-side messages
         role: "assistant",
         content: "",
-        conversationId: currentConversationId || undefined,
+        conversationId: currentConversationId || 0,
+        createdAt: new Date(),
       };
 
       addMessage(assistantMessageObj);
@@ -209,10 +218,8 @@ export default function ChatInterface({
           assistantMessage += chunk.content;
           assistantMessageObj.content = assistantMessage;
           
-          setMessages(prev => [
-            ...prev.slice(0, -1),
-            assistantMessageObj
-          ]);
+          // Update the last message in the messages array
+          addMessage(assistantMessageObj);
         }
       }
     } catch (error) {
@@ -238,9 +245,11 @@ export default function ChatInterface({
     const data = await response.json();
     
     const assistantMessage: ClientMessage = {
+      id: Date.now() + 2, // Temporary ID for client-side messages
       role: "assistant",
       content: data.content,
-      conversationId: currentConversationId || undefined,
+      conversationId: currentConversationId || 0,
+      createdAt: new Date(),
     };
 
     addMessage(assistantMessage);

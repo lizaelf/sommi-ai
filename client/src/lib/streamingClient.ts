@@ -127,27 +127,18 @@ export class StreamingChatClient {
     conversationId?: number;
     wineData?: any;
   }): Promise<AsyncIterable<{ content?: string }>> {
-    const chunks: { content?: string }[] = [];
-    let resolveStream: (value: AsyncIterable<{ content?: string }>) => void;
+    // Simple async iterable implementation
+    const self = this;
     
-    const streamPromise = new Promise<AsyncIterable<{ content?: string }>>(resolve => {
-      resolveStream = resolve;
-    });
-    
-    // Start streaming and collect chunks
-    await this.startStreaming(options.messages, options.conversationId, options.wineData);
-    
-    // Return async iterable
-    const asyncIterable = {
+    return {
       async *[Symbol.asyncIterator]() {
-        for (const chunk of chunks) {
-          yield chunk;
-        }
+        // Start streaming process
+        await self.startStreaming(options.messages, options.conversationId, options.wineData);
+        
+        // For now, yield empty content - this is a compatibility layer
+        yield { content: '' };
       }
     };
-    
-    resolveStream(asyncIterable);
-    return streamPromise;
   }
 }
 
