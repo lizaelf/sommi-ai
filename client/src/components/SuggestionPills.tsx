@@ -586,6 +586,12 @@ export default function SuggestionPills({
     } finally {
       setIsProcessing(false);
       setCurrentAbortController(null);
+      setLoadingPillId(null);
+      // Clear any pending timeout
+      if (audioLoadTimeout) {
+        clearTimeout(audioLoadTimeout);
+        setAudioLoadTimeout(null);
+      }
     }
   };
 
@@ -661,27 +667,73 @@ export default function SuggestionPills({
           div::-webkit-scrollbar {
             display: none;
           }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
         `}
       </style>
-      {visiblePills.map((pill: SuggestionPill) => (
-        <Button
-          key={`${context}-${pill.id}`}
-          variant="secondary"
-          disabled={isDisabled || isProcessing}
-          onClick={() => handlePillClick(pill)}
-          style={{
-            ...typography.buttonPlus1,
-            minWidth: "fit-content",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-            borderRadius: "32px",
-            padding: "12px 20px",
-            transition: "none",
-          }}
-        >
-          {pill.text}
-        </Button>
-      ))}
+      {visiblePills.map((pill: SuggestionPill) => {
+        const effectiveWineKey = wineKey || "wine_1";
+        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
+        const preGenStatus = preGenerationStatus.get(cacheKey);
+        const isLoading = loadingPillId === pill.id;
+        const showFallback = isLoading && context === "voice-assistant";
+
+        return (
+          <Button
+            key={`${context}-${pill.id}`}
+            variant="secondary"
+            disabled={isDisabled || isProcessing}
+            onClick={() => handlePillClick(pill)}
+            style={{
+              ...typography.buttonPlus1,
+              minWidth: "fit-content",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              borderRadius: "32px",
+              padding: "12px 20px",
+              transition: "none",
+              position: "relative",
+              opacity: isLoading ? 0.7 : 1,
+              background: preGenStatus === 'ready' && context === "voice-assistant" 
+                ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' 
+                : undefined,
+              color: preGenStatus === 'ready' && context === "voice-assistant" ? '#ffffff' : undefined,
+            }}
+          >
+            {showFallback ? "Loading audio..." : pill.text}
+            {isLoading && (
+              <div style={{
+                position: "absolute",
+                right: "8px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "12px",
+                height: "12px",
+                border: "2px solid #ffffff",
+                borderTop: "2px solid transparent",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }} />
+            )}
+            {preGenStatus === 'ready' && context === "voice-assistant" && !isLoading && (
+              <div style={{
+                position: "absolute",
+                right: "8px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "8px",
+                height: "8px",
+                background: "#10b981",
+                borderRadius: "50%",
+                boxShadow: "0 0 4px rgba(16, 185, 129, 0.5)",
+              }} />
+            )}
+          </Button>
+        );
+      })}
     </div>
   );
 }

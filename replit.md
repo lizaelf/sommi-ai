@@ -63,6 +63,11 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Stop Button Implementation**: Added stop functionality with audio playback state tracking and proper cleanup
 - **User-Controlled Suggestion Changes**: Completely fixed suggestion system to only change when users click pills, preventing automatic cycling during page load
 - **Console Error Resolution**: Fixed all remaining syntax issues and HMR failures in SuggestionPills component
+- **Spreadsheet Key Matching**: Updated wine response keys to exactly match generated suggestion ID format, eliminating key mismatch warnings
+- **Visual Loading Indicators**: Added real-time loading states with spinner animation and 500ms fallback timeout for audio generation
+- **Pre-generation Status Tracking**: Implemented comprehensive status tracking (loading/ready/failed) with visual indicators for voice context
+- **Eager Audio Pre-generation**: Enhanced system to pre-generate audio for both API and default suggestions to improve responsiveness
+- **Enhanced UX Feedback**: Voice-ready suggestions show blue gradient background with green ready indicator, loading suggestions show fallback text
 - **Hidden Used Pills**: Updated suggestion display logic to hide used pills and show fresh alternatives instead of cycling
 - **Improved User Experience**: Voice suggestions now use curated content for consistent, high-quality responses
 
