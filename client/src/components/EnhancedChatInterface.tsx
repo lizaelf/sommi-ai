@@ -516,6 +516,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
     console.log("EnhancedChatInterface: Handling text-only suggestion:", content);
     
+    // Enable text-only mode to prevent automatic voice responses
+    if ((window as any).voiceAssistant?.setTextOnlyMode) {
+      (window as any).voiceAssistant.setTextOnlyMode(true);
+    }
+    
     setHideSuggestions(true);
     setIsTyping(true);
 

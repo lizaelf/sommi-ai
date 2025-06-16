@@ -8,6 +8,7 @@ let currentUtterance = null;
 let pausedText = "";
 let currentPosition = 0;
 let wasMuted = false;
+let isTextOnlyMode = false; // Track text-only chat suggestions
 
 // AGGRESSIVE VOICE CONTROL VARIABLES
 let GUARANTEED_MALE_VOICE = null;
@@ -336,7 +337,8 @@ document.addEventListener("DOMContentLoaded", function () {
       mutations.forEach(function (mutation) {
         if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
           // Check if the last input was voice and a new assistant message was added
-          if (lastInputWasVoice) {
+          // BUT NEVER trigger voice for text-only chat suggestions
+          if (lastInputWasVoice && !isTextOnlyMode) {
             // Look for the newest assistant message
             const assistantMessages = conversationElement.querySelectorAll(
               '.message.assistant[data-role="assistant"]',
@@ -753,6 +755,12 @@ window.voiceAssistant = {
   speakLastAssistantMessage: speakLastAssistantMessage,
   muteAndSavePosition: muteAndSavePosition,
   resumeFromMute: resumeFromMute,
+  // Text-only mode control
+  setTextOnlyMode: (enabled) => {
+    isTextOnlyMode = enabled;
+    console.log("🔕 Text-only mode set to:", enabled);
+  },
+  getTextOnlyMode: () => isTextOnlyMode,
   // Debug functions
   forceReLockVoice: FORCE_MALE_VOICE_LOCK,
   getCurrentVoice: () => GUARANTEED_MALE_VOICE,
