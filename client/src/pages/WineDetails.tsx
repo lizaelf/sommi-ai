@@ -300,7 +300,6 @@ export default function WineDetails() {
           style={{
             width: "100%",
             padding: "0 20px",
-            marginBottom: "32px",
           }}
         >
           <p

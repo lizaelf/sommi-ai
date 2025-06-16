@@ -18,7 +18,7 @@ const typography = {
     fontSize: "24px",
     lineHeight: "32px",
     fontFamily: "Lora, serif",
-    fontWeight: "400", // Medium weight
+    fontWeight: "500", // Medium weight
   },
 
   // H2 heading style using Inter font
@@ -52,8 +52,7 @@ const typography = {
     lineHeight: "24px",
     fontFamily: "Inter, sans-serif",
     fontStyle: "normal",
-    fontWeight: "300", // Regular weight
-    letterSpacing: "-0.15px",
+    fontWeight: "400", // Regular weight
   },
 
   // Special body styles with modifiers for medium and regular weights
@@ -61,7 +60,7 @@ const typography = {
     fontSize: "13px",
     lineHeight: "16px",
     fontFamily: "Inter, sans-serif",
-    fontWeight: "400", // Medium weight
+    fontWeight: "500", // Medium weight
   },
 
   body1R: {
