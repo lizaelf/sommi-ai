@@ -106,6 +106,7 @@ export default function SuggestionPills({
   }, [suggestionsData, usedPills, wineKey, isResetting]);
 
   const handlePillClick = async (pill: SuggestionPill) => {
+    console.log("🔍 DEBUGGING: handlePillClick called with context:", context, "preferredResponseType:", preferredResponseType);
     if (isDisabled) return;
 
     // Optimistically mark as used
@@ -131,6 +132,10 @@ export default function SuggestionPills({
         !!instantResponse,
         "Context:",
         context,
+        "PillId:",
+        pill.id,
+        "PreferredType:",
+        preferredResponseType
       );
 
       // CHAT CONTEXT: Handle text-only, no audio
