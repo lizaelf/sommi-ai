@@ -569,11 +569,17 @@ export async function textToSpeech(text: string): Promise<Buffer> {
                        .replace(/\n\n/g, '. ')
                        .trim();
     
-    // Check cache first for consistency
+    // Check cache first for consistency (skip cache for welcome messages to allow updates)
     const cacheKey = `${VoiceConfig.VOICE}_${cleanText}`;
-    if (voiceCache.has(cacheKey)) {
+    const isWelcomeMessage = cleanText.includes("Hello, I see you're looking at") || cleanText.includes("Hi and welcome to Somm.ai");
+    
+    if (voiceCache.has(cacheKey) && !isWelcomeMessage) {
       console.log("Using cached voice response for consistency");
       return voiceCache.get(cacheKey)!;
+    }
+    
+    if (isWelcomeMessage) {
+      console.log("Generating fresh welcome message (bypassing cache)");
     }
     
     console.log("Processing TTS request for text:", cleanText.substring(0, 50) + "...");

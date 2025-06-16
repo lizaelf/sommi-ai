@@ -48,15 +48,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   
   // Cache welcome message immediately on component mount for instant playback
   const cacheWelcomeMessage = async () => {
-    if (welcomeAudioCacheRef.current) return; // Already cached
+    // Force cache refresh for new welcome message
+    console.log("Generating new dynamic welcome message");
     
-    // Check if global cache is available first
-    const globalCache = (window as any).globalWelcomeAudioCache;
-    if (globalCache && globalCache.url && globalCache.element) {
-      console.log("Using global welcome audio cache for instant playback");
-      welcomeAudioCacheRef.current = globalCache.url;
-      welcomeAudioElementRef.current = globalCache.element;
-      return;
+    // Clear existing caches to use new message
+    welcomeAudioCacheRef.current = null;
+    welcomeAudioElementRef.current = null;
+    if ((window as any).globalWelcomeAudioCache) {
+      delete (window as any).globalWelcomeAudioCache;
+      console.log("Cleared global welcome cache for new message");
     }
     
     try {
