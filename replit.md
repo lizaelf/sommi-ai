@@ -47,6 +47,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 16, 2025)
 
 ### Design System Standardization Complete (June 16, 2025 - Latest)
+- **Welcome Message Audio Caching**: Implemented comprehensive audio caching system with global app-level initialization and component-level fallbacks for instant welcome message playback, eliminating TTS generation delays
 - **Error Button Variant Creation**: Added new error button variant with #8A332C fill color for destructive actions, replacing inline styling with centralized Button component variant
 - **Close Button Standardization**: Updated delete account dialog to use same IconButton close button as Text/Voice bottom sheet for consistent user experience
 - **Comprehensive Spacing System**: Created centralized spacing.ts file documenting all distances and spacing values throughout the platform
