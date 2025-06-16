@@ -825,7 +825,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                           justifyContent:
                             message.role === "user" ? "flex-end" : "flex-start",
                           width: "100%",
-                          marginBottom: "12px",
+                          marginBottom: "16px",
                         }}
                       >
                         <div
