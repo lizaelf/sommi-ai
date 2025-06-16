@@ -48,7 +48,8 @@ const initializeWelcomeAudioCache = async () => {
   
   try {
     console.log("Initializing global welcome audio cache");
-    const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+    // Use new dynamic welcome message
+    const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
     const response = await fetch('/api/text-to-speech', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

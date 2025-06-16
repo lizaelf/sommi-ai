@@ -182,7 +182,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               setIsResponding(true);
               
               // Proceed with welcome message
-              const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+              const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
               setTimeout(() => {
                 (window as any).currentResponseAudio = null;
                 setIsResponding(false);
@@ -253,7 +253,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       } else {
         // Fallback to generating audio if cache is not ready
         console.log("QR SCAN: Cache not ready, generating welcome message");
-        const welcomeMessage = "Hi and welcome to Somm.ai let me tell you about this wine?";
+        const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
         
         fetch('/api/text-to-speech', {
           method: 'POST',
