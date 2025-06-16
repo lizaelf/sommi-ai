@@ -296,10 +296,114 @@ export default function SuggestionPills({
             console.log("🎤 VOICE: Browser TTS fallback initiated");
           }
         } else {
-          console.log("🎤 VOICE: No cache - suggestion pills should NOT call voice assistant API");
-          console.log("🎤 VOICE: Voice context should only use cached responses to prevent bottom sheet closing");
-          // DO NOT call onSuggestionClick - it causes bottom sheet to close
-          // Voice suggestions without cache should be ignored to maintain UI state
+          console.log("🎤 VOICE: No cache - making direct API call for voice response");
+          
+          // Make direct API call without routing through voice assistant
+          try {
+            setIsDisabled(true);
+            
+            const response = await fetch("/api/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                messages: [
+                  { role: "user", content: pill.prompt }
+                ],
+                wineKey: wineKey,
+                textOnly: false // Enable voice for voice assistant context
+              }),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              
+              // Add messages to chat
+              const userMessage = {
+                id: Date.now(),
+                content: pill.prompt,
+                role: "user" as const,
+                conversationId: conversationId || 0,
+                createdAt: new Date().toISOString(),
+              };
+
+              const assistantMessage = {
+                id: Date.now() + 1,
+                content: data.response,
+                role: "assistant" as const,
+                conversationId: conversationId || 0,
+                createdAt: new Date().toISOString(),
+              };
+
+              // Use chat event system
+              window.dispatchEvent(
+                new CustomEvent("addChatMessage", {
+                  detail: { userMessage, assistantMessage },
+                }),
+              );
+
+              // Play audio using OpenAI TTS
+              console.log("🎤 VOICE: Playing audio response for API result");
+              
+              const ttsResponse = await fetch("/api/text-to-speech", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: data.response }),
+              });
+
+              if (ttsResponse.ok) {
+                const audioBlob = await ttsResponse.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+
+                // Store reference for stop functionality
+                (window as any).currentOpenAIAudio = audio;
+
+                audio.onplay = () => {
+                  console.log("🎤 VOICE: OpenAI TTS audio started playing");
+                };
+
+                audio.onended = () => {
+                  console.log("🎤 VOICE: OpenAI TTS audio finished playing");
+                  URL.revokeObjectURL(audioUrl);
+                  (window as any).currentOpenAIAudio = null;
+                };
+
+                audio.onerror = () => {
+                  console.error("🎤 VOICE: OpenAI TTS audio error, falling back to browser TTS");
+                  URL.revokeObjectURL(audioUrl);
+                  (window as any).currentOpenAIAudio = null;
+                  
+                  // Fallback to browser TTS
+                  const utterance = new SpeechSynthesisUtterance(data.response);
+                  const voices = speechSynthesis.getVoices();
+                  const maleVoice = voices.find(voice => 
+                    voice.name.includes("Google UK English Male") ||
+                    voice.name.includes("Google US English Male") ||
+                    (voice.name.includes("Male") && voice.lang.startsWith("en"))
+                  ) || voices[0];
+                  
+                  if (maleVoice) utterance.voice = maleVoice;
+                  utterance.rate = 1.0;
+                  utterance.pitch = 1.0;
+                  utterance.volume = 1.0;
+                  
+                  speechSynthesis.cancel();
+                  speechSynthesis.speak(utterance);
+                };
+
+                await audio.play();
+                console.log("🎤 VOICE: OpenAI TTS audio playback initiated");
+              } else {
+                throw new Error("TTS API failed");
+              }
+            } else {
+              throw new Error("Chat API failed");
+            }
+          } catch (error) {
+            console.error("🎤 VOICE: API call failed:", error);
+          } finally {
+            setIsDisabled(false);
+          }
         }
 
         // Mark as used in background for voice context
