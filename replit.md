@@ -46,7 +46,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 16, 2025)
 
-### Context-Aware Registration System Implementation (June 16, 2025 - Latest)
+### UI Component Updates (June 16, 2025 - Latest)
+- **Input Focus State Enhancement**: Updated ChatInput component to use white 8% background (rgba(255, 255, 255, 0.08)) when focused instead of gradient for cleaner visual feedback
+- **Dropdown Menu Component Creation**: Created separate DropdownMenuItem component with full-width display and removed border radius for standardized dropdown behavior
+- **Voice Assistant Suggestion Fix**: Eliminated thinking states and unmute buttons during voice assistant suggestion clicks by preventing unnecessary state changes
+
+### Context-Aware Registration System Implementation (June 16, 2025)
 - **Scanned Page vs Wine Details Differentiation**: Implemented proper context awareness where scanned pages (`/scanned?wine=1`) show current session chat history without registration requirements, while wine details pages (`/wine-details/1`) require registration for historical chat access
 - **Enhanced EnhancedChatInterface Props**: Added `isScannedPage` boolean prop to control registration behavior based on page context
 - **ChatSection Component Updates**: Updated component interface to accept and pass through `isScannedPage` prop for proper context handling
