@@ -20,10 +20,12 @@ interface VoiceBottomSheetProps {
   showUnmuteButton?: boolean;
   isLoadingAudio?: boolean;
   isVoiceActive?: boolean;
+  isPlayingAudio?: boolean;
   wineKey?: string;
   onSuggestionClick?: (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
   onListenResponse?: () => void;
   onUnmute?: () => void;
+  onStopAudio?: () => void;
 }
 
 
@@ -42,10 +44,12 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   showUnmuteButton = false,
   isLoadingAudio = false,
   isVoiceActive = false,
+  isPlayingAudio = false,
   wineKey = '',
   onSuggestionClick,
   onListenResponse,
-  onUnmute
+  onUnmute,
+  onStopAudio
 }) => {
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
 
@@ -250,11 +254,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 <ShiningText text="Loading..." />
               </div>
             </div>
-          ) : isResponding ? (
+          ) : (isResponding || isPlayingAudio) ? (
             <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
               <button
                 className="secondary-button react-button"
-                onClick={onMute}
+                onClick={isPlayingAudio ? onStopAudio : onMute}
                 style={{
                   width: '100%',
                   borderRadius: '32px',
