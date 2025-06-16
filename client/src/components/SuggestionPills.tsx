@@ -110,6 +110,55 @@ export default function SuggestionPills({
     }
   }, [suggestionsData, usedPills, wineKey, isResetting]);
 
+  // Pre-generate TTS audio for voice context suggestions
+  useEffect(() => {
+    if (context === "voice-assistant" && suggestionsData?.suggestions && !isLoading) {
+      preGenerateSuggestionAudio();
+    }
+  }, [context, suggestionsData, isLoading, wineKey]);
+
+  const preGenerateSuggestionAudio = async () => {
+    if (!suggestionsData?.suggestions) return;
+
+    console.log("🎤 PRE-GEN: Starting audio pre-generation for suggestions");
+    const audioCache = (window as any).suggestionAudioCache || {};
+    (window as any).suggestionAudioCache = audioCache;
+
+    const effectiveWineKey = wineKey || "wine_1";
+    
+    for (const pill of suggestionsData.suggestions.slice(0, 3)) {
+      const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+      const cacheKey = `${effectiveWineKey}_${suggestionId}`;
+      
+      if (audioCache[cacheKey]) continue;
+
+      const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
+      if (wineData?.responses) {
+        const responseText = wineData.responses[suggestionId as keyof typeof wineData.responses];
+        if (responseText) {
+          try {
+            console.log(`🎤 PRE-GEN: Generating audio for "${pill.text}"`);
+            const response = await fetch("/api/text-to-speech", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: responseText }),
+            });
+
+            if (response.ok) {
+              const audioBuffer = await response.arrayBuffer();
+              const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+              const audioUrl = URL.createObjectURL(audioBlob);
+              audioCache[cacheKey] = audioUrl;
+              console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
+            }
+          } catch (error) {
+            console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`, error);
+          }
+        }
+      }
+    }
+  };
+
   // Listen for abort conversation events (when user closes voice assistant)
   useEffect(() => {
     const handleAbortConversation = () => {
@@ -263,13 +312,65 @@ export default function SuggestionPills({
           const responseSource = instantResponse.length > 200 ? "spreadsheet" : "cache";
           console.log(`🎤 VOICE: Using ${responseSource} response - starting TTS immediately`);
 
-          // Start TTS immediately - don't wait for chat messages
-          console.log("🎤 VOICE: Starting immediate TTS for instant response");
+          // Check if we have pre-generated audio for this suggestion
+          const audioCache = (window as any).suggestionAudioCache || {};
+          const cacheKey = `${effectiveWineKey}_${suggestionId}`;
           
+          if (audioCache[cacheKey]) {
+            console.log("🎤 VOICE: Using pre-generated audio for instant playback");
+            const audio = new Audio(audioCache[cacheKey]);
+            
+            audio.onplay = () => {
+              console.log("🎤 VOICE: ✅ Pre-generated audio started");
+              window.dispatchEvent(new CustomEvent("tts-audio-start"));
+            };
+
+            audio.onended = () => {
+              console.log("🎤 VOICE: Pre-generated audio completed");
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+            
+            audio.onerror = (e) => {
+              console.error("🎤 VOICE: Pre-generated audio error:", e);
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+            };
+
+            (window as any).currentOpenAIAudio = audio;
+            await audio.play();
+            
+            // Add messages to chat
+            const userMessage = {
+              id: Date.now(),
+              content: pill.prompt,
+              role: "user" as const,
+              conversationId: conversationId || 0,
+              createdAt: new Date().toISOString(),
+            };
+
+            const assistantMessage = {
+              id: Date.now() + 1,
+              content: instantResponse,
+              role: "assistant" as const,
+              conversationId: conversationId || 0,
+              createdAt: new Date().toISOString(),
+            };
+
+            window.dispatchEvent(
+              new CustomEvent("addChatMessage", {
+                detail: { userMessage, assistantMessage },
+              }),
+            );
+
+            markPillAsUsed(pill.id);
+            return;
+          }
+
           // Start TTS generation in parallel with chat message handling
           const ttsPromise = (async () => {
             try {
-              console.log("🎤 VOICE: Making immediate TTS API request");
+              console.log("🎤 VOICE: Making TTS API request (no pre-generated audio)");
               const response = await fetch("/api/text-to-speech", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -286,27 +387,51 @@ export default function SuggestionPills({
                 console.log("🎤 VOICE: Immediate TTS ready - playing audio");
                 
                 audio.onplay = () => {
-                  console.log("🎤 VOICE: Immediate audio started");
+                  console.log("🎤 VOICE: ✅ Audio playback started successfully");
                   // Dispatch TTS audio start event for VoiceAssistant
                   window.dispatchEvent(new CustomEvent("tts-audio-start"));
                 };
 
                 audio.onended = () => {
+                  console.log("🎤 VOICE: Audio playback completed");
                   URL.revokeObjectURL(audioUrl);
                   setIsProcessing(false);
                   // Dispatch TTS audio stop event for VoiceAssistant
                   window.dispatchEvent(new CustomEvent("tts-audio-stop"));
                 };
                 
-                audio.onerror = () => {
+                audio.onerror = (e) => {
+                  console.error("🎤 VOICE: Audio playback error:", e);
                   URL.revokeObjectURL(audioUrl);
                   setIsProcessing(false);
                   // Dispatch TTS audio stop event for VoiceAssistant
                   window.dispatchEvent(new CustomEvent("tts-audio-stop"));
                 };
+
+                // Store reference for potential stopping
+                (window as any).currentOpenAIAudio = audio;
                 
-                await audio.play();
-                console.log("🎤 VOICE: Immediate audio playbook started");
+                try {
+                  console.log("🎤 VOICE: Attempting to play audio...");
+                  await audio.play();
+                  console.log("🎤 VOICE: ✅ Audio play() call succeeded");
+                } catch (playError) {
+                  console.error("🎤 VOICE: Audio play() failed:", playError);
+                  // Try to unlock audio context and retry
+                  if (window.AudioContext || (window as any).webkitAudioContext) {
+                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                    if (audioContext.state === 'suspended') {
+                      await audioContext.resume();
+                      console.log("🎤 VOICE: Audio context resumed, retrying...");
+                      try {
+                        await audio.play();
+                        console.log("🎤 VOICE: ✅ Audio play() retry succeeded");
+                      } catch (retryError) {
+                        console.error("🎤 VOICE: Audio play() retry failed:", retryError);
+                      }
+                    }
+                  }
+                }
               }
             } catch (error: any) {
               if (error.name === 'AbortError') {
