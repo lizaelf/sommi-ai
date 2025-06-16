@@ -666,6 +666,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
       if (status === "playing") {
         setIsResponding(true);
+        setIsPlayingAudio(true);
         setShowUnmuteButton(false);
       } else if (
         status === "stopped" ||
@@ -673,8 +674,25 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         status === "muted"
       ) {
         setIsResponding(false);
+        setIsPlayingAudio(false);
         setShowUnmuteButton(true);
       }
+    };
+
+    // Handle TTS audio start from suggestion pills
+    const handleTTSAudioStart = () => {
+      console.log("🎤 VoiceAssistant: TTS audio started from suggestion");
+      setIsPlayingAudio(true);
+      setIsResponding(true);
+      setShowUnmuteButton(false);
+    };
+
+    // Handle TTS audio stop from suggestion pills
+    const handleTTSAudioStop = () => {
+      console.log("🎤 VoiceAssistant: TTS audio stopped from suggestion");
+      setIsPlayingAudio(false);
+      setIsResponding(false);
+      setShowUnmuteButton(true);
     };
 
     // Stop microphone when user leaves the page/tab
@@ -706,6 +724,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       "showUnmuteButton",
       handleShowUnmuteButton as EventListener,
     );
+    window.addEventListener(
+      "tts-audio-start",
+      handleTTSAudioStart as EventListener,
+    );
+    window.addEventListener(
+      "tts-audio-stop",
+      handleTTSAudioStop as EventListener,
+    );
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
@@ -716,6 +742,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       window.removeEventListener(
         "showUnmuteButton",
         handleShowUnmuteButton as EventListener,
+      );
+      window.removeEventListener(
+        "tts-audio-start",
+        handleTTSAudioStart as EventListener,
+      );
+      window.removeEventListener(
+        "tts-audio-stop",
+        handleTTSAudioStop as EventListener,
       );
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };

@@ -277,18 +277,28 @@ export default function SuggestionPills({
                 
                 console.log("🎤 VOICE: Immediate TTS ready - playing audio");
                 
+                audio.onplay = () => {
+                  console.log("🎤 VOICE: Immediate audio started");
+                  // Dispatch TTS audio start event for VoiceAssistant
+                  window.dispatchEvent(new CustomEvent("tts-audio-start"));
+                };
+
                 audio.onended = () => {
                   URL.revokeObjectURL(audioUrl);
                   setIsProcessing(false);
+                  // Dispatch TTS audio stop event for VoiceAssistant
+                  window.dispatchEvent(new CustomEvent("tts-audio-stop"));
                 };
                 
                 audio.onerror = () => {
                   URL.revokeObjectURL(audioUrl);
                   setIsProcessing(false);
+                  // Dispatch TTS audio stop event for VoiceAssistant
+                  window.dispatchEvent(new CustomEvent("tts-audio-stop"));
                 };
                 
                 await audio.play();
-                console.log("🎤 VOICE: Immediate audio playback started");
+                console.log("🎤 VOICE: Immediate audio playbook started");
               }
             } catch (error: any) {
               if (error.name === 'AbortError') {
