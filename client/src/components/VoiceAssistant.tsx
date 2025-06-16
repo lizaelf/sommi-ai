@@ -1133,13 +1133,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
     
     // CRITICAL: SuggestionPills in voice context handles everything internally
-    // Voice assistant should NEVER interfere with suggestion handling
-    console.log("🚀 VoiceAssistant: SuggestionPills handles all suggestion logic - closing bottom sheet only");
+    // Voice assistant should do NOTHING - no state changes, no sheet closing
+    console.log("🚀 VoiceAssistant: SuggestionPills handles all suggestion logic - voice assistant does nothing");
     
-    // Only close the bottom sheet - SuggestionPills manages all audio, messages, and caching
-    setShowBottomSheet(false);
-    
-    // Don't call onSendMessage at all - this prevents thinking states and unmute buttons
+    // Don't close bottom sheet, don't call onSendMessage, don't change any states
+    // SuggestionPills manages all audio, messages, and caching independently
     return;
   };
 
