@@ -80,6 +80,9 @@ export default function SuggestionPills({
     enabled: true, // Always enabled since we have fallback wine key
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
   });
 
   // Manual reset function - only triggered by user interaction
@@ -109,7 +112,7 @@ export default function SuggestionPills({
     if (context === "voice-assistant" && suggestionsData?.suggestions && !isLoading) {
       preGenerateSuggestionAudio();
     }
-  }, [context, suggestionsData, isLoading, wineKey]);
+  }, [context, suggestionsData, isLoading]);
 
   const preGenerateSuggestionAudio = async () => {
     if (!suggestionsData?.suggestions) return;
@@ -571,7 +574,7 @@ export default function SuggestionPills({
         }),
         headers: { "Content-Type": "application/json" },
       });
-      refetch();
+      // Removed refetch() - suggestions stay stable until manual refresh
     } catch (error) {
       console.error("Error marking pill as used:", error);
     }
