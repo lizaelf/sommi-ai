@@ -379,6 +379,10 @@ export default function SuggestionPills({
             if (response.ok) {
               const data = await response.json();
               
+              // Extract response text first
+              const responseText = data.message?.content || data.response;
+              console.log("🎤 VOICE: Text to convert:", responseText);
+              
               // Add messages to chat
               const userMessage = {
                 id: Date.now(),
@@ -405,9 +409,6 @@ export default function SuggestionPills({
 
               // Play audio using OpenAI TTS
               console.log("🎤 VOICE: Playing audio response for API result");
-              
-              const responseText = data.message?.content || data.response;
-              console.log("🎤 VOICE: Text to convert:", responseText);
               console.log("🎤 VOICE: Full data object:", JSON.stringify(data, null, 2));
               
               if (!responseText || responseText.trim() === '') {
