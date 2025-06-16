@@ -884,29 +884,19 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      justifyContent: "center",
+                      justifyContent: "flex-start",
                       alignItems: "center",
                       minHeight: "200px",
                       width: "100%",
                       textAlign: "center",
-                      gap: "16px",
+                      paddingTop: "16px",
                     }}
                   >
-                    <p
-                      style={{
-                        color: "rgba(255, 255, 255, 0.6)",
-                        ...typography.body,
-                        textAlign: "center",
-                        margin: "0",
-                      }}
-                    >
-                      Register to view chat history
-                    </p>
                     <Button
                       onClick={() => setShowContactSheet(true)}
                       variant="secondary"
                       style={{
-                        width: "auto",
+                        width: "100%",
                         padding: "12px 24px",
                       }}
                     >
