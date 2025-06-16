@@ -1,8 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { suggestionCache } from "@/utils/suggestionCache";
-import Button from "@/components/ui/Button";
-import typography from "@/styles/typography";
 
 interface SuggestionPill {
   id: string;
@@ -12,15 +9,11 @@ interface SuggestionPill {
 
 interface SuggestionPillsProps {
   wineKey: string;
-  conversationId?: string; // Add conversation context
+  conversationId?: number;
   onSuggestionClick: (
     prompt: string,
-    pillId?: string,
-    options?: {
-      textOnly?: boolean;
-      instantResponse?: string;
-      conversationId?: string;
-    },
+    suggestionId: string,
+    options?: { textOnly?: boolean; conversationId?: number }
   ) => void;
   isDisabled?: boolean;
   preferredResponseType?: "text" | "voice";
@@ -36,7 +29,6 @@ export default function SuggestionPills({
   context = "chat",
 }: SuggestionPillsProps) {
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
-  const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
   // Default suggestions to show immediately while API loads
@@ -70,64 +62,75 @@ export default function SuggestionPills({
         `/api/suggestion-pills/${encodeURIComponent(wineKey)}`,
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch suggestion pills");
+        throw new Error("Failed to fetch suggestions");
       }
       return response.json();
     },
     enabled: !!wineKey,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
-  // Handle resetting pills when all are used
-  useEffect(() => {
-    const availablePills = suggestionsData?.suggestions || [];
-    if (availablePills.length === 0) return;
+  // Load cached responses for instant display
+  const [cachedResponses, setCachedResponses] = useState<{
+    [key: string]: string;
+  }>({});
 
-    const unusedPills = availablePills.filter(
-      (pill: SuggestionPill) => !usedPills.has(pill.id),
+  useEffect(() => {
+    const loadCachedResponses = () => {
+      try {
+        const cached = localStorage.getItem("suggestion_responses");
+        if (cached) {
+          const responses = JSON.parse(cached);
+          setCachedResponses(responses);
+          console.log(
+            `Loaded ${Object.keys(responses).length} cached suggestion responses`,
+          );
+        }
+      } catch (error) {
+        console.error("Failed to load cached responses:", error);
+      }
+    };
+
+    loadCachedResponses();
+  }, []);
+
+  // Get available suggestions (API data or defaults)
+  const availableSuggestions = suggestionsData?.suggestions || defaultSuggestions;
+
+  // Filter out used suggestions and limit to 3
+  const displayedSuggestions = availableSuggestions
+    .filter((pill: SuggestionPill) => !usedPills.has(pill.id))
+    .slice(0, 3);
+
+  // If no unused suggestions, show some used ones to maintain 3 pills
+  const suggestionsToShow =
+    displayedSuggestions.length === 0
+      ? availableSuggestions.slice(0, 3)
+      : displayedSuggestions.length < 3
+      ? [
+          ...displayedSuggestions,
+          ...availableSuggestions
+            .filter((pill: SuggestionPill) => usedPills.has(pill.id))
+            .slice(0, 3 - displayedSuggestions.length),
+        ]
+      : displayedSuggestions;
+
+  // Mark pill as used and handle suggestion click
+  const handlePillClick = async (pill: SuggestionPill) => {
+    if (isDisabled || isResetting) return;
+
+    console.log(
+      `🔍 DEBUGGING: handlePillClick called with context: ${context}, preferredResponseType: ${preferredResponseType}`,
     );
 
-    if (unusedPills.length === 0 && !isResetting) {
-      console.log("All suggestions used - resetting cycle for wine:", wineKey);
-      setIsResetting(true);
-
-      fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
-        method: "DELETE",
-      })
-        .then(() => {
-          setUsedPills(new Set());
-          setIsResetting(false);
-        })
-        .catch((error) => {
-          console.error("Failed to reset suggestion pills:", error);
-          setIsResetting(false);
-        });
-    }
-  }, [suggestionsData, usedPills, wineKey, isResetting]);
-
-  const handlePillClick = async (pill: SuggestionPill) => {
-    console.log("🔍 DEBUGGING: handlePillClick called with context:", context, "preferredResponseType:", preferredResponseType);
-    if (isDisabled) return;
-
-    // Optimistically mark as used
-    setUsedPills((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(pill.id);
-      return newSet;
-    });
-
     try {
-      // Check for instant response (cached)
-      let instantResponse = null;
-      const suggestionId = pill.prompt
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_");
+      // Optimistically mark as used
+      setUsedPills((prev) => new Set([...prev, pill.id]));
 
-      instantResponse = await suggestionCache.getCachedResponse(
-        wineKey,
-        suggestionId,
-      );
+      // Check for cached response for instant display
+      const cacheKey = `${wineKey}:${pill.id}`;
+      const instantResponse = cachedResponses[cacheKey];
+
       console.log(
         "💾 Cached response found:",
         !!instantResponse,
@@ -179,10 +182,9 @@ export default function SuggestionPills({
           console.log("💬 CHAT: No cache - using normal API flow");
           // No cached response - let chat handle API call
           // Send the button text to display in chat, but use the full prompt for the API
-          onSuggestionClick(pill.text, pill.id, {
+          onSuggestionClick(pill.prompt, pill.id, {
             textOnly: true,
             conversationId,
-            fullPrompt: pill.prompt, // Include full prompt for API processing
           });
         }
 
@@ -196,8 +198,6 @@ export default function SuggestionPills({
         console.log(
           "🎤 VOICE CONTEXT: Processing suggestion for voice assistant",
         );
-        
-        setIsProcessing(true);
 
         if (instantResponse) {
           console.log("🎤 VOICE: Using cached response - playing audio");
@@ -226,293 +226,34 @@ export default function SuggestionPills({
             }),
           );
 
-          // Play audio using OpenAI TTS for consistency with voice assistant
-          console.log("🎤 VOICE: Generating TTS audio for suggestion response");
-          console.log("🎤 VOICE: Cached response text:", instantResponse);
+          // For voice context, trigger TTS using browser speech
+          console.log("🎤 VOICE: Playing cached response with browser TTS");
+          const utterance = new SpeechSynthesisUtterance(instantResponse);
           
-          if (!instantResponse || instantResponse.trim() === '') {
-            console.error("🎤 VOICE: Empty cached response text, cannot generate TTS");
-            throw new Error("Empty cached response text");
-          }
+          // Use consistent male voice
+          const voices = speechSynthesis.getVoices();
+          const maleVoice = voices.find(voice => 
+            voice.name.includes("Google UK English Male") ||
+            voice.name.includes("Google US English Male") ||
+            (voice.name.includes("Male") && voice.lang.startsWith("en"))
+          ) || voices[0];
           
-          try {
-            console.log("🎤 VOICE: Making TTS API request for cached response");
-            const response = await fetch("/api/text-to-speech", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ text: instantResponse }),
-            });
-
-            console.log("🎤 VOICE: TTS API response status:", response.status, response.ok);
-
-            if (response.ok) {
-              const audioBlob = await response.blob();
-              console.log("🎤 VOICE: Audio blob created, size:", audioBlob.size);
-              
-              const audioUrl = URL.createObjectURL(audioBlob);
-              const audio = new Audio(audioUrl);
-              console.log("🎤 VOICE: Audio element created with URL:", audioUrl);
-
-              // Store reference for stop functionality
-              (window as any).currentOpenAIAudio = audio;
-
-              audio.onplay = () => {
-                console.log("🎤 VOICE: ✅ OpenAI TTS audio started playing successfully");
-              };
-
-              audio.onended = () => {
-                console.log("🎤 VOICE: OpenAI TTS audio finished playing");
-                URL.revokeObjectURL(audioUrl);
-                (window as any).currentOpenAIAudio = null;
-              };
-
-              audio.onerror = (e) => {
-                console.error("🎤 VOICE: OpenAI TTS audio error:", e, "falling back to browser TTS");
-                URL.revokeObjectURL(audioUrl);
-                (window as any).currentOpenAIAudio = null;
-                
-                // Fallback to browser TTS
-                const utterance = new SpeechSynthesisUtterance(instantResponse);
-                const voices = speechSynthesis.getVoices();
-                const maleVoice = voices.find(voice => 
-                  voice.name.includes("Google UK English Male") ||
-                  voice.name.includes("Google US English Male") ||
-                  (voice.name.includes("Male") && voice.lang.startsWith("en"))
-                ) || voices[0];
-                
-                if (maleVoice) utterance.voice = maleVoice;
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                utterance.volume = 1.0;
-                
-                speechSynthesis.cancel();
-                speechSynthesis.speak(utterance);
-                console.log("🎤 VOICE: Browser TTS fallback initiated");
-              };
-
-              try {
-                await audio.play();
-                console.log("🎤 VOICE: OpenAI TTS audio playback initiated successfully");
-              } catch (playError) {
-                console.error("🎤 VOICE: Audio.play() failed for cached response:", playError);
-                // Try to unlock audio context and retry
-                if (window.AudioContext || (window as any).webkitAudioContext) {
-                  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-                  if (audioContext.state === 'suspended') {
-                    await audioContext.resume();
-                    console.log("🎤 VOICE: Audio context resumed, retrying cached audio play");
-                    try {
-                      await audio.play();
-                      console.log("🎤 VOICE: Cached audio play retry successful");
-                    } catch (retryError) {
-                      console.error("🎤 VOICE: Cached audio play retry failed, using browser TTS:", retryError);
-                      // Fallback to browser TTS
-                      const utterance = new SpeechSynthesisUtterance(instantResponse);
-                      const voices = speechSynthesis.getVoices();
-                      const maleVoice = voices.find(voice => 
-                        voice.name.includes("Google UK English Male") ||
-                        voice.name.includes("Google US English Male") ||
-                        (voice.name.includes("Male") && voice.lang.startsWith("en"))
-                      ) || voices[0];
-                      
-                      if (maleVoice) utterance.voice = maleVoice;
-                      utterance.rate = 1.0;
-                      utterance.pitch = 1.0;
-                      utterance.volume = 1.0;
-                      
-                      speechSynthesis.cancel();
-                      speechSynthesis.speak(utterance);
-                      console.log("🎤 VOICE: Browser TTS fallback initiated for cached response");
-                    }
-                  }
-                }
-              }
-            } else {
-              throw new Error("TTS API failed");
-            }
-          } catch (error) {
-            console.error("🎤 VOICE: TTS generation failed, using browser TTS fallback:", error);
-            
-            // Fallback to browser TTS
-            const utterance = new SpeechSynthesisUtterance(instantResponse);
-            const voices = speechSynthesis.getVoices();
-            const maleVoice = voices.find(voice => 
-              voice.name.includes("Google UK English Male") ||
-              voice.name.includes("Google US English Male") ||
-              (voice.name.includes("Male") && voice.lang.startsWith("en"))
-            ) || voices[0];
-            
-            if (maleVoice) utterance.voice = maleVoice;
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            utterance.volume = 1.0;
-            
-            speechSynthesis.cancel();
-            speechSynthesis.speak(utterance);
-            console.log("🎤 VOICE: Browser TTS fallback initiated");
-          }
+          if (maleVoice) utterance.voice = maleVoice;
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+          
+          speechSynthesis.cancel();
+          speechSynthesis.speak(utterance);
+          console.log("🎤 VOICE: Browser TTS initiated for cached response");
         } else {
           console.log("🎤 VOICE: No cache - making direct API call for voice response");
           
-          // Make direct API call without routing through voice assistant
-          try {
-            setIsProcessing(true);
-            
-            const response = await fetch("/api/chat", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                messages: [
-                  { role: "user", content: pill.prompt }
-                ],
-                wineKey: wineKey,
-                conversationId: conversationId,
-                wineData: {
-                  id: parseInt(wineKey.replace('wine_', '')),
-                  name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel"
-                },
-                textOnly: false // Enable voice for voice assistant context
-              }),
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              
-              // Add messages to chat
-              const userMessage = {
-                id: Date.now(),
-                content: pill.prompt,
-                role: "user" as const,
-                conversationId: conversationId || 0,
-                createdAt: new Date().toISOString(),
-              };
-
-              const assistantMessage = {
-                id: Date.now() + 1,
-                content: data.response,
-                role: "assistant" as const,
-                conversationId: conversationId || 0,
-                createdAt: new Date().toISOString(),
-              };
-
-              // Use chat event system
-              window.dispatchEvent(
-                new CustomEvent("addChatMessage", {
-                  detail: { userMessage, assistantMessage },
-                }),
-              );
-
-              // Play audio using OpenAI TTS
-              console.log("🎤 VOICE: Playing audio response for API result");
-              console.log("🎤 VOICE: Response data:", data);
-              console.log("🎤 VOICE: Text to convert:", data.response);
-              
-              if (!data.response || data.response.trim() === '') {
-                console.error("🎤 VOICE: Empty response text, cannot generate TTS");
-                throw new Error("Empty response text");
-              }
-              
-              const ttsResponse = await fetch("/api/text-to-speech", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: data.response }),
-              });
-
-              console.log("🎤 VOICE: TTS API response for new request - status:", ttsResponse.status, ttsResponse.ok);
-
-              if (ttsResponse.ok) {
-                const audioBlob = await ttsResponse.blob();
-                console.log("🎤 VOICE: Audio blob created for new request, size:", audioBlob.size);
-                
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
-                console.log("🎤 VOICE: Audio element created for new request with URL:", audioUrl);
-
-                // Store reference for stop functionality
-                (window as any).currentOpenAIAudio = audio;
-
-                audio.onplay = () => {
-                  console.log("🎤 VOICE: ✅ OpenAI TTS audio for new request started playing successfully");
-                };
-
-                audio.onended = () => {
-                  console.log("🎤 VOICE: OpenAI TTS audio for new request finished playing");
-                  URL.revokeObjectURL(audioUrl);
-                  (window as any).currentOpenAIAudio = null;
-                };
-
-                audio.onerror = (e) => {
-                  console.error("🎤 VOICE: OpenAI TTS audio error for new request:", e, "falling back to browser TTS");
-                  URL.revokeObjectURL(audioUrl);
-                  (window as any).currentOpenAIAudio = null;
-                  
-                  // Fallback to browser TTS
-                  const utterance = new SpeechSynthesisUtterance(data.response);
-                  const voices = speechSynthesis.getVoices();
-                  const maleVoice = voices.find(voice => 
-                    voice.name.includes("Google UK English Male") ||
-                    voice.name.includes("Google US English Male") ||
-                    (voice.name.includes("Male") && voice.lang.startsWith("en"))
-                  ) || voices[0];
-                  
-                  if (maleVoice) utterance.voice = maleVoice;
-                  utterance.rate = 1.0;
-                  utterance.pitch = 1.0;
-                  utterance.volume = 1.0;
-                  
-                  speechSynthesis.cancel();
-                  speechSynthesis.speak(utterance);
-                  console.log("🎤 VOICE: Browser TTS fallback initiated for new request");
-                };
-
-                try {
-                  await audio.play();
-                  console.log("🎤 VOICE: OpenAI TTS audio playback initiated successfully");
-                } catch (playError) {
-                  console.error("🎤 VOICE: Audio.play() failed:", playError);
-                  // Try to unlock audio context and retry
-                  if (window.AudioContext || (window as any).webkitAudioContext) {
-                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-                    if (audioContext.state === 'suspended') {
-                      await audioContext.resume();
-                      console.log("🎤 VOICE: Audio context resumed, retrying play");
-                      try {
-                        await audio.play();
-                        console.log("🎤 VOICE: Audio play retry successful");
-                      } catch (retryError) {
-                        console.error("🎤 VOICE: Audio play retry failed, using browser TTS:", retryError);
-                        // Fallback to browser TTS
-                        const utterance = new SpeechSynthesisUtterance(data.response);
-                        const voices = speechSynthesis.getVoices();
-                        const maleVoice = voices.find(voice => 
-                          voice.name.includes("Google UK English Male") ||
-                          voice.name.includes("Google US English Male") ||
-                          (voice.name.includes("Male") && voice.lang.startsWith("en"))
-                        ) || voices[0];
-                        
-                        if (maleVoice) utterance.voice = maleVoice;
-                        utterance.rate = 1.0;
-                        utterance.pitch = 1.0;
-                        utterance.volume = 1.0;
-                        
-                        speechSynthesis.cancel();
-                        speechSynthesis.speak(utterance);
-                        console.log("🎤 VOICE: Browser TTS fallback initiated");
-                      }
-                    }
-                  }
-                }
-              } else {
-                throw new Error("TTS API failed");
-              }
-            } else {
-              throw new Error("Chat API failed");
-            }
-          } catch (error) {
-            console.error("🎤 VOICE: API call failed:", error);
-          } finally {
-            setIsProcessing(false);
-          }
+          // No cached response - use normal flow but ensure voice context
+          onSuggestionClick(pill.prompt, pill.id, {
+            textOnly: false,
+            conversationId,
+          });
         }
 
         // Mark as used in background for voice context
@@ -538,80 +279,88 @@ export default function SuggestionPills({
   };
 
   // Helper function to mark pill as used
-  const markPillAsUsed = async (pillId: string) => {
+  const markPillAsUsed = async (suggestionId: string) => {
     try {
       await fetch("/api/suggestion-pills/used", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           wineKey,
-          suggestionId: pillId,
-          userId: null,
+          suggestionId,
         }),
-        headers: { "Content-Type": "application/json" },
       });
-      refetch();
     } catch (error) {
-      console.error("Error marking pill as used:", error);
+      console.error("Failed to mark suggestion as used:", error);
     }
   };
 
-  // Always show exactly 3 pills
-  const visiblePills = useMemo(() => {
-    const availablePills = suggestionsData?.suggestions || [];
+  // Reset used pills when all are exhausted
+  useEffect(() => {
+    if (
+      availableSuggestions.length > 0 &&
+      usedPills.size >= availableSuggestions.length &&
+      !isResetting
+    ) {
+      const resetUsedPills = async () => {
+        setIsResetting(true);
+        try {
+          await fetch(`/api/suggestion-pills/reset/${encodeURIComponent(wineKey)}`, {
+            method: "DELETE",
+          });
+          setUsedPills(new Set());
+          await refetch();
+        } catch (error) {
+          console.error("Failed to reset used pills:", error);
+        } finally {
+          setIsResetting(false);
+        }
+      };
 
-    if (isLoading || availablePills.length === 0) {
-      return defaultSuggestions.slice(0, 3);
+      resetUsedPills();
     }
+  }, [usedPills.size, availableSuggestions.length, wineKey, isResetting, refetch]);
 
-    // Start with unused pills
-    let pills = availablePills.filter(
-      (pill: SuggestionPill) => !usedPills.has(pill.id),
+  if (isLoading && availableSuggestions.length === 0) {
+    return (
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="animate-pulse bg-gray-200 rounded-full px-4 py-2 min-w-fit"
+          >
+            <div className="w-20 h-4 bg-gray-300 rounded"></div>
+          </div>
+        ))}
+      </div>
     );
-
-    // If we don't have enough unused pills, add used ones to reach 3
-    if (pills.length < 3) {
-      const usedPillsToAdd = availablePills
-        .filter((pill: SuggestionPill) => usedPills.has(pill.id))
-        .slice(0, 3 - pills.length);
-      pills = [...pills, ...usedPillsToAdd];
-    }
-
-    // Always return exactly 3 pills (slice to ensure exactly 3)
-    return pills.slice(0, 3);
-  }, [suggestionsData, usedPills, isLoading]);
+  }
 
   return (
-    <div
-      className="flex gap-2 overflow-x-auto scrollbar-hide pb-1"
-      style={{
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-      }}
-      data-suggestion-context={context} // Add context identifier
-    >
-      {visiblePills.map((pill: SuggestionPill) => (
-        <Button
-          key={`${context}-${pill.id}`} // Make keys unique per context
-          variant="secondary"
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent event bubbling
-            handlePillClick(pill);
-          }}
-          disabled={isDisabled || usedPills.has(pill.id)}
-          className="h-auto py-2 px-4 whitespace-nowrap hover:bg-gray-100 transition-colors border border-gray-300 rounded-full flex-shrink-0 min-w-fit"
-          style={{
-            ...typography.body, // 📝 Apply body typography style
-            // You can override specific properties if needed:
-            // fontSize: typography.body.fontSize,
-            // fontWeight: typography.body.fontWeight,
-            // lineHeight: typography.body.lineHeight,
-            // fontFamily: typography.body.fontFamily,
-          }}
-          data-pill-context={context} // Add context data attribute
-        >
-          {pill.text}
-        </Button>
-      ))}
+    <div className="flex gap-2 overflow-x-auto pb-2">
+      {suggestionsToShow.map((pill: SuggestionPill) => {
+        const isUsed = usedPills.has(pill.id);
+        return (
+          <button
+            key={`${context}-${pill.id}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePillClick(pill);
+            }}
+            disabled={isDisabled || isResetting}
+            className={`
+              px-4 py-2 rounded-full text-sm min-w-fit transition-all duration-200
+              ${
+                isUsed
+                  ? "bg-gray-100 text-gray-500 border border-gray-200"
+                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+              }
+              ${isDisabled || isResetting ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+            `}
+          >
+            {pill.text}
+          </button>
+        );
+      })}
     </div>
   );
 }
