@@ -60,22 +60,23 @@ export default function SuggestionPills({
   ];
 
   // Fetch available suggestion pills for this wine
+  const effectiveWineKeyForQuery = wineKey || "wine_1";
   const {
     data: suggestionsData,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["/api/suggestion-pills", wineKey],
+    queryKey: ["/api/suggestion-pills", effectiveWineKeyForQuery],
     queryFn: async () => {
       const response = await fetch(
-        `/api/suggestion-pills/${encodeURIComponent(wineKey)}`,
+        `/api/suggestion-pills/${encodeURIComponent(effectiveWineKeyForQuery)}`,
       );
       if (!response.ok) {
         throw new Error("Failed to fetch suggestion pills");
       }
       return response.json();
     },
-    enabled: !!wineKey,
+    enabled: true, // Always enabled since we have fallback wine key
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
@@ -90,10 +91,11 @@ export default function SuggestionPills({
     );
 
     if (unusedPills.length === 0 && !isResetting) {
-      console.log("All suggestions used - resetting cycle for wine:", wineKey);
+      const effectiveWineKey = wineKey || "wine_1";
+      console.log("All suggestions used - resetting cycle for wine:", effectiveWineKey);
       setIsResetting(true);
 
-      fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
+      fetch(`/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`, {
         method: "DELETE",
       })
         .then(() => {
@@ -154,8 +156,12 @@ export default function SuggestionPills({
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "_");
 
+      // Use effective wine key for cache lookup
+      const effectiveWineKey = wineKey || "wine_1"; // Default to wine_1 when wineKey is empty
+      console.log("🔍 Cache lookup using effectiveWineKey:", effectiveWineKey);
+
       instantResponse = await suggestionCache.getCachedResponse(
-        wineKey,
+        effectiveWineKey,
         suggestionId,
       );
       console.log(
@@ -442,6 +448,14 @@ export default function SuggestionPills({
                 }),
               );
 
+              // Cache the response for future use
+              await suggestionCache.storeResponse(
+                effectiveWineKey,
+                suggestionId,
+                responseText,
+              );
+              console.log("💾 Response cached for future use:", effectiveWineKey, suggestionId);
+
               // Play audio using OpenAI TTS
               console.log("🎤 VOICE: Playing audio response for API result");
               console.log("🎤 VOICE: Full data object:", JSON.stringify(data, null, 2));
@@ -593,10 +607,11 @@ export default function SuggestionPills({
   // Helper function to mark pill as used
   const markPillAsUsed = async (pillId: string) => {
     try {
+      const effectiveWineKey = wineKey || "wine_1";
       await fetch("/api/suggestion-pills/used", {
         method: "POST",
         body: JSON.stringify({
-          wineKey,
+          wineKey: effectiveWineKey,
           suggestionId: pillId,
           userId: null,
         }),
@@ -636,8 +651,9 @@ export default function SuggestionPills({
       console.log("🔄 All suggestions used - resetting to show fresh suggestions");
       // Reset used pills and show first 3 suggestions
       setUsedPills(new Set());
-      // Trigger a reset on the backend
-      fetch(`/api/suggestion-pills/${encodeURIComponent(wineKey)}/reset`, {
+      // Trigger a reset on the backend using effective wine key
+      const effectiveWineKey = wineKey || "wine_1";
+      fetch(`/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`, {
         method: 'DELETE'
       }).catch(console.error);
       return availablePills.slice(0, 3);
