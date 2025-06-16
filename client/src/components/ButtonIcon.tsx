@@ -436,6 +436,7 @@ export function ButtonIcon({
                   height: "56px",
                   fontSize: "16px",
                   fontWeight: 500,
+                  borderRadius: 0,
                 }}
               >
                 Don't delete
@@ -449,6 +450,7 @@ export function ButtonIcon({
                   height: "56px",
                   fontSize: "16px",
                   fontWeight: 600,
+                  borderRadius: 0,
                 }}
               >
                 Delete
