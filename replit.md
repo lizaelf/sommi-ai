@@ -50,7 +50,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Component Separation Implementation**: Created separate ContactInput component for contact forms (completely transparent) and ChatInputField component for chat interface (retains blue focus styling)
 - **Contact Form Modernization**: Replaced all contact form inputs with ContactInput component, eliminating all white/blue backgrounds with !important declarations to override browser defaults
 - **Input Component Architecture**: Established clear separation between contact form inputs (transparent only) and chat inputs (blue focus states allowed)
-- **ChatInput Complete Restoration**: Restored ChatInput component to yesterday's exact styling with white 8% opacity background fill, transparent input field, and blue gradient border (rgba(74, 144, 226, 0.08))
+- **ChatInput Complete Restoration**: Restored ChatInput component to yesterday's exact styling with white 8% opacity background fill, transparent input field, and blue gradient border with transparent center (rgba(74, 144, 226, 0.08) to transparent)
 - **Dropdown Menu Component Creation**: Created separate DropdownMenuItem component with full-width display and removed border radius for standardized dropdown behavior
 - **Voice Assistant Bottom Sheet Fix**: Fixed suggestion clicks closing bottom sheet by preventing SuggestionPills from calling voice assistant API without cached responses
 - **Voice Recording Completion Fix**: Removed setShowBottomSheet(false) calls after voice recording completion to keep bottom sheet open for continued interaction
