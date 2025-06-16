@@ -1868,6 +1868,7 @@ const Cellar = () => {
                         handleInputChange("phone", e.target.value)
                       }
                       error={!!errors.phone}
+                      errorMessage={errors.phone}
                       className="flex-1"
                     />
                   </div>
