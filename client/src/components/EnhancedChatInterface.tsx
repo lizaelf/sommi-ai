@@ -889,7 +889,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       minHeight: "200px",
                       width: "100%",
                       textAlign: "center",
-                      paddingTop: "16px",
                     }}
                   >
                     <Button
@@ -897,6 +896,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       variant="secondary"
                       style={{
                         width: "100%",
+                        height: "56px",
                         padding: "12px 24px",
                       }}
                     >
