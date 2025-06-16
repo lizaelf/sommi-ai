@@ -511,10 +511,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   }, [messages.length]);
 
   // Handle suggestion button clicks - TEXT ONLY responses
-  const handleSuggestionClick = async (content: string) => {
+  const handleSuggestionClick = async (displayText: string, apiPrompt?: string) => {
+    const content = displayText;
+    const apiContent = apiPrompt || displayText;
+    
     if (content.trim() === "" || !currentConversationId) return;
 
-    console.log("EnhancedChatInterface: Handling text-only suggestion:", content);
+    console.log("EnhancedChatInterface: Handling text-only suggestion:", content, "API prompt:", apiContent);
     
     // Enable text-only mode to prevent automatic voice responses
     if ((window as any).voiceAssistant?.setTextOnlyMode) {
@@ -536,7 +539,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       await addMessage(tempUserMessage);
 
       const requestBody = {
-        messages: [{ role: "user", content }],
+        messages: [{ role: "user", content: apiContent }], // Use API prompt for processing
         conversationId: currentConversationId,
         wineData: currentWine,
         optimize_for_speed: true,
@@ -947,7 +950,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       conversationId={currentConversationId?.toString()}
                       onSuggestionClick={(prompt, pillId, options) => {
                         console.log("EnhancedChatInterface: SuggestionPills clicked:", prompt);
-                        handleSuggestionClick(prompt);
+                        // Use fullPrompt for API if available, otherwise use the button text
+                        const apiPrompt = options?.fullPrompt || prompt;
+                        handleSuggestionClick(prompt, apiPrompt);
                       }}
                       isDisabled={isTyping}
                       preferredResponseType="text"

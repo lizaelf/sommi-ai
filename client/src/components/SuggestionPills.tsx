@@ -108,7 +108,7 @@ export default function SuggestionPills({
           // Add messages to chat using the event system
           const userMessage = {
             id: Date.now(),
-            content: pill.prompt,
+            content: pill.text, // Use pill.text to match what's shown on the button
             role: "user" as const,
             conversationId: conversationId || 0,
             createdAt: new Date().toISOString(),
@@ -131,9 +131,11 @@ export default function SuggestionPills({
         } else {
           console.log("💬 CHAT: No cache - using normal API flow");
           // No cached response - let chat handle API call
-          onSuggestionClick(pill.prompt, pill.id, {
+          // Send the button text to display in chat, but use the full prompt for the API
+          onSuggestionClick(pill.text, pill.id, {
             textOnly: true,
             conversationId,
+            fullPrompt: pill.prompt, // Include full prompt for API processing
           });
         }
         
