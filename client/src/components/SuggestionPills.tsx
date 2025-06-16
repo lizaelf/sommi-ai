@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
 import Button from "@/components/ui/Button";
-import { typography } from "@/styles/typography";
+import typography from "@/styles/typography";
 
 interface SuggestionPill {
   id: string;
