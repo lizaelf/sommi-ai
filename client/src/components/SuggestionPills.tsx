@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
+import wineResponses from "@/../../shared/wineResponses.json";
 
 interface SuggestionPill {
   id: string;
@@ -150,7 +151,7 @@ export default function SuggestionPills({
     });
 
     try {
-      // Check for instant response (cached)
+      // Check for instant response (cached or spreadsheet)
       let instantResponse = null;
       const suggestionId = pill.prompt
         .toLowerCase()
@@ -160,10 +161,25 @@ export default function SuggestionPills({
       const effectiveWineKey = wineKey || "wine_1"; // Default to wine_1 when wineKey is empty
       console.log("🔍 Cache lookup using effectiveWineKey:", effectiveWineKey);
 
-      instantResponse = await suggestionCache.getCachedResponse(
-        effectiveWineKey,
-        suggestionId,
-      );
+      // First check spreadsheet data for voice suggestions
+      if (context === "voice-assistant") {
+        const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
+        if (wineData && wineData.responses) {
+          const spreadsheetResponse = wineData.responses[suggestionId as keyof typeof wineData.responses];
+          if (spreadsheetResponse) {
+            console.log("📊 Using spreadsheet response for voice suggestion:", suggestionId);
+            instantResponse = spreadsheetResponse;
+          }
+        }
+      }
+
+      // Fallback to cache lookup if no spreadsheet response
+      if (!instantResponse) {
+        instantResponse = await suggestionCache.getCachedResponse(
+          effectiveWineKey,
+          suggestionId,
+        );
+      }
       console.log(
         "💾 Cached response found:",
         !!instantResponse,
@@ -236,7 +252,8 @@ export default function SuggestionPills({
         setIsProcessing(true);
 
         if (instantResponse) {
-          console.log("🎤 VOICE: Using cached response - playing audio");
+          const responseSource = instantResponse.length > 200 ? "spreadsheet" : "cache";
+          console.log(`🎤 VOICE: Using ${responseSource} response - playing audio`);
 
           // Add messages to chat
           const userMessage = {

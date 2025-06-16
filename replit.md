@@ -46,7 +46,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 16, 2025)
 
-### UI Component Updates (June 16, 2025 - Latest)
+### Spreadsheet Response Integration (June 16, 2025 - Latest)
+- **Voice Suggestion Data Source**: Updated voice assistant to use pre-populated responses from shared spreadsheet data instead of API calls
+- **Enhanced SuggestionPills Component**: Modified to prioritize spreadsheet responses over cached API responses for voice context
+- **Cached Response System**: Enhanced cache lookup to use effective wine keys with "wine_1" fallback for consistent data access
+- **Stop Button Implementation**: Added stop functionality with audio playback state tracking and proper cleanup
+- **Hidden Used Pills**: Updated suggestion display logic to hide used pills and show fresh alternatives instead of cycling
+- **Improved User Experience**: Voice suggestions now use curated content for consistent, high-quality responses
+
+### UI Component Updates (June 16, 2025)
 - **Component Separation Implementation**: Created separate ContactInput component for contact forms (completely transparent) and ChatInputField component for chat interface (retains blue focus styling)
 - **Contact Form Modernization**: Replaced all contact form inputs with ContactInput component, eliminating all white/blue backgrounds with !important declarations to override browser defaults
 - **Input Component Architecture**: Established clear separation between contact form inputs (transparent only) and chat inputs (blue focus states allowed)
