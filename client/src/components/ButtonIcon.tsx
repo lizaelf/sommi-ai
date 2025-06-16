@@ -90,13 +90,10 @@ export function ButtonIcon({
   };
 
   // Function to handle delete account click
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount = () => {
     setShowProfileMenu(false);
     
-    // Clear chat history first
-    await clearChatHistory();
-    
-    // Show bottom sheet with interaction choice
+    // Show bottom sheet immediately
     setAnimationState("opening");
     setShowDeleteBottomSheet(true);
     
@@ -367,10 +364,10 @@ export function ButtonIcon({
               maxWidth: "500px",
               borderRadius: "24px 24px 0px 0px",
               borderTop: "1px solid rgba(255, 255, 255, 0.20)",
-              paddingTop: "32px",
+              paddingTop: "24px",
               paddingLeft: "24px",
               paddingRight: "24px",
-              paddingBottom: "32px",
+              paddingBottom: "28px",
               display: "flex",
               flexDirection: "column",
               boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
@@ -399,16 +396,28 @@ export function ButtonIcon({
             </Button>
 
             {/* Header */}
-            <div style={{ marginBottom: "32px", textAlign: "center" }}>
+            <div style={{ marginBottom: "24px", marginTop: "0px" }}>
               <h2
                 style={{
                   color: "white",
-                  margin: "0 0 16px 0",
                   ...typography.h2,
+                  textAlign: "center",
+                  margin: "0 0 12px 0",
                 }}
               >
                 Delete account?
               </h2>
+
+              <p
+                style={{
+                  color: "#CECECE",
+                  ...typography.body,
+                  textAlign: "center",
+                  margin: "0 0 8px 0",
+                }}
+              >
+                This will clear all your chat history
+              </p>
             </div>
 
             {/* Action Buttons */}
@@ -424,9 +433,10 @@ export function ButtonIcon({
                 variant="secondary"
                 style={{
                   width: "100%",
-                  height: "56px",
+                  padding: "16px",
+                  borderRadius: "12px",
                   ...typography.body,
-                  fontWeight: "600",
+                  fontWeight: "500",
                 }}
               >
                 Don't delete
@@ -436,15 +446,15 @@ export function ButtonIcon({
                 onClick={handleConfirmDelete}
                 style={{
                   width: "100%",
-                  height: "56px",
                   backgroundColor: "#8B0000",
                   color: "white",
                   border: "none",
-                  borderRadius: "8px",
+                  borderRadius: "12px",
+                  padding: "16px",
                   cursor: "pointer",
                   transition: "background-color 0.2s ease",
                   ...typography.body,
-                  fontWeight: "600",
+                  fontWeight: "500",
                 }}
                 onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.backgroundColor = "#A52A2A";
