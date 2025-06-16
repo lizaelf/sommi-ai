@@ -261,7 +261,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   };
 
   // Simplified content formatter for lists and bold text
-  const formatContent = (content: string) => {
+  const formatContent = (content: string, isUserMessage = false) => {
     if (!content) return null;
 
     const formatText = (text: string) => {
@@ -315,7 +315,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               style={{ 
                 marginBottom: "8px", 
                 whiteSpace: "pre-wrap",
-                color: "rgba(255, 255, 255, 0.8)",
+                color: isUserMessage ? "#000000" : "rgba(255, 255, 255, 0.8)",
                 ...typography.body
               }}
             >
@@ -861,7 +861,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 lineHeight: "1.6",
                               }}
                             >
-                              {formatContent(message.content)}
+                              {formatContent(message.content, true)}
                             </div>
                           )}
                         </div>
