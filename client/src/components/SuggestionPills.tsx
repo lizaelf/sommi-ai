@@ -407,11 +407,14 @@ export default function SuggestionPills({
               
               const responseText = data.message?.content || data.response;
               console.log("🎤 VOICE: Text to convert:", responseText);
+              console.log("🎤 VOICE: Full data object:", JSON.stringify(data, null, 2));
               
               if (!responseText || responseText.trim() === '') {
                 console.error("🎤 VOICE: Empty response text, cannot generate TTS");
                 throw new Error("Empty response text");
               }
+              
+              console.log("🎤 VOICE: Making TTS request with text length:", responseText.length);
               
               const ttsResponse = await fetch("/api/text-to-speech", {
                 method: "POST",
@@ -420,6 +423,12 @@ export default function SuggestionPills({
               });
 
               console.log("🎤 VOICE: TTS API response for new request - status:", ttsResponse.status, ttsResponse.ok);
+              
+              if (!ttsResponse.ok) {
+                const errorText = await ttsResponse.text();
+                console.error("🎤 VOICE: TTS API error response:", errorText);
+                throw new Error(`TTS API failed: ${ttsResponse.status} ${errorText}`);
+              }
 
               if (ttsResponse.ok) {
                 const audioBlob = await ttsResponse.blob();
@@ -483,7 +492,7 @@ export default function SuggestionPills({
                       } catch (retryError) {
                         console.error("🎤 VOICE: Audio play retry failed, using browser TTS:", retryError);
                         // Fallback to browser TTS
-                        const utterance = new SpeechSynthesisUtterance(data.response);
+                        const utterance = new SpeechSynthesisUtterance(responseText);
                         const voices = speechSynthesis.getVoices();
                         const maleVoice = voices.find(voice => 
                           voice.name.includes("Google UK English Male") ||
