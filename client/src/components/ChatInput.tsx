@@ -57,7 +57,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           animation: !isFocused ? 'bg-slide-idle 7.5s linear infinite' : 'none'
         }}
       >
-
+        {isFocused && (
+          <div className="absolute inset-0 rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-slide-lr"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent animate-slide-lr-delayed"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow"></div>
+          </div>
+        )}
         <input
           ref={inputRef}
           type="text"
