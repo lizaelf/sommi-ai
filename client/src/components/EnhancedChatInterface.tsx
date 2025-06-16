@@ -393,6 +393,36 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     };
   }, [clearConversation, createNewConversation]);
 
+  // Listen for cached suggestion messages from SuggestionPills
+  useEffect(() => {
+    const handleAddChatMessage = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { userMessage, assistantMessage } = customEvent.detail;
+      
+      console.log("EnhancedChatInterface: Received cached suggestion messages");
+      
+      // Add both messages to the conversation
+      if (userMessage) {
+        await addMessage(userMessage);
+      }
+      if (assistantMessage) {
+        await addMessage(assistantMessage);
+      }
+      
+      // Hide suggestions after use
+      setHideSuggestions(true);
+      
+      // Refresh messages to ensure they appear
+      refetchMessages();
+    };
+
+    window.addEventListener("addChatMessage", handleAddChatMessage);
+
+    return () => {
+      window.removeEventListener("addChatMessage", handleAddChatMessage);
+    };
+  }, [addMessage, refetchMessages]);
+
   // Chat interface states
   const [isTyping, setIsTyping] = useState(false);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
