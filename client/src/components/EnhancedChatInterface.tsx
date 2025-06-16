@@ -845,9 +845,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             <div
                               style={{
                                 color: "#DBDBDB",
-                                fontFamily: "Inter, system-ui, sans-serif",
-                                fontSize: "16px",
-                                lineHeight: "1.6",
+                                ...typography.body,
                               }}
                             >
                               {formatContent(message.content)}
@@ -856,9 +854,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             <div
                               style={{
                                 color: "#000000",
-                                fontFamily: "Inter, system-ui, sans-serif",
-                                fontSize: "16px",
-                                lineHeight: "1.6",
+                                ...typography.body,
                               }}
                             >
                               {formatContent(message.content, true)}
@@ -882,8 +878,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     <p
                       style={{
                         color: "rgba(255, 255, 255, 0.6)",
-                        fontFamily: "Inter, system-ui, sans-serif",
-                        fontSize: "16px",
+                        ...typography.body,
                         textAlign: "center",
                         margin: "0",
                       }}

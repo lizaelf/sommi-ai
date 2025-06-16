@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import Button from "./ui/Button";
 import { FormInput } from "./ui/FormInput";
+import typography from "@/styles/typography";
 
 export interface ContactFormData {
   firstName: string;
@@ -127,9 +128,7 @@ export default function ContactBottomSheet({
           <h2
             style={{
               color: "white",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "20px",
-              fontWeight: 500,
+              ...typography.h2,
               textAlign: "center",
               margin: "0 0 12px 0",
             }}
@@ -140,10 +139,7 @@ export default function ContactBottomSheet({
           <p
             style={{
               color: "#CECECE",
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 400,
-              lineHeight: "1.3",
+              ...typography.body,
               textAlign: "center",
               margin: "0 0 8px 0",
             }}
