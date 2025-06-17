@@ -1038,8 +1038,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       conversationId={currentConversationId?.toString()}
                       onSuggestionClick={(prompt, pillId, options) => {
                         console.log("EnhancedChatInterface: SuggestionPills clicked:", prompt);
-                        // Use fullPrompt for API if available, otherwise use the button text
-                        const apiPrompt = options?.fullPrompt || prompt;
+                        // Use the button text for API call
+                        const apiPrompt = prompt;
                         handleSuggestionClick(prompt, apiPrompt);
                       }}
                       isDisabled={isTyping}
