@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-06-17T20:25:17.519Z",
+  "summary": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1,
+    "successRate": "83.3"
+  },
+  "tests": [
+    {
+      "name": "Server Health",
+      "status": "PASSED"
+    },
+    {
+      "name": "Database Access",
+      "status": "PASSED"
+    },
+    {
+      "name": "Conversations API",
+      "status": "PASSED"
+    },
+    {
+      "name": "Suggestion System",
+      "status": "PASSED"
+    },
+    {
+      "name": "Voice System",
+      "status": "PASSED"
+    },
+    {
+      "name": "Error Handling",
+      "status": "FAILED",
+      "error": "Expected 404, got 200"
+    }
+  ]
+}
