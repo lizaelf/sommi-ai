@@ -9,7 +9,7 @@ import {
 } from "@/utils/microphonePermissions";
 import { WINE_CONFIG } from "../../../shared/wineConfig";
 
-// ✅ Centralized dynamic welcome message generator
+// Centralized dynamic welcome message generator
 const getDynamicWelcomeMessage = () => {
   const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
   return `Hello, I see you're looking at the ${wineName}, an excellent choice. The ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard} ${WINE_CONFIG.varietal} expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.`;
@@ -21,184 +21,202 @@ interface VoiceAssistantProps {
   wineKey?: string;
 }
 
+interface MicStatusEvent extends Event {
+  detail: {
+    status: 'listening' | 'stopped' | 'error';
+    volume?: number;
+  };
+}
+
+interface VoiceVolumeEvent extends Event {
+  detail: {
+    volume: number;
+  };
+}
+
 const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   onSendMessage,
   isProcessing,
-  wineKey = '',
+  wineKey = ''
 }) => {
-  const [isListening, setIsListening] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [showAskButton, setShowAskButton] = useState(true);
+  const [showUnmuteButton, setShowUnmuteButton] = useState(false);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [showUnmuteButton, setShowUnmuteButton] = useState(false);
-  const [showAskButton, setShowAskButton] = useState(true);
-
-  const { toast } = useToast();
-  const recognitionRef = useRef<any>(null);
+  
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const welcomeAudioCacheRef = useRef<string | null>(null);
-  const welcomeAudioElementRef = useRef<HTMLAudioElement | null>(null);
-  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-  
-  // Cache welcome message immediately on component mount for instant playback
-  const cacheWelcomeMessage = async () => {
-    if (welcomeAudioCacheRef.current) return;
-    
-    const globalCache = (window as any).globalWelcomeAudioCache;
-    if (globalCache && globalCache.url && globalCache.element) {
-      console.log("Using global welcome audio cache for instant playback");
-      welcomeAudioCacheRef.current = globalCache.url;
-      welcomeAudioElementRef.current = globalCache.element;
-      return;
-    }
-    
-    console.log("Caching dynamic welcome message for instant playback");
-    
-    try {
-      const welcomeMessage = getDynamicWelcomeMessage();
-      
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: welcomeMessage })
-      });
-      
-      if (response.ok) {
-        const buffer = await response.arrayBuffer();
-        const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        const audioElement = new Audio(audioUrl);
-        audioElement.preload = 'auto';
-        
-        await new Promise((resolve, reject) => {
-          audioElement.oncanplaythrough = resolve;
-          audioElement.onerror = reject;
-          audioElement.load();
+  const { toast } = useToast();
+
+  // Cache welcome message audio on component mount
+  useEffect(() => {
+    const cacheWelcomeAudio = async () => {
+      try {
+        const welcomeMessage = getDynamicWelcomeMessage();
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: welcomeMessage })
         });
         
-        welcomeAudioCacheRef.current = audioUrl;
-        welcomeAudioElementRef.current = audioElement;
-        console.log("Welcome message audio cached and preloaded for instant playback");
-        
-        (window as any).globalWelcomeAudioCache = {
-          url: audioUrl,
-          element: audioElement
-        };
+        if (response.ok) {
+          const audioBlob = await response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          welcomeAudioCacheRef.current = audioUrl;
+          console.log("Welcome audio cached successfully");
+        }
+      } catch (error) {
+        console.error("Failed to cache welcome audio:", error);
       }
-    } catch (error) {
-      console.error("Failed to cache welcome message:", error);
-    }
-  };
+    };
 
-  useEffect(() => {
-    cacheWelcomeMessage();
+    cacheWelcomeAudio();
   }, []);
 
-  const handleSuggestionClick = (prompt: string, pillId?: string, options?: any) => {
-    console.log("🚀 VoiceAssistant: SuggestionPills handles all suggestion logic - voice assistant does nothing");
-  };
-
   const handleCloseBottomSheet = () => {
+    console.log("Voice Assistant closed");
     setShowBottomSheet(false);
+    setIsListening(false);
+    setIsResponding(false);
+    setIsThinking(false);
+    setShowAskButton(true);
+    setShowUnmuteButton(false);
+    setIsVoiceActive(false);
+    setIsPlayingAudio(false);
+    
+    // Stop any ongoing audio
+    if ((window as any).currentOpenAIAudio) {
+      (window as any).currentOpenAIAudio.pause();
+      (window as any).currentOpenAIAudio = null;
+    }
+    
+    // Clean up media recorder
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
   };
 
   const handleMute = () => {
-    setShowBottomSheet(false);
-  };
-
-  const handleUnmute = async () => {
-    console.log("🎤 VoiceAssistant: Manual unmute requested");
+    console.log("Mute button clicked - stopping recording");
+    setIsListening(false);
+    setShowUnmuteButton(true);
     
-    try {
-      if (welcomeAudioElementRef.current && welcomeAudioCacheRef.current) {
-        console.log("Playing cached welcome audio for instant response");
-        
-        const audio = welcomeAudioElementRef.current.cloneNode() as HTMLAudioElement;
-        audio.src = welcomeAudioCacheRef.current;
-        
-        audio.onplay = () => {
-          setIsResponding(true);
-          setShowUnmuteButton(false);
-          setShowAskButton(false);
-          console.log("🎤 VoiceAssistant: TTS audio started from welcome");
-        };
-        
-        audio.onended = () => {
-          setIsResponding(false);
-          setShowUnmuteButton(false);
-          setShowAskButton(true);
-          console.log("🎤 VoiceAssistant: TTS audio ended from welcome");
-        };
-        
-        audio.onerror = (error) => {
-          console.error("🎤 VoiceAssistant: Welcome audio error:", error);
-          console.error("🎤 Audio URL:", audio.src);
-          console.error("🎤 Audio readyState:", audio.readyState);
-          console.error("🎤 Audio networkState:", audio.networkState);
-          setIsResponding(false);
-          setShowUnmuteButton(false);
-          setShowAskButton(true);
-        };
-        
-        (window as any).currentOpenAIAudio = audio;
-        await audio.play();
-        return;
-      }
-      
-      const welcomeMessage = getDynamicWelcomeMessage();
-      
-      setIsResponding(true);
-      const response = await fetch('/api/text-to-speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: welcomeMessage })
-      });
-      
-      if (response.ok) {
-        const buffer = await response.arrayBuffer();
-        const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        const audio = new Audio(audioUrl);
-        audio.onplay = () => {
-          setIsResponding(true);
-          setShowUnmuteButton(false);
-          setShowAskButton(false);
-        };
-        
-        audio.onended = () => {
-          setIsResponding(false);
-          setShowUnmuteButton(false);
-          setShowAskButton(true);
-          URL.revokeObjectURL(audioUrl);
-        };
-        
-        audio.onerror = (error) => {
-          console.error("🎤 VoiceAssistant: Audio error:", error);
-          console.error("🎤 Audio URL:", audioUrl);
-          console.error("🎤 Audio readyState:", audio.readyState);
-          console.error("🎤 Audio networkState:", audio.networkState);
-          setIsResponding(false);
-          setShowUnmuteButton(false);
-          setShowAskButton(true);
-          URL.revokeObjectURL(audioUrl);
-        };
-        
-        await audio.play();
-      }
-    } catch (error) {
-      console.error("🎤 VoiceAssistant: Unmute error:", error);
-      setIsResponding(false);
-      setShowUnmuteButton(false);
-      setShowAskButton(true);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
     }
   };
 
+  const handleSuggestionClick = (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
+    console.log("Voice Assistant suggestion clicked:", suggestion);
+    
+    if (options?.instantResponse) {
+      setIsResponding(true);
+      setShowAskButton(false);
+      
+      // Play audio for voice context
+      const utterance = new SpeechSynthesisUtterance(options.instantResponse);
+      const voices = speechSynthesis.getVoices();
+      const maleVoice = voices.find(voice => 
+        voice.name.includes('Google UK English Male') ||
+        voice.name.includes('Google US English Male') ||
+        voice.name.includes('Male') ||
+        voice.lang.includes('en')
+      );
+      
+      if (maleVoice) {
+        utterance.voice = maleVoice;
+      }
+      
+      utterance.rate = 1.0;
+      utterance.onend = () => {
+        setIsResponding(false);
+        setShowAskButton(true);
+      };
+      
+      speechSynthesis.speak(utterance);
+    }
+    
+    onSendMessage(suggestion, pillId, options);
+  };
+
+  const handleUnmute = async () => {
+    console.log("Unmute button clicked");
+    
+    // First try cached welcome audio
+    if (welcomeAudioCacheRef.current) {
+      try {
+        const audio = new Audio(welcomeAudioCacheRef.current);
+        (window as any).currentOpenAIAudio = audio;
+        setIsPlayingAudio(true);
+        setShowUnmuteButton(false);
+        
+        audio.onended = () => {
+          setIsPlayingAudio(false);
+          setShowAskButton(true);
+          (window as any).currentOpenAIAudio = null;
+        };
+        
+        audio.onerror = (error) => {
+          console.error("Cached audio playback failed:", error);
+          setIsPlayingAudio(false);
+          setShowAskButton(true);
+          // Fall back to browser TTS
+          playWelcomeWithBrowserTTS();
+        };
+        
+        await audio.play();
+        console.log("Cached welcome audio playing");
+        return;
+      } catch (error) {
+        console.error("Failed to play cached audio:", error);
+      }
+    }
+    
+    // Fallback to browser TTS
+    playWelcomeWithBrowserTTS();
+  };
+
+  const playWelcomeWithBrowserTTS = () => {
+    const welcomeMessage = getDynamicWelcomeMessage();
+    const utterance = new SpeechSynthesisUtterance(welcomeMessage);
+    
+    const voices = speechSynthesis.getVoices();
+    const maleVoice = voices.find(voice => 
+      voice.name.includes('Google UK English Male') ||
+      voice.name.includes('Google US English Male') ||
+      voice.name.includes('Male') ||
+      voice.lang.includes('en')
+    );
+    
+    if (maleVoice) {
+      utterance.voice = maleVoice;
+    }
+    
+    utterance.rate = 1.0;
+    utterance.onstart = () => {
+      setIsPlayingAudio(true);
+      setShowUnmuteButton(false);
+    };
+    
+    utterance.onend = () => {
+      setIsPlayingAudio(false);
+      setShowAskButton(true);
+    };
+    
+    speechSynthesis.speak(utterance);
+  };
+
   const handleAsk = () => {
-    console.log("🎤 VoiceAssistant: Ask button clicked");
+    console.log("Ask button clicked");
   };
 
   const stopAudio = () => {
@@ -209,20 +227,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setIsResponding(false);
     setIsPlayingAudio(false);
     setShowAskButton(true);
-    console.log("🛑 VoiceAssistant: All audio stopped");
+    console.log("All audio stopped");
   };
 
   const handleMicrophoneClick = async () => {
-    console.log("🎤 VoiceAssistant: Microphone button clicked");
+    console.log("Microphone button clicked");
+    
+    // Clear session storage for testing
+    sessionStorage.removeItem('voice_choice_shown');
     
     const hasShownSheet = sessionStorage.getItem('voice_choice_shown');
     if (hasShownSheet) {
-      console.log("🎤 VoiceAssistant: Choice already shown this session, showing voice assistant");
+      console.log("Choice already shown this session, showing voice assistant");
       setShowBottomSheet(true);
       return;
     }
     
     sessionStorage.setItem('voice_choice_shown', 'true');
+    console.log("Dispatching show-voice-choice event");
     window.dispatchEvent(new CustomEvent('show-voice-choice'));
   };
 
@@ -239,57 +261,48 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (welcomeAudioCacheRef.current) {
-        URL.revokeObjectURL(welcomeAudioCacheRef.current);
-      }
-      if ((window as any).currentOpenAIAudio) {
-        (window as any).currentOpenAIAudio.pause();
-        (window as any).currentOpenAIAudio = null;
-      }
-    };
-  }, []);
-
   return (
     <div>
-      {!showBottomSheet && (
+      {/* Microphone Button */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: "96px",
+          right: "16px",
+          zIndex: 40,
+          cursor: "pointer",
+        }}
+        onClick={handleMicrophoneClick}
+      >
         <div
-          onClick={handleMicrophoneClick}
           style={{
-            width: "48px",
-            height: "48px",
-            backgroundColor: isProcessing
-              ? "rgba(255, 255, 255, 0.1)"
-              : "rgba(255, 255, 255, 0.2)",
+            width: "64px",
+            height: "64px",
             borderRadius: "50%",
+            background: "linear-gradient(135deg, #4A90E2, #357ABD)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            cursor: isProcessing ? "default" : "pointer",
-            border: "none",
-            outline: "none",
-            transition: "background-color 0.2s ease",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
           }}
         >
           <svg
-            xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
-            viewBox="0 0 20 20"
-            style={{
-              color: isProcessing
-                ? "rgba(255, 255, 255, 0.5)"
-                : "rgba(255, 255, 255, 1)",
-            }}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <path
-              fill="currentColor"
-              d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"
-            />
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
           </svg>
         </div>
-      )}
+      </div>
 
       <VoiceBottomSheet
         isOpen={showBottomSheet}

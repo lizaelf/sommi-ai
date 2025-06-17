@@ -15,7 +15,8 @@ import SommTenantAdmin from "@/pages/SommTenantAdmin";
 import TenantCreate from "@/pages/TenantCreate";
 import QRCodes from "@/pages/QRCodes";
 import QRDemo from "@/pages/QRDemo";
-import { useEffect } from "react";
+import QRScanModal from "@/components/QRScanModal";
+import { useEffect, useState } from "react";
 
 
 function Router() {
@@ -46,6 +47,31 @@ function Router() {
 // Welcome message caching is now handled entirely by VoiceAssistant component
 
 function App() {
+  const [showVoiceChoiceModal, setShowVoiceChoiceModal] = useState(false);
+
+  useEffect(() => {
+    const handleShowVoiceChoice = () => {
+      console.log("🎤 App: Received show-voice-choice event");
+      setShowVoiceChoiceModal(true);
+    };
+
+    window.addEventListener('show-voice-choice', handleShowVoiceChoice);
+    
+    return () => {
+      window.removeEventListener('show-voice-choice', handleShowVoiceChoice);
+    };
+  }, []);
+
+  const handleVoiceChoice = () => {
+    console.log("🎤 App: User chose Voice option");
+    setShowVoiceChoiceModal(false);
+    window.dispatchEvent(new CustomEvent('voice-choice-selected'));
+  };
+
+  const handleTextChoice = () => {
+    console.log("💬 App: User chose Text option");
+    setShowVoiceChoiceModal(false);
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -53,6 +79,14 @@ function App() {
         <div className="mobile-fullscreen">
           <Toaster />
           <Router />
+          
+          {/* Global Voice Choice Modal */}
+          <QRScanModal
+            isOpen={showVoiceChoiceModal}
+            onClose={() => setShowVoiceChoiceModal(false)}
+            onTextChoice={handleTextChoice}
+            onVoiceChoice={handleVoiceChoice}
+          />
         </div>
       </TooltipProvider>
     </QueryClientProvider>
