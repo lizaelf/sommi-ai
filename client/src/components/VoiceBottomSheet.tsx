@@ -11,7 +11,6 @@ interface VoiceBottomSheetProps {
   onClose: () => void;
   onMute: () => void;
   onAsk: () => void;
-  onChoice?: (choice: "text" | "voice") => void;
   isListening?: boolean;
   isResponding?: boolean;
   isThinking?: boolean;
@@ -36,7 +35,6 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   onClose,
   onMute,
   onAsk,
-  onChoice,
   isListening = false,
   isResponding = false,
   isThinking = false,
@@ -294,102 +292,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               width: '100%'
             }}>
               
-              {/* Text/Voice Choice Screen - Show when onChoice is available and no other interactions */}
-              {onChoice && !showAskButton && !showUnmuteButton && !isListening && !isResponding && !isThinking && !isPlayingAudio && !isLoadingAudio && (
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  width: '100%',
-                  paddingLeft: '16px',
-                  paddingRight: '16px',
-                  gap: '16px'
-                }}>
-                  <div style={{
-                    color: '#CECECE',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '18px',
-                    fontWeight: 'normal',
-                    textAlign: 'center',
-                    marginBottom: '8px'
-                  }}>
-                    How would you like to explore?
-                  </div>
-                  
-                  {/* Text Choice Button */}
-                  <button
-                    onClick={() => onChoice("text")}
-                    style={{
-                      width: '100%',
-                      height: '56px',
-                      borderRadius: '32px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      border: 'none',
-                      color: 'white',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '16px',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      transition: 'background-color 0.2s ease',
-                      outline: 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                    }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                    Text
-                  </button>
-
-                  {/* Voice Choice Button */}
-                  <button
-                    onClick={() => onChoice("voice")}
-                    style={{
-                      width: '100%',
-                      height: '56px',
-                      borderRadius: '32px',
-                      backgroundColor: '#3b82f6',
-                      border: 'none',
-                      color: 'white',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '16px',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      transition: 'background-color 0.2s ease',
-                      outline: 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#2563eb';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#3b82f6';
-                    }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                      <line x1="12" y1="19" x2="12" y2="23"/>
-                      <line x1="8" y1="23" x2="16" y2="23"/>
-                    </svg>
-                    Voice
-                  </button>
-                </div>
-              )}
-
               {/* Suggestions Section */}
-              {showSuggestions && onSuggestionClick && (showAskButton || !showAskButton) && !onChoice && (
+              {showSuggestions && onSuggestionClick && (showAskButton || !showAskButton) && (
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 

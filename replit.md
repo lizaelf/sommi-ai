@@ -48,17 +48,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 17, 2025)
 
-### Voice Assistant Bug Fixes & Architecture Stabilization (June 17, 2025 - Latest)
-- **Import Consistency Fixed**: Resolved VoiceController import inconsistencies in EnhancedChatInterface component
-- **Component Integration Corrected**: Fixed VoiceAssistant component usage throughout the application
-- **Audio Format Compatibility**: Updated MediaRecorder to use audio/webm format for proper backend transcription
-- **Message Handling Enhancement**: Added proper onSendMessage parameter passing through voice component hierarchy
-- **Transcription Integration**: Connected voice recording to existing /api/transcribe endpoint with proper error handling
-- **Component Export Optimization**: Standardized voice component exports with proper TypeScript interfaces
-- **Voice State Synchronization**: Enhanced state management between voice components and UI elements
-- **Error Handling Improvement**: Added comprehensive error handling for voice recording and transcription failures
-
-### Welcome Message Architecture Cleanup (June 17, 2025)
+### Welcome Message Architecture Cleanup (June 17, 2025 - Latest)
 - **Removed Redundant Welcome Message**: Eliminated duplicate welcome message implementation from App.tsx to prevent code duplication
 - **Centralized Voice Functionality**: Welcome message now handled entirely by VoiceAssistant component using dynamic wine configuration data
 - **Improved Maintainability**: Single source of truth for welcome message content and caching logic
