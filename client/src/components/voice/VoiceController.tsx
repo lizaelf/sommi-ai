@@ -78,14 +78,15 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
 
   // Handle voice assistant events
   useEffect(() => {
-    const handleTriggerVoiceAssistant = () => {
+    const handleTriggerVoiceAssistant = async () => {
       setShowBottomSheet(true);
       sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
       setShowAskButton(false);
       setIsResponding(true);
 
-      // Play welcome message
+      // Play welcome message immediately - if not cached, generate it now
       if (welcomeAudioCacheRef.current) {
+        console.log("Playing cached welcome message");
         const audio = new Audio(welcomeAudioCacheRef.current);
         currentAudioRef.current = audio;
         setIsPlayingAudio(true);
@@ -106,8 +107,55 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
           setShowAskButton(true);
         });
       } else {
-        setIsResponding(false);
-        setShowAskButton(true);
+        // Generate welcome message immediately if not cached
+        console.log("Generating welcome message on demand");
+        const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+        
+        try {
+          const response = await fetch('/api/text-to-speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: welcomeMessage })
+          });
+          
+          if (response.ok) {
+            const buffer = await response.arrayBuffer();
+            const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            welcomeAudioCacheRef.current = audioUrl;
+            (window as any).globalWelcomeAudioCache = audioUrl;
+            
+            // Play immediately
+            const audio = new Audio(audioUrl);
+            currentAudioRef.current = audio;
+            setIsPlayingAudio(true);
+            
+            audio.onended = () => {
+              setIsPlayingAudio(false);
+              currentAudioRef.current = null;
+              if (!isManuallyClosedRef.current) {
+                setIsResponding(false);
+                setShowAskButton(true);
+              }
+            };
+            
+            audio.play().catch(error => {
+              console.error("Audio playback failed:", error);
+              setIsPlayingAudio(false);
+              setIsResponding(false);
+              setShowAskButton(true);
+            });
+          } else {
+            console.error("Failed to generate welcome message");
+            setIsResponding(false);
+            setShowAskButton(true);
+          }
+        } catch (error) {
+          console.error("Error generating welcome message:", error);
+          setIsResponding(false);
+          setShowAskButton(true);
+        }
       }
     };
 
