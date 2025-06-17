@@ -251,6 +251,24 @@ export default function SuggestionPills({
     };
   }, [currentAbortController]);
 
+  // Helper function to mark pill as used
+  const markPillAsUsed = async (pillId: string) => {
+    try {
+      const effectiveWineKey = wineKey || "wine_1";
+      await fetch("/api/suggestion-pills/used", {
+        method: "POST",
+        body: JSON.stringify({
+          wineKey: effectiveWineKey,
+          suggestionId: pillId,
+          userId: null,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      console.error("Error marking pill as used:", error);
+    }
+  };
+
   const handlePillClick = async (pill: SuggestionPill) => {
     console.log(
       "🔍 DEBUGGING: handlePillClick called with context:",
@@ -382,8 +400,7 @@ export default function SuggestionPills({
           });
         }
 
-        // ✅ FIXED: Only mark as used temporarily during processing
-        // Don't permanently hide the pill
+        // Mark as used temporarily during processing
         setUsedPills((prev) => new Set(prev).add(pill.id));
 
         // Reset the used state after a short delay to make the pill available again
@@ -393,7 +410,7 @@ export default function SuggestionPills({
             newSet.delete(pill.id);
             return newSet;
           });
-        }, 2000); // 2 seconds - enough time to prevent double-clicking
+        }, 2000);
 
         markPillAsUsed(pill.id);
         return;
@@ -445,7 +462,14 @@ export default function SuggestionPills({
             };
 
             (window as any).currentOpenAIAudio = audio;
-            await audio.play();
+            try {
+              await audio.play();
+            } catch (playError) {
+              console.error("🎤 VOICE: Audio play failed:", playError);
+              setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+              return;
+            }
 
             const userMessage = {
               id: Date.now(),
@@ -469,7 +493,7 @@ export default function SuggestionPills({
               }),
             );
 
-            // ✅ FIXED: Only mark as used temporarily
+            // Mark as used temporarily
             setUsedPills((prev) => new Set(prev).add(pill.id));
             setTimeout(() => {
               setUsedPills((prev) => {
@@ -485,68 +509,78 @@ export default function SuggestionPills({
 
           // Generate TTS if not cached
           console.log("🎤 VOICE: Making high-priority TTS request");
-          const response = await fetch("/api/text-to-speech", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Cache-Control": "no-cache",
-              Priority: "urgent",
-            },
-            body: JSON.stringify({
-              text: instantResponse.slice(0, 1000),
-              optimize: "speed",
-            }),
-            signal: currentAbortController?.signal,
-          });
+          try {
+            const response = await fetch("/api/text-to-speech", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-cache",
+                Priority: "urgent",
+              },
+              body: JSON.stringify({
+                text: instantResponse.slice(0, 1000),
+                optimize: "speed",
+              }),
+              signal: currentAbortController?.signal,
+            });
 
-          if (response.ok) {
-            const audioBuffer = await response.arrayBuffer();
-            const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioUrl);
+            if (response.ok) {
+              const audioBuffer = await response.arrayBuffer();
+              const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+              const audioUrl = URL.createObjectURL(audioBlob);
+              const audio = new Audio(audioUrl);
 
-            audio.preload = "auto";
-            audio.crossOrigin = "anonymous";
+              audio.preload = "auto";
+              audio.crossOrigin = "anonymous";
 
-            console.log("🎤 VOICE: TTS ready - starting immediate playback");
+              console.log("🎤 VOICE: TTS ready - starting immediate playback");
 
-            audio.onloadeddata = () => {
-              console.log("🎤 VOICE: Audio data loaded, starting playback");
-              audio.play().catch(console.error);
-            };
-
-            audio.onplay = () => {
-              console.log("🎤 VOICE: ✅ Audio playback started successfully");
-              window.dispatchEvent(new CustomEvent("tts-audio-start"));
-            };
-
-            audio.onended = () => {
-              console.log("🎤 VOICE: Audio playback completed");
-              URL.revokeObjectURL(audioUrl);
-              setIsProcessing(false);
-              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-            };
-
-            audio.onerror = (e) => {
-              console.error("🎤 VOICE: Audio playback error:", e);
-              URL.revokeObjectURL(audioUrl);
-              setIsProcessing(false);
-              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-            };
-
-            (window as any).currentOpenAIAudio = audio;
-
-            try {
-              console.log("🎤 VOICE: Starting immediate audio playback");
-              await audio.play();
-              console.log("🎤 VOICE: ✅ Audio playback initiated successfully");
-            } catch (playError) {
-              console.error("🎤 VOICE: Immediate playback failed:", playError);
-              audio.addEventListener("canplay", () => {
+              audio.onloadeddata = () => {
+                console.log("🎤 VOICE: Audio data loaded, starting playback");
                 audio.play().catch(console.error);
-              });
+              };
+
+              audio.onplay = () => {
+                console.log("🎤 VOICE: ✅ Audio playback started successfully");
+                window.dispatchEvent(new CustomEvent("tts-audio-start"));
+              };
+
+              audio.onended = () => {
+                console.log("🎤 VOICE: Audio playback completed");
+                URL.revokeObjectURL(audioUrl);
+                setIsProcessing(false);
+                window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+              };
+
+              audio.onerror = (e) => {
+                console.error("🎤 VOICE: Audio playback error:", e);
+                URL.revokeObjectURL(audioUrl);
+                setIsProcessing(false);
+                window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+              };
+
+              (window as any).currentOpenAIAudio = audio;
+
+              try {
+                console.log("🎤 VOICE: Starting immediate audio playback");
+                await audio.play();
+                console.log("🎤 VOICE: ✅ Audio playback initiated successfully");
+              } catch (playError) {
+                console.error("🎤 VOICE: Immediate playback failed:", playError);
+                audio.addEventListener("canplay", () => {
+                  audio.play().catch(console.error);
+                });
+                setIsProcessing(false);
+              }
+            } else {
+              console.error("🎤 VOICE: TTS request failed:", response.status);
               setIsProcessing(false);
+              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
             }
+          } catch (fetchError) {
+            console.error("🎤 VOICE: TTS fetch failed:", fetchError);
+            setIsProcessing(false);
+            window.dispatchEvent(new CustomEvent("tts-audio-stop"));
           }
 
           const userMessage = {
@@ -571,7 +605,7 @@ export default function SuggestionPills({
             }),
           );
 
-          // ✅ FIXED: Only mark as used temporarily
+          // Mark as used temporarily
           setUsedPills((prev) => new Set(prev).add(pill.id));
           setTimeout(() => {
             setUsedPills((prev) => {
@@ -583,85 +617,19 @@ export default function SuggestionPills({
 
           markPillAsUsed(pill.id);
           return;
-        } else {
-          // No cached response - make API call
-          console.log(
-            "🎤 VOICE: No cache - making direct API call for voice response",
-          );
-
-          const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              messages: [{ role: "user", content: pill.prompt }],
-              wineKey: effectiveWineKey,
-              wineData: {
-                id: null,
-                name: 'Ridge "Lytton Springs" Dry Creek Zinfandel',
-              },
-              textOnly: false,
-            }),
-            signal: currentAbortController?.signal,
-          });
-
-          if (!response.ok) {
-            throw new Error(`API request failed: ${response.status}`);
-          }
-
-          const data = await response.json();
-          const responseText = data.message?.content || "";
-
-          if (
-            responseText &&
-            data.audioBuffers &&
-            data.audioBuffers.length > 0
-          ) {
-            const cacheKey = getSuggestionCacheKey(
-              effectiveWineKey,
-              suggestionId,
-            );
-            localStorage.setItem(cacheKey, responseText);
-
-            const userMessage = {
-              id: Date.now(),
-              content: pill.prompt,
-              role: "user" as const,
-              conversationId: conversationId || 0,
-              createdAt: new Date().toISOString(),
-            };
-
-            const assistantMessage = {
-              id: Date.now() + 1,
-              content: responseText,
-              role: "assistant" as const,
-              conversationId: conversationId || 0,
-              createdAt: new Date().toISOString(),
-            };
-
-            window.dispatchEvent(
-              new CustomEvent("addChatMessage", {
-                detail: { userMessage, assistantMessage },
-              }),
-            );
-
-            for (const buffer of data.audioBuffers) {
-              const audioBlob = new Blob([buffer], { type: "audio/mpeg" });
-              const audioUrl = URL.createObjectURL(audioBlob);
-              const audio = new Audio(audioUrl);
-
-              await new Promise((resolve, reject) => {
-                audio.onended = () => {
-                  URL.revokeObjectURL(audioUrl);
-                  resolve(undefined);
-                };
-                audio.onerror = reject;
-                audio.play();
-              });
-            }
-          }
         }
 
-        // ✅ FIXED: Only mark as used temporarily
+        // No cached response - make API call
+        console.log(
+          "🎤 VOICE: No cache - making direct API call for voice response",
+        );
+
+        onSuggestionClick(pill.prompt, pill.id, {
+          textOnly: false,
+          conversationId,
+        });
+
+        // Mark as used temporarily
         setUsedPills((prev) => new Set(prev).add(pill.id));
         setTimeout(() => {
           setUsedPills((prev) => {
@@ -700,25 +668,7 @@ export default function SuggestionPills({
     }
   };
 
-  // Helper function to mark pill as used
-  const markPillAsUsed = async (pillId: string) => {
-    try {
-      const effectiveWineKey = wineKey || "wine_1";
-      await fetch("/api/suggestion-pills/used", {
-        method: "POST",
-        body: JSON.stringify({
-          wineKey: effectiveWineKey,
-          suggestionId: pillId,
-          userId: null,
-        }),
-        headers: { "Content-Type": "application/json" },
-      });
-    } catch (error) {
-      console.error("Error marking pill as used:", error);
-    }
-  };
-
-  // ✅ FIXED: Stable pill display - pills don't disappear after use
+  // Fixed: Stable pill display with unique keys
   const visiblePills = useMemo(() => {
     // Get the source pills (API or default)
     const sourcePills =
@@ -726,35 +676,38 @@ export default function SuggestionPills({
         ? suggestionsData.suggestions
         : defaultSuggestions;
 
-    // Ensure we have at least 3 pills by duplicating if necessary
-    const extendedPills = [...sourcePills];
-    while (extendedPills.length < 3) {
-      extendedPills.push(...sourcePills.slice(0, 3 - extendedPills.length));
-    }
+    // Create unique pills by adding index suffix to prevent key duplication
+    const createUniquePills = (pills: SuggestionPill[], startIndex = 0) => {
+      return pills.map((pill, index) => ({
+        ...pill,
+        id: `${pill.id}_${startIndex + index}`, // Make IDs unique
+      }));
+    };
 
-    // Always return exactly 3 pills, temporarily filter out currently used ones
-    const availablePills = extendedPills.filter(
+    // Always return exactly 3 unique pills
+    const availablePills = sourcePills.filter(
       (pill: SuggestionPill) => !usedPills.has(pill.id),
     );
 
-    // If we have enough available pills, use them
     if (availablePills.length >= 3) {
-      return availablePills.slice(0, 3);
+      return createUniquePills(availablePills.slice(0, 3));
     }
 
-    // Otherwise, mix available and recently used pills
-    const recentlyUsedPills = extendedPills.filter((pill: SuggestionPill) =>
-      usedPills.has(pill.id),
-    );
+    // If we need to fill slots, create unique versions
+    const fillPills = [...availablePills];
+    let fillIndex = 0;
+    
+    while (fillPills.length < 3 && sourcePills.length > 0) {
+      const pillToAdd = sourcePills[fillIndex % sourcePills.length];
+      const uniquePill = {
+        ...pillToAdd,
+        id: `${pillToAdd.id}_fill_${fillIndex}`,
+      };
+      fillPills.push(uniquePill);
+      fillIndex++;
+    }
 
-    const combined = [...availablePills, ...recentlyUsedPills];
-
-    // Remove duplicates and return exactly 3
-    const uniquePills = Array.from(
-      new Map(combined.map((pill) => [pill.id, pill])).values(),
-    );
-
-    return uniquePills.slice(0, 3);
+    return fillPills.slice(0, 3);
   }, [suggestionsData, usedPills, isLoading]);
 
   return (
@@ -818,30 +771,30 @@ export default function SuggestionPills({
                   : isRecentlyUsed
                     ? "#f3f4f6"
                     : undefined,
-              color:
-                preGenStatus === "ready" && context === "voice-assistant"
-                  ? "#ffffff"
-                  : isRecentlyUsed
-                    ? "#9ca3af"
-                    : undefined,
             }}
           >
-            {showFallback ? "Loading audio..." : pill.text}
-            {isLoading && (
+            {showFallback ? (
               <div
                 style={{
-                  position: "absolute",
-                  right: "8px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  width: "12px",
-                  height: "12px",
-                  border: "2px solid #ffffff",
-                  borderTop: "2px solid transparent",
-                  borderRadius: "50%",
-                  animation: "spin 1s linear infinite",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
                 }}
-              />
+              >
+                <div
+                  style={{
+                    width: "12px",
+                    height: "12px",
+                    border: "2px solid #e5e7eb",
+                    borderTop: "2px solid #3b82f6",
+                    borderRadius: "50%",
+                    animation: "spin 1s linear infinite",
+                  }}
+                />
+                Loading...
+              </div>
+            ) : (
+              pill.text
             )}
           </Button>
         );
