@@ -48,12 +48,10 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 17, 2025)
 
 ### Welcome Message Architecture Cleanup (June 17, 2025 - Latest)
-- **Centralized Welcome Message Implementation**: Created `getDynamicWelcomeMessage()` function to eliminate code duplication across components
 - **Removed Redundant Welcome Message**: Eliminated duplicate welcome message implementation from App.tsx to prevent code duplication
-- **Unified Dynamic Content**: All welcome messages now use centralized function with dynamic wine configuration data
-- **VoiceAssistant Syntax Fix**: Cleaned up corrupted file structure and resolved multiple default export errors
-- **Improved Maintainability**: Single source of truth for welcome message content and caching logic using actual Ridge Vineyards data
-- **Cleaner Component Architecture**: VoiceAssistant component now uses centralized getDynamicWelcomeMessage() function for all welcome message generation
+- **Centralized Voice Functionality**: Welcome message now handled entirely by VoiceAssistant component using dynamic wine configuration data
+- **Improved Maintainability**: Single source of truth for welcome message content and caching logic
+- **Cleaner App Architecture**: App.tsx simplified to focus solely on routing and core application setup
 
 ### SuggestionPills UI Stability Enhancement (June 17, 2025)
 - **Stable Pill Display Implementation**: Fixed SuggestionPills component to prevent UI changes during page loading, eliminating pill flickering and content shifts

@@ -5,15 +5,6 @@ import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import wineResponses from "@/../../shared/wineResponses.json";
 
-// Helper function to generate cache keys for suggestions
-const getSuggestionCacheKey = (
-  wineKey: string,
-  suggestionId: string,
-  type: string = "text",
-): string => {
-  return `${wineKey}:${suggestionId}:${type}`;
-};
-
 interface SuggestionPill {
   id: string;
   text: string;
@@ -48,14 +39,11 @@ export default function SuggestionPills({
   const [usedPills, setUsedPills] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const [currentAbortController, setCurrentAbortController] =
-    useState<AbortController | null>(null);
-  const [preGenerationStatus, setPreGenerationStatus] = useState<
-    Map<string, "loading" | "ready" | "failed">
-  >(new Map());
+  const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);
+  const [preGenerationStatus, setPreGenerationStatus] = useState<Map<string, 'loading' | 'ready' | 'failed'>>(new Map());
   const [loadingPillId, setLoadingPillId] = useState<string | null>(null);
-  const [audioLoadTimeout, setAudioLoadTimeout] =
-    useState<NodeJS.Timeout | null>(null);
+  const [audioLoadTimeout, setAudioLoadTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [allPillsReady, setAllPillsReady] = useState(false);
 
   // Default suggestions to show immediately while API loads
   const defaultSuggestions: SuggestionPill[] = [
@@ -104,18 +92,12 @@ export default function SuggestionPills({
   // Manual reset function - only triggered by user interaction
   const resetSuggestionPills = useCallback(() => {
     const effectiveWineKey = wineKey || "wine_1";
-    console.log(
-      "Manually resetting suggestion cycle for wine:",
-      effectiveWineKey,
-    );
+    console.log("Manually resetting suggestion cycle for wine:", effectiveWineKey);
     setIsResetting(true);
 
-    fetch(
-      `/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`,
-      {
-        method: "DELETE",
-      },
-    )
+    fetch(`/api/suggestion-pills/${encodeURIComponent(effectiveWineKey)}/reset`, {
+      method: "DELETE",
+    })
       .then(() => {
         setUsedPills(new Set());
         setIsResetting(false);
@@ -143,8 +125,7 @@ export default function SuggestionPills({
 
   // Enhanced pre-generation with status tracking and fallbacks
   const preGenerateSuggestionAudio = async (suggestions?: SuggestionPill[]) => {
-    const pillsToProcess =
-      suggestions || suggestionsData?.suggestions || defaultSuggestions;
+    const pillsToProcess = suggestions || suggestionsData?.suggestions || defaultSuggestions;
     if (!pillsToProcess?.length) return;
 
     console.log("🎤 PRE-GEN: Starting enhanced audio pre-generation");
@@ -154,29 +135,21 @@ export default function SuggestionPills({
     const effectiveWineKey = wineKey || "wine_1";
 
     for (const pill of pillsToProcess.slice(0, 3)) {
-      const suggestionId = pill.prompt
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_");
-      const cacheKey = getSuggestionCacheKey(
-        effectiveWineKey,
-        suggestionId,
-        "audio",
-      );
+      const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+      const cacheKey = `${effectiveWineKey}_${suggestionId}`;
 
       // Update pre-generation status
-      setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "loading"));
+      setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'loading'));
 
       if (audioCache[cacheKey]) {
-        setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "ready"));
+        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
         console.log(`🎤 PRE-GEN: Audio already cached for "${pill.text}"`);
         continue;
       }
 
-      const wineData =
-        wineResponses[effectiveWineKey as keyof typeof wineResponses];
+      const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
       if (wineData?.responses) {
-        const responseText =
-          wineData.responses[suggestionId as keyof typeof wineData.responses];
+        const responseText = wineData.responses[suggestionId as keyof typeof wineData.responses];
         if (responseText) {
           try {
             console.log(`🎤 PRE-GEN: Generating audio for "${pill.text}"`);
@@ -188,40 +161,25 @@ export default function SuggestionPills({
 
             if (response.ok) {
               const audioBuffer = await response.arrayBuffer();
-              const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+              const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
               const audioUrl = URL.createObjectURL(audioBlob);
               audioCache[cacheKey] = audioUrl;
-              setPreGenerationStatus((prev) =>
-                new Map(prev).set(cacheKey, "ready"),
-              );
+              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
               console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
             } else {
-              setPreGenerationStatus((prev) =>
-                new Map(prev).set(cacheKey, "failed"),
-              );
-              console.error(
-                `🎤 PRE-GEN: TTS request failed for "${pill.text}"`,
-              );
+              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+              console.error(`🎤 PRE-GEN: TTS request failed for "${pill.text}"`);
             }
           } catch (error) {
-            setPreGenerationStatus((prev) =>
-              new Map(prev).set(cacheKey, "failed"),
-            );
-            console.error(
-              `🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`,
-              error,
-            );
+            setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+            console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`, error);
           }
         } else {
-          setPreGenerationStatus((prev) =>
-            new Map(prev).set(cacheKey, "failed"),
-          );
-          console.log(
-            `🎤 PRE-GEN: No spreadsheet response for "${pill.text}", skipping pre-generation`,
-          );
+          setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+          console.log(`🎤 PRE-GEN: No spreadsheet response for "${pill.text}", skipping pre-generation`);
         }
       } else {
-        setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "failed"));
+        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
         console.log(`🎤 PRE-GEN: No wine data found for "${effectiveWineKey}"`);
       }
     }
@@ -230,9 +188,7 @@ export default function SuggestionPills({
   // Listen for abort conversation events (when user closes voice assistant)
   useEffect(() => {
     const handleAbortConversation = () => {
-      console.log(
-        "🛑 SuggestionPills: Received abort signal - stopping all API requests",
-      );
+      console.log("🛑 SuggestionPills: Received abort signal - stopping all API requests");
 
       // Abort current API request if ongoing
       if (currentAbortController) {
@@ -251,20 +207,15 @@ export default function SuggestionPills({
       }
     };
 
-    window.addEventListener("abortConversation", handleAbortConversation);
+    window.addEventListener('abortConversation', handleAbortConversation);
 
     return () => {
-      window.removeEventListener("abortConversation", handleAbortConversation);
+      window.removeEventListener('abortConversation', handleAbortConversation);
     };
   }, [currentAbortController]);
 
   const handlePillClick = async (pill: SuggestionPill) => {
-    console.log(
-      "🔍 DEBUGGING: handlePillClick called with context:",
-      context,
-      "preferredResponseType:",
-      preferredResponseType,
-    );
+    console.log("🔍 DEBUGGING: handlePillClick called with context:", context, "preferredResponseType:", preferredResponseType);
     console.log("🔍 DEBUGGING: wineKey:", wineKey, "pill:", pill);
     if (isDisabled) return;
 
@@ -281,33 +232,16 @@ export default function SuggestionPills({
 
       // First check spreadsheet data for voice suggestions
       if (context === "voice-assistant") {
-        console.log(
-          "🔍 VOICE DEBUG: Looking for wine data with key:",
-          effectiveWineKey,
-        );
-        console.log(
-          "🔍 VOICE DEBUG: Available wine keys:",
-          Object.keys(wineResponses),
-        );
-        const wineData =
-          wineResponses[effectiveWineKey as keyof typeof wineResponses];
+        console.log("🔍 VOICE DEBUG: Looking for wine data with key:", effectiveWineKey);
+        console.log("🔍 VOICE DEBUG: Available wine keys:", Object.keys(wineResponses));
+        const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
         console.log("🔍 VOICE DEBUG: Found wine data:", !!wineData);
         if (wineData && wineData.responses) {
-          console.log(
-            "🔍 VOICE DEBUG: Available response keys:",
-            Object.keys(wineData.responses),
-          );
-          console.log(
-            "🔍 VOICE DEBUG: Looking for suggestion ID:",
-            suggestionId,
-          );
-          const spreadsheetResponse =
-            wineData.responses[suggestionId as keyof typeof wineData.responses];
+          console.log("🔍 VOICE DEBUG: Available response keys:", Object.keys(wineData.responses));
+          console.log("🔍 VOICE DEBUG: Looking for suggestion ID:", suggestionId);
+          const spreadsheetResponse = wineData.responses[suggestionId as keyof typeof wineData.responses];
           if (spreadsheetResponse) {
-            console.log(
-              "📊 Using spreadsheet response for voice suggestion:",
-              suggestionId,
-            );
+            console.log("📊 Using spreadsheet response for voice suggestion:", suggestionId);
             instantResponse = spreadsheetResponse;
           } else {
             console.log("❌ No spreadsheet response found for:", suggestionId);
@@ -330,7 +264,7 @@ export default function SuggestionPills({
         "PillId:",
         pill.id,
         "PreferredType:",
-        preferredResponseType,
+        preferredResponseType
       );
 
       // CHAT CONTEXT: Handle text-only, no audio
@@ -368,9 +302,7 @@ export default function SuggestionPills({
 
           console.log("💬 CHAT: Messages added to chat - NO AUDIO PLAYED");
         } else {
-          console.log(
-            "💬 CHAT: No cache - using API call with instant feedback",
-          );
+          console.log("💬 CHAT: No cache - using API call with instant feedback");
           // No cached response - make API call but show instant user message
           const userMessage = {
             id: Date.now(),
@@ -413,22 +345,14 @@ export default function SuggestionPills({
         console.log("🎤 VOICE: Dispatched TTS start event for stop button");
 
         if (instantResponse) {
-          console.log(
-            "🎤 VOICE: Using cached response - starting TTS immediately",
-          );
+          console.log("🎤 VOICE: Using cached response - starting TTS immediately");
 
           // Check if we have pre-generated audio for this suggestion
           const audioCache = (window as any).suggestionAudioCache || {};
-          const cacheKey = getSuggestionCacheKey(
-            effectiveWineKey,
-            suggestionId,
-            "audio",
-          );
+          const cacheKey = `${effectiveWineKey}_${suggestionId}`;
 
           if (audioCache[cacheKey]) {
-            console.log(
-              "🎤 VOICE: Using pre-generated audio for instant playback",
-            );
+            console.log("🎤 VOICE: Using pre-generated audio for instant playback");
             const audio = new Audio(audioCache[cacheKey]);
 
             audio.onplay = () => {
@@ -482,27 +406,27 @@ export default function SuggestionPills({
           console.log("🎤 VOICE: Making high-priority TTS request");
           const response = await fetch("/api/text-to-speech", {
             method: "POST",
-            headers: {
+            headers: { 
               "Content-Type": "application/json",
               "Cache-Control": "no-cache", // Prevent caching delays
-              Priority: "urgent", // Request priority hint
+              "Priority": "urgent" // Request priority hint
             },
-            body: JSON.stringify({
+            body: JSON.stringify({ 
               text: instantResponse.slice(0, 1000), // Limit text length for faster processing
-              optimize: "speed", // Server optimization hint
+              optimize: "speed" // Server optimization hint
             }),
             signal: currentAbortController?.signal,
           });
 
           if (response.ok) {
             const audioBuffer = await response.arrayBuffer();
-            const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+            const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
 
             // Optimize for immediate playback
-            audio.preload = "auto";
-            audio.crossOrigin = "anonymous";
+            audio.preload = 'auto';
+            audio.crossOrigin = 'anonymous';
 
             console.log("🎤 VOICE: TTS ready - starting immediate playback");
 
@@ -540,7 +464,7 @@ export default function SuggestionPills({
             } catch (playError) {
               console.error("🎤 VOICE: Immediate playback failed:", playError);
               // Fallback: wait for loadeddata event
-              audio.addEventListener("canplay", () => {
+              audio.addEventListener('canplay', () => {
                 audio.play().catch(console.error);
               });
               setIsProcessing(false);
@@ -576,9 +500,7 @@ export default function SuggestionPills({
           return; // Exit early - TTS already started above
         } else {
           // No cached response - make API call
-          console.log(
-            "🎤 VOICE: No cache - making direct API call for voice response",
-          );
+          console.log("🎤 VOICE: No cache - making direct API call for voice response");
 
           const response = await fetch("/api/chat", {
             method: "POST",
@@ -586,10 +508,7 @@ export default function SuggestionPills({
             body: JSON.stringify({
               messages: [{ role: "user", content: pill.prompt }],
               wineKey: effectiveWineKey,
-              wineData: {
-                id: null,
-                name: 'Ridge "Lytton Springs" Dry Creek Zinfandel',
-              },
+              wineData: { id: null, name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel" },
               textOnly: false,
             }),
             signal: currentAbortController?.signal,
@@ -602,17 +521,10 @@ export default function SuggestionPills({
           const data = await response.json();
           const responseText = data.message?.content || "";
 
-          if (
-            responseText &&
-            data.audioBuffers &&
-            data.audioBuffers.length > 0
-          ) {
+          if (responseText && data.audioBuffers && data.audioBuffers.length > 0) {
             // Cache the response for future use
-            const cacheKey = getSuggestionCacheKey(
-              effectiveWineKey,
-              suggestionId,
-            );
-            localStorage.setItem(cacheKey, responseText);
+            const cacheKey = `${effectiveWineKey}:${suggestionId}`;
+            localStorage.setItem(`suggestion_${cacheKey}`, responseText);
 
             // Add messages to chat
             const userMessage = {
@@ -639,7 +551,7 @@ export default function SuggestionPills({
 
             // Play audio from API response
             for (const buffer of data.audioBuffers) {
-              const audioBlob = new Blob([buffer], { type: "audio/mpeg" });
+              const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
               const audioUrl = URL.createObjectURL(audioBlob);
               const audio = new Audio(audioUrl);
 
@@ -706,30 +618,32 @@ export default function SuggestionPills({
     }
   };
 
-  const sourceSuggestions = useMemo(() => {
-    const apiSuggestions = suggestionsData?.suggestions || [];
-    const isStable = !isLoading && apiSuggestions.length >= 3;
-
-    return isStable ? apiSuggestions : defaultSuggestions;
-  }, [isLoading, suggestionsData]);
-
   // Stable pill display - prevent changes during page loading
-
   const visiblePills = useMemo(() => {
-    const unused = sourceSuggestions.filter((pill) => !usedPills.has(pill.id));
-    const used = sourceSuggestions.filter((pill) => usedPills.has(pill.id));
-    const combined = [...unused, ...used];
-
-    // Conditionally fill in if fewer than 3
-    if (combined.length < 3) {
-      combined.push(...defaultSuggestions);
+    // Always start with default suggestions to prevent loading flicker
+    let finalPills = defaultSuggestions;
+    
+    // Only use API suggestions if fully loaded and stable
+    if (suggestionsData?.suggestions && !isLoading) {
+      finalPills = suggestionsData.suggestions;
     }
 
-    const uniqueById = Array.from(
-      new Map(combined.map((p) => [p.id, p])).values(),
+    // Filter used pills only after user interaction, not during loading
+    const displayPills = finalPills.filter((pill: SuggestionPill) => 
+      !usedPills.has(pill.id)
     );
-    return uniqueById.slice(0, 3);
-  }, [sourceSuggestions, usedPills]);
+
+    // If we have less than 3 unused pills, fill with used ones to maintain count
+    if (displayPills.length < 3) {
+      const usedPills_array = finalPills.filter((pill: SuggestionPill) => 
+        usedPills.has(pill.id)
+      );
+      return [...displayPills, ...usedPills_array].slice(0, 3);
+    }
+    
+    // Always show exactly 3 pills for stable UI
+    return displayPills.slice(0, 3);
+  }, [suggestionsData, usedPills, isLoading]);
 
   // Show suggestions immediately - always display visible pills
 
@@ -759,16 +673,10 @@ export default function SuggestionPills({
       </style>
       {visiblePills.map((pill: SuggestionPill) => {
         const effectiveWineKey = wineKey || "wine_1";
-        const suggestionId = pill.prompt
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "_");
-        const cacheKey = getSuggestionCacheKey(
-          effectiveWineKey,
-          suggestionId,
-          "audio",
-        );
+        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
         const preGenStatus = preGenerationStatus.get(cacheKey);
-        const isPillLoading = loadingPillId === pill.id;
+        const isLoading = loadingPillId === pill.id;
         const showFallback = isLoading && context === "voice-assistant";
 
         return (
@@ -786,34 +694,29 @@ export default function SuggestionPills({
               padding: "12px 20px",
               transition: "none",
               position: "relative",
-              opacity: isPillLoading ? 0.7 : 1,
-              background:
-                preGenStatus === "ready" && context === "voice-assistant"
-                  ? "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)"
-                  : undefined,
-              color:
-                preGenStatus === "ready" && context === "voice-assistant"
-                  ? "#ffffff"
-                  : undefined,
+              opacity: isLoading ? 0.7 : 1,
+              background: preGenStatus === 'ready' && context === "voice-assistant" 
+                ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' 
+                : undefined,
+              color: preGenStatus === 'ready' && context === "voice-assistant" ? '#ffffff' : undefined,
             }}
           >
             {showFallback ? "Loading audio..." : pill.text}
-            {isPillLoading && (
-              <div
-                style={{
-                  position: "absolute",
-                  right: "8px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  width: "12px",
-                  height: "12px",
-                  border: "2px solid #ffffff",
-                  borderTop: "2px solid transparent",
-                  borderRadius: "50%",
-                  animation: "spin 1s linear infinite",
-                }}
-              />
+            {isLoading && (
+              <div style={{
+                position: "absolute",
+                right: "8px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "12px",
+                height: "12px",
+                border: "2px solid #ffffff",
+                borderTop: "2px solid transparent",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }} />
             )}
+
           </Button>
         );
       })}
