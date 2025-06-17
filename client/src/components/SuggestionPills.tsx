@@ -266,6 +266,12 @@ export default function SuggestionPills({
   }, []);
 
   const handlePillClick = async (pill: SuggestionPill) => {
+    // Fix 2: Debounce or guard against overlapping clicks
+    if ((window as any).audioLock) {
+      console.log("Audio lock active, ignoring click");
+      return;
+    }
+
     if (isDisabled || isProcessing) return;
 
     setLoadingPillId(pill.id);
@@ -350,45 +356,80 @@ export default function SuggestionPills({
           );
 
           if (audioCache[cacheKey]) {
-            // Play pre-generated audio
-            const audio = new Audio(audioCache[cacheKey]);
+            // Fix 2: Set audio lock
+            (window as any).audioLock = true;
 
-            audio.onplay = () =>
-              window.dispatchEvent(new CustomEvent("tts-audio-start"));
-            audio.onended = () => {
-              setIsProcessing(false);
-              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-            };
-            audio.onerror = () => {
-              setIsProcessing(false);
-              window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-            };
+            try {
+              // Fix 3: Track Audio Lifecycle More Safely
+              const previousAudio = (window as any).currentOpenAIAudio;
+              if (previousAudio) {
+                try {
+                  previousAudio.pause();
+                  previousAudio.currentTime = 0;
+                } catch (e) {
+                  console.warn("Error while stopping previous audio:", e);
+                }
+              }
 
-            (window as any).currentOpenAIAudio = audio;
-            await audio.play();
+              // Play pre-generated audio
+              const audio = new Audio(audioCache[cacheKey]);
 
-            // Add messages to chat
-            const userMessage = {
-              id: Date.now(),
-              content: pill.prompt,
-              role: "user" as const,
-              conversationId: conversationId || 0,
-              createdAt: new Date().toISOString(),
-            };
+              // Fix 4: Use loadedmetadata or canplaythrough to guarantee audio is ready
+              await new Promise((resolve, reject) => {
+                audio.oncanplaythrough = resolve;
+                audio.onerror = reject;
+                audio.load();
+              });
 
-            const assistantMessage = {
-              id: Date.now() + 1,
-              content: instantResponse,
-              role: "assistant" as const,
-              conversationId: conversationId || 0,
-              createdAt: new Date().toISOString(),
-            };
+              audio.onplay = () =>
+                window.dispatchEvent(new CustomEvent("tts-audio-start"));
+              audio.onended = () => {
+                setIsProcessing(false);
+                window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+              };
+              audio.onerror = () => {
+                setIsProcessing(false);
+                window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+              };
 
-            window.dispatchEvent(
-              new CustomEvent("addChatMessage", {
-                detail: { userMessage, assistantMessage },
-              }),
-            );
+              (window as any).currentOpenAIAudio = audio;
+
+              // Fix 1: Wrap all calls to audio.play() in a try/catch, and await it explicitly
+              try {
+                await audio.play();
+              } catch (e) {
+                console.warn("Playback failed or was interrupted:", e);
+                setIsProcessing(false);
+                window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+                return;
+              }
+
+              // Add messages to chat
+              const userMessage = {
+                id: Date.now(),
+                content: pill.prompt,
+                role: "user" as const,
+                conversationId: conversationId || 0,
+                createdAt: new Date().toISOString(),
+              };
+
+              const assistantMessage = {
+                id: Date.now() + 1,
+                content: instantResponse,
+                role: "assistant" as const,
+                conversationId: conversationId || 0,
+                createdAt: new Date().toISOString(),
+              };
+
+              window.dispatchEvent(
+                new CustomEvent("addChatMessage", {
+                  detail: { userMessage, assistantMessage },
+                }),
+              );
+            } finally {
+              // Fix 2: Release audio lock
+              (window as any).audioLock = false;
+            }
           } else {
             // No pre-generated audio - use callback to let parent handle
             onSuggestionClick(pill.prompt, pill.id, {
