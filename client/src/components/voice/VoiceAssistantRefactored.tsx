@@ -15,11 +15,10 @@ interface VoiceAssistantRefactoredProps {
   wineKey?: string;
 }
 
-export const VoiceAssistantRefactored: React.FC<VoiceAssistantRefactoredProps> = ({
-  onSendMessage,
-  isProcessing,
-  wineKey = "",
-}) => {
+export const VoiceAssistantRefactored = React.forwardRef<
+  { forceActivate: () => Promise<void> },
+  VoiceAssistantRefactoredProps
+>(({ onSendMessage, isProcessing, wineKey = "" }, ref) => {
   const { toast } = useToast();
   
   // Use modular voice hooks
@@ -164,6 +163,11 @@ export const VoiceAssistantRefactored: React.FC<VoiceAssistantRefactoredProps> =
     }
   };
 
+  // Expose the force activation method for external use
+  React.useImperativeHandle(ref, () => ({
+    forceActivate: voiceCore.forceVoiceActivation
+  }), [voiceCore.forceVoiceActivation]);
+
   return (
     <>
       <VoiceBottomSheet
@@ -183,7 +187,7 @@ export const VoiceAssistantRefactored: React.FC<VoiceAssistantRefactoredProps> =
       />
     </>
   );
-};
+});
 
 // Export with backward compatibility
 export default VoiceAssistantRefactored;

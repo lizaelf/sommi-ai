@@ -107,10 +107,16 @@ export const useVoiceCore = ({ onSendMessage, onStateChange, wineKey = '', isPro
     }
   }, [updateState]);
 
-  const handleVoiceActivation = useCallback(async () => {
-    if (isManuallyClosedRef.current) {
+  const handleVoiceActivation = useCallback(async (forceActivation = false) => {
+    if (isManuallyClosedRef.current && !forceActivation) {
       console.log("VoiceCore: Permanently closed - no automatic reopening until page refresh");
       return;
+    }
+
+    // Reset the manually closed flag when user explicitly activates voice
+    if (forceActivation) {
+      console.log("VoiceCore: Force activation - resetting manual close flag");
+      isManuallyClosedRef.current = false;
     }
 
     console.log("User chose Voice option");
@@ -151,10 +157,17 @@ export const useVoiceCore = ({ onSendMessage, onStateChange, wineKey = '', isPro
     updateState({ isPlayingAudio: false });
   }, [updateState]);
 
+  // Add explicit force activation method for user-triggered voice button clicks
+  const forceVoiceActivation = useCallback(async () => {
+    console.log("VoiceCore: Force activation requested by user click");
+    await handleVoiceActivation(true);
+  }, [handleVoiceActivation]);
+
   return {
     state,
     updateState,
     handleVoiceActivation,
+    forceVoiceActivation,
     handleClose,
     stopAudio,
     playWelcomeMessage,
