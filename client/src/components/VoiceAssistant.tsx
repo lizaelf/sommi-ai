@@ -1,5 +1,5 @@
-import React from "react";
-import { VoiceAssistantRefactored } from "./voice/VoiceAssistantRefactored";
+import React, { useRef } from "react";
+import VoiceAssistantRefactored from "./voice/VoiceAssistantRefactored";
 
 interface VoiceAssistantProps {
   onSendMessage: (
@@ -12,7 +12,20 @@ interface VoiceAssistantProps {
 }
 
 const VoiceAssistant: React.FC<VoiceAssistantProps> = (props) => {
-  return <VoiceAssistantRefactored {...props} />;
+  const voiceRef = useRef<{ forceActivate: () => Promise<void> }>(null);
+
+  const handleForceActivate = async () => {
+    if (voiceRef.current) {
+      await voiceRef.current.forceActivate();
+    }
+  };
+
+  return (
+    <VoiceAssistantRefactored 
+      ref={voiceRef}
+      {...props} 
+    />
+  );
 };
 
 export default VoiceAssistant;

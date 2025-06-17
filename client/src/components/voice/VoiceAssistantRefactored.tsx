@@ -15,7 +15,7 @@ interface VoiceAssistantRefactoredProps {
   wineKey?: string;
 }
 
-export const VoiceAssistantRefactored = React.forwardRef<
+const VoiceAssistantRefactored = React.forwardRef<
   { forceActivate: () => Promise<void> },
   VoiceAssistantRefactoredProps
 >(({ onSendMessage, isProcessing, wineKey = "" }, ref) => {
