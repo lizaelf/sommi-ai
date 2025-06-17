@@ -170,9 +170,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             setIsResponding(false);
             setShowAskButton(true);
           });
-    })();
-  } else {
-    // Fallback to generating audio if cache is not ready
+          } else {
+          // Fallback to generating audio if cache is not ready
 
         console.log("QR SCAN: Cache not ready, generating welcome message");
         const welcomeMessage = getDynamicWelcomeMessage();
