@@ -72,6 +72,10 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Bottom Sheet Readiness Check**: Modified voice assistant to only show bottom sheet when suggestions have ready audio or spreadsheet responses
 - **Audio-Ready Display Logic**: Pills now only appear when they have pre-cached audio, spreadsheet responses, or confirmed ready status
 - **User-Controlled Pill Removal**: Eliminated optimistic pill marking - pills only disappear after successful user interaction completion
+- **Dynamic Pill Replacement**: Used pills are hidden and automatically replaced with next available suggestions from spreadsheet data
+- **Page Load Synchronization**: Added readiness checks to ensure page loads only when all suggestion pills have audio ready
+- **Loading State Implementation**: Shows "Preparing suggestions..." spinner while waiting for audio generation to complete
+- **Spreadsheet Integration**: Expanded suggestion pool to include all available spreadsheet responses for seamless replacements
 - **Hidden Used Pills**: Updated suggestion display logic to hide used pills and show fresh alternatives instead of cycling
 - **Improved User Experience**: Voice suggestions now use curated content for consistent, high-quality responses
 
