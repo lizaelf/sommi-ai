@@ -1107,12 +1107,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
                     voiceButtonComponent={
-                      <VoiceAssistant
-                        onSendMessage={handleSendMessage}
-                        isProcessing={isTyping}
-                        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
-                        onVoiceToggle={handleVoiceToggle}
-                      />
+                      <button
+                        onClick={handleVoiceToggle}
+                        className="p-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 flex items-center justify-center"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V4C15 2.34 13.66 1 12 1Z" fill="currentColor"/>
+                          <path d="M19 10V12C19 16.42 15.42 20 11 20H13C13 22.21 11.21 24 9 24H15C15 22.21 13.21 21 15 21C18.87 21 22 17.87 22 14V10H19Z" fill="currentColor"/>
+                          <path d="M5 10V12C5 15.31 7.69 18 11 18V21H13V18C16.31 18 19 15.31 19 12V10H17V12C17 14.21 15.21 16 13 16H11C8.79 16 7 14.21 7 12V10H5Z" fill="currentColor"/>
+                        </svg>
+                      </button>
                     }
                   />
                 </>
@@ -1382,6 +1386,24 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           </div>,
           portalElement || document.body
         )}
+
+        {/* Voice Bottom Sheet */}
+        <VoiceBottomSheet
+          isOpen={showVoiceBottomSheet}
+          onClose={handleVoiceBottomSheetClose}
+          onSuggestionClick={handleVoiceSuggestionClick}
+          onMute={handleVoiceMute}
+          onAsk={handleVoiceAsk}
+          onUnmute={handleVoiceUnmute}
+          onStopAudio={handleVoiceStopAudio}
+          isListening={voiceState.isListening}
+          isResponding={voiceState.isResponding}
+          isThinking={voiceState.isThinking}
+          isPlayingAudio={voiceState.isPlayingAudio}
+          showAskButton={voiceState.showAskButton}
+          showUnmuteButton={voiceState.showUnmuteButton}
+          wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+        />
     </div>
   );
 };

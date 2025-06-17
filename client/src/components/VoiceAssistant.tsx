@@ -20,7 +20,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   onVoiceToggle
 }) => {
   const handleMicrophoneClick = () => {
-    console.log("Voice button clicked");
+    console.log("Voice button clicked - triggering voice bottom sheet");
     if (onVoiceToggle) {
       onVoiceToggle();
     }
