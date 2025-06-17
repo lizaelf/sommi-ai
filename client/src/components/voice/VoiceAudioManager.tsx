@@ -115,9 +115,7 @@ export const VoiceAudioManager: React.FC<VoiceAudioManagerProps> = ({
   }, [onAudioStateChange]);
 
   const generateFreshWelcomeAudio = useCallback(async () => {
-    // Generate dynamic welcome message using WINE_CONFIG
-    const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
-    const welcomeMessage = `Hello, I see you're looking at the ${wineName}, an excellent choice. This ${WINE_CONFIG.varietal} expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate that is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.`;
+    const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
     
     try {
       const response = await fetch('/api/text-to-speech', {
