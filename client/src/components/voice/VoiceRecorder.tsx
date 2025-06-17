@@ -108,7 +108,7 @@ export const useVoiceRecorder = (
 
       refs.mediaRecorderRef.current.onstop = () => {
         console.log("🎤 VoiceAssistant: Recording stopped");
-        const audioBlob = new Blob(refs.audioChunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(refs.audioChunksRef.current, { type: 'audio/webm' });
         processRecording(audioBlob);
       };
 
