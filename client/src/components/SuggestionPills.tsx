@@ -93,6 +93,7 @@ export default function SuggestionPills({
   const {
     data: suggestionsData,
     isLoading,
+    isFetching,
     refetch,
   } = useQuery({
     queryKey: ["/api/suggestion-pills", effectiveWineKeyForQuery],
@@ -536,7 +537,7 @@ export default function SuggestionPills({
         `}
       </style>
 
-      {isLoading
+      {isFetching
         ? Array.from({ length: 3 }).map((_, index) => (
             <SkeletonPill key={`skeleton-${index}`} index={index} />
           ))
