@@ -309,11 +309,11 @@ export default function SuggestionPills({
           onSuggestionClick(pill.text, pill.id, {
             textOnly: true,
             conversationId,
-            fullPrompt: pill.prompt, // Include full prompt for API processing
           });
         }
 
-        // Mark as used in background for chat context
+        // Mark as used only after successful chat interaction
+        setUsedPills((prev) => new Set(prev).add(pill.id));
         markPillAsUsed(pill.id);
         return; // EXIT EARLY - Chat context handled
       }
@@ -509,12 +509,9 @@ export default function SuggestionPills({
           const responseText = data.message?.content || "";
 
           if (responseText && data.audioBuffers && data.audioBuffers.length > 0) {
-            // Store response in cache for future use
-            await suggestionCache.storeResponse(
-              effectiveWineKey,
-              suggestionId,
-              responseText,
-            );
+            // Cache the response for future use
+            const cacheKey = `${effectiveWineKey}:${suggestionId}`;
+            localStorage.setItem(`suggestion_${cacheKey}`, responseText);
 
             // Add messages to chat
             const userMessage = {
@@ -557,7 +554,8 @@ export default function SuggestionPills({
           }
         }
 
-        // Mark as used in background for voice context
+        // Mark as used only after successful voice interaction
+        setUsedPills((prev) => new Set(prev).add(pill.id));
         markPillAsUsed(pill.id);
         return; // EXIT EARLY - Voice context handled
       }
@@ -631,8 +629,9 @@ export default function SuggestionPills({
         // Check if audio is pre-cached or spreadsheet response exists
         const audioCache = (window as any).suggestionAudioCache || {};
         const hasPreCachedAudio = audioCache[cacheKey];
-        const spreadsheetResponse = hasSpreadsheetResponse(effectiveWineKey, suggestionId);
-        const hasSpreadsheetResponseData = !!spreadsheetResponse;
+        // Check for spreadsheet response
+        const wineData = (window as any).wineResponses?.[effectiveWineKey];
+        const hasSpreadsheetResponseData = wineData && wineData[suggestionId];
         
         return status === 'ready' || hasPreCachedAudio || hasSpreadsheetResponseData;
       }
