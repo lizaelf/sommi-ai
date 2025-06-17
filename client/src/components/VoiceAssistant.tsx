@@ -54,42 +54,157 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   // Cache welcome message immediately on component mount for instant playback
   const cacheWelcomeMessage = async () => {
-    console.log("QR SCAN: welcome audio caching triggered");
-    const welcomeMessage = getDynamicWelcomeMessage();
+    if (welcomeAudioCacheRef.current) return; // Already cached
+
+    // Check if global cache is available first
+    const globalCache = (window as any).globalWelcomeAudioCache;
+    if (globalCache && globalCache.url && globalCache.element) {
+      console.log("Using global welcome audio cache for instant playback");
+      welcomeAudioCacheRef.current = globalCache.url;
+      welcomeAudioElementRef.current = globalCache.element;
+      return;
+    }
+
+    console.log("Caching dynamic welcome message for instant playback");
 
     try {
-      const response = await fetch("/api/text-to-speech", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: welcomeMessage,
-          voice: process.env.NODE_ENV === "development" ? "shimmer" : "nova",
-        }),
+      // Generate dynamic welcome message using centralized function
+      const welcomeMessage = getDynamicWelcomeMessage();
+
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: welcomeMessage })
       });
 
-      if (!response.ok) throw new Error("Failed to fetch TTS");
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
 
-      const arrayBuffer = await response.arrayBuffer();
-      const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-      const blobUrl = URL.createObjectURL(blob);
+        // Pre-create audio element for instant playback
+        const audioElement = new Audio(audioUrl);
+        audioElement.preload = 'auto';
 
-      const audio = new Audio(blobUrl);
+        // Wait for audio to be fully loaded
+        await new Promise((resolve, reject) => {
+          audioElement.oncanplaythrough = resolve;
+          audioElement.onerror = reject;
+          audioElement.load();
+        });
 
-      // Wait until audio is fully loaded
-      await new Promise<void>((resolve, reject) => {
-        audio.oncanplaythrough = () => resolve();
-        audio.onerror = () => reject(new Error("Audio failed to load"));
-        audio.load();
-      });
-
-      (window as any).welcomeAudioGlobalCache = { audio, url: blobUrl };
-      console.log("QR SCAN: fetched and cached welcome audio");
-    } catch (err) {
-      console.error("QR SCAN: failed to cache welcome audio", err);
+        welcomeAudioCacheRef.current = audioUrl;
+        welcomeAudioElementRef.current = audioElement;
+        console.log("Welcome message audio cached and preloaded for instant playback");
+      }
+    } catch (error) {
+      console.error("Failed to cache welcome message:", error);
     }
   };
+
+  // Cache welcome message on component mount and warm cache early
+  useEffect(() => {
+    // Immediately start caching
+    cacheWelcomeMessage();
+
+    // Also set up global cache warming for early initialization
+    if (!(window as any).welcomeAudioGlobalCache) {
+      (window as any).welcomeAudioGlobalCache = cacheWelcomeMessage;
+      // Try to warm cache after a short delay to allow page to settle
+      setTimeout(() => {
+        if (!welcomeAudioCacheRef.current) {
+          console.log("Warming welcome audio cache early");
+          cacheWelcomeMessage();
+        }
+      }, 1000);
+    }
+
+    // Cleanup function to revoke cached audio URLs
+    return () => {
+      if (welcomeAudioCacheRef.current) {
+        URL.revokeObjectURL(welcomeAudioCacheRef.current);
+        welcomeAudioCacheRef.current = null;
+      }
+      if (welcomeAudioElementRef.current) {
+        welcomeAudioElementRef.current.pause();
+        welcomeAudioElementRef.current = null;
+      }
+    };
+  }, []);
+
+  // Listen for suggestion playback events to show Stop button
+  useEffect(() => {
+    const handleSuggestionPlayback = () => {
+      if (!isManuallyClosedRef.current) {
+        setIsResponding(true);
+        setShowUnmuteButton(false);
+        setShowAskButton(false);
+      }
+    };
+
+    const handleSuggestionPlaybackEnded = () => {
+      if (!isManuallyClosedRef.current) {
+        setIsResponding(false);
+        setShowUnmuteButton(false);
+        setShowAskButton(true);
+      }
+    };
+
+    const handleTriggerVoiceAssistant = async () => {
+      console.log("QR SCAN: Voice assistant triggered");
+      // Don't reopen if manually closed
+      if (isManuallyClosedRef.current) {
+        console.log("QR SCAN: Voice assistant manually closed, ignoring trigger");
+        return;
+      }
+
+      // QR scan voice button should always work - don't block based on session storage
+      console.log("QR SCAN: Voice button clicked - proceeding with voice assistant");
+
+      // DEPLOYMENT: Block welcome message until male voice is verified
+      const isDeployment = window.location.hostname.includes('.replit.app') || 
+                          window.location.hostname.includes('.repl.co') ||
+                          window.location.hostname !== 'localhost';
+
+      if (isDeployment) {
+        // Check if voice is properly locked before speaking
+        const voiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
+        console.log("🔍 DEPLOYMENT: Voice verification check:", {
+          VOICE_LOCK_VERIFIED: (window as any).VOICE_LOCK_VERIFIED,
+          GUARANTEED_MALE_VOICE: (window as any).GUARANTEED_MALE_VOICE?.name,
+          voiceLocked
+        });
+
+        if (!voiceLocked) {
+          console.log("🚫 DEPLOYMENT: Blocking welcome message - voice not verified");
+          // Wait a moment for voice system to initialize, then try again
+          setTimeout(() => {
+            const retryVoiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
+            if (retryVoiceLocked) {
+              console.log("✅ DEPLOYMENT: Voice verified on retry, showing welcome");
+              setShowBottomSheet(true);
+              sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+              setShowAskButton(false);
+              setIsResponding(true);
+
+              // Proceed with welcome message
+              const welcomeMessage = getDynamicWelcomeMessage();
+              setTimeout(() => {
+                (window as any).currentResponseAudio = null;
+                setIsResponding(false);
+                setShowAskButton(true);
+              }, 100);
+            } else {
+              console.log("🚫 DEPLOYMENT: Voice still not verified after retry");
+              setShowBottomSheet(true);
+              sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+              setShowAskButton(true);
+              setIsResponding(false);
+            }
+          }, 500);
+          return;
+        }
+      }
 
       // Show bottom sheet immediately for instant response
       setShowBottomSheet(true);
@@ -176,9 +291,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             setIsResponding(false);
             setShowAskButton(true);
           });
-          } else {
-          // Fallback to generating audio if cache is not ready
-
+        });
+      } else {
+        // Fallback to generating audio if cache is not ready
         console.log("QR SCAN: Cache not ready, generating welcome message");
         const welcomeMessage = getDynamicWelcomeMessage();
 
