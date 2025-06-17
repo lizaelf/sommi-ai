@@ -1,19 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useToast } from "@/hooks/UseToast";
-import VoiceBottomSheet from "./VoiceBottomSheet";
-import {
-  getMicrophonePermission,
-  requestMicrophonePermission,
-  shouldSkipPermissionPrompt,
-  syncMicrophonePermissionWithBrowser,
-} from "@/utils/microphonePermissions";
-import { WINE_CONFIG } from "../../../shared/wineConfig";
-
-// ✅ Centralized dynamic welcome message generator
-const getDynamicWelcomeMessage = () => {
-  const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
-  return `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I'd be delighted to offer serving tips or pairing ideas to make the most of it.`;
-};
+import React from "react";
+import { VoiceController } from "./voice";
 
 interface VoiceAssistantProps {
   onSendMessage: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;

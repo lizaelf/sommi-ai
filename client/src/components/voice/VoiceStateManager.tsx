@@ -1,197 +1,84 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
-interface VoiceState {
+export interface VoiceState {
   isListening: boolean;
+  showBottomSheet: boolean;
   isResponding: boolean;
   isThinking: boolean;
   isPlayingAudio: boolean;
-  isVoiceActive: boolean;
-  showBottomSheet: boolean;
   showUnmuteButton: boolean;
   showAskButton: boolean;
+  isVoiceActive: boolean;
 }
 
-interface VoiceStateManagerProps {
-  children: (state: VoiceState & {
-    updateState: (updates: Partial<VoiceState>) => void;
-    resetState: () => void;
-  }) => React.ReactNode;
+export interface VoiceRefs {
+  isManuallyClosedRef: React.MutableRefObject<boolean>;
+  mediaRecorderRef: React.MutableRefObject<MediaRecorder | null>;
+  audioChunksRef: React.MutableRefObject<Blob[]>;
+  streamRef: React.MutableRefObject<MediaStream | null>;
+  welcomeAudioCacheRef: React.MutableRefObject<string | null>;
+  welcomeAudioElementRef: React.MutableRefObject<HTMLAudioElement | null>;
+  currentAudioRef: React.MutableRefObject<HTMLAudioElement | null>;
+  audioContextRef: React.MutableRefObject<AudioContext | null>;
+  analyserRef: React.MutableRefObject<AnalyserNode | null>;
+  silenceTimerRef: React.MutableRefObject<NodeJS.Timeout | null>;
+  voiceDetectionIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
+  silenceStartTimeRef: React.MutableRefObject<number | null>;
+  lastVoiceDetectedRef: React.MutableRefObject<number>;
+  consecutiveSilenceCountRef: React.MutableRefObject<number>;
+  recordingStartTimeRef: React.MutableRefObject<number>;
+  audioCache: React.MutableRefObject<Map<string, Blob>>;
 }
 
-export const VoiceStateManager: React.FC<VoiceStateManagerProps> = ({ children }) => {
-  const [voiceState, setVoiceState] = useState<VoiceState>({
+export const useVoiceState = () => {
+  const [state, setState] = useState<VoiceState>({
     isListening: false,
+    showBottomSheet: false,
     isResponding: false,
     isThinking: false,
     isPlayingAudio: false,
-    isVoiceActive: false,
-    showBottomSheet: false,
     showUnmuteButton: false,
     showAskButton: false,
+    isVoiceActive: false,
   });
 
-  const isManuallyClosedRef = useRef(false);
+  const refs: VoiceRefs = {
+    isManuallyClosedRef: useRef(false),
+    mediaRecorderRef: useRef<MediaRecorder | null>(null),
+    audioChunksRef: useRef<Blob[]>([]),
+    streamRef: useRef<MediaStream | null>(null),
+    welcomeAudioCacheRef: useRef<string | null>(null),
+    welcomeAudioElementRef: useRef<HTMLAudioElement | null>(null),
+    currentAudioRef: useRef<HTMLAudioElement | null>(null),
+    audioContextRef: useRef<AudioContext | null>(null),
+    analyserRef: useRef<AnalyserNode | null>(null),
+    silenceTimerRef: useRef<NodeJS.Timeout | null>(null),
+    voiceDetectionIntervalRef: useRef<NodeJS.Timeout | null>(null),
+    silenceStartTimeRef: useRef<number | null>(null),
+    lastVoiceDetectedRef: useRef<number>(0),
+    consecutiveSilenceCountRef: useRef<number>(0),
+    recordingStartTimeRef: useRef<number>(0),
+    audioCache: useRef<Map<string, Blob>>(new Map()),
+  };
 
-  // Share state globally for CircleAnimation and other components
+  const updateState = (updates: Partial<VoiceState>) => {
+    setState(prev => ({ ...prev, ...updates }));
+  };
+
+  // Share state globally for CircleAnimation
   useEffect(() => {
     (window as any).voiceAssistantState = {
-      ...voiceState,
-      isProcessing: voiceState.isThinking
+      isListening: state.isListening,
+      isProcessing: state.isThinking,
+      isResponding: state.isResponding,
+      showBottomSheet: state.showBottomSheet,
+      isPlayingAudio: state.isPlayingAudio
     };
-  }, [voiceState]);
+  }, [state.isListening, state.isThinking, state.isResponding, state.showBottomSheet, state.isPlayingAudio]);
 
-  const updateState = useCallback((updates: Partial<VoiceState>) => {
-    setVoiceState(prev => ({ ...prev, ...updates }));
-  }, []);
-
-  const resetState = useCallback(() => {
-    setVoiceState({
-      isListening: false,
-      isResponding: false,
-      isThinking: false,
-      isPlayingAudio: false,
-      isVoiceActive: false,
-      showBottomSheet: false,
-      showUnmuteButton: false,
-      showAskButton: false,
-    });
-    isManuallyClosedRef.current = false;
-  }, []);
-
-  // Handle voice assistant events
-  useEffect(() => {
-    const handleSuggestionPlayback = () => {
-      updateState({ 
-        isResponding: true, 
-        isPlayingAudio: true, 
-        showUnmuteButton: true, 
-        showAskButton: false 
-      });
-    };
-
-    const handleSuggestionPlaybackEnded = () => {
-      if (!isManuallyClosedRef.current) {
-        updateState({ 
-          isResponding: false, 
-          isPlayingAudio: false, 
-          showUnmuteButton: false, 
-          showAskButton: true 
-        });
-      }
-    };
-
-    const handleTriggerVoiceAssistant = () => {
-      // Show bottom sheet immediately for instant response
-      updateState({
-        showBottomSheet: true,
-        showAskButton: false,
-        isResponding: true
-      });
-      sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-    };
-
-    const handlePlayAudioResponse = (event: any) => {
-      const { audioBlob } = event.detail;
-      if (audioBlob) {
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        
-        updateState({ 
-          isPlayingAudio: true, 
-          showUnmuteButton: true, 
-          showAskButton: false 
-        });
-
-        audio.onended = () => {
-          URL.revokeObjectURL(audioUrl);
-          if (!isManuallyClosedRef.current) {
-            updateState({ 
-              isResponding: false, 
-              isPlayingAudio: false, 
-              showUnmuteButton: false, 
-              showAskButton: true 
-            });
-          }
-        };
-
-        audio.onerror = () => {
-          URL.revokeObjectURL(audioUrl);
-          if (!isManuallyClosedRef.current) {
-            updateState({ 
-              isResponding: false, 
-              isPlayingAudio: false, 
-              showUnmuteButton: false, 
-              showAskButton: true 
-            });
-          }
-        };
-
-        audio.play();
-      }
-    };
-
-    const handleCachedResponseEnded = () => {
-      console.log("Cached response playback ended - resetting to Ask button");
-      if (!isManuallyClosedRef.current) {
-        updateState({
-          isResponding: false,
-          showUnmuteButton: false,
-          showAskButton: true,
-          isThinking: false
-        });
-      }
-    };
-
-    // Event listeners
-    window.addEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
-    window.addEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
-    window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
-    window.addEventListener('playAudioResponse', handlePlayAudioResponse);
-    window.addEventListener('cachedResponseEnded', handleCachedResponseEnded);
-
-    return () => {
-      window.removeEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
-      window.removeEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
-      window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
-      window.removeEventListener('playAudioResponse', handlePlayAudioResponse);
-      window.removeEventListener('cachedResponseEnded', handleCachedResponseEnded);
-    };
-  }, [updateState]);
-
-  // Handle close button
-  const handleClose = useCallback(() => {
-    isManuallyClosedRef.current = true;
-    updateState({
-      showBottomSheet: false,
-      isListening: false,
-      isResponding: false,
-      isThinking: false,
-      isPlayingAudio: false,
-      showUnmuteButton: false,
-      showAskButton: false
-    });
-
-    // Stop any playing audio
-    if ((window as any).voiceAudioManager) {
-      (window as any).voiceAudioManager.stopAudio();
-    }
-
-    // Stop recording
-    if ((window as any).voiceRecorder) {
-      (window as any).voiceRecorder.stopRecording();
-    }
-  }, [updateState]);
-
-  // Expose close handler globally
-  useEffect(() => {
-    (window as any).voiceAssistantClose = handleClose;
-  }, [handleClose]);
-
-  return children({
-    ...voiceState,
+  return {
+    state,
+    refs,
     updateState,
-    resetState
-  });
+  };
 };
-
-export default VoiceStateManager;

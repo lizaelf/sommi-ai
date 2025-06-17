@@ -1,228 +1,216 @@
-import React, { useRef, useCallback } from "react";
+import { useCallback } from "react";
 import {
   getMicrophonePermission,
   requestMicrophonePermission,
   shouldSkipPermissionPrompt,
   syncMicrophonePermissionWithBrowser,
 } from "@/utils/microphonePermissions";
+import { VoiceRefs, VoiceState } from "./VoiceStateManager";
 
-interface VoiceRecorderProps {
-  onRecordingStateChange: (state: { 
-    isListening: boolean; 
-    isVoiceActive: boolean;
-  }) => void;
-  onRecordingComplete: (audioBlob: Blob) => void;
-  onRecordingError: (error: string) => void;
-}
-
-export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
-  onRecordingStateChange,
-  onRecordingComplete,
-  onRecordingError
-}) => {
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const streamRef = useRef<MediaStream | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const voiceDetectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const silenceStartTimeRef = useRef<number | null>(null);
-  const lastVoiceDetectedRef = useRef<number>(0);
-  const consecutiveSilenceCountRef = useRef<number>(0);
-  const recordingStartTimeRef = useRef<number>(0);
-
+export const useVoiceRecorder = (
+  refs: VoiceRefs,
+  state: VoiceState,
+  updateState: (updates: Partial<VoiceState>) => void,
+  toast: any
+) => {
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  const setupVoiceDetection = useCallback((stream: MediaStream) => {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      const microphone = audioContext.createMediaStreamSource(stream);
-      
-      analyser.smoothingTimeConstant = 0.8;
-      analyser.fftSize = 256;
-      microphone.connect(analyser);
-      
-      audioContextRef.current = audioContext;
-      analyserRef.current = analyser;
-      
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      
-      voiceDetectionIntervalRef.current = setInterval(() => {
-        analyser.getByteFrequencyData(dataArray);
-        
-        let sum = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          sum += dataArray[i];
-        }
-        const average = sum / bufferLength;
-        
-        const isVoiceDetected = average > 5;
-        
-        // Dispatch voice volume for CircleAnimation
-        window.dispatchEvent(new CustomEvent('voiceVolume', { 
-          detail: { volume: average, threshold: 3 } 
-        }));
-        
-        if (isVoiceDetected) {
-          lastVoiceDetectedRef.current = Date.now();
-          consecutiveSilenceCountRef.current = 0;
-          silenceStartTimeRef.current = null;
-          
-          onRecordingStateChange({ 
-            isListening: true, 
-            isVoiceActive: true 
-          });
-        } else {
-          if (silenceStartTimeRef.current === null) {
-            silenceStartTimeRef.current = Date.now();
-          }
-          
-          const silenceDuration = Date.now() - silenceStartTimeRef.current;
-          
-          if (silenceDuration > 1500) {
-            consecutiveSilenceCountRef.current++;
-            
-            if (consecutiveSilenceCountRef.current >= 3) {
-              stopRecording();
-            }
-          }
-          
-          onRecordingStateChange({ 
-            isListening: true, 
-            isVoiceActive: false 
-          });
-        }
-      }, 100);
-      
-    } catch (error) {
-      console.error("Voice detection setup failed:", error);
-    }
-  }, [onRecordingStateChange]);
+  // Voice activity detection
+  const startVoiceDetection = useCallback(() => {
+    if (!refs.streamRef.current || !refs.audioContextRef.current) return;
 
-  const startRecording = useCallback(async () => {
-    try {
-      // Check microphone permission
-      const hasPermission = await getMicrophonePermission();
-      if (!hasPermission && !shouldSkipPermissionPrompt()) {
-        const granted = await requestMicrophonePermission();
-        if (!granted) {
-          onRecordingError("Microphone permission denied");
-          return;
+    refs.analyserRef.current = refs.audioContextRef.current.createAnalyser();
+    refs.analyserRef.current.fftSize = 256;
+    
+    const source = refs.audioContextRef.current.createMediaStreamSource(refs.streamRef.current);
+    source.connect(refs.analyserRef.current);
+
+    const bufferLength = refs.analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const detectVoice = () => {
+      if (!refs.analyserRef.current) return;
+
+      refs.analyserRef.current.getByteFrequencyData(dataArray);
+      
+      let sum = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        sum += dataArray[i];
+      }
+      const average = sum / bufferLength;
+
+      const currentTime = Date.now();
+      const volume = Math.round(average);
+
+      // Voice detection threshold
+      if (volume > 5) {
+        refs.lastVoiceDetectedRef.current = currentTime;
+        refs.consecutiveSilenceCountRef.current = 0;
+        refs.silenceStartTimeRef.current = null;
+        updateState({ isVoiceActive: true });
+
+        // Dispatch volume event for CircleAnimation
+        window.dispatchEvent(new CustomEvent('voiceVolume', { 
+          detail: { volume, timestamp: currentTime }
+        }));
+      } else {
+        if (refs.silenceStartTimeRef.current === null) {
+          refs.silenceStartTimeRef.current = currentTime;
+        }
+
+        const silenceDuration = currentTime - refs.silenceStartTimeRef.current;
+        if (silenceDuration > 2000) { // 2 seconds of silence
+          updateState({ isVoiceActive: false });
+          refs.consecutiveSilenceCountRef.current++;
         }
       }
 
-      // Get microphone stream
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 44100
-        } 
-      });
+      if (state.isListening) {
+        requestAnimationFrame(detectVoice);
+      }
+    };
 
-      streamRef.current = stream;
-      audioChunksRef.current = [];
-      recordingStartTimeRef.current = Date.now();
+    detectVoice();
+  }, [refs, state.isListening, updateState]);
+
+  // Start recording
+  const startRecording = useCallback(async () => {
+    try {
+      console.log("🎤 VoiceAssistant: Starting recording");
       
-      // Setup MediaRecorder
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
-      
-      mediaRecorderRef.current = mediaRecorder;
-      
-      mediaRecorder.ondataavailable = (event) => {
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      refs.streamRef.current = stream;
+
+      // Initialize audio context for voice detection
+      if (!refs.audioContextRef.current) {
+        refs.audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
+      if (refs.audioContextRef.current.state === 'suspended') {
+        await refs.audioContextRef.current.resume();
+      }
+
+      // Start voice activity detection
+      startVoiceDetection();
+
+      // Setup media recorder
+      refs.mediaRecorderRef.current = new MediaRecorder(stream);
+      refs.audioChunksRef.current = [];
+      refs.recordingStartTimeRef.current = Date.now();
+
+      refs.mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+          refs.audioChunksRef.current.push(event.data);
         }
       };
-      
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { 
-          type: 'audio/webm;codecs=opus' 
-        });
-        onRecordingComplete(audioBlob);
-        cleanup();
+
+      refs.mediaRecorderRef.current.onstop = () => {
+        console.log("🎤 VoiceAssistant: Recording stopped");
+        const audioBlob = new Blob(refs.audioChunksRef.current, { type: 'audio/wav' });
+        processRecording(audioBlob);
       };
-      
-      // Start recording
-      mediaRecorder.start(100);
-      setupVoiceDetection(stream);
-      
-      onRecordingStateChange({ 
-        isListening: true, 
-        isVoiceActive: false 
+
+      refs.mediaRecorderRef.current.start();
+      updateState({ isListening: true });
+
+      // Dispatch mic status event
+      window.dispatchEvent(new CustomEvent('micStatus', { 
+        detail: { status: 'listening', timestamp: Date.now() }
+      }));
+
+    } catch (error) {
+      console.error("🎤 VoiceAssistant: Failed to start recording:", error);
+      toast({
+        title: "Microphone Access Failed",
+        description: "Please allow microphone access to use voice features.",
+        variant: "destructive",
       });
+    }
+  }, [refs, updateState, startVoiceDetection, toast]);
+
+  // Stop recording
+  const stopRecording = useCallback(() => {
+    console.log("🎤 VoiceAssistant: Stopping recording");
+
+    if (refs.mediaRecorderRef.current && refs.mediaRecorderRef.current.state !== 'inactive') {
+      refs.mediaRecorderRef.current.stop();
+    }
+
+    if (refs.streamRef.current) {
+      refs.streamRef.current.getTracks().forEach(track => track.stop());
+      refs.streamRef.current = null;
+    }
+
+    updateState({ isListening: false, isVoiceActive: false });
+
+    // Dispatch mic status event
+    window.dispatchEvent(new CustomEvent('micStatus', { 
+      detail: { status: 'idle', timestamp: Date.now() }
+    }));
+  }, [refs, updateState]);
+
+  // Process recorded audio
+  const processRecording = useCallback(async (audioBlob: Blob) => {
+    console.log("🎤 VoiceAssistant: Processing recording");
+    updateState({ isThinking: true });
+
+    try {
+      // Convert audio to text using speech recognition
+      // For now, we'll use a placeholder - in production this would use OpenAI Whisper
+      const text = "Sample voice input"; // Replace with actual speech-to-text
+      
+      console.log("🎤 VoiceAssistant: Transcribed text:", text);
+      
+      // Process the transcribed text
+      // This would be handled by the parent component
       
     } catch (error) {
-      console.error("Recording start failed:", error);
-      onRecordingError("Failed to start recording");
-      cleanup();
+      console.error("🎤 VoiceAssistant: Failed to process recording:", error);
+      toast({
+        title: "Voice Processing Failed",
+        description: "Failed to process your voice input. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      updateState({ isThinking: false });
     }
-  }, [onRecordingStateChange, onRecordingComplete, onRecordingError, setupVoiceDetection]);
+  }, [updateState, toast]);
 
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
+  // Auto-stop recording after silence
+  const setupAutoStop = useCallback(() => {
+    if (refs.silenceTimerRef.current) {
+      clearTimeout(refs.silenceTimerRef.current);
     }
-    
-    onRecordingStateChange({ 
-      isListening: false, 
-      isVoiceActive: false 
-    });
-    
-    cleanup();
-  }, [onRecordingStateChange]);
 
+    refs.silenceTimerRef.current = setTimeout(() => {
+      if (state.isListening && refs.consecutiveSilenceCountRef.current > 3) {
+        console.log("🎤 VoiceAssistant: Auto-stopping due to prolonged silence");
+        stopRecording();
+      }
+    }, 3000); // Auto-stop after 3 seconds of silence
+  }, [refs, state.isListening, stopRecording]);
+
+  // Cleanup function
   const cleanup = useCallback(() => {
-    // Clear timers
-    if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = null;
+    if (refs.streamRef.current) {
+      refs.streamRef.current.getTracks().forEach(track => track.stop());
     }
     
-    if (voiceDetectionIntervalRef.current) {
-      clearInterval(voiceDetectionIntervalRef.current);
-      voiceDetectionIntervalRef.current = null;
+    if (refs.silenceTimerRef.current) {
+      clearTimeout(refs.silenceTimerRef.current);
     }
     
-    // Close audio context
-    if (audioContextRef.current) {
-      audioContextRef.current.close().catch(console.error);
-      audioContextRef.current = null;
+    if (refs.voiceDetectionIntervalRef.current) {
+      clearTimeout(refs.voiceDetectionIntervalRef.current);
     }
-    
-    // Stop media stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    
-    // Reset refs
-    mediaRecorderRef.current = null;
-    analyserRef.current = null;
-    silenceStartTimeRef.current = null;
-    lastVoiceDetectedRef.current = 0;
-    consecutiveSilenceCountRef.current = 0;
-    recordingStartTimeRef.current = 0;
-  }, []);
+  }, [refs]);
 
-  // Expose methods globally
-  React.useEffect(() => {
-    (window as any).voiceRecorder = {
-      startRecording,
-      stopRecording,
-      cleanup
-    };
-    
-    return cleanup;
-  }, [startRecording, stopRecording, cleanup]);
-
-  return null; // Logic-only component
+  return {
+    startRecording,
+    stopRecording,
+    setupAutoStop,
+    cleanup,
+    isMobileDevice,
+  };
 };
-
-export default VoiceRecorder;
