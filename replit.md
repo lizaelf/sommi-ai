@@ -45,9 +45,19 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - Typography update applied to SuggestionPills with user permission (June 16, 2025)
   - **Welcome Message under code freeze - require user approval before any changes (finalized June 16, 2025)**
 
+## Recent Changes (June 17, 2025)
+
+### SuggestionPills UI Stability Enhancement (June 17, 2025 - Latest)
+- **Stable Pill Display Implementation**: Fixed SuggestionPills component to prevent UI changes during page loading, eliminating pill flickering and content shifts
+- **Loading State Management**: Pills now start with default suggestions and only switch to API suggestions when fully loaded and stable
+- **Consistent 3-Pill Display**: Maintains exactly 3 suggestion pills at all times for stable UI layout
+- **User-Controlled Filtering**: Used pill filtering only occurs after user interaction, not during page initialization
+- **Immediate Cached Response Display**: Enhanced suggestion clicks to use cached responses for instant feedback without loading delays
+- **Enhanced Chat Context Handling**: Added immediate user message display for non-cached responses while API processes assistant response
+
 ## Recent Changes (June 16, 2025)
 
-### Welcome Message Enhancement & TTS Optimization (June 16, 2025 - Latest)
+### Welcome Message Enhancement & TTS Optimization (June 16, 2025)
 - **Dynamic Welcome Message Implementation**: Updated voice welcome message to use personalized template incorporating actual wine name and tasting data instead of generic greeting
 - **Multi-Location Welcome Message Updates**: Synchronized welcome message across all components (App.tsx, VoiceAssistant.tsx) to use consistent dynamic content
 - **TTS Response Speed Optimization**: Implemented faster TTS processing with reduced timeouts (20s/15s), faster tts-1 model, and optimized audio playback for immediate response
