@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useToast } from "../../hooks/UseToast";
+import { useToast } from "@/hooks/UseToast";
 import VoiceBottomSheet from "../VoiceBottomSheet";
 import {
   getMicrophonePermission,
   requestMicrophonePermission,
   shouldSkipPermissionPrompt,
-} from "../../utils/microphonePermissions";
+} from "@/utils/microphonePermissions";
 // Voice controller for wine platform
 
 interface VoiceControllerProps {
