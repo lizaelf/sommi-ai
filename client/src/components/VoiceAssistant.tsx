@@ -177,53 +177,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           setTimeout(() => {
             const retryVoiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
             if (retryVoiceLocked) {
-              console.log("✅ DEPLOYMENT: Voice verified on retry, checking suggestions readiness");
-              
-              // Check if suggestions are ready before showing bottom sheet
-              const effectiveWineKey = wineKey || "wine_1";
-              const audioCache = (window as any).suggestionAudioCache || {};
-              const wineData = (window as any).wineResponses?.[effectiveWineKey];
-              
-              const hasReadySuggestions = Object.keys(audioCache).some(key => 
-                key.startsWith(effectiveWineKey)
-              ) || (wineData && Object.keys(wineData).length > 0);
-              
-              if (hasReadySuggestions) {
-                setShowBottomSheet(true);
-                sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-                setShowAskButton(false);
-                setIsResponding(true);
-              } else {
-                console.log("🔄 DEPLOYMENT: Waiting for suggestions to be ready");
-                // Wait for suggestions to be ready
-                const suggestionInterval = setInterval(() => {
-                  const updatedAudioCache = (window as any).suggestionAudioCache || {};
-                  const updatedWineData = (window as any).wineResponses?.[effectiveWineKey];
-                  
-                  const nowHasReadySuggestions = Object.keys(updatedAudioCache).some(key => 
-                    key.startsWith(effectiveWineKey)
-                  ) || (updatedWineData && Object.keys(updatedWineData).length > 0);
-                  
-                  if (nowHasReadySuggestions) {
-                    clearInterval(suggestionInterval);
-                    setShowBottomSheet(true);
-                    sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-                    setShowAskButton(false);
-                    setIsResponding(true);
-                  }
-                }, 100);
-                
-                // Clear interval after 5 seconds
-                setTimeout(() => {
-                  clearInterval(suggestionInterval);
-                  setShowBottomSheet(true);
-                  sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-                  setShowAskButton(false);
-                  setIsResponding(true);
-                }, 5000);
-                
-                return;
-              }
+              console.log("✅ DEPLOYMENT: Voice verified on retry, showing welcome");
+              setShowBottomSheet(true);
+              sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+              setShowAskButton(false);
+              setIsResponding(true);
               
               // Proceed with welcome message
               const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
@@ -244,48 +202,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       }
       
-      // Check if suggestions are ready before showing bottom sheet
-      const checkSuggestionsReady = () => {
-        const effectiveWineKey = wineKey || "wine_1";
-        const audioCache = (window as any).suggestionAudioCache || {};
-        const wineData = (window as any).wineResponses?.[effectiveWineKey];
-        
-        // Check if we have any ready suggestions (pre-cached audio or spreadsheet responses)
-        const hasReadySuggestions = Object.keys(audioCache).some(key => 
-          key.startsWith(effectiveWineKey)
-        ) || (wineData && Object.keys(wineData).length > 0);
-        
-        if (hasReadySuggestions) {
-          setShowBottomSheet(true);
-          sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-          setShowAskButton(false);
-          setIsResponding(true);
-          return true;
-        }
-        return false;
-      };
-      
-      // Try to show bottom sheet if suggestions are ready
-      if (!checkSuggestionsReady()) {
-        // Wait for suggestions to be ready, then show bottom sheet
-        const checkInterval = setInterval(() => {
-          if (checkSuggestionsReady()) {
-            clearInterval(checkInterval);
-          }
-        }, 100);
-        
-        // Clear interval after 10 seconds to avoid infinite waiting
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          // Show bottom sheet anyway after timeout
-          setShowBottomSheet(true);
-          sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-          setShowAskButton(false);
-          setIsResponding(true);
-        }, 10000);
-        
-        return;
-      }
+      // Show bottom sheet immediately for instant response
+      setShowBottomSheet(true);
+      sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+      setShowAskButton(false);
+      setIsResponding(true);
       
       // Play preloaded welcome message instantly
       if (welcomeAudioElementRef.current) {
@@ -322,15 +243,46 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           console.error("QR SCAN: Preloaded audio playback error");
         };
         
-        // Instant playback since audio is already loaded
-        audio.play().catch(error => {
-          console.error("QR SCAN: Instant playback failed:", error);
-          // Fallback to creating new audio element
-          const fallbackAudio = new Audio(welcomeAudioCacheRef.current!);
-          (window as any).currentOpenAIAudio = fallbackAudio;
-          fallbackAudio.onended = audio.onended;
-          fallbackAudio.onerror = audio.onerror;
-          fallbackAudio.play();
+        // Play audio immediately
+        audio.play().then(() => {
+          console.log("QR SCAN: Welcome audio playing successfully");
+        }).catch(error => {
+          console.error("QR SCAN: Audio playback failed, generating fresh audio:", error);
+          // Generate fresh audio immediately if cached fails
+          const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+          
+          fetch('/api/text-to-speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: welcomeMessage })
+          })
+          .then(response => response.arrayBuffer())
+          .then(buffer => {
+            const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const freshAudio = new Audio(audioUrl);
+            (window as any).currentOpenAIAudio = freshAudio;
+            
+            freshAudio.onended = () => {
+              URL.revokeObjectURL(audioUrl);
+              if (!isManuallyClosedRef.current) {
+                setIsResponding(false);
+                setShowAskButton(true);
+              }
+            };
+            
+            freshAudio.play().then(() => {
+              console.log("QR SCAN: Fresh audio playing successfully");
+            }).catch(() => {
+              // If all audio fails, just show suggestions
+              setIsResponding(false);
+              setShowAskButton(true);
+            });
+          }).catch(() => {
+            // If fetch fails, show suggestions
+            setIsResponding(false);
+            setShowAskButton(true);
+          });
         });
       } else {
         // Fallback to generating audio if cache is not ready
