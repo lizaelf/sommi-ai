@@ -18,7 +18,7 @@ interface VoiceRecorderProps {
 export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   onRecordingStateChange,
   onRecordingComplete,
-  onError
+  onRecordingError
 }) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -109,7 +109,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       if (!hasPermission && !shouldSkipPermissionPrompt()) {
         const granted = await requestMicrophonePermission();
         if (!granted) {
-          onError("Microphone permission denied");
+          onRecordingError("Microphone permission denied");
           return;
         }
       }
@@ -160,10 +160,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       
     } catch (error) {
       console.error("Recording start failed:", error);
-      onError("Failed to start recording");
+      onRecordingError("Failed to start recording");
       cleanup();
     }
-  }, [onRecordingStateChange, onRecordingComplete, onError, setupVoiceDetection]);
+  }, [onRecordingStateChange, onRecordingComplete, onRecordingError, setupVoiceDetection]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
