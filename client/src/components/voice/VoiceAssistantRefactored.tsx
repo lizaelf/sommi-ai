@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useToast } from "@/hooks/UseToast";
 import VoiceBottomSheet from "../VoiceBottomSheet";
 import { useVoiceCore } from "./VoiceCore";
@@ -31,6 +31,12 @@ export const VoiceAssistantRefactored: React.FC<VoiceAssistantRefactoredProps> =
 
   const voiceRecording = useVoiceRecording();
   const voicePermissions = useVoicePermissions();
+
+  // Auto-activate voice assistant when component mounts
+  useEffect(() => {
+    // Trigger voice activation automatically
+    voiceCore.handleVoiceActivation();
+  }, []); // Only run once on mount
 
   const handleVoiceInput = async () => {
     if (!voiceRecording.isSupported) {
