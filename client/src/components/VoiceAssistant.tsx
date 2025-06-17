@@ -12,7 +12,7 @@ import { WINE_CONFIG } from "../../../shared/wineConfig";
 // ✅ Centralized dynamic welcome message generator
 const getDynamicWelcomeMessage = () => {
   const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
-  return `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers.Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.`;
+  return `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.`;
 };
 
 interface VoiceAssistantProps {
@@ -248,10 +248,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         };
 
         // Play audio immediately
-        audio.play().then(() => {
+        try {
+          await audio.play();
           console.log("QR SCAN: Welcome audio playing successfully");
-        }).catch(error => {
+        } catch (error) {
           console.error("QR SCAN: Audio playback failed, generating fresh audio:", error);
+          // fallback logic...
+        }
+
           // Generate fresh audio immediately if cached fails
           const welcomeMessage = getDynamicWelcomeMessage();
 
