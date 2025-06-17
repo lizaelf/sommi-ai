@@ -605,42 +605,22 @@ export default function SuggestionPills({
     }
   };
 
-  // Show pills replacing used ones with next available from spreadsheet
+  // Show only pills that have audio ready and are unused
   const visiblePills = useMemo(() => {
     const availablePills = suggestionsData?.suggestions || [];
     const effectiveWineKey = wineKey || "wine_1";
 
-    // Get all possible suggestions from spreadsheet
-    const wineData = (window as any).wineResponses?.[effectiveWineKey];
-    const spreadsheetSuggestions: SuggestionPill[] = [];
-    
-    if (wineData) {
-      Object.keys(wineData).forEach((key, index) => {
-        // Convert spreadsheet keys back to readable text
-        const readableText = key
-          .split('_')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ')
-          .replace(/^(What|How|Tell|Share|Does|Should)/, match => match)
-          .replace(/\s+/g, ' ')
-          .trim();
-        
-        spreadsheetSuggestions.push({
-          id: `spreadsheet-${index}`,
-          text: readableText.length > 50 ? readableText.substring(0, 47) + "..." : readableText,
-          prompt: key.split('_').join(' ').toLowerCase()
-        });
-      });
-    }
+    // Combine API and default suggestions
+    const allPills = [...availablePills, ...defaultSuggestions];
 
-    // Combine all available suggestions (API + default + spreadsheet)
-    const allPills = [...availablePills, ...defaultSuggestions, ...spreadsheetSuggestions];
+    // Filter pills that are unused and have audio ready (for voice context)
+    const readyPills = allPills.filter((pill: SuggestionPill) => {
+      // Don't show used pills
+      if (usedPills.has(pill.id)) {
+        return false;
+      }
 
-    // Filter out used pills and get ready ones
-    const unusedPills = allPills.filter((pill: SuggestionPill) => !usedPills.has(pill.id));
-
-    // For voice context, only show pills with ready audio or spreadsheet responses
-    const readyPills = unusedPills.filter((pill: SuggestionPill) => {
+      // For voice context, only show pills with ready audio
       if (context === "voice-assistant") {
         const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
         const cacheKey = `${effectiveWineKey}_${suggestionId}`;
@@ -649,6 +629,8 @@ export default function SuggestionPills({
         // Check if audio is pre-cached or spreadsheet response exists
         const audioCache = (window as any).suggestionAudioCache || {};
         const hasPreCachedAudio = audioCache[cacheKey];
+        // Check for spreadsheet response
+        const wineData = (window as any).wineResponses?.[effectiveWineKey];
         const hasSpreadsheetResponseData = wineData && wineData[suggestionId];
         
         return status === 'ready' || hasPreCachedAudio || hasSpreadsheetResponseData;
@@ -658,9 +640,9 @@ export default function SuggestionPills({
       return true;
     });
 
-    console.log(`🎤 Voice context: ${readyPills.length} voice-ready pills available (${usedPills.size} used)`);
+    console.log(`🎤 Voice context: ${readyPills.length} voice-ready pills available`);
     
-    // Always return exactly 3 pills, filling from the ready pills list
+    // Return up to 3 ready pills
     return readyPills.slice(0, 3);
   }, [suggestionsData, usedPills, isLoading, preGenerationStatus, context, wineKey]);
 
