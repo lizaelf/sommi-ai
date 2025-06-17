@@ -259,11 +259,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 <ShiningText text="Loading..." />
               </div>
             </div>
-          ) : (isResponding || isPlayingAudio) ? (
+          ) : isResponding && !isPlayingAudio ? (
             <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
               <button
                 className="secondary-button react-button"
-                onClick={isPlayingAudio ? onStopAudio : onMute}
+                onClick={onMute}
                 style={{
                   width: '100%',
                   borderRadius: '32px',
@@ -297,8 +297,37 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               width: '100%'
             }}>
               
-              {/* Suggestions Section */}
-              {showSuggestions && onSuggestionClick && (showAskButton || !showAskButton) && (
+              {/* Stop Button - appears when audio is playing */}
+              {isPlayingAudio && onStopAudio && (
+                <div style={{
+                  width: '100%',
+                  paddingLeft: '16px',
+                  paddingRight: '16px',
+                  marginBottom: '16px'
+                }}>
+                  <Button
+                    onClick={onStopAudio}
+                    variant="secondary"
+                    style={{
+                      width: '100%',
+                      height: '56px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                      <rect x="6" y="4" width="4" height="16" rx="1"/>
+                      <rect x="14" y="4" width="4" height="16" rx="1"/>
+                    </svg>
+                    Stop
+                  </Button>
+                </div>
+              )}
+              
+              {/* Suggestions Section - show in default state OR when audio is playing */}
+              {showSuggestions && onSuggestionClick && (showAskButton || isPlayingAudio || !showAskButton) && (
                 <div style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 
@@ -386,8 +415,8 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                 </div>
               )}
 
-              {/* Ask Button */}
-              {showAskButton && onAsk && (
+              {/* Ask Button - show when enabled OR when audio is playing */}
+              {(showAskButton || isPlayingAudio) && onAsk && (
                 <div style={{
                   width: '100%',
                   paddingLeft: '16px',
