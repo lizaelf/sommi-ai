@@ -2,7 +2,9 @@ import React from 'react';
 import WineBottleImage from '@/components/WineBottleImage';
 import USFlagImage from '@/components/USFlagImage';
 import WineRating from '@/components/WineRating';
+import WineTechnicalDetails from '@/components/WineTechnicalDetails';
 import typography from '@/styles/typography';
+import { WINE_CONFIG } from '@/../../shared/wineConfig';
 
 interface SelectedWine {
   id: number;
@@ -145,6 +147,19 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         </p>
       </div>
 
+      {/* Technical Details Section */}
+      <div style={{
+        width: '100%',
+        maxWidth: '400px',
+        marginTop: '32px'
+      }}>
+        <WineTechnicalDetails
+          varietal={WINE_CONFIG.technicalDetails.varietal}
+          appellation={WINE_CONFIG.technicalDetails.appellation}
+          aging={WINE_CONFIG.technicalDetails.aging}
+          abv={WINE_CONFIG.technicalDetails.abv}
+        />
+      </div>
 
     </div>
   );

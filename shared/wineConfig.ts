@@ -15,6 +15,22 @@ export const WINE_CONFIG = {
   country: 'United States',
   varietal: 'Zinfandel',
   
+  // Technical wine details
+  technicalDetails: {
+    varietal: {
+      primary: 'Zinfandel',
+      primaryPercentage: 67,
+      secondary: 'Carignane',
+      secondaryPercentage: 11
+    },
+    appellation: 'Dry Creek Valley',
+    aging: {
+      drinkNow: true,
+      ageUpTo: '10-12 years'
+    },
+    abv: 14.3
+  },
+  
   // Detailed characteristics
   characteristics: {
     body: 85,
