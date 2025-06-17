@@ -74,6 +74,11 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
     };
   }, []);
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log("VoiceBottomSheet: isOpen changed to:", isOpen, "portalElement exists:", !!portalElement);
+  }, [isOpen, portalElement]);
+
   if (!isOpen || !portalElement) return null;
 
   return createPortal(

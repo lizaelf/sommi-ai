@@ -168,6 +168,11 @@ const VoiceAssistantRefactored = React.forwardRef<
     forceActivate: voiceCore.forceVoiceActivation
   }), [voiceCore.forceVoiceActivation]);
 
+  // Debug logging for state changes
+  React.useEffect(() => {
+    console.log("VoiceAssistantRefactored: showBottomSheet state changed to:", voiceCore.state.showBottomSheet);
+  }, [voiceCore.state.showBottomSheet]);
+
   return (
     <>
       <VoiceBottomSheet

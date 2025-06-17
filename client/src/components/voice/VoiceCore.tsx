@@ -120,6 +120,7 @@ export const useVoiceCore = ({ onSendMessage, onStateChange, wineKey = '', isPro
     }
 
     console.log("User chose Voice option");
+    console.log("VoiceCore: Setting showBottomSheet to true");
     updateState({ showBottomSheet: true });
     
     // Play welcome message immediately
