@@ -164,17 +164,16 @@ export const VoiceAssistantRefactored: React.FC<VoiceAssistantRefactoredProps> =
   return (
     <>
       <VoiceBottomSheet
-        showBottomSheet={voiceCore.state.showBottomSheet}
+        isOpen={voiceCore.state.showBottomSheet}
         onClose={voiceCore.handleClose}
+        onMute={handleStopRecording}
+        onAsk={handleVoiceInput}
         isListening={voiceCore.state.isListening}
         isResponding={voiceCore.state.isResponding}
         isThinking={voiceCore.state.isThinking}
         isPlayingAudio={voiceCore.state.isPlayingAudio}
         showUnmuteButton={voiceCore.state.showUnmuteButton}
         showAskButton={voiceCore.state.showAskButton}
-        onVoiceInput={handleVoiceInput}
-        onStopRecording={handleStopRecording}
-        onCancelRecording={handleCancelRecording}
         onStopAudio={voiceCore.stopAudio}
         onSuggestionClick={handleSuggestionClick}
         wineKey={wineKey}
