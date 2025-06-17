@@ -21,6 +21,16 @@ const WineHistorySection: React.FC<WineHistorySectionProps> = ({ description }) 
         marginBottom: "32px",
       }}
     >
+      <h1
+        style={{
+          ...typography.h1,
+          color: "white",
+          marginBottom: "24px",
+          textAlign: "left",
+        }}
+      >
+        Tasting notes
+      </h1>
       <p
         style={{
           color: "rgba(255, 255, 255, 0.8)",
