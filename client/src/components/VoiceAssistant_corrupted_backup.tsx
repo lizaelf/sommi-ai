@@ -1,9 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Mic, MicOff, Volume2, VolumeX, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/Button';
 import { CircleAnimation } from './CircleAnimation';
 import { SuggestionPills } from './SuggestionPills';
-import { apiRequest } from '@/lib/queryClient';
 
 export interface VoiceAssistantProps {
   onClose?: () => void;
