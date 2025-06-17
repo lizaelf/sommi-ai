@@ -9,6 +9,12 @@ import {
 } from "@/utils/microphonePermissions";
 import { WINE_CONFIG } from "../../../shared/wineConfig";
 
+// ✅ Centralized dynamic welcome message generator
+const getDynamicWelcomeMessage = () => {
+  const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
+  return `Hello, I see you're looking at the ${wineName}, an excellent choice. The ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard} ${WINE_CONFIG.varietal} expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.`;
+};
+
 interface VoiceAssistantProps {
   onSendMessage: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
   isProcessing: boolean;
@@ -62,10 +68,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("Caching dynamic welcome message for instant playback");
     
     try {
-      // Generate dynamic welcome message using actual wine data
-      const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
-      
-      const welcomeMessage = `Hello, I see you're looking at the ${wineName}, an excellent choice. The ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard} ${WINE_CONFIG.varietal} expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.`;
+      // Generate dynamic welcome message using centralized function
+      const welcomeMessage = getDynamicWelcomeMessage();
       
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
@@ -184,7 +188,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               setIsResponding(true);
               
               // Proceed with welcome message
-              const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+              const welcomeMessage = getDynamicWelcomeMessage();
               setTimeout(() => {
                 (window as any).currentResponseAudio = null;
                 setIsResponding(false);
@@ -249,7 +253,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }).catch(error => {
           console.error("QR SCAN: Audio playback failed, generating fresh audio:", error);
           // Generate fresh audio immediately if cached fails
-          const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+          const welcomeMessage = getDynamicWelcomeMessage();
           
           fetch('/api/text-to-speech', {
             method: 'POST',
@@ -287,7 +291,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       } else {
         // Fallback to generating audio if cache is not ready
         console.log("QR SCAN: Cache not ready, generating welcome message");
-        const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+        const welcomeMessage = getDynamicWelcomeMessage();
         
         fetch('/api/text-to-speech', {
           method: 'POST',
