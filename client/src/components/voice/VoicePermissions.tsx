@@ -21,10 +21,8 @@ export const useVoicePermissions = (): VoicePermissionsHook => {
 
   const checkPermission = useCallback(async (): Promise<PermissionState> => {
     try {
-      const permission = await getMicrophonePermission();
-      const state = permission === 'granted' ? 'granted' : 
-                   permission === 'denied' ? 'denied' : 
-                   permission === 'prompt' ? 'prompt' : 'unknown';
+      const permission = getMicrophonePermission();
+      const state: PermissionState = permission?.granted ? 'granted' : 'denied';
       setPermissionState(state);
       return state;
     } catch (error) {

@@ -35,7 +35,7 @@ export const useVoiceRecording = (): VoiceRecordingHook => {
   const { checkPermission, requestPermission } = useVoicePermissions();
 
   const checkSupported = useCallback(() => {
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    return !!(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
   }, []);
 
   const setupAudioAnalysis = useCallback((stream: MediaStream) => {
