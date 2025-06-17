@@ -164,6 +164,20 @@ export const useVoiceCore = ({ onSendMessage, onStateChange, wineKey = '', isPro
     await handleVoiceActivation(true);
   }, [handleVoiceActivation]);
 
+  // Listen for voice activation events from UI components
+  useEffect(() => {
+    const handleTriggerVoiceAssistant = () => {
+      console.log("VoiceCore: Received triggerVoiceAssistant event");
+      handleVoiceActivation(true); // Force activation to bypass manual close flag
+    };
+
+    window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+    
+    return () => {
+      window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+    };
+  }, [handleVoiceActivation]);
+
   return {
     state,
     updateState,
