@@ -6,7 +6,6 @@ import {
   requestMicrophonePermission,
   shouldSkipPermissionPrompt,
 } from "@/utils/microphonePermissions";
-// Voice controller for wine platform
 
 interface VoiceControllerProps {
   onSendMessage: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
@@ -42,7 +41,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
     };
   }, [isListening, isThinking, isResponding, showBottomSheet, isPlayingAudio]);
 
-  // Initialize welcome message cache
+  // Initialize welcome message cache - handled by VoiceAudioManager
   useEffect(() => {
     const initializeWelcomeCache = async () => {
       const globalCache = (window as any).globalWelcomeAudioCache;
@@ -52,174 +51,138 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       }
 
       // Welcome message generation delegated to VoiceAudioManager using WINE_CONFIG
-      return;
-      
-      try {
-        const response = await fetch('/api/text-to-speech', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: welcomeMessage })
-        });
-        
-        if (response.ok) {
-          const buffer = await response.arrayBuffer();
-          const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          
-          welcomeAudioCacheRef.current = audioUrl;
-          (window as any).globalWelcomeAudioCache = audioUrl;
-        }
-      } catch (error) {
-        console.error("Failed to cache welcome message:", error);
-      }
+      console.log('VoiceController: Welcome audio handled by VoiceAudioManager');
     };
 
     initializeWelcomeCache();
   }, []);
 
-  // Handle voice assistant events
-  useEffect(() => {
-    const handleTriggerVoiceAssistant = () => {
-      setShowBottomSheet(true);
-      sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-      setShowAskButton(false);
-      setIsResponding(true);
+  const handleUnmute = async () => {
+    try {
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      }
 
-      // Play welcome message
+      setShowUnmuteButton(false);
+      setIsPlayingAudio(false);
+      setShowAskButton(true);
+
+      // Use cached welcome audio if available
       if (welcomeAudioCacheRef.current) {
         const audio = new Audio(welcomeAudioCacheRef.current);
         currentAudioRef.current = audio;
-        setIsPlayingAudio(true);
         
-        audio.onended = () => {
+        audio.addEventListener('ended', () => {
           setIsPlayingAudio(false);
-          currentAudioRef.current = null;
-          if (!isManuallyClosedRef.current) {
-            setIsResponding(false);
-            setShowAskButton(true);
-          }
+          setShowAskButton(true);
+          console.log('Welcome audio completed');
+        });
+
+        setIsPlayingAudio(true);
+        await audio.play();
+        return;
+      }
+
+      // Fallback to browser TTS if no cached audio
+      console.log('Using fallback browser TTS for welcome message');
+      const fallbackMessage = "Welcome to your wine exploration experience. I'm here to help you discover more about your wine collection.";
+      
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(fallbackMessage);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        
+        utterance.onstart = () => {
+          setIsPlayingAudio(true);
         };
         
-        audio.play().catch(error => {
-          console.error("Audio playback failed:", error);
+        utterance.onend = () => {
           setIsPlayingAudio(false);
-          setIsResponding(false);
           setShowAskButton(true);
-        });
-      } else {
-        setIsResponding(false);
-        setShowAskButton(true);
+        };
+        
+        speechSynthesis.speak(utterance);
       }
-    };
 
-    window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
-
-    return () => {
-      window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
-    };
-  }, []);
-
-  const handleClose = () => {
-    isManuallyClosedRef.current = true;
-    setShowBottomSheet(false);
-    setIsListening(false);
-    setIsResponding(false);
-    setIsThinking(false);
-    setIsPlayingAudio(false);
-    setShowUnmuteButton(false);
-    setShowAskButton(false);
-
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current = null;
+    } catch (error) {
+      console.error('Failed to play welcome audio:', error);
+      setShowUnmuteButton(false);
+      setIsPlayingAudio(false);
+      setShowAskButton(true);
     }
   };
 
-  const handleAsk = async () => {
+  const handleMicrophoneClick = async () => {
     try {
-      const hasPermission = await getMicrophonePermission();
-      if (!hasPermission && !shouldSkipPermissionPrompt()) {
-        const granted = await requestMicrophonePermission();
-        if (!granted) {
-          toast({
-            title: "Microphone permission denied",
-            description: "Please enable microphone access to use voice features",
-            variant: "destructive",
-          });
-          return;
-        }
+      if (shouldSkipPermissionPrompt()) {
+        setShowBottomSheet(true);
+        return;
       }
 
-      setIsListening(true);
-      setShowAskButton(false);
+      const hasPermission = await getMicrophonePermission();
       
-      // Start recording logic would go here
-      // For now, simulate recording timeout
-      setTimeout(() => {
-        setIsListening(false);
-        setShowAskButton(true);
-      }, 5000);
-
+      if (hasPermission) {
+        setShowBottomSheet(true);
+      } else {
+        const granted = await requestMicrophonePermission();
+        if (granted) {
+          setShowBottomSheet(true);
+        } else {
+          toast({
+            title: "Microphone Access Required",
+            description: "Please allow microphone access to use voice features.",
+            variant: "destructive",
+          });
+        }
+      }
     } catch (error) {
+      console.error('Microphone permission error:', error);
       toast({
-        title: "Recording failed",
-        description: "Please try again",
+        title: "Error",
+        description: "Failed to access microphone. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const handleUnmute = async () => {
-    if (welcomeAudioCacheRef.current) {
-      const audio = new Audio(welcomeAudioCacheRef.current);
-      currentAudioRef.current = audio;
-      setIsPlayingAudio(true);
-      setShowUnmuteButton(false);
-      
-      audio.onended = () => {
-        setIsPlayingAudio(false);
-        currentAudioRef.current = null;
-        if (!isManuallyClosedRef.current) {
-          setShowAskButton(true);
-        }
-      };
-      
-      audio.play().catch(error => {
-        console.error("Audio playback failed:", error);
-        setIsPlayingAudio(false);
-        setShowAskButton(true);
-      });
-    }
-  };
-
-  const stopAudio = () => {
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current.currentTime = 0;
-      currentAudioRef.current = null;
-    }
-    setIsPlayingAudio(false);
-    setShowUnmuteButton(false);
-    setShowAskButton(true);
+  const handleBottomSheetClose = () => {
+    setShowBottomSheet(false);
+    isManuallyClosedRef.current = true;
   };
 
   return (
-    <VoiceBottomSheet
-      isOpen={showBottomSheet}
-      onClose={handleClose}
-      onMute={stopAudio}
-      onAsk={handleAsk}
-      isListening={isListening}
-      isResponding={isResponding}
-      isThinking={isThinking}
-      showAskButton={showAskButton}
-      showUnmuteButton={showUnmuteButton}
-      isPlayingAudio={isPlayingAudio}
-      wineKey={wineKey}
-      onSuggestionClick={onSendMessage}
-      onUnmute={handleUnmute}
-      onStopAudio={stopAudio}
-    />
+    <>
+      <div className="flex items-center gap-2">
+        {showUnmuteButton && (
+          <button
+            onClick={handleUnmute}
+            className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            aria-label="Unmute welcome message"
+          >
+            🔊
+          </button>
+        )}
+        
+        {showAskButton && (
+          <button
+            onClick={handleMicrophoneClick}
+            className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+            aria-label="Ask voice assistant"
+          >
+            🎤
+          </button>
+        )}
+      </div>
+
+      <VoiceBottomSheet
+        isOpen={showBottomSheet}
+        onClose={handleBottomSheetClose}
+        onSendMessage={onSendMessage}
+        isProcessing={isProcessing}
+        wineKey={wineKey}
+      />
+    </>
   );
 };
 
