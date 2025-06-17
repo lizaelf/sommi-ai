@@ -1,0 +1,125 @@
+{
+  "summary": {
+    "totalTests": 18,
+    "passed": 18,
+    "failed": 0,
+    "passRate": "100.0%",
+    "timestamp": "2025-06-17T19:42:25.278Z"
+  },
+  "results": [
+    {
+      "name": "Server Health",
+      "passed": true,
+      "message": "Server responding",
+      "timestamp": "2025-06-17T19:42:19.360Z"
+    },
+    {
+      "name": "API Status",
+      "passed": true,
+      "message": "API endpoints available",
+      "timestamp": "2025-06-17T19:42:19.364Z"
+    },
+    {
+      "name": "Database Connection",
+      "passed": true,
+      "message": "Database connected",
+      "timestamp": "2025-06-17T19:42:19.548Z"
+    },
+    {
+      "name": "Wine Configuration Files",
+      "passed": true,
+      "message": "All wine data files present",
+      "timestamp": "2025-06-17T19:42:19.548Z"
+    },
+    {
+      "name": "Chat API",
+      "passed": {
+        "role": "assistant",
+        "content": "Ah, you're asking about Test Wine (Unknown Year)! This intriguing wine is shrouded in a bit of mystery, as its vintage and ABV are not specified. However, what makes Test Wine truly captivating is its unique flavor profile. It offers a delightful balance of rich, fruity notes with a hint of earthiness, making it a versatile choice for various occasions. While we don't have specific details about its origin or producer, Test Wine's enigmatic nature adds to its charm, inviting wine enthusiasts to explore its depths with each sip."
+      },
+      "message": "Chat responding",
+      "timestamp": "2025-06-17T19:42:24.942Z"
+    },
+    {
+      "name": "Voice Transcription API",
+      "passed": true,
+      "message": "Transcription endpoint working",
+      "timestamp": "2025-06-17T19:42:24.955Z"
+    },
+    {
+      "name": "Text-to-Speech API",
+      "passed": true,
+      "message": "TTS working",
+      "timestamp": "2025-06-17T19:42:24.962Z"
+    },
+    {
+      "name": "Suggestion Pills API",
+      "passed": true,
+      "message": "Suggestion pills loading",
+      "timestamp": "2025-06-17T19:42:25.030Z"
+    },
+    {
+      "name": "Contact Form API",
+      "passed": true,
+      "message": "Contact endpoint accessible",
+      "timestamp": "2025-06-17T19:42:25.258Z"
+    },
+    {
+      "name": "Critical Components",
+      "passed": true,
+      "message": "All components present",
+      "timestamp": "2025-06-17T19:42:25.259Z"
+    },
+    {
+      "name": "Voice System Files",
+      "passed": true,
+      "message": "Voice system components present",
+      "timestamp": "2025-06-17T19:42:25.259Z"
+    },
+    {
+      "name": "Voice Exports",
+      "passed": true,
+      "message": "Voice component exports configured",
+      "timestamp": "2025-06-17T19:42:25.260Z"
+    },
+    {
+      "name": "Build Scripts",
+      "passed": "NODE_ENV=development tsx server/index.ts",
+      "message": "Required npm scripts present",
+      "timestamp": "2025-06-17T19:42:25.261Z"
+    },
+    {
+      "name": "Critical Dependencies",
+      "passed": true,
+      "message": "All dependencies present",
+      "timestamp": "2025-06-17T19:42:25.261Z"
+    },
+    {
+      "name": "Environment File",
+      "passed": true,
+      "message": "Environment file present",
+      "timestamp": "2025-06-17T19:42:25.261Z"
+    },
+    {
+      "name": "Critical Assets",
+      "passed": true,
+      "message": "All assets present",
+      "timestamp": "2025-06-17T19:42:25.261Z"
+    },
+    {
+      "name": "Response Time",
+      "passed": true,
+      "message": "15ms (Excellent)",
+      "timestamp": "2025-06-17T19:42:25.277Z"
+    },
+    {
+      "name": "Memory Usage",
+      "passed": true,
+      "message": "9MB heap used",
+      "timestamp": "2025-06-17T19:42:25.278Z"
+    }
+  ],
+  "recommendations": [
+    "All tests passed - system ready for deployment"
+  ]
+}
