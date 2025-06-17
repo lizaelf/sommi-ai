@@ -9,8 +9,10 @@ import { suggestionCache } from '@/utils/suggestionCache';
 interface VoiceBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onMute: () => void;
-  onAsk: () => void;
+  onSendMessage?: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
+  isProcessing?: boolean;
+  onMute?: () => void;
+  onAsk?: () => void;
   isListening?: boolean;
   isResponding?: boolean;
   isThinking?: boolean;
@@ -33,6 +35,8 @@ interface VoiceBottomSheetProps {
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   isOpen,
   onClose,
+  onSendMessage,
+  isProcessing = false,
   onMute,
   onAsk,
   isListening = false,
