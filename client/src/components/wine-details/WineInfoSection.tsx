@@ -203,6 +203,20 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         />
       </div>
 
+      {/* Technical Details Section */}
+      <div style={{
+        width: '100%',
+        maxWidth: '400px',
+        marginTop: '32px'
+      }}>
+        <WineTechnicalDetails
+          varietal={wine.technicalDetails?.varietal || extractVarietalInfo(wine.name)}
+          appellation={wine.technicalDetails?.appellation || wine.location?.split(',')[0] || 'Unknown Appellation'}
+          aging={wine.technicalDetails?.aging || getAgingRecommendations(wine.name, wine.year)}
+          abv={wine.technicalDetails?.customAbv || wine.ratings?.abv}
+        />
+      </div>
+
       {/* History Section */}
       <div style={{
         width: '100%',
@@ -225,20 +239,6 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         }}>
           {wine.description || 'A distinguished wine that represents the finest traditions of winemaking, crafted with passion and expertise to deliver an exceptional tasting experience.'}
         </p>
-      </div>
-
-      {/* Technical Details Section */}
-      <div style={{
-        width: '100%',
-        maxWidth: '400px',
-        marginTop: '32px'
-      }}>
-        <WineTechnicalDetails
-          varietal={wine.technicalDetails?.varietal || extractVarietalInfo(wine.name)}
-          appellation={wine.technicalDetails?.appellation || wine.location?.split(',')[0] || 'Unknown Appellation'}
-          aging={wine.technicalDetails?.aging || getAgingRecommendations(wine.name, wine.year)}
-          abv={wine.technicalDetails?.customAbv || wine.ratings?.abv}
-        />
       </div>
 
     </div>
