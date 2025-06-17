@@ -2,6 +2,7 @@ import React from 'react';
 import WineBottleImage from '@/components/WineBottleImage';
 import USFlagImage from '@/components/USFlagImage';
 import WineRating from '@/components/WineRating';
+import WineTechnicalDetails from '@/components/WineTechnicalDetails';
 import typography from '@/styles/typography';
 
 interface WineDetailsHeaderProps {
@@ -16,6 +17,20 @@ interface WineDetailsHeaderProps {
       jd: number;
       ws: number;
       abv: number;
+    };
+    technicalDetails?: {
+      varietal?: {
+        primary: string;
+        primaryPercentage: number;
+        secondary?: string;
+        secondaryPercentage?: number;
+      };
+      appellation?: string;
+      aging?: {
+        drinkNow: boolean;
+        ageUpTo?: string;
+      };
+      customAbv?: number;
     };
   } | null;
 }
