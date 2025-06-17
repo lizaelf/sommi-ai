@@ -204,7 +204,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
               // Proceed with welcome message
               const welcomeMessage =
-                'Ah, this wine is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.';
+                `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I'd be delighted to offer serving tips or pairing ideas to make the most of it.`;
               setTimeout(() => {
                 (window as any).currentResponseAudio = null;
                 setIsResponding(false);
@@ -280,7 +280,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             );
             // Generate fresh audio immediately if cached fails
             const welcomeMessage =
-              'Ah, this wine is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.';
+              `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I'd be delighted to offer serving tips or pairing ideas to make the most of it.`;
 
             fetch("/api/text-to-speech", {
               method: "POST",
@@ -323,7 +323,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         // Fallback to generating audio if cache is not ready
         console.log("QR SCAN: Cache not ready, generating welcome message");
         const welcomeMessage =
-          'Ah, this wine is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.';
+          `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I'd be delighted to offer serving tips or pairing ideas to make the most of it.`;
 
         fetch("/api/text-to-speech", {
           method: "POST",
