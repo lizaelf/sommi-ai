@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/UseToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import VoiceAssistant from "./VoiceAssistant";
+import VoiceController from "./voice/VoiceController";
 import SuggestionPills from "./SuggestionPills";
 import Button from "./ui/Button";
 import { FormInput } from "./ui/FormInput";
@@ -20,8 +20,6 @@ import {
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
 import ContactBottomSheet, { ContactFormData } from "./ContactBottomSheet";
-import VoiceBottomSheet from "./VoiceBottomSheet";
-import CircleAnimation from "./CircleAnimation";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -145,58 +143,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
-
-  // Voice bottom sheet state
-  const [showVoiceBottomSheet, setShowVoiceBottomSheet] = useState(false);
-  const [voiceState, setVoiceState] = useState({
-    isListening: false,
-    isResponding: false,
-    isThinking: false,
-    isPlayingAudio: false,
-    isVoiceActive: false,
-    showUnmuteButton: false,
-    showAskButton: true
-  });
-
-  // Handle voice toggle
-  const handleVoiceToggle = useCallback(() => {
-    console.log("User chose Voice option");
-    setShowVoiceBottomSheet(true);
-  }, []);
-
-  // Handle voice bottom sheet close
-  const handleVoiceBottomSheetClose = useCallback(() => {
-    setShowVoiceBottomSheet(false);
-    setVoiceState(prev => ({ 
-      ...prev, 
-      isListening: false, 
-      isResponding: false, 
-      isPlayingAudio: false 
-    }));
-  }, []);
-
-  // Handle voice suggestion clicks
-  const handleVoiceSuggestionClick = useCallback((suggestion: string, pillId?: string, options?: any) => {
-    console.log("Voice suggestion clicked:", suggestion);
-    handleSendMessage(suggestion);
-  }, []);
-
-  // Handle voice commands
-  const handleVoiceMute = useCallback(() => {
-    setVoiceState(prev => ({ ...prev, isPlayingAudio: false }));
-  }, []);
-
-  const handleVoiceAsk = useCallback(() => {
-    setVoiceState(prev => ({ ...prev, isListening: true }));
-  }, []);
-
-  const handleVoiceUnmute = useCallback(() => {
-    setVoiceState(prev => ({ ...prev, isPlayingAudio: true }));
-  }, []);
-
-  const handleVoiceStopAudio = useCallback(() => {
-    setVoiceState(prev => ({ ...prev, isPlayingAudio: false }));
-  }, []);
 
   // Set up portal element for contact bottom sheet
   useEffect(() => {
@@ -1107,15 +1053,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
                     voiceButtonComponent={
-                      <button
-                        onClick={handleVoiceToggle}
-                        className="p-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 flex items-center justify-center"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2Z" fill="currentColor"/>
-                          <path d="M19 11C19 15.42 15.42 19 11 19V21H13V19C16.31 19 19 16.31 19 13V11H17V13C17 15.21 15.21 17 13 17H11C8.79 17 7 15.21 7 13V11H5V13C5 16.31 7.69 19 11 19V21H13V19C16.31 19 19 16.31 19 13V11Z" fill="currentColor"/>
-                        </svg>
-                      </button>
+                      <VoiceController
+                        onSendMessage={handleSendMessage}
+                        isProcessing={isTyping}
+                        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+                      />
                     }
                   />
                 </>
@@ -1385,24 +1327,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           </div>,
           portalElement || document.body
         )}
-
-        {/* Voice Bottom Sheet */}
-        <VoiceBottomSheet
-          isOpen={showVoiceBottomSheet}
-          onClose={handleVoiceBottomSheetClose}
-          onSuggestionClick={handleVoiceSuggestionClick}
-          onMute={handleVoiceMute}
-          onAsk={handleVoiceAsk}
-          onUnmute={handleVoiceUnmute}
-          onStopAudio={handleVoiceStopAudio}
-          isListening={voiceState.isListening}
-          isResponding={voiceState.isResponding}
-          isThinking={voiceState.isThinking}
-          isPlayingAudio={voiceState.isPlayingAudio}
-          showAskButton={voiceState.showAskButton}
-          showUnmuteButton={voiceState.showUnmuteButton}
-          wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
-        />
     </div>
   );
 };

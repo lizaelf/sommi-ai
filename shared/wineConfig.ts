@@ -121,9 +121,3 @@ Present information in a friendly, conversational manner as if you're speaking t
 
 For tasting notes, be specific and detailed about the ${WINE_CONFIG.vintage} ${WINE_CONFIG.name}. For food pairings, be creative but appropriate for this ${wineType}. For region information, include the history of ${WINE_CONFIG.region} and what makes it special for ${wineType}.`;
 };
-
-// Generate dynamic welcome message with actual wine data
-export const getDynamicWelcomeMessage = () => {
-  const tastingHighlights = WINE_CONFIG.tastingNotes.slice(0, 2).join(', ');
-  return `Welcome! I'm here to help you explore your ${WINE_CONFIG.vintage} ${WINE_CONFIG.name}. This exceptional ${WINE_CONFIG.varietal} from ${WINE_CONFIG.winery} offers ${tastingHighlights.toLowerCase()}. I can share tasting notes, food pairings, or answer any questions about this wine. What would you like to know?`;
-};
