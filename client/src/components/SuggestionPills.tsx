@@ -657,7 +657,6 @@ export default function SuggestionPills({
         overflowX: "auto",
         scrollbarWidth: "none",
         msOverflowStyle: "none",
-        WebkitScrollbar: { display: "none" },
       }}
     >
       <style>
