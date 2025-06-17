@@ -538,7 +538,7 @@ export default function SuggestionPills({
 
       {isLoading
         ? Array.from({ length: 3 }).map((_, index) => (
-            <SkeletonPill index={index} />
+            <SkeletonPill key={`skeleton-${index}`} index={index} />
           ))
         : visiblePills.map((pill: SuggestionPill) => {
             const effectiveWineKey = wineKey || "wine_1";
