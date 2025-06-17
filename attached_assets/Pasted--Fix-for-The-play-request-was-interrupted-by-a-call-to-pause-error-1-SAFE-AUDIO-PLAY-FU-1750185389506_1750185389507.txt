@@ -1,0 +1,285 @@
+// Fix for "The play() request was interrupted by a call to pause()" error
+
+// 1. SAFE AUDIO PLAY FUNCTION
+const safeAudioPlay = async (audio: HTMLAudioElement): Promise<boolean> => {
+  try {
+    // Check if audio is already playing
+    if (!audio.paused) {
+      console.log("🎵 Audio already playing, skipping");
+      return true;
+    }
+
+    // Store the play promise to handle properly
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+      await playPromise;
+      console.log("🎵 Audio started successfully");
+      return true;
+    }
+    
+    return false;
+  } catch (error: any) {
+    // Handle specific error types
+    if (error.name === 'AbortError') {
+      console.log("🎵 Audio play was aborted (this is normal)");
+      return false;
+    } else if (error.name === 'NotAllowedError') {
+      console.log("🎵 Audio play not allowed by browser policy");
+      return false;
+    } else {
+      console.error("🎵 Audio play failed:", error);
+      return false;
+    }
+  }
+};
+
+// 2. SAFE AUDIO PAUSE FUNCTION
+const safeAudioPause = (audio: HTMLAudioElement): void => {
+  try {
+    if (!audio.paused) {
+      audio.pause();
+      console.log("🎵 Audio paused safely");
+    }
+  } catch (error) {
+    console.warn("🎵 Error pausing audio:", error);
+  }
+};
+
+// 3. SAFE AUDIO STOP FUNCTION
+const safeAudioStop = (audio: HTMLAudioElement): void => {
+  try {
+    if (!audio.paused) {
+      audio.pause();
+    }
+    audio.currentTime = 0;
+    console.log("🎵 Audio stopped safely");
+  } catch (error) {
+    console.warn("🎵 Error stopping audio:", error);
+  }
+};
+
+// 4. AUDIO MANAGER CLASS TO PREVENT CONFLICTS
+class AudioManager {
+  private currentAudio: HTMLAudioElement | null = null;
+  private playPromise: Promise<void> | null = null;
+
+  async playAudio(audioUrl: string): Promise<boolean> {
+    try {
+      // Stop any existing audio first
+      await this.stopCurrentAudio();
+
+      // Create new audio element
+      const audio = new Audio(audioUrl);
+      this.currentAudio = audio;
+
+      // Set up event listeners
+      audio.addEventListener('ended', () => this.cleanup());
+      audio.addEventListener('error', () => this.cleanup());
+
+      // Wait for audio to be ready
+      await new Promise((resolve, reject) => {
+        audio.oncanplaythrough = resolve;
+        audio.onerror = reject;
+        audio.load();
+      });
+
+      // Play the audio
+      this.playPromise = audio.play();
+      await this.playPromise;
+      this.playPromise = null;
+
+      console.log("🎵 AudioManager: Audio playing successfully");
+      return true;
+
+    } catch (error: any) {
+      console.error("🎵 AudioManager: Play failed:", error);
+      this.cleanup();
+      return false;
+    }
+  }
+
+  async stopCurrentAudio(): Promise<void> {
+    if (this.currentAudio) {
+      try {
+        // If there's a pending play promise, wait for it to resolve/reject
+        if (this.playPromise) {
+          try {
+            await this.playPromise;
+          } catch (e) {
+            // Play promise was rejected, that's okay
+          }
+          this.playPromise = null;
+        }
+
+        // Now safely pause the audio
+        safeAudioPause(this.currentAudio);
+        this.currentAudio.currentTime = 0;
+      } catch (error) {
+        console.warn("🎵 AudioManager: Error stopping audio:", error);
+      }
+    }
+    this.cleanup();
+  }
+
+  private cleanup(): void {
+    this.currentAudio = null;
+    this.playPromise = null;
+  }
+
+  isPlaying(): boolean {
+    return this.currentAudio && !this.currentAudio.paused;
+  }
+}
+
+// 5. FIXED AUDIO PLAYBACK FOR SUGGESTION PILLS
+const playAudioWithoutInterruption = async (audioUrl: string, text: string): Promise<boolean> => {
+  const audioManager = (window as any).audioManager || new AudioManager();
+  (window as any).audioManager = audioManager;
+
+  try {
+    const success = await audioManager.playAudio(audioUrl);
+    
+    if (success) {
+      // Dispatch events for UI updates
+      window.dispatchEvent(new CustomEvent("tts-audio-start"));
+      
+      // Set up end listener
+      if (audioManager.currentAudio) {
+        audioManager.currentAudio.addEventListener('ended', () => {
+          window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+        });
+      }
+      
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error("🎵 Audio playback failed:", error);
+    return false;
+  }
+};
+
+// 6. UPDATE YOUR SUGGESTION PILLS COMPONENT
+// Replace the playAudioWithFallback function with this:
+const playAudioWithFallbackFixed = async (audioUrl: string, text: string): Promise<boolean> => {
+  try {
+    console.log("🎵 Starting audio playback...");
+    
+    // Use the safe audio manager
+    const success = await playAudioWithoutInterruption(audioUrl, text);
+    
+    if (success) {
+      console.log("🎵 Audio playing successfully");
+      return true;
+    }
+    
+    // Fallback to TTS API if cached audio fails
+    if (text) {
+      console.log("🎵 Attempting fallback TTS generation");
+      
+      const response = await fetch("/api/text-to-speech", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      
+      if (response.ok) {
+        const audioBuffer = await response.arrayBuffer();
+        const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+        const fallbackUrl = URL.createObjectURL(audioBlob);
+        
+        const fallbackSuccess = await playAudioWithoutInterruption(fallbackUrl, text);
+        
+        // Clean up the blob URL after a delay
+        setTimeout(() => URL.revokeObjectURL(fallbackUrl), 5000);
+        
+        return fallbackSuccess;
+      }
+    }
+    
+    return false;
+  } catch (error) {
+    console.error("🎵 Complete audio playback failure:", error);
+    return false;
+  }
+};
+
+// 7. COMPONENT CLEANUP HANDLER
+const cleanupAudioOnUnmount = () => {
+  const audioManager = (window as any).audioManager;
+  if (audioManager) {
+    audioManager.stopCurrentAudio();
+  }
+  
+  // Clear audio cache
+  const audioCache = (window as any).suggestionAudioCache || {};
+  Object.values(audioCache).forEach((url: unknown) => {
+    if (typeof url === 'string') {
+      URL.revokeObjectURL(url);
+    }
+  });
+  (window as any).suggestionAudioCache = {};
+  
+  console.log("🧹 Audio cleanup completed");
+};
+
+// 8. ABORT CONVERSATION HANDLER
+const handleAbortConversation = async () => {
+  console.log("🛑 Aborting conversation and stopping audio");
+  
+  const audioManager = (window as any).audioManager;
+  if (audioManager) {
+    await audioManager.stopCurrentAudio();
+  }
+  
+  // Clear any locks
+  (window as any).audioLock = false;
+  
+  // Dispatch stop event
+  window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+};
+
+// 9. EVENT LISTENER SETUP
+// Add this to your component or app initialization
+const setupAudioEventListeners = () => {
+  // Listen for abort events
+  window.addEventListener("abortConversation", handleAbortConversation);
+  
+  // Listen for page unload
+  window.addEventListener("beforeunload", cleanupAudioOnUnmount);
+  
+  // Listen for visibility change (tab switch)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      const audioManager = (window as any).audioManager;
+      if (audioManager && audioManager.isPlaying()) {
+        console.log("🎵 Tab hidden, pausing audio");
+        audioManager.stopCurrentAudio();
+      }
+    }
+  });
+};
+
+// 10. INITIALIZE AUDIO SYSTEM
+const initializeAudioSystem = () => {
+  setupAudioEventListeners();
+  console.log("🎵 Audio system initialized with interruption protection");
+};
+
+// Export for use
+export {
+  safeAudioPlay,
+  safeAudioPause,
+  safeAudioStop,
+  AudioManager,
+  playAudioWithoutInterruption,
+  playAudioWithFallbackFixed,
+  cleanupAudioOnUnmount,
+  handleAbortConversation,
+  initializeAudioSystem
+};
+
+// Call this in your app initialization
+// initializeAudioSystem();
