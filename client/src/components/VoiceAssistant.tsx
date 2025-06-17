@@ -66,16 +66,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("Caching dynamic welcome message for instant playback");
 
     try {
-      // Generate dynamic welcome message using actual wine data
-      const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
-
-      const welcomeMessage = `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.`;
-
-      const response = await fetch("/api/text-to-speech", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: welcomeMessage }),
-      });
+      // Welcome message generation delegated to VoiceAudioManager
+      // This ensures single source of truth for WINE_CONFIG-based content
+      console.log("VoiceAssistant: Welcome message handled by VoiceAudioManager");
+      return;
 
       if (response.ok) {
         const buffer = await response.arrayBuffer();
@@ -202,9 +196,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               setShowAskButton(false);
               setIsResponding(true);
 
-              // Proceed with welcome message
-              const welcomeMessage =
-                "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+              // Welcome message handled by VoiceAudioManager - no hardcoded content
+              return;
               setTimeout(() => {
                 (window as any).currentResponseAudio = null;
                 setIsResponding(false);
@@ -279,8 +272,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               error,
             );
             // Generate fresh audio immediately if cached fails
-            const welcomeMessage =
-              "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+            // Welcome message handled by VoiceAudioManager - no hardcoded content
+            return;
 
             fetch("/api/text-to-speech", {
               method: "POST",
