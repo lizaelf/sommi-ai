@@ -47,7 +47,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 17, 2025)
 
-### SuggestionPills UI Stability Enhancement (June 17, 2025 - Latest)
+### Welcome Message Architecture Cleanup (June 17, 2025 - Latest)
+- **Removed Redundant Welcome Message**: Eliminated duplicate welcome message implementation from App.tsx to prevent code duplication
+- **Centralized Voice Functionality**: Welcome message now handled entirely by VoiceAssistant component using dynamic wine configuration data
+- **Improved Maintainability**: Single source of truth for welcome message content and caching logic
+- **Cleaner App Architecture**: App.tsx simplified to focus solely on routing and core application setup
+
+### SuggestionPills UI Stability Enhancement (June 17, 2025)
 - **Stable Pill Display Implementation**: Fixed SuggestionPills component to prevent UI changes during page loading, eliminating pill flickering and content shifts
 - **Loading State Management**: Pills now start with default suggestions and only switch to API suggestions when fully loaded and stable
 - **Consistent 3-Pill Display**: Maintains exactly 3 suggestion pills at all times for stable UI layout

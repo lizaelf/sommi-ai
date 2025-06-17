@@ -43,53 +43,9 @@ function Router() {
 }
 
 // Global welcome message cache initialization
-const initializeWelcomeAudioCache = async () => {
-  if ((window as any).globalWelcomeAudioCache) return; // Already cached
-  
-  try {
-    console.log("Initializing global welcome audio cache");
-    // Use new dynamic welcome message
-    const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
-    const response = await fetch('/api/text-to-speech', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: welcomeMessage })
-    });
-    
-    if (response.ok) {
-      const buffer = await response.arrayBuffer();
-      const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      // Create preloaded audio element
-      const audioElement = new Audio(audioUrl);
-      audioElement.preload = 'auto';
-      
-      await new Promise((resolve, reject) => {
-        audioElement.oncanplaythrough = resolve;
-        audioElement.onerror = reject;
-        audioElement.load();
-      });
-      
-      (window as any).globalWelcomeAudioCache = {
-        url: audioUrl,
-        element: audioElement
-      };
-      console.log("Global welcome audio cache ready for instant playback");
-    }
-  } catch (error) {
-    console.error("Failed to initialize global welcome audio cache:", error);
-  }
-};
+// Welcome message caching is now handled entirely by VoiceAssistant component
 
 function App() {
-  // Initialize welcome audio cache early
-  useEffect(() => {
-    // Start caching after app initializes
-    setTimeout(() => {
-      initializeWelcomeAudioCache();
-    }, 2000);
-  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
