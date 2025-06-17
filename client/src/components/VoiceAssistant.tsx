@@ -12,7 +12,7 @@ import { WINE_CONFIG } from "../../../shared/wineConfig";
 // ✅ Centralized dynamic welcome message generator
 const getDynamicWelcomeMessage = () => {
   const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
-  return `Hello, I see you're looking at the ${wineName}, an excellent choice. The ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard} ${WINE_CONFIG.varietal} expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.`;
+  return `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers.Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.`;
 };
 
 interface VoiceAssistantProps {
