@@ -6,30 +6,21 @@ import typography from "@/styles/typography";
 import wineResponses from "@/../../shared/wineResponses.json";
 
 // Standard skeleton pill component with shimmer effect
-const SkeletonPill = ({
-  index,
-  width = "120px",
-}: {
-  index: number;
-  width?: string;
-}) => (
-  <div
-    className="skeleton-pill-shimmer"
-    style={{
-      width: width ?? "120px",
-      height: "40px",
-      borderRadius: "32px",
-      flexShrink: 0,
-    }}
-  />
-);
+const SkeletonPill = ({ index, width = "120px" }: { index: number; width?: string }) => (
+    <div
+      className="skeleton-pill-shimmer"
+      style={{
+        width: width ?? "120px"
+        height: "40px",
+        borderRadius: "32px",
+        flexShrink: 0,
+      }}      
+    />
+  );
+
 
 // Helper function to generate cache keys for suggestions
-function getSuggestionCacheKey(
-  wineKey: string,
-  suggestionId: string,
-  type: string = "text",
-): string {
+function getSuggestionCacheKey(wineKey: string, suggestionId: string, type: string = "text"): string {
   return `${wineKey}:${suggestionId}:${type}`;
 }
 
@@ -118,16 +109,10 @@ export default function SuggestionPills({
     return () => {
       // Clean up all audio URLs to prevent memory leaks
       const audioCache = (window as any).suggestionAudioCache || {};
-      console.log(
-        "🧹 Cleaning up",
-        Object.keys(audioCache).length,
-        "cached audio URLs",
-      );
+      console.log("🧹 Cleaning up", Object.keys(audioCache).length, "cached audio URLs");
 
-      Object.values(audioCache).forEach((url: unknown) => {
-        if (typeof url === "string") {
-          URL.revokeObjectURL(url);
-        }
+      Object.values(audioCache).forEach((url: string) => {
+        URL.revokeObjectURL(url);
       });
 
       // Clear the cache completely
@@ -144,98 +129,68 @@ export default function SuggestionPills({
   }, []);
 
   // Pre-generation for voice context with proper error handling
-  const preGenerateSuggestionAudio = useCallback(
-    async (suggestions?: SuggestionPill[]) => {
-      const pillsToProcess =
-        suggestions || suggestionsData?.suggestions || defaultSuggestions;
-      if (!pillsToProcess?.length) return;
+  const preGenerateSuggestionAudio = useCallback(async (suggestions?: SuggestionPill[]) => {
+    const pillsToProcess = suggestions || suggestionsData?.suggestions || defaultSuggestions;
+    if (!pillsToProcess?.length) return;
 
-      console.log("🎤 PRE-GEN: Starting enhanced audio pre-generation");
-      const audioCache = (window as any).suggestionAudioCache || {};
+    console.log("🎤 PRE-GEN: Starting enhanced audio pre-generation");
+    const audioCache = (window as any).suggestionAudioCache || {};
 
-      // FIX 3: Add cache size limit to prevent unlimited memory growth
-      const MAX_CACHE_SIZE = 15;
-      const cacheKeys = Object.keys(audioCache);
-      if (cacheKeys.length >= MAX_CACHE_SIZE) {
-        console.log("🧹 Audio cache full, cleaning oldest entries");
-        const keysToRemove = cacheKeys.slice(0, Math.floor(MAX_CACHE_SIZE / 2));
-        keysToRemove.forEach((oldKey) => {
-          URL.revokeObjectURL(audioCache[oldKey]);
-          delete audioCache[oldKey];
-        });
+    // FIX 3: Add cache size limit to prevent unlimited memory growth
+    const MAX_CACHE_SIZE = 15;
+    const cacheKeys = Object.keys(audioCache);
+    if (cacheKeys.length >= MAX_CACHE_SIZE) {
+      console.log("🧹 Audio cache full, cleaning oldest entries");
+      const keysToRemove = cacheKeys.slice(0, Math.floor(MAX_CACHE_SIZE / 2));
+      keysToRemove.forEach(oldKey => {
+        URL.revokeObjectURL(audioCache[oldKey]);
+        delete audioCache[oldKey];
+      });
+    }
+
+    (window as any).suggestionAudioCache = audioCache;
+    const effectiveWineKey = wineKey || "wine_1";
+
+    for (const pill of pillsToProcess.slice(0, 3)) {
+      const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+      const cacheKey = getSuggestionCacheKey(effectiveWineKey, suggestionId, "audio");
+
+      setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "loading"));
+
+      if (audioCache[cacheKey]) {
+        setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "ready"));
+        continue;
       }
 
-      (window as any).suggestionAudioCache = audioCache;
-      const effectiveWineKey = wineKey || "wine_1";
+      try {
+        const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
+        if (wineData?.responses) {
+          const responseText = wineData.responses[suggestionId as keyof typeof wineData.responses];
+          if (responseText) {
+            const response = await fetch("/api/text-to-speech", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: responseText }), // FIX 4: Send full text, no truncation
+            });
 
-      for (const pill of pillsToProcess.slice(0, 3)) {
-        const suggestionId = pill.prompt
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "_");
-        const cacheKey = getSuggestionCacheKey(
-          effectiveWineKey,
-          suggestionId,
-          "audio",
-        );
-
-        setPreGenerationStatus((prev) =>
-          new Map(prev).set(cacheKey, "loading"),
-        );
-
-        if (audioCache[cacheKey]) {
-          setPreGenerationStatus((prev) =>
-            new Map(prev).set(cacheKey, "ready"),
-          );
-          continue;
-        }
-
-        try {
-          const wineData =
-            wineResponses[effectiveWineKey as keyof typeof wineResponses];
-          if (wineData?.responses) {
-            const responseText =
-              wineData.responses[
-                suggestionId as keyof typeof wineData.responses
-              ];
-            if (responseText) {
-              const response = await fetch("/api/text-to-speech", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: responseText }), // FIX 4: Send full text, no truncation
-              });
-
-              if (response.ok) {
-                const audioBuffer = await response.arrayBuffer();
-                const audioBlob = new Blob([audioBuffer], {
-                  type: "audio/mpeg",
-                });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                audioCache[cacheKey] = audioUrl;
-                setPreGenerationStatus((prev) =>
-                  new Map(prev).set(cacheKey, "ready"),
-                );
-                console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.prompt}"`);
-              } else {
-                setPreGenerationStatus((prev) =>
-                  new Map(prev).set(cacheKey, "failed"),
-                );
-                console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.prompt}" - HTTP ${response.status}`);
-              }
+            if (response.ok) {
+              const audioBuffer = await response.arrayBuffer();
+              const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+              const audioUrl = URL.createObjectURL(audioBlob);
+              audioCache[cacheKey] = audioUrl;
+              setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "ready"));
+              console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
+            } else {
+              setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "failed"));
             }
           }
-        } catch (error) {
-          setPreGenerationStatus((prev) =>
-            new Map(prev).set(cacheKey, "failed"),
-          );
-          console.error(
-            `🎤 PRE-GEN: Failed to generate audio for "${pill.prompt}":`,
-            error,
-          );
         }
+      } catch (error) {
+        setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "failed"));
+        console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`, error);
       }
-    },
-    [wineKey, suggestionsData],
-  );
+    }
+  }, [wineKey, suggestionsData]);
 
   // Pre-generate audio for voice context
   useEffect(() => {
@@ -273,20 +228,16 @@ export default function SuggestionPills({
     setIsProcessing(true);
 
     try {
-      const suggestionId = pill.prompt
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_");
+      const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
       const effectiveWineKey = wineKey || "wine_1";
 
       let instantResponse = null;
 
       // Check spreadsheet data for voice context
       if (context === "voice-assistant") {
-        const wineData =
-          wineResponses[effectiveWineKey as keyof typeof wineResponses];
+        const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
         if (wineData?.responses) {
-          const spreadsheetResponse =
-            wineData.responses[suggestionId as keyof typeof wineData.responses];
+          const spreadsheetResponse = wineData.responses[suggestionId as keyof typeof wineData.responses];
           if (spreadsheetResponse) {
             instantResponse = spreadsheetResponse;
           }
@@ -295,10 +246,7 @@ export default function SuggestionPills({
 
       // Fallback to cache if no spreadsheet response
       if (!instantResponse) {
-        instantResponse = await suggestionCache.getCachedResponse(
-          effectiveWineKey,
-          suggestionId,
-        );
+        instantResponse = await suggestionCache.getCachedResponse(effectiveWineKey, suggestionId);
       }
 
       // CHAT CONTEXT: Handle text-only
@@ -321,11 +269,9 @@ export default function SuggestionPills({
             createdAt: new Date().toISOString(),
           };
 
-          window.dispatchEvent(
-            new CustomEvent("addChatMessage", {
-              detail: { userMessage, assistantMessage },
-            }),
-          );
+          window.dispatchEvent(new CustomEvent("addChatMessage", {
+            detail: { userMessage, assistantMessage },
+          }));
         } else {
           // FIX 5: Use callback pattern consistently
           onSuggestionClick(pill.text, pill.id, {
@@ -344,34 +290,24 @@ export default function SuggestionPills({
         if (instantResponse) {
           // Check for pre-generated audio
           const audioCache = (window as any).suggestionAudioCache || {};
-          const cacheKey = getSuggestionCacheKey(
-            effectiveWineKey,
-            suggestionId,
-            "audio",
-          );
+          const cacheKey = getSuggestionCacheKey(effectiveWineKey, suggestionId, "audio");
 
           if (audioCache[cacheKey]) {
             // Play pre-generated audio
             const audio = new Audio(audioCache[cacheKey]);
 
-            audio.onplay = () =>
-              window.dispatchEvent(new CustomEvent("tts-audio-start"));
+            audio.onplay = () => window.dispatchEvent(new CustomEvent("tts-audio-start"));
             audio.onended = () => {
               setIsProcessing(false);
               window.dispatchEvent(new CustomEvent("tts-audio-stop"));
             };
-            audio.onerror = (error) => {
-              console.error("🎤 SuggestionPills: Audio playback error:", error);
-              console.error("🎤 Audio URL:", audioCache[cacheKey]);
-              console.error("🎤 Audio readyState:", audio.readyState);
-              console.error("🎤 Audio networkState:", audio.networkState);
+            audio.onerror = () => {
               setIsProcessing(false);
               window.dispatchEvent(new CustomEvent("tts-audio-stop"));
             };
 
             (window as any).currentOpenAIAudio = audio;
             await audio.play();
-            console.log(`🎤 SUCCESS: Audio playback started for "${pill.prompt}"`);
 
             // Add messages to chat
             const userMessage = {
@@ -390,11 +326,9 @@ export default function SuggestionPills({
               createdAt: new Date().toISOString(),
             };
 
-            window.dispatchEvent(
-              new CustomEvent("addChatMessage", {
-                detail: { userMessage, assistantMessage },
-              }),
-            );
+            window.dispatchEvent(new CustomEvent("addChatMessage", {
+              detail: { userMessage, assistantMessage },
+            }));
           } else {
             // No pre-generated audio - use callback to let parent handle
             onSuggestionClick(pill.prompt, pill.id, {
@@ -415,6 +349,7 @@ export default function SuggestionPills({
         await markPillAsUsed(pill.id);
         return;
       }
+
     } catch (error) {
       console.error("Error handling pill click:", error);
       setUsedPills((prev) => {
@@ -453,21 +388,15 @@ export default function SuggestionPills({
   }, [isLoading, suggestionsData]);
 
   const visiblePills = useMemo(() => {
-    const unused = sourceSuggestions.filter(
-      (pill: any) => !usedPills.has(pill.id),
-    );
-    const used = sourceSuggestions.filter((pill: any) =>
-      usedPills.has(pill.id),
-    );
+    const unused = sourceSuggestions.filter((pill) => !usedPills.has(pill.id));
+    const used = sourceSuggestions.filter((pill) => usedPills.has(pill.id));
     const combined = [...unused, ...used];
 
     if (combined.length < 3) {
       combined.push(...defaultSuggestions);
     }
 
-    const uniqueById = Array.from(
-      new Map(combined.map((p) => [p.id, p])).values(),
-    );
+    const uniqueById = Array.from(new Map(combined.map((p) => [p.id, p])).values());
     return uniqueById.slice(0, 3);
   }, [sourceSuggestions, usedPills]);
 
@@ -484,7 +413,7 @@ export default function SuggestionPills({
         msOverflowStyle: "none",
       }}
     >
-      {/* Move styles to proper location */}
+      {/* FIX 7: Move styles to proper location */}
       <style>
         {`
           div::-webkit-scrollbar {
@@ -507,14 +436,8 @@ export default function SuggestionPills({
           ))
         : visiblePills.map((pill: SuggestionPill) => {
             const effectiveWineKey = wineKey || "wine_1";
-            const suggestionId = pill.prompt
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "_");
-            const cacheKey = getSuggestionCacheKey(
-              effectiveWineKey,
-              suggestionId,
-              "audio",
-            );
+            const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+            const cacheKey = getSuggestionCacheKey(effectiveWineKey, suggestionId, "audio");
             const preGenStatus = preGenerationStatus.get(cacheKey);
             const isPillLoading = loadingPillId === pill.id;
 
