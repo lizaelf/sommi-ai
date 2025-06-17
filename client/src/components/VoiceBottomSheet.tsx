@@ -33,18 +33,22 @@ interface VoiceBottomSheetProps {
 const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
   isOpen,
   onClose,
+  onMute,
+  onAsk,
   isListening = false,
   isResponding = false,
   isThinking = false,
+  showSuggestions = true,
+  showListenButton = false,
   showAskButton = false,
   showUnmuteButton = false,
+  isLoadingAudio = false,
   isVoiceActive = false,
   isPlayingAudio = false,
   wineKey = '',
-  onSendMessage,
-  onStartListening,
-  onStopListening,
-  onPlayWelcome,
+  onSuggestionClick,
+  onListenResponse,
+  onUnmute,
   onStopAudio
 }) => {
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);

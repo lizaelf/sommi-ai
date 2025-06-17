@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/UseToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import VoiceAssistant from "./VoiceAssistant";
+import VoiceController from "./voice/VoiceController";
 import SuggestionPills from "./SuggestionPills";
 import Button from "./ui/Button";
 import { FormInput } from "./ui/FormInput";
@@ -1053,9 +1053,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
                     voiceButtonComponent={
-                      <VoiceAssistant
+                      <VoiceController
                         onSendMessage={handleSendMessage}
                         isProcessing={isTyping}
+                        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
                       />
                     }
                   />

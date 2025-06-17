@@ -6,7 +6,7 @@ import {
   requestMicrophonePermission,
   shouldSkipPermissionPrompt,
 } from "@/utils/microphonePermissions";
-import { WINE_CONFIG } from "../../../shared/wineConfig";
+// Voice controller for wine platform
 
 interface VoiceControllerProps {
   onSendMessage: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
