@@ -69,7 +69,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Generate dynamic welcome message using actual wine data
       const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
 
-      const welcomeMessage = `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers. Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.`;
 
       const response = await fetch("/api/text-to-speech", {
         method: "POST",
