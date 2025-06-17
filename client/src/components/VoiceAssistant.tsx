@@ -12,7 +12,7 @@ import { WINE_CONFIG } from "../../../shared/wineConfig";
 // ✅ Centralized dynamic welcome message generator
 const getDynamicWelcomeMessage = () => {
   const wineName = `${WINE_CONFIG.vintage} ${WINE_CONFIG.winery} "${WINE_CONFIG.vineyard}"`;
-  return `Hello, I see you're looking at the ${wineName}, an excellent choice. The ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard} ${WINE_CONFIG.varietal} expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.`;
+  return `Ah, the ${WINE_CONFIG.vintage} ${WINE_CONFIG.vineyard}—a stellar pick. This ${WINE_CONFIG.varietal} is brimming with red and black raspberries, laced with sage and a touch of dark chocolate on the nose. On the palate? Think ripe blackberry and plum wrapped in full-bodied richness, finishing with a lively acidity that lingers.Planning to pop the cork soon? I’d be delighted to offer serving tips or pairing ideas to make the most of it.`;
 };
 
 interface VoiceAssistantProps {
@@ -31,7 +31,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [isResponding, setIsResponding] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  
+
   // Share state globally for CircleAnimation
   useEffect(() => {
     (window as any).voiceAssistantState = {
@@ -51,11 +51,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const welcomeAudioCacheRef = useRef<string | null>(null);
   const welcomeAudioElementRef = useRef<HTMLAudioElement | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-  
+
   // Cache welcome message immediately on component mount for instant playback
   const cacheWelcomeMessage = async () => {
     if (welcomeAudioCacheRef.current) return; // Already cached
-    
+
     // Check if global cache is available first
     const globalCache = (window as any).globalWelcomeAudioCache;
     if (globalCache && globalCache.url && globalCache.element) {
@@ -64,35 +64,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       welcomeAudioElementRef.current = globalCache.element;
       return;
     }
-    
+
     console.log("Caching dynamic welcome message for instant playback");
-    
+
     try {
       // Generate dynamic welcome message using centralized function
       const welcomeMessage = getDynamicWelcomeMessage();
-      
+
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: welcomeMessage })
       });
-      
+
       if (response.ok) {
         const buffer = await response.arrayBuffer();
         const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
         const audioUrl = URL.createObjectURL(audioBlob);
-        
+
         // Pre-create audio element for instant playback
         const audioElement = new Audio(audioUrl);
         audioElement.preload = 'auto';
-        
+
         // Wait for audio to be fully loaded
         await new Promise((resolve, reject) => {
           audioElement.oncanplaythrough = resolve;
           audioElement.onerror = reject;
           audioElement.load();
         });
-        
+
         welcomeAudioCacheRef.current = audioUrl;
         welcomeAudioElementRef.current = audioElement;
         console.log("Welcome message audio cached and preloaded for instant playback");
@@ -101,12 +101,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       console.error("Failed to cache welcome message:", error);
     }
   };
-  
+
   // Cache welcome message on component mount and warm cache early
   useEffect(() => {
     // Immediately start caching
     cacheWelcomeMessage();
-    
+
     // Also set up global cache warming for early initialization
     if (!(window as any).welcomeAudioGlobalCache) {
       (window as any).welcomeAudioGlobalCache = cacheWelcomeMessage;
@@ -118,7 +118,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       }, 1000);
     }
-    
+
     // Cleanup function to revoke cached audio URLs
     return () => {
       if (welcomeAudioCacheRef.current) {
@@ -131,7 +131,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     };
   }, []);
-  
+
   // Listen for suggestion playback events to show Stop button
   useEffect(() => {
     const handleSuggestionPlayback = () => {
@@ -157,15 +157,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         console.log("QR SCAN: Voice assistant manually closed, ignoring trigger");
         return;
       }
-      
+
       // QR scan voice button should always work - don't block based on session storage
       console.log("QR SCAN: Voice button clicked - proceeding with voice assistant");
-      
+
       // DEPLOYMENT: Block welcome message until male voice is verified
       const isDeployment = window.location.hostname.includes('.replit.app') || 
                           window.location.hostname.includes('.repl.co') ||
                           window.location.hostname !== 'localhost';
-      
+
       if (isDeployment) {
         // Check if voice is properly locked before speaking
         const voiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
@@ -174,7 +174,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           GUARANTEED_MALE_VOICE: (window as any).GUARANTEED_MALE_VOICE?.name,
           voiceLocked
         });
-        
+
         if (!voiceLocked) {
           console.log("🚫 DEPLOYMENT: Blocking welcome message - voice not verified");
           // Wait a moment for voice system to initialize, then try again
@@ -186,7 +186,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
               setShowAskButton(false);
               setIsResponding(true);
-              
+
               // Proceed with welcome message
               const welcomeMessage = getDynamicWelcomeMessage();
               setTimeout(() => {
@@ -205,24 +205,24 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           return;
         }
       }
-      
+
       // Show bottom sheet immediately for instant response
       setShowBottomSheet(true);
       sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
       setShowAskButton(false);
       setIsResponding(true);
-      
+
       // Play preloaded welcome message instantly
       if (welcomeAudioElementRef.current) {
         console.log("QR SCAN: Playing preloaded welcome message instantly");
         const audio = welcomeAudioElementRef.current;
-        
+
         // Reset audio to beginning for replay
         audio.currentTime = 0;
-        
+
         // Store reference for potential stopping
         (window as any).currentOpenAIAudio = audio;
-        
+
         audio.onended = () => {
           if (!isManuallyClosedRef.current) {
             setIsResponding(false);
@@ -234,7 +234,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           (window as any).currentOpenAIAudio = null;
           console.log("QR SCAN: Preloaded welcome message completed");
         };
-        
+
         audio.onerror = () => {
           if (!isManuallyClosedRef.current) {
             setIsResponding(false);
@@ -246,7 +246,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           (window as any).currentOpenAIAudio = null;
           console.error("QR SCAN: Preloaded audio playback error");
         };
-        
+
         // Play audio immediately
         audio.play().then(() => {
           console.log("QR SCAN: Welcome audio playing successfully");
@@ -254,7 +254,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           console.error("QR SCAN: Audio playback failed, generating fresh audio:", error);
           // Generate fresh audio immediately if cached fails
           const welcomeMessage = getDynamicWelcomeMessage();
-          
+
           fetch('/api/text-to-speech', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -266,7 +266,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             const audioUrl = URL.createObjectURL(audioBlob);
             const freshAudio = new Audio(audioUrl);
             (window as any).currentOpenAIAudio = freshAudio;
-            
+
             freshAudio.onended = () => {
               URL.revokeObjectURL(audioUrl);
               if (!isManuallyClosedRef.current) {
@@ -274,7 +274,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 setShowAskButton(true);
               }
             };
-            
+
             freshAudio.play().then(() => {
               console.log("QR SCAN: Fresh audio playing successfully");
             }).catch(() => {
@@ -292,7 +292,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         // Fallback to generating audio if cache is not ready
         console.log("QR SCAN: Cache not ready, generating welcome message");
         const welcomeMessage = getDynamicWelcomeMessage();
-        
+
         fetch('/api/text-to-speech', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -305,10 +305,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           const audio = new Audio(audioUrl);
           currentAudioRef.current = audio;
           setIsPlayingAudio(true);
-          
+
           // Store reference for potential stopping
           (window as any).currentOpenAIAudio = audio;
-          
+
           audio.onended = () => {
             setIsPlayingAudio(false);
             currentAudioRef.current = null;
@@ -323,7 +323,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             (window as any).currentOpenAIAudio = null;
             console.log("QR SCAN: Welcome message completed");
           };
-          
+
           audio.onerror = () => {
             setIsPlayingAudio(false);
             currentAudioRef.current = null;
@@ -338,7 +338,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             (window as any).currentOpenAIAudio = null;
             console.error("QR SCAN: Audio playback error");
           };
-          
+
           audio.play();
           console.log("QR SCAN: Playing welcome message via OpenAI TTS");
         })
@@ -358,10 +358,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     // Custom audio playback handler for suggestion responses
     const handlePlayAudioResponse = async (event: Event) => {
       if (isManuallyClosedRef.current) return;
-      
+
       const customEvent = event as CustomEvent;
       const { audioBuffers, isTextOnly, context } = customEvent.detail;
-      
+
       // CRITICAL: Block all text-only chat suggestions from triggering voice
       if (isTextOnly || context === "chat") {
         console.log("🚫 VOICE ASSISTANT: Blocking text-only/chat suggestion from triggering audio");
@@ -371,16 +371,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         setIsResponding(true);
         setShowUnmuteButton(false);
         setShowAskButton(false);
-        
+
         try {
           for (const buffer of audioBuffers) {
             const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
             currentAudioRef.current = audio;
-            
+
             setIsPlayingAudio(true);
-            
+
             await new Promise((resolve, reject) => {
               audio.onended = () => {
                 setIsPlayingAudio(false);
@@ -390,7 +390,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               audio.onerror = reject;
               audio.play();
             });
-            
+
             URL.revokeObjectURL(audioUrl);
           }
         } catch (error) {
@@ -421,7 +421,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
     window.addEventListener('playAudioResponse', handlePlayAudioResponse);
     window.addEventListener('cachedResponseEnded', handleCachedResponseEnded);
-    
+
     return () => {
       window.removeEventListener('suggestionPlaybackStarted', handleSuggestionPlayback);
       window.removeEventListener('suggestionPlaybackEnded', handleSuggestionPlaybackEnded);
@@ -430,15 +430,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       window.removeEventListener('cachedResponseEnded', handleCachedResponseEnded);
     };
   }, []);
-  
+
   // Audio cache for TTS responses to minimize fallback usage
   const audioCache = useRef<Map<string, Blob>>(new Map());
-  
+
   const getCachedAudio = (text: string): Blob | null => {
     const cacheKey = btoa(text).slice(0, 50); // Create cache key from text
     return audioCache.current.get(cacheKey) || null;
   };
-  
+
   const setCachedAudio = (text: string, audioBlob: Blob): void => {
     const cacheKey = btoa(text).slice(0, 50);
     audioCache.current.set(cacheKey, audioBlob);
@@ -459,12 +459,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     };
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
+
     return () => {
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, []);
-  
+
   // Voice activity detection state
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -483,20 +483,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   // Stop audio function
   const stopAudio = () => {
     console.log("🛑 VoiceAssistant: Stopping all audio playback");
-    
+
     // Stop current audio ref
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
       currentAudioRef.current.currentTime = 0;
       currentAudioRef.current = null;
     }
-    
+
     // Stop welcome audio
     if (welcomeAudioElementRef.current) {
       welcomeAudioElementRef.current.pause();
       welcomeAudioElementRef.current.currentTime = 0;
     }
-    
+
     // Stop any global OpenAI audio (from suggestions)
     if ((window as any).currentOpenAIAudio) {
       (window as any).currentOpenAIAudio.pause();
@@ -504,16 +504,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       (window as any).currentOpenAIAudio = null;
       console.log("🛑 VoiceAssistant: Stopped suggestion TTS audio");
     }
-    
+
     // Update states
     setIsPlayingAudio(false);
     setIsResponding(false);
     setShowAskButton(true);
     setShowUnmuteButton(false);
-    
+
     // Dispatch stop event to clean up any other audio references
     window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-    
+
     console.log("🛑 VoiceAssistant: All audio stopped");
   };
 
@@ -521,37 +521,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const startVoiceDetection = (stream: MediaStream) => {
     try {
       console.log('🎤 Setting up voice detection...');
-      
+
       // Create audio context for voice activity detection
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
+
       console.log('🎤 Audio context created, state:', audioContextRef.current.state);
-      
+
       // Resume audio context if suspended (required for some browsers)
       if (audioContextRef.current.state === 'suspended') {
         audioContextRef.current.resume().then(() => {
           console.log('🎤 Audio context resumed');
         });
       }
-      
+
       const source = audioContextRef.current.createMediaStreamSource(stream);
       analyserRef.current = audioContextRef.current.createAnalyser();
-      
+
       // Configure analyser for voice detection with more sensitive settings
       analyserRef.current.fftSize = 512; // Increased for better frequency resolution
       analyserRef.current.smoothingTimeConstant = 0.3; // Reduced for more responsive detection
       analyserRef.current.minDecibels = -90;
       analyserRef.current.maxDecibels = -10;
-      
+
       source.connect(analyserRef.current);
-      
+
       console.log('🎤 Audio pipeline connected, starting monitoring...');
-      
+
       // Start monitoring voice activity with high frequency for immediate response
       voiceDetectionIntervalRef.current = setInterval(() => {
         checkVoiceActivity();
       }, 25); // Check every 25ms for maximum responsiveness
-      
+
       console.log('🎤 Voice detection started successfully');
     } catch (error) {
       console.error("Failed to start voice detection:", error);
@@ -560,17 +560,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const checkVoiceActivity = () => {
     if (!analyserRef.current) return;
-    
+
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteFrequencyData(dataArray);
-    
+
     // Calculate multiple audio metrics for debugging
     let sum = 0;
     let max = 0;
     let min = 255;
     let nonZeroValues = 0;
-    
+
     for (let i = 0; i < bufferLength; i++) {
       const value = dataArray[i];
       sum += value;
@@ -579,11 +579,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       if (value > 0) nonZeroValues++;
     }
     const average = sum / bufferLength;
-    
+
     // Try time domain data as well
     const timeDomainArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteTimeDomainData(timeDomainArray);
-    
+
     let timeSum = 0;
     let timeMax = 0;
     for (let i = 0; i < bufferLength; i++) {
@@ -592,17 +592,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       if (value > timeMax) timeMax = value;
     }
     const timeAverage = timeSum / bufferLength;
-    
+
     const voiceThreshold = 20; // Lower threshold for more sensitive voice detection
     const silenceThreshold = 10; // Much lower threshold to maintain voice state longer
-    
+
     // Use hysteresis to prevent flapping between voice/silence
     const currentThreshold = isVoiceActive ? silenceThreshold : voiceThreshold;
     const isCurrentlyActive = average > currentThreshold;
-    
+
     const now = Date.now();
     const recordingDuration = now - recordingStartTimeRef.current;
-    
+
     // Dispatch real-time volume data for CircleAnimation
     window.dispatchEvent(
       new CustomEvent("voice-volume", {
@@ -613,7 +613,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         },
       }),
     );
-    
+
     // Reduced debug logging
     if (Math.random() < 0.01) { // 1% of volume updates
       console.log('🎤 Voice volume:', { average, max, isActive: isCurrentlyActive });
@@ -623,14 +623,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     if (average === 0 && max === 0 && timeAverage === 128 && consecutiveSilenceCountRef.current % 100 === 0) {
       console.log("Audio input issue detected");
     }
-    
+
     if (isCurrentlyActive) {
       lastVoiceDetectedRef.current = now;
       consecutiveSilenceCountRef.current = 0;
-      
+
       if (!isVoiceActive) {
         setIsVoiceActive(true);
-        
+
         // Clear any existing silence timer
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
@@ -639,20 +639,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     } else {
       consecutiveSilenceCountRef.current++;
-      
+
       if (isVoiceActive) {
         setIsVoiceActive(false);
-        
+
         // Start silence timer with extended delay for natural speech patterns
         if (silenceTimerRef.current) {
           clearTimeout(silenceTimerRef.current);
         }
-        
+
         silenceTimerRef.current = setTimeout(() => {
           // Check if minimum recording time has passed
           const canStopEarly = (window as any).canStopEarly;
           const currentRecordingDuration = Date.now() - recordingStartTimeRef.current;
-          
+
           if (canStopEarly && currentRecordingDuration > 1500) {
             stopListening();
           } else {
@@ -663,7 +663,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }
         }, 3000);
       }
-      
+
       // Fallback: Only trigger if we've actually had voice activity AND been recording for at least 3 seconds
       if (lastVoiceDetectedRef.current > 0 && 
           recordingStartTimeRef.current > 0 &&
@@ -681,19 +681,19 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       clearInterval(voiceDetectionIntervalRef.current);
       voiceDetectionIntervalRef.current = null;
     }
-    
+
     // Clear silence timer
     if (silenceTimerRef.current) {
       clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = null;
     }
-    
+
     // Close audio context
     if (audioContextRef.current) {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
-    
+
     analyserRef.current = null;
     setIsVoiceActive(false);
     // Voice detection stopped
@@ -831,7 +831,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     console.log("🎤 DEPLOY DEBUG: Setting UI states - showBottomSheet: true, isListening: true");
     setShowBottomSheet(true);
     setIsListening(true);
-    
+
     // Dispatch listening event immediately to ensure CircleAnimation responds
     console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event (early)');
     const micEvent = new CustomEvent("mic-status", {
@@ -851,14 +851,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const setupRecording = async () => {
     // Setup recording started
-    
+
     try {
       // Clean up any existing streams first
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
         streamRef.current = null;
       }
-      
+
       // Request fresh microphone stream
       // Requesting microphone stream
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -870,7 +870,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           channelCount: 1
         } 
       });
-      
+
       // Stream created successfully
       streamRef.current = stream;
 
@@ -879,7 +879,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         mimeType: 'audio/webm;codecs=opus', // Opus codec for better compression
         audioBitsPerSecond: 16000, // Lower bitrate for faster processing
       });
-      
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -890,20 +890,20 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           // Audio data chunk received
         }
       };
-      
+
       mediaRecorder.onstop = () => {
         // Wrap the async operation to prevent unhandled rejections
         (async () => {
           try {
             // Audio recording stopped, processing
-            
+
             // Create audio blob from recorded chunks
             const audioBlob = new Blob(audioChunksRef.current, { 
               type: 'audio/webm;codecs=opus' 
             });
-            
+
             // Audio blob created
-            
+
             // Check if audio blob has sufficient data
             if (audioBlob.size < 1000) { // Less than 1KB indicates no meaningful audio
               console.warn("Audio blob too small, skipping transcription");
@@ -913,37 +913,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               setIsListening(false);
               return;
             }
-            
+
             // Send audio to Whisper transcription endpoint with timeout
             const formData = new FormData();
             formData.append('audio', audioBlob, 'recording.webm');
-            
+
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 12000); // 12-second client timeout
-            
+
             const response = await fetch('/api/transcribe', {
               method: 'POST',
               body: formData,
               signal: controller.signal,
             });
-            
+
             clearTimeout(timeoutId);
-            
+
             if (!response.ok) {
               const errorData = await response.json().catch(() => ({}));
               throw new Error(errorData.error || `Transcription failed: ${response.statusText}`);
             }
-            
+
             const result = await response.json();
             // Transcription completed
-            
+
             // Handle fallback responses
             if (result.fallback) {
               // Using fallback transcription
               onSendMessage(result.text.trim());
               return;
             }
-            
+
             if (result.text && result.text.trim()) {
               onSendMessage(result.text.trim());
             } else {
@@ -953,7 +953,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             }
           } catch (error) {
             console.error("Transcription error:", error);
-            
+
             // Use fallback question instead of showing error
             // Using fallback question due to transcription error
             onSendMessage("Tell me about this wine");
@@ -979,7 +979,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           setIsListening(false);
         });
       };
-      
+
       // Recording state already set in startListening, just update UI
       recordingStartTimeRef.current = Date.now(); // Initialize recording start time
       lastVoiceDetectedRef.current = 0; // Reset voice detection
@@ -988,16 +988,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       stream.getAudioTracks().forEach((track: MediaStreamTrack) => {
         track.enabled = true;
       });
-      
+
       mediaRecorder.start(250); // Request data every 250ms for stability
-      
+
       // Start voice activity detection immediately
       console.log('🎤 VoiceAssistant: Starting voice detection with stream');
       startVoiceDetection(stream);
-      
+
       // Store stream globally for CircleAnimation access
       (window as any).currentMicrophoneStream = stream;
-      
+
       // Force dispatch a second listening event to ensure CircleAnimation receives it
       setTimeout(() => {
         console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event (confirmation)');
@@ -1007,7 +1007,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }),
         );
       }, 100);
-      
+
       // Emit microphone status event for wine bottle animation
       console.log('🎤 VoiceAssistant: Dispatching mic-status "listening" event');
       window.dispatchEvent(
@@ -1015,28 +1015,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           detail: { status: "listening", stream: stream },
         }),
       );
-      
+
       console.log('VoiceAssistant: Dispatched mic-status event with stream:', {
         hasStream: !!stream,
         streamId: stream.id,
         audioTracks: stream.getAudioTracks().length
       });
-      
+
       // Minimum recording duration to ensure we capture some audio and allow voice detection
       const minimumRecordingTime = 3000; // 3 seconds minimum to allow proper voice detection
       let canStopEarly = false;
-      
+
       setTimeout(() => {
         canStopEarly = true;
         // Minimum recording time reached
       }, minimumRecordingTime);
-      
+
       // Store the canStopEarly flag globally for voice detection
       (window as any).canStopEarly = false;
       setTimeout(() => {
         (window as any).canStopEarly = true;
       }, minimumRecordingTime);
-      
+
       // Primary backup: stop after 8 seconds to allow more time for voice detection
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
@@ -1044,7 +1044,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           stopListening();
         }
       }, 8000);
-      
+
       // Secondary backup: stop after 10 seconds if silence detection completely fails
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
@@ -1060,10 +1060,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         stack: error instanceof Error ? error.stack : 'No stack',
         type: typeof error
       });
-      
+
       setIsListening(false);
       setShowBottomSheet(false);
-      
+
       if (error instanceof Error && error.name === "NotAllowedError") {
         toast({
           description: (
@@ -1129,11 +1129,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const stopListening = () => {
     // Immediately stop voice detection to prevent any further timers
     stopVoiceDetection();
-    
+
     // Show thinking state immediately
     setIsListening(false);
     setIsThinking(true);
-    
+
     // Emit microphone status event for wine bottle animation
     console.log('🎤 VoiceAssistant: Dispatching mic-status "processing" event');
     window.dispatchEvent(
@@ -1141,18 +1141,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         detail: { status: "processing" },
       }),
     );
-    
+
     // Stop media recorder
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.stop();
     }
-    
+
     // Stop media stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
-    
+
     // Audio recording stopped
   };
 
@@ -1169,7 +1169,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         showBottomSheet
       }
     });
-    
+
     if (isProcessing) {
       console.log('🎤 VOICE BUTTON: Blocked - currently processing');
       return;
@@ -1187,28 +1187,28 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowBottomSheet(false);
     } else {
       console.log('🎤 VOICE BUTTON: Starting new listening session');
-      
+
       // Reset all states immediately for responsive UI
       setIsListening(false);
       setIsThinking(false);
       setIsResponding(false);
       setShowUnmuteButton(false);
       setShowAskButton(false);
-      
+
       try {
         // Test microphone access first
         console.log('🎤 VOICE BUTTON: Testing microphone access...');
         const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         testStream.getTracks().forEach(track => track.stop());
         console.log('🎤 VOICE BUTTON: Microphone test successful');
-        
+
         // Start the actual listening session
         await startListening();
         console.log('🎤 VOICE BUTTON: Start listening completed successfully');
-        
+
       } catch (error) {
         console.error("🎤 VOICE BUTTON: Failed to start:", error);
-        
+
         // Reset all states on error
         setShowBottomSheet(false);
         setIsListening(false);
@@ -1216,17 +1216,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         setIsResponding(false);
         setShowUnmuteButton(false);
         setShowAskButton(false);
-        
+
         // Determine error type for user feedback
         const isPermissionError = error instanceof Error && 
           (error.name === "NotAllowedError" || error.message.includes("Permission"));
-        
+
         const errorMessage = isPermissionError 
           ? "Microphone access required for voice input"
           : `Failed to start voice recording: ${error instanceof Error ? error.message : 'Unknown error'}`;
-        
+
         console.log('🎤 VOICE BUTTON: Showing error toast:', errorMessage);
-        
+
         toast({
           description: (
             <span style={{ fontFamily: "Inter, sans-serif", fontSize: "16px", fontWeight: 500 }}>
@@ -1256,18 +1256,18 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleSuggestionClick = (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
     console.log("VoiceAssistant: Suggestion clicked:", suggestion, "with options:", options);
-    
+
     // 🚨 SAFETY CHECK: Text-only suggestions should NEVER reach voice assistant
     if (options?.textOnly) {
       console.error("🚨 CONTEXT LEAK DETECTED: Chat suggestion reached voice assistant!");
       console.error("This indicates improper routing - suggestion should have been handled by chat interface");
       return; // Block voice assistant behavior for chat suggestions
     }
-    
+
     // CRITICAL: SuggestionPills in voice context handles everything internally
     // Voice assistant should do NOTHING - no state changes, no sheet closing
     console.log("🚀 VoiceAssistant: SuggestionPills handles all suggestion logic - voice assistant does nothing");
-    
+
     // Don't close bottom sheet, don't call onSendMessage, don't change any states
     // SuggestionPills manages all audio, messages, and caching independently
     return;
@@ -1275,39 +1275,39 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleCloseBottomSheet = () => {
     console.log("VoiceAssistant: Manual close triggered - setting flag to prevent reopening");
-    
+
     // Set flag to prevent automatic reopening
     isManuallyClosedRef.current = true;
-    
+
     // Abort any ongoing conversation processing
     window.dispatchEvent(new CustomEvent('abortConversation'));
-    
+
     // Stop OpenAI TTS audio playback
     if ((window as any).currentOpenAIAudio) {
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
     }
-    
+
     // Stop any autoplay audio
     if ((window as any).currentAutoplayAudio) {
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
     }
-    
+
     // Stop browser speech synthesis
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
-    
+
     setShowBottomSheet(false);
     setIsThinking(false);
     setIsResponding(false);
     setShowUnmuteButton(false);
     setShowAskButton(false);
     stopListening();
-    
+
     // PERMANENT CLOSE: Never reset the flag - user must refresh page to reopen
     console.log("VoiceAssistant: Permanently closed - no automatic reopening until page refresh");
   };
@@ -1359,7 +1359,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const handleUnmute = async () => {
     console.log("Unmute button clicked - starting TTS playback");
     console.log("Current window.lastAssistantMessageText:", (window as any).lastAssistantMessageText);
-    
+
     // Wrap entire function in try-catch to prevent unhandled rejections
     try {
       // Check if there's pending autoplay audio from mobile autoplay blocking
@@ -1411,17 +1411,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
       if (!lastAssistantMessage || !lastAssistantMessage.trim()) {
         console.warn("No assistant message available to play - attempting comprehensive fallback");
-        
+
         // Multiple fallback strategies for deployed environments
         let fallbackText = null;
-        
+
         // Strategy 1: Look for data-role="assistant" elements
         const assistantElements = document.querySelectorAll('[data-role="assistant"]');
         if (assistantElements.length > 0) {
           const lastElement = assistantElements[assistantElements.length - 1];
           fallbackText = lastElement.textContent || (lastElement as HTMLElement).innerText;
         }
-        
+
         // Strategy 2: Look for assistant message containers with specific classes
         if (!fallbackText || !fallbackText.trim()) {
           const messageContainers = document.querySelectorAll('.message-assistant, .assistant-message, [class*="assistant"]');
@@ -1434,7 +1434,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             }
           }
         }
-        
+
         // Strategy 3: Look for any message that looks like an assistant response
         if (!fallbackText || !fallbackText.trim()) {
           const allMessages = document.querySelectorAll('[class*="message"], [data-message], .prose');
@@ -1448,7 +1448,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             }
           }
         }
-        
+
         // Strategy 4: Use cached conversation data if available
         if (!fallbackText || !fallbackText.trim()) {
           try {
@@ -1464,7 +1464,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             console.log("Cache fallback failed:", e);
           }
         }
-        
+
         if (fallbackText && fallbackText.trim()) {
           console.log("Using fallback message from comprehensive search:", fallbackText.substring(0, 50) + "...");
           (window as any).lastAssistantMessageText = fallbackText.trim();
@@ -1504,7 +1504,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           console.log("Using cached TTS audio");
           const audioUrl = URL.createObjectURL(cachedAudio);
           const audio = new Audio(audioUrl);
-          
+
           // Store reference for stop functionality
           (window as any).currentOpenAIAudio = audio;
 
@@ -1541,7 +1541,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         let audio: HTMLAudioElement | null = null;
         let audioUrl: string | null = null;
         let timeoutId: NodeJS.Timeout | null = null;
-        
+
         try {
           // Create a safer Promise wrapper that prevents unhandled rejections
           const safeTimeout = (ms: number) => {
@@ -1559,12 +1559,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ text: finalMessageText }),
             });
-            
+
             if (timeoutId) {
               clearTimeout(timeoutId);
               timeoutId = null;
             }
-            
+
             return response;
           };
 
@@ -1590,10 +1590,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           if (response.ok) {
             const audioBuffer = await response.arrayBuffer();
             const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
-            
+
             // Cache the successful audio response to minimize future fallbacks
             setCachedAudio(finalMessageText, audioBlob);
-            
+
             audioUrl = URL.createObjectURL(audioBlob);
             audio = new Audio(audioUrl);
             console.log("Using server TTS audio");
@@ -1606,27 +1606,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             name: serverError instanceof Error ? serverError.name : 'Unknown',
             message: serverError instanceof Error ? serverError.message : String(serverError)
           });
-          
+
           // Clear the timeout to prevent unhandled rejection
           if (timeoutId) {
             clearTimeout(timeoutId);
             timeoutId = null;
           }
-          
+
           // Use browser's built-in speech synthesis as immediate fallback
           const utterance = new SpeechSynthesisUtterance(finalMessageText);
           utterance.rate = 0.9; // Slightly slower for better clarity
           utterance.pitch = 1.0;
           utterance.volume = 0.8;
-          
+
           // Log the full text being spoken for debugging
           console.log("Browser TTS: Full text length:", finalMessageText.length);
           console.log("Browser TTS: Text content:", finalMessageText);
-          
+
           // CRITICAL: Use the same locked male voice across all components
           const selectVoice = () => {
             const voices = speechSynthesis.getVoices();
-            
+
             // Priority 1: Use LOCKED voice URI for absolute consistency
             const lockedVoiceURI = localStorage.getItem('LOCKED_VOICE_URI');
             if (lockedVoiceURI) {
@@ -1637,29 +1637,29 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 return;
               }
             }
-            
+
             // Priority 2: Google UK English Male (exact match)
             let preferredVoice = voices.find(voice => 
               voice.name === 'Google UK English Male');
-            
+
             // Priority 3: Google US English Male (exact match)
             if (!preferredVoice) {
               preferredVoice = voices.find(voice => 
                 voice.name === 'Google US English Male');
             }
-            
+
             // Priority 4: Any Google male voice with English
             if (!preferredVoice) {
               preferredVoice = voices.find(voice => 
                 voice.name.includes('Google') && voice.name.includes('Male') && voice.lang.startsWith('en'));
             }
-            
+
             // Priority 5: First available English male voice
             if (!preferredVoice) {
               preferredVoice = voices.find(voice => 
                 voice.name.includes('Male') && voice.lang.startsWith('en'));
             }
-            
+
             if (preferredVoice) {
               utterance.voice = preferredVoice;
               // Lock this voice for consistent reuse
@@ -1668,7 +1668,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               console.log("LOCKED VOICE FOR CONSISTENCY:", preferredVoice.name, "URI:", preferredVoice.voiceURI);
             }
           };
-          
+
           // Handle voice loading
           if (speechSynthesis.getVoices().length > 0) {
             selectVoice();
@@ -1738,15 +1738,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             networkState: audio?.networkState,
             readyState: audio?.readyState,
           });
-          
+
           // Deployment-specific fallback to browser TTS for reliability
           console.log("DEPLOYMENT FIX: OpenAI audio failed, using browser TTS as fallback");
-          
+
           const utterance = new SpeechSynthesisUtterance(lastAssistantMessage);
           utterance.rate = 1.0;
           utterance.pitch = 1.0;
           utterance.volume = 0.8;
-          
+
           // Use locked male voice for consistency
           const voices = speechSynthesis.getVoices();
           const maleVoice = voices.find(voice => 
@@ -1757,27 +1757,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           if (maleVoice) {
             utterance.voice = maleVoice;
           }
-          
+
           utterance.onstart = () => {
             console.log("DEPLOYMENT FIX: Browser TTS fallback started");
           };
-          
+
           utterance.onend = () => {
             setIsResponding(false);
             setShowUnmuteButton(false);
             setShowAskButton(true);
             console.log("DEPLOYMENT FIX: Browser TTS fallback completed - Ask button enabled");
           };
-          
+
           utterance.onerror = () => {
             setIsResponding(false);
             setShowUnmuteButton(false);
             setShowAskButton(true);
             console.error("DEPLOYMENT FIX: Browser TTS fallback also failed");
           };
-          
+
           speechSynthesis.speak(utterance);
-          
+
           // Clean up failed OpenAI audio
           setIsResponding(false);
           setShowUnmuteButton(false);
@@ -1859,7 +1859,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         // Add user interaction check for audio playback
         try {
           const playPromise = audio.play();
-          
+
           if (playPromise !== undefined) {
             await playPromise;
             console.log("Manual unmute audio play promise resolved successfully");
@@ -1869,12 +1869,12 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
           // DEPLOYMENT FIX: If OpenAI audio fails, immediately use browser TTS fallback
           console.log("DEPLOYMENT FIX: OpenAI audio play failed, using browser TTS fallback");
-          
+
           const utterance = new SpeechSynthesisUtterance(finalMessageText);
           utterance.rate = 1.0;
           utterance.pitch = 1.0;
           utterance.volume = 0.8;
-          
+
           // Use locked male voice for consistency
           const voices = speechSynthesis.getVoices();
           const maleVoice = voices.find(voice => 
@@ -1885,36 +1885,36 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           if (maleVoice) {
             utterance.voice = maleVoice;
           }
-          
+
           utterance.onstart = () => {
             setIsResponding(true);
             setShowUnmuteButton(false);
             setShowAskButton(false);
             console.log("DEPLOYMENT FIX: Browser TTS fallback started for play error");
           };
-          
+
           utterance.onend = () => {
             setIsResponding(false);
             setShowUnmuteButton(false);
             setShowAskButton(true);
             console.log("DEPLOYMENT FIX: Browser TTS fallback completed - Ask button enabled");
           };
-          
+
           utterance.onerror = () => {
             setIsResponding(false);
             setShowUnmuteButton(false);
             setShowAskButton(true);
             console.error("DEPLOYMENT FIX: Browser TTS fallback also failed");
           };
-          
+
           speechSynthesis.speak(utterance);
-          
+
           // Clean up failed OpenAI audio
           if (audioUrl) {
             URL.revokeObjectURL(audioUrl);
           }
           (window as any).currentOpenAIAudio = null;
-          
+
           return; // Exit early since we're using browser TTS
         }
 
@@ -1926,15 +1926,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             networkState: audio?.networkState,
             readyState: audio?.readyState,
           });
-          
+
           // DEPLOYMENT FIX: OpenAI audio failed, use browser TTS fallback
           console.log("DEPLOYMENT FIX: OpenAI audio failed, using browser TTS as fallback");
-          
+
           const utterance = new SpeechSynthesisUtterance(finalMessageText);
           utterance.rate = 1.0;
           utterance.pitch = 1.0;
           utterance.volume = 0.8;
-          
+
           // Use locked male voice for consistency
           const voices = speechSynthesis.getVoices();
           const maleVoice = voices.find(voice => 
@@ -1945,27 +1945,27 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           if (maleVoice) {
             utterance.voice = maleVoice;
           }
-          
+
           utterance.onstart = () => {
             console.log("DEPLOYMENT FIX: Browser TTS fallback started");
           };
-          
+
           utterance.onend = () => {
             setIsResponding(false);
             setShowUnmuteButton(false);
             setShowAskButton(true);
             console.log("DEPLOYMENT FIX: Browser TTS fallback completed - Ask button enabled");
           };
-          
+
           utterance.onerror = () => {
             setIsResponding(false);
             setShowUnmuteButton(false);
             setShowAskButton(true);
             console.error("DEPLOYMENT FIX: Browser TTS fallback also failed");
           };
-          
+
           speechSynthesis.speak(utterance);
-          
+
           // Clean up failed OpenAI audio
           setIsResponding(false);
           setShowUnmuteButton(false);
@@ -2035,43 +2035,43 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   const handleAsk = async () => {
     // Ask button clicked
-    
+
     // Check if manually closed - don't reopen if so
     if (isManuallyClosedRef.current) {
       console.log("Voice assistant manually closed, ignoring ask button");
       return;
     }
-    
+
     // Prevent multiple rapid clicks
     if (isListening || isProcessing) {
       // Already processing
       return;
     }
-    
+
     // Stop any existing audio playback
     if ((window as any).currentOpenAIAudio) {
       (window as any).currentOpenAIAudio.pause();
       (window as any).currentOpenAIAudio.currentTime = 0;
       (window as any).currentOpenAIAudio = null;
     }
-    
+
     if ((window as any).currentAutoplayAudio) {
       (window as any).currentAutoplayAudio.pause();
       (window as any).currentAutoplayAudio.currentTime = 0;
       (window as any).currentAutoplayAudio = null;
     }
-    
+
     // Stop browser speech synthesis
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
-    
+
     // Clean up existing streams
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
-    
+
     // Reset UI state
     setShowUnmuteButton(false);
     setShowAskButton(false);
@@ -2079,7 +2079,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     setIsThinking(false);
     setShowBottomSheet(true);
     setIsListening(true);
-    
+
     try {
       // Request microphone access and start recording in one step
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -2091,30 +2091,30 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           channelCount: 1
         }
       });
-      
+
       // Microphone stream obtained
       streamRef.current = stream;
-      
+
       // Setup recording immediately
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus',
         audioBitsPerSecond: 16000,
       });
-      
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
-      
+
       // Setup recording handlers
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
         }
       };
-      
+
       mediaRecorder.onstop = async () => {
         setIsThinking(true);
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' });
-        
+
         if (audioBlob.size < 1000) {
           console.warn("Audio too small, using fallback");
           onSendMessage("Tell me about this wine");
@@ -2124,16 +2124,16 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           // Keep bottom sheet open for continued interaction
           return;
         }
-        
+
         try {
           const formData = new FormData();
           formData.append('audio', audioBlob, 'recording.webm');
-          
+
           const response = await fetch('/api/transcribe', {
             method: 'POST',
             body: formData,
           });
-          
+
           if (response.ok) {
             const result = await response.json();
             if (result.text && result.text.trim()) {
@@ -2153,26 +2153,26 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           // Keep bottom sheet open after voice interaction
         }
       };
-      
+
       // Start recording
       mediaRecorder.start(250);
       // Recording started
-      
+
       // Start voice detection
       startVoiceDetection(stream);
-      
+
       // Auto-stop after 4 seconds
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
           stopListening();
         }
       }, 4000);
-      
+
     } catch (error) {
       console.error("Microphone access failed:", error);
       setIsListening(false);
       setShowAskButton(true);
-      
+
       toast({
         description: (
           <span style={{ fontFamily: "Inter, sans-serif", fontSize: "16px", fontWeight: 500 }}>
