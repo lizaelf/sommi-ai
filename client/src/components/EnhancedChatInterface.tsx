@@ -20,6 +20,8 @@ import {
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
 import ContactBottomSheet, { ContactFormData } from "./ContactBottomSheet";
+import VoiceBottomSheet from "./VoiceBottomSheet";
+import CircleAnimation from "./CircleAnimation";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -143,6 +145,18 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState("");
+
+  // Voice bottom sheet state
+  const [showVoiceBottomSheet, setShowVoiceBottomSheet] = useState(false);
+  const [voiceState, setVoiceState] = useState({
+    isListening: false,
+    isResponding: false,
+    isThinking: false,
+    isPlayingAudio: false,
+    isVoiceActive: false,
+    showUnmuteButton: false,
+    showAskButton: true
+  });
 
   // Set up portal element for contact bottom sheet
   useEffect(() => {

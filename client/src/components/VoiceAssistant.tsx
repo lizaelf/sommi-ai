@@ -13,12 +13,14 @@ interface VoiceAssistantProps {
   ) => void;
   isProcessing: boolean;
   wineKey?: string;
+  onVoiceToggle?: () => void;
 }
 
 const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   onSendMessage,
   isProcessing,
-  wineKey = ''
+  wineKey = '',
+  onVoiceToggle
 }) => {
   const [voiceState, setVoiceState] = useState({
     isListening: false,
@@ -34,12 +36,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [transcribedText, setTranscribedText] = useState('');
 
   const handleMicrophoneToggle = useCallback(() => {
-    if (voiceState.isListening) {
-      setVoiceState(prev => ({ ...prev, isListening: false }));
+    console.log("User chose Voice option");
+    if (onVoiceToggle) {
+      onVoiceToggle();
     } else {
-      setVoiceState(prev => ({ ...prev, isListening: true }));
+      if (voiceState.isListening) {
+        setVoiceState(prev => ({ ...prev, isListening: false }));
+      } else {
+        setVoiceState(prev => ({ ...prev, isListening: true, showBottomSheet: true }));
+      }
     }
-  }, [voiceState.isListening]);
+  }, [voiceState.isListening, onVoiceToggle]);
 
   const handlePlayWelcome = useCallback(async () => {
     setVoiceState(prev => ({ ...prev, isPlayingAudio: true }));
