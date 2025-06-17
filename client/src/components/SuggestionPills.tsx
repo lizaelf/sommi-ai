@@ -10,7 +10,7 @@ const SkeletonPill = ({ index, width = "120px" }: { index: number; width?: strin
     <div
       className="skeleton-pill-shimmer"
       style={{
-        width: width ?? "120px"
+        width: width ?? "120px",
         height: "40px",
         borderRadius: "32px",
         flexShrink: 0,
@@ -111,8 +111,10 @@ export default function SuggestionPills({
       const audioCache = (window as any).suggestionAudioCache || {};
       console.log("🧹 Cleaning up", Object.keys(audioCache).length, "cached audio URLs");
 
-      Object.values(audioCache).forEach((url: string) => {
-        URL.revokeObjectURL(url);
+      Object.values(audioCache).forEach((url: unknown) => {
+        if (typeof url === 'string') {
+          URL.revokeObjectURL(url);
+        }
       });
 
       // Clear the cache completely
@@ -388,8 +390,8 @@ export default function SuggestionPills({
   }, [isLoading, suggestionsData]);
 
   const visiblePills = useMemo(() => {
-    const unused = sourceSuggestions.filter((pill) => !usedPills.has(pill.id));
-    const used = sourceSuggestions.filter((pill) => usedPills.has(pill.id));
+    const unused = sourceSuggestions.filter((pill: any) => !usedPills.has(pill.id));
+    const used = sourceSuggestions.filter((pill: any) => usedPills.has(pill.id));
     const combined = [...unused, ...used];
 
     if (combined.length < 3) {
