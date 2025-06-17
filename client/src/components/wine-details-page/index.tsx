@@ -6,3 +6,5 @@ export { default as FoodPairingExpandableItem } from './FoodPairingExpandableIte
 export { default as BuyAgainSection } from './BuyAgainSection';
 export { default as WineRecommendationsSection } from './WineRecommendationsSection';
 export { default as WineChatSection } from './WineChatSection';
+export { default as WineRecommendationCard } from './WineRecommendationCard';
+export { default as WineCardImage } from './WineCardImage';
