@@ -28,10 +28,10 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
         minHeight: "100vh",
       }}
     >
-      {/* Wine bottle image */}
+      {/* Wine bottle image with blurred circle/glow effect */}
       <WineBottleImage image={wine?.image} wineName={wine?.name} />
 
-      {/* Wine name */}
+      {/* Wine name with typography styling */}
       <div
         style={{
           width: "100%",
@@ -52,7 +52,7 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
           : `2021 Wine Name`}
       </div>
 
-      {/* Wine region with flag */}
+      {/* Wine region with typography styling and flag */}
       <div
         style={{
           textAlign: "left",
@@ -77,7 +77,7 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
         </span>
       </div>
 
-      {/* Wine ratings */}
+      {/* Wine ratings section */}
       <WineRating
         ratings={wine ? wine.ratings : { vn: 95, jd: 93, ws: 93, abv: 14.3 }}
         align="left"
