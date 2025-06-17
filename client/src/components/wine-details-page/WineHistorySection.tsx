@@ -9,7 +9,7 @@ const WineHistorySection: React.FC<WineHistorySectionProps> = ({ description }) 
   const getWineHistory = () => {
     return (
       description ||
-      "Lytton Springs is a renowned single-vineyard red wine produced by Ridge Vineyards, located in the Dry Creek Valley of Sonoma County, California. Celebrated for its rich heritage and distinctive field-blend style, Lytton Springs has become a benchmark for Zinfandel-based wines in the United States."
+      "The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by a mid-palate that is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish."
     );
   };
 
