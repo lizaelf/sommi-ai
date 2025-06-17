@@ -1112,9 +1112,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         className="p-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 flex items-center justify-center"
                       >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V4C15 2.34 13.66 1 12 1Z" fill="currentColor"/>
-                          <path d="M19 10V12C19 16.42 15.42 20 11 20H13C13 22.21 11.21 24 9 24H15C15 22.21 13.21 21 15 21C18.87 21 22 17.87 22 14V10H19Z" fill="currentColor"/>
-                          <path d="M5 10V12C5 15.31 7.69 18 11 18V21H13V18C16.31 18 19 15.31 19 12V10H17V12C17 14.21 15.21 16 13 16H11C8.79 16 7 14.21 7 12V10H5Z" fill="currentColor"/>
+                          <path d="M12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2Z" fill="currentColor"/>
+                          <path d="M19 11C19 15.42 15.42 19 11 19V21H13V19C16.31 19 19 16.31 19 13V11H17V13C17 15.21 15.21 17 13 17H11C8.79 17 7 15.21 7 13V11H5V13C5 16.31 7.69 19 11 19V21H13V19C16.31 19 19 16.31 19 13V11Z" fill="currentColor"/>
                         </svg>
                       </button>
                     }
