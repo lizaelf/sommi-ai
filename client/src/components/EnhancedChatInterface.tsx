@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
@@ -157,6 +157,46 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     showUnmuteButton: false,
     showAskButton: true
   });
+
+  // Handle voice toggle
+  const handleVoiceToggle = useCallback(() => {
+    console.log("User chose Voice option");
+    setShowVoiceBottomSheet(true);
+  }, []);
+
+  // Handle voice bottom sheet close
+  const handleVoiceBottomSheetClose = useCallback(() => {
+    setShowVoiceBottomSheet(false);
+    setVoiceState(prev => ({ 
+      ...prev, 
+      isListening: false, 
+      isResponding: false, 
+      isPlayingAudio: false 
+    }));
+  }, []);
+
+  // Handle voice suggestion clicks
+  const handleVoiceSuggestionClick = useCallback((suggestion: string, pillId?: string, options?: any) => {
+    console.log("Voice suggestion clicked:", suggestion);
+    handleSendMessage(suggestion);
+  }, []);
+
+  // Handle voice commands
+  const handleVoiceMute = useCallback(() => {
+    setVoiceState(prev => ({ ...prev, isPlayingAudio: false }));
+  }, []);
+
+  const handleVoiceAsk = useCallback(() => {
+    setVoiceState(prev => ({ ...prev, isListening: true }));
+  }, []);
+
+  const handleVoiceUnmute = useCallback(() => {
+    setVoiceState(prev => ({ ...prev, isPlayingAudio: true }));
+  }, []);
+
+  const handleVoiceStopAudio = useCallback(() => {
+    setVoiceState(prev => ({ ...prev, isPlayingAudio: false }));
+  }, []);
 
   // Set up portal element for contact bottom sheet
   useEffect(() => {
@@ -1071,6 +1111,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                         onSendMessage={handleSendMessage}
                         isProcessing={isTyping}
                         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+                        onVoiceToggle={handleVoiceToggle}
                       />
                     }
                   />
