@@ -715,19 +715,7 @@ export default function SuggestionPills({
                 animation: "spin 1s linear infinite",
               }} />
             )}
-            {preGenStatus === 'ready' && context === "voice-assistant" && !isLoading && (
-              <div style={{
-                position: "absolute",
-                right: "8px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                width: "8px",
-                height: "8px",
-                background: "#10b981",
-                borderRadius: "50%",
-                boxShadow: "0 0 4px rgba(16, 185, 129, 0.5)",
-              }} />
-            )}
+
           </Button>
         );
       })}

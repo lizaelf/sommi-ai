@@ -177,11 +177,53 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           setTimeout(() => {
             const retryVoiceLocked = (window as any).VOICE_LOCK_VERIFIED && (window as any).GUARANTEED_MALE_VOICE;
             if (retryVoiceLocked) {
-              console.log("✅ DEPLOYMENT: Voice verified on retry, showing welcome");
-              setShowBottomSheet(true);
-              sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-              setShowAskButton(false);
-              setIsResponding(true);
+              console.log("✅ DEPLOYMENT: Voice verified on retry, checking suggestions readiness");
+              
+              // Check if suggestions are ready before showing bottom sheet
+              const effectiveWineKey = wineKey || "wine_1";
+              const audioCache = (window as any).suggestionAudioCache || {};
+              const wineData = (window as any).wineResponses?.[effectiveWineKey];
+              
+              const hasReadySuggestions = Object.keys(audioCache).some(key => 
+                key.startsWith(effectiveWineKey)
+              ) || (wineData && Object.keys(wineData).length > 0);
+              
+              if (hasReadySuggestions) {
+                setShowBottomSheet(true);
+                sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+                setShowAskButton(false);
+                setIsResponding(true);
+              } else {
+                console.log("🔄 DEPLOYMENT: Waiting for suggestions to be ready");
+                // Wait for suggestions to be ready
+                const suggestionInterval = setInterval(() => {
+                  const updatedAudioCache = (window as any).suggestionAudioCache || {};
+                  const updatedWineData = (window as any).wineResponses?.[effectiveWineKey];
+                  
+                  const nowHasReadySuggestions = Object.keys(updatedAudioCache).some(key => 
+                    key.startsWith(effectiveWineKey)
+                  ) || (updatedWineData && Object.keys(updatedWineData).length > 0);
+                  
+                  if (nowHasReadySuggestions) {
+                    clearInterval(suggestionInterval);
+                    setShowBottomSheet(true);
+                    sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+                    setShowAskButton(false);
+                    setIsResponding(true);
+                  }
+                }, 100);
+                
+                // Clear interval after 5 seconds
+                setTimeout(() => {
+                  clearInterval(suggestionInterval);
+                  setShowBottomSheet(true);
+                  sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+                  setShowAskButton(false);
+                  setIsResponding(true);
+                }, 5000);
+                
+                return;
+              }
               
               // Proceed with welcome message
               const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards \"Lytton Springs,\" an excellent choice. The 2021 Lytton Springs Zinfandel expresses a nose of red and black raspberry, sage, and dark chocolate, followed by mid-palate is full bodied and features flavors of blackberry and ripe plum, ending with juicy acidity and a lengthy finish. Out of curiosity, are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
@@ -202,10 +244,48 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
       }
       
-      setShowBottomSheet(true);
-      sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-      setShowAskButton(false);
-      setIsResponding(true);
+      // Check if suggestions are ready before showing bottom sheet
+      const checkSuggestionsReady = () => {
+        const effectiveWineKey = wineKey || "wine_1";
+        const audioCache = (window as any).suggestionAudioCache || {};
+        const wineData = (window as any).wineResponses?.[effectiveWineKey];
+        
+        // Check if we have any ready suggestions (pre-cached audio or spreadsheet responses)
+        const hasReadySuggestions = Object.keys(audioCache).some(key => 
+          key.startsWith(effectiveWineKey)
+        ) || (wineData && Object.keys(wineData).length > 0);
+        
+        if (hasReadySuggestions) {
+          setShowBottomSheet(true);
+          sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+          setShowAskButton(false);
+          setIsResponding(true);
+          return true;
+        }
+        return false;
+      };
+      
+      // Try to show bottom sheet if suggestions are ready
+      if (!checkSuggestionsReady()) {
+        // Wait for suggestions to be ready, then show bottom sheet
+        const checkInterval = setInterval(() => {
+          if (checkSuggestionsReady()) {
+            clearInterval(checkInterval);
+          }
+        }, 100);
+        
+        // Clear interval after 10 seconds to avoid infinite waiting
+        setTimeout(() => {
+          clearInterval(checkInterval);
+          // Show bottom sheet anyway after timeout
+          setShowBottomSheet(true);
+          sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
+          setShowAskButton(false);
+          setIsResponding(true);
+        }, 10000);
+        
+        return;
+      }
       
       // Play preloaded welcome message instantly
       if (welcomeAudioElementRef.current) {
