@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/UseToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import VoiceController from "./voice/VoiceController";
+import VoiceAssistant from "./VoiceAssistant";
 import SuggestionPills from "./SuggestionPills";
 import Button from "./ui/Button";
 import { FormInput } from "./ui/FormInput";
