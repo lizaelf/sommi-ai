@@ -39,7 +39,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const [transcribedText, setTranscribedText] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize focused hooks
+  // Initialize focused hooks for modular architecture
   const { playAudio, stopAudio, isPlaying } = useAudioPlayback();
   
   const { recordingState, startRecording, stopRecording } = useVoiceRecorder({
@@ -92,7 +92,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
   });
 
-  // Initialize welcome message cache
   useEffect(() => {
     if (!isInitialized) {
       initializeWelcomeCache().then(() => {
@@ -101,7 +100,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
   }, [initializeWelcomeCache, isInitialized]);
 
-  // Voice assistant trigger handler
   function handleVoiceAssistantTrigger() {
     const welcomeAudio = getWelcomeAudio();
     if (welcomeAudio) {
@@ -153,7 +151,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     stopAudio();
   }, [stopAudio]);
 
-  // Update processing state
   useEffect(() => {
     setVoiceState(prev => ({ ...prev, isThinking: isProcessing }));
   }, [isProcessing]);

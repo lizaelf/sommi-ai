@@ -1053,7 +1053,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
                     voiceButtonComponent={
-                      <VoiceController
+                      <VoiceAssistant
                         onSendMessage={handleSendMessage}
                         isProcessing={isTyping}
                         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
