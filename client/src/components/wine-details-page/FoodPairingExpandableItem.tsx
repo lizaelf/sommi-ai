@@ -1,5 +1,4 @@
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
 import typography from '@/styles/typography';
 
 interface FoodPairingExpandableItemProps {
@@ -90,41 +89,50 @@ const FoodPairingExpandableItem: React.FC<FoodPairingExpandableItemProps> = ({
             </span>
           )}
           {/* Rotating chevron icon for expanded state */}
-          <ChevronDown
-            size={16}
-            color="white"
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
             style={{
               transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
               transition: "transform 0.3s ease",
             }}
-          />
+          >
+            <path
+              d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06"
+              fill="white"
+            />
+          </svg>
         </div>
       </div>
 
-      {/* Expanded content */}
+      {/* Expanded content - only visible when expanded */}
       {isExpanded && (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            paddingBottom: "20px",
+            padding: "0 0 20px 0",
+            color: "white",
+            ...typography.body,
           }}
         >
-          {content.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                backgroundColor: "#333333",
-                borderRadius: "12px",
-                padding: "12px 16px",
-                color: "white",
-                ...typography.body,
-              }}
-            >
-              {item}
-            </div>
-          ))}
+          <div style={{ paddingLeft: "20px", margin: "10px 0" }}>
+            {content.map((item: string, index: number) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  marginBottom: "8px",
+                }}
+              >
+                <span style={{ ...typography.body }}>{emoji}</span>
+                <span style={{ ...typography.body }}>{item}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

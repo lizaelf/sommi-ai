@@ -18,6 +18,7 @@ const WineHistorySection: React.FC<WineHistorySectionProps> = ({ description }) 
       style={{
         width: "100%",
         padding: "0 20px",
+        marginBottom: "32px",
       }}
     >
       <p

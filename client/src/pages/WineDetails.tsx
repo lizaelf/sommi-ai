@@ -211,7 +211,6 @@ export default function WineDetails() {
         wineId={wine?.id?.toString() || "1"}
         isScannedPage={isScannedPage}
       />
-      </div>
 
       {/* QR Modal */}
       <QRScanModal
