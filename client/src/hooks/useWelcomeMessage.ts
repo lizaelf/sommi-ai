@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { getDynamicWelcomeMessage } from '@/shared/wineConfig';
+import { getDynamicWelcomeMessage } from '../../../shared/wineConfig';
 
 interface WelcomeMessageCache {
   audioUrl: string | null;

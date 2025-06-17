@@ -1,5 +1,5 @@
 import { useRef, useCallback, useState } from 'react';
-import { getMicrophonePermission, requestMicrophonePermission, shouldSkipPermissionPrompt } from '@/lib/permissions';
+import { getMicrophonePermission, requestMicrophonePermission, shouldSkipPermissionPrompt } from '../lib/permissions';
 
 interface RecordingState {
   isRecording: boolean;
