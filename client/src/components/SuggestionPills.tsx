@@ -6,7 +6,11 @@ import typography from "@/styles/typography";
 import wineResponses from "@/../../shared/wineResponses.json";
 
 // Helper function to generate cache keys for suggestions
-const getSuggestionCacheKey = (wineKey: string, suggestionId: string, type: string = "text"): string => {
+const getSuggestionCacheKey = (
+  wineKey: string,
+  suggestionId: string,
+  type: string = "text",
+): string => {
   return `${wineKey}:${suggestionId}:${type}`;
 };
 
@@ -52,7 +56,6 @@ export default function SuggestionPills({
   const [loadingPillId, setLoadingPillId] = useState<string | null>(null);
   const [audioLoadTimeout, setAudioLoadTimeout] =
     useState<NodeJS.Timeout | null>(null);
-  const [allPillsReady, setAllPillsReady] = useState(false);
 
   // Default suggestions to show immediately while API loads
   const defaultSuggestions: SuggestionPill[] = [
@@ -703,30 +706,30 @@ export default function SuggestionPills({
     }
   };
 
+  const sourceSuggestions = useMemo(() => {
+    const apiSuggestions = suggestionsData?.suggestions || [];
+    const isStable = !isLoading && apiSuggestions.length >= 3;
+
+    return isStable ? apiSuggestions : defaultSuggestions;
+  }, [isLoading, suggestionsData]);
+
   // Stable pill display - prevent changes during page loading
+
   const visiblePills = useMemo(() => {
-    // Always start with default suggestions to prevent loading flicker
-    let finalPills =
-      suggestionsData?.suggestions && !isLoading
-        ? suggestionsData.suggestions
-        : defaultSuggestions;
+    const unused = sourceSuggestions.filter((pill) => !usedPills.has(pill.id));
+    const used = sourceSuggestions.filter((pill) => usedPills.has(pill.id));
+    const combined = [...unused, ...used];
 
-    // Filter used pills only after user interaction, not during loading
-    const displayPills = finalPills.filter(
-      (pill: SuggestionPill) => !usedPills.has(pill.id),
-    );
-
-    // If we have less than 3 unused pills, fill with used ones to maintain count
-    if (displayPills.length < 3) {
-      const usedPills_array = finalPills.filter((pill: SuggestionPill) =>
-        usedPills.has(pill.id),
-      );
-      return [...displayPills, ...usedPills_array].slice(0, 3);
+    // Conditionally fill in if fewer than 3
+    if (combined.length < 3) {
+      combined.push(...defaultSuggestions);
     }
 
-    // Always show exactly 3 pills for stable UI
-    return displayPills.slice(0, 3);
-  }, [suggestionsData, usedPills, isLoading]);
+    const uniqueById = Array.from(
+      new Map(combined.map((p) => [p.id, p])).values(),
+    );
+    return uniqueById.slice(0, 3);
+  }, [sourceSuggestions, usedPills]);
 
   // Show suggestions immediately - always display visible pills
 
@@ -765,7 +768,7 @@ export default function SuggestionPills({
           "audio",
         );
         const preGenStatus = preGenerationStatus.get(cacheKey);
-        const isLoading = loadingPillId === pill.id;
+        const isPillLoading = loadingPillId === pill.id;
         const showFallback = isLoading && context === "voice-assistant";
 
         return (
@@ -783,7 +786,7 @@ export default function SuggestionPills({
               padding: "12px 20px",
               transition: "none",
               position: "relative",
-              opacity: isLoading ? 0.7 : 1,
+              opacity: isPillLoading ? 0.7 : 1,
               background:
                 preGenStatus === "ready" && context === "voice-assistant"
                   ? "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)"
@@ -795,7 +798,7 @@ export default function SuggestionPills({
             }}
           >
             {showFallback ? "Loading audio..." : pill.text}
-            {isLoading && (
+            {isPillLoading && (
               <div
                 style={{
                   position: "absolute",
