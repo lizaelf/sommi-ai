@@ -331,8 +331,36 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
 
 
 
+              {/* Stop Button - appears when audio is playing */}
+              {isPlayingAudio && onStopAudio && (
+                <div style={{
+                  width: '100%',
+                  paddingLeft: '16px',
+                  paddingRight: '16px'
+                }}>
+                  <Button
+                    onClick={onStopAudio}
+                    variant="secondary"
+                    style={{
+                      width: '100%',
+                      height: '56px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                      <rect x="6" y="4" width="4" height="16" rx="1"/>
+                      <rect x="14" y="4" width="4" height="16" rx="1"/>
+                    </svg>
+                    Stop
+                  </Button>
+                </div>
+              )}
+
               {/* Unmute Button */}
-              {showUnmuteButton && onUnmute && !showAskButton && (
+              {showUnmuteButton && onUnmute && !showAskButton && !isPlayingAudio && (
                 <div style={{
                   width: '100%',
                   paddingLeft: '16px',
