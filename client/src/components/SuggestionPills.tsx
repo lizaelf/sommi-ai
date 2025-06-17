@@ -635,24 +635,8 @@ export default function SuggestionPills({
       !usedPills.has(pill.id)
     );
 
-    // For voice context, only show pills with ready audio
-    const readyPills = unusedPills.filter((pill: SuggestionPill) => {
-      if (context === "voice-assistant") {
-        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
-        const status = preGenerationStatus.get(cacheKey);
-        
-        // Check if audio is pre-cached or spreadsheet response exists
-        const audioCache = (window as any).suggestionAudioCache || {};
-        const hasPreCachedAudio = audioCache[cacheKey];
-        const hasSpreadsheetResponseData = wineData && wineData[suggestionId];
-        
-        return status === 'ready' || hasPreCachedAudio || hasSpreadsheetResponseData;
-      }
-
-      // For chat context, show all unused pills
-      return true;
-    });
+    // Show all pills immediately - no readiness checks
+    const readyPills = unusedPills;
 
     console.log(`🎤 Voice context: ${readyPills.length} voice-ready pills available (${usedPills.size} used)`);
     
@@ -672,43 +656,9 @@ export default function SuggestionPills({
     
     // Always show exactly 3 pills - take next available ones as replacements
     return readyPills.slice(0, 3);
-  }, [suggestionsData, usedPills, isLoading, preGenerationStatus, context, wineKey, allPillsReady]);
+  }, [suggestionsData, usedPills, preGenerationStatus, context, wineKey, allPillsReady]);
 
-  // Show loading state for voice context when pills aren't ready
-  if (context === "voice-assistant" && !allPillsReady && visiblePills.length < 3) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "12px",
-          padding: "20px 16px",
-          margin: "0",
-        }}
-      >
-        <div style={{
-          width: "20px",
-          height: "20px",
-          border: "2px solid #ffffff",
-          borderTop: "2px solid transparent",
-          borderRadius: "50%",
-          animation: "spin 1s linear infinite",
-        }} />
-        <span style={{ color: "#ffffff", fontSize: "14px" }}>
-          Preparing suggestions...
-        </span>
-        <style>
-          {`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}
-        </style>
-      </div>
-    );
-  }
+  // Show suggestions immediately - always display visible pills
 
   return (
     <div
