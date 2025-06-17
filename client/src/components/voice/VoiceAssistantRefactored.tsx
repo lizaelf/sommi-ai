@@ -32,11 +32,8 @@ export const VoiceAssistantRefactored: React.FC<VoiceAssistantRefactoredProps> =
   const voiceRecording = useVoiceRecording();
   const voicePermissions = useVoicePermissions();
 
-  // Auto-activate voice assistant when component mounts
-  useEffect(() => {
-    // Trigger voice activation automatically
-    voiceCore.handleVoiceActivation();
-  }, []); // Only run once on mount
+  // Remove auto-activation to prevent conflicts with manual close system
+  // Voice assistant should only activate when user explicitly clicks voice button
 
   const handleVoiceInput = async () => {
     if (!voiceRecording.isSupported) {
