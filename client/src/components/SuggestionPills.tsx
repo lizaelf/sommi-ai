@@ -214,11 +214,12 @@ export default function SuggestionPills({
                 setPreGenerationStatus((prev) =>
                   new Map(prev).set(cacheKey, "ready"),
                 );
-                console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
+                console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.prompt}"`);
               } else {
                 setPreGenerationStatus((prev) =>
                   new Map(prev).set(cacheKey, "failed"),
                 );
+                console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.prompt}" - HTTP ${response.status}`);
               }
             }
           }
@@ -227,7 +228,7 @@ export default function SuggestionPills({
             new Map(prev).set(cacheKey, "failed"),
           );
           console.error(
-            `🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`,
+            `🎤 PRE-GEN: Failed to generate audio for "${pill.prompt}":`,
             error,
           );
         }
@@ -370,6 +371,7 @@ export default function SuggestionPills({
 
             (window as any).currentOpenAIAudio = audio;
             await audio.play();
+            console.log(`🎤 SUCCESS: Audio playback started for "${pill.prompt}"`);
 
             // Add messages to chat
             const userMessage = {
