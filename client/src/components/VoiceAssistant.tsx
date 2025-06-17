@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
-import { VoiceController } from "./voice/VoiceController";
+import React from "react";
 
 export interface VoiceAssistantProps {
   onClose?: () => void;
@@ -16,20 +15,23 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   isVoiceContext = true,
   onSendMessage
 }) => {
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleSendMessage = (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
-    if (onSendMessage) {
-      onSendMessage(message, pillId, options);
-    }
-  };
-
   return (
-    <VoiceController
-      onSendMessage={handleSendMessage}
-      isProcessing={isProcessing}
-      wineKey={wineKey}
-    />
+    <div className="voice-assistant-container">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-6">
+        <div className="text-center">
+          <h2 className="text-xl mb-4">Voice Assistant</h2>
+          <p className="text-white/60">Voice functionality temporarily disabled for debugging</p>
+          {onClose && (
+            <button 
+              onClick={onClose}
+              className="mt-4 px-4 py-2 bg-white/10 text-white rounded hover:bg-white/20"
+            >
+              Close
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
