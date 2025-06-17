@@ -114,36 +114,8 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   };
 
   const handleMicrophoneClick = async () => {
-    try {
-      if (shouldSkipPermissionPrompt()) {
-        setShowBottomSheet(true);
-        return;
-      }
-
-      const hasPermission = await getMicrophonePermission();
-      
-      if (hasPermission) {
-        setShowBottomSheet(true);
-      } else {
-        const granted = await requestMicrophonePermission();
-        if (granted) {
-          setShowBottomSheet(true);
-        } else {
-          toast({
-            title: "Microphone Access Required",
-            description: "Please allow microphone access to use voice features.",
-            variant: "destructive",
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Microphone permission error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to access microphone. Please try again.",
-        variant: "destructive",
-      });
-    }
+    console.log('Voice button clicked - showing bottom sheet');
+    setShowBottomSheet(true);
   };
 
   const handleBottomSheetClose = () => {
