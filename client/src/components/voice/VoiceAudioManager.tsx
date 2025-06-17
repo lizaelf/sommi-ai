@@ -115,7 +115,7 @@ export const VoiceAudioManager: React.FC<VoiceAudioManagerProps> = ({
   }, [onAudioStateChange]);
 
   const generateFreshWelcomeAudio = useCallback(async () => {
-    const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+    // Use only dynamic WINE_CONFIG-based message from above
     
     try {
       const response = await fetch('/api/text-to-speech', {

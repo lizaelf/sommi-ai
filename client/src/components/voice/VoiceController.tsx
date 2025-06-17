@@ -51,7 +51,8 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
         return;
       }
 
-      const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+      // Welcome message generation delegated to VoiceAudioManager using WINE_CONFIG
+      return;
       
       try {
         const response = await fetch('/api/text-to-speech', {
