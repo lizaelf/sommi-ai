@@ -48,12 +48,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 17, 2025)
 
-### Dynamic Technical Details Implementation (June 17, 2025 - Latest)
-- **WineTechnicalDetails Component Enhancement**: Replaced hardcoded technical wine details with dynamic data extraction from actual wine objects
-- **Intelligent Varietal Detection**: Added helper functions to extract varietal composition based on wine name analysis (Zinfandel, Cabernet, Chardonnay, Pinot Noir detection)
-- **Dynamic Aging Recommendations**: Implemented wine-type specific aging suggestions calculated from vintage year and wine characteristics
-- **Real Data Integration**: Technical details now display authentic wine information including actual ABV from ratings and appellation from location data
-- **Adaptive Component Logic**: Component automatically adjusts varietal percentages and aging recommendations based on wine type identification
+### Admin Panel Technical Details Integration (June 17, 2025 - Latest)
+- **Complete Technical Details Admin Interface**: Added comprehensive technical details fields to wine editing admin panel including varietal composition (primary/secondary with percentages), appellation, aging recommendations (drink now checkbox + age up to field)
+- **Database Schema Enhancement**: Extended UnifiedWineData interface with technicalDetails object containing varietal, appellation, aging, and customAbv fields for manual wine specification
+- **Smart Fallback System**: Implemented priority system where manually entered admin values override automatic extraction, with intelligent fallback to dynamic wine name analysis when manual data unavailable
+- **Persistent Technical Data**: All manually entered technical details are stored in wine data structure and persist across sessions, ensuring authentic wine information display
+- **Enhanced Wine Details Display**: Updated WineInfoSection component to prioritize admin-entered technical details while maintaining automatic extraction as backup for incomplete manual data
 
 ### Welcome Message Architecture Cleanup (June 17, 2025)
 - **Removed Redundant Welcome Message**: Eliminated duplicate welcome message implementation from App.tsx to prevent code duplication

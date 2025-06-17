@@ -1098,6 +1098,283 @@ export default function WineEdit() {
             />
           </div>
 
+          {/* Technical Details Section */}
+          <div style={{ marginTop: "32px", marginBottom: "24px" }}>
+            <h3 style={{
+              ...typography.h3,
+              color: "white",
+              marginBottom: "16px",
+              fontSize: "18px",
+              fontWeight: "600"
+            }}>
+              Technical Details
+            </h3>
+            
+            {/* Varietal Composition */}
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "1fr 1fr", 
+              gap: "16px",
+              marginBottom: "16px"
+            }}>
+              <div>
+                <label style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}>
+                  Primary Varietal
+                </label>
+                <input
+                  type="text"
+                  value={wine.technicalDetails?.varietal?.primary || ""}
+                  onChange={(e) => updateWine("technicalDetails", {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      primary: e.target.value,
+                      primaryPercentage: wine.technicalDetails?.varietal?.primaryPercentage || 100
+                    }
+                  })}
+                  className="contact-form-input"
+                  style={{
+                    ...typography.body,
+                    color: "white !important",
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px",
+                  }}
+                  placeholder="e.g., Zinfandel"
+                />
+              </div>
+              
+              <div>
+                <label style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}>
+                  Primary %
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={wine.technicalDetails?.varietal?.primaryPercentage || ""}
+                  onChange={(e) => updateWine("technicalDetails", {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      primary: wine.technicalDetails?.varietal?.primary || "",
+                      primaryPercentage: parseInt(e.target.value) || 100
+                    }
+                  })}
+                  className="contact-form-input"
+                  style={{
+                    ...typography.num,
+                    color: "white !important",
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px",
+                  }}
+                  placeholder="100"
+                />
+              </div>
+            </div>
+
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "1fr 1fr", 
+              gap: "16px",
+              marginBottom: "16px"
+            }}>
+              <div>
+                <label style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}>
+                  Secondary Varietal
+                </label>
+                <input
+                  type="text"
+                  value={wine.technicalDetails?.varietal?.secondary || ""}
+                  onChange={(e) => updateWine("technicalDetails", {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      secondary: e.target.value,
+                      secondaryPercentage: wine.technicalDetails?.varietal?.secondaryPercentage || 0
+                    }
+                  })}
+                  className="contact-form-input"
+                  style={{
+                    ...typography.body,
+                    color: "white !important",
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px",
+                  }}
+                  placeholder="e.g., Carignane (optional)"
+                />
+              </div>
+              
+              <div>
+                <label style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}>
+                  Secondary %
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={wine.technicalDetails?.varietal?.secondaryPercentage || ""}
+                  onChange={(e) => updateWine("technicalDetails", {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      secondary: wine.technicalDetails?.varietal?.secondary || "",
+                      secondaryPercentage: parseInt(e.target.value) || 0
+                    }
+                  })}
+                  className="contact-form-input"
+                  style={{
+                    ...typography.num,
+                    color: "white !important",
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px",
+                  }}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            {/* Appellation */}
+            <div style={{ marginBottom: "16px" }}>
+              <label style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.60)",
+                display: "block",
+                marginBottom: "8px",
+              }}>
+                Appellation
+              </label>
+              <input
+                type="text"
+                value={wine.technicalDetails?.appellation || ""}
+                onChange={(e) => updateWine("technicalDetails", {
+                  ...wine.technicalDetails,
+                  appellation: e.target.value
+                })}
+                className="contact-form-input"
+                style={{
+                  ...typography.body,
+                  color: "white !important",
+                  height: "56px",
+                  width: "100%",
+                  fontSize: "16px",
+                  fontWeight: "400",
+                  padding: "0 16px",
+                }}
+                placeholder="e.g., Dry Creek Valley"
+              />
+            </div>
+
+            {/* Aging Recommendations */}
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "auto 1fr", 
+              gap: "16px",
+              alignItems: "end",
+              marginBottom: "16px"
+            }}>
+              <div>
+                <label style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}>
+                  Drink Now
+                </label>
+                <div style={{ 
+                  height: "56px", 
+                  display: "flex", 
+                  alignItems: "center",
+                  paddingLeft: "16px"
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={wine.technicalDetails?.aging?.drinkNow || false}
+                    onChange={(e) => updateWine("technicalDetails", {
+                      ...wine.technicalDetails,
+                      aging: {
+                        ...wine.technicalDetails?.aging,
+                        drinkNow: e.target.checked,
+                        ageUpTo: wine.technicalDetails?.aging?.ageUpTo || ""
+                      }
+                    })}
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      accentColor: "#4a90e2"
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label style={{
+                  ...typography.body1R,
+                  color: "rgba(255, 255, 255, 0.60)",
+                  display: "block",
+                  marginBottom: "8px",
+                }}>
+                  Age Up To
+                </label>
+                <input
+                  type="text"
+                  value={wine.technicalDetails?.aging?.ageUpTo || ""}
+                  onChange={(e) => updateWine("technicalDetails", {
+                    ...wine.technicalDetails,
+                    aging: {
+                      ...wine.technicalDetails?.aging,
+                      drinkNow: wine.technicalDetails?.aging?.drinkNow || false,
+                      ageUpTo: e.target.value
+                    }
+                  })}
+                  className="contact-form-input"
+                  style={{
+                    ...typography.body,
+                    color: "white !important",
+                    height: "56px",
+                    width: "100%",
+                    fontSize: "16px",
+                    fontWeight: "400",
+                    padding: "0 16px",
+                  }}
+                  placeholder="e.g., 10-12 years"
+                />
+              </div>
+            </div>
+          </div>
+
           <div>
             <label
               style={{

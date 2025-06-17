@@ -43,6 +43,21 @@ export interface UnifiedWineData {
   membershipTiers?: string;
   clubPricing?: string;
   clubBenefits?: string;
+  // Technical Details
+  technicalDetails?: {
+    varietal?: {
+      primary: string;
+      primaryPercentage: number;
+      secondary?: string;
+      secondaryPercentage?: number;
+    };
+    appellation?: string;
+    aging?: {
+      drinkNow: boolean;
+      ageUpTo: string;
+    };
+    customAbv?: number; // Override for ratings.abv when manually set
+  };
 }
 
 // Master wine data - this is the canonical source of truth

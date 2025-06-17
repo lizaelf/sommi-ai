@@ -22,6 +22,20 @@ interface SelectedWine {
   description?: string;
   foodPairing?: string[];
   buyAgainLink?: string;
+  technicalDetails?: {
+    varietal?: {
+      primary: string;
+      primaryPercentage: number;
+      secondary?: string;
+      secondaryPercentage?: number;
+    };
+    appellation?: string;
+    aging?: {
+      drinkNow: boolean;
+      ageUpTo: string;
+    };
+    customAbv?: number;
+  };
 }
 
 interface WineInfoSectionProps {
@@ -220,10 +234,10 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         marginTop: '32px'
       }}>
         <WineTechnicalDetails
-          varietal={extractVarietalInfo(wine.name)}
-          appellation={wine.location?.split(',')[0] || 'Unknown Appellation'}
-          aging={getAgingRecommendations(wine.name, wine.year)}
-          abv={wine.ratings?.abv}
+          varietal={wine.technicalDetails?.varietal || extractVarietalInfo(wine.name)}
+          appellation={wine.technicalDetails?.appellation || wine.location?.split(',')[0] || 'Unknown Appellation'}
+          aging={wine.technicalDetails?.aging || getAgingRecommendations(wine.name, wine.year)}
+          abv={wine.technicalDetails?.customAbv || wine.ratings?.abv}
         />
       </div>
 
