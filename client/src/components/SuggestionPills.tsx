@@ -357,57 +357,52 @@ export default function SuggestionPills({
           );
 
           if (audioCache[cacheKey]) {
-            console.log("🎵 Playing cached audio for suggestion:", pill.text);
-            
+            // Fix 2: Set audio lock
+            (window as any).audioLock = true;
+
             try {
-              // Stop any previous audio
+              // Fix 3: Track Audio Lifecycle More Safely
               const previousAudio = (window as any).currentOpenAIAudio;
               if (previousAudio) {
                 try {
                   previousAudio.pause();
                   previousAudio.currentTime = 0;
                 } catch (e) {
-                  console.warn("Error stopping previous audio:", e);
+                  console.warn("Error while stopping previous audio:", e);
                 }
               }
 
-              // Create and play audio
+              // Play pre-generated audio
               const audio = new Audio(audioCache[cacheKey]);
-              
-              // Set up event handlers before playing
-              audio.onplay = () => {
-                console.log("🎵 Audio started playing:", pill.text);
+
+              // Fix 4: Use loadedmetadata or canplaythrough to guarantee audio is ready
+              await new Promise((resolve, reject) => {
+                audio.oncanplaythrough = resolve;
+                audio.onerror = reject;
+                audio.load();
+              });
+
+              audio.onplay = () =>
                 window.dispatchEvent(new CustomEvent("tts-audio-start"));
-              };
-              
               audio.onended = () => {
-                console.log("🎵 Audio finished playing:", pill.text);
                 setIsProcessing(false);
                 window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-                (window as any).currentOpenAIAudio = null;
               };
-              
-              audio.onerror = (e) => {
-                console.error("🎵 Audio playback error:", e);
+              audio.onerror = () => {
                 setIsProcessing(false);
                 window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-                (window as any).currentOpenAIAudio = null;
               };
 
-              // Store audio reference
               (window as any).currentOpenAIAudio = audio;
 
-              // Play audio immediately with proper error handling
-              const playPromise = audio.play();
-              if (playPromise !== undefined) {
-                playPromise.then(() => {
-                  console.log("🎵 Audio playback started successfully");
-                }).catch((e) => {
-                  console.error("🎵 Audio play() failed:", e);
-                  setIsProcessing(false);
-                  window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-                  (window as any).currentOpenAIAudio = null;
-                });
+              // Fix 1: Wrap all calls to audio.play() in a try/catch, and await it explicitly
+              try {
+                await audio.play();
+              } catch (e) {
+                console.warn("Playback failed or was interrupted:", e);
+                setIsProcessing(false);
+                window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+                return;
               }
 
               // Add messages to chat
@@ -432,9 +427,9 @@ export default function SuggestionPills({
                   detail: { userMessage, assistantMessage },
                 }),
               );
-            } catch (error) {
-              console.error("🎵 Error during audio playback:", error);
-              setIsProcessing(false);
+            } finally {
+              // Fix 2: Release audio lock
+              (window as any).audioLock = false;
             }
           } else {
             // No pre-generated audio - use callback to let parent handle
