@@ -40,6 +40,9 @@ export default function SuggestionPills({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);
+  const [preGenerationStatus, setPreGenerationStatus] = useState<Map<string, 'loading' | 'ready' | 'failed'>>(new Map());
+  const [loadingPillId, setLoadingPillId] = useState<string | null>(null);
+  const [audioLoadTimeout, setAudioLoadTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Default suggestions to show immediately while API loads
   const defaultSuggestions: SuggestionPill[] = [
@@ -107,27 +110,41 @@ export default function SuggestionPills({
 
   // Removed automatic reset - suggestions only change when user clicks
 
-  // Pre-generate TTS audio for voice context suggestions
+  // Eager pre-generation for all contexts to improve responsiveness
   useEffect(() => {
-    if (context === "voice-assistant" && suggestionsData?.suggestions && !isLoading) {
-      preGenerateSuggestionAudio();
+    if (context === "voice-assistant") {
+      // Pre-generate for API suggestions when available
+      if (suggestionsData?.suggestions && !isLoading) {
+        preGenerateSuggestionAudio(suggestionsData.suggestions);
+      }
+      // Always pre-generate for default suggestions
+      preGenerateSuggestionAudio(defaultSuggestions);
     }
   }, [context, suggestionsData, isLoading]);
 
-  const preGenerateSuggestionAudio = async () => {
-    if (!suggestionsData?.suggestions) return;
+  // Enhanced pre-generation with status tracking and fallbacks
+  const preGenerateSuggestionAudio = async (suggestions?: SuggestionPill[]) => {
+    const pillsToProcess = suggestions || suggestionsData?.suggestions || defaultSuggestions;
+    if (!pillsToProcess?.length) return;
 
-    console.log("🎤 PRE-GEN: Starting audio pre-generation for suggestions");
+    console.log("🎤 PRE-GEN: Starting enhanced audio pre-generation");
     const audioCache = (window as any).suggestionAudioCache || {};
     (window as any).suggestionAudioCache = audioCache;
 
     const effectiveWineKey = wineKey || "wine_1";
 
-    for (const pill of suggestionsData.suggestions.slice(0, 3)) {
+    for (const pill of pillsToProcess.slice(0, 3)) {
       const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
       const cacheKey = `${effectiveWineKey}_${suggestionId}`;
 
-      if (audioCache[cacheKey]) continue;
+      // Update pre-generation status
+      setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'loading'));
+
+      if (audioCache[cacheKey]) {
+        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
+        console.log(`🎤 PRE-GEN: Audio already cached for "${pill.text}"`);
+        continue;
+      }
 
       const wineData = wineResponses[effectiveWineKey as keyof typeof wineResponses];
       if (wineData?.responses) {
@@ -146,12 +163,23 @@ export default function SuggestionPills({
               const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
               const audioUrl = URL.createObjectURL(audioBlob);
               audioCache[cacheKey] = audioUrl;
+              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'ready'));
               console.log(`🎤 PRE-GEN: ✅ Audio cached for "${pill.text}"`);
+            } else {
+              setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+              console.error(`🎤 PRE-GEN: TTS request failed for "${pill.text}"`);
             }
           } catch (error) {
+            setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
             console.error(`🎤 PRE-GEN: Failed to generate audio for "${pill.text}":`, error);
           }
+        } else {
+          setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+          console.log(`🎤 PRE-GEN: No spreadsheet response for "${pill.text}", skipping pre-generation`);
         }
+      } else {
+        setPreGenerationStatus(prev => new Map(prev).set(cacheKey, 'failed'));
+        console.log(`🎤 PRE-GEN: No wine data found for "${effectiveWineKey}"`);
       }
     }
   };
@@ -189,13 +217,6 @@ export default function SuggestionPills({
     console.log("🔍 DEBUGGING: handlePillClick called with context:", context, "preferredResponseType:", preferredResponseType);
     console.log("🔍 DEBUGGING: wineKey:", wineKey, "pill:", pill);
     if (isDisabled) return;
-
-    // Optimistically mark as used
-    setUsedPills((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(pill.id);
-      return newSet;
-    });
 
     try {
       // Check for instant response (cached or spreadsheet)
@@ -558,6 +579,12 @@ export default function SuggestionPills({
     } finally {
       setIsProcessing(false);
       setCurrentAbortController(null);
+      setLoadingPillId(null);
+      // Clear any pending timeout
+      if (audioLoadTimeout) {
+        clearTimeout(audioLoadTimeout);
+        setAudioLoadTimeout(null);
+      }
     }
   };
 
@@ -580,39 +607,45 @@ export default function SuggestionPills({
     }
   };
 
-  // Always show exactly 3 pills
+  // Show only pills that have audio ready and are unused
   const visiblePills = useMemo(() => {
     const availablePills = suggestionsData?.suggestions || [];
+    const effectiveWineKey = wineKey || "wine_1";
 
-    if (isLoading || availablePills.length === 0) {
-      return defaultSuggestions.slice(0, 3);
-    }
+    // Combine API and default suggestions
+    const allPills = [...availablePills, ...defaultSuggestions];
 
-    // Only show unused pills - never show used ones
-    const unusedPills = availablePills.filter(
-      (pill: SuggestionPill) => !usedPills.has(pill.id),
-    );
+    // Filter pills that are unused and have audio ready (for voice context)
+    const readyPills = allPills.filter((pill: SuggestionPill) => {
+      // Don't show used pills
+      if (usedPills.has(pill.id)) {
+        return false;
+      }
 
-    // Always show exactly 3 unused pills if available
-    if (unusedPills.length >= 3) {
-      return unusedPills.slice(0, 3);
-    }
+      // For voice context, only show pills with ready audio
+      if (context === "voice-assistant") {
+        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
+        const status = preGenerationStatus.get(cacheKey);
+        
+        // Check if audio is pre-cached or spreadsheet response exists
+        const audioCache = (window as any).suggestionAudioCache || {};
+        const hasPreCachedAudio = audioCache[cacheKey];
+        const spreadsheetResponse = hasSpreadsheetResponse(effectiveWineKey, suggestionId);
+        const hasSpreadsheetResponseData = !!spreadsheetResponse;
+        
+        return status === 'ready' || hasPreCachedAudio || hasSpreadsheetResponseData;
+      }
 
-    // If we have some unused pills but less than 3, show what we have
-    if (unusedPills.length > 0) {
-      return unusedPills;
-    }
+      // For chat context, show all unused pills
+      return true;
+    });
 
-    // If all suggestions are used, show default suggestions instead of auto-resetting
-    if (unusedPills.length === 0 && availablePills.length > 0) {
-      console.log("All suggestions used - showing default suggestions (no auto-reset)");
-      return defaultSuggestions.slice(0, 3);
-    }
-
-    // Fallback: show unused default suggestions if no API suggestions available
-    const unusedDefaults = defaultSuggestions.filter(def => !usedPills.has(def.id));
-    return unusedDefaults.slice(0, 3);
-  }, [suggestionsData, usedPills, isLoading]);
+    console.log(`🎤 Voice context: ${readyPills.length} voice-ready pills available`);
+    
+    // Return up to 3 ready pills
+    return readyPills.slice(0, 3);
+  }, [suggestionsData, usedPills, isLoading, preGenerationStatus, context, wineKey]);
 
   return (
     <div
@@ -633,27 +666,73 @@ export default function SuggestionPills({
           div::-webkit-scrollbar {
             display: none;
           }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
         `}
       </style>
-      {visiblePills.map((pill: SuggestionPill) => (
-        <Button
-          key={`${context}-${pill.id}`}
-          variant="secondary"
-          disabled={isDisabled || isProcessing}
-          onClick={() => handlePillClick(pill)}
-          style={{
-            ...typography.buttonPlus1,
-            minWidth: "fit-content",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-            borderRadius: "32px",
-            padding: "12px 20px",
-            transition: "none",
-          }}
-        >
-          {pill.text}
-        </Button>
-      ))}
+      {visiblePills.map((pill: SuggestionPill) => {
+        const effectiveWineKey = wineKey || "wine_1";
+        const suggestionId = pill.prompt.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+        const cacheKey = `${effectiveWineKey}_${suggestionId}`;
+        const preGenStatus = preGenerationStatus.get(cacheKey);
+        const isLoading = loadingPillId === pill.id;
+        const showFallback = isLoading && context === "voice-assistant";
+
+        return (
+          <Button
+            key={`${context}-${pill.id}`}
+            variant="secondary"
+            disabled={isDisabled || isProcessing}
+            onClick={() => handlePillClick(pill)}
+            style={{
+              ...typography.buttonPlus1,
+              minWidth: "fit-content",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              borderRadius: "32px",
+              padding: "12px 20px",
+              transition: "none",
+              position: "relative",
+              opacity: isLoading ? 0.7 : 1,
+              background: preGenStatus === 'ready' && context === "voice-assistant" 
+                ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' 
+                : undefined,
+              color: preGenStatus === 'ready' && context === "voice-assistant" ? '#ffffff' : undefined,
+            }}
+          >
+            {showFallback ? "Loading audio..." : pill.text}
+            {isLoading && (
+              <div style={{
+                position: "absolute",
+                right: "8px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "12px",
+                height: "12px",
+                border: "2px solid #ffffff",
+                borderTop: "2px solid transparent",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }} />
+            )}
+            {preGenStatus === 'ready' && context === "voice-assistant" && !isLoading && (
+              <div style={{
+                position: "absolute",
+                right: "8px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "8px",
+                height: "8px",
+                background: "#10b981",
+                borderRadius: "50%",
+                boxShadow: "0 0 4px rgba(16, 185, 129, 0.5)",
+              }} />
+            )}
+          </Button>
+        );
+      })}
     </div>
   );
 }
