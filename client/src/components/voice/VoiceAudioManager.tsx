@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useCallback } from "react";
-import { WINE_CONFIG } from "../../../../shared/wineConfig";
+import { WINE_CONFIG } from "../../shared/wineConfig";
 
 interface VoiceAudioManagerProps {
   onAudioStateChange: (state: { isPlayingAudio: boolean }) => void;
