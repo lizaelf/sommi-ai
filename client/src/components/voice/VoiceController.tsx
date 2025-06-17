@@ -72,13 +72,17 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     }
   };
 
-  // Handle voice/text choice
-  const handleChoice = async (choice: "voice" | "text") => {
-    if (choice === "voice") {
-      await recorder.startRecording();
-    } else {
-      updateState({ showBottomSheet: false });
-    }
+  // Handle mute button
+  const handleMute = () => {
+    console.log("🔇 VoiceController: Mute button clicked");
+    audioManager.stopAllAudio();
+    recorder.stopRecording();
+  };
+
+  // Handle ask button
+  const handleAsk = async () => {
+    console.log("🎙️ VoiceController: Ask button clicked");
+    await recorder.startRecording();
   };
 
   // Handle suggestion click
@@ -168,15 +172,16 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         <VoiceBottomSheet
           isOpen={state.showBottomSheet}
           onClose={handleClose}
-          onChoice={handleChoice}
+          onMute={handleMute}
+          onAsk={handleAsk}
           onSuggestionClick={handleSuggestionClick}
           isListening={state.isListening}
-          isProcessing={state.isThinking}
+          isThinking={state.isThinking}
           isResponding={state.isResponding}
           isPlayingAudio={state.isPlayingAudio}
           showUnmuteButton={state.showUnmuteButton}
           showAskButton={state.showAskButton}
-          onStopClick={handleStopClick}
+          onStopAudio={handleStopClick}
           wineKey={wineKey}
         />
       )}
