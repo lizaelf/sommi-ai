@@ -49,26 +49,34 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     };
   }, [recorder, audioManager]);
 
-  // Handle microphone button click
+  // Handle microphone button click - show choice bottom sheet
   const handleMicrophoneClick = async () => {
     if (refs.isManuallyClosedRef.current) {
       console.log("VoiceAssistant: Permanently closed - no automatic reopening until page refresh");
       return;
     }
 
-    if (state.isListening) {
-      recorder.stopRecording();
+    // Always show the text/voice choice bottom sheet first
+    updateState({ showBottomSheet: true });
+    
+    // Cache welcome message when bottom sheet opens
+    setTimeout(() => {
+      audioManager.cacheWelcomeMessage();
+    }, 100);
+  };
+
+  // Handle choice selection (Text or Voice)
+  const handleChoice = async (choice: "text" | "voice") => {
+    console.log(`User chose ${choice === "voice" ? "Voice" : "Text"} option`);
+    
+    if (choice === "voice") {
+      // Auto-play welcome message and keep bottom sheet open for voice interaction
+      setTimeout(() => {
+        audioManager.playWelcomeMessage();
+      }, 300);
     } else {
-      if (!state.showBottomSheet) {
-        updateState({ showBottomSheet: true });
-        
-        // Auto-play welcome message after showing bottom sheet
-        setTimeout(() => {
-          audioManager.playWelcomeMessage();
-        }, 300);
-      } else {
-        await recorder.startRecording();
-      }
+      // Close bottom sheet for text-only mode
+      updateState({ showBottomSheet: false });
     }
   };
 
@@ -174,6 +182,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
           onClose={handleClose}
           onMute={handleMute}
           onAsk={handleAsk}
+          onChoice={handleChoice}
           onSuggestionClick={handleSuggestionClick}
           isListening={state.isListening}
           isThinking={state.isThinking}
