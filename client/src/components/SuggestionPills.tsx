@@ -22,7 +22,7 @@ interface SuggestionPill {
 
 interface SuggestionPillsProps {
   wineKey: string;
-  conversationId?: string; // Add conversation context
+  conversationId?: string;
   onSuggestionClick: (
     prompt: string,
     pillId?: string,
@@ -94,7 +94,7 @@ export default function SuggestionPills({
       }
       return response.json();
     },
-    enabled: true, // Always enabled since we have fallback wine key
+    enabled: true,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -120,7 +120,7 @@ export default function SuggestionPills({
       .then(() => {
         setUsedPills(new Set());
         setIsResetting(false);
-        refetch(); // Refresh suggestions after reset
+        refetch();
       })
       .catch((error) => {
         console.error("Failed to reset suggestion pills:", error);
@@ -128,16 +128,12 @@ export default function SuggestionPills({
       });
   }, [wineKey, refetch]);
 
-  // Removed automatic reset - suggestions only change when user clicks
-
   // Eager pre-generation for all contexts to improve responsiveness
   useEffect(() => {
     if (context === "voice-assistant") {
-      // Pre-generate for API suggestions when available
       if (suggestionsData?.suggestions && !isLoading) {
         preGenerateSuggestionAudio(suggestionsData.suggestions);
       }
-      // Always pre-generate for default suggestions
       preGenerateSuggestionAudio(defaultSuggestions);
     }
   }, [context, suggestionsData, isLoading]);
@@ -164,7 +160,6 @@ export default function SuggestionPills({
         "audio",
       );
 
-      // Update pre-generation status
       setPreGenerationStatus((prev) => new Map(prev).set(cacheKey, "loading"));
 
       if (audioCache[cacheKey]) {
@@ -228,23 +223,20 @@ export default function SuggestionPills({
     }
   };
 
-  // Listen for abort conversation events (when user closes voice assistant)
+  // Listen for abort conversation events
   useEffect(() => {
     const handleAbortConversation = () => {
       console.log(
         "🛑 SuggestionPills: Received abort signal - stopping all API requests",
       );
 
-      // Abort current API request if ongoing
       if (currentAbortController) {
         currentAbortController.abort();
         setCurrentAbortController(null);
       }
 
-      // Reset processing state
       setIsProcessing(false);
 
-      // Stop any ongoing audio
       if ((window as any).currentOpenAIAudio) {
         (window as any).currentOpenAIAudio.pause();
         (window as any).currentOpenAIAudio.currentTime = 0;
@@ -267,17 +259,16 @@ export default function SuggestionPills({
       preferredResponseType,
     );
     console.log("🔍 DEBUGGING: wineKey:", wineKey, "pill:", pill);
+
     if (isDisabled) return;
 
     try {
-      // Check for instant response (cached or spreadsheet)
       let instantResponse = null;
       const suggestionId = pill.prompt
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "_");
 
-      // Use effective wine key for cache lookup
-      const effectiveWineKey = wineKey || "wine_1"; // Default to wine_1 when wineKey is empty
+      const effectiveWineKey = wineKey || "wine_1";
       console.log("🔍 Cache lookup using effectiveWineKey:", effectiveWineKey);
 
       // First check spreadsheet data for voice suggestions
@@ -343,10 +334,9 @@ export default function SuggestionPills({
         if (instantResponse) {
           console.log("💬 CHAT: Using cached response - displaying instantly");
 
-          // Add messages to chat using the event system
           const userMessage = {
             id: Date.now(),
-            content: pill.text, // Use pill.text to match what's shown on the button
+            content: pill.text,
             role: "user" as const,
             conversationId: conversationId || 0,
             createdAt: new Date().toISOString(),
@@ -360,7 +350,6 @@ export default function SuggestionPills({
             createdAt: new Date().toISOString(),
           };
 
-          // Use chat event system - NO AUDIO
           window.dispatchEvent(
             new CustomEvent("addChatMessage", {
               detail: { userMessage, assistantMessage },
@@ -372,7 +361,7 @@ export default function SuggestionPills({
           console.log(
             "💬 CHAT: No cache - using API call with instant feedback",
           );
-          // No cached response - make API call but show instant user message
+
           const userMessage = {
             id: Date.now(),
             content: pill.text,
@@ -381,24 +370,33 @@ export default function SuggestionPills({
             createdAt: new Date().toISOString(),
           };
 
-          // Show user message immediately, then let API handle assistant response
           window.dispatchEvent(
             new CustomEvent("addChatMessage", {
               detail: { userMessage },
             }),
           );
 
-          // Make API call for assistant response
           onSuggestionClick(pill.prompt, pill.id, {
             textOnly: true,
             conversationId,
           });
         }
 
-        // Mark as used only after successful chat interaction
+        // ✅ FIXED: Only mark as used temporarily during processing
+        // Don't permanently hide the pill
         setUsedPills((prev) => new Set(prev).add(pill.id));
+
+        // Reset the used state after a short delay to make the pill available again
+        setTimeout(() => {
+          setUsedPills((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(pill.id);
+            return newSet;
+          });
+        }, 2000); // 2 seconds - enough time to prevent double-clicking
+
         markPillAsUsed(pill.id);
-        return; // EXIT EARLY - Chat context handled
+        return;
       }
 
       // VOICE CONTEXT: Handle with audio
@@ -408,8 +406,6 @@ export default function SuggestionPills({
         );
 
         setIsProcessing(true);
-
-        // Immediately dispatch TTS start event to show stop button
         window.dispatchEvent(new CustomEvent("tts-audio-start"));
         console.log("🎤 VOICE: Dispatched TTS start event for stop button");
 
@@ -418,7 +414,6 @@ export default function SuggestionPills({
             "🎤 VOICE: Using cached response - starting TTS immediately",
           );
 
-          // Check if we have pre-generated audio for this suggestion
           const audioCache = (window as any).suggestionAudioCache || {};
           const cacheKey = getSuggestionCacheKey(
             effectiveWineKey,
@@ -452,7 +447,6 @@ export default function SuggestionPills({
             (window as any).currentOpenAIAudio = audio;
             await audio.play();
 
-            // Add messages to chat
             const userMessage = {
               id: Date.now(),
               content: pill.prompt,
@@ -475,22 +469,32 @@ export default function SuggestionPills({
               }),
             );
 
+            // ✅ FIXED: Only mark as used temporarily
+            setUsedPills((prev) => new Set(prev).add(pill.id));
+            setTimeout(() => {
+              setUsedPills((prev) => {
+                const newSet = new Set(prev);
+                newSet.delete(pill.id);
+                return newSet;
+              });
+            }, 2000);
+
             markPillAsUsed(pill.id);
             return;
           }
 
-          // Optimized TTS generation with high priority for immediate response
+          // Generate TTS if not cached
           console.log("🎤 VOICE: Making high-priority TTS request");
           const response = await fetch("/api/text-to-speech", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Cache-Control": "no-cache", // Prevent caching delays
-              Priority: "urgent", // Request priority hint
+              "Cache-Control": "no-cache",
+              Priority: "urgent",
             },
             body: JSON.stringify({
-              text: instantResponse.slice(0, 1000), // Limit text length for faster processing
-              optimize: "speed", // Server optimization hint
+              text: instantResponse.slice(0, 1000),
+              optimize: "speed",
             }),
             signal: currentAbortController?.signal,
           });
@@ -501,7 +505,6 @@ export default function SuggestionPills({
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
 
-            // Optimize for immediate playback
             audio.preload = "auto";
             audio.crossOrigin = "anonymous";
 
@@ -533,14 +536,12 @@ export default function SuggestionPills({
 
             (window as any).currentOpenAIAudio = audio;
 
-            // Try immediate playback - audio will start when data loads
             try {
               console.log("🎤 VOICE: Starting immediate audio playback");
               await audio.play();
               console.log("🎤 VOICE: ✅ Audio playback initiated successfully");
             } catch (playError) {
               console.error("🎤 VOICE: Immediate playback failed:", playError);
-              // Fallback: wait for loadeddata event
               audio.addEventListener("canplay", () => {
                 audio.play().catch(console.error);
               });
@@ -548,7 +549,6 @@ export default function SuggestionPills({
             }
           }
 
-          // Add messages to chat in parallel
           const userMessage = {
             id: Date.now(),
             content: pill.prompt,
@@ -565,16 +565,24 @@ export default function SuggestionPills({
             createdAt: new Date().toISOString(),
           };
 
-          // Use chat event system
           window.dispatchEvent(
             new CustomEvent("addChatMessage", {
               detail: { userMessage, assistantMessage },
             }),
           );
 
-          // Mark pill as used and complete processing
+          // ✅ FIXED: Only mark as used temporarily
+          setUsedPills((prev) => new Set(prev).add(pill.id));
+          setTimeout(() => {
+            setUsedPills((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(pill.id);
+              return newSet;
+            });
+          }, 2000);
+
           markPillAsUsed(pill.id);
-          return; // Exit early - TTS already started above
+          return;
         } else {
           // No cached response - make API call
           console.log(
@@ -608,14 +616,12 @@ export default function SuggestionPills({
             data.audioBuffers &&
             data.audioBuffers.length > 0
           ) {
-            // Cache the response for future use
             const cacheKey = getSuggestionCacheKey(
               effectiveWineKey,
               suggestionId,
             );
             localStorage.setItem(cacheKey, responseText);
 
-            // Add messages to chat
             const userMessage = {
               id: Date.now(),
               content: pill.prompt,
@@ -638,7 +644,6 @@ export default function SuggestionPills({
               }),
             );
 
-            // Play audio from API response
             for (const buffer of data.audioBuffers) {
               const audioBlob = new Blob([buffer], { type: "audio/mpeg" });
               const audioUrl = URL.createObjectURL(audioBlob);
@@ -656,10 +661,18 @@ export default function SuggestionPills({
           }
         }
 
-        // Mark as used only after successful voice interaction
+        // ✅ FIXED: Only mark as used temporarily
         setUsedPills((prev) => new Set(prev).add(pill.id));
+        setTimeout(() => {
+          setUsedPills((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(pill.id);
+            return newSet;
+          });
+        }, 2000);
+
         markPillAsUsed(pill.id);
-        return; // EXIT EARLY - Voice context handled
+        return;
       }
 
       // Fallback for unknown context
@@ -680,7 +693,6 @@ export default function SuggestionPills({
       setIsProcessing(false);
       setCurrentAbortController(null);
       setLoadingPillId(null);
-      // Clear any pending timeout
       if (audioLoadTimeout) {
         clearTimeout(audioLoadTimeout);
         setAudioLoadTimeout(null);
@@ -701,38 +713,49 @@ export default function SuggestionPills({
         }),
         headers: { "Content-Type": "application/json" },
       });
-      // Removed refetch() - suggestions stay stable until manual refresh
     } catch (error) {
       console.error("Error marking pill as used:", error);
     }
   };
 
-  // Stable pill display - prevent changes during page loading
+  // ✅ FIXED: Stable pill display - pills don't disappear after use
   const visiblePills = useMemo(() => {
-    // Always start with default suggestions to prevent loading flicker
-    let finalPills =
+    // Get the source pills (API or default)
+    const sourcePills =
       suggestionsData?.suggestions && !isLoading
         ? suggestionsData.suggestions
         : defaultSuggestions;
 
-    // Filter used pills only after user interaction, not during loading
-    const displayPills = finalPills.filter(
+    // Ensure we have at least 3 pills by duplicating if necessary
+    const extendedPills = [...sourcePills];
+    while (extendedPills.length < 3) {
+      extendedPills.push(...sourcePills.slice(0, 3 - extendedPills.length));
+    }
+
+    // Always return exactly 3 pills, temporarily filter out currently used ones
+    const availablePills = extendedPills.filter(
       (pill: SuggestionPill) => !usedPills.has(pill.id),
     );
 
-    // If we have less than 3 unused pills, fill with used ones to maintain count
-    if (displayPills.length < 3) {
-      const usedPills_array = finalPills.filter((pill: SuggestionPill) =>
-        usedPills.has(pill.id),
-      );
-      return [...displayPills, ...usedPills_array].slice(0, 3);
+    // If we have enough available pills, use them
+    if (availablePills.length >= 3) {
+      return availablePills.slice(0, 3);
     }
 
-    // Always show exactly 3 pills for stable UI
-    return displayPills.slice(0, 3);
-  }, [suggestionsData, usedPills, isLoading]);
+    // Otherwise, mix available and recently used pills
+    const recentlyUsedPills = extendedPills.filter((pill: SuggestionPill) =>
+      usedPills.has(pill.id),
+    );
 
-  // Show suggestions immediately - always display visible pills
+    const combined = [...availablePills, ...recentlyUsedPills];
+
+    // Remove duplicates and return exactly 3
+    const uniquePills = Array.from(
+      new Map(combined.map((pill) => [pill.id, pill])).values(),
+    );
+
+    return uniquePills.slice(0, 3);
+  }, [suggestionsData, usedPills, isLoading]);
 
   return (
     <div
@@ -771,12 +794,13 @@ export default function SuggestionPills({
         const preGenStatus = preGenerationStatus.get(cacheKey);
         const isLoading = loadingPillId === pill.id;
         const showFallback = isLoading && context === "voice-assistant";
+        const isRecentlyUsed = usedPills.has(pill.id);
 
         return (
           <Button
             key={`${context}-${pill.id}`}
             variant="secondary"
-            disabled={isDisabled || isProcessing}
+            disabled={isDisabled || isProcessing || isRecentlyUsed}
             onClick={() => handlePillClick(pill)}
             style={{
               ...typography.buttonPlus1,
@@ -787,15 +811,19 @@ export default function SuggestionPills({
               padding: "12px 20px",
               transition: "none",
               position: "relative",
-              opacity: isLoading ? 0.7 : 1,
+              opacity: isLoading ? 0.7 : isRecentlyUsed ? 0.6 : 1,
               background:
                 preGenStatus === "ready" && context === "voice-assistant"
                   ? "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)"
-                  : undefined,
+                  : isRecentlyUsed
+                    ? "#f3f4f6"
+                    : undefined,
               color:
                 preGenStatus === "ready" && context === "voice-assistant"
                   ? "#ffffff"
-                  : undefined,
+                  : isRecentlyUsed
+                    ? "#9ca3af"
+                    : undefined,
             }}
           >
             {showFallback ? "Loading audio..." : pill.text}
