@@ -274,9 +274,7 @@ export default function SuggestionPills({
         );
 
         if (instantResponse) {
-          console.log(
-            "💬 CHAT: Using cached response - adding to chat WITHOUT audio",
-          );
+          console.log("💬 CHAT: Using cached response - displaying instantly");
 
           // Add messages to chat using the event system
           const userMessage = {
@@ -304,10 +302,25 @@ export default function SuggestionPills({
 
           console.log("💬 CHAT: Messages added to chat - NO AUDIO PLAYED");
         } else {
-          console.log("💬 CHAT: No cache - using normal API flow");
-          // No cached response - let chat handle API call
-          // Send the button text to display in chat, but use the full prompt for the API
-          onSuggestionClick(pill.text, pill.id, {
+          console.log("💬 CHAT: No cache - using API call with instant feedback");
+          // No cached response - make API call but show instant user message
+          const userMessage = {
+            id: Date.now(),
+            content: pill.text,
+            role: "user" as const,
+            conversationId: conversationId || 0,
+            createdAt: new Date().toISOString(),
+          };
+
+          // Show user message immediately, then let API handle assistant response
+          window.dispatchEvent(
+            new CustomEvent("addChatMessage", {
+              detail: { userMessage },
+            }),
+          );
+
+          // Make API call for assistant response
+          onSuggestionClick(pill.prompt, pill.id, {
             textOnly: true,
             conversationId,
           });
@@ -332,8 +345,7 @@ export default function SuggestionPills({
         console.log("🎤 VOICE: Dispatched TTS start event for stop button");
 
         if (instantResponse) {
-          const responseSource = instantResponse.length > 200 ? "spreadsheet" : "cache";
-          console.log(`🎤 VOICE: Using ${responseSource} response - starting TTS immediately`);
+          console.log("🎤 VOICE: Using cached response - starting TTS immediately");
 
           // Check if we have pre-generated audio for this suggestion
           const audioCache = (window as any).suggestionAudioCache || {};
