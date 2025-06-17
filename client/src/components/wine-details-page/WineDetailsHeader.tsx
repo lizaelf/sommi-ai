@@ -173,22 +173,7 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
         zIndex: 2,
         padding: "0 20px",
       }}>
-        <div style={{
-          backgroundColor: "#191919",
-          borderRadius: "12px",
-          padding: "20px",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-        }}>
-          <h3 style={{
-            ...typography.h3,
-            color: "white",
-            marginBottom: "16px",
-            fontSize: "18px",
-            fontWeight: "600"
-          }}>
-            Technical Details
-          </h3>
-          
+        <div>
           {/* Varietal */}
           <div style={{ marginBottom: "12px" }}>
             <span style={{
