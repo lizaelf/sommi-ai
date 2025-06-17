@@ -263,45 +263,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   return (
     <div>
-      {/* Microphone Button */}
+      {/* Microphone Button for Chat Input */}
       <div
         style={{
-          position: "fixed",
-          bottom: "96px",
-          right: "16px",
-          zIndex: 40,
+          width: "48px",
+          height: "48px",
+          borderRadius: "50%",
+          background: "linear-gradient(135deg, #4A90E2, #357ABD)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           cursor: "pointer",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
         }}
         onClick={handleMicrophoneClick}
+        title="Voice Assistant"
       >
-        <div
-          style={{
-            width: "64px",
-            height: "64px",
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #4A90E2, #357ABD)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-          }}
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" y1="19" x2="12" y2="23"></line>
-            <line x1="8" y1="23" x2="16" y2="23"></line>
-          </svg>
-        </div>
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
       </div>
 
       <VoiceBottomSheet

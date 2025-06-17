@@ -47,7 +47,11 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 17, 2025)
 
-### Welcome Message Architecture Cleanup (June 17, 2025 - Latest)
+### Voice Assistant UI Cleanup (June 17, 2025 - Latest)
+- **Floating Microphone Button Removal**: Removed standalone floating microphone button from VoiceAssistant component to streamline UI and rely on existing voice choice modal system
+- **Simplified Voice Access**: Voice assistant now exclusively accessible through the text/voice choice modal triggered by other components
+
+### Welcome Message Architecture Cleanup (June 17, 2025)
 - **Removed Redundant Welcome Message**: Eliminated duplicate welcome message implementation from App.tsx to prevent code duplication
 - **Centralized Voice Functionality**: Welcome message now handled entirely by VoiceAssistant component using dynamic wine configuration data
 - **Improved Maintainability**: Single source of truth for welcome message content and caching logic
