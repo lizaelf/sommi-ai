@@ -397,14 +397,18 @@ export default function SuggestionPills({
               // Store audio reference
               (window as any).currentOpenAIAudio = audio;
 
-              // Play audio immediately
-              audio.play().then(() => {
-                console.log("🎵 Audio playback started successfully");
-              }).catch((e) => {
-                console.error("🎵 Audio play() failed:", e);
-                setIsProcessing(false);
-                window.dispatchEvent(new CustomEvent("tts-audio-stop"));
-              });
+              // Play audio immediately with proper error handling
+              const playPromise = audio.play();
+              if (playPromise !== undefined) {
+                playPromise.then(() => {
+                  console.log("🎵 Audio playback started successfully");
+                }).catch((e) => {
+                  console.error("🎵 Audio play() failed:", e);
+                  setIsProcessing(false);
+                  window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+                  (window as any).currentOpenAIAudio = null;
+                });
+              }
 
               // Add messages to chat
               const userMessage = {
