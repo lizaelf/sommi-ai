@@ -116,7 +116,7 @@ export default function VoiceAssistant({
     const checkMicrophonePermission = async () => {
       try {
         const permission = await getMicrophonePermission();
-        setMicPermission(permission);
+        setMicPermission(permission || "prompt");
       } catch (error) {
         console.error("Error checking microphone permission:", error);
       }
@@ -136,8 +136,6 @@ export default function VoiceAssistant({
           isResponding={isResponding}
           showUnmuteButton={showUnmuteButton}
           showAskButton={showAskButton}
-          onStartListening={startListening}
-          onStopListening={stopListening}
           onSuggestionClick={handleSuggestionClick}
           wineKey={wineKey}
         />
