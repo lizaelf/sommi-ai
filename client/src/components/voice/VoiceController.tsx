@@ -20,7 +20,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   const { state, refs, updateState } = useVoiceState();
   
   const audioManager = useVoiceAudioManager(refs, updateState);
-  const recorder = useVoiceRecorder(refs, state, updateState, toast);
+  const recorder = useVoiceRecorder(refs, state, updateState, toast, onSendMessage);
 
   // Initialize welcome audio on mount
   useEffect(() => {

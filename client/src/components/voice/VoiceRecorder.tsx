@@ -11,7 +11,8 @@ export const useVoiceRecorder = (
   refs: VoiceRefs,
   state: VoiceState,
   updateState: (updates: Partial<VoiceState>) => void,
-  toast: any
+  toast: any,
+  onSendMessage?: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void
 ) => {
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -156,14 +157,38 @@ export const useVoiceRecorder = (
     updateState({ isThinking: true });
 
     try {
-      // Convert audio to text using speech recognition
-      // For now, we'll use a placeholder - in production this would use OpenAI Whisper
-      const text = "Sample voice input"; // Replace with actual speech-to-text
-      
-      console.log("🎤 VoiceAssistant: Transcribed text:", text);
-      
-      // Process the transcribed text
-      // This would be handled by the parent component
+      // Create FormData for audio upload
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+
+      // Send audio to backend for transcription
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Transcription failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const transcribedText = data.text;
+
+      if (transcribedText && transcribedText.trim()) {
+        console.log("🎤 VoiceAssistant: Transcribed text:", transcribedText);
+        
+        // Send the transcribed message
+        if (onSendMessage) {
+          onSendMessage(transcribedText);
+        }
+      } else {
+        console.log("🎤 VoiceAssistant: No speech detected");
+        toast({
+          title: "No Speech Detected",
+          description: "Please try speaking again.",
+          variant: "destructive",
+        });
+      }
       
     } catch (error) {
       console.error("🎤 VoiceAssistant: Failed to process recording:", error);
@@ -175,7 +200,7 @@ export const useVoiceRecorder = (
     } finally {
       updateState({ isThinking: false });
     }
-  }, [updateState, toast]);
+  }, [updateState, toast, onSendMessage]);
 
   // Auto-stop recording after silence
   const setupAutoStop = useCallback(() => {
