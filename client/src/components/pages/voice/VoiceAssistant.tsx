@@ -7,7 +7,7 @@ import {
   shouldSkipPermissionPrompt,
   syncMicrophonePermissionWithBrowser,
 } from "@/utils/microphonePermissions";
-import { WINE_CONFIG } from "@/shared/wineConfig";
+import { WINE_CONFIG } from "@shared/wineConfig";
 
 // ✅ Centralized dynamic welcome message generator
 const getDynamicWelcomeMessage = () => {

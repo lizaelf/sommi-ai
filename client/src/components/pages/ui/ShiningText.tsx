@@ -23,3 +23,5 @@ function ShiningText({ text }: ShiningTextProps) {
     </motion.span>
   );
 }
+
+export default ShiningText;

@@ -1,3 +1,5 @@
+import React from "react";
+
 interface SegmentedPickerOption {
   value: string;
   label: string;
@@ -10,7 +12,7 @@ interface SegmentedPickerProps {
   className?: string;
 }
 
-export function SegmentedPicker({ options, value, onChange, className = "" }: SegmentedPickerProps) {
+function SegmentedPicker({ options, value, onChange, className = "" }: SegmentedPickerProps) {
   return (
     <div className={`flex w-full rounded-xl p-1 ${className}`}>
       {options.map((option) => (
@@ -40,3 +42,5 @@ export function SegmentedPicker({ options, value, onChange, className = "" }: Se
     </div>
   );
 }
+
+export default SegmentedPicker;
