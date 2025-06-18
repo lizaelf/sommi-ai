@@ -48,7 +48,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Microphone Icon Sizing Update (June 18, 2025 - Latest)
+### Wine Rating Display Position Update (June 18, 2025 - Latest)
+- **Ratings Moved to Bottom**: Relocated wine ratings to bottom of wine info section after History content
+- **ABV Display Hidden**: Updated WineRating component to hide ABV rating by default across all implementations
+- **Enhanced Section Flow**: Wine info section now follows order: Image → Name → Location → Technical Details → History → Ratings
+- **Consistent Rating Visibility**: Only VN, JD, and WS ratings display by default, maintaining cleaner presentation
+
+### Microphone Icon Sizing Update (June 18, 2025 - Previous)
 - **Direct Icon Implementation**: Replaced IconButton wrapper with direct button implementation for precise 24×24px microphone icon control
 - **Explicit Sizing**: Used Mic component with size={24} prop to ensure exact icon dimensions without component interference
 - **40×40px Button Container**: Maintained consistent 40×40px button dimensions with proper styling and accessibility features

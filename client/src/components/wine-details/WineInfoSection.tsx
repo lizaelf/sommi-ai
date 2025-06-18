@@ -195,14 +195,6 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         </div>
       )}
 
-      {/* Wine Ratings */}
-      <div style={{ width: '100%', maxWidth: '300px' }}>
-        <WineRating 
-          ratings={wine.ratings}
-          variant="default"
-        />
-      </div>
-
       {/* Technical Details Section */}
       <div style={{
         width: '100%',
@@ -239,6 +231,15 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         }}>
           {wine.description || 'A distinguished wine that represents the finest traditions of winemaking, crafted with passion and expertise to deliver an exceptional tasting experience.'}
         </p>
+      </div>
+
+      {/* Wine Ratings */}
+      <div style={{ width: '100%', maxWidth: '300px' }}>
+        <WineRating 
+          ratings={wine.ratings}
+          variant="default"
+          hideAbv={true}
+        />
       </div>
 
     </div>
