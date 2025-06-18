@@ -1012,8 +1012,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             onKeyboardFocus={() => setIsKeyboardFocused(true)}
             onKeyboardBlur={() => setIsKeyboardFocused(false)}
             onMicClick={() => {
-              // Dispatch the voice assistant trigger event
-              const event = new CustomEvent('triggerVoiceAssistant');
+              // Dispatch the mic button trigger event (direct to listening)
+              const event = new CustomEvent('triggerMicButton');
               window.dispatchEvent(event);
             }}
           />
