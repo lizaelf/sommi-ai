@@ -48,7 +48,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### WineRating Component Left Alignment Update (June 18, 2025 - Latest)
+### Ghost Button Variant Replacement (June 18, 2025 - Latest)
+- **Complete Ghost Variant Elimination**: Replaced all ghost button variants with secondaryIcon variants across entire application for consistent styling
+- **Component Updates**: Updated BottomSheet, CellarSearch, Sidebar, Calendar, Pagination, and SearchInterface components
+- **Button Standardization**: All icon buttons now use secondaryIcon variant eliminating visual inconsistencies
+- **Design System Compliance**: Unified button styling system with standardized secondaryIcon variant for all icon-based buttons
+
+### WineRating Component Left Alignment Update (June 18, 2025 - Previous)
 - **Left Alignment Implementation**: Updated WineRating component to align all content to the left using flex-start properties
 - **Container Alignment**: Changed main container alignItems and justifyContent from center to flex-start
 - **Line Alignment**: Updated both rating lines (VN/JD/WS and ABV) to use flex-start justification for consistent left alignment

@@ -93,7 +93,7 @@ export function SearchInterface({
           <IconButton
             icon={X}
             onClick={onClose}
-            variant="ghost"
+            variant="secondaryIcon"
             size="sm"
             title="Close search"
           />
