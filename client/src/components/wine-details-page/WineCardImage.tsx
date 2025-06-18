@@ -1,4 +1,5 @@
 import React from 'react';
+import WineBottleImageDisplay from './WineBottleImageDisplay';
 
 interface WineCardImageProps {
   image: string;
@@ -27,28 +28,12 @@ const WineCardImage: React.FC<WineCardImageProps> = ({
         overflow: "hidden",
       }}
     >
-      {image ? (
-        <img
-          src={image}
-          alt={alt}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderRadius: "12px",
-          }}
-        />
-      ) : (
-        <div
-          style={{
-            color: "#666",
-            fontSize: "12px",
-            textAlign: "center",
-          }}
-        >
-          No image
-        </div>
-      )}
+      <WineBottleImageDisplay 
+        image={image}
+        wineName={alt}
+        height="100%"
+        zIndex={1}
+      />
     </div>
   );
 };
