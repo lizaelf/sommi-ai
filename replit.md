@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Complete Page Organization Implementation (June 18, 2025 - Latest)
+### Asset Organization Implementation (June 18, 2025 - Latest)
+- **Food Pairing Assets Organization**: Moved all food pairing SVG files to dedicated `/public/food-pairing/` folder (cheese.svg, herbs.svg, meat.svg)
+- **Wine Bottle Images Organization**: Organized all wine bottle images into `/public/wines/` folder with clean naming conventions
+- **Food Categories Cleanup**: Maintained only lowercase food category images in `/public/food-categories/` folder, removing duplicate uppercase versions
+- **Organized Asset Structure**: Created clean folder hierarchy for better asset management and maintenance
+- **Simplified Naming Convention**: Updated wine bottle images to use clean, descriptive names without timestamp suffixes
+
+### Complete Page Organization Implementation (June 18, 2025 - Previous)
 - **Admin Folder Organization**: Organized all admin-related pages into dedicated 'admin' folder for improved project architecture
 - **End-User Folder Organization**: Moved all end-user pages to dedicated 'end-user' folder while keeping shared pages like NotFound at root level
 - **Admin Pages Migration**: Moved TenantAdmin.tsx, TenantAdminRefactored.tsx, AdminPage.tsx, SommTenantAdmin.tsx, and TenantCreate.tsx to /client/src/pages/admin/
