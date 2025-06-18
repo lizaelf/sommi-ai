@@ -899,29 +899,71 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      justifyContent: "flex-start",
-                      alignItems: "center",
+                      gap: "16px",
                       minHeight: "200px",
                       width: "100%",
-                      textAlign: "center",
+                      padding: "16px 0",
                     }}
                   >
-                    <Button
-                      onClick={() => setShowContactSheet(true)}
-                      variant="secondary"
-                      className="w-full h-14 !bg-white/8 !text-white hover:!bg-white/16"
+                    {/* Sample Question */}
+                    <div
                       style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 5,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "normal",
-                        wordBreak: "break-word",
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        width: "100%",
                       }}
                     >
-                      View chat history
-                    </Button>
+                      <div
+                        style={{
+                          backgroundColor: "#DBDBDB",
+                          borderRadius: "16px",
+                          padding: "16px",
+                          width: "fit-content",
+                          maxWidth: "80%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            color: "#000000",
+                            ...typography.body,
+                          }}
+                        >
+                          What makes this Zinfandel special?
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sample Answer (5 lines max) */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        width: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: "transparent",
+                          borderRadius: "16px",
+                          padding: "0 0 16px 0",
+                          width: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            color: "#DBDBDB",
+                            ...typography.body,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 5,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          This 2021 Ridge "Lytton Springs" Dry Creek Zinfandel is exceptional because it comes from one of Sonoma County's most prestigious vineyard sites. The Lytton Springs vineyard has been producing world-class Zinfandel since the 1970s, with old-vine fruit that delivers incredible concentration and complexity. The wine showcases the classic Dry Creek Valley terroir with its rich blackberry and raspberry notes, complemented by the signature peppery spice that makes Zinfandel so distinctive. Ridge's traditional winemaking approach, including fermentation with native yeasts and aging in American oak, allows the vineyard's unique character to shine through in every bottle.
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ) : messages.length > 0 ? (
                   <>
