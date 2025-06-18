@@ -46,28 +46,9 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - **Welcome Message under code freeze - require user approval before any changes (finalized June 16, 2025)**
   - **VoiceAssistant Component System under complete code freeze - require explicit user approval before any modifications (finalized June 17, 2025)**
 
-## Recent Changes (June 18, 2025)
-
-### Complete Page-Based Component Organization (June 18, 2025 - Latest)
-- **Systematic Component Reorganization**: Successfully restructured entire component library into page-based folder hierarchy for improved maintainability
-- **Page-Based Architecture**: Created comprehensive `/components/pages/` directory structure organizing components by their primary usage:
-  - `/pages/home/` - Home page components (WelcomeSection, WineCard, WineCollection)
-  - `/pages/wine-details/` - Wine details page components (WineDetailsHeader, WineHistorySection, etc.)
-  - `/pages/tenant-admin/` - Admin interface components (AdminHeader, TabNavigation, WineManagement)
-  - `/pages/wine-edit/` - Wine editing components (WineEditForm)
-  - `/pages/chat/` - Chat interface components (ChatInput, ChatInterface, EnhancedChatInterface)
-  - `/pages/voice/` - Voice system components (VoiceAssistant, VoiceController, CircleAnimation)
-  - `/pages/shared/` - Cross-page reusable components (AppHeader, Logo, WineRating, etc.)
-  - `/pages/ui/` - Base UI components (Button, Input, Dialog, etc.)
-- **Import Path Standardization**: Updated all import references throughout codebase to use new page-based paths for cleaner dependency management
-- **Component Index Files**: Created comprehensive index.ts files for each page folder with proper exports and module organization
-- **Enhanced Developer Experience**: Component location is now intuitive based on page usage, significantly improving code navigation and maintainability
-- **Maintained Functionality**: All existing functionality preserved while improving code maintainability and architectural clarity
-- **Application Status**: Successfully running on port 5000 with complete page-based organization implemented
-
 ## Recent Changes (June 17, 2025)
 
-### Wine Details Page Component Refactoring Complete (June 17, 2025 - Previous)
+### Wine Details Page Component Refactoring Complete (June 17, 2025 - Latest)
 - **Modular Component Architecture**: Successfully refactored wine details page into focused, maintainable components in /components/wine-details/ directory
 - **WineDetailsHeader Component**: Displays wine image, name, location, ratings (VN/JD/WS only), and technical details with updated className styling (pt-[0px] pb-[0px])
 - **Technical Details Integration**: Added seamless technical details display within main container after wine ratings, showing varietal composition, appellation, aging recommendations, and ABV without background styling

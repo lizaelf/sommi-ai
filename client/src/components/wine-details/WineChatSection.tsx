@@ -1,0 +1,27 @@
+import React from 'react';
+import EnhancedChatInterface from '@/components/EnhancedChatInterface';
+
+interface WineChatSectionProps {
+  wineId: string;
+  isScannedPage: boolean;
+}
+
+const WineChatSection: React.FC<WineChatSectionProps> = ({ wineId, isScannedPage }) => {
+  return (
+    <div
+      style={{
+        width: "100%",
+        background: "black",
+        paddingTop: "40px",
+        marginTop: "-20px",
+      }}
+    >
+      <EnhancedChatInterface
+        wineId={wineId}
+        isScannedPage={isScannedPage}
+      />
+    </div>
+  );
+};
+
+export default WineChatSection;

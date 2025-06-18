@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
 import { useToast } from "@/hooks/UseToast";
-import Button from "@/components/pages/ui/Button";
+import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { WINE_CONFIG } from "@shared/wineConfig";
@@ -14,7 +14,7 @@ import {
 } from "@/utils/imageDeduplication";
 // Default images removed - only authentic uploaded images will be displayed
 import placeholderImage from "@assets/Placeholder.png";
-import AppHeader from "@/components/pages/shared/AppHeader";
+import AppHeader from "@/components/AppHeader";
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;

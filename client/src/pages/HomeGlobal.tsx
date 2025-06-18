@@ -3,11 +3,11 @@ import { Link, useLocation } from "wouter";
 import wineryLogoPath from "@assets/winary-logo.png";
 // Default images removed - only authentic uploaded images will be displayed
 import typography from "@/styles/typography";
-import Logo from "@/components/pages/shared/Logo";
-import WineRating from "@/components/pages/shared/WineRating";
+import Logo from "@/components/Logo";
+import WineRating from "@/components/WineRating";
 import { getWineDisplayName } from '../../../shared/wineConfig';
-import AppHeader, { HeaderSpacer } from "@/components/pages/shared/AppHeader";
-import { ButtonIcon } from "@/components/pages/ui/ButtonIcon";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import { ButtonIcon } from "@/components/ButtonIcon";
 import HomeGlobalSkeleton from "@/components/HomeGlobalSkeleton";
 
 interface Wine {

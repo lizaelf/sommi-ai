@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import QRScanModal from '../components/pages/shared/QRScanModal';
-import Button from '../components/pages/ui/Button';
-import VoiceAssistant from '../components/pages/voice/VoiceAssistant';
+import QRScanModal from '../components/QRScanModal';
+import Button from '../components/ui/Button';
+import VoiceAssistant from '../components/VoiceAssistant';
 
 export default function QRDemo() {
   const [showQRModal, setShowQRModal] = useState(false);

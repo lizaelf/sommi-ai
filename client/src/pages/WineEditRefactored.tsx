@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useToast } from "@/hooks/UseToast";
 import { DataSyncManager } from "@/utils/dataSync";
-import AppHeader, { HeaderSpacer } from "@/components/pages/shared/AppHeader";
-import { WineEditForm } from "@/components/pages/wine-edit/WineEditForm";
-import { ShiningText } from "@/components/pages/ui/ShiningText";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import { WineEditForm } from "@/components/wine-edit/WineEditForm";
+import { ShiningText } from "@/components/ShiningText";
 import typography from "@/styles/typography";
 
 interface Wine {

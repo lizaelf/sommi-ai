@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
-import QRScanModal from "@/components/pages/shared/QRScanModal";
-import AppHeader, { HeaderSpacer } from "@/components/pages/shared/AppHeader";
+import QRScanModal from "@/components/QRScanModal";
+import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import typography from "@/styles/typography";
 import {
@@ -12,7 +12,7 @@ import {
   BuyAgainSection,
   WineRecommendationsSection,
   WineChatSection
-} from "@/components/pages/wine-details";
+} from "@/components/wine-details";
 
 interface SelectedWine {
   id: number;

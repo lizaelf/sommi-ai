@@ -4,15 +4,15 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
-import Button from "@/components/pages/ui/Button";
-import { ContactInput } from "@/components/pages/ui/ContactInput";
+import Button from "@/components/ui/Button";
+import { ContactInput } from "@/components/ui/ContactInput";
 
 
 // Default wine image removed - only authentic uploaded images will be displayed
 import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@assets/Logo.png";
 
-import AppHeader from "@/components/pages/shared/AppHeader";
+import AppHeader from "@/components/AppHeader";
 
 const Cellar = () => {
   const { toast } = useToast();
