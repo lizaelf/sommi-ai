@@ -1,6 +1,6 @@
 import React from 'react';
 import WineBottleImage from './WineBottleImage';
-import USFlagImage from './USFlagImage';
+
 import WineRating from './WineRating';
 import typography from '@/styles/typography';
 
@@ -69,7 +69,7 @@ export const WineInfo: React.FC<WineInfoProps> = ({ wine }) => {
           ...typography.body,
         }}
       >
-        <USFlagImage />
+        <img src="/us-flag.png" alt="US Flag" style={{ width: '20px', height: '15px' }} />
         <span>{wine.location || "Santa Cruz Mountains | California | United States"}</span>
       </div>
 

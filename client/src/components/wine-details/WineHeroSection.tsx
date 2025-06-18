@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import WineBottleImage from "./WineBottleImage";
-import USFlagImage from "./USFlagImage";
+
 import WineRating from "./WineRating";
 import typography from "@/styles/typography";
 
@@ -114,7 +114,7 @@ const WineHeroSection: React.FC<WineHeroSectionProps> = ({
               marginBottom: "20px",
             }}
           >
-            <USFlagImage />
+            <img src="/us-flag.png" alt="US Flag" style={{ width: '20px', height: '15px' }} />
             <span
               style={{
                 ...typography.body1R,
