@@ -37,7 +37,6 @@ const WineCardImage: React.FC<WineCardImageProps> = ({
       style={{
         width: variantStyles.width,
         height: variantStyles.height,
-        backgroundColor: "#333",
         borderRadius: "12px",
         marginBottom: "12px",
         display: "flex",
