@@ -1,9 +1,9 @@
-import React from 'react';
-import { MapPin } from 'lucide-react';
-import USFlagImage from '@/components/USFlagImage';
-import WineRating from '@/components/WineRating';
-import WineTechnicalDetailsSection from './WineTechnicalDetailsSection';
-import typography from '@/styles/typography';
+import React from "react";
+import { MapPin } from "lucide-react";
+import USFlagImage from "@/components/USFlagImage";
+import WineRating from "@/components/WineRating";
+import WineTechnicalDetailsSection from "./WineTechnicalDetailsSection";
+import typography from "@/styles/typography";
 
 interface WineDetailsHeroProps {
   wine: {
@@ -36,55 +36,43 @@ interface WineDetailsHeroProps {
 }
 
 const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
-
   if (!wine) return null;
 
   return (
-    <div style={{
-      backgroundColor: "#0a0a0a",
-      color: "white",
-      padding: "32px 0px",
-      minHeight: "100vh",
-      position: "relative",
-    }}>
+    <div
+      style={{
+        backgroundColor: "#0a0a0a",
+        color: "white",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
       {/* Wine Title */}
-      <div style={{
-        marginBottom: "24px",
-        textAlign: "center",
-        padding: "0 16px",
-      }}>
-        <h1 style={{
-          ...typography.h1,
-          marginBottom: "8px",
-        }}>
+      <div
+        style={{
+          marginBottom: "24px",
+          textAlign: "left",
+          padding: "0 16px",
+        }}
+      >
+        <h1
+          style={{
+            ...typography.h1,
+            marginBottom: "8px",
+          }}
+        >
           {wine.year} {wine.name}
         </h1>
       </div>
 
-      {/* Location */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "8px",
-        marginBottom: "24px",
-        padding: "0 16px",
-      }}>
-        <USFlagImage />
-        <span style={{
-          ...typography.body,
-          color: "rgba(255, 255, 255, 0.8)",
-        }}>
-          {wine.location || "Dry Creek Valley, Sonoma County, California"}
-        </span>
-      </div>
-
       {/* Wine Ratings */}
-      <div style={{ 
-        marginBottom: "32px",
-        padding: "0 16px",
-      }}>
-        <WineRating 
+      <div
+        style={{
+          marginBottom: "32px",
+          padding: "0 16px",
+        }}
+      >
+        <WineRating
           ratings={wine.ratings}
           variant="default"
           style={{ justifyContent: "center" }}

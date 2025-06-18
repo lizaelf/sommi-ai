@@ -97,7 +97,7 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
     <div style={{
       display: "flex",
       alignItems: "flex-start",
-      gap: "20px",
+      gap: "12px",
       padding: "0 16px",
     }}>
       <div style={{ flex: 1 }}>
@@ -111,7 +111,7 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
           <div style={{ flex: 1 }}>
             <span style={{
               ...typography.body,
-              color: "rgba(255, 255, 255, 0.6)",
+              color: "white",
               display: "block",
               marginBottom: "4px",
             }}>
@@ -121,17 +121,32 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
               ...typography.body1M,
               color: "rgba(255, 255, 255, 0.6)",
             }}>
-              {wine?.technicalDetails?.varietal ? 
-                `${wine.technicalDetails.varietal.primary} ${wine.technicalDetails.varietal.primaryPercentage}%${wine.technicalDetails.varietal.secondary ? `, ${wine.technicalDetails.varietal.secondary} ${wine.technicalDetails.varietal.secondaryPercentage}%` : ''}` :
-                extractVarietalInfo(wine?.name || '').secondary ? 
-                  `${extractVarietalInfo(wine?.name || '').primary} ${extractVarietalInfo(wine?.name || '').primaryPercentage}%, ${extractVarietalInfo(wine?.name || '').secondary} ${extractVarietalInfo(wine?.name || '').secondaryPercentage}%` :
+              {wine?.technicalDetails?.varietal ? (
+                <>
+                  {wine.technicalDetails.varietal.primary} {wine.technicalDetails.varietal.primaryPercentage}%
+                  {wine.technicalDetails.varietal.secondary && (
+                    <>
+                      <br />
+                      {wine.technicalDetails.varietal.secondary} {wine.technicalDetails.varietal.secondaryPercentage}%
+                    </>
+                  )}
+                </>
+              ) : 
+                extractVarietalInfo(wine?.name || '').secondary ? (
+                  <>
+                    {extractVarietalInfo(wine?.name || '').primary} {extractVarietalInfo(wine?.name || '').primaryPercentage}%
+                    <br />
+                    {extractVarietalInfo(wine?.name || '').secondary} {extractVarietalInfo(wine?.name || '').secondaryPercentage}%
+                  </>
+                ) : (
                   `${extractVarietalInfo(wine?.name || '').primary} ${extractVarietalInfo(wine?.name || '').primaryPercentage}%`
+                )
               }
             </span>
           </div>
           <div
             style={{
-              width: "100px",
+              width: "80px",
               height: "2px",
               background: "linear-gradient(90deg, rgba(117, 117, 117, 0.20) 0%, rgba(219, 219, 219, 0.50) 100%)",
             }}
