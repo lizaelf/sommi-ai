@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import wineryLogoPath from "@assets/winary-logo.png";
+const wineryLogoPath = "/wineries/winary-logo.png";
 // Default images removed - only authentic uploaded images will be displayed
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";

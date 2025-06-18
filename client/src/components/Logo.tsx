@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'wouter';
-// Import the logo image directly from assets
-import logoImage from '@assets/Logo.png';
+// Use the standardized somm-logo from public directory
+const logoImage = '/somm-logo.png';
 
 const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
