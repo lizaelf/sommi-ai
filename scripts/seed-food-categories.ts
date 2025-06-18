@@ -1,27 +1,22 @@
 import { storage } from "../server/storage";
 
 const foodCategories = [
-  { type: "Appetizers", imagePath: "/food-categories/appetizers.png" },
-  { type: "Cheese", imagePath: "/food-categories/cheese.png" },
-  { type: "Meat", imagePath: "/food-categories/meat.png" },
-  { type: "Pasta", imagePath: "/food-categories/pasta.png" },
-  { type: "Poultry", imagePath: "/food-categories/poultry.png" },
-  { type: "Seafood", imagePath: "/food-categories/seafood.png" },
-  { type: "Side Dishes", imagePath: "/food-categories/side-dishes.png" },
-  { type: "Veggie", imagePath: "/food-categories/veggie.png" },
+  { type: "Appetizers", imagePath: "/food-categories/Appetizers.png" },
+  { type: "Cheese", imagePath: "/food-categories/Cheese.png" },
+  { type: "Meat", imagePath: "/food-categories/Meat.png" },
+  { type: "Pasta", imagePath: "/food-categories/Pasta.png" },
+  { type: "Poultry", imagePath: "/food-categories/Poultry.png" },
+  { type: "Seafood", imagePath: "/food-categories/Seafood.png" },
+  { type: "Side Dishes", imagePath: "/food-categories/Side Dishes.png" },
+  { type: "Veggie", imagePath: "/food-categories/Veggie.png" },
 ];
 
 async function seedFoodCategories() {
   console.log("Starting food category seeding...");
   
   try {
-    // Check if categories already exist
-    const existingCategories = await storage.getAllFoodPairingCategories();
-    
-    if (existingCategories.length > 0) {
-      console.log("Food categories already exist in database. Skipping seed.");
-      return;
-    }
+    // Always reseed to ensure latest image paths
+    console.log("Reseeding food categories with updated image paths...");
 
     // Insert each category
     for (const category of foodCategories) {
