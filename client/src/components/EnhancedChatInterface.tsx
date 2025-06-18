@@ -869,7 +869,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             {/* Conversation Content */}
             <div style={{ width: "100%" }}>
               {/* Chat Title */}
-              <div style={{ marginBottom: "16px", paddingLeft: "16px", paddingRight: "16px" }}>
+              <div style={{ 
+                marginBottom: "16px", 
+                paddingLeft: "16px", 
+                paddingRight: "16px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
                 <h1
                   style={{
                     color: "white",
@@ -880,6 +887,21 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 >
                   Chat
                 </h1>
+                <Button
+                  variant="secondary"
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: "14px",
+                    fontWeight: 400,
+                    color: "white",
+                    backgroundColor: "rgba(255, 255, 255, 0.08)",
+                    border: "none",
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                  }}
+                >
+                  View all
+                </Button>
               </div>
               
               <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", width: "100%" }}>

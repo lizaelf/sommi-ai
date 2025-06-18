@@ -48,7 +48,16 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Wine Type Detection & Food Pairing Image Integration (June 18, 2025 - Latest)
+### Wine Recommendation Card UI Enhancements (June 18, 2025 - Latest)
+- **Wine Card Dimensions Standardization**: Set wine recommendation cards to exact 208px width × 312px height for consistent layout presentation
+- **Center Alignment Implementation**: Applied center alignment to wine titles and ratings within recommendation cards for balanced visual presentation
+- **WineRating Component Rebuild**: Completely reconstructed WineRating component with proper center alignment and standardized color scheme
+- **Typography Color Standardization**: Implemented consistent gray labels (#999999) and white values using typography.body1R and typography.num
+- **Chat Interface Enhancement**: Added "View all" button positioned on the right side of Chat title with secondary variant styling and proper spacing
+- **Card Content Optimization**: Wine titles display with buttonPlus1 typography, center alignment, and proper text truncation for long names
+- **Rating Display Consistency**: All wine ratings now show consistent formatting with 12px gap between rating pairs and 4px gap between labels and values
+
+### Wine Type Detection & Food Pairing Image Integration (June 18, 2025 - Previous)
 - **Comprehensive Wine Classification System**: Implemented intelligent wine type detection that automatically classifies wines as Red, Rose, White, or Sparkling based on wine names
 - **Advanced Pattern Recognition Algorithm**: Created sophisticated detection logic using keyword analysis, wine name patterns, and varietal identification to accurately determine wine types
 - **PostgreSQL Database Integration**: Extended database schema with wine_types table storing type-to-image mappings for all four wine categories
