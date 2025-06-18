@@ -1,6 +1,6 @@
 import React from 'react';
 import WineBottleImageDisplay from '@/components/wine-details/WineBottleImageDisplay';
-import WineRating from '@/components/WineRating';
+import WineRating from '@/components/wine-details/WineRating';
 import typography from '@/styles/typography';
 
 interface Wine {

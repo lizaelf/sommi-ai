@@ -1,6 +1,6 @@
 import React from 'react';
 import WineBottleImage from './WineBottleImage';
-import USFlagImage from '@/components/USFlagImage';
+import USFlagImage from './USFlagImage';
 import WineRating from './WineRating';
 import WineTechnicalDetails from './WineTechnicalDetails';
 import typography from '@/styles/typography';

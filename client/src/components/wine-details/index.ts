@@ -10,3 +10,8 @@ export { default as WineRecommendationCard } from './WineRecommendationCard';
 export { default as WineCardImage } from './WineCardImage';
 export { default as WineBottleImageDisplay } from './WineBottleImageDisplay';
 export { default as ChatInterface } from './ChatInterface';
+export { default as WineBottleImage } from './WineBottleImage';
+export { default as WineRating } from './WineRating';
+export { default as WineTechnicalDetails } from './WineTechnicalDetails';
+export { default as WineInfo } from './WineInfo';
+export { default as USFlagImage } from './USFlagImage';
