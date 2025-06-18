@@ -1,7 +1,7 @@
 // CircleAnimation Component - CODE FREEZE (June 14, 2025)
 // No modifications allowed without explicit permission
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-const wineCircleImage = '/wines/wine-circle.png';
+import wineCircleImage from '@assets/wine-circle.png';
 
 interface CircleAnimationProps {
   isAnimating?: boolean;
