@@ -83,60 +83,70 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   // Handle voice assistant events
   useEffect(() => {
     const handleTriggerVoiceAssistant = async () => {
+      // Step 1: Open voice bottom sheet
       setShowBottomSheet(true);
       setShowAskButton(false);
-      setIsListening(true);
-      setIsResponding(false);
+      setIsListening(false);
+      setIsResponding(true);
       setIsThinking(false);
-      setIsPlayingAudio(false);
+      setIsPlayingAudio(true);
       setShowUnmuteButton(false);
       
-      // Dispatch mic status event for CircleAnimation
-      const micEvent = new CustomEvent('mic-status', {
-        detail: { status: 'listening' }
-      });
-      window.dispatchEvent(micEvent);
+      // Step 2: Immediately start welcome message with stop button
+      await handleWelcomeMessage();
       
-      // Simulate voice volume events during listening for circle animation
-      const voiceVolumeInterval = setInterval(() => {
-        const volume = Math.random() * 40 + 20; // Random volume between 20-60
-        const voiceVolumeEvent = new CustomEvent('voice-volume', {
-          detail: { volume, maxVolume: 100, isActive: true }
-        });
-        window.dispatchEvent(voiceVolumeEvent);
-      }, 150); // Update every 150ms for smooth animation
-      
-      // Step 1: Show listening state for 3 seconds (user speaking)
+      // After welcome message completes, continue with listening phase
       setTimeout(() => {
-        // Clear voice volume simulation
-        clearInterval(voiceVolumeInterval);
-        // Step 2: Show thinking state
-        setIsListening(false);
-        setIsThinking(true);
+        // Step 3: Show "Listening..." state with circle animation
+        setIsResponding(false);
+        setIsPlayingAudio(false);
+        setIsListening(true);
         
-        // Dispatch processing status event
-        const processingEvent = new CustomEvent('mic-status', {
-          detail: { status: 'processing' }
+        // Dispatch mic status event for CircleAnimation
+        const micEvent = new CustomEvent('mic-status', {
+          detail: { status: 'listening' }
         });
-        window.dispatchEvent(processingEvent);
+        window.dispatchEvent(micEvent);
         
-        // Step 3: After 2 seconds of thinking, start response
-        setTimeout(() => {
-          setIsThinking(false);
-          setIsResponding(true);
-          setIsPlayingAudio(true);
-          
-          // Dispatch stopped status event (audio is playing, not listening)
-          const stoppedEvent = new CustomEvent('mic-status', {
-            detail: { status: 'stopped' }
+        // Simulate voice volume events during listening for circle animation
+        const voiceVolumeInterval = setInterval(() => {
+          const volume = Math.random() * 40 + 20; // Random volume between 20-60
+          const voiceVolumeEvent = new CustomEvent('voice-volume', {
+            detail: { volume, maxVolume: 100, isActive: true }
           });
-          window.dispatchEvent(stoppedEvent);
+          window.dispatchEvent(voiceVolumeEvent);
+        }, 150);
+        
+        // Step 4: Display listening state during speaking (3 seconds)
+        setTimeout(() => {
+          clearInterval(voiceVolumeInterval);
           
-          // Generate and play a sample response
-          handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+          // Step 5: Show "Thinking..." state
+          setIsListening(false);
+          setIsThinking(true);
           
-        }, 2000); // 2 seconds thinking
-      }, 3000); // 3 seconds listening
+          const processingEvent = new CustomEvent('mic-status', {
+            detail: { status: 'processing' }
+          });
+          window.dispatchEvent(processingEvent);
+          
+          // Step 6: After thinking, start answer with Stop button
+          setTimeout(() => {
+            setIsThinking(false);
+            setIsResponding(true);
+            setIsPlayingAudio(true);
+            
+            const stoppedEvent = new CustomEvent('mic-status', {
+              detail: { status: 'stopped' }
+            });
+            window.dispatchEvent(stoppedEvent);
+            
+            // Step 7: Generate and play response with Stop button
+            handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+            
+          }, 2000); // 2 seconds thinking
+        }, 3000); // 3 seconds listening
+      }, 500); // Small delay after welcome message
     };
 
     const handleStopAudio = () => {
@@ -162,8 +172,64 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
     };
   }, []);
 
+  const handleWelcomeMessage = async () => {
+    try {
+      // Use cached welcome message if available
+      if (welcomeAudioCacheRef.current) {
+        const audio = new Audio(welcomeAudioCacheRef.current);
+        audio.volume = 1.0;
+        currentAudioRef.current = audio;
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          
+          audio.onended = () => {
+            setIsPlayingAudio(false);
+            setIsResponding(false);
+            currentAudioRef.current = null;
+          };
+        }
+      } else {
+        // Generate welcome message if not cached
+        const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+        
+        const response = await fetch('/api/text-to-speech', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: welcomeMessage }),
+        });
+
+        if (response.ok) {
+          const audioBlob = await response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          welcomeAudioCacheRef.current = audioUrl;
+          
+          const audio = new Audio(audioUrl);
+          audio.volume = 1.0;
+          currentAudioRef.current = audio;
+          
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            
+            audio.onended = () => {
+              setIsPlayingAudio(false);
+              setIsResponding(false);
+              currentAudioRef.current = null;
+              URL.revokeObjectURL(audioUrl);
+            };
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to play welcome message:", error);
+      setIsPlayingAudio(false);
+      setIsResponding(false);
+    }
+  };
+
   const handleVoiceResponse = async (responseText: string) => {
-    console.log("🎵 Starting voice response for text:", responseText);
     try {
       // Generate TTS audio for the response
       const response = await fetch('/api/text-to-speech', {
@@ -174,27 +240,21 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
         body: JSON.stringify({ text: responseText }),
       });
 
-      console.log("🎵 TTS API response status:", response.status);
-
       if (!response.ok) {
         throw new Error('Failed to generate speech');
       }
 
       const audioBlob = await response.blob();
-      console.log("🎵 Audio blob size:", audioBlob.size);
       const audioUrl = URL.createObjectURL(audioBlob);
-      console.log("🎵 Audio URL created:", audioUrl);
       
       if (audioUrl && !isManuallyClosedRef.current) {
         const audio = new Audio(audioUrl);
-        audio.volume = 1.0; // Ensure maximum volume
+        audio.volume = 1.0;
         audio.preload = 'auto';
         currentAudioRef.current = audio;
         setIsPlayingAudio(true);
         setIsResponding(true);
         setShowUnmuteButton(false);
-        
-        console.log("🎵 Starting audio playback with volume:", audio.volume);
         
         // Ensure audio context is unlocked for playback
         if (typeof window !== 'undefined' && window.AudioContext) {
@@ -204,18 +264,16 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
               audioContext.resume();
             }
           } catch (e) {
-            console.log("AudioContext not available, proceeding with direct audio play");
+            // AudioContext not available, continue with direct play
           }
         }
         
         audio.play()
           .then(() => {
-            console.log("🎵 Audio playback started successfully");
             audio.onended = () => {
-              console.log("🎵 Audio playback ended");
               setIsPlayingAudio(false);
               currentAudioRef.current = null;
-              URL.revokeObjectURL(audioUrl); // Clean up blob URL
+              URL.revokeObjectURL(audioUrl);
               if (!isManuallyClosedRef.current) {
                 setIsResponding(false);
                 setShowAskButton(true);
@@ -223,13 +281,12 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
             };
           })
           .catch(error => {
-            console.error("🎵 Audio playback failed:", error);
-            console.log("🎵 Attempting fallback audio play...");
+            console.error("Audio playback failed:", error);
             
             // Fallback: try to play again after a short delay
             setTimeout(() => {
               audio.play().catch(fallbackError => {
-                console.error("🎵 Fallback audio play also failed:", fallbackError);
+                console.error("Fallback audio play also failed:", fallbackError);
                 setIsPlayingAudio(false);
                 setIsResponding(false);
                 setShowAskButton(true);
@@ -238,7 +295,6 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
             }, 100);
           });
       } else {
-        console.log("🎵 No audio URL or manually closed");
         setIsResponding(false);
         setShowAskButton(true);
       }
@@ -364,8 +420,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   };
 
   const stopAudio = () => {
-    // Use deployment audio synchronization for consistent stopping
-    deploymentAudioUtils.stopAllAudio();
+    console.log("🛑 VoiceController: Stopping all audio playback");
     
     // Clean up local audio reference
     if (currentAudioRef.current) {
@@ -373,8 +428,21 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
         currentAudioRef.current.pause();
         currentAudioRef.current.currentTime = 0;
         currentAudioRef.current = null;
+        console.log("🛑 VoiceController: Local audio stopped");
       } catch (error) {
         console.warn("Error stopping local audio reference:", error);
+      }
+    }
+    
+    // Stop any global audio references
+    if ((window as any).currentOpenAIAudio) {
+      try {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio.currentTime = 0;
+        (window as any).currentOpenAIAudio = null;
+        console.log("🛑 VoiceController: Global audio stopped");
+      } catch (error) {
+        console.warn("Error stopping global audio:", error);
       }
     }
     
@@ -384,7 +452,10 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
     setShowUnmuteButton(false);
     setShowAskButton(true);
     
-    console.log("Audio stopped successfully via deployment sync");
+    // Dispatch stop event for other components
+    window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+    
+    console.log("🛑 VoiceController: All audio stopped successfully");
   };
 
   return (

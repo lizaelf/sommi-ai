@@ -130,13 +130,28 @@ export default function SuggestionPills({
 
   // Eager pre-generation for all contexts to improve responsiveness
   useEffect(() => {
-    if (context === "voice-assistant") {
-      if (suggestionsData?.suggestions && !isLoading) {
-        preGenerateSuggestionAudio(suggestionsData.suggestions);
-      }
-      preGenerateSuggestionAudio(defaultSuggestions);
+    if (context === "voice-assistant" && !isLoading) {
+      // Prevent recursive calls by checking if already processing
+      const isAlreadyProcessing = (window as any).isPreGenerating;
+      if (isAlreadyProcessing) return;
+      
+      (window as any).isPreGenerating = true;
+      
+      const processAudio = async () => {
+        try {
+          if (suggestionsData?.suggestions) {
+            await preGenerateSuggestionAudio(suggestionsData.suggestions);
+          } else {
+            await preGenerateSuggestionAudio(defaultSuggestions);
+          }
+        } finally {
+          (window as any).isPreGenerating = false;
+        }
+      };
+      
+      processAudio();
     }
-  }, [context, suggestionsData, isLoading]);
+  }, [context, suggestionsData?.suggestions?.length, isLoading]);
 
   // Enhanced pre-generation with status tracking and fallbacks
   const preGenerateSuggestionAudio = async (suggestions?: SuggestionPill[]) => {
