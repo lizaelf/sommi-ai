@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import Logo from "@/components/Logo";
 import { IconButton } from "@/components/ui/IconButton";
-import { ButtonIcon } from "@/components/ButtonIcon";
 
 interface AppHeaderProps {
   title?: string;
@@ -90,7 +89,7 @@ export function AppHeader({
               <IconButton
                 icon={ArrowLeft}
                 onClick={onBack}
-                variant="ghost"
+                variant="headerIcon"
                 size="md"
                 title="Go back"
               />
@@ -107,18 +106,11 @@ export function AppHeader({
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
             {rightContent || (
-              <>
-                <Link to="/cellar">
-                  <button className="secondary-button react-button">
-                    My cellar
-                  </button>
-                </Link>
-                <ButtonIcon 
-                  onEditContact={() => console.log('Edit contact clicked')}
-                  onManageNotifications={() => console.log('Manage notifications clicked')}
-                  onDeleteAccount={() => console.log('Delete account clicked')}
-                />
-              </>
+              <Link to="/cellar">
+                <button className="secondary-button react-button">
+                  My cellar
+                </button>
+              </Link>
             )}
           </div>
         </div>
