@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import ChatInputArea from "./ChatInputArea";
+import ChatAnswer from "./ChatAnswer";
 import VoiceController from "@/components/voice/VoiceController";
 import SuggestionPills from "@/components/SuggestionPills";
 import Button from "@/components/ui/Button";
@@ -108,94 +109,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [selectedWine, onReady]);
 
-  // Simplified content formatter for lists and bold text
-  const formatContent = (content: string, isUserMessage = false) => {
-    if (!content) return null;
 
-    const formatText = (text: string) => {
-      const parts = text.split(/(\*\*.*?\*\*)/g);
-      return parts.map((part, i) =>
-        part.startsWith("**") && part.endsWith("**") ? (
-          <strong key={i}>{part.slice(2, -2)}</strong>
-        ) : (
-          part
-        ),
-      );
-    };
-
-    const lines = content.split("\n");
-    const elements: React.ReactNode[] = [];
-    let listItems: string[] = [];
-
-    lines.forEach((line, i) => {
-      const isListItem = /^[-•*]\s|^\d+\.\s/.test(line.trim());
-
-      if (isListItem) {
-        listItems.push(line.trim().replace(/^[-•*]\s|^\d+\.\s/, ""));
-      } else {
-        if (listItems.length > 0) {
-          elements.push(
-            <div key={`list-${i}`} style={{ margin: "8px 0" }}>
-              {listItems.map((item, j) => (
-                <div
-                  key={j}
-                  style={{
-                    display: "flex",
-                    marginBottom: "4px",
-                    paddingLeft: "8px",
-                  }}
-                >
-                  <span style={{ color: "#6A53E7", marginRight: "8px" }}>
-                    •
-                  </span>
-                  <span>{formatText(item)}</span>
-                </div>
-              ))}
-            </div>,
-          );
-          listItems = [];
-        }
-
-        if (line.trim()) {
-          elements.push(
-            <div
-              key={i}
-              style={{
-                marginBottom: isUserMessage ? "0px" : "8px",
-                whiteSpace: "pre-wrap",
-                color: isUserMessage ? "#000000" : "rgba(255, 255, 255, 0.8)",
-                ...typography.body,
-              }}
-            >
-              {formatText(line)}
-            </div>,
-          );
-        }
-      }
-    });
-
-    if (listItems.length > 0) {
-      elements.push(
-        <div key="final-list" style={{ margin: "8px 0" }}>
-          {listItems.map((item, j) => (
-            <div
-              key={j}
-              style={{
-                display: "flex",
-                marginBottom: "4px",
-                paddingLeft: "8px",
-              }}
-            >
-              <span style={{ color: "#6A53E7", marginRight: "8px" }}>•</span>
-              <span>{formatText(item)}</span>
-            </div>
-          ))}
-        </div>,
-      );
-    }
-
-    return <>{elements}</>;
-  };
 
   // Use conversation hook
   const {
@@ -735,25 +649,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             maxWidth: message.role === "user" ? "80%" : "100%",
                           }}
                         >
-                          {message.role === "assistant" ? (
-                            <div
-                              style={{
-                                color: "#DBDBDB",
-                                ...typography.body,
-                              }}
-                            >
-                              {formatContent(message.content)}
-                            </div>
-                          ) : (
-                            <div
-                              style={{
-                                color: "#000000",
-                                ...typography.body,
-                              }}
-                            >
-                              {formatContent(message.content, true)}
-                            </div>
-                          )}
+                          <ChatAnswer
+                            content={message.content}
+                            isUserMessage={message.role === "user"}
+                          />
                         </div>
                       </div>
                     ))}
