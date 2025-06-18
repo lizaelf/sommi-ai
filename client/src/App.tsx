@@ -8,6 +8,7 @@ import WineDetails from "@/pages/WineDetails";
 import FoodPairings from "@/pages/FoodPairings";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
+import ChatPage from "@/pages/ChatPage";
 import HomeGlobalRefactored from "@/pages/HomeGlobalRefactored";
 import WineScan from "@/pages/WineScan";
 import WineEditRefactored from "@/pages/WineEditRefactored";
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/scanned" component={WineDetails} />
       <Route path="/cellar" component={Cellar} />
       <Route path="/wine/conversation" component={ConversationDialog} />
+      <Route path="/chat" component={ChatPage} />
       <Route path="/wine-details/:id" component={() => 
         <WineDetails key={`wine-${Date.now()}`} />
       } />
