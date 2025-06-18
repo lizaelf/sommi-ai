@@ -139,6 +139,61 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
     };
   }, []);
 
+  const handleVoiceResponse = async (responseText: string) => {
+    try {
+      // Generate TTS audio for the response
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: responseText }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate speech');
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      if (audioUrl && !isManuallyClosedRef.current) {
+        const audio = new Audio(audioUrl);
+        currentAudioRef.current = audio;
+        setIsPlayingAudio(true);
+        setIsResponding(true);
+        setShowUnmuteButton(false);
+        
+        audio.play()
+          .then(() => {
+            audio.onended = () => {
+              setIsPlayingAudio(false);
+              currentAudioRef.current = null;
+              URL.revokeObjectURL(audioUrl); // Clean up blob URL
+              if (!isManuallyClosedRef.current) {
+                setIsResponding(false);
+                setShowAskButton(true);
+              }
+            };
+          })
+          .catch(error => {
+            console.error("Audio playback failed:", error);
+            setIsPlayingAudio(false);
+            setIsResponding(false);
+            setShowAskButton(true);
+            URL.revokeObjectURL(audioUrl);
+          });
+      } else {
+        setIsResponding(false);
+        setShowAskButton(true);
+      }
+    } catch (error) {
+      console.error("Failed to generate voice response:", error);
+      setIsResponding(false);
+      setShowAskButton(true);
+    }
+  };
+
   const handleClose = () => {
     isManuallyClosedRef.current = true;
     setShowBottomSheet(false);
@@ -170,15 +225,29 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
         }
       }
 
+      // Start listening state
       setIsListening(true);
       setShowAskButton(false);
+      setIsThinking(false);
+      setIsResponding(false);
       
-      // Start recording logic would go here
-      // For now, simulate recording timeout
+      // Simulate voice recording for 3 seconds
       setTimeout(() => {
+        // Stop listening, start thinking
         setIsListening(false);
-        setShowAskButton(true);
-      }, 5000);
+        setIsThinking(true);
+        
+        // Simulate processing for 2 seconds
+        setTimeout(() => {
+          // Stop thinking, start responding
+          setIsThinking(false);
+          setIsResponding(true);
+          setIsPlayingAudio(true);
+          
+          // Generate and play a sample response
+          handleVoiceResponse("This is a sample wine response based on your voice question.");
+        }, 2000);
+      }, 3000);
 
     } catch (error) {
       toast({
@@ -186,6 +255,9 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
         description: "Please try again",
         variant: "destructive",
       });
+      setIsListening(false);
+      setIsThinking(false);
+      setShowAskButton(true);
     }
   };
 
