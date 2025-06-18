@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Complete Voice Flow Implementation (June 18, 2025 - Latest)
+### Voice/Mic Button Separation Implementation (June 18, 2025 - Latest)
+- **Separate Voice Button Logic**: Voice button opens bottom sheet → immediate welcome message with Stop button → listening state with circle animation → thinking → response with Stop button → Ask button with suggestions
+- **Separate Mic Button Logic**: Mic button opens bottom sheet → immediate listening state with circle animation → thinking → response with Stop button → Ask button with suggestions  
+- **Distinct User Flows**: Voice button includes welcome message, mic button skips directly to listening for faster interaction
+- **Event-Based Triggers**: triggerVoiceAssistant for voice button, triggerMicButton for mic button with separate handling logic
+- **Unified Response Phase**: Both flows converge at thinking/response/suggestions phase for consistent user experience
+
+### Complete Voice Flow Implementation (June 18, 2025 - Previous)
 - **Full State Progression**: Microphone button now triggers complete listening → thinking → response → ask button flow
 - **Listening State**: Opens bottom sheet with immediate "Listening..." display and circle animation for 3 seconds (user speaking)
 - **Thinking State**: Shows "Thinking..." state with processing animation for 2 seconds after listening completes

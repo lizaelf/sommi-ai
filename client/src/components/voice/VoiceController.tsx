@@ -1,22 +1,18 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useToast } from "@/hooks/UseToast";
-import VoiceBottomSheet from "../VoiceBottomSheet";
-import {
-  getMicrophonePermission,
-  requestMicrophonePermission,
-  shouldSkipPermissionPrompt,
-} from "@/utils/microphonePermissions";
-import { deploymentAudioUtils } from "@/utils/deploymentAudioSync";
-// Voice controller for wine platform
+import React, { useState, useRef, useEffect } from 'react';
+import VoiceBottomSheet from '../VoiceBottomSheet';
 
 interface VoiceControllerProps {
-  onSendMessage: (message: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
-  isProcessing: boolean;
+  onSendMessage?: (message: string, options?: any) => void;
+  onAddMessage?: (message: any) => void;
+  conversationId?: number;
+  isProcessing?: boolean;
   wineKey?: string;
 }
 
-export const VoiceController: React.FC<VoiceControllerProps> = ({
+const VoiceController: React.FC<VoiceControllerProps> = ({
   onSendMessage,
+  onAddMessage,
+  conversationId,
   isProcessing,
   wineKey = '',
 }) => {
@@ -30,7 +26,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   const isManuallyClosedRef = useRef(false);
   const welcomeAudioCacheRef = useRef<string | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-  const { toast } = useToast();
+
 
   const handleWelcomeMessage = async () => {
     try {
@@ -178,6 +174,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
 
   // Handle voice assistant events
   useEffect(() => {
+    // VOICE BUTTON: Complete flow with welcome message
     const handleTriggerVoiceAssistant = async () => {
       // Step 1: Open voice bottom sheet
       setShowBottomSheet(true);
@@ -245,6 +242,63 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       }, 500); // Small delay after welcome message
     };
 
+    // MIC BUTTON: Direct to listening without welcome message
+    const handleTriggerMicButton = async () => {
+      // Step 1: Open voice bottom sheet
+      setShowBottomSheet(true);
+      setShowAskButton(false);
+      setIsListening(true);
+      setIsResponding(false);
+      setIsThinking(false);
+      setIsPlayingAudio(false);
+      setShowUnmuteButton(false);
+      
+      // Step 2: Immediately show "Listening..." state with circle animation
+      const micEvent = new CustomEvent('mic-status', {
+        detail: { status: 'listening' }
+      });
+      window.dispatchEvent(micEvent);
+      
+      // Simulate voice volume events during listening for circle animation
+      const voiceVolumeInterval = setInterval(() => {
+        const volume = Math.random() * 40 + 20; // Random volume between 20-60
+        const voiceVolumeEvent = new CustomEvent('voice-volume', {
+          detail: { volume, maxVolume: 100, isActive: true }
+        });
+        window.dispatchEvent(voiceVolumeEvent);
+      }, 150);
+      
+      // Step 3: Display listening state during speaking (3 seconds)
+      setTimeout(() => {
+        clearInterval(voiceVolumeInterval);
+        
+        // Step 4: Show "Thinking..." state
+        setIsListening(false);
+        setIsThinking(true);
+        
+        const processingEvent = new CustomEvent('mic-status', {
+          detail: { status: 'processing' }
+        });
+        window.dispatchEvent(processingEvent);
+        
+        // Step 5: After thinking, start answer with Stop button
+        setTimeout(() => {
+          setIsThinking(false);
+          setIsResponding(true);
+          setIsPlayingAudio(true);
+          
+          const stoppedEvent = new CustomEvent('mic-status', {
+            detail: { status: 'stopped' }
+          });
+          window.dispatchEvent(stoppedEvent);
+          
+          // Step 6: Generate and play response with Stop button
+          handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+          
+        }, 2000); // 2 seconds thinking
+      }, 3000); // 3 seconds listening
+    };
+
     const handleStopAudio = () => {
       stopAudio();
     };
@@ -258,11 +312,13 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
     };
 
     window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+    window.addEventListener('triggerMicButton', handleTriggerMicButton);
     window.addEventListener('stopVoiceAudio', handleStopAudio);
     window.addEventListener('deploymentAudioStopped', handleDeploymentAudioStopped);
 
     return () => {
       window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+      window.removeEventListener('triggerMicButton', handleTriggerMicButton);
       window.removeEventListener('stopVoiceAudio', handleStopAudio);
       window.removeEventListener('deploymentAudioStopped', handleDeploymentAudioStopped);
     };
@@ -345,7 +401,11 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   };
 
   const handleClose = () => {
-    isManuallyClosedRef.current = true;
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    
     setShowBottomSheet(false);
     setIsListening(false);
     setIsResponding(false);
@@ -353,148 +413,60 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
     setIsPlayingAudio(false);
     setShowUnmuteButton(false);
     setShowAskButton(false);
-
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current = null;
-    }
+    isManuallyClosedRef.current = true;
+    
+    // Reset manual close flag after a short delay
+    setTimeout(() => {
+      isManuallyClosedRef.current = false;
+    }, 1000);
   };
 
-  const handleAsk = async () => {
-    try {
-      const hasPermission = await getMicrophonePermission();
-      if (!hasPermission && !shouldSkipPermissionPrompt()) {
-        const granted = await requestMicrophonePermission();
-        if (!granted) {
-          toast({
-            title: "Microphone permission denied",
-            description: "Please enable microphone access to use voice features",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-
-      // Start listening state
-      setIsListening(true);
-      setShowAskButton(false);
-      setIsThinking(false);
-      setIsResponding(false);
-      
-      // Dispatch mic status event for CircleAnimation
-      const micEvent = new CustomEvent('mic-status', {
-        detail: { status: 'listening' }
-      });
-      window.dispatchEvent(micEvent);
-      
-      // Simulate voice recording for 3 seconds
-      setTimeout(() => {
-        // Stop listening, start thinking
-        setIsListening(false);
-        setIsThinking(true);
-        
-        // Dispatch processing status event
-        const processingEvent = new CustomEvent('mic-status', {
-          detail: { status: 'processing' }
-        });
-        window.dispatchEvent(processingEvent);
-        
-        // Simulate processing for 2 seconds
-        setTimeout(() => {
-          // Stop thinking, start responding
-          setIsThinking(false);
-          setIsResponding(true);
-          setIsPlayingAudio(true);
-          
-          // Dispatch stopped status event (audio is playing, not listening)
-          const stoppedEvent = new CustomEvent('mic-status', {
-            detail: { status: 'stopped' }
-          });
-          window.dispatchEvent(stoppedEvent);
-          
-          // Generate and play a sample response
-          handleVoiceResponse("This is a sample wine response based on your voice question.");
-        }, 2000);
-      }, 3000);
-
-    } catch (error) {
-      toast({
-        title: "Recording failed",
-        description: "Please try again",
-        variant: "destructive",
-      });
-      setIsListening(false);
-      setIsThinking(false);
-      setShowAskButton(true);
-      
-      // Dispatch stopped status event on error
-      const errorEvent = new CustomEvent('mic-status', {
-        detail: { status: 'stopped' }
-      });
-      window.dispatchEvent(errorEvent);
-    }
-  };
-
-  const handleUnmute = async () => {
-    if (welcomeAudioCacheRef.current) {
-      const audio = new Audio(welcomeAudioCacheRef.current);
-      currentAudioRef.current = audio;
-      setIsPlayingAudio(true);
-      setShowUnmuteButton(false);
-      
-      audio.onended = () => {
-        setIsPlayingAudio(false);
-        currentAudioRef.current = null;
-        if (!isManuallyClosedRef.current) {
-          setShowAskButton(true);
-        }
-      };
-      
-      audio.play().catch(error => {
-        console.error("Audio playback failed:", error);
-        setIsPlayingAudio(false);
-        setShowAskButton(true);
-      });
-    }
-  };
-
-  const stopAudio = () => {
-    console.log("🛑 VoiceController: Stopping all audio playback");
-    
-    // Clean up local audio reference
-    if (currentAudioRef.current) {
-      try {
-        currentAudioRef.current.pause();
-        currentAudioRef.current.currentTime = 0;
-        currentAudioRef.current = null;
-        console.log("🛑 VoiceController: Local audio stopped");
-      } catch (error) {
-        console.warn("Error stopping local audio reference:", error);
-      }
-    }
-    
-    // Stop any global audio references
-    if ((window as any).currentOpenAIAudio) {
-      try {
-        (window as any).currentOpenAIAudio.pause();
-        (window as any).currentOpenAIAudio.currentTime = 0;
-        (window as any).currentOpenAIAudio = null;
-        console.log("🛑 VoiceController: Global audio stopped");
-      } catch (error) {
-        console.warn("Error stopping global audio:", error);
-      }
-    }
-    
-    // Reset all audio-related states
-    setIsPlayingAudio(false);
+  const handleAskRecording = () => {
+    setShowAskButton(false);
+    setIsListening(true);
     setIsResponding(false);
+    setIsThinking(false);
+    setIsPlayingAudio(false);
     setShowUnmuteButton(false);
-    setShowAskButton(true);
     
-    // Dispatch stop event for other components
-    window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+    // Simulate manual voice recording flow (same as mic button)
+    const micEvent = new CustomEvent('mic-status', {
+      detail: { status: 'listening' }
+    });
+    window.dispatchEvent(micEvent);
     
-    console.log("🛑 VoiceController: All audio stopped successfully");
+    const voiceVolumeInterval = setInterval(() => {
+      const volume = Math.random() * 40 + 20;
+      const voiceVolumeEvent = new CustomEvent('voice-volume', {
+        detail: { volume, maxVolume: 100, isActive: true }
+      });
+      window.dispatchEvent(voiceVolumeEvent);
+    }, 150);
+    
+    setTimeout(() => {
+      clearInterval(voiceVolumeInterval);
+      setIsListening(false);
+      setIsThinking(true);
+      
+      const processingEvent = new CustomEvent('mic-status', {
+        detail: { status: 'processing' }
+      });
+      window.dispatchEvent(processingEvent);
+      
+      setTimeout(() => {
+        setIsThinking(false);
+        setIsResponding(true);
+        setIsPlayingAudio(true);
+        
+        const stoppedEvent = new CustomEvent('mic-status', {
+          detail: { status: 'stopped' }
+        });
+        window.dispatchEvent(stoppedEvent);
+        
+        handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+        
+      }, 2000);
+    }, 3000);
   };
 
   return (
@@ -502,17 +474,16 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       isOpen={showBottomSheet}
       onClose={handleClose}
       onMute={stopAudio}
-      onAsk={handleAsk}
+      onAsk={handleAskRecording}
       isListening={isListening}
       isResponding={isResponding}
       isThinking={isThinking}
-      showAskButton={showAskButton}
-      showUnmuteButton={showUnmuteButton}
       isPlayingAudio={isPlayingAudio}
-      wineKey={wineKey}
-      onSuggestionClick={onSendMessage}
-      onUnmute={handleUnmute}
+      showUnmuteButton={showUnmuteButton}
+      showAskButton={showAskButton}
       onStopAudio={stopAudio}
+      onUnmute={stopAudio}
+      wineKey={wineKey}
     />
   );
 };
