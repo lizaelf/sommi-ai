@@ -1,110 +1,57 @@
 import React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-interface ButtonProps {
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        primary: "bg-white text-black hover:bg-white/90 active:bg-white/80 active:scale-[0.98]",
+        secondary: "bg-transparent border border-white/20 text-white hover:bg-white/10 active:bg-white/15",
+        secondaryFilled: "bg-white/10 text-white hover:bg-white/20 active:bg-white/25",
+        tertiary: "bg-transparent text-white hover:bg-white/5 active:bg-white/10",
+        ghost: "bg-transparent text-white hover:bg-white/5 active:bg-white/10",
+        error: "bg-[#8A332C] text-white hover:bg-[#9A433C] active:bg-[#7A232C]",
+        suggestion: "bg-white/8 text-white hover:bg-white/16 active:bg-white/20 whitespace-nowrap",
+        headerIcon: "bg-transparent text-white hover:bg-white/10 active:bg-white/15 p-2",
+        secondaryIcon: "bg-transparent border border-white/20 text-white hover:bg-white/10 active:bg-white/15 p-2"
+      },
+      size: {
+        sm: "h-8 px-3 text-sm",
+        default: "h-10 px-4 text-sm",
+        lg: "h-12 px-6 text-base",
+        icon: "h-10 w-10",
+        iconSm: "h-8 w-8",
+        iconLg: "h-12 w-12"
+      }
+    },
+    defaultVariants: {
+      variant: "secondary",
+      size: "default"
+    }
+  }
+);
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   children: React.ReactNode;
-  onClick?: () => void;
-  variant?: "primary" | "secondary" | "secondaryFilled" | "headerIcon" | "secondaryIcon" | "error";
-  disabled?: boolean;
-  className?: string;
-  style?: React.CSSProperties;
+  asChild?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  onClick,
-  variant = "secondary",
-  disabled = false,
-  className = "",
-  style = {},
-  ...props
-}) => {
-  // Use CSS classes for variants to override global button styles
-  if (variant === "secondaryFilled") {
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, children, ...props }, ref) => {
     return (
       <button
-        className="secondary-filled-button react-button"
-        style={style}
-        onClick={disabled ? undefined : onClick}
-        disabled={disabled}
+        className={cn(buttonVariants({ variant, size }), className)}
+        ref={ref}
         {...props}
       >
         {children}
       </button>
     );
   }
+);
+Button.displayName = "Button";
 
-  if (variant === "primary") {
-    return (
-      <button
-        className="primary-button react-button"
-        style={style}
-        onClick={disabled ? undefined : onClick}
-        disabled={disabled}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-
-  if (variant === "headerIcon") {
-    return (
-      <button
-        className={`header-icon-button react-button ${className}`}
-        style={style}
-        onClick={disabled ? undefined : onClick}
-        disabled={disabled}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-
-  if (variant === "secondaryIcon") {
-    return (
-      <button
-        className="secondary-icon-button react-button"
-        style={style}
-        onClick={disabled ? undefined : onClick}
-        disabled={disabled}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-
-  if (variant === "error") {
-    return (
-      <button
-        className="error-button react-button"
-        style={style}
-        onClick={disabled ? undefined : onClick}
-        disabled={disabled}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-
-  // Secondary variant also uses CSS class
-  return (
-    <button
-      className="secondary-button react-button"
-      style={{
-        opacity: disabled ? 0.5 : 1,
-        cursor: disabled ? "not-allowed" : "pointer",
-        ...style,
-      }}
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-
+export { Button, buttonVariants };
 export default Button;
