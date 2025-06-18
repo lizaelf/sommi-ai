@@ -7,7 +7,7 @@ interface WineErrorStateProps {
   error?: string;
 }
 
-const WineErrorState: React.FC<WineErrorStateProps> = ({ error }) => {
+export const WineErrorState: React.FC<WineErrorStateProps> = ({ error }) => {
   return (
     <div
       style={{
@@ -48,5 +48,3 @@ const WineErrorState: React.FC<WineErrorStateProps> = ({ error }) => {
     </div>
   );
 };
-
-export default WineErrorState;

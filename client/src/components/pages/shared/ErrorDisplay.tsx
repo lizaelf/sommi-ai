@@ -11,7 +11,7 @@ interface ErrorDisplayProps {
   showIcon?: boolean;
 }
 
-const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
+export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   title = "Something went wrong",
   message = "An unexpected error occurred. Please try again.",
   onRetry,
@@ -65,5 +65,3 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
     </div>
   );
 };
-
-export default ErrorDisplay;

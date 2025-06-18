@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import Button from "../ui/Button";
-import FormInput from "../ui/FormInput";
+import Button from "./ui/Button";
+import { FormInput } from "./ui/FormInput";
 import typography from "@/styles/typography";
 
 export interface ContactFormData {
@@ -159,7 +159,7 @@ export default function ContactBottomSheet({
                   name="firstName"
                   placeholder="First name"
                   value={formData.firstName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("firstName", e.target.value)}
+                  onChange={(value) => handleInputChange("firstName", value)}
                   required
                   className=""
                 />
@@ -170,7 +170,7 @@ export default function ContactBottomSheet({
                   name="lastName"
                   placeholder="Last name"
                   value={formData.lastName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("lastName", e.target.value)}
+                  onChange={(value) => handleInputChange("lastName", value)}
                   required
                   className=""
                 />
@@ -183,7 +183,7 @@ export default function ContactBottomSheet({
               name="email"
               placeholder="Email"
               value={formData.email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
+              onChange={(value) => handleInputChange("email", value)}
               required
             />
 
@@ -193,7 +193,7 @@ export default function ContactBottomSheet({
               name="phone"
               placeholder="Phone"
               value={formData.phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("phone", e.target.value)}
+              onChange={(value) => handleInputChange("phone", value)}
               required
             />
           </div>

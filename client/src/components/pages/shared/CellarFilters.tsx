@@ -11,7 +11,7 @@ interface CellarFiltersProps {
   emptyCount: number;
 }
 
-const CellarFilters: React.FC<CellarFiltersProps> = ({
+export const CellarFilters: React.FC<CellarFiltersProps> = ({
   activeFilter,
   onFilterChange,
   totalCount,
@@ -62,5 +62,3 @@ const CellarFilters: React.FC<CellarFiltersProps> = ({
     </div>
   );
 };
-
-export default CellarFilters;

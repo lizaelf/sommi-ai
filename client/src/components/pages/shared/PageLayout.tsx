@@ -9,7 +9,7 @@ interface PageLayoutProps {
   maxWidth?: string;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({
+export const PageLayout: React.FC<PageLayoutProps> = ({
   children,
   header,
   showDefaultHeader = true,
@@ -31,5 +31,3 @@ const PageLayout: React.FC<PageLayoutProps> = ({
     </div>
   );
 };
-
-export default PageLayout;

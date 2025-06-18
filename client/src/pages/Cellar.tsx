@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import Button from "@/components/pages/ui/Button";
-import FormInput from "@/components/pages/ui/FormInput";
+import { ContactInput } from "@/components/pages/ui/ContactInput";
 
 
 // Default wine image removed - only authentic uploaded images will be displayed
@@ -1592,31 +1592,34 @@ const Cellar = () => {
                     marginBottom: "24px",
                   }}
                 >
-                  <FormInput
+                  <ContactInput
                     type="text"
                     name="firstName"
                     placeholder="First name"
                     value={formData.firstName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("firstName", e.target.value)}
-                    error={errors.firstName}
+                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    error={!!errors.firstName}
+                    errorMessage={errors.firstName}
                   />
 
-                  <FormInput
+                  <ContactInput
                     type="text"
                     name="lastName"
                     placeholder="Last name"
                     value={formData.lastName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("lastName", e.target.value)}
-                    error={errors.lastName}
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    error={!!errors.lastName}
+                    errorMessage={errors.lastName}
                   />
 
-                  <FormInput
+                  <ContactInput
                     type="email"
                     name="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
-                    error={errors.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    error={!!errors.email}
+                    errorMessage={errors.email}
                   />
 
                   {/* Phone Input Row - Country Selector + Phone Input */}
@@ -1857,14 +1860,15 @@ const Cellar = () => {
                     </div>
 
                     {/* Phone Input - Right Side */}
-                    <FormInput
+                    <ContactInput
                       type="tel"
                       placeholder="Phone"
                       value={formData.phone}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      onChange={(e) =>
                         handleInputChange("phone", e.target.value)
                       }
-                      error={errors.phone}
+                      error={!!errors.phone}
+                      errorMessage={errors.phone}
                       className="flex-1"
                     />
                   </div>

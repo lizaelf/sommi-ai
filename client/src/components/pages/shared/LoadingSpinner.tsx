@@ -1,5 +1,5 @@
 import React from "react";
-import ShiningText from "@/components/pages/ui/ShiningText";
+import { ShiningText } from "@/components/ShiningText";
 import typography from "@/styles/typography";
 
 interface LoadingSpinnerProps {
@@ -8,7 +8,7 @@ interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text = "Loading...",
   description,
   size = "md",
@@ -57,5 +57,3 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     </div>
   );
 };
-
-export default LoadingSpinner;

@@ -5,21 +5,21 @@ import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
-import ChatInput from "../ui/ChatInput";
-import VoiceController from "../voice/VoiceController";
-import SuggestionPills from "../shared/SuggestionPills";
-import Button from "../ui/Button";
-import FormInput from "../ui/FormInput";
+import ChatInput from "./ChatInput";
+import VoiceController from "./voice/VoiceController";
+import SuggestionPills from "./SuggestionPills";
+import Button from "./ui/Button";
+import { FormInput } from "./ui/FormInput";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import { DataSyncManager } from "@/utils/dataSync";
-import ShiningText from "../ui/ShiningText";
+import { ShiningText } from "@/components/ShiningText";
 import {
   createStreamingClient,
   isStreamingSupported,
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
-import ContactBottomSheet, { ContactFormData } from "../shared/ContactBottomSheet";
+import ContactBottomSheet, { ContactFormData } from "./ContactBottomSheet";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -1218,7 +1218,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   name="firstName"
                   placeholder="First name"
                   value={formData.firstName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("firstName", e.target.value)}
+                  onChange={(value) => handleInputChange("firstName", value)}
                   error={errors.firstName}
                 />
 
@@ -1227,7 +1227,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   name="lastName"
                   placeholder="Last name"
                   value={formData.lastName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("lastName", e.target.value)}
+                  onChange={(value) => handleInputChange("lastName", value)}
                   error={errors.lastName}
                 />
 
@@ -1236,7 +1236,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   name="email"
                   placeholder="Email"
                   value={formData.email}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
+                  onChange={(value) => handleInputChange("email", value)}
                   error={errors.email}
                 />
 
@@ -1288,7 +1288,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       name="phone"
                       placeholder="Phone number"
                       value={formData.phone}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("phone", e.target.value)}
+                      onChange={(value) => handleInputChange("phone", value)}
                       error={errors.phone}
                       className="flex-1"
                     />

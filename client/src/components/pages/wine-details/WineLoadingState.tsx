@@ -1,8 +1,8 @@
 import React from "react";
-import ShiningText from "@/components/pages/ui/ShiningText";
+import { ShiningText } from "@/components/ShiningText";
 import typography from "@/styles/typography";
 
-const WineLoadingState: React.FC = () => {
+export const WineLoadingState: React.FC = () => {
   return (
     <div
       style={{
@@ -34,5 +34,3 @@ const WineLoadingState: React.FC = () => {
     </div>
   );
 };
-
-export default WineLoadingState;

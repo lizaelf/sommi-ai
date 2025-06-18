@@ -8,7 +8,7 @@ interface SimpleQRCodeProps {
   wineId?: number;
 }
 
-function SimpleQRCode({ value, size = 80, wineId }: SimpleQRCodeProps) {
+export function SimpleQRCode({ value, size = 80, wineId }: SimpleQRCodeProps) {
   const [, setLocation] = useLocation();
 
   const handleClick = () => {
@@ -43,5 +43,3 @@ function SimpleQRCode({ value, size = 80, wineId }: SimpleQRCodeProps) {
     </div>
   );
 }
-
-export default SimpleQRCode;
