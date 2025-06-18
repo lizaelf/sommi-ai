@@ -10,8 +10,8 @@ interface FoodPairingCardProps {
 const FoodPairingCard: React.FC<FoodPairingCardProps> = ({ image, title, description }) => {
   return (
     <div style={{
-      width: "160px",
-      height: "200px",
+      width: "120px",
+      height: "140px",
       backgroundColor: "#191919",
       borderRadius: "16px",
       overflow: "hidden",
@@ -21,13 +21,14 @@ const FoodPairingCard: React.FC<FoodPairingCardProps> = ({ image, title, descrip
     }}>
       {/* Image container */}
       <div style={{
-        width: "100%",
-        height: "120px",
+        width: "100px",
+        height: "100px",
         backgroundColor: "#2a2a2a",
         backgroundImage: `url(${image})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         borderRadius: "16px 16px 0 0",
+        margin: "10px auto 0",
       }} />
       
       {/* Content container */}

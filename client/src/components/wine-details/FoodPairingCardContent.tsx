@@ -9,14 +9,14 @@ interface FoodPairingCardContentProps {
 const FoodPairingCardContent: React.FC<FoodPairingCardContentProps> = ({ title, description }) => {
   return (
     <div style={{
-      padding: "12px",
+      padding: "8px 12px",
       flex: 1,
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
     }}>
       <h3 style={{
-        ...typography.body1M,
+        ...typography.body,
         color: "white",
         margin: 0,
         marginBottom: "4px",
