@@ -1,5 +1,5 @@
 import React from 'react';
-import typography from '@/styles/typography';
+import FoodPairingCardContent from './FoodPairingCardContent';
 
 interface FoodPairingCardProps {
   image: string;
@@ -31,31 +31,7 @@ const FoodPairingCard: React.FC<FoodPairingCardProps> = ({ image, title, descrip
       }} />
       
       {/* Content container */}
-      <div style={{
-        padding: "12px",
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}>
-        <h3 style={{
-          ...typography.body1M,
-          color: "white",
-          margin: 0,
-          marginBottom: "4px",
-        }}>
-          {title}
-        </h3>
-        <p style={{
-          ...typography.body1R,
-          color: "rgba(255, 255, 255, 0.6)",
-          margin: 0,
-          fontSize: "12px",
-          lineHeight: "16px",
-        }}>
-          {description}
-        </p>
-      </div>
+      <FoodPairingCardContent title={title} description={description} />
     </div>
   );
 };
