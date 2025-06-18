@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: LucideIcon;
-  variant?: 'default' | 'ghost' | 'outline';
+  variant?: 'default' | 'ghost' | 'outline' | 'headerIcon' | 'primary';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -20,7 +20,9 @@ export const IconButton: React.FC<IconButtonProps> = ({
   const variants = {
     default: 'bg-primary text-primary-foreground hover:bg-primary/90',
     ghost: 'hover:bg-accent hover:text-accent-foreground',
-    outline: 'border border-input hover:bg-accent hover:text-accent-foreground'
+    outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
+    headerIcon: 'text-white/80 hover:text-white transition-colors',
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90'
   };
   
   const sizes = {
@@ -37,7 +39,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
 
   return (
     <button
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={cn(baseStyles, variants[variant as keyof typeof variants], sizes[size], className)}
       {...props}
     >
       <Icon size={iconSizes[size]} />

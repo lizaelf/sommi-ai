@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import AppHeader, { HeaderSpacer } from "@/components/pages/shared/AppHeader";
-import { WelcomeSection } from "@/components/home-global/WelcomeSection";
-import { WineCollection } from "@/components/home-global/WineCollection";
+import { WelcomeSection } from "@/components/pages/home/WelcomeSection";
+import { WineCollection } from "@/components/pages/home/WineCollection";
 
 interface Wine {
   id: number;
