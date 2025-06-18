@@ -48,7 +48,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Ghost Button Variant Replacement (June 18, 2025 - Latest)
+### Comprehensive Unused Component Cleanup (June 18, 2025 - Latest)
+- **Systematic Component Removal**: Removed 30+ unused components from codebase including BackgroundGradientAnimation, ThemeToggle, Chart, HoverCard, InputOtp, Menubar, NavigationMenu, Resizable, and many others
+- **Dependency Cleanup**: Fixed import errors and removed components with broken dependencies (Calendar, Pagination, Sidebar)
+- **Directory Structure Optimization**: Removed entire shared components directory and unused wine-details components (VoiceAssistantContainer, FoodPairingExpandableItem)
+- **Index File Updates**: Updated wine-details index.ts to remove references to deleted components preventing build errors
+- **Codebase Reduction**: Significantly reduced bundle size and improved maintainability by eliminating dead code
+- **Maintained Functionality**: All core application features preserved while removing unused components
+
+### Ghost Button Variant Replacement (June 18, 2025 - Previous)
 - **Complete Ghost Variant Elimination**: Replaced all ghost button variants with secondaryIcon variants across entire application for consistent styling
 - **Component Updates**: Updated BottomSheet, CellarSearch, Sidebar, Calendar, Pagination, and SearchInterface components
 - **Button Standardization**: All icon buttons now use secondaryIcon variant eliminating visual inconsistencies
