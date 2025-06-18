@@ -1007,7 +1007,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 )}
               </div>
             </div>
-            </div>
 
             {/* Extra space at the bottom */}
             <div style={{ height: "80px" }}></div>
