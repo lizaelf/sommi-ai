@@ -412,14 +412,14 @@ export default function WineEdit() {
                     // Validate image file
                     const validation = validateImageFile(file);
                     if (!validation.valid) {
-                      toastError(validation.error);
+                      toastError(validation.error || "Invalid image file");
                       return;
                     }
                     
                     // Check for duplicates
                     const duplicateCheck = await wineImageDeduplication.checkDuplicate(wineId, file);
                     if (duplicateCheck.isDuplicate) {
-                      toastInfo("This image already exists for this wine");
+                      toastError("This image already exists for this wine");
                       return;
                     }
                     
