@@ -7,7 +7,7 @@ interface WineErrorStateProps {
   error?: string;
 }
 
-export const WineErrorState: React.FC<WineErrorStateProps> = ({ error }) => {
+const WineErrorState: React.FC<WineErrorStateProps> = ({ error }) => {
   return (
     <div
       style={{

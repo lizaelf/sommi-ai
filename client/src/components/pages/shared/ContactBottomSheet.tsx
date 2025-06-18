@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import Button from "../ui/Button";
-import { FormInput } from "./ui/FormInput";
+import FormInput from "../ui/FormInput";
 import typography from "@/styles/typography";
 
 export interface ContactFormData {
@@ -159,7 +159,7 @@ export default function ContactBottomSheet({
                   name="firstName"
                   placeholder="First name"
                   value={formData.firstName}
-                  onChange={(value) => handleInputChange("firstName", value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("firstName", e.target.value)}
                   required
                   className=""
                 />
@@ -170,7 +170,7 @@ export default function ContactBottomSheet({
                   name="lastName"
                   placeholder="Last name"
                   value={formData.lastName}
-                  onChange={(value) => handleInputChange("lastName", value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("lastName", e.target.value)}
                   required
                   className=""
                 />
@@ -183,7 +183,7 @@ export default function ContactBottomSheet({
               name="email"
               placeholder="Email"
               value={formData.email}
-              onChange={(value) => handleInputChange("email", value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
               required
             />
 
@@ -193,7 +193,7 @@ export default function ContactBottomSheet({
               name="phone"
               placeholder="Phone"
               value={formData.phone}
-              onChange={(value) => handleInputChange("phone", value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("phone", e.target.value)}
               required
             />
           </div>
