@@ -1598,8 +1598,7 @@ const Cellar = () => {
                     placeholder="First name"
                     value={formData.firstName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("firstName", e.target.value)}
-                    error={!!errors.firstName}
-                    errorMessage={errors.firstName}
+                    error={errors.firstName}
                   />
 
                   <FormInput
@@ -1608,8 +1607,7 @@ const Cellar = () => {
                     placeholder="Last name"
                     value={formData.lastName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("lastName", e.target.value)}
-                    error={!!errors.lastName}
-                    errorMessage={errors.lastName}
+                    error={errors.lastName}
                   />
 
                   <FormInput
@@ -1618,8 +1616,7 @@ const Cellar = () => {
                     placeholder="Email"
                     value={formData.email}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
-                    error={!!errors.email}
-                    errorMessage={errors.email}
+                    error={errors.email}
                   />
 
                   {/* Phone Input Row - Country Selector + Phone Input */}
@@ -1868,7 +1865,6 @@ const Cellar = () => {
                         handleInputChange("phone", e.target.value)
                       }
                       error={errors.phone}
-                      errorMessage={errors.phone}
                       className="flex-1"
                     />
                   </div>
