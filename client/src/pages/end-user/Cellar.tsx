@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import Button from "@/components/ui/Button";
 import { ContactInput } from "@/components/ui/ContactInput";
@@ -16,7 +16,7 @@ import logoImage from "@assets/Logo.png";
 import AppHeader from "@/components/AppHeader";
 
 const Cellar = () => {
-  const { toast } = useToast();
+  const { toastInfo } = useStandardToast();
   const [showModal, setShowModal] = useState(() => {
     // Only show modal automatically if user hasn't shared contact AND hasn't closed it before
     const hasShared = localStorage.getItem("hasSharedContact") === "true";
@@ -398,34 +398,7 @@ const Cellar = () => {
         setTimeout(() => setAnimationState("closed"), 300);
 
         // Show toast notification
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Select wine to see past info and chats
-            </span>
-          ),
-          duration: 5000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
+        toastInfo("Select wine to see past info and chats");
       } else {
         console.error("Failed to save contact:", data);
         // Handle server validation errors if needed
