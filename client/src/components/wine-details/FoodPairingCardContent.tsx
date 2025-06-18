@@ -23,15 +23,7 @@ const FoodPairingCardContent: React.FC<FoodPairingCardContentProps> = ({ title, 
       }}>
         {title}
       </h3>
-      <p style={{
-        ...typography.body1R,
-        color: "rgba(255, 255, 255, 0.6)",
-        margin: 0,
-        fontSize: "12px",
-        lineHeight: "16px",
-      }}>
-        {description}
-      </p>
+
     </div>
   );
 };
