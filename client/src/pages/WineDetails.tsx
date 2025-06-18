@@ -188,7 +188,7 @@ export default function WineDetails() {
       {/* Wine Details Hero Section */}
       <WineDetailsHero wine={wine} />
 
-      {/* Wine History Section */}
+      {/* Tasting Notes */}
       <WineHistorySection description={wine?.description} />
 
       {/* Food Pairing Section */}
