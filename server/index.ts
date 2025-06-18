@@ -35,7 +35,7 @@ if (enableCompression) {
   app.use(compression({
     level: 6,
     threshold: 1024,
-    filter: (req, res) => {
+    filter: (req: any, res: any) => {
       return compression.filter(req, res) || res.getHeader('content-type')?.includes('application/json');
     }
   }));

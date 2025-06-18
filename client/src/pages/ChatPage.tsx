@@ -10,6 +10,7 @@ import { DataSyncManager } from '@/utils/dataSync';
 interface Wine {
   id: number;
   name: string;
+  year: number;
   image: string;
   bottles: number;
   ratings: {
