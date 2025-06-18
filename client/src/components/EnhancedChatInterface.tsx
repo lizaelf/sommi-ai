@@ -1004,18 +1004,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
           {/* Input Area - Fixed to Bottom */}
           <ChatInputArea
-            showBuyButton={showBuyButton}
-            showChatInput={showChatInput}
             currentWine={currentWine}
             currentConversationId={currentConversationId}
             isTyping={isTyping}
-            onBuyClick={() => {
-              if (currentWine?.buyAgainLink) {
-                window.open(currentWine.buyAgainLink, "_blank");
-              } else {
-                console.log("No buy again link available");
-              }
-            }}
             onSendMessage={handleSendMessage}
             onSuggestionClick={handleSuggestionClick}
             onKeyboardFocus={() => setIsKeyboardFocused(true)}
