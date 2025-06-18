@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
 import { TextGenerateEffect } from '@/components/ui/TextGenerateEffect';
+import ChatAnswer from './ChatAnswer';
 
 // Ensure window.voiceAssistant type is available
 declare global {
@@ -21,25 +22,7 @@ interface ChatMessageProps {
   isUserMessage?: boolean;
 }
 
-// Helper to convert Markdown-style bold text (**text**) to actual bold elements
-function processMarkdownBold(text: string) {
-  if (!text) return null;
-  
-  // Regular expression to match text between double asterisks
-  const parts = text.split(/(\*\*.*?\*\*)/g);
-  
-  if (parts.length === 1) {
-    return text;
-  }
-  
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      const boldText = part.slice(2, -2);
-      return <strong key={i}>{boldText}</strong>;
-    }
-    return part;
-  });
-}
+
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
@@ -242,80 +225,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     };
   }, [audioUrl]);
   
-  // Function to format text with bold and code blocks
-  const formatContent = (content: string) => {
-    // Handle undefined or empty content
-    if (!content) {
-      return null;
-    }
-    
-    try {
-      // Check if there are any code blocks
-      if (!content.includes('```')) {
-        // No code blocks, apply bold formatting and return
-        return <p>{processMarkdownBold(content)}</p>;
-      }
-      
-      // Split content by code block markers and process each part
-      const segments = [];
-      let isCodeBlock = false;
-      let buffer = '';
-      
-      // Split by newline to process line by line
-      const lines = content.split('\n');
-      
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        
-        if (line.includes('```')) {
-          // We found a code block delimiter
-          // Add the current buffer as the appropriate type
-          if (buffer) {
-            segments.push({
-              type: isCodeBlock ? 'code' : 'text',
-              content: buffer.trim()
-            });
-            buffer = '';
-          }
-          // Toggle the code block state
-          isCodeBlock = !isCodeBlock;
-          // Skip the delimiter line
-          continue;
-        }
-        
-        // Add the line to our buffer with the appropriate separator
-        if (buffer) {
-          buffer += '\n' + line;
-        } else {
-          buffer = line;
-        }
-      }
-      
-      // Add any remaining content
-      if (buffer) {
-        segments.push({
-          type: isCodeBlock ? 'code' : 'text',
-          content: buffer.trim()
-        });
-      }
-      
-      // Render the segments
-      return (
-        <>
-          {segments.map((segment, index) => (
-            segment.type === 'text' ? 
-              <p key={index}>{processMarkdownBold(segment.content)}</p> : 
-              <pre key={index} className="bg-muted p-2 rounded mt-1 text-sm overflow-x-auto">
-                {segment.content}
-              </pre>
-          ))}
-        </>
-      );
-    } catch (error) {
-      console.error("Error formatting message content:", error);
-      return <p>{content}</p>;
-    }
-  };
+
 
   // Function to detect wine information from content
   const formatWineInfo = (content: string) => {
@@ -404,14 +314,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         // User Message - Smaller and right-aligned
         <div className="flex justify-end mb-2">
           <div className="bg-primary/10 text-foreground rounded-lg py-1.5 sm:py-2 px-3 sm:px-4 max-w-[85%] border border-primary/20 text-sm sm:text-base">
-            {formatContent(message.content)}
+            <ChatAnswer content={message.content} isUserMessage={true} />
           </div>
         </div>
       ) : (
         // AI Message - Wine info style with full text display
         <div data-role="assistant" className="relative">
           <div className="text-foreground font-normal whitespace-pre-wrap">
-            {formatContent(message.content)}
+            <ChatAnswer content={message.content} isUserMessage={false} />
           </div>
           
           {/* Play/Pause Button - Always show for assistant messages */}
