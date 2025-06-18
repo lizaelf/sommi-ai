@@ -64,19 +64,7 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
         </h1>
       </div>
 
-      {/* Wine Ratings */}
-      <div
-        style={{
-          marginBottom: "32px",
-          padding: "0 16px",
-        }}
-      >
-        <WineRating
-          ratings={wine.ratings}
-          variant="default"
-          style={{ justifyContent: "center" }}
-        />
-      </div>
+
 
       {/* Technical Details Section */}
       <WineTechnicalDetailsSection wine={wine} />

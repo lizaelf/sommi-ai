@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### AuthBottomSheet Removal from EnhancedChatInterface (June 18, 2025 - Latest)
+### Wine Ratings Position Update Below Image (June 18, 2025 - Latest)
+- **Ratings Repositioned Below Wine Image**: Moved wine ratings from hero section to below wine bottle image in WineTechnicalDetailsSection component
+- **Enhanced Visual Hierarchy**: Wine ratings now display directly under the wine bottle image for better visual association
+- **Streamlined Layout**: Removed ratings from WineDetailsHero component and integrated them into technical details section
+- **Consistent Rating Format**: Maintained VN, JD, WS rating display format with white values and gray labels
+- **TypeScript Interface Updates**: Extended WineTechnicalDetailsSection interface to include complete rating properties (vn, jd, ws, abv)
+
+### AuthBottomSheet Removal from EnhancedChatInterface (June 18, 2025 - Previous)
 - **Complete AuthBottomSheet Removal**: Successfully removed all AuthBottomSheet references from EnhancedChatInterface component
 - **Authentication System Cleanup**: Eliminated unused authentication form handler and related imports
 - **Component Simplification**: Streamlined EnhancedChatInterface by removing complex authentication modal functionality
