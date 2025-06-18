@@ -170,7 +170,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         id: Date.now(),
         content: content.trim(),
         role: "user",
-        timestamp: new Date(),
+        conversationId: currentConversationId || 1,
+        createdAt: new Date(),
       };
 
       await addMessage(userMessage);
@@ -212,7 +213,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           id: Date.now() + 1,
           content: data.content,
           role: "assistant",
-          timestamp: new Date(),
+          conversationId: currentConversationId || 1,
+          createdAt: new Date(),
         };
 
         await addMessage(assistantMessage);
@@ -333,7 +335,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 variant="secondary"
                 onClick={() => {}}
                 style={{
-                  ...typography.buttonBase,
                   padding: "8px 16px",
                   fontSize: "14px",
                 }}
@@ -403,11 +404,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
       {/* Chat Input Area */}
       <ChatInputArea
-        inputValue={inputValue}
-        onInputChange={setInputValue}
+        currentWine={currentWine}
+        currentConversationId={currentConversationId}
+        isTyping={isTyping}
         onSendMessage={handleSendMessage}
-        isProcessing={isTyping}
-        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+        onSuggestionClick={handleSuggestionClick}
+        onKeyboardFocus={setIsKeyboardFocused}
+        showChatInput={true}
       />
     </div>
   );
