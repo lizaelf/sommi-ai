@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import Button from "@/components/ui/Button";
 import { ContactInput } from "@/components/ui/ContactInput";
+import { CellarSearch, CellarFilters } from "@/components/cellar";
 
 
 // Default wine image removed - only authentic uploaded images will be displayed

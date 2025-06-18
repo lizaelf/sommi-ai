@@ -48,7 +48,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Wine-Details Component Organization Complete (June 18, 2025 - Latest)
+### Cellar Component Organization & USFlagImage Cleanup (June 18, 2025 - Latest)
+- **Cellar Components Organization**: Confirmed all cellar-related components (CellarSearch, CellarFilters) are properly organized in `/client/src/components/cellar/` folder
+- **Cellar Index File Creation**: Created index.ts file in cellar folder to export CellarSearch and CellarFilters components for clean imports
+- **USFlagImage Component Deletion**: Completely removed USFlagImage component from wine-details folder as requested
+- **Import Reference Cleanup**: Updated all wine-details components to use direct img tags instead of USFlagImage component
+- **Cellar Page Integration**: Updated Cellar.tsx to import cellar components from organized cellar folder using clean index imports
+- **Component Architecture Cleanup**: Eliminated unnecessary component wrapper for simple flag image display
+
+### Wine-Details Component Organization Complete (June 18, 2025 - Previous)
 - **Complete Component Migration**: Successfully moved all wine-details specific components to `/client/src/components/wine-details/` folder including WineRating, WineTechnicalDetails, WineBottleImage, WineInfo, and USFlagImage
 - **Import Path Updates**: Fixed all import references throughout the codebase to use wine-details folder paths for better organization
 - **Index File Enhancement**: Updated wine-details index.ts to export all moved components (WineRating, WineTechnicalDetails, WineBottleImage, WineInfo, USFlagImage)
