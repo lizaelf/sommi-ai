@@ -1,5 +1,5 @@
 import React from "react";
-import { SegmentedPicker } from "@/components/SegmentedPicker";
+import { SegmentedPicker } from "@/components/pages/shared/SegmentedPicker";
 
 interface TabNavigationProps {
   activeTab: "profile" | "cms" | "ai-model";

@@ -1,5 +1,5 @@
 import React from 'react';
-import EnhancedChatInterface from '@/components/EnhancedChatInterface';
+import EnhancedChatInterface from '@/components/pages/chat/EnhancedChatInterface';
 
 interface WineChatSectionProps {
   wineId: string;

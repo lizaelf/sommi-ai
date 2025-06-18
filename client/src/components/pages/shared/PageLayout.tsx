@@ -1,5 +1,5 @@
 import React from "react";
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/pages/shared/AppHeader";
 
 interface PageLayoutProps {
   children: React.ReactNode;

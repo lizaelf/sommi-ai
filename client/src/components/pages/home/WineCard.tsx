@@ -1,5 +1,5 @@
 import React from "react";
-import WineRating from "@/components/WineRating";
+import WineRating from "@/components/pages/shared/WineRating";
 import typography from "@/styles/typography";
 import WineBottleImageDisplay from "@/components/wine-details/WineBottleImageDisplay";
 

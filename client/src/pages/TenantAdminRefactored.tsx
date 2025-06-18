@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "wouter";
 import { useToast } from "@/hooks/UseToast";
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/pages/shared/AppHeader";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 
 // Refactored components

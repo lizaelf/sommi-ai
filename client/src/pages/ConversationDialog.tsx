@@ -5,8 +5,8 @@ import { getWineDisplayName } from '../../../shared/wineConfig';
 import { TextGenerateEffect } from '../components/ui/TextGenerateEffect';
 import { useState, useEffect } from 'react';
 import typography from '../styles/typography';
-import AppHeader from '@/components/AppHeader';
-import { ButtonIcon } from '@/components/ButtonIcon';
+import AppHeader from '@/components/pages/shared/AppHeader';
+import { ButtonIcon } from '@/components/pages/ui/ButtonIcon';
 
 export default function ConversationDialog() {
   const [, setLocation] = useLocation();

@@ -14,7 +14,7 @@ import {
 } from "@/utils/imageDeduplication";
 // Default images removed - only authentic uploaded images will be displayed
 import placeholderImage from "@assets/Placeholder.png";
-import AppHeader from "@/components/AppHeader";
+import AppHeader from "@/components/pages/shared/AppHeader";
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;

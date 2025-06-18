@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
-import WineBottleImage from "@/components/WineBottleImage";
+import WineBottleImage from "@/components/pages/shared/WineBottleImage";
 import USFlagImage from "@/components/USFlagImage";
-import WineRating from "@/components/WineRating";
+import WineRating from "@/components/pages/shared/WineRating";
 import typography from "@/styles/typography";
 
 interface SelectedWine {

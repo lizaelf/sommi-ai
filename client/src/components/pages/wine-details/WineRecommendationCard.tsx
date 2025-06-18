@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'wouter';
-import WineRating from '@/components/WineRating';
+import WineRating from '@/components/pages/shared/WineRating';
 import WineCardImage from './WineCardImage';
 import typography from '@/styles/typography';
 

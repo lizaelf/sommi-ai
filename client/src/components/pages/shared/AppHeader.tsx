@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import Logo from "@/components/Logo";
+import Logo from "@/components/pages/shared/Logo";
 import { IconButton } from "@/components/ui/IconButton";
-import { ButtonIcon } from "@/components/ButtonIcon";
+import { ButtonIcon } from "@/components/pages/ui/ButtonIcon";
 
 interface AppHeaderProps {
   title?: string;

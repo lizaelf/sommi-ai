@@ -12,7 +12,7 @@ import { ContactInput } from "@/components/ui/ContactInput";
 import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@assets/Logo.png";
 
-import AppHeader from "@/components/AppHeader";
+import AppHeader from "@/components/pages/shared/AppHeader";
 
 const Cellar = () => {
   const { toast } = useToast();

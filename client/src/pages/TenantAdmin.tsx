@@ -3,14 +3,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings, Menu, Plus } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useToast } from "@/hooks/UseToast";
-import { SegmentedPicker } from "@/components/SegmentedPicker";
+import { SegmentedPicker } from "@/components/pages/shared/SegmentedPicker";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import placeholderImage from "@assets/Placeholder.png";
-import AppHeader from "@/components/AppHeader";
+import AppHeader from "@/components/pages/shared/AppHeader";
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;

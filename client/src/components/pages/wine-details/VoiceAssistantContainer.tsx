@@ -1,5 +1,5 @@
 import React from 'react';
-import VoiceAssistant from '@/components/VoiceAssistant';
+import VoiceAssistant from '@/components/pages/voice/VoiceAssistant';
 
 interface SelectedWine {
   id: number;
