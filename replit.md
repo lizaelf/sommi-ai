@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Button Override Protection Enhancement (June 18, 2025 - Latest)
+### Wine Image Integration in Technical Details (June 18, 2025 - Latest)
+- **Horizontal Layout Implementation**: Modified WineDetailsHeader technical details section to display wine image alongside technical specifications
+- **Flexbox Layout Enhancement**: Added display flex with 20px gap between technical details text and wine image for balanced presentation
+- **Responsive Wine Image**: Added 100px x 120px wine bottle image on right side with contain object-fit and 8px border radius
+- **Optimized Technical Details**: Technical details now flex: 1 to utilize available space while wine image maintains fixed proportions
+- **Visual Balance Improvement**: Enhanced visual hierarchy with wine image complementing technical specifications display
+
+### Button Override Protection Enhancement (June 18, 2025 - Previous)
 - **Triple CSS Protection**: Enhanced "View chat history" button in EnhancedChatInterface with `!important` declarations to prevent any CSS overrides
 - **Explicit Secondary Styling**: Added `!bg-white/8 !text-white hover:!bg-white/16` classes to force secondary variant appearance
 - **Comprehensive Button Protection**: Button now has react-button class, proper variant designation, and explicit CSS protection

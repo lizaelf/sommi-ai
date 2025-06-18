@@ -165,7 +165,7 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
         }}
       />
 
-      {/* Technical Details Section - Temporarily disabled due to crypto.subtle error */}
+      {/* Technical Details Section with Wine Image */}
       <div style={{
         width: '100%',
         maxWidth: '400px',
@@ -173,8 +173,11 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
         position: "relative",
         zIndex: 2,
         padding: "0 20px",
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "20px",
       }}>
-        <div>
+        <div style={{ flex: 1 }}>
           {/* Varietal */}
           <div style={{ marginBottom: "12px" }}>
             <span style={{
@@ -261,6 +264,26 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
               {wine?.technicalDetails?.customAbv || wine?.ratings?.abv || 14.8}%
             </span>
           </div>
+        </div>
+        
+        {/* Wine Image */}
+        <div style={{
+          width: "100px",
+          height: "120px",
+          flexShrink: 0,
+          position: "relative",
+        }}>
+          <img
+            src={wine?.image}
+            alt={wine?.name}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              borderRadius: "8px",
+            }}
+            onLoad={() => console.log(`Wine bottle image loaded: ${wine?.name}`)}
+          />
         </div>
       </div>
     </div>
