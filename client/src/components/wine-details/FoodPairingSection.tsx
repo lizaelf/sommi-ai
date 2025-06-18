@@ -54,11 +54,7 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
     : [];
 
   const handleSeeAllClick = () => {
-    // Scroll to show all cards in the horizontal container
-    const container = document.querySelector('[style*="overflowX: auto"]');
-    if (container) {
-      container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
-    }
+    setLocation('/food-pairings-ai');
   };
 
   return (
