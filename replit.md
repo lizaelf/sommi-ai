@@ -48,7 +48,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### ChatInput Button Container Sizing (June 18, 2025 - Latest)
+### Microphone Icon Sizing Update (June 18, 2025 - Latest)
+- **Fixed Icon Dimensions**: Updated MicrophoneButton component to display microphone icon at exactly 24×24px
+- **IconButton Integration**: Used iconSize prop to override default size and ensure consistent icon display
+- **Enhanced Visual Consistency**: Microphone icon now matches design specifications across all chat interfaces
+
+### ChatInput Button Container Sizing (June 18, 2025 - Previous)
 - **Fixed Button Container Dimensions**: Updated ChatInput voice/send button container to exactly 40×40px for consistent sizing
 - **Uniform Button Area**: Both microphone and send buttons now have identical container dimensions
 - **Improved Layout Consistency**: Fixed positioning ensures consistent button appearance across chat interfaces

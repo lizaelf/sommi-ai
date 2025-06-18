@@ -27,6 +27,7 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
         opacity: isProcessing ? 0.5 : 1
       }}
+      iconSize={24}
     />
   );
 };
