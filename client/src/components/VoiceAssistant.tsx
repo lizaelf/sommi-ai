@@ -8,6 +8,7 @@ import {
   syncMicrophonePermissionWithBrowser,
 } from "@/utils/microphonePermissions";
 import { WINE_CONFIG } from "../../../shared/wineConfig";
+import { audioCache } from "@/utils/audioCache";
 
 // ✅ Centralized dynamic welcome message generator
 const getDynamicWelcomeMessage = () => {
