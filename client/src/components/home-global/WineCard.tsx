@@ -1,6 +1,7 @@
 import React from "react";
 import WineRating from "@/components/WineRating";
 import typography from "@/styles/typography";
+import WineBottleImageDisplay from "@/components/wine-details-page/WineBottleImageDisplay";
 
 interface Wine {
   id: number;
@@ -36,13 +37,11 @@ export const WineCard: React.FC<WineCardProps> = ({ wine, onClick }) => {
       <div className="flex items-start gap-4">
         {/* Wine Bottle Image */}
         <div className="flex items-center justify-center">
-          <img
-            src={wine.image}
-            alt="Wine Bottle"
-            style={{
-              height: "170px",
-              width: "auto",
-            }}
+          <WineBottleImageDisplay 
+            image={wine.image}
+            wineName={wine.name}
+            height="170px"
+            zIndex={1}
           />
         </div>
 
