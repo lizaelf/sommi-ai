@@ -67,6 +67,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Food Pairing Card Sizing**: Optimized cards to 120px width with 120x120px images and 8px vertical text padding for balanced presentation
 - **Complete Food Category Display**: Updated to show all 8 food pairing categories from database instead of wine-type filtering for comprehensive options
 - **Wine Image Size Variations**: Created size variants (small/medium/large) in WineCardImage component with 180px medium variant applied to recommendation cards
+- **WineRating Center Alignment**: Updated all WineRating components to use center alignment, eliminating left-aligned ratings across wine cards and details pages
 
 ### Food Pairing Categories Database Implementation (June 18, 2025 - Previous)
 - **PostgreSQL Database Schema**: Created food_pairing_categories table with type-image mapping for food pairing categories

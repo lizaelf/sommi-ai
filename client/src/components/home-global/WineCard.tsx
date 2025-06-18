@@ -68,7 +68,7 @@ export const WineCard: React.FC<WineCardProps> = ({ wine, onClick }) => {
           {/* Wine Ratings */}
           <WineRating
             ratings={wine.ratings}
-            align="left"
+            align="center"
             style={{
               position: "relative",
               zIndex: 2,
