@@ -366,6 +366,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   <Button
                     onClick={onUnmute}
                     variant="secondary"
+                    className="react-button !bg-white/8 !text-white hover:!bg-white/16 !border-none"
                     style={{
                       width: '100%',
                       height: '56px',
