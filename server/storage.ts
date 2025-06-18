@@ -3,7 +3,8 @@ import {
   messages, type Message, type InsertMessage,
   conversations, type Conversation, type InsertConversation,
   tenants, type Tenant, type InsertTenant,
-  usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill
+  usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill,
+  foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -40,6 +41,13 @@ export interface IStorage {
   getUsedSuggestionPills(wineKey: string): Promise<UsedSuggestionPill[]>;
   markSuggestionPillUsed(pill: InsertUsedSuggestionPill): Promise<UsedSuggestionPill>;
   resetUsedSuggestionPills(wineKey: string): Promise<void>;
+  
+  // Food pairing categories operations
+  getAllFoodPairingCategories(): Promise<FoodPairingCategory[]>;
+  getFoodPairingCategoryByType(type: string): Promise<FoodPairingCategory | undefined>;
+  createFoodPairingCategory(category: InsertFoodPairingCategory): Promise<FoodPairingCategory>;
+  updateFoodPairingCategory(id: number, category: Partial<InsertFoodPairingCategory>): Promise<FoodPairingCategory | undefined>;
+  deleteFoodPairingCategory(id: number): Promise<void>;
 }
 
 // Database storage implementation
@@ -197,6 +205,37 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(usedSuggestionPills)
       .where(eq(usedSuggestionPills.wineKey, wineKey));
+  }
+
+  // Food pairing categories operations
+  async getAllFoodPairingCategories(): Promise<FoodPairingCategory[]> {
+    return await db.select().from(foodPairingCategories);
+  }
+
+  async getFoodPairingCategoryByType(type: string): Promise<FoodPairingCategory | undefined> {
+    const [category] = await db.select().from(foodPairingCategories).where(eq(foodPairingCategories.type, type));
+    return category || undefined;
+  }
+
+  async createFoodPairingCategory(insertCategory: InsertFoodPairingCategory): Promise<FoodPairingCategory> {
+    const [category] = await db
+      .insert(foodPairingCategories)
+      .values(insertCategory)
+      .returning();
+    return category;
+  }
+
+  async updateFoodPairingCategory(id: number, data: Partial<InsertFoodPairingCategory>): Promise<FoodPairingCategory | undefined> {
+    const [category] = await db
+      .update(foodPairingCategories)
+      .set(data)
+      .where(eq(foodPairingCategories.id, id))
+      .returning();
+    return category || undefined;
+  }
+
+  async deleteFoodPairingCategory(id: number): Promise<void> {
+    await db.delete(foodPairingCategories).where(eq(foodPairingCategories.id, id));
   }
 }
 

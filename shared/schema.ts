@@ -114,3 +114,19 @@ export const insertUsedSuggestionPillSchema = createInsertSchema(usedSuggestionP
 
 export type InsertUsedSuggestionPill = z.infer<typeof insertUsedSuggestionPillSchema>;
 export type UsedSuggestionPill = typeof usedSuggestionPills.$inferSelect;
+
+// Food pairing categories table
+export const foodPairingCategories = pgTable("food_pairing_categories", {
+  id: serial("id").primaryKey(),
+  type: text("type").notNull().unique(),
+  imagePath: text("image_path").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const insertFoodPairingCategorySchema = createInsertSchema(foodPairingCategories).pick({
+  type: true,
+  imagePath: true,
+});
+
+export type InsertFoodPairingCategory = z.infer<typeof insertFoodPairingCategorySchema>;
+export type FoodPairingCategory = typeof foodPairingCategories.$inferSelect;
