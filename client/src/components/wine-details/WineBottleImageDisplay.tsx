@@ -16,30 +16,43 @@ const WineBottleImageDisplay: React.FC<WineBottleImageDisplayProps> = ({
   zIndex = 2
 }) => {
   return (
-    <img
-      src={image || placeholderImage}
-      alt={wineName || "Wine bottle"}
+    <div
       style={{
+        position: "relative",
         height,
         zIndex,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
-      onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
-      onError={(e) => {
-        const target = e.target as HTMLImageElement;
-        console.error(`Wine bottle image failed to load: ${wineName}, attempted URL: ${target.src}`);
-        
-        // Try fallback images in order
-        if (target.src !== placeholderImage) {
-          console.log(`Falling back to placeholder image: ${placeholderImage}`);
-          target.src = placeholderImage;
-        } else if (target.src !== ridgeWineImage) {
-          console.log(`Falling back to Ridge wine image: ${ridgeWineImage}`);
-          target.src = ridgeWineImage;
-        } else {
-          console.error('All fallback images failed to load');
-        }
-      }}
-    />
+    >
+      <img
+        src={image || placeholderImage}
+        alt={wineName || "Wine bottle"}
+        style={{
+          height: "100%",
+          width: "auto",
+          objectFit: "contain",
+          borderRadius: "8px",
+        }}
+        onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          console.error(`Wine bottle image failed to load: ${wineName}, attempted URL: ${target.src}`);
+          
+          // Try fallback images in order
+          if (target.src !== placeholderImage) {
+            console.log(`Falling back to placeholder image: ${placeholderImage}`);
+            target.src = placeholderImage;
+          } else if (target.src !== ridgeWineImage) {
+            console.log(`Falling back to Ridge wine image: ${ridgeWineImage}`);
+            target.src = ridgeWineImage;
+          } else {
+            console.error('All fallback images failed to load');
+          }
+        }}
+      />
+    </div>
   );
 };
 

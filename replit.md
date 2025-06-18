@@ -48,7 +48,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### WineRating Component Two-Line Layout Update (June 18, 2025 - Latest)
+### WineBottleImageDisplay Component Enhancement (June 18, 2025 - Latest)
+- **Container Structure Enhancement**: Replaced direct img element with proper wine bottle component structure including container div with centering and positioning
+- **Enhanced Image Styling**: Added objectFit contain, 8px border radius, and proper width/height handling for improved visual presentation
+- **Maintained Functionality**: Preserved all existing error handling, fallback image logic, and console logging functionality
+- **Component Architecture**: Created proper wine bottle component with container wrapper for better layout control and styling consistency
+
+### WineRating Component Two-Line Layout Update (June 18, 2025 - Previous)
 - **Two-Line Rating Display**: Updated WineRating component to show VN/JD/WS ratings on first line and ABV value on second line
 - **Column Flex Layout**: Changed from horizontal to vertical flex layout with 8px gap between rating lines
 - **Centered Alignment**: Maintained center alignment for both rating rows while preserving 12px horizontal gaps between individual ratings
