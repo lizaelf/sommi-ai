@@ -54,11 +54,11 @@ export default function WineRating({
       },
       valueStyle: {
         ...typography.num,
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "white",
       },
       labelStyle: {
         ...typography.body1R,
-        color: "white",
+        color: "#999999",
       },
     };
 
