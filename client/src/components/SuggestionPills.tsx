@@ -767,25 +767,19 @@ export default function SuggestionPills({
         return (
           <Button
             key={`${context}-${pill.id}`}
-            variant="secondary"
+            variant="suggestion"
             disabled={isDisabled || isProcessing || isRecentlyUsed}
             onClick={() => handlePillClick(pill)}
+            className={`
+              ${isLoading ? 'opacity-70' : isRecentlyUsed ? 'opacity-60' : 'opacity-100'}
+              ${preGenStatus === "ready" && context === "voice-assistant" ? 'bg-gradient-to-br from-blue-600 to-blue-700' : ''}
+              ${isRecentlyUsed ? 'bg-gray-100' : ''}
+            `}
             style={{
               ...typography.buttonPlus1,
               minWidth: "fit-content",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-              borderRadius: "32px",
-              padding: "12px 20px",
               transition: "none",
               position: "relative",
-              opacity: isLoading ? 0.7 : isRecentlyUsed ? 0.6 : 1,
-              background:
-                preGenStatus === "ready" && context === "voice-assistant"
-                  ? "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)"
-                  : isRecentlyUsed
-                    ? "#f3f4f6"
-                    : undefined,
             }}
           >
             {showFallback ? (
