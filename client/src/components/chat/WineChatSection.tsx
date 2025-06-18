@@ -7,9 +7,8 @@ interface WineChatSectionProps {
 }
 
 const WineChatSection: React.FC<WineChatSectionProps> = ({ 
-  wine, 
-  isScannedPage,
-  ...otherProps 
+  wineId, 
+  isScannedPage
 }) => {
   return (
     <div
@@ -21,7 +20,6 @@ const WineChatSection: React.FC<WineChatSectionProps> = ({
       }}
     >
       <EnhancedChatInterface
-        selectedWine={wine}
         isScannedPage={isScannedPage}
       />
     </div>
