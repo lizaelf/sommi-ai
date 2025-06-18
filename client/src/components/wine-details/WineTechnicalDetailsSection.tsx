@@ -1,5 +1,6 @@
 import React from 'react';
 import typography from '@/styles/typography';
+import TechnicalDetailItem from './TechnicalDetailItem';
 
 interface WineTechnicalDetailsSectionProps {
   wine: {
@@ -137,69 +138,29 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
           />
         </div>
 
-        {/* Appellation */}
-        <div style={{ marginBottom: "12px" }}>
-          <span style={{
-            ...typography.body1R,
-            color: "rgba(255, 255, 255, 0.6)",
-            display: "block",
-            marginBottom: "4px",
-          }}>
-            Appellation
-          </span>
-          <span style={{
-            ...typography.body,
-            color: "white",
-          }}>
-            {wine?.technicalDetails?.appellation || wine?.location?.split(',')[0] || 'Dry Creek Valley'}
-          </span>
-        </div>
+        <TechnicalDetailItem
+          label="Appellation"
+          value={wine?.technicalDetails?.appellation || wine?.location?.split(',')[0] || 'Dry Creek Valley'}
+        />
 
-        {/* Aging */}
-        <div style={{ marginBottom: "12px" }}>
-          <span style={{
-            ...typography.body1R,
-            color: "rgba(255, 255, 255, 0.6)",
-            display: "block",
-            marginBottom: "4px",
-          }}>
-            Aging Recommendation
-          </span>
-          <span style={{
-            ...typography.body,
-            color: "white",
-          }}>
-            {wine?.technicalDetails?.aging ? 
-              (wine.technicalDetails.aging.drinkNow && wine.technicalDetails.aging.ageUpTo ? 
-                `Drink now or age up to ${wine.technicalDetails.aging.ageUpTo}` :
-                wine.technicalDetails.aging.drinkNow ? "Drink now" : 
-                wine.technicalDetails.aging.ageUpTo ? `Age up to ${wine.technicalDetails.aging.ageUpTo}` : "Drink now"
-              ) :
-              getAgingRecommendations(wine?.name || '', wine?.year).drinkNow && getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo ?
-                `Drink now or age up to ${getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo}` : "Drink now"
-            }
-          </span>
-        </div>
+        <TechnicalDetailItem
+          label="Aging Recommendation"
+          value={wine?.technicalDetails?.aging ? 
+            (wine.technicalDetails.aging.drinkNow && wine.technicalDetails.aging.ageUpTo ? 
+              `Drink now or age up to ${wine.technicalDetails.aging.ageUpTo}` :
+              wine.technicalDetails.aging.drinkNow ? "Drink now" : 
+              wine.technicalDetails.aging.ageUpTo ? `Age up to ${wine.technicalDetails.aging.ageUpTo}` : "Drink now"
+            ) :
+            getAgingRecommendations(wine?.name || '', wine?.year).drinkNow && getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo ?
+              `Drink now or age up to ${getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo}` : "Drink now"
+          }
+        />
 
-        {/* ABV */}
-        <div>
-          <span style={{
-            ...typography.body1R,
-            color: "rgba(255, 255, 255, 0.6)",
-            display: "block",
-            marginBottom: "4px",
-          }}>
-            Alcohol by Volume
-          </span>
-          <span style={{
-            ...typography.body,
-            color: "white",
-            fontSize: "18px",
-            fontWeight: "500",
-          }}>
-            {wine?.technicalDetails?.customAbv || wine?.ratings?.abv || 14.8}%
-          </span>
-        </div>
+        <TechnicalDetailItem
+          label="Alcohol by Volume"
+          value={`${wine?.technicalDetails?.customAbv || wine?.ratings?.abv || 14.8}%`}
+          isLast={true}
+        />
       </div>
       
       {/* Wine Image */}
