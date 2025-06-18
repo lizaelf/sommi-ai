@@ -42,29 +42,15 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
     }
   });
 
-  // Define wine type specific food pairing recommendations
-  const getFoodPairingsByWineType = (wineType: string): string[] => {
-    const pairingMap: Record<string, string[]> = {
-      'Red': ['Meat', 'Cheese', 'Pasta', 'Side Dishes'],
-      'White': ['Seafood', 'Poultry', 'Veggie', 'Appetizers'],
-      'Rose': ['Appetizers', 'Side Dishes', 'Cheese', 'Seafood'],
-      'Sparkling': ['Appetizers', 'Seafood', 'Cheese', 'Poultry']
-    };
-    return pairingMap[wineType] || ['Meat', 'Cheese', 'Appetizers'];
-  };
-
   const detectedWineType = wineTypeData?.detectedType || 'Red';
-  const recommendedCategories = getFoodPairingsByWineType(detectedWineType);
 
+  // Show ALL food pairing categories from the database
   const foodPairingCards = foodCategories
-    ? recommendedCategories
-        .map((categoryType: string) => foodCategories.find((cat: { type: string; imagePath: string; id: number }) => cat.type === categoryType))
-        .filter(Boolean)
-        .map((category: any) => ({
-          image: category.imagePath,
-          title: category.type,
-          description: `Perfect pairing for ${detectedWineType.toLowerCase()} wines`
-        }))
+    ? foodCategories.map((category: any) => ({
+        image: category.imagePath,
+        title: category.type,
+        description: `Perfect pairing for ${detectedWineType.toLowerCase()} wines`
+      }))
     : [];
 
   const handleSeeAllClick = () => {
