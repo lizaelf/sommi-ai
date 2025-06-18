@@ -139,6 +139,8 @@ export default function WineRating({
       className={className}
       style={{
         ...styles.container,
+        justifyContent: "center",
+        alignItems: "center",
         ...style,
       }}
     >
