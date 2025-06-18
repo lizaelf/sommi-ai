@@ -4,7 +4,7 @@ const wineryLogoPath = "/wineries/winary-logo.png";
 // Default images removed - only authentic uploaded images will be displayed
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
-import WineRating from "@/components/WineRating";
+import WineRating from "@/components/wine-details/WineRating";
 import { getWineDisplayName } from '../../../../shared/wineConfig';
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { ButtonIcon } from "@/components/ButtonIcon";

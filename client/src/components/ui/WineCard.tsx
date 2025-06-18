@@ -1,5 +1,5 @@
 import React from "react";
-import WineRating from "@/components/WineRating";
+import WineRating from "@/components/wine-details/WineRating";
 
 interface WineCardProps {
   id: number;

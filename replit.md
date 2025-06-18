@@ -48,7 +48,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Mic Button Bottom Sheet Fix (June 18, 2025 - Latest)
+### Wine-Details Component Organization Complete (June 18, 2025 - Latest)
+- **Complete Component Migration**: Successfully moved all wine-details specific components to `/client/src/components/wine-details/` folder including WineRating, WineTechnicalDetails, WineBottleImage, WineInfo, and USFlagImage
+- **Import Path Updates**: Fixed all import references throughout the codebase to use wine-details folder paths for better organization
+- **Index File Enhancement**: Updated wine-details index.ts to export all moved components (WineRating, WineTechnicalDetails, WineBottleImage, WineInfo, USFlagImage)
+- **Cross-Component Compatibility**: Updated all external components (HomeGlobal, WineCard, WineCardComponent) to import from wine-details folder
+- **Component Creation**: Created missing USFlagImage component within wine-details folder for consistent organization
+- **Enhanced Project Structure**: Achieved clean separation of wine-details specific components from general UI components
+
+### Mic Button Bottom Sheet Fix (June 18, 2025 - Previous)
 - **VoiceController Visibility Fix**: Removed hidden positioning from VoiceController component in EnhancedChatInterface to allow proper bottom sheet display
 - **Unified Bottom Sheet Experience**: Both voice button and mic button now use the same VoiceAssistantBottomSheet for consistent user interface
 - **Event Flow Preservation**: Maintained separate event flows (triggerVoiceAssistant vs triggerMicButton) while using unified bottom sheet component
