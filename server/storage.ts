@@ -73,9 +73,22 @@ export class DatabaseStorage implements IStorage {
     return results.length > 0 ? results[0] : undefined;
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const results = await db.select().from(users).where(eq(users.email, email));
+    return results.length > 0 ? results[0] : undefined;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const result = await db.insert(users).values(insertUser).returning();
     return result[0];
+  }
+
+  async authenticateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.getUserByEmail(email);
+    if (user && user.password === password) {
+      return user;
+    }
+    return null;
   }
 
   // Message operations

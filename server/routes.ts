@@ -78,6 +78,79 @@ async function saveToGoogleSheets(contactData: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication endpoints
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Email and password are required" 
+        });
+      }
+
+      const user = await storage.authenticateUser(email, password);
+      
+      if (user) {
+        res.json({ 
+          success: true, 
+          user: { id: user.id, email: user.email, username: user.username }
+        });
+      } else {
+        res.status(401).json({ 
+          success: false, 
+          error: "Invalid email or password" 
+        });
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Authentication failed" 
+      });
+    }
+  });
+
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, password, username } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Email and password are required" 
+        });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "User with this email already exists" 
+        });
+      }
+
+      const newUser = await storage.createUser({ 
+        email, 
+        password, 
+        username: username || email.split('@')[0] 
+      });
+      
+      res.json({ 
+        success: true, 
+        user: { id: newUser.id, email: newUser.email, username: newUser.username }
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Registration failed" 
+      });
+    }
+  });
+
   // API status endpoint
   app.get("/api/status", async (_req, res) => {
     try {

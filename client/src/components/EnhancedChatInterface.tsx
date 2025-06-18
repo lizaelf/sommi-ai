@@ -108,9 +108,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [selectedWine, onReady]);
 
-  // Check if user has shared contact information (is registered)
+  // Check if user is authenticated
   const [isUserRegistered, setIsUserRegistered] = useState(() => {
-    return localStorage.getItem("hasSharedContact") === "true";
+    return localStorage.getItem("isAuthenticated") === "true";
   });
 
   // State to control showing chat input interface instead of contact form
@@ -353,15 +353,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     return <>{elements}</>;
   };
 
-  // Handler for ContactBottomSheet submission
+  // Handler for AuthBottomSheet submission
   const handleAuthSubmit = async (data: AuthFormData) => {
     try {
-      const response = await fetch("/api/auth/login", {
+      const endpoint = data.mode === 'signup' ? '/api/auth/register' : '/api/auth/login';
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          username: data.email.split('@')[0] // Use email prefix as username for registration
+        }),
       });
 
       const result = await response.json();
@@ -369,9 +374,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       if (result.success) {
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("userEmail", data.email);
+        localStorage.setItem("userId", result.user.id.toString());
         setIsUserRegistered(true);
         handleCloseContactSheet();
 
+        const successMessage = data.mode === 'signup' ? 'Account created successfully!' : 'Signed in successfully!';
+        
         toast({
           description: (
             <span
@@ -382,7 +390,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 whiteSpace: "nowrap",
               }}
             >
-              Signed in successfully!
+              {successMessage}
             </span>
           ),
           duration: 3000,
@@ -401,16 +409,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           },
         });
       } else {
-        console.error("Failed to save contact:", result);
+        console.error("Authentication failed:", result);
         toast({
-          description: "Failed to save contact information",
+          description: result.error || "Authentication failed",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error("Error submitting contact form:", error);
+      console.error("Error during authentication:", error);
       toast({
-        description: "Error saving contact information",
+        description: "Network error during authentication",
         variant: "destructive",
       });
     }
