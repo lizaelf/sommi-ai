@@ -88,6 +88,8 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       setIsListening(true);
       setIsResponding(false);
       setIsThinking(false);
+      setIsPlayingAudio(false);
+      setShowUnmuteButton(false);
       
       // Dispatch mic status event for CircleAnimation
       const micEvent = new CustomEvent('mic-status', {
@@ -95,17 +97,43 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       });
       window.dispatchEvent(micEvent);
       
-      // Show listening state for 3 seconds, then show Ask button
+      // Step 1: Show listening state for 3 seconds (user speaking)
       setTimeout(() => {
+        // Step 2: Show thinking state
         setIsListening(false);
-        setShowAskButton(true);
+        setIsThinking(true);
         
-        // Dispatch stopped status event
-        const stoppedEvent = new CustomEvent('mic-status', {
-          detail: { status: 'stopped' }
+        // Dispatch processing status event
+        const processingEvent = new CustomEvent('mic-status', {
+          detail: { status: 'processing' }
         });
-        window.dispatchEvent(stoppedEvent);
-      }, 3000);
+        window.dispatchEvent(processingEvent);
+        
+        // Step 3: After 2 seconds of thinking, start response
+        setTimeout(() => {
+          setIsThinking(false);
+          setIsResponding(true);
+          setIsPlayingAudio(true);
+          
+          // Dispatch stopped status event (audio is playing, not listening)
+          const stoppedEvent = new CustomEvent('mic-status', {
+            detail: { status: 'stopped' }
+          });
+          window.dispatchEvent(stoppedEvent);
+          
+          // Generate and play a sample response
+          handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+          
+          // Step 4: After response finishes, show Ask button and suggestions
+          setTimeout(() => {
+            setIsResponding(false);
+            setIsPlayingAudio(false);
+            setShowAskButton(true);
+            setShowUnmuteButton(false);
+          }, 8000); // 8 seconds for response playback
+          
+        }, 2000); // 2 seconds thinking
+      }, 3000); // 3 seconds listening
     };
 
     const handleStopAudio = () => {
