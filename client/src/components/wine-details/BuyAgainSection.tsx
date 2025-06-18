@@ -34,12 +34,7 @@ const BuyAgainSection: React.FC<BuyAgainSectionProps> = ({ buyAgainLink }) => {
         }}
         variant="primary"
         size="lg"
-        className="w-full mb-6"
-        style={{
-          height: "56px",
-          borderRadius: "16px",
-          ...typography.body,
-        }}
+        className="w-full mb-6 h-14 rounded-2xl"
       >
         Buy again
       </Button>
