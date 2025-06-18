@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
@@ -26,7 +26,7 @@ const getCRMWines = (): WineCardData[] => {
 export default function WineEdit() {
   const [, setLocation] = useLocation();
   const params = useParams();
-  const { toast } = useToast();
+  const { toastSuccess, toastError } = useStandardToast();
   const wineId = parseInt(params.id || "1");
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);

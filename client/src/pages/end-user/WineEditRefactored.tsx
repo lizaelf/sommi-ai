@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import { DataSyncManager } from "@/utils/dataSync";
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { WineEditForm } from "@/components/admin/WineEditForm";
@@ -24,7 +24,7 @@ interface Wine {
 const WineEditRefactored: React.FC = () => {
   const { id } = useParams();
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
+  const { toastSuccess, toastError } = useStandardToast();
   const [wine, setWine] = useState<Wine | null>(null);
   const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error'>('loading');
 
@@ -83,20 +83,13 @@ const WineEditRefactored: React.FC = () => {
         qrLink: "",
       });
 
-      toast({
-        title: "Wine updated",
-        description: "Wine details have been saved successfully.",
-      });
+      toastSuccess("Wine details have been saved successfully.", "Wine updated");
 
       // Navigate back to wine details
       setLocation(`/wine-details/${wineData.id}`);
     } catch (error) {
       console.error("Error saving wine:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save wine details.",
-        variant: "destructive",
-      });
+      toastError("Failed to save wine details.");
     }
   };
 
