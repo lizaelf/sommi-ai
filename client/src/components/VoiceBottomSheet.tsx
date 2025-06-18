@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
 import CircleAnimation from './CircleAnimation';
 import { ShiningText } from './ShiningText';
 import Button from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
 import SuggestionPills from './SuggestionPills';
 import { suggestionCache } from '@/utils/suggestionCache';
 
@@ -156,26 +158,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              cursor: 'pointer',
-              zIndex: 10,
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '50%',
-            }}
+          <IconButton
+            icon={X}
+            variant="headerIcon"
+            size="iconSm"
             onClick={onClose}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M18 6L6 18M6 6l12 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+            className="absolute top-4 right-4 z-10"
+          />
 
           {/* Wine glass animation container */}
           <div style={{ 

@@ -199,23 +199,14 @@ export default function ContactBottomSheet({
           </div>
 
           {/* Submit Button */}
-          <button
+          <Button
             type="submit"
-            style={{
-              width: "100%",
-              backgroundColor: "white",
-              color: "black",
-              fontWeight: 500,
-              padding: "16px",
-              borderRadius: "12px",
-              border: "none",
-              fontSize: "16px",
-              fontFamily: "Inter, sans-serif",
-              cursor: "pointer",
-            }}
+            variant="primary"
+            size="lg"
+            className="w-full"
           >
             Submit
-          </button>
+          </Button>
         </form>
       </div>
     </div>,

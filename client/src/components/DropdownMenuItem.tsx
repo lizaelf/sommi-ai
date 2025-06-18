@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import typography from "../styles/typography";
+import Button from "./ui/Button";
+import { cn } from "@/lib/utils";
 
 interface DropdownMenuItemProps {
   children: ReactNode;
@@ -16,62 +17,25 @@ export function DropdownMenuItem({
   variant = "default",
   disabled = false 
 }: DropdownMenuItemProps) {
-  const baseStyles = {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    padding: "16px 20px",
-    backgroundColor: "transparent",
-    border: "none",
-    cursor: disabled ? "default" : "pointer",
-    transition: "all 0.2s ease",
-    width: "100vw",
-    textAlign: "left" as const,
-    borderRadius: 0,
-    ...typography.body1R,
-  };
-
-  const variantStyles = {
-    default: {
-      color: disabled ? "#666666" : "white",
-    },
-    danger: {
-      color: disabled ? "#666666" : "#FF6B6B",
-    },
-  };
-
-  const hoverStyles = {
-    default: "rgba(255, 255, 255, 0.1)",
-    danger: "rgba(255, 107, 107, 0.1)",
-  };
-
+  const buttonVariant = variant === "danger" ? "error" : "tertiary";
+  
   return (
-    <button
-      className="dropdown-menu-item"
-      onClick={disabled ? undefined : onClick}
-      style={{
-        ...baseStyles,
-        ...variantStyles[variant],
-        opacity: disabled ? 0.5 : 1,
-      }}
-      onMouseEnter={(e) => {
-        if (!disabled) {
-          e.currentTarget.style.backgroundColor = hoverStyles[variant];
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!disabled) {
-          e.currentTarget.style.backgroundColor = "transparent";
-        }
-      }}
+    <Button
+      variant={buttonVariant}
+      onClick={onClick}
       disabled={disabled}
+      className={cn(
+        "w-full justify-start gap-3 px-5 py-4 rounded-none h-auto text-left",
+        "hover:bg-white/10 text-sm font-normal",
+        variant === "danger" && "text-red-400 hover:text-red-300 hover:bg-red-500/10"
+      )}
     >
       {icon && (
-        <span style={{ display: "flex", alignItems: "center" }}>
+        <span className="flex items-center">
           {icon}
         </span>
       )}
       {children}
-    </button>
+    </Button>
   );
 }
