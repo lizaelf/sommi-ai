@@ -838,30 +838,35 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Store the canStopEarly flag globally for voice detection
       (window as any).canStopEarly = false;
 
-      // Primary backup: stop after 6 seconds
-      setTimeout(() => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          console.log("🎤 Primary backup auto-stop after 6 seconds");
-          stopListening();
+      // Absolute timeout: force stop after 4 seconds regardless of state
+      const forceStopTimeout = setTimeout(() => {
+        console.log("🎤 FORCE STOP: Auto-stopping listening after 4 seconds");
+        
+        // Stop media recorder if active
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+          try {
+            mediaRecorderRef.current.stop();
+          } catch (e) {
+            console.log("🎤 Media recorder already stopped");
+          }
         }
-      }, 6000);
-
-      // Secondary backup: stop after 8 seconds
-      setTimeout(() => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          console.log("🎤 Secondary backup auto-stop after 8 seconds - silence detection failed");
-          stopListening();
-        }
-      }, 8000);
-
-      // Absolute failsafe: force stop listening state after 10 seconds
-      setTimeout(() => {
-        if (isListening) {
-          console.log("🎤 FAILSAFE: Force stopping listening state after 10 seconds");
-          setIsListening(false);
+        
+        // Force state updates
+        setIsListening(false);
+        setIsThinking(true);
+        stopVoiceDetection();
+        
+        // Emit processing status for circle animation
+        window.dispatchEvent(
+          new CustomEvent("mic-status", {
+            detail: { status: "processing" },
+          }),
+        );
+        
+        // Simulate thinking then return to ask button
+        setTimeout(() => {
           setIsThinking(false);
           setShowAskButton(true);
-          stopVoiceDetection();
           
           // Emit stopped status for circle animation
           window.dispatchEvent(
@@ -869,8 +874,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               detail: { status: "stopped" },
             }),
           );
-        }
-      }, 10000);
+        }, 2000);
+        
+      }, 4000);
     } catch (error) {
       console.error("🎤 DEPLOY DEBUG: Error in setupRecording:", error);
 
