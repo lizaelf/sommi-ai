@@ -17,7 +17,7 @@ export function DropdownMenuItem({
   variant = "default",
   disabled = false 
 }: DropdownMenuItemProps) {
-  const buttonVariant = variant === "danger" ? "error" : "tertiary";
+  const buttonVariant = variant === "danger" ? "error" : "secondary";
   
   return (
     <Button

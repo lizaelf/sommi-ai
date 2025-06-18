@@ -125,7 +125,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                   setMessage('');
                 }
               }}
-              variant="ghost"
+              variant="secondary"
               size="md"
               disabled={isProcessing}
               title="Send message"

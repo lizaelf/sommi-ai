@@ -19,7 +19,7 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
     <IconButton
       icon={Mic}
       onClick={onClick}
-      variant="ghost"
+      variant="secondary"
       size="md"
       disabled={isProcessing || disabled}
       title={title}

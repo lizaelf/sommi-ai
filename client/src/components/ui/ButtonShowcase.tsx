@@ -40,23 +40,14 @@ export default function ButtonShowcase() {
         </div>
       </section>
 
-      {/* Secondary Filled */}
+      {/* Additional Secondary Examples */}
       <section>
-        <h2 className="text-xl font-semibold mb-4">Secondary Filled</h2>
+        <h2 className="text-xl font-semibold mb-4">Additional Secondary Examples</h2>
         <div className="flex gap-4 items-center">
-          <Button variant="secondaryFilled" size="sm">Small Filled</Button>
-          <Button variant="secondaryFilled" size="default">Default Filled</Button>
-          <Button variant="secondaryFilled" size="lg">Large Filled</Button>
-          <Button variant="secondaryFilled" disabled>Disabled</Button>
-        </div>
-      </section>
-
-      {/* Tertiary & Ghost */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Tertiary & Ghost</h2>
-        <div className="flex gap-4 items-center">
-          <Button variant="tertiary">Tertiary Button</Button>
-          <Button variant="ghost">Ghost Button</Button>
+          <Button variant="secondary" size="sm">Small Secondary</Button>
+          <Button variant="secondary" size="default">Default Secondary</Button>
+          <Button variant="secondary" size="lg">Large Secondary</Button>
+          <Button variant="secondary" disabled>Disabled Secondary</Button>
         </div>
       </section>
 

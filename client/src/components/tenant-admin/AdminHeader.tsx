@@ -53,18 +53,18 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
             >
               <Button
                 onClick={onEditProfile}
-                variant="ghost"
+                variant="secondary"
                 size="default"
-                className="w-full justify-start gap-3 px-4 py-3 text-left"
+                className="justify-start gap-3 px-4 py-3 text-left"
               >
                 <Settings size={16} />
                 Edit Profile
               </Button>
               <Button
                 onClick={onLogout}
-                variant="ghost"
+                variant="secondary"
                 size="default"
-                className="w-full justify-start gap-3 px-4 py-3 text-left text-red-400 hover:text-red-300"
+                className="justify-start gap-3 px-4 py-3 text-left text-red-400 hover:text-red-300"
               >
                 <LogOut size={16} />
                 Logout

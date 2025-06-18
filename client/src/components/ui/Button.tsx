@@ -9,9 +9,6 @@ const buttonVariants = cva(
       variant: {
         primary: "bg-white text-black hover:bg-white/90 active:bg-white/80 active:scale-[0.98]",
         secondary: "bg-white/8 w-full text-white hover:bg-white/16 active:bg-white/20",
-        secondaryFilled: "bg-white/10 text-white hover:bg-white/20 active:bg-white/25",
-        tertiary: "bg-transparent text-white hover:bg-white/5 active:bg-white/10",
-        ghost: "bg-transparent text-white hover:bg-white/5 active:bg-white/10",
         error: "bg-[#8A332C] text-white hover:bg-[#9A433C] active:bg-[#7A232C]",
         suggestion: "bg-white/8 text-white hover:bg-white/16 active:bg-white/20 whitespace-nowrap",
         headerIcon: "bg-transparent text-white hover:bg-white/10 active:bg-white/15 p-2",

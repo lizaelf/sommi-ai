@@ -416,7 +416,7 @@ const TenantAdmin: React.FC = () => {
                 {searchTerm && (
                   <Button
                     onClick={() => setSearchTerm("")}
-                    variant="ghost"
+                    variant="secondary"
                     size="iconSm"
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
                   >
