@@ -77,6 +77,7 @@ export default function WineRating({
       aria-label="Wine ratings"
       style={{
         ...styles.container,
+        justifyContent: "center",
         ...style,
       }}
     >
