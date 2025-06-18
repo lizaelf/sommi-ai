@@ -195,6 +195,7 @@ export default function WineDetails() {
       <FoodPairingSection
         foodPairing={wine?.foodPairing}
         wineId={wine?.id}
+        wineName={wine?.name}
       />
 
       {/* Buy Again Section */}

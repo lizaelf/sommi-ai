@@ -14,25 +14,59 @@ interface FoodPairingSectionProps {
 const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
   foodPairing,
   wineId,
+  wineName,
 }) => {
   const [, setLocation] = useLocation();
-  const foodPairingCards = [
-    {
-      image: "/food-pairing-meat.svg",
-      title: "Red Meat",
-      description: "Perfect for grilled steaks and lamb"
+
+  // Fetch wine type detection
+  const { data: wineTypeData } = useQuery({
+    queryKey: ['wine-type', wineName],
+    queryFn: async () => {
+      if (!wineName) return null;
+      const response = await fetch('/api/detect-wine-type', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wineName })
+      });
+      return response.json();
     },
-    {
-      image: "/food-pairing-cheese.svg", 
-      title: "Aged Cheese",
-      description: "Pairs wonderfully with aged cheddar"
-    },
-    {
-      image: "/food-pairing-herbs.svg",
-      title: "Herbs & Spices", 
-      description: "Complements rosemary and thyme"
+    enabled: !!wineName
+  });
+
+  // Fetch food pairing categories
+  const { data: foodCategories } = useQuery({
+    queryKey: ['food-pairing-categories'],
+    queryFn: async () => {
+      const response = await fetch('/api/food-pairing-categories');
+      return response.json();
     }
-  ];
+  });
+
+  // Define wine type specific food pairing recommendations
+  const getFoodPairingsByWineType = (wineType: string): string[] => {
+    const pairingMap: Record<string, string[]> = {
+      'Red': ['Meat', 'Cheese', 'Pasta'],
+      'White': ['Seafood', 'Poultry', 'Veggie'],
+      'Rose': ['Appetizers', 'Side Dishes', 'Cheese'],
+      'Sparkling': ['Appetizers', 'Seafood', 'Cheese']
+    };
+    return pairingMap[wineType] || ['Meat', 'Cheese', 'Appetizers'];
+  };
+
+  const detectedWineType = wineTypeData?.detectedType || 'Red';
+  const recommendedCategories = getFoodPairingsByWineType(detectedWineType);
+
+  const foodPairingCards = foodCategories
+    ? recommendedCategories
+        .map((categoryType: string) => foodCategories.find((cat: { type: string; imagePath: string; id: number }) => cat.type === categoryType))
+        .filter(Boolean)
+        .slice(0, 3)
+        .map((category: any) => ({
+          image: category.imagePath,
+          title: category.type,
+          description: `Perfect pairing for ${detectedWineType.toLowerCase()} wines`
+        }))
+    : [];
 
   const handleSeeAllClick = () => {
     setLocation(`/food-pairings/${wineId || 1}`);
@@ -69,7 +103,7 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
         overflowX: "auto",
         paddingBottom: "8px",
       }}>
-        {foodPairingCards.map((card, index) => (
+        {foodPairingCards.map((card: any, index: number) => (
           <FoodPairingCard
             key={index}
             image={card.image}
