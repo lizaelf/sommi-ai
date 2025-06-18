@@ -1,8 +1,8 @@
 import React from 'react';
 import WineBottleImage from '@/components/pages/shared/WineBottleImage';
-import USFlagImage from '@/components/USFlagImage';
+import USFlagImage from '@/components/pages/shared/USFlagImage';
 import WineRating from '@/components/pages/shared/WineRating';
-import WineTechnicalDetails from '@/components/WineTechnicalDetails';
+import WineTechnicalDetails from '@/components/pages/shared/WineTechnicalDetails';
 import typography from '@/styles/typography';
 
 interface WineDetailsHeaderProps {

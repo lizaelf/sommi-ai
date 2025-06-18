@@ -1,5 +1,5 @@
 import React from "react";
-import WineBottleImageDisplay from "./wine-details/WineBottleImageDisplay";
+import WineBottleImageDisplay from "../wine-details/WineBottleImageDisplay";
 
 interface WineBottleImageProps {
   image?: string;

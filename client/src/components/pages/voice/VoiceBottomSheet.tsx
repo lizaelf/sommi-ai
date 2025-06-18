@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CircleAnimation from './CircleAnimation';
-import { ShiningText } from './ShiningText';
+import ShiningText from '../ui/ShiningText';
 import Button from '@/components/pages/ui/Button';
-import SuggestionPills from './SuggestionPills';
+import SuggestionPills from '../shared/SuggestionPills';
 import { suggestionCache } from '@/utils/suggestionCache';
 
 interface VoiceBottomSheetProps {
