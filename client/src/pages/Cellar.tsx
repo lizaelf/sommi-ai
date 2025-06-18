@@ -62,8 +62,7 @@ const Cellar = () => {
   const [showWineSearch, setShowWineSearch] = useState(false);
   const [wineSearchQuery, setWineSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [notificationPreferences, setNotificationPreferences] = useState(() => {
     const saved = localStorage.getItem("notificationPreferences");
@@ -79,47 +78,10 @@ const Cellar = () => {
     return localStorage.getItem("hasClosedContactForm") === "true";
   });
 
-  // Function to reset account status (clear all user data)
-  const resetAccountStatus = () => {
-    // Clear all localStorage items
-    localStorage.removeItem("hasSharedContact");
-    localStorage.removeItem("hasClosedContactForm");
-    localStorage.removeItem("currentConversationId");
-    localStorage.removeItem("conversations");
-    localStorage.removeItem("messages");
 
-    // Force immediate state updates
-    setHasSharedContact(false);
-    setHasClosedContactForm(false);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-    });
 
-    // Force page reload to ensure clean state
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
-  };
 
-  // Close profile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (showProfileMenu) {
-        const target = event.target as Element;
-        if (!target.closest('[data-profile-menu]') && !target.closest('[data-profile-icon]')) {
-          setShowProfileMenu(false);
-        }
-      }
-    };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showProfileMenu]);
 
   const countries = [
     { name: "Afghanistan", dial_code: "+93", code: "AF", flag: "🇦🇫" },
@@ -734,24 +696,7 @@ const Cellar = () => {
               </svg>
             </div>
 
-            {/* Profile Icon */}
-            <div
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="cursor-pointer text-white/80 hover:text-white transition-all duration-200"
-              data-profile-icon
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="currentColor"
-                  d="M17.755 14a2.25 2.25 0 0 1 2.248 2.25v.575c0 .894-.32 1.759-.9 2.438c-1.57 1.833-3.957 2.738-7.103 2.738s-5.532-.905-7.098-2.74a3.75 3.75 0 0 1-.898-2.434v-.578A2.25 2.25 0 0 1 6.253 14zm0 1.5H6.252a.75.75 0 0 0-.75.75v.577c0 .535.192 1.053.54 1.46c1.253 1.469 3.22 2.214 5.957 2.214c2.739 0 4.706-.745 5.963-2.213a2.25 2.25 0 0 0 .54-1.463v-.576a.75.75 0 0 0-.748-.749M12 2.005a5 5 0 1 1 0 10a5 5 0 0 1 0-10m0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7"
-                />
-              </svg>
-            </div>
+
           </>
         }
       />
