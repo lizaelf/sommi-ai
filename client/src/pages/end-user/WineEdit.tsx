@@ -200,68 +200,14 @@ export default function WineEdit() {
       DataSyncManager.addOrUpdateWine(wineToSave);
       console.log('Successfully saved to unified data system');
 
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {isNewWine ? "Wine added" : "Wine updated"}
-          </span>
-        ),
-        duration: 2000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+      toastSuccess(isNewWine ? "Wine added" : "Wine updated");
 
       setLocation("/winery-tenant-admin");
     } catch (error) {
       console.error('Wine save failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {errorMessage}
-          </span>
-        ),
-        duration: 2000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+      toastError(errorMessage);
     }
   };
 
@@ -304,66 +250,12 @@ export default function WineEdit() {
         console.log("No individual wine data to remove:", e);
       }
 
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            Wine deleted
-          </span>
-        ),
-        duration: 5000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+      toastSuccess("Wine deleted");
 
       setLocation("/winery-tenant-admin");
     } catch (error) {
       console.error("Delete error:", error);
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            Failed to delete wine
-          </span>
-        ),
-        duration: 2000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+      toastError("Failed to delete wine");
     }
   };
 
@@ -520,7 +412,7 @@ export default function WineEdit() {
                     // Validate image file
                     const validation = validateImageFile(file);
                     if (!validation.valid) {
-                      toastInfo(validation.error);
+                      toastError(validation.error);
                       return;
                     }
                     
