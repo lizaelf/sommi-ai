@@ -331,6 +331,23 @@ body {
   /* This class excludes buttons from global styles */
 }
 
+/* Force secondary button styling - highest specificity */
+.react-button.w-full.h-14,
+button.react-button.w-full.h-14 {
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+}
+
+.react-button.w-full.h-14:hover,
+button.react-button.w-full.h-14:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  background-image: none !important;
+}
+
 button:not(.react-button) {
   all: unset;
   background: transparent !important;
