@@ -1597,7 +1597,7 @@ const Cellar = () => {
                     name="firstName"
                     placeholder="First name"
                     value={formData.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("firstName", e.target.value)}
                     error={!!errors.firstName}
                     errorMessage={errors.firstName}
                   />
@@ -1607,7 +1607,7 @@ const Cellar = () => {
                     name="lastName"
                     placeholder="Last name"
                     value={formData.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("lastName", e.target.value)}
                     error={!!errors.lastName}
                     errorMessage={errors.lastName}
                   />
@@ -1617,7 +1617,7 @@ const Cellar = () => {
                     name="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange("email", e.target.value)}
                     error={!!errors.email}
                     errorMessage={errors.email}
                   />
@@ -1864,7 +1864,7 @@ const Cellar = () => {
                       type="tel"
                       placeholder="Phone"
                       value={formData.phone}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleInputChange("phone", e.target.value)
                       }
                       error={!!errors.phone}

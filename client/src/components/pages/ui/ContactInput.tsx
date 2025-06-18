@@ -12,6 +12,8 @@ interface ContactInputProps {
   disabled?: boolean;
   required?: boolean;
   name?: string;
+  error?: boolean;
+  errorMessage?: string;
 }
 
 const ContactInput: React.FC<ContactInputProps> = ({
@@ -26,6 +28,8 @@ const ContactInput: React.FC<ContactInputProps> = ({
   disabled = false,
   required = false,
   name,
+  error = false,
+  errorMessage,
 }) => {
   return (
     <input
