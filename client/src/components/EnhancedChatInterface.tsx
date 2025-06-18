@@ -354,9 +354,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   };
 
   // Handler for ContactBottomSheet submission
-  const handleContactSubmit = async (data: ContactFormData) => {
+  const handleAuthSubmit = async (data: AuthFormData) => {
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -367,7 +367,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       const result = await response.json();
 
       if (result.success) {
-        localStorage.setItem("hasSharedContact", "true");
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("userEmail", data.email);
         setIsUserRegistered(true);
         handleCloseContactSheet();
 
@@ -381,7 +382,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 whiteSpace: "nowrap",
               }}
             >
-              Contact saved successfully!
+              Signed in successfully!
             </span>
           ),
           duration: 3000,
@@ -1106,10 +1107,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         )}
       </div>
 
-      <ContactBottomSheet
+      <AuthBottomSheet
         isOpen={showContactSheet}
         onClose={handleCloseContactSheet}
-        onSubmit={handleContactSubmit}
+        onSubmit={handleAuthSubmit}
+        mode="login"
       />
 
       {/* Hidden VoiceController for microphone functionality */}
