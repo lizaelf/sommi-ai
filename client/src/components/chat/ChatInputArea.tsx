@@ -47,9 +47,6 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
         <ChatInput
           onSendMessage={onSendMessage}
           isProcessing={isTyping}
-          onFocus={onKeyboardFocus}
-          onBlur={onKeyboardBlur}
-          onMicClick={onMicClick}
         />
       </div>
     </div>

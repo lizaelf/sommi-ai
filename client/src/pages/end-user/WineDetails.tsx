@@ -10,9 +10,9 @@ import {
   WineHistorySection,
   FoodPairingSection,
   BuyAgainSection,
-  WineRecommendationsSection,
-  WineChatSection
+  WineRecommendationsSection
 } from "@/components/wine-details";
+import { WineChatSection } from "@/components/chat";
 
 interface SelectedWine {
   id: number;

@@ -2,17 +2,7 @@ import React from 'react';
 import EnhancedChatInterface from './EnhancedChatInterface';
 
 interface WineChatSectionProps {
-  wine: any;
-  messages: any[];
-  isTyping: boolean;
-  hideSuggestions: boolean;
-  showChatInput: boolean;
-  isKeyboardFocused: boolean;
-  currentConversationId: number | null;
-  onSendMessage: (content: string) => Promise<void>;
-  onSuggestionClick: (content: string) => Promise<void>;
-  onKeyboardFocus: (focused: boolean) => void;
-  onToggleHideSuggestions: () => void;
+  wineId: string;
   isScannedPage: boolean;
 }
 
