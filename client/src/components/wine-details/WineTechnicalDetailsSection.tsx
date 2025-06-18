@@ -223,6 +223,7 @@ const WineTechnicalDetailsSection: React.FC<
         >
           <div
             style={{
+              position: "relative",
               display: "flex",
               alignItems: "center",
               gap: "12px",
