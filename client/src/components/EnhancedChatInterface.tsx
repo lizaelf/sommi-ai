@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/UseToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
+import ChatInputArea from "./ChatInputArea";
 import VoiceController from "./voice/VoiceController";
 import SuggestionPills from "./SuggestionPills";
 import Button from "./ui/Button";
@@ -1002,69 +1003,29 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           </div>
 
           {/* Input Area - Fixed to Bottom */}
-          <div
-            style={{
-              backgroundColor: "#1C1C1C",
-              padding: "16px",
-              zIndex: 50,
-              position: "fixed",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+          <ChatInputArea
+            showBuyButton={showBuyButton}
+            showChatInput={showChatInput}
+            currentWine={currentWine}
+            currentConversationId={currentConversationId}
+            isTyping={isTyping}
+            onBuyClick={() => {
+              if (currentWine?.buyAgainLink) {
+                window.open(currentWine.buyAgainLink, "_blank");
+              } else {
+                console.log("No buy again link available");
+              }
             }}
-          >
-            <div className="max-w-3xl mx-auto">
-              {showBuyButton && !showChatInput ? (
-                <Button
-                  onClick={() => {
-                    if (currentWine?.buyAgainLink) {
-                      window.open(currentWine.buyAgainLink, "_blank");
-                    } else {
-                      console.log("No buy again link available");
-                    }
-                  }}
-                  variant="primary"
-                  style={{
-                    margin: 0,
-                    width: "100%",
-                  }}
-                >
-                  Buy again
-                </Button>
-              ) : (
-                <>
-                  {/* Suggestion Pills from parsed table */}
-                  <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
-                    <SuggestionPills
-                      wineKey={currentWine ? `wine_${currentWine.id}` : "default"}
-                      conversationId={currentConversationId?.toString()}
-                      onSuggestionClick={(prompt, pillId, options) => {
-                        console.log("EnhancedChatInterface: SuggestionPills clicked:", prompt);
-                        // Use the button text for API call
-                        const apiPrompt = prompt;
-                        handleSuggestionClick(prompt, apiPrompt);
-                      }}
-                      isDisabled={isTyping}
-                      preferredResponseType="text"
-                      context="chat"
-                    />
-                  </div>
-                  <ChatInput
-                    onSendMessage={handleSendMessage}
-                    isProcessing={isTyping}
-                    onFocus={() => setIsKeyboardFocused(true)}
-                    onBlur={() => setIsKeyboardFocused(false)}
-                    onMicClick={() => {
-                      // Dispatch the voice assistant trigger event
-                      const event = new CustomEvent('triggerVoiceAssistant');
-                      window.dispatchEvent(event);
-                    }}
-                  />
-                </>
-              )}
-            </div>
-          </div>
+            onSendMessage={handleSendMessage}
+            onSuggestionClick={handleSuggestionClick}
+            onKeyboardFocus={() => setIsKeyboardFocused(true)}
+            onKeyboardBlur={() => setIsKeyboardFocused(false)}
+            onMicClick={() => {
+              // Dispatch the voice assistant trigger event
+              const event = new CustomEvent('triggerVoiceAssistant');
+              window.dispatchEvent(event);
+            }}
+          />
         </main>
 
         {/* Scroll to Bottom Floating Button */}

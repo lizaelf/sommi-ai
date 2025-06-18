@@ -1,30 +1,35 @@
-import React from "react";
-import ChatInput from "./ChatInput";
-import VoiceAssistant from "./VoiceAssistant";
-import SuggestionPills from "./SuggestionPills";
-import Button from "./ui/Button";
+import React from 'react';
+import Button from '@/components/ui/Button';
+import ChatInput from '@/components/ChatInput';
+import SuggestionPills from '@/components/SuggestionPills';
 
 interface ChatInputAreaProps {
   showBuyButton: boolean;
   showChatInput: boolean;
   currentWine?: any;
-  onSendMessage: (message: string) => void;
+  currentConversationId?: number;
   isTyping: boolean;
-  onKeyboardFocus: (focused: boolean) => void;
-  onSuggestionClick: (suggestion: string) => void;
-  conversationId?: string;
+  onBuyClick: () => void;
+  onSendMessage: (message: string) => void;
+  onSuggestionClick: (prompt: string, apiPrompt: string) => void;
+  onKeyboardFocus: () => void;
+  onKeyboardBlur: () => void;
+  onMicClick: () => void;
 }
 
-export default function ChatInputArea({
+const ChatInputArea: React.FC<ChatInputAreaProps> = ({
   showBuyButton,
   showChatInput,
   currentWine,
-  onSendMessage,
+  currentConversationId,
   isTyping,
-  onKeyboardFocus,
+  onBuyClick,
+  onSendMessage,
   onSuggestionClick,
-  conversationId,
-}: ChatInputAreaProps) {
+  onKeyboardFocus,
+  onKeyboardBlur,
+  onMicClick
+}) => {
   return (
     <div
       style={{
@@ -41,13 +46,7 @@ export default function ChatInputArea({
       <div className="max-w-3xl mx-auto">
         {showBuyButton && !showChatInput ? (
           <Button
-            onClick={() => {
-              if (currentWine?.buyAgainLink) {
-                window.open(currentWine.buyAgainLink, "_blank");
-              } else {
-                console.log("No buy again link available");
-              }
-            }}
+            onClick={onBuyClick}
             variant="primary"
             style={{
               margin: 0,
@@ -62,10 +61,12 @@ export default function ChatInputArea({
             <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
               <SuggestionPills
                 wineKey={currentWine ? `wine_${currentWine.id}` : "default"}
-                conversationId={conversationId}
+                conversationId={currentConversationId?.toString()}
                 onSuggestionClick={(prompt, pillId, options) => {
                   console.log("ChatInputArea: SuggestionPills clicked:", prompt);
-                  onSuggestionClick(prompt);
+                  // Use the button text for API call
+                  const apiPrompt = prompt;
+                  onSuggestionClick(prompt, apiPrompt);
                 }}
                 isDisabled={isTyping}
                 preferredResponseType="text"
@@ -75,18 +76,15 @@ export default function ChatInputArea({
             <ChatInput
               onSendMessage={onSendMessage}
               isProcessing={isTyping}
-              onFocus={() => onKeyboardFocus(true)}
-              onBlur={() => onKeyboardFocus(false)}
-              voiceButtonComponent={
-                <VoiceAssistant
-                  onSendMessage={onSendMessage}
-                  isProcessing={isTyping}
-                />
-              }
+              onFocus={onKeyboardFocus}
+              onBlur={onKeyboardBlur}
+              onMicClick={onMicClick}
             />
           </>
         )}
       </div>
     </div>
   );
-}
+};
+
+export default ChatInputArea;

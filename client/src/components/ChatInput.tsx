@@ -134,13 +134,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                 opacity: isProcessing ? 0.5 : 1
               }}
             />
-          ) : (
+          ) : onMicClick ? (
             <MicrophoneButton
-              onClick={onMicClick}
+              onClick={() => onMicClick()}
               isProcessing={isProcessing}
               title="Voice input"
             />
-          )}
+          ) : null}
         </div>
       </div>
     </div>
