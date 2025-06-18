@@ -28,7 +28,7 @@ const FoodPairingCard: React.FC<FoodPairingCardProps> = ({ image, title, descrip
         backgroundSize: "cover",
         backgroundPosition: "center",
         borderRadius: "16px 16px 0 0",
-        margin: "10px auto 0",
+        margin: "0 auto",
       }} />
       
       {/* Content container */}
