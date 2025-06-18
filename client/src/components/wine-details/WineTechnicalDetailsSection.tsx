@@ -218,7 +218,7 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
           transform: "translate(-50%, -50%)",
           width: "240px",
           height: "240px",
-          background: "radial-gradient(circle, rgba(139, 69, 19, 0.3) 0%, rgba(139, 69, 19, 0.1) 50%, transparent 100%)",
+          background: "radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%)",
           borderRadius: "50%",
           filter: "blur(40px)",
           zIndex: 0,
