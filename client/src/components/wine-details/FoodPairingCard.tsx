@@ -21,14 +21,13 @@ const FoodPairingCard: React.FC<FoodPairingCardProps> = ({ image, title, descrip
     }}>
       {/* Image container */}
       <div style={{
-        width: "100px",
-        height: "100px",
+        width: "100%",
+        flex: 1,
         backgroundColor: "#2a2a2a",
         backgroundImage: `url(${image})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         borderRadius: "16px 16px 0 0",
-        margin: "0 auto",
       }} />
       
       {/* Content container */}
