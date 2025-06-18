@@ -118,8 +118,8 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
               Varietal
             </span>
             <span style={{
-              ...typography.body,
-              color: "white",
+              ...typography.body1M,
+              color: "rgba(255, 255, 255, 0.6)",
             }}>
               {wine?.technicalDetails?.varietal ? 
                 `${wine.technicalDetails.varietal.primary} ${wine.technicalDetails.varietal.primaryPercentage}%${wine.technicalDetails.varietal.secondary ? `, ${wine.technicalDetails.varietal.secondary} ${wine.technicalDetails.varietal.secondaryPercentage}%` : ''}` :
