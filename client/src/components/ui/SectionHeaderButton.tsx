@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "./Button";
 
 interface SectionHeaderButtonProps {
   children: React.ReactNode;
@@ -16,40 +17,16 @@ const SectionHeaderButton: React.FC<SectionHeaderButtonProps> = ({
   style = {},
 }) => {
   return (
-    <button
+    <Button
+      variant="secondary"
+      size="xs"
       onClick={onClick}
       disabled={disabled}
-      className={className}
-      style={{
-        width: "auto",
-        flexShrink: 0,
-        whiteSpace: "nowrap",
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
-        border: "none",
-        padding: "8px 16px",
-        fontSize: "14px",
-        fontWeight: 400,
-        color: "white",
-        borderRadius: "20px",
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.6 : 1,
-        outline: "none",
-        transition: "background-color 0.2s ease, opacity 0.2s ease",
-        ...style,
-      }}
-      onMouseEnter={(e) => {
-        if (!disabled) {
-          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!disabled) {
-          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
-        }
-      }}
+      className={`w-auto flex-shrink-0 whitespace-nowrap ${className}`}
+      style={style}
     >
       {children}
-    </button>
+    </Button>
   );
 };
 
