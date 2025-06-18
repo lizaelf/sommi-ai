@@ -52,6 +52,12 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use('/@assets', express.static(join(__dirname, '..', 'attached_assets')));
 app.use('/@assets', express.static(join(__dirname, '..', 'public', 'attached_assets')));
 
+// Serve food category images
+app.use('/food-categories', express.static(join(__dirname, '..', 'public', 'food-categories')));
+
+// Serve wine type images
+app.use('/wine-types', express.static(join(__dirname, '..', 'public', 'wine-types')));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
