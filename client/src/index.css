@@ -381,6 +381,26 @@ button.react-button.w-full.h-14:not([data-variant="brand"]):hover {
   background-image: none !important;
 }
 
+/* Secondary button variant specific overrides */
+.react-button[data-variant="secondary"],
+button.react-button[data-variant="secondary"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 100px !important;
+}
+
+.react-button[data-variant="secondary"]:hover,
+button.react-button[data-variant="secondary"]:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+}
+
 /* Brand button styling - override with highest specificity */
 .react-button[data-variant="brand"],
 button.react-button[data-variant="brand"] {
