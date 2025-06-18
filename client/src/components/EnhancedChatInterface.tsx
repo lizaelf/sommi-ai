@@ -910,6 +910,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       onClick={() => setShowContactSheet(true)}
                       variant="secondary"
                       className="w-full h-14 !bg-white/8 !text-white hover:!bg-white/16"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 5,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "normal",
+                        wordBreak: "break-word",
+                      }}
                     >
                       View chat history
                     </Button>
