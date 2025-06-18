@@ -6,7 +6,7 @@ import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import typography from "@/styles/typography";
 import {
-  WineDetailsHeader,
+  WineDetailsHero,
   WineHistorySection,
   FoodPairingSection,
   BuyAgainSection,
@@ -187,8 +187,8 @@ export default function WineDetails() {
       <AppHeader />
       <HeaderSpacer />
 
-      {/* Wine Details Header Section */}
-      <WineDetailsHeader wine={wine} />
+      {/* Wine Details Hero Section */}
+      <WineDetailsHero wine={wine} />
 
       {/* Wine History Section */}
       <WineHistorySection description={wine?.description} />

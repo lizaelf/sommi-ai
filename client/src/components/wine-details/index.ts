@@ -1,4 +1,4 @@
-export { default as WineDetailsHeader } from './WineDetailsHeader';
+export { default as WineDetailsHero } from './WineDetailsHero';
 export { default as WineInfoSection } from './WineInfoSection';
 export { default as WineHistorySection } from './WineHistorySection';
 export { default as FoodPairingSection } from './FoodPairingSection';
