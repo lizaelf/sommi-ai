@@ -1659,6 +1659,94 @@ Provide 6 detailed tasting note categories with professional sommelier-level des
     }
   });
 
+  // AI Food Pairing Generation Endpoint
+  app.post("/api/generate-food-pairings", async (req, res) => {
+    try {
+      console.log("Received AI food pairing generation request");
+      
+      const { wineName, wineYear, wineLocation, wineDescription, abv } = req.body;
+      
+      if (!wineName) {
+        return res.status(400).json({ error: "Wine name is required" });
+      }
+
+      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a professional sommelier and culinary expert. Generate detailed, authentic food pairing recommendations for wines. Return your response as a JSON object with a "foodPairings" array containing objects with: id (unique string), category (food category like "Appetizers", "Main Course", etc.), dish (specific dish name), description (detailed description of the dish), pairing_reason (why this pairs well with the wine), and intensity (number 1-10 indicating pairing strength).
+
+Focus on creating diverse, sophisticated pairings across different categories. Provide professional explanations that a sommelier would use.`
+          },
+          {
+            role: "user",
+            content: `Generate professional food pairing recommendations for: ${wineYear ? wineYear + ' ' : ''}${wineName}${wineLocation ? ' from ' + wineLocation : ''}${abv ? ' (ABV: ' + abv + '%)' : ''}${wineDescription ? '. Wine description: ' + wineDescription : ''}. 
+
+Provide 8-10 detailed food pairings across different categories (appetizers, main courses, desserts, etc.) with professional sommelier-level explanations and appropriate intensity ratings.`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+        max_tokens: 2000
+      });
+
+      const content = response.choices[0].message.content;
+      if (!content) {
+        throw new Error("No content received from OpenAI");
+      }
+
+      let foodPairingData;
+      try {
+        foodPairingData = JSON.parse(content);
+      } catch (parseError) {
+        console.error("Failed to parse OpenAI response:", content);
+        throw new Error("Invalid JSON response from AI");
+      }
+
+      // Validate and format the response
+      if (!foodPairingData.foodPairings || !Array.isArray(foodPairingData.foodPairings)) {
+        throw new Error("Invalid food pairings format from AI");
+      }
+
+      // Ensure each pairing has proper structure
+      const formattedPairings = foodPairingData.foodPairings.map((pairing: any, index: number) => ({
+        id: pairing.id || `pairing-${index + 1}`,
+        category: pairing.category || "Main Course",
+        dish: pairing.dish || pairing.name || "Specialty Dish",
+        description: pairing.description || "A carefully crafted dish",
+        pairing_reason: pairing.pairing_reason || pairing.reason || "Complements the wine's characteristics",
+        intensity: Math.min(10, Math.max(1, pairing.intensity || 7))
+      }));
+
+      console.log(`Generated ${formattedPairings.length} food pairings for ${wineName}`);
+      
+      res.json({
+        foodPairings: formattedPairings,
+        wine: {
+          name: wineName,
+          year: wineYear,
+          location: wineLocation
+        }
+      });
+
+    } catch (error) {
+      console.error("Error generating food pairings:", error);
+      
+      // Check for quota errors
+      if (error instanceof Error && error.message.includes("quota")) {
+        return res.status(429).json({ 
+          error: "API quota exceeded. Please try again later." 
+        });
+      }
+      
+      res.status(500).json({ 
+        error: "Failed to generate food pairings. Please try again." 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
