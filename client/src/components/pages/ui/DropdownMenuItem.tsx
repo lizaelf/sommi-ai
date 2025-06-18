@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import typography from "../styles/typography";
+import typography from "@/styles/typography";
 
 interface DropdownMenuItemProps {
   children: ReactNode;

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/UseToast";
-import Button from "../../../components/ui/Button";
-import { IconButton } from "../../../components/ui/IconButton";
+import Button from "./Button";
+import { IconButton } from "./IconButton";
 import { DropdownMenuItem } from "./DropdownMenuItem";
 import colors from "@/styles/colors";
 import typography from "@/styles/typography";
@@ -64,7 +64,7 @@ export function ButtonIcon({
         
         // Clear only chat history from IndexedDB, preserve wine data
         try {
-          const { default: indexedDBService } = await import('../lib/indexedDB');
+          const { default: indexedDBService } = await import('@/lib/indexedDB');
           await indexedDBService.clearChatHistory();
           console.log('Chat history cleared from IndexedDB, wine data preserved');
         } catch (idbError) {
