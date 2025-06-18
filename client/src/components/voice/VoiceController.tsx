@@ -135,14 +135,6 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
           // Generate and play a sample response
           handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
           
-          // Step 4: After response finishes, show Ask button and suggestions
-          setTimeout(() => {
-            setIsResponding(false);
-            setIsPlayingAudio(false);
-            setShowAskButton(true);
-            setShowUnmuteButton(false);
-          }, 8000); // 8 seconds for response playback
-          
         }, 2000); // 2 seconds thinking
       }, 3000); // 3 seconds listening
     };
@@ -195,12 +187,26 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       
       if (audioUrl && !isManuallyClosedRef.current) {
         const audio = new Audio(audioUrl);
+        audio.volume = 1.0; // Ensure maximum volume
+        audio.preload = 'auto';
         currentAudioRef.current = audio;
         setIsPlayingAudio(true);
         setIsResponding(true);
         setShowUnmuteButton(false);
         
-        console.log("🎵 Starting audio playback...");
+        console.log("🎵 Starting audio playback with volume:", audio.volume);
+        
+        // Ensure audio context is unlocked for playback
+        if (typeof window !== 'undefined' && window.AudioContext) {
+          try {
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+              audioContext.resume();
+            }
+          } catch (e) {
+            console.log("AudioContext not available, proceeding with direct audio play");
+          }
+        }
         
         audio.play()
           .then(() => {
@@ -218,10 +224,18 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
           })
           .catch(error => {
             console.error("🎵 Audio playback failed:", error);
-            setIsPlayingAudio(false);
-            setIsResponding(false);
-            setShowAskButton(true);
-            URL.revokeObjectURL(audioUrl);
+            console.log("🎵 Attempting fallback audio play...");
+            
+            // Fallback: try to play again after a short delay
+            setTimeout(() => {
+              audio.play().catch(fallbackError => {
+                console.error("🎵 Fallback audio play also failed:", fallbackError);
+                setIsPlayingAudio(false);
+                setIsResponding(false);
+                setShowAskButton(true);
+                URL.revokeObjectURL(audioUrl);
+              });
+            }, 100);
           });
       } else {
         console.log("🎵 No audio URL or manually closed");
