@@ -22,7 +22,6 @@ import {
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
 
-
 // Extend Window interface to include voiceAssistant
 declare global {
   interface Window {
@@ -64,6 +63,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 }) => {
   const [currentWine, setCurrentWine] = useState<any>(selectedWine || null);
   const [isComponentReady, setIsComponentReady] = useState(false);
+  const [isUserRegistered, setIsUserRegistered] = useState(false); // FIX: Define missing variable
 
   // Initialize component and signal when ready
   useEffect(() => {
@@ -107,162 +107,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       }
     }
   }, [selectedWine, onReady]);
-
-  // Check if user is authenticated
-  const [isUserRegistered, setIsUserRegistered] = useState(() => {
-    return localStorage.getItem("isAuthenticated") === "true";
-  });
-
-  // State to control showing chat input interface instead of contact form
-  const [showChatInput, setShowChatInput] = useState(true);
-
-  // State for contact bottom sheet
-  const [showContactSheet, setShowContactSheet] = useState(false);
-  const [animationState, setAnimationState] = useState<
-    "closed" | "opening" | "open" | "closing"
-  >("closed");
-  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-
-  const [selectedCountry, setSelectedCountry] = useState({
-    dial_code: "+1",
-    flag: "🇺🇸",
-    name: "United States",
-    code: "US",
-  });
-
-  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const [countrySearchQuery, setCountrySearchQuery] = useState("");
-
-  // Set up portal element for contact bottom sheet
-  useEffect(() => {
-    const portal = document.createElement("div");
-    document.body.appendChild(portal);
-    setPortalElement(portal);
-
-    return () => {
-      document.body.removeChild(portal);
-    };
-  }, []);
-
-  const handleCloseContactSheet = () => {
-    setShowContactSheet(false);
-    setAnimationState("closing");
-    setTimeout(() => setAnimationState("closed"), 300);
-  };
-
-  // Form validation and handling
-  const validateForm = () => {
-    const newErrors = {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-    };
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    }
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((error) => error === "");
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          phone: `${selectedCountry.dial_code}${formData.phone}`,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        localStorage.setItem("hasSharedContact", "true");
-        setIsUserRegistered(true);
-        handleCloseContactSheet();
-
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Contact saved successfully!
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "91px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
-      } else {
-        console.error("Failed to save contact:", data);
-        if (data.errors) {
-          setErrors(data.errors);
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
 
   // Simplified content formatter for lists and bold text
   const formatContent = (content: string, isUserMessage = false) => {
@@ -316,11 +160,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           elements.push(
             <div
               key={i}
-              style={{ 
-                marginBottom: isUserMessage ? "0px" : "8px", 
+              style={{
+                marginBottom: isUserMessage ? "0px" : "8px",
                 whiteSpace: "pre-wrap",
                 color: isUserMessage ? "#000000" : "rgba(255, 255, 255, 0.8)",
-                ...typography.body
+                ...typography.body,
               }}
             >
               {formatText(line)}
@@ -352,8 +196,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
     return <>{elements}</>;
   };
-
-
 
   // Use conversation hook
   const {
@@ -409,9 +251,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     const handleAddChatMessage = async (event: Event) => {
       const customEvent = event as CustomEvent;
       const { userMessage, assistantMessage } = customEvent.detail;
-      
+
       console.log("EnhancedChatInterface: Received cached suggestion messages");
-      
+
       // Add both messages to the conversation
       if (userMessage) {
         await addMessage(userMessage);
@@ -419,10 +261,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       if (assistantMessage) {
         await addMessage(assistantMessage);
       }
-      
+
       // Hide suggestions after use
       setHideSuggestions(true);
-      
+
       // Refresh messages to ensure they appear
       refetchMessages();
     };
@@ -440,7 +282,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [hideSuggestions, setHideSuggestions] = useState(false);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
-  
+
   // Voice assistant state
   const [voiceControllerRef, setVoiceControllerRef] = useState<any>(null);
   const [, setLocation] = useLocation();
@@ -525,22 +367,30 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   }, [messages.length]);
 
   // Handle suggestion button clicks - TEXT ONLY responses
-  const handleSuggestionClick = async (displayText: string, apiPrompt?: string) => {
+  const handleSuggestionClick = async (
+    displayText: string,
+    apiPrompt?: string,
+  ) => {
     const content = displayText;
     const apiContent = apiPrompt || displayText;
-    
+
     if (content.trim() === "" || !currentConversationId) return;
 
-    console.log("EnhancedChatInterface: Handling text-only suggestion:", content, "API prompt:", apiContent);
-    
+    console.log(
+      "EnhancedChatInterface: Handling text-only suggestion:",
+      content,
+      "API prompt:",
+      apiContent,
+    );
+
     // Expand chat to show full conversation history
     setShowFullConversation(true);
-    
+
     // Enable text-only mode to prevent automatic voice responses
     if ((window as any).voiceAssistant?.setTextOnlyMode) {
       (window as any).voiceAssistant.setTextOnlyMode(true);
     }
-    
+
     setHideSuggestions(true);
     setIsTyping(true);
 
@@ -564,7 +414,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         disable_audio: true, // Explicitly disable any audio processing
       };
 
-      console.log("EnhancedChatInterface: Sending text-only request:", requestBody);
+      console.log(
+        "EnhancedChatInterface: Sending text-only request:",
+        requestBody,
+      );
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -593,7 +446,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         };
 
         await addMessage(assistantMessage);
-        console.log("EnhancedChatInterface: Text-only response added successfully");
+        console.log(
+          "EnhancedChatInterface: Text-only response added successfully",
+        );
       }
 
       refetchMessages();
@@ -606,7 +461,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       });
     } finally {
       setIsTyping(false);
-      
+
       // Disable text-only mode after processing
       if ((window as any).voiceAssistant?.setTextOnlyMode) {
         (window as any).voiceAssistant.setTextOnlyMode(false);
@@ -620,7 +475,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
     // Expand chat to show full conversation history
     setShowFullConversation(true);
-    
+
     setHideSuggestions(true);
     setIsTyping(true);
 
@@ -793,10 +648,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   }
 
   return (
-    <div
-      className="flex flex-col h-auto"
-      style={{ width: "100%" }}
-    >
+    <div className="flex flex-col h-auto" style={{ width: "100%" }}>
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Chat Area */}
@@ -816,14 +668,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             {/* Conversation Content */}
             <div style={{ width: "100%" }}>
               {/* Chat Title */}
-              <div style={{ 
-                marginBottom: "16px", 
-                paddingLeft: "16px", 
-                paddingRight: "16px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}>
+              <div
+                style={{
+                  marginBottom: "16px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
                 <h1
                   style={{
                     color: "white",
@@ -837,15 +691,23 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <SectionHeaderButton
                   onClick={() => {
                     // Navigate to dedicated chat page
-                    window.location.href = '/chat';
+                    window.location.href = "/chat";
                   }}
                 >
                   See all
                 </SectionHeaderButton>
               </div>
-              
-              <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", width: "100%" }}>
-{showFullConversation || messages.length > 0 ? (
+
+              <div
+                id="conversation"
+                className="space-y-4 mb-96"
+                style={{
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  width: "100%",
+                }}
+              >
+                {showFullConversation || messages.length > 0 ? (
                   <>
                     {/* Show full conversation history when expanded */}
                     {messages.map((message: any, index: number) => (
@@ -866,7 +728,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                                 ? "#DBDBDB"
                                 : "transparent",
                             borderRadius: "16px",
-                            padding: message.role === "user" ? "16px" : "0 0 16px 0",
+                            padding:
+                              message.role === "user" ? "16px" : "0 0 16px 0",
                             width:
                               message.role === "user" ? "fit-content" : "100%",
                             maxWidth: message.role === "user" ? "80%" : "100%",
@@ -895,7 +758,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       </div>
                     ))}
                   </>
-                ) : (!isScannedPage && !isUserRegistered) ? (
+                ) : !isScannedPage && !isUserRegistered ? (
                   <div
                     style={{
                       display: "flex",
@@ -961,7 +824,20 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             textOverflow: "ellipsis",
                           }}
                         >
-                          This 2021 Ridge "Lytton Springs" Dry Creek Zinfandel is exceptional because it comes from one of Sonoma County's most prestigious vineyard sites. The Lytton Springs vineyard has been producing world-class Zinfandel since the 1970s, with old-vine fruit that delivers incredible concentration and complexity. The wine showcases the classic Dry Creek Valley terroir with its rich blackberry and raspberry notes, complemented by the signature peppery spice that makes Zinfandel so distinctive. Ridge's traditional winemaking approach, including fermentation with native yeasts and aging in American oak, allows the vineyard's unique character to shine through in every bottle.
+                          This 2021 Ridge "Lytton Springs" Dry Creek Zinfandel
+                          is exceptional because it comes from one of Sonoma
+                          County's most prestigious vineyard sites. The Lytton
+                          Springs vineyard has been producing world-class
+                          Zinfandel since the 1970s, with old-vine fruit that
+                          delivers incredible concentration and complexity. The
+                          wine showcases the classic Dry Creek Valley terroir
+                          with its rich blackberry and raspberry notes,
+                          complemented by the signature peppery spice that makes
+                          Zinfandel so distinctive. Ridge's traditional
+                          winemaking approach, including fermentation with
+                          native yeasts and aging in American oak, allows the
+                          vineyard's unique character to shine through in every
+                          bottle.
                         </div>
                       </div>
                     </div>
@@ -1019,7 +895,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             isTyping={isTyping}
             onSendMessage={handleSendMessage}
             onSuggestionClick={handleSuggestionClick}
-            onKeyboardFocus={(focused: boolean) => setIsKeyboardFocused(focused)}
+            onKeyboardFocus={(focused: boolean) =>
+              setIsKeyboardFocused(focused)
+            }
           />
         </main>
 
@@ -1045,228 +923,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         )}
       </div>
 
-
-
       {/* VoiceController for microphone functionality */}
       <VoiceController
         onSendMessage={handleSendMessage}
         isProcessing={isTyping}
         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
       />
-
-      {/* Legacy Contact Bottom Sheet - keeping for reference but commented out */}
-      {false && animationState !== "closed" &&
-        portalElement &&
-        createPortal(
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              zIndex: 9999,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-end",
-              opacity:
-                animationState === "open"
-                  ? 1
-                  : animationState === "opening"
-                    ? 0.8
-                    : 0,
-              transition: "opacity 0.3s ease-out",
-            }}
-            onClick={handleCloseContactSheet}
-          >
-            <div
-              style={{
-                background:
-                  "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
-                backdropFilter: "blur(20px)",
-                width: "100%",
-                maxWidth: "500px",
-                borderRadius: "24px 24px 0px 0px",
-                borderTop: "1px solid rgba(255, 255, 255, 0.20)",
-                paddingTop: "24px",
-                paddingLeft: "24px",
-                paddingRight: "24px",
-                paddingBottom: "28px",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
-                transform:
-                  animationState === "open"
-                    ? "translateY(0)"
-                    : "translateY(100%)",
-                transition: "transform 0.3s ease-out",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <Button
-                onClick={handleCloseContactSheet}
-                variant="secondary"
-                size="icon"
-                className="absolute top-4 right-4 z-10 w-10 h-10 p-0 rounded-full"
-              >
-                <X size={24} color="white" />
-              </Button>
-
-              {/* Header */}
-              <div style={{ marginBottom: "24px", marginTop: "0px" }}>
-                <h2
-                  style={{
-                    color: "white",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "20px",
-                    fontWeight: 500,
-                    textAlign: "center",
-                    margin: "0 0 12px 0",
-                  }}
-                >
-                  Want to see wine history?
-                </h2>
-
-                <p
-                  style={{
-                    color: "#CECECE",
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "16px",
-                    fontWeight: 400,
-                    lineHeight: "1.3",
-                    textAlign: "center",
-                    margin: "0 0 8px 0",
-                  }}
-                >
-                  Enter your contact info
-                </p>
-              </div>
-
-              {/* Form Fields */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                <FormInput
-                  type="text"
-                  name="firstName"
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={(value) => handleInputChange("firstName", value)}
-                  error={errors.firstName}
-                />
-
-                <FormInput
-                  type="text"
-                  name="lastName"
-                  placeholder="Last name"
-                  value={formData.lastName}
-                  onChange={(value) => handleInputChange("lastName", value)}
-                  error={errors.lastName}
-                />
-
-                <FormInput
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(value) => handleInputChange("email", value)}
-                  error={errors.email}
-                />
-
-                {/* Phone number with country selector */}
-                <div style={{ position: "relative" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      height: "64px",
-                      width: "100%",
-                      boxSizing: "border-box",
-                    }}
-                    className="contact-form-input"
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        paddingLeft: "24px",
-                        paddingRight: "12px",
-                        cursor: "pointer",
-                        borderRight: "1px solid rgba(255, 255, 255, 0.2)",
-                      }}
-                      onClick={() => setShowCountryDropdown(true)}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <span style={{ fontSize: "16px" }}>
-                          {selectedCountry.flag}
-                        </span>
-                        <span
-                          style={{
-                            color: "white",
-                            fontFamily: "Inter, sans-serif",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {selectedCountry.dial_code}
-                        </span>
-                      </div>
-                    </div>
-                    <FormInput
-                      type="tel"
-                      name="phone"
-                      placeholder="Phone number"
-                      value={formData.phone}
-                      onChange={(value) => handleInputChange("phone", value)}
-                      error={errors.phone}
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-
-                {/* Save Button */}
-                <div
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  <button
-                    onClick={handleSubmit}
-                    className="save-button"
-                    style={{
-                      width: "100%",
-                      height: "56px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "black",
-                      fontFamily: "Inter, sans-serif",
-                      fontSize: "16px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>,
-          portalElement || document.body
-        )}
     </div>
   );
 };

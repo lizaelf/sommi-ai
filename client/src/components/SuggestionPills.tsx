@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
-import Button from "@/components/ui/Button";
+import { ChatQuestion } from "@/components/chat";
 import typography from "@/styles/typography";
 import wineResponses from "../../../shared/wineResponses.json";
 
@@ -766,47 +766,19 @@ export default function SuggestionPills({
         const isRecentlyUsed = usedPills.has(pill.id);
 
         return (
-          <Button
+          <ChatQuestion
             key={`${context}-${pill.id}`}
-            variant="suggestion"
-            disabled={isDisabled || isProcessing || isRecentlyUsed}
+            text={pill.text}
             onClick={() => handlePillClick(pill)}
-            className={`suggestion-pill-button react-button
+            disabled={isDisabled || isProcessing || isRecentlyUsed}
+            loading={showFallback}
+            variant="suggestion"
+            className={`suggestion-pill-button
               ${isLoading ? 'opacity-70' : isRecentlyUsed ? 'opacity-60' : 'opacity-100'}
               ${preGenStatus === "ready" && context === "voice-assistant" ? 'bg-gradient-to-br from-blue-600 to-blue-700' : ''}
               ${isRecentlyUsed ? 'bg-gray-100' : ''}
             `}
-            style={{
-              ...typography.buttonPlus1,
-              minWidth: "fit-content",
-              transition: "none",
-              position: "relative",
-            }}
-          >
-            {showFallback ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "12px",
-                    height: "12px",
-                    border: "2px solid #e5e7eb",
-                    borderTop: "2px solid #3b82f6",
-                    borderRadius: "50%",
-                    animation: "spin 1s linear infinite",
-                  }}
-                />
-                Loading...
-              </div>
-            ) : (
-              pill.text
-            )}
-          </Button>
+          />
         );
       })}
     </div>
