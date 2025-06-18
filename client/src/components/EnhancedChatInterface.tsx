@@ -21,7 +21,7 @@ import {
   isStreamingSupported,
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
-import AuthBottomSheet, { AuthFormData } from "./AuthBottomSheet";
+
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -353,76 +353,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     return <>{elements}</>;
   };
 
-  // Handler for AuthBottomSheet submission
-  const handleAuthSubmit = async (data: AuthFormData) => {
-    try {
-      const endpoint = data.mode === 'signup' ? '/api/auth/register' : '/api/auth/login';
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-          username: data.email.split('@')[0] // Use email prefix as username for registration
-        }),
-      });
 
-      const result = await response.json();
-
-      if (result.success) {
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("userEmail", data.email);
-        localStorage.setItem("userId", result.user.id.toString());
-        setIsUserRegistered(true);
-        handleCloseContactSheet();
-
-        const successMessage = data.mode === 'signup' ? 'Account created successfully!' : 'Signed in successfully!';
-        
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {successMessage}
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "91px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
-      } else {
-        console.error("Authentication failed:", result);
-        toast({
-          description: result.error || "Authentication failed",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Error during authentication:", error);
-      toast({
-        description: "Network error during authentication",
-        variant: "destructive",
-      });
-    }
-  };
 
   // Use conversation hook
   const {
@@ -1115,12 +1046,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         )}
       </div>
 
-      <AuthBottomSheet
-        isOpen={showContactSheet}
-        onClose={handleCloseContactSheet}
-        onSubmit={handleAuthSubmit}
-        mode="login"
-      />
+
 
       {/* Hidden VoiceController for microphone functionality */}
       <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', visibility: 'hidden' }}>
