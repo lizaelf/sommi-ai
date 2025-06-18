@@ -449,10 +449,20 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       onSuggestionClick={(suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
         console.log("VoiceController: Handling suggestion click:", suggestion);
         
+        // Set states for voice response with Stop button
+        setShowAskButton(false);
+        setIsListening(false);
+        setIsThinking(false);
+        setIsResponding(true);
+        setIsPlayingAudio(true);
+        setShowUnmuteButton(false);
+        
         // Handle voice suggestion with TTS
         if (options?.instantResponse) {
+          console.log("VoiceController: Playing instant response with TTS");
           handleVoiceResponse(options.instantResponse);
         } else if (onSendMessage) {
+          console.log("VoiceController: Sending message for API response");
           onSendMessage(suggestion);
         }
       }}
