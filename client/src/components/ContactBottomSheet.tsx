@@ -108,17 +108,8 @@ export default function ContactBottomSheet({
         <Button
           onClick={onClose}
           variant="secondary"
-          style={{
-            position: "absolute",
-            top: "16px",
-            right: "16px",
-            zIndex: 10,
-            width: "40px",
-            height: "40px",
-            padding: "0",
-            minHeight: "40px",
-            borderRadius: "20px",
-          }}
+          size="icon"
+          className="absolute top-4 right-4 z-10 w-10 h-10 p-0 rounded-full"
         >
           <X size={24} color="white" />
         </Button>

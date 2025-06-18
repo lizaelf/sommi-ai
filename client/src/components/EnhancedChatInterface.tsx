@@ -898,11 +898,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     <Button
                       onClick={() => setShowContactSheet(true)}
                       variant="secondary"
-                      style={{
-                        width: "100%",
-                        height: "56px",
-                        padding: "12px 24px",
-                      }}
+                      className="w-full h-14"
                     >
                       View chat history
                     </Button>
@@ -1026,19 +1022,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           <Button
             onClick={scrollToBottom}
             variant="secondary"
-            style={{
-              position: "fixed",
-              bottom: "100px",
-              right: "20px",
-              width: "48px",
-              height: "48px",
-              borderRadius: "24px",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
-              zIndex: 1000,
-              backdropFilter: "blur(8px)",
-              padding: "0",
-              minHeight: "48px",
-            }}
+            size="icon"
+            className="fixed bottom-[100px] right-5 w-12 h-12 rounded-3xl shadow-lg z-[1000] backdrop-blur-sm p-0"
           >
             <svg
               width="20"
@@ -1123,17 +1108,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               <Button
                 onClick={handleCloseContactSheet}
                 variant="secondary"
-                style={{
-                  position: "absolute",
-                  top: "16px",
-                  right: "16px",
-                  zIndex: 10,
-                  width: "40px",
-                  height: "40px",
-                  padding: "0",
-                  minHeight: "40px",
-                  borderRadius: "20px",
-                }}
+                size="icon"
+                className="absolute top-4 right-4 z-10 w-10 h-10 p-0 rounded-full"
               >
                 <X size={24} color="white" />
               </Button>
