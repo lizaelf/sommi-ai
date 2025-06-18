@@ -99,10 +99,10 @@ export default function ButtonShowcase() {
           
           <div className="flex gap-4 items-center">
             <h3 className="text-sm font-medium w-24">With Text:</h3>
-            <IconButton icon={Mic} variant="secondaryFilled" size="default">
+            <IconButton icon={Mic} variant="secondary" size="default">
               Voice Assistant
             </IconButton>
-            <IconButton icon={Settings} variant="tertiary" size="default">
+            <IconButton icon={Settings} variant="secondary" size="default">
               Settings
             </IconButton>
           </div>
@@ -125,8 +125,8 @@ import { Settings } from "lucide-react";
 // Secondary actions (cancel, back, alternative actions)
 <Button variant="secondary">View Details</Button>
 
-// Filled secondary for emphasis without primary weight
-<Button variant="secondaryFilled">Add to Collection</Button>
+// Secondary for emphasis without primary weight
+<Button variant="secondary">Add to Collection</Button>
 
 // Destructive actions
 <Button variant="error">Delete Account</Button>
