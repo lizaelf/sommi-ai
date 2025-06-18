@@ -58,12 +58,16 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     const checkVoiceAssistantState = () => {
       const voiceAssistant = (window as any).voiceAssistantState;
       if (voiceAssistant) {
-        console.log("🎯 CircleAnimation: Global state check:", {
-          globalListening: voiceAssistant.isListening,
-          globalProcessing: voiceAssistant.isProcessing,
-          localListening: isListening,
-          localProcessing: isProcessing
-        });
+        // Only log significant state changes to reduce console spam
+        const hasChange = (voiceAssistant.isListening !== isListening) || (voiceAssistant.isProcessing !== isProcessing);
+        if (hasChange) {
+          console.log("🎯 CircleAnimation: State change detected:", {
+            globalListening: voiceAssistant.isListening,
+            globalProcessing: voiceAssistant.isProcessing,
+            localListening: isListening,
+            localProcessing: isProcessing
+          });
+        }
         
         if (voiceAssistant.isListening && !isListening) {
           console.log("🎯 CircleAnimation: Setting listening from global state");
@@ -86,7 +90,7 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
       }
     };
 
-    const intervalId = setInterval(checkVoiceAssistantState, 250); // reduced frequency
+    const intervalId = setInterval(checkVoiceAssistantState, 1000); // reduced to 1 second to prevent loops
 
     const handleMicStatusChange = (event: MicStatusEvent) => {
       const status = event.detail?.status;
