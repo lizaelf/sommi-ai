@@ -92,6 +92,11 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
           variant="secondary"
           size="sm"
           onClick={handleSeeAllClick}
+          style={{ 
+            width: "auto",
+            flexShrink: 0,
+            whiteSpace: "nowrap" 
+          }}
         >
           See all
         </Button>
