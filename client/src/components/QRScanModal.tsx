@@ -21,6 +21,7 @@ export default function QRScanModal({ isOpen, onClose, onTextChoice, onVoiceChoi
         <Button
           onClick={onClose}
           variant="secondary"
+          className="react-button !bg-white/8 !text-white hover:!bg-white/16 !border-none"
           style={{
             flex: 1,
             height: '56px',
