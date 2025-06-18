@@ -26,6 +26,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   const isManuallyClosedRef = useRef(false);
   const welcomeAudioCacheRef = useRef<string | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const currentTTSRequestRef = useRef<AbortController | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -358,7 +359,33 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     };
 
     const handleStopAudio = () => {
+      console.log("🛑 VoiceController: Stop button clicked - aborting all audio");
+      
+      // Abort ongoing TTS request
+      if (currentTTSRequestRef.current) {
+        console.log("🛑 VoiceController: Aborting TTS request");
+        currentTTSRequestRef.current.abort();
+        currentTTSRequestRef.current = null;
+      }
+      
+      // Stop audio playback
+      if (currentAudioRef.current) {
+        console.log("🛑 VoiceController: Stopping audio playback");
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+        currentAudioRef.current = null;
+      }
+      
+      // Reset all states
+      setIsPlayingAudio(false);
+      setIsResponding(false);
+      setShowUnmuteButton(false);
+      setShowAskButton(true);
+      
+      // Call original stop function
       stopAudio();
+      
+      console.log("🛑 VoiceController: Stop button processing complete");
     };
 
     const handleDeploymentAudioStopped = () => {
@@ -384,12 +411,19 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
 
   const handleVoiceResponse = async (responseText: string) => {
     try {
+      // Create AbortController for this TTS request
+      const abortController = new AbortController();
+      currentTTSRequestRef.current = abortController;
+      
+      console.log("🎤 VoiceController: Starting TTS request with abort controller");
+      
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ text: responseText }),
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -401,22 +435,31 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       const audio = new Audio(audioUrl);
       currentAudioRef.current = audio;
 
+      console.log("🎤 VoiceController: Starting audio playback");
       await audio.play();
 
       audio.onended = () => {
+        console.log("🎤 VoiceController: Audio playback ended naturally");
         setIsPlayingAudio(false);
         setIsResponding(false);
         setShowUnmuteButton(false);
         setShowAskButton(true);
         currentAudioRef.current = null;
+        currentTTSRequestRef.current = null;
         URL.revokeObjectURL(audioUrl);
       };
 
-    } catch (error) {
-      console.error('Error in voice response:', error);
+    } catch (error: any) {
+      if (error?.name === 'AbortError') {
+        console.log("🛑 VoiceController: TTS request was aborted by stop button");
+      } else {
+        console.error('Error in voice response:', error);
+      }
       setIsPlayingAudio(false);
       setIsResponding(false);
+      setShowUnmuteButton(false);
       setShowAskButton(true);
+      currentTTSRequestRef.current = null;
     }
   };
 
