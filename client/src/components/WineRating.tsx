@@ -76,72 +76,38 @@ export default function WineRating({
       className={className}
       aria-label="Wine ratings"
       style={{
-        ...styles.container,
+        display: "flex",
+        alignItems: "center",
         justifyContent: "center",
+        gap: "12px",
         ...style,
       }}
     >
       {ratings.vn && (
-        <span style={styles.ratingItem}>
-          {variant === "compact" || variant === "minimal" ? (
-            <span style={styles.valueStyle}>
-              <span style={styles.labelStyle}>VN: </span>
-              <span style={{ ...typography.num, color: "white !important" }}>{ratings.vn}</span>
-            </span>
-          ) : (
-            <>
-              <span style={styles.valueStyle}>{ratings.vn}</span>
-              <span style={styles.labelStyle}>VN</span>
-            </>
-          )}
+        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <span style={{ ...typography.body1R, color: "#999999" }}>VN:</span>
+          <span style={{ ...typography.num, color: "white" }}>{ratings.vn}</span>
         </span>
       )}
 
       {ratings.jd && (
-        <span style={styles.ratingItem}>
-          {variant === "compact" || variant === "minimal" ? (
-            <span style={styles.valueStyle}>
-              <span style={styles.labelStyle}>JD: </span>
-              <span style={{ ...typography.num, color: "white !important" }}>{ratings.jd}</span>
-            </span>
-          ) : (
-            <>
-              <span style={styles.valueStyle}>{ratings.jd}</span>
-              <span style={styles.labelStyle}>JD</span>
-            </>
-          )}
+        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <span style={{ ...typography.body1R, color: "#999999" }}>JD:</span>
+          <span style={{ ...typography.num, color: "white" }}>{ratings.jd}</span>
         </span>
       )}
 
       {ratings.ws && (
-        <span style={styles.ratingItem}>
-          {variant === "compact" || variant === "minimal" ? (
-            <span style={styles.valueStyle}>
-              <span style={styles.labelStyle}>WS: </span>
-              <span style={{ ...typography.num, color: "white !important" }}>{ratings.ws}</span>
-            </span>
-          ) : (
-            <>
-              <span style={styles.valueStyle}>{ratings.ws}</span>
-              <span style={styles.labelStyle}>WS</span>
-            </>
-          )}
+        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <span style={{ ...typography.body1R, color: "#999999" }}>WS:</span>
+          <span style={{ ...typography.num, color: "white" }}>{ratings.ws}</span>
         </span>
       )}
 
       {ratings.abv && !hideAbv && (
-        <span style={styles.ratingItem}>
-          {variant === "compact" || variant === "minimal" ? (
-            <span style={styles.valueStyle}>
-              <span style={styles.labelStyle}>ABV: </span>
-              <span style={{ ...typography.num, color: "white !important" }}>{ratings.abv}%</span>
-            </span>
-          ) : (
-            <>
-              <span style={styles.valueStyle}>{ratings.abv}%</span>
-              <span style={styles.labelStyle}>ABV</span>
-            </>
-          )}
+        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <span style={{ ...typography.body1R, color: "#999999" }}>ABV:</span>
+          <span style={{ ...typography.num, color: "white" }}>{ratings.abv}%</span>
         </span>
       )}
     </Rating>
