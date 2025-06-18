@@ -13,13 +13,7 @@ const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
             height: '33px', 
             width: 'auto',
             objectFit: 'contain'
-          }}
-          onLoad={() => console.log('Somm logo loaded successfully')}
-          onError={(e) => {
-            console.error('Failed to load somm logo:', logoImage);
-            const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-          }}
+          }} 
         />
       </div>
     </Link>

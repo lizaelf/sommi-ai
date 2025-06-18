@@ -52,6 +52,9 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use('/@assets', express.static(join(__dirname, '..', 'attached_assets')));
 app.use('/@assets', express.static(join(__dirname, '..', 'public', 'attached_assets')));
 
+// Serve all public assets (including somm-logo.png)
+app.use(express.static(join(__dirname, '..', 'public')));
+
 // Serve food category images
 app.use('/food-categories', express.static(join(__dirname, '..', 'public', 'food-categories')));
 

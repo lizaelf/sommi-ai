@@ -55,6 +55,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Database Image Path Updates**: Updated all food pairing category image paths in database to use lowercase organized folder structure (/food-categories/appetizers.png, etc.)
 - **Icons Organization**: Moved send-icon.svg to `/public/icons/` folder and added close-icon.svg for consistent icon management
 - **Logo Consolidation**: Removed duplicate logo files (logo.png, logo-updated.png, new-logo.png) and standardized to use only somm-logo.png across all components
+- **Static File Serving Fix**: Fixed Express server configuration to properly serve all public assets including somm-logo.png by adding public directory to static middleware
 - **Wineries Organization**: Created `/public/wineries/` folder and moved winary-logo.png for better winery asset management
 - **Component Updates**: Updated Logo component and HomeGlobal to use standardized logo paths from organized folder structure
 - **Organized Asset Structure**: Created clean folder hierarchy for better asset management and maintenance
