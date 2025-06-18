@@ -1,5 +1,5 @@
 import React from 'react';
-import ridgeWineImage from '@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png';
+const ridgeWineImage = '/wines/wine-1-ridge-lytton-springs-dry-creek-zinfandel.png';
 import placeholderImage from '@assets/Placeholder.png';
 
 interface WineBottleImageDisplayProps {
