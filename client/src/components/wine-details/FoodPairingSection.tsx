@@ -45,10 +45,10 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
   // Define wine type specific food pairing recommendations
   const getFoodPairingsByWineType = (wineType: string): string[] => {
     const pairingMap: Record<string, string[]> = {
-      'Red': ['Meat', 'Cheese', 'Pasta'],
-      'White': ['Seafood', 'Poultry', 'Veggie'],
-      'Rose': ['Appetizers', 'Side Dishes', 'Cheese'],
-      'Sparkling': ['Appetizers', 'Seafood', 'Cheese']
+      'Red': ['Meat', 'Cheese', 'Pasta', 'Side Dishes'],
+      'White': ['Seafood', 'Poultry', 'Veggie', 'Appetizers'],
+      'Rose': ['Appetizers', 'Side Dishes', 'Cheese', 'Seafood'],
+      'Sparkling': ['Appetizers', 'Seafood', 'Cheese', 'Poultry']
     };
     return pairingMap[wineType] || ['Meat', 'Cheese', 'Appetizers'];
   };
@@ -60,7 +60,6 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
     ? recommendedCategories
         .map((categoryType: string) => foodCategories.find((cat: { type: string; imagePath: string; id: number }) => cat.type === categoryType))
         .filter(Boolean)
-        .slice(0, 3)
         .map((category: any) => ({
           image: category.imagePath,
           title: category.type,
