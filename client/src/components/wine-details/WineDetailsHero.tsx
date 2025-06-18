@@ -43,14 +43,13 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
     <div style={{
       backgroundColor: "#0a0a0a",
       color: "white",
-      padding: "32px 0px",
       minHeight: "100vh",
       position: "relative",
     }}>
       {/* Wine Title */}
       <div style={{
         marginBottom: "24px",
-        textAlign: "center",
+        textAlign: "left",
         padding: "0 16px",
       }}>
         <h1 style={{
@@ -59,24 +58,6 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
         }}>
           {wine.year} {wine.name}
         </h1>
-      </div>
-
-      {/* Location */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "8px",
-        marginBottom: "24px",
-        padding: "0 16px",
-      }}>
-        <USFlagImage />
-        <span style={{
-          ...typography.body,
-          color: "rgba(255, 255, 255, 0.8)",
-        }}>
-          {wine.location || "Dry Creek Valley, Sonoma County, California"}
-        </span>
       </div>
 
       {/* Wine Ratings */}

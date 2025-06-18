@@ -110,7 +110,7 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
         }}>
           <div style={{ flex: 1 }}>
             <span style={{
-              ...typography.body,
+              ...typography.body1R,
               color: "rgba(255, 255, 255, 0.6)",
               display: "block",
               marginBottom: "4px",
