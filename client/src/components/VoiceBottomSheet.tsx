@@ -158,13 +158,23 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
-          <IconButton
-            icon={X}
-            variant="headerIcon"
-            size="iconSm"
+          <Button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10"
-          />
+            variant="secondary"
+            className="react-button !bg-white/8 !text-white hover:!bg-white/16 !border-none absolute top-4 right-4 z-10"
+            style={{
+              width: '40px',
+              height: '40px',
+              minWidth: '40px',
+              minHeight: '40px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '0'
+            }}
+          >
+            <X size={20} />
+          </Button>
 
           {/* Wine glass animation container */}
           <div style={{ 
