@@ -332,8 +332,8 @@ body {
 }
 
 /* Force secondary button styling - highest specificity */
-.react-button.w-full.h-14,
-button.react-button.w-full.h-14 {
+.react-button.w-full.h-14:not([data-variant="brand"]),
+button.react-button.w-full.h-14:not([data-variant="brand"]) {
   background: rgba(255, 255, 255, 0.08) !important;
   background-color: rgba(255, 255, 255, 0.08) !important;
   background-image: none !important;
@@ -341,10 +341,34 @@ button.react-button.w-full.h-14 {
   border: none !important;
 }
 
-.react-button.w-full.h-14:hover,
-button.react-button.w-full.h-14:hover {
+.react-button.w-full.h-14:not([data-variant="brand"]):hover,
+button.react-button.w-full.h-14:not([data-variant="brand"]):hover {
   background: rgba(255, 255, 255, 0.16) !important;
   background-color: rgba(255, 255, 255, 0.16) !important;
+  background-image: none !important;
+}
+
+/* Brand button styling - override with highest specificity */
+.react-button[data-variant="brand"],
+button.react-button[data-variant="brand"] {
+  background: #6C1E2C !important;
+  background-color: #6C1E2C !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+}
+
+.react-button[data-variant="brand"]:hover,
+button.react-button[data-variant="brand"]:hover {
+  background: #7C2E3C !important;
+  background-color: #7C2E3C !important;
+  background-image: none !important;
+}
+
+.react-button[data-variant="brand"]:active,
+button.react-button[data-variant="brand"]:active {
+  background: #5C1E2C !important;
+  background-color: #5C1E2C !important;
   background-image: none !important;
 }
 
