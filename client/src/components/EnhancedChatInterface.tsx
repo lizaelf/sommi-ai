@@ -888,8 +888,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 >
                   Chat
                 </h1>
-                <SectionHeaderButton>
-                  View all
+                <SectionHeaderButton
+                  onClick={() => {
+                    // Navigate to dedicated chat page
+                    window.location.href = '/chat';
+                  }}
+                >
+                  See all
                 </SectionHeaderButton>
               </div>
               
