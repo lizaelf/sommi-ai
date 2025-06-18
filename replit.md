@@ -48,7 +48,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Wine Rating Display Format Update (June 18, 2025 - Latest)
+### SectionHeaderButton Background Enhancement (June 18, 2025 - Latest)
+- **Enhanced Button Visibility**: Updated SectionHeaderButton component background from 8% to 10% white opacity for improved visibility
+- **Consistent Hover States**: Maintained 12% hover state while updating base state to match new opacity level
+- **Universal Application**: Change applies to all "View all" and "See all" buttons across food pairing and chat sections
+
+### Wine Rating Display Format Update (June 18, 2025 - Previous)
 - **Value-First Display Format**: Updated WineRating component to show values before labels (e.g., "95 VN" instead of "VN: 95")
 - **Consistent Typography**: Maintained white typography.num for values and gray typography.body1R for labels with proper spacing
 - **Universal Application**: Updated format applies across all wine cards, details pages, and recommendation displays
