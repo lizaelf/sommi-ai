@@ -786,16 +786,17 @@ const TenantAdmin: React.FC = () => {
                       {/* Edit Mode Controls */}
                       {isEditMode && (
                         <div className="absolute top-2 right-2 flex gap-1">
-                          <button
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               setLocation(`/wine-edit/${wine.id}`);
                             }}
-                            className="bg-blue-600 hover:bg-blue-700 text-white p-1 rounded text-xs"
+                            variant="primary"
+                            size="sm"
                           >
                             Edit
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               if (confirm(`Delete ${wine.name}?`)) {
@@ -805,10 +806,11 @@ const TenantAdmin: React.FC = () => {
                                 });
                               }
                             }}
-                            className="bg-red-600 hover:bg-red-700 text-white p-1 rounded text-xs"
+                            variant="error"
+                            size="sm"
                           >
                             Delete
-                          </button>
+                          </Button>
                         </div>
                       )}
                     </div>
