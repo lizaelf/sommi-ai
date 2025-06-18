@@ -1,34 +1,59 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
 
-interface ContactInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
+interface ContactInputProps {
+  type?: string;
+  placeholder?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  style?: React.CSSProperties;
+  className?: string;
+  disabled?: boolean;
+  required?: boolean;
+  name?: string;
 }
 
-export const ContactInput: React.FC<ContactInputProps> = ({ 
-  label, 
-  error, 
-  className, 
-  ...props 
+const ContactInput: React.FC<ContactInputProps> = ({
+  type = "text",
+  placeholder,
+  value,
+  onChange,
+  onFocus,
+  onBlur,
+  style,
+  className = "",
+  disabled = false,
+  required = false,
+  name,
 }) => {
-  const baseStyles = 'flex h-10 w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50';
-
   return (
-    <div className="space-y-2">
-      {label && (
-        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-          {label}
-        </label>
-      )}
-      <input
-        className={cn(baseStyles, error && 'border-destructive', className)}
-        {...props}
-      />
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
-    </div>
+    <input
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      disabled={disabled}
+      required={required}
+      name={name}
+      className={className}
+      style={{
+        width: "100%",
+        padding: "12px 16px",
+        backgroundColor: "transparent !important",
+        border: "1px solid rgba(255, 255, 255, 0.12)",
+        borderRadius: "12px",
+        color: "#FFFFFF",
+        fontFamily: "Inter, sans-serif",
+        fontSize: "16px",
+        fontWeight: "400",
+        outline: "none",
+        transition: "all 0.2s ease",
+        ...style,
+      }}
+    />
   );
 };
 

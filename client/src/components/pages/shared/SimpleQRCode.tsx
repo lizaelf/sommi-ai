@@ -43,3 +43,5 @@ function SimpleQRCode({ value, size = 80, wineId }: SimpleQRCodeProps) {
     </div>
   );
 }
+
+export default SimpleQRCode;

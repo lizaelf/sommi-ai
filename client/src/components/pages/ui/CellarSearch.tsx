@@ -10,7 +10,7 @@ interface CellarSearchProps {
   placeholder?: string;
 }
 
-export const CellarSearch: React.FC<CellarSearchProps> = ({
+const CellarSearch: React.FC<CellarSearchProps> = ({
   searchTerm,
   onSearchChange,
   onClearSearch,
@@ -76,3 +76,5 @@ export const CellarSearch: React.FC<CellarSearchProps> = ({
     </div>
   );
 };
+
+export default CellarSearch;
