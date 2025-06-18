@@ -1258,7 +1258,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
 
             // Cache the successful audio response
-            setCachedAudio(finalMessageText, audioBlob);
+            audioCache.set(finalMessageText, audioBlob);
 
             const audioUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioUrl);
