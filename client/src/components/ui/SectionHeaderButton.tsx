@@ -1,10 +1,8 @@
 import React from "react";
-import { Button } from "@/components/ui/Button";
 
 interface SectionHeaderButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: "secondary" | "primary";
   disabled?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -13,15 +11,12 @@ interface SectionHeaderButtonProps {
 const SectionHeaderButton: React.FC<SectionHeaderButtonProps> = ({
   children,
   onClick,
-  variant = "secondary",
   disabled = false,
   className = "",
   style = {},
 }) => {
   return (
-    <Button
-      variant={variant}
-      size="sm"
+    <button
       onClick={onClick}
       disabled={disabled}
       className={className}
@@ -38,11 +33,23 @@ const SectionHeaderButton: React.FC<SectionHeaderButtonProps> = ({
         borderRadius: "20px",
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.6 : 1,
+        outline: "none",
+        transition: "background-color 0.2s ease, opacity 0.2s ease",
         ...style,
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.08)";
+        }
       }}
     >
       {children}
-    </Button>
+    </button>
   );
 };
 
