@@ -202,8 +202,14 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
 
   // Handle voice assistant events
   useEffect(() => {
+    let isVoiceButtonTriggered = false;
+    let isMicButtonTriggered = false;
+    
     // VOICE BUTTON: Complete flow with welcome message
     const handleTriggerVoiceAssistant = async () => {
+      if (isMicButtonTriggered) return; // Prevent conflict with mic button
+      isVoiceButtonTriggered = true;
+      
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsListening(false);
@@ -213,10 +219,18 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       setShowUnmuteButton(false);
       
       await handleWelcomeMessage();
+      
+      // Reset flag after welcome message completes
+      setTimeout(() => {
+        isVoiceButtonTriggered = false;
+      }, 3000);
     };
 
     // MIC BUTTON: Direct to listening with speech detection
     const handleTriggerMicButton = async () => {
+      if (isVoiceButtonTriggered) return; // Prevent conflict with voice button
+      isMicButtonTriggered = true;
+      
       console.log("🎤 VoiceController: handleTriggerMicButton called");
       setShowBottomSheet(true);
       setShowAskButton(false);
@@ -353,9 +367,19 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             }));
             
             handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+            
+            // Reset mic button flag after response
+            setTimeout(() => {
+              isMicButtonTriggered = false;
+            }, 1000);
           }, 2000);
         }, 3000);
       }
+      
+      // Reset mic button flag on error
+      setTimeout(() => {
+        isMicButtonTriggered = false;
+      }, 8000);
     };
 
     const handleStopAudio = () => {

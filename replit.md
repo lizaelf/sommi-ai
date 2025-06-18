@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### VoiceBottomSheet Close Button Styling Update (June 18, 2025 - Latest)
+### Voice Assistant Event Isolation Fix (June 18, 2025 - Latest)
+- **Simultaneous Event Prevention**: Fixed timing issue where welcome message and thinking state occurred simultaneously by implementing flag-based event isolation
+- **Voice/Mic Button Separation**: Added proper conflict prevention between voice button (welcome message flow) and mic button (direct listening flow)
+- **State Management Enhancement**: Ensured voice button flow exclusively handles welcome message without interference from mic button logic
+- **Flag Reset Mechanisms**: Implemented proper flag cleanup after flow completion and error handling timeouts
+- **User Experience Improvement**: Voice assistant now properly shows welcome message OR thinking state, never both simultaneously
+
+### VoiceBottomSheet Close Button Styling Update (June 18, 2025 - Previous)
 - **SecondaryIcon Variant Implementation**: Updated close button to use proper `secondaryIcon` variant instead of secondary with manual overrides
 - **Simplified Component Architecture**: Removed unnecessary CSS overrides in favor of built-in button variant styling
 - **Proper Icon Button Styling**: SecondaryIcon variant provides transparent background with white border and proper hover states for icon-only buttons
