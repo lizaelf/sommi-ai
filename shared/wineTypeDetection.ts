@@ -115,10 +115,10 @@ export function detectWineType(wineName: string): WineTypeCategory {
  */
 export function getWineTypeImagePath(wineType: WineTypeCategory): string {
   const imagePaths = {
-    'Red': '/wine-types/red.png',
-    'Rose': '/wine-types/rose.png', 
-    'White': '/wine-types/white.png',
-    'Sparkling': '/wine-types/sparkling.png'
+    'Red': '/wine-types/red.svg',
+    'Rose': '/wine-types/rose.svg', 
+    'White': '/wine-types/white.svg',
+    'Sparkling': '/wine-types/sparkling.svg'
   };
   
   return imagePaths[wineType] || imagePaths.Red;

@@ -3,10 +3,10 @@ import { detectWineType, getWineTypeImagePath } from "../shared/wineTypeDetectio
 
 // Wine type data based on spreadsheet mapping
 const wineTypes = [
-  { type: "Red", imagePath: "/wine-types/red.png" },
-  { type: "Rose", imagePath: "/wine-types/rose.png" },
-  { type: "White", imagePath: "/wine-types/white.png" },
-  { type: "Sparkling", imagePath: "/wine-types/sparkling.png" },
+  { type: "Red", imagePath: "/wine-types/red.svg" },
+  { type: "Rose", imagePath: "/wine-types/rose.svg" },
+  { type: "White", imagePath: "/wine-types/white.svg" },
+  { type: "Sparkling", imagePath: "/wine-types/sparkling.svg" },
 ];
 
 async function seedWineTypes() {
