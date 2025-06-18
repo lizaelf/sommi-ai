@@ -169,7 +169,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               minHeight: '40px'
             }}
           >
-            <X size={20} />
+            <X size={24} />
           </Button>
 
           {/* Wine glass animation container */}
