@@ -1,10 +1,10 @@
 import React from 'react';
-import WineBottleImage from '@/components/WineBottleImage';
+import WineBottleImage from './WineBottleImage';
 import USFlagImage from '@/components/USFlagImage';
-import WineRating from '@/components/WineRating';
-import WineTechnicalDetails from '@/components/WineTechnicalDetails';
+import WineRating from './WineRating';
+import WineTechnicalDetails from './WineTechnicalDetails';
 import typography from '@/styles/typography';
-import { WINE_CONFIG } from '../../../shared/wineConfig';
+import { WINE_CONFIG } from '../../../../shared/wineConfig';
 
 interface SelectedWine {
   id: number;
