@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### ChatInputArea Component Enhancement (June 18, 2025 - Latest)
+### Voice System Rollback to Original Bottom Sheet Logic (June 18, 2025 - Latest)
+- **Microphone Button Behavior Restoration**: Rolled back microphone functionality to original bottom sheet logic from 5 days ago
+- **Welcome Message Flow**: Microphone button now opens bottom sheet with welcome message playback and Ask button
+- **Manual Recording Trigger**: Users must click Ask button to start listening → thinking → response flow instead of immediate recording
+- **Original State Management**: Restored previous voice assistant trigger behavior for consistent user experience
+- **Bottom Sheet UI**: Maintained original bottom sheet interface with suggestion pills and manual voice activation
+
+### ChatInputArea Component Enhancement (June 18, 2025)
 - **Buy Again Functionality Removal**: Removed Buy again button functionality from ChatInputArea component for cleaner interface
 - **Simplified Component Props**: Streamlined ChatInputArea interface by removing showBuyButton, showChatInput, and onBuyClick props
 - **Enhanced Modularity**: ChatInputArea now focuses solely on chat input and suggestion functionality without commerce features

@@ -82,84 +82,37 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
 
   // Handle voice assistant events
   useEffect(() => {
-    const handleTriggerVoiceAssistant = async () => {
+    const handleTriggerVoiceAssistant = () => {
       setShowBottomSheet(true);
       sessionStorage.setItem('voice_bottom_sheet_shown', 'true');
-      isManuallyClosedRef.current = false;
-      
-      // Start listening immediately when mic button is clicked
-      try {
-        const hasPermission = await getMicrophonePermission();
-        if (!hasPermission && !shouldSkipPermissionPrompt()) {
-          const granted = await requestMicrophonePermission();
-          if (!granted) {
-            toast({
-              title: "Microphone permission denied",
-              description: "Please enable microphone access to use voice features",
-              variant: "destructive",
-            });
-            setShowAskButton(true);
-            return;
-          }
-        }
+      setShowAskButton(false);
+      setIsResponding(true);
 
-        // Start listening state immediately
-        setIsListening(true);
-        setShowAskButton(false);
-        setIsThinking(false);
-        setIsResponding(false);
-        
-        // Dispatch mic status event for CircleAnimation
-        const micEvent = new CustomEvent('mic-status', {
-          detail: { status: 'listening' }
-        });
-        window.dispatchEvent(micEvent);
-        
-        // Simulate voice recording for 3 seconds
-        setTimeout(() => {
-          // Stop listening, start thinking
-          setIsListening(false);
-          setIsThinking(true);
-          
-          // Dispatch processing status event
-          const processingEvent = new CustomEvent('mic-status', {
-            detail: { status: 'processing' }
-          });
-          window.dispatchEvent(processingEvent);
-          
-          // Simulate processing for 2 seconds
-          setTimeout(() => {
-            // Stop thinking, start responding
-            setIsThinking(false);
-            setIsResponding(true);
+      // Play welcome message with deployment synchronization
+      if (welcomeAudioCacheRef.current) {
+        deploymentAudioUtils.playAudio(welcomeAudioCacheRef.current)
+          .then(audio => {
+            currentAudioRef.current = audio;
             setIsPlayingAudio(true);
             
-            // Dispatch stopped status event (audio is playing, not listening)
-            const stoppedEvent = new CustomEvent('mic-status', {
-              detail: { status: 'stopped' }
-            });
-            window.dispatchEvent(stoppedEvent);
-            
-            // Generate and play a sample response
-            handleVoiceResponse("This is a sample wine response based on your voice question.");
-          }, 2000);
-        }, 3000);
-
-      } catch (error) {
-        toast({
-          title: "Recording failed",
-          description: "Please try again",
-          variant: "destructive",
-        });
-        setIsListening(false);
-        setIsThinking(false);
+            audio.onended = () => {
+              setIsPlayingAudio(false);
+              currentAudioRef.current = null;
+              if (!isManuallyClosedRef.current) {
+                setIsResponding(false);
+                setShowAskButton(true);
+              }
+            };
+          })
+          .catch(error => {
+            console.error("Audio playback failed:", error);
+            setIsPlayingAudio(false);
+            setIsResponding(false);
+            setShowAskButton(true);
+          });
+      } else {
+        setIsResponding(false);
         setShowAskButton(true);
-        
-        // Dispatch stopped status event on error
-        const errorEvent = new CustomEvent('mic-status', {
-          detail: { status: 'stopped' }
-        });
-        window.dispatchEvent(errorEvent);
       }
     };
 
