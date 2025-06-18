@@ -12,7 +12,7 @@ import {
   createStreamingClient,
   isStreamingSupported,
 } from "@/lib/streamingClient";
-import ContactBottomSheet, { ContactFormData } from "@/components/ContactBottomSheet";
+
 
 // Refactored components
 import { WineDetailsHeader } from "@/components/wine-details/WineDetailsHeader";
@@ -54,29 +54,7 @@ export default function WineDetailsRefactored() {
   const [hideSuggestions, setHideSuggestions] = useState(false);
   const [showChatInput, setShowChatInput] = useState(true);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
-  const [showContactSheet, setShowContactSheet] = useState(false);
-  const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
-  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
-  const [hasSharedContact, setHasSharedContact] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-  const [selectedCountry, setSelectedCountry] = useState({
-    flag: "🇺🇸",
-    dial_code: "+1",
-    name: "United States"
-  });
-  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+
   const { toast } = useToast();
 
   // Chat conversation management
@@ -221,33 +199,7 @@ export default function WineDetailsRefactored() {
     await handleSendMessage(content);
   };
 
-  // Contact sheet handlers
-  const handleCloseContactSheet = () => {
-    setAnimationState("closing");
-    setTimeout(() => {
-      setShowContactSheet(false);
-      setAnimationState("closed");
-    }, 300);
-  };
 
-  const handleSubmit = async (data: ContactFormData) => {
-    try {
-      // Handle contact form submission
-      console.log("Contact form submitted:", data);
-      handleCloseContactSheet();
-      toast({
-        title: "Contact information saved",
-        description: "Thank you for sharing your contact details.",
-      });
-    } catch (error) {
-      console.error("Error submitting contact form:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save contact information.",
-        variant: "destructive",
-      });
-    }
-  };
 
   // Render loading state
   if (loadingState === 'loading') {
@@ -287,12 +239,7 @@ export default function WineDetailsRefactored() {
         onKeyboardFocus={setIsKeyboardFocused}
       />
 
-      {/* Contact Bottom Sheet */}
-      <ContactBottomSheet
-        isOpen={animationState !== "closed"}
-        onClose={handleCloseContactSheet}
-        onSubmit={handleSubmit}
-      />
+
 
       {/* QR Scan Modal */}
       <QRScanModal
