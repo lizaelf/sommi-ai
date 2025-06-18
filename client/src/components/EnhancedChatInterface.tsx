@@ -1055,14 +1055,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
 
 
-      {/* Hidden VoiceController for microphone functionality */}
-      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', visibility: 'hidden' }}>
-        <VoiceController
-          onSendMessage={handleSendMessage}
-          isProcessing={isTyping}
-          wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
-        />
-      </div>
+      {/* VoiceController for microphone functionality */}
+      <VoiceController
+        onSendMessage={handleSendMessage}
+        isProcessing={isTyping}
+        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+      />
 
       {/* Legacy Contact Bottom Sheet - keeping for reference but commented out */}
       {false && animationState !== "closed" &&

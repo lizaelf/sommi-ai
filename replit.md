@@ -48,7 +48,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Asset Organization Implementation (June 18, 2025 - Latest)
+### Mic Button Bottom Sheet Fix (June 18, 2025 - Latest)
+- **VoiceController Visibility Fix**: Removed hidden positioning from VoiceController component in EnhancedChatInterface to allow proper bottom sheet display
+- **Unified Bottom Sheet Experience**: Both voice button and mic button now use the same VoiceAssistantBottomSheet for consistent user interface
+- **Event Flow Preservation**: Maintained separate event flows (triggerVoiceAssistant vs triggerMicButton) while using unified bottom sheet component
+- **Component Architecture Cleanup**: Eliminated hidden component positioning that was preventing mic button bottom sheet from displaying
+
+### Asset Organization Implementation (June 18, 2025 - Previous)
 - **Food Pairing Assets Organization**: Moved all food pairing SVG files to dedicated `/public/food-pairing/` folder (cheese.svg, herbs.svg, meat.svg)
 - **Wine Bottle Images Organization**: Organized all wine bottle images into `/public/wines/` folder with clean naming conventions
 - **Food Categories Cleanup**: Maintained only lowercase food category images in `/public/food-categories/` folder, removing duplicate uppercase versions

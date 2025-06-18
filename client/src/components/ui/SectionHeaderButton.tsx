@@ -19,7 +19,7 @@ const SectionHeaderButton: React.FC<SectionHeaderButtonProps> = ({
   return (
     <Button
       variant="secondary"
-      size="xs"
+      size="md"
       onClick={onClick}
       disabled={disabled}
       className={`w-auto flex-shrink-0 whitespace-nowrap ${className}`}
