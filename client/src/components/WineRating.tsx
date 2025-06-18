@@ -78,7 +78,7 @@ export default function WineRating({
       style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "flex-start",
+        justifyContent: "center",
         gap: "12px",
         width: "fit-content",
         ...style,
