@@ -21,7 +21,7 @@ const TechnicalDetailItem: React.FC<TechnicalDetailItemProps> = ({
         marginBottom: isLast ? "0px" : "24px",
       }}
     >
-      <div style={{ flex: 1 }}>
+      <div style={{ width: "140px" }}>
         <span
           style={{
             ...typography.body1M,
@@ -44,7 +44,7 @@ const TechnicalDetailItem: React.FC<TechnicalDetailItemProps> = ({
       </div>
       <div
         style={{
-          width: "80px",
+          flex: 1,
           height: "2px",
           background:
             "linear-gradient(90deg, rgba(117, 117, 117, 0.20) 0%, rgba(219, 219, 219, 0.50) 100%)",
