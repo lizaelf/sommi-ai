@@ -47,13 +47,6 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
         <ChatInput
           onSendMessage={onSendMessage}
           isProcessing={isTyping}
-          onMicClick={() => {
-            // Trigger voice assistant via custom event
-            const event = new CustomEvent('triggerMicButton', {
-              detail: { source: 'chat-input' }
-            });
-            window.dispatchEvent(event);
-          }}
         />
       </div>
     </div>

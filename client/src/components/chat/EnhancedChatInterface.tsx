@@ -1,35 +1,268 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Mic, Send, X } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import React, { useRef, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
+import { X } from "lucide-react";
+import ChatMessage from "./ChatMessage";
+import ChatInput from "./ChatInput";
+import ChatInputArea from "./ChatInputArea";
+import VoiceController from "@/components/voice/VoiceController";
+import SuggestionPills from "@/components/SuggestionPills";
+import Button from "@/components/ui/Button";
+import SectionHeaderButton from "@/components/ui/SectionHeaderButton";
+import { FormInput } from "@/components/ui/FormInput";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
+import { DataSyncManager } from "@/utils/dataSync";
+import { ShiningText } from "@/components/ShiningText";
+import {
+  createStreamingClient,
+  isStreamingSupported,
+} from "@/lib/streamingClient";
 import typography from "@/styles/typography";
-import VoiceController from "@/components/voice/VoiceController";
-import ChatInputArea from "./ChatInputArea";
-import SuggestionPills from "@/components/SuggestionPills";
+
+
+// Extend Window interface to include voiceAssistant
+declare global {
+  interface Window {
+    voiceAssistant?: {
+      speakResponse: (text: string) => Promise<void>;
+      playLastAudio: () => void;
+      speakLastAssistantMessage: () => void;
+      muteAndSavePosition: () => void;
+      resumeFromMute: () => void;
+    };
+  }
+}
+
+interface SelectedWine {
+  id: number;
+  name: string;
+  image: string;
+  bottles: number;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+}
 
 interface EnhancedChatInterfaceProps {
-  selectedWine?: any;
-  isScannedPage?: boolean;
+  showBuyButton?: boolean;
+  selectedWine?: SelectedWine | null;
+  onReady?: () => void;
+  isScannedPage?: boolean; // true for scanned page (current session), false for wine details (historical)
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
-  selectedWine,
+  showBuyButton = false,
+  selectedWine = null,
+  onReady,
   isScannedPage = false,
 }) => {
-  const { toast } = useToast();
-  const [isTyping, setIsTyping] = useState(false);
-  const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
-  const [isUserRegistered, setIsUserRegistered] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [hideSuggestions, setHideSuggestions] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const [currentWine, setCurrentWine] = useState<any>(selectedWine || null);
+  const [isComponentReady, setIsComponentReady] = useState(false);
+
+  // Initialize component and signal when ready
+  useEffect(() => {
+    if (selectedWine) {
+      setCurrentWine(selectedWine);
+      setIsComponentReady(true);
+
+      // Signal parent that component is ready
+      const timer = setTimeout(() => {
+        onReady?.();
+      }, 100);
+
+      return () => clearTimeout(timer);
+    } else {
+      // Get wine ID from URL parameters as fallback
+      const urlParams = new URLSearchParams(window.location.search);
+      const wineId = urlParams.get("wine");
+
+      if (wineId) {
+        const unifiedWines = DataSyncManager.getUnifiedWineData();
+        const wine = unifiedWines.find((w: any) => w.id === parseInt(wineId));
+        if (wine) {
+          const crmWines = JSON.parse(
+            localStorage.getItem("admin-wines") || "[]",
+          );
+          const fullWine = crmWines.find((w: any) => w.id === parseInt(wineId));
+          setCurrentWine(fullWine || wine);
+          setIsComponentReady(true);
+          onReady?.();
+          return;
+        }
+      }
+
+      // Fallback to first wine in CRM
+      const crmWines = JSON.parse(localStorage.getItem("admin-wines") || "[]");
+      const wine = crmWines.find((w: any) => w.id === 1) || crmWines[0];
+      if (wine) {
+        setCurrentWine(wine);
+        setIsComponentReady(true);
+        onReady?.();
+      }
+    }
+  }, [selectedWine, onReady]);
+
+  // Check if user is authenticated
+  const [isUserRegistered, setIsUserRegistered] = useState(() => {
+    return localStorage.getItem("isAuthenticated") === "true";
+  });
 
   // State to control showing chat input interface instead of contact form
   const [showChatInput, setShowChatInput] = useState(true);
+
+  // State for contact bottom sheet
+  const [showContactSheet, setShowContactSheet] = useState(false);
+  const [animationState, setAnimationState] = useState<
+    "closed" | "opening" | "open" | "closing"
+  >("closed");
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+
+  const [selectedCountry, setSelectedCountry] = useState({
+    dial_code: "+1",
+    flag: "🇺🇸",
+    name: "United States",
+    code: "US",
+  });
+
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
+
+  // Set up portal element for contact bottom sheet
+  useEffect(() => {
+    const portal = document.createElement("div");
+    document.body.appendChild(portal);
+    setPortalElement(portal);
+
+    return () => {
+      document.body.removeChild(portal);
+    };
+  }, []);
+
+  const handleCloseContactSheet = () => {
+    setShowContactSheet(false);
+    setAnimationState("closing");
+    setTimeout(() => setAnimationState("closed"), 300);
+  };
+
+  // Form validation and handling
+  const validateForm = () => {
+    const newErrors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+    };
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    }
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every((error) => error === "");
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field as keyof typeof errors]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          phone: `${selectedCountry.dial_code}${formData.phone}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem("hasSharedContact", "true");
+        setIsUserRegistered(true);
+        handleCloseContactSheet();
+
+        toast({
+          description: (
+            <span
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "16px",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Contact saved successfully!
+            </span>
+          ),
+          duration: 3000,
+          className: "bg-white text-black border-none",
+          style: {
+            position: "fixed",
+            top: "91px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "auto",
+            maxWidth: "none",
+            padding: "8px 24px",
+            borderRadius: "32px",
+            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+            zIndex: 9999,
+          },
+        });
+      } else {
+        console.error("Failed to save contact:", data);
+        if (data.errors) {
+          setErrors(data.errors);
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
 
   // Simplified content formatter for lists and bold text
   const formatContent = (content: string, isUserMessage = false) => {
@@ -47,371 +280,993 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     };
 
     const lines = content.split("\n");
-    const formattedLines: JSX.Element[] = [];
-    let currentList: string[] = [];
-    let isInList = false;
+    const elements: React.ReactNode[] = [];
+    let listItems: string[] = [];
 
-    lines.forEach((line, index) => {
-      if (line.trim().match(/^[\d]+\.\s/)) {
-        if (!isInList) {
-          if (currentList.length > 0) {
-            formattedLines.push(
-              <ul key={`ul-${formattedLines.length}`}>
-                {currentList.map((item, i) => (
-                  <li key={i}>{formatText(item)}</li>
-                ))}
-              </ul>,
-            );
-            currentList = [];
-          }
-          isInList = true;
-        }
-        currentList.push(line.replace(/^[\d]+\.\s/, ""));
-      } else if (line.trim().match(/^[-•]\s/)) {
-        if (isInList) {
-          formattedLines.push(
-            <ol key={`ol-${formattedLines.length}`}>
-              {currentList.map((item, i) => (
-                <li key={i}>{formatText(item)}</li>
-              ))}
-            </ol>,
-          );
-          currentList = [];
-          isInList = false;
-        }
-        currentList.push(line.replace(/^[-•]\s/, ""));
+    lines.forEach((line, i) => {
+      const isListItem = /^[-•*]\s|^\d+\.\s/.test(line.trim());
+
+      if (isListItem) {
+        listItems.push(line.trim().replace(/^[-•*]\s|^\d+\.\s/, ""));
       } else {
-        if (currentList.length > 0) {
-          if (isInList) {
-            formattedLines.push(
-              <ol key={`ol-${formattedLines.length}`}>
-                {currentList.map((item, i) => (
-                  <li key={i}>{formatText(item)}</li>
-                ))}
-              </ol>,
-            );
-          } else {
-            formattedLines.push(
-              <ul key={`ul-${formattedLines.length}`}>
-                {currentList.map((item, i) => (
-                  <li key={i}>{formatText(item)}</li>
-                ))}
-              </ul>,
-            );
-          }
-          currentList = [];
-          isInList = false;
+        if (listItems.length > 0) {
+          elements.push(
+            <div key={`list-${i}`} style={{ margin: "8px 0" }}>
+              {listItems.map((item, j) => (
+                <div
+                  key={j}
+                  style={{
+                    display: "flex",
+                    marginBottom: "4px",
+                    paddingLeft: "8px",
+                  }}
+                >
+                  <span style={{ color: "#6A53E7", marginRight: "8px" }}>
+                    •
+                  </span>
+                  <span>{formatText(item)}</span>
+                </div>
+              ))}
+            </div>,
+          );
+          listItems = [];
         }
 
         if (line.trim()) {
-          formattedLines.push(
-            <p key={`p-${formattedLines.length}`}>{formatText(line)}</p>,
+          elements.push(
+            <div
+              key={i}
+              style={{ 
+                marginBottom: isUserMessage ? "0px" : "8px", 
+                whiteSpace: "pre-wrap",
+                color: isUserMessage ? "#000000" : "rgba(255, 255, 255, 0.8)",
+                ...typography.body
+              }}
+            >
+              {formatText(line)}
+            </div>,
           );
         }
       }
     });
 
-    if (currentList.length > 0) {
-      if (isInList) {
-        formattedLines.push(
-          <ol key={`ol-final`}>
-            {currentList.map((item, i) => (
-              <li key={i}>{formatText(item)}</li>
-            ))}
-          </ol>,
-        );
-      } else {
-        formattedLines.push(
-          <ul key={`ul-final`}>
-            {currentList.map((item, i) => (
-              <li key={i}>{formatText(item)}</li>
-            ))}
-          </ul>,
-        );
-      }
+    if (listItems.length > 0) {
+      elements.push(
+        <div key="final-list" style={{ margin: "8px 0" }}>
+          {listItems.map((item, j) => (
+            <div
+              key={j}
+              style={{
+                display: "flex",
+                marginBottom: "4px",
+                paddingLeft: "8px",
+              }}
+            >
+              <span style={{ color: "#6A53E7", marginRight: "8px" }}>•</span>
+              <span>{formatText(item)}</span>
+            </div>
+          ))}
+        </div>,
+      );
     }
 
-    return <div>{formattedLines}</div>;
+    return <>{elements}</>;
   };
 
-  // Chat conversation management
+
+
+  // Use conversation hook
   const {
-    messages,
     currentConversationId,
+    setCurrentConversationId,
+    messages,
     addMessage,
+    conversations,
+    createNewConversation,
+    clearConversation,
     refetchMessages,
-  } = useConversation();
+  } = useConversation(currentWine ? `wine_${currentWine.id}` : "default");
 
-  // Check user registration
+  // Clear old conversation data if wine doesn't match stored messages
   useEffect(() => {
-    const hasSharedContact = localStorage.getItem("hasSharedContact");
-    setIsUserRegistered(!!hasSharedContact);
-  }, []);
+    if (currentWine && messages.length > 0) {
+      const hasOldRidgeContent = messages.some(
+        (msg) =>
+          msg.content.includes('Ridge "Lytton Springs"') &&
+          !currentWine.name.includes("Ridge"),
+      );
 
-  // Auto-scroll to bottom when new messages arrive
+      if (hasOldRidgeContent) {
+        console.log(
+          "Clearing outdated conversation data for wine:",
+          currentWine.name,
+        );
+        clearConversation();
+      }
+    }
+  }, [currentWine, messages, clearConversation]);
+
+  // Listen for chat history clearing events
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({
+    const handleChatHistoryCleared = () => {
+      console.log("Chat history cleared event received");
+      clearConversation();
+      createNewConversation();
+    };
+
+    window.addEventListener("chat-history-cleared", handleChatHistoryCleared);
+
+    return () => {
+      window.removeEventListener(
+        "chat-history-cleared",
+        handleChatHistoryCleared,
+      );
+    };
+  }, [clearConversation, createNewConversation]);
+
+  // Listen for cached suggestion messages from SuggestionPills
+  useEffect(() => {
+    const handleAddChatMessage = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { userMessage, assistantMessage } = customEvent.detail;
+      
+      console.log("EnhancedChatInterface: Received cached suggestion messages");
+      
+      // Add both messages to the conversation
+      if (userMessage) {
+        await addMessage(userMessage);
+      }
+      if (assistantMessage) {
+        await addMessage(assistantMessage);
+      }
+      
+      // Hide suggestions after use
+      setHideSuggestions(true);
+      
+      // Refresh messages to ensure they appear
+      refetchMessages();
+    };
+
+    window.addEventListener("addChatMessage", handleAddChatMessage);
+
+    return () => {
+      window.removeEventListener("addChatMessage", handleAddChatMessage);
+    };
+  }, [addMessage, refetchMessages]);
+
+  // Chat interface states
+  const [isTyping, setIsTyping] = useState(false);
+  const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
+  const [hideSuggestions, setHideSuggestions] = useState(false);
+  const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
+  const [showFullConversation, setShowFullConversation] = useState(false);
+  
+  // Voice assistant state
+  const [voiceControllerRef, setVoiceControllerRef] = useState<any>(null);
+  const [, setLocation] = useLocation();
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(
+    null,
+  );
+  const [hasTriggeredAutoQuestion, setHasTriggeredAutoQuestion] =
+    useState(false);
+  const [currentEventSource, setCurrentEventSource] =
+    useState<EventSource | null>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const { toast } = useToast();
+
+  // Create a ref for the chat container
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll detection for showing/hiding scroll to bottom button
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollToBottom(!isNearBottom && messages.length > 3);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    handleScroll();
+
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [messages.length]);
+
+  // Function to scroll to bottom
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
         behavior: "smooth",
-        block: "end",
       });
     }
-  }, [messages, isTyping]);
+  };
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim()) return;
+  // API status check
+  const { data: apiStatus } = useQuery({
+    queryKey: ["/api/status"],
+    refetchInterval: 30000,
+  });
+
+  // Auto-scroll behavior
+  useEffect(() => {
+    if (chatContainerRef.current && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+
+      if (lastMessage && lastMessage.role === "user") {
+        setTimeout(() => {
+          const conversationContainer = document.getElementById("conversation");
+          if (conversationContainer) {
+            const messageElements = conversationContainer.children;
+            if (messageElements.length > 0) {
+              const lastUserMessageElement = messageElements[
+                messageElements.length - 1
+              ] as HTMLElement;
+
+              lastUserMessageElement.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+                inline: "nearest",
+              });
+            }
+          }
+        }, 100);
+      }
+    }
+  }, [messages.length]);
+
+  // Reset suggestions visibility when conversation changes
+  useEffect(() => {
+    if (messages.length === 0) {
+      setHideSuggestions(false);
+    }
+  }, [messages.length]);
+
+  // Handle suggestion button clicks - TEXT ONLY responses
+  const handleSuggestionClick = async (displayText: string, apiPrompt?: string) => {
+    const content = displayText;
+    const apiContent = apiPrompt || displayText;
+    
+    if (content.trim() === "" || !currentConversationId) return;
+
+    console.log("EnhancedChatInterface: Handling text-only suggestion:", content, "API prompt:", apiContent);
+    
+    // Expand chat to show full conversation history
+    setShowFullConversation(true);
+    
+    // Enable text-only mode to prevent automatic voice responses
+    if ((window as any).voiceAssistant?.setTextOnlyMode) {
+      (window as any).voiceAssistant.setTextOnlyMode(true);
+    }
+    
+    setHideSuggestions(true);
+    setIsTyping(true);
 
     try {
-      setIsTyping(true);
-      setInputValue("");
-
-      // Add user message immediately
-      const userMessage: ClientMessage = {
+      const tempUserMessage: ClientMessage = {
         id: Date.now(),
-        content: content.trim(),
+        content,
         role: "user",
-        conversationId: currentConversationId || 1,
-        createdAt: new Date(),
-      };
-
-      await addMessage(userMessage);
-
-      // Prepare request body
-      const requestBody = {
-        messages: [
-          ...messages.map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-          })),
-          { role: "user", content: content.trim() },
-        ],
         conversationId: currentConversationId,
-        wine: selectedWine || null,
+        createdAt: new Date().toISOString(),
       };
 
-      // Create abort controller for this request
-      abortControllerRef.current = new AbortController();
+      await addMessage(tempUserMessage);
 
-      // Make API call
+      const requestBody = {
+        messages: [{ role: "user", content: apiContent }], // Use API prompt for processing
+        conversationId: currentConversationId,
+        wineData: currentWine,
+        optimize_for_speed: true,
+        text_only: true, // Ensure text-only response
+        disable_audio: true, // Explicitly disable any audio processing
+      };
+
+      console.log("EnhancedChatInterface: Sending text-only request:", requestBody);
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Priority": "high",
         },
         body: JSON.stringify(requestBody),
-        signal: abortControllerRef.current.signal,
+        credentials: "same-origin",
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`API request failed with status ${response.status}`);
       }
 
-      const data = await response.json();
+      const responseData = await response.json();
 
-      if (data.content) {
+      if (responseData.message && responseData.message.content) {
         const assistantMessage: ClientMessage = {
           id: Date.now() + 1,
-          content: data.content,
+          content: responseData.message.content,
           role: "assistant",
-          conversationId: currentConversationId || 1,
-          createdAt: new Date(),
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
         };
 
         await addMessage(assistantMessage);
-      }
-    } catch (error: any) {
-      if (error.name === "AbortError") {
-        console.log("Request was aborted");
-        return;
+        console.log("EnhancedChatInterface: Text-only response added successfully");
       }
 
-      console.error("Error sending message:", error);
+      refetchMessages();
+    } catch (error) {
+      console.error("Error in suggestion request:", error);
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
         variant: "destructive",
       });
     } finally {
       setIsTyping(false);
-      abortControllerRef.current = null;
+      
+      // Disable text-only mode after processing
+      if ((window as any).voiceAssistant?.setTextOnlyMode) {
+        (window as any).voiceAssistant.setTextOnlyMode(false);
+      }
     }
   };
 
-  const handleSuggestionClick = async (content: string) => {
-    await handleSendMessage(content);
+  // Handle sending a message
+  const handleSendMessage = async (content: string) => {
+    if (content.trim() === "" || !currentConversationId) return;
+
+    // Expand chat to show full conversation history
+    setShowFullConversation(true);
+    
+    setHideSuggestions(true);
+    setIsTyping(true);
+
+    try {
+      const tempUserMessage: ClientMessage = {
+        id: Date.now(),
+        content,
+        role: "user",
+        conversationId: currentConversationId,
+        createdAt: new Date().toISOString(),
+      };
+
+      await addMessage(tempUserMessage);
+
+      const requestBody = {
+        messages: [{ role: "user", content }],
+        conversationId: currentConversationId,
+        wineData: currentWine,
+        optimize_for_speed: true,
+      };
+
+      // Check if streaming is enabled
+      const enableStreaming = import.meta.env.VITE_ENABLE_STREAMING === "true";
+
+      if (enableStreaming && isStreamingSupported()) {
+        // Streaming implementation
+        const eventSource = new EventSource(
+          `/api/chat-stream?${new URLSearchParams({
+            messages: JSON.stringify([{ role: "user", content }]),
+            conversationId: currentConversationId?.toString() || "",
+            wineData: JSON.stringify(currentWine),
+            optimize_for_speed: "true",
+          })}`,
+        );
+
+        setCurrentEventSource(eventSource);
+
+        let streamingContent = "";
+        let assistantMessageId = Date.now() + 1;
+
+        eventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+
+            switch (data.type) {
+              case "first_token":
+                streamingContent = data.content;
+
+                if (data.start_tts && window.voiceAssistant?.speakResponse) {
+                  window.voiceAssistant.speakResponse(data.content);
+                }
+
+                const initialMessage: ClientMessage = {
+                  id: assistantMessageId,
+                  content: streamingContent,
+                  role: "assistant",
+                  conversationId: currentConversationId,
+                  createdAt: new Date().toISOString(),
+                };
+
+                addMessage(initialMessage);
+                setLatestMessageId(assistantMessageId);
+                break;
+
+              case "token":
+                if (data.content) {
+                  streamingContent += data.content;
+                  refetchMessages();
+                }
+                break;
+
+              case "complete":
+                (window as any).lastAssistantMessageText = streamingContent;
+                window.dispatchEvent(new CustomEvent("showUnmuteButton"));
+                eventSource.close();
+                setCurrentEventSource(null);
+                refetchMessages();
+                break;
+
+              case "error":
+                console.error("Streaming error:", data.message);
+                eventSource.close();
+                setCurrentEventSource(null);
+                throw new Error(data.message || "Streaming failed");
+            }
+          } catch (parseError) {
+            console.error("Error parsing streaming event:", parseError);
+            eventSource.close();
+            setCurrentEventSource(null);
+          }
+        };
+
+        eventSource.onerror = (error) => {
+          console.error("EventSource error:", error);
+          eventSource.close();
+          setCurrentEventSource(null);
+          throw new Error("Streaming connection failed");
+        };
+
+        return;
+      }
+
+      // Fallback to regular request
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Priority": "high",
+        },
+        body: JSON.stringify(requestBody),
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      if (responseData.message && responseData.message.content) {
+        const assistantMessage: ClientMessage = {
+          id: Date.now() + 1,
+          content: responseData.message.content,
+          role: "assistant",
+          conversationId: currentConversationId,
+          createdAt: new Date().toISOString(),
+        };
+
+        setLatestMessageId(assistantMessage.id);
+        (window as any).lastAssistantMessageText = assistantMessage.content;
+        await addMessage(assistantMessage);
+        window.dispatchEvent(new CustomEvent("showUnmuteButton"));
+      }
+
+      refetchMessages();
+    } catch (error) {
+      console.error("Error in chat request:", error);
+      toast({
+        title: "Error",
+        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsTyping(false);
+      setCurrentEventSource(null);
+    }
   };
 
-  const currentWine = selectedWine || {
-    id: 1,
-    name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
-  };
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (currentEventSource) {
+        currentEventSource.close();
+        setCurrentEventSource(null);
+      }
+    };
+  }, [currentEventSource]);
 
-  // Check if user is unregistered and not on scanned page
-  const shouldShowRegistrationPrompt = !isUserRegistered && !isScannedPage;
+  // Show loading state while initializing
+  if (!isComponentReady || !currentConversationId) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+          <span className="text-gray-400 text-sm">Loading chat...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        width: "100%",
-        backgroundColor: "black",
-        position: "relative",
-      }}
+      className="flex flex-col h-auto"
+      style={{ width: "100%" }}
     >
-      {/* Main Content */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          padding: showChatInput ? "16px" : "0",
-          paddingBottom: showChatInput ? "80px" : "0",
-          overflow: "hidden",
-        }}
-      >
-        {/* Messages Container */}
-        <div
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Chat Area */}
+        <main
+          className="flex-1 flex flex-col bg-background overflow-hidden"
           style={{
-            flex: 1,
-            overflowY: "auto",
-            paddingBottom: "16px",
+            backgroundColor: "#0A0A0A !important",
+            backgroundImage: "none !important",
+            width: "100%",
           }}
         >
-          {messages.length === 0 ? (
-            <div
-              style={{
+          {/* Scrollable container */}
+          <div
+            ref={chatContainerRef}
+            className="flex-1 overflow-y-auto scrollbar-hide"
+          >
+            {/* Conversation Content */}
+            <div style={{ width: "100%" }}>
+              {/* Chat Title */}
+              <div style={{ 
+                marginBottom: "16px", 
+                paddingLeft: "16px", 
+                paddingRight: "16px",
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-                textAlign: "center",
-                padding: "20px",
-              }}
-            >
-              <h2
-                style={{
-                  ...typography.h2,
-                  color: "white",
-                  marginBottom: "16px",
-                }}
-              >
-                Chat
-              </h2>
-              <div
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  borderRadius: "12px",
-                  padding: "16px",
-                  marginBottom: "24px",
-                  maxWidth: "400px",
-                }}
-              >
-                <div
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
+                <h1
                   style={{
-                    ...typography.body1R,
-                    color: "#999999",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Q: What food pairs well with this wine?
-                </div>
-                <div
-                  style={{
-                    ...typography.body1R,
                     color: "white",
-                    lineHeight: "1.4",
+                    textAlign: "left",
+                    margin: "0",
+                    ...typography.h1,
                   }}
                 >
-                  This Zinfandel pairs beautifully with grilled meats,
-                  barbecue, and aged cheeses. The wine's bold fruit flavors
-                  complement smoky, savory dishes while its spice notes enhance
-                  complex flavors...
-                </div>
+                  Chat
+                </h1>
+                <SectionHeaderButton
+                  onClick={() => {
+                    // Navigate to dedicated chat page
+                    window.location.href = '/chat';
+                  }}
+                >
+                  See all
+                </SectionHeaderButton>
               </div>
-              <Button
-                variant="secondary"
-                onClick={() => {}}
-                style={{
-                  padding: "8px 16px",
-                  fontSize: "14px",
-                }}
-              >
-                See all
-              </Button>
+              
+              <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", width: "100%" }}>
+{showFullConversation || messages.length > 0 ? (
+                  <>
+                    {/* Show full conversation history when expanded */}
+                    {messages.map((message: any, index: number) => (
+                      <div
+                        key={`${message.id}-${index}`}
+                        style={{
+                          display: "flex",
+                          justifyContent:
+                            message.role === "user" ? "flex-end" : "flex-start",
+                          width: "100%",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            backgroundColor:
+                              message.role === "user"
+                                ? "#DBDBDB"
+                                : "transparent",
+                            borderRadius: "16px",
+                            padding: message.role === "user" ? "16px" : "0 0 16px 0",
+                            width:
+                              message.role === "user" ? "fit-content" : "100%",
+                            maxWidth: message.role === "user" ? "80%" : "100%",
+                          }}
+                        >
+                          {message.role === "assistant" ? (
+                            <div
+                              style={{
+                                color: "#DBDBDB",
+                                ...typography.body,
+                              }}
+                            >
+                              {formatContent(message.content)}
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                color: "#000000",
+                                ...typography.body,
+                              }}
+                            >
+                              {formatContent(message.content, true)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ) : (!isScannedPage && !isUserRegistered) ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "16px",
+                      minHeight: "200px",
+                      width: "100%",
+                      padding: "0 0 16px 0",
+                    }}
+                  >
+                    {/* Sample Question */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        width: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: "#DBDBDB",
+                          borderRadius: "16px",
+                          padding: "16px",
+                          width: "fit-content",
+                          maxWidth: "80%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            color: "#000000",
+                            ...typography.body,
+                          }}
+                        >
+                          What makes this Zinfandel special?
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sample Answer (5 lines max) */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        width: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: "transparent",
+                          borderRadius: "16px",
+                          padding: "0 0 16px 0",
+                          width: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            color: "#DBDBDB",
+                            ...typography.body,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 5,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          This 2021 Ridge "Lytton Springs" Dry Creek Zinfandel is exceptional because it comes from one of Sonoma County's most prestigious vineyard sites. The Lytton Springs vineyard has been producing world-class Zinfandel since the 1970s, with old-vine fruit that delivers incredible concentration and complexity. The wine showcases the classic Dry Creek Valley terroir with its rich blackberry and raspberry notes, complemented by the signature peppery spice that makes Zinfandel so distinctive. Ridge's traditional winemaking approach, including fermentation with native yeasts and aging in American oak, allows the vineyard's unique character to shine through in every bottle.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "200px",
+                      width: "100%",
+                      textAlign: "center",
+                    }}
+                  >
+                    <p
+                      style={{
+                        color: "rgba(255, 255, 255, 0.6)",
+                        ...typography.body,
+                        textAlign: "center",
+                        margin: "0",
+                      }}
+                    >
+                      Ask a question to see chat history
+                    </p>
+                  </div>
+                )}
+
+                {/* Typing Indicator */}
+                {isTyping && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%",
+                      marginBottom: "12px",
+                      padding: "16px",
+                    }}
+                  >
+                    <ShiningText text="Thinking..." />
+                  </div>
+                )}
+              </div>
             </div>
-          ) : (
-            <>
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  style={{
-                    marginBottom: "16px",
-                    display: "flex",
-                    justifyContent:
-                      message.role === "user" ? "flex-end" : "flex-start",
-                  }}
-                >
-                  <div
-                    style={{
-                      maxWidth: "80%",
-                      padding: "12px 16px",
-                      borderRadius: "16px",
-                      backgroundColor:
-                        message.role === "user"
-                          ? "rgba(255, 255, 255, 0.1)"
-                          : "rgba(255, 255, 255, 0.05)",
-                      color: "white",
-                      ...typography.body1R,
-                    }}
-                  >
-                    {formatContent(message.content, message.role === "user")}
-                  </div>
-                </div>
-              ))}
-              {isTyping && (
-                <div
-                  style={{
-                    marginBottom: "16px",
-                    display: "flex",
-                    justifyContent: "flex-start",
-                  }}
-                >
-                  <div
-                    style={{
-                      maxWidth: "80%",
-                      padding: "12px 16px",
-                      borderRadius: "16px",
-                      backgroundColor: "rgba(255, 255, 255, 0.05)",
-                      color: "white",
-                      ...typography.body1R,
-                    }}
-                  >
-                    Thinking...
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </>
-          )}
-        </div>
+
+            {/* Extra space at the bottom */}
+            <div style={{ height: "80px" }}></div>
+          </div>
+
+          {/* Input Area - Fixed to Bottom */}
+          <ChatInputArea
+            currentWine={currentWine}
+            currentConversationId={currentConversationId}
+            isTyping={isTyping}
+            onSendMessage={handleSendMessage}
+            onSuggestionClick={handleSuggestionClick}
+            onKeyboardFocus={(focused: boolean) => setIsKeyboardFocused(focused)}
+          />
+        </main>
+
+        {/* Scroll to Bottom Floating Button */}
+        {showScrollToBottom && (
+          <Button
+            onClick={scrollToBottom}
+            variant="secondary"
+            size="icon"
+            className="fixed bottom-[100px] right-5 w-12 h-12 rounded-3xl shadow-lg z-[1000] backdrop-blur-sm p-0"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M12 16l-4-4h8l-4 4z" fill="white" />
+              <path d="M12 20l-4-4h8l-4 4z" fill="white" opacity="0.6" />
+            </svg>
+          </Button>
+        )}
       </div>
 
-      {/* Voice Assistant */}
-      <VoiceController />
 
-      {/* Chat Input Area */}
-      <ChatInputArea
-        currentWine={currentWine}
-        currentConversationId={currentConversationId}
-        isTyping={isTyping}
+
+      {/* VoiceController for microphone functionality */}
+      <VoiceController
         onSendMessage={handleSendMessage}
-        onSuggestionClick={handleSuggestionClick}
-        onKeyboardFocus={setIsKeyboardFocused}
-        showChatInput={true}
+        isProcessing={isTyping}
+        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
       />
+
+      {/* Legacy Contact Bottom Sheet - keeping for reference but commented out */}
+      {false && animationState !== "closed" &&
+        portalElement &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 9999,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-end",
+              opacity:
+                animationState === "open"
+                  ? 1
+                  : animationState === "opening"
+                    ? 0.8
+                    : 0,
+              transition: "opacity 0.3s ease-out",
+            }}
+            onClick={handleCloseContactSheet}
+          >
+            <div
+              style={{
+                background:
+                  "linear-gradient(174deg, rgba(28, 28, 28, 0.85) 4.05%, #1C1C1C 96.33%)",
+                backdropFilter: "blur(20px)",
+                width: "100%",
+                maxWidth: "500px",
+                borderRadius: "24px 24px 0px 0px",
+                borderTop: "1px solid rgba(255, 255, 255, 0.20)",
+                paddingTop: "24px",
+                paddingLeft: "24px",
+                paddingRight: "24px",
+                paddingBottom: "28px",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.3)",
+                transform:
+                  animationState === "open"
+                    ? "translateY(0)"
+                    : "translateY(100%)",
+                transition: "transform 0.3s ease-out",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <Button
+                onClick={handleCloseContactSheet}
+                variant="secondary"
+                size="icon"
+                className="absolute top-4 right-4 z-10 w-10 h-10 p-0 rounded-full"
+              >
+                <X size={24} color="white" />
+              </Button>
+
+              {/* Header */}
+              <div style={{ marginBottom: "24px", marginTop: "0px" }}>
+                <h2
+                  style={{
+                    color: "white",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 500,
+                    textAlign: "center",
+                    margin: "0 0 12px 0",
+                  }}
+                >
+                  Want to see wine history?
+                </h2>
+
+                <p
+                  style={{
+                    color: "#CECECE",
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "16px",
+                    fontWeight: 400,
+                    lineHeight: "1.3",
+                    textAlign: "center",
+                    margin: "0 0 8px 0",
+                  }}
+                >
+                  Enter your contact info
+                </p>
+              </div>
+
+              {/* Form Fields */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "16px",
+                  marginBottom: "24px",
+                }}
+              >
+                <FormInput
+                  type="text"
+                  name="firstName"
+                  placeholder="First name"
+                  value={formData.firstName}
+                  onChange={(value) => handleInputChange("firstName", value)}
+                  error={errors.firstName}
+                />
+
+                <FormInput
+                  type="text"
+                  name="lastName"
+                  placeholder="Last name"
+                  value={formData.lastName}
+                  onChange={(value) => handleInputChange("lastName", value)}
+                  error={errors.lastName}
+                />
+
+                <FormInput
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(value) => handleInputChange("email", value)}
+                  error={errors.email}
+                />
+
+                {/* Phone number with country selector */}
+                <div style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      height: "64px",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    className="contact-form-input"
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        paddingLeft: "24px",
+                        paddingRight: "12px",
+                        cursor: "pointer",
+                        borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+                      }}
+                      onClick={() => setShowCountryDropdown(true)}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>
+                          {selectedCountry.flag}
+                        </span>
+                        <span
+                          style={{
+                            color: "white",
+                            fontFamily: "Inter, sans-serif",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {selectedCountry.dial_code}
+                        </span>
+                      </div>
+                    </div>
+                    <FormInput
+                      type="tel"
+                      name="phone"
+                      placeholder="Phone number"
+                      value={formData.phone}
+                      onChange={(value) => handleInputChange("phone", value)}
+                      error={errors.phone}
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div
+                  style={{
+                    width: "100%",
+                  }}
+                >
+                  <button
+                    onClick={handleSubmit}
+                    className="save-button"
+                    style={{
+                      width: "100%",
+                      height: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "black",
+                      fontFamily: "Inter, sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          portalElement || document.body
+        )}
     </div>
   );
 };
