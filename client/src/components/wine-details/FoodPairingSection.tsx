@@ -1,14 +1,19 @@
 import React from 'react';
+import { useLocation } from 'wouter';
 import FoodPairingCard from './FoodPairingCard';
+import { Button } from '@/components/ui/Button';
 import typography from '@/styles/typography';
 
 interface FoodPairingSectionProps {
   foodPairing?: string[];
+  wineId?: number;
 }
 
 const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
   foodPairing,
+  wineId,
 }) => {
+  const [, setLocation] = useLocation();
   const foodPairingCards = [
     {
       image: "/food-pairing-meat.svg",
@@ -27,16 +32,34 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
     }
   ];
 
+  const handleSeeAllClick = () => {
+    setLocation(`/food-pairings/${wineId || 1}`);
+  };
+
   return (
     <div style={{ padding: "0 16px", marginBottom: "32px" }}>
-      <h1 style={{
-        ...typography.h1,
-        color: "white",
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
         marginBottom: "20px",
-        textAlign: "left",
       }}>
-        Food pairings
-      </h1>
+        <h1 style={{
+          ...typography.h1,
+          color: "white",
+          margin: 0,
+          textAlign: "left",
+        }}>
+          Food pairings
+        </h1>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleSeeAllClick}
+        >
+          See all
+        </Button>
+      </div>
       
       <div style={{
         display: "flex",

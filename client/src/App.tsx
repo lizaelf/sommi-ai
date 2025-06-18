@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/Toaster";
 import { TooltipProvider } from "@/components/ui/Tooltip";
 import NotFound from "@/pages/NotFound";
 import WineDetails from "@/pages/WineDetails";
+import FoodPairings from "@/pages/FoodPairings";
 import Cellar from "@/pages/Cellar";
 import ConversationDialog from "@/pages/ConversationDialog";
 import HomeGlobalRefactored from "@/pages/HomeGlobalRefactored";
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/wine-details/:id" component={() => 
         <WineDetails key={`wine-${Date.now()}`} />
       } />
+      <Route path="/food-pairings/:id" component={FoodPairings} />
       <Route path="/tenants/:tenantSlug/admin" component={TenantAdminRefactored} />
       <Route path="/winery-tenant-admin" component={TenantAdminRefactored} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
