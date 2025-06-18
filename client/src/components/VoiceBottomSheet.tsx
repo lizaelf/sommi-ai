@@ -160,17 +160,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
           {/* Close button */}
           <Button
             onClick={onClose}
-            variant="secondary"
-            className="react-button !bg-white/8 !text-white hover:!bg-white/16 !border-none absolute top-4 right-4 z-10"
+            variant="secondaryIcon"
+            className="react-button absolute top-4 right-4 z-10"
             style={{
               width: '40px',
               height: '40px',
               minWidth: '40px',
-              minHeight: '40px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0'
+              minHeight: '40px'
             }}
           >
             <X size={20} />

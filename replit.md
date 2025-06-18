@@ -49,11 +49,11 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 18, 2025)
 
 ### VoiceBottomSheet Close Button Styling Update (June 18, 2025 - Latest)
+- **SecondaryIcon Variant Implementation**: Updated close button to use proper `secondaryIcon` variant instead of secondary with manual overrides
+- **Simplified Component Architecture**: Removed unnecessary CSS overrides in favor of built-in button variant styling
+- **Proper Icon Button Styling**: SecondaryIcon variant provides transparent background with white border and proper hover states for icon-only buttons
 - **Consistent Button Component Usage**: Replaced IconButton close button with standardized Button component in VoiceBottomSheet
-- **Secondary Button Variant Implementation**: Applied same secondary button styling as QRScanModal Text/Voice buttons for visual consistency
-- **CSS Override Protection**: Added comprehensive CSS protection with `react-button !bg-white/8 !text-white hover:!bg-white/16 !border-none` classes
-- **Proper Dimensions**: Maintained 40x40px close button dimensions while using standard Button component architecture
-- **Visual Consistency**: All bottom sheet buttons now share identical styling approach with 8% white background and 16% hover state
+- **Maintained Dimensions**: Preserved 40x40px close button dimensions while using appropriate icon-specific variant
 
 ### Wine Ratings Position Update Below Technical Details Section (June 18, 2025 - Previous)
 - **Ratings Repositioned Below Technical Details**: Moved wine ratings below Technical Details Section in WineDetailsHero component
