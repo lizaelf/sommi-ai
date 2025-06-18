@@ -42,7 +42,7 @@ export default function WineDetails() {
   const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -196,8 +196,6 @@ export default function WineDetails() {
       {/* Food Pairing Section */}
       <FoodPairingSection
         foodPairing={wine?.foodPairing}
-        expandedItem={expandedItem}
-        onToggleExpanded={handleToggleExpanded}
       />
 
       {/* Buy Again Section */}
