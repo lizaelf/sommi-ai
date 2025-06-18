@@ -259,21 +259,46 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
               <button
                 className="secondary-button react-button"
                 onClick={() => {
-                  // Enhanced stop functionality for deployment compatibility
-                  if (isPlayingAudio && onStopAudio) {
+                  console.log("🛑 Stop button clicked - attempting to stop audio");
+                  
+                  // Primary stop method
+                  if (onStopAudio) {
+                    console.log("🛑 Calling onStopAudio prop");
                     onStopAudio();
-                  } else if (onMute) {
+                  }
+                  
+                  // Secondary stop method
+                  if (onMute) {
+                    console.log("🛑 Calling onMute prop");
                     onMute();
                   }
                   
-                  // Fallback: use global stop function
+                  // Global stop function fallback
                   if ((window as any).stopVoiceAudio) {
+                    console.log("🛑 Calling global stopVoiceAudio");
                     (window as any).stopVoiceAudio();
                   }
                   
-                  // Additional fallback: dispatch stop event
-                  const stopEvent = new CustomEvent('stopVoiceAudio');
-                  window.dispatchEvent(stopEvent);
+                  // Stop all audio elements directly
+                  try {
+                    const audioElements = document.querySelectorAll('audio');
+                    audioElements.forEach((audio) => {
+                      if (!audio.paused) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                        console.log("🛑 Stopped audio element directly");
+                      }
+                    });
+                  } catch (error) {
+                    console.warn("Error stopping audio elements:", error);
+                  }
+                  
+                  // Dispatch multiple stop events
+                  window.dispatchEvent(new CustomEvent('stopVoiceAudio'));
+                  window.dispatchEvent(new CustomEvent('tts-audio-stop'));
+                  window.dispatchEvent(new CustomEvent('deploymentAudioStopped'));
+                  
+                  console.log("🛑 Stop button processing complete");
                 }}
                 style={{
                   width: '100%',

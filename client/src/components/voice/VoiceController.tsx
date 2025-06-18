@@ -112,6 +112,20 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       }
     }
     
+    // Stop all audio elements in the document
+    try {
+      const audioElements = document.querySelectorAll('audio');
+      audioElements.forEach((audio) => {
+        if (!audio.paused) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+      console.log("🛑 VoiceController: All DOM audio elements stopped");
+    } catch (error) {
+      console.warn("Error stopping DOM audio elements:", error);
+    }
+    
     // Reset all audio-related states
     setIsPlayingAudio(false);
     setIsResponding(false);
@@ -120,6 +134,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     
     // Dispatch stop event for other components
     window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+    window.dispatchEvent(new CustomEvent("deploymentAudioStopped"));
     
     console.log("🛑 VoiceController: All audio stopped successfully");
   };
