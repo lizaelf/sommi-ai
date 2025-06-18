@@ -58,7 +58,7 @@ const WineRecommendationCard: React.FC<WineRecommendationCardProps> = ({ wine })
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            height: "3.9em",
+            height: "40px",
           }}
         >
           {wine.year ? `${wine.year} ` : ""}{wine.name}
