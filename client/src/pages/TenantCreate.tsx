@@ -128,7 +128,7 @@ export default function TenantCreate() {
             label="Website"
             type="url"
             value={formData.website}
-            onChange={(value: string) => handleInputChange('website', value)}
+            onChange={(e) => handleInputChange('website', e.target.value)}
             placeholder="https://example.com"
           />
 

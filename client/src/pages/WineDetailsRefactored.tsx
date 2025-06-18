@@ -15,11 +15,11 @@ import {
 import ContactBottomSheet, { ContactFormData } from "@/components/ContactBottomSheet";
 
 // Refactored components
-import { WineDetailsHeader } from "@/components/wine-details/WineDetailsHeader";
-import { WineHeroSection } from "@/components/wine-details/WineHeroSection";
-import { WineChatSection } from "@/components/wine-details/WineChatSection";
-import { WineLoadingState } from "@/components/wine-details/WineLoadingState";
-import { WineErrorState } from "@/components/wine-details/WineErrorState";
+import { WineDetailsHeader } from "@/components/pages/wine-details/WineDetailsHeader";
+import { WineHeroSection } from "@/components/pages/wine-details/WineHeroSection";
+import { WineChatSection } from "@/components/pages/wine-details/WineChatSection";
+import { WineLoadingState } from "@/components/pages/wine-details/WineLoadingState";
+import { WineErrorState } from "@/components/pages/wine-details/WineErrorState";
 
 interface SelectedWine {
   id: number;

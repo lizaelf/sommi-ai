@@ -1,6 +1,6 @@
 import React from "react";
 import { Upload, Download, Search, RefreshCw } from "lucide-react";
-import Button from "@/components/ui/Button";
+import Button from "@/components/pages/ui/Button";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import typography from "@/styles/typography";
 

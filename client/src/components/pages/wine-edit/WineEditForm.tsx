@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 import { Upload, Save, X } from "lucide-react";
-import Button from "@/components/ui/Button";
-import { IconButton } from "@/components/ui/IconButton";
+import Button from "@/components/pages/ui/Button";
+import { IconButton } from "@/components/pages/ui/IconButton";
 import typography from "@/styles/typography";
-import { FormInput } from "@/components/ui/FormInput";
+import { FormInput } from "@/components/pages/ui/FormInput";
 
 interface WineEditFormProps {
   wine: {

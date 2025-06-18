@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
-import Button from "@/components/ui/Button";
-import { ContactInput } from "@/components/ui/ContactInput";
+import Button from "@/components/pages/ui/Button";
+import { ContactInput } from "@/components/pages/ui/ContactInput";
 
 
 // Default wine image removed - only authentic uploaded images will be displayed

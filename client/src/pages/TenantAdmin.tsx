@@ -4,7 +4,7 @@ import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settin
 import { Link, useLocation, useParams } from "wouter";
 import { useToast } from "@/hooks/UseToast";
 import { SegmentedPicker } from "@/components/pages/shared/SegmentedPicker";
-import Button from "@/components/ui/Button";
+import Button from "@/components/pages/ui/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
-import Button from "@/components/ui/Button";
+import Button from "@/components/pages/ui/Button";
 import typography from "@/styles/typography";
 import wineResponses from "@/../../shared/wineResponses.json";
 

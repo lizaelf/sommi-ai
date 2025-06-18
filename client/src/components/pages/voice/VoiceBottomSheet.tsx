@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CircleAnimation from './CircleAnimation';
 import { ShiningText } from './ShiningText';
-import Button from '@/components/ui/Button';
+import Button from '@/components/pages/ui/Button';
 import SuggestionPills from './SuggestionPills';
 import { suggestionCache } from '@/utils/suggestionCache';
 

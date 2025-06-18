@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Message } from '@shared/schema';
 import { ClientMessage } from '@/lib/types';
-import { TextGenerateEffect } from '@/components/ui/TextGenerateEffect';
+import { TextGenerateEffect } from '@/components/pages/ui/TextGenerateEffect';
 
 // Ensure window.voiceAssistant type is available
 declare global {
