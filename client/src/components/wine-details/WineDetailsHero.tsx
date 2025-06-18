@@ -43,7 +43,6 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
       style={{
         backgroundColor: "#0a0a0a",
         color: "white",
-        minHeight: "100vh",
         position: "relative",
       }}
     >
