@@ -135,8 +135,10 @@ export default function WineRating({
   };
 
   return (
-    <div
+    <section
       className={className}
+      role="group"
+      aria-label="Wine ratings"
       style={{
         ...styles.container,
         ...style,
@@ -185,6 +187,6 @@ export default function WineRating({
           {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
         </span>
       )}
-    </div>
+    </section>
   );
 }
