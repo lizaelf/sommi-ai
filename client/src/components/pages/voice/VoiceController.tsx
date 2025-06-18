@@ -203,22 +203,67 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   };
 
   return (
-    <VoiceBottomSheet
-      isOpen={showBottomSheet}
-      onClose={handleClose}
-      onMute={stopAudio}
-      onAsk={handleAsk}
-      isListening={isListening}
-      isResponding={isResponding}
-      isThinking={isThinking}
-      showAskButton={showAskButton}
-      showUnmuteButton={showUnmuteButton}
-      isPlayingAudio={isPlayingAudio}
-      wineKey={wineKey}
-      onSuggestionClick={onSendMessage}
-      onUnmute={handleUnmute}
-      onStopAudio={stopAudio}
-    />
+    <>
+      {/* Microphone Button */}
+      <button
+        onClick={() => setShowBottomSheet(true)}
+        style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "20px",
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          color: "white",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.15)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+        }}
+        title="Voice assistant"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"
+            fill="currentColor"
+          />
+          <path
+            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+
+      {/* Voice Bottom Sheet */}
+      <VoiceBottomSheet
+        isOpen={showBottomSheet}
+        onClose={handleClose}
+        onMute={stopAudio}
+        onAsk={handleAsk}
+        isListening={isListening}
+        isResponding={isResponding}
+        isThinking={isThinking}
+        showAskButton={showAskButton}
+        showUnmuteButton={showUnmuteButton}
+        isPlayingAudio={isPlayingAudio}
+        wineKey={wineKey}
+        onSuggestionClick={onSendMessage}
+        onUnmute={handleUnmute}
+        onStopAudio={stopAudio}
+      />
+    </>
   );
 };
 
