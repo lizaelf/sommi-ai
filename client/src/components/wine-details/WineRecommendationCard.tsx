@@ -26,7 +26,7 @@ const WineRecommendationCard: React.FC<WineRecommendationCardProps> = ({ wine })
     <Link to={`/wine-details/${wine.id}`}>
       <div
         style={{
-          minWidth: "240px",
+          minWidth: "208px",
           backgroundColor: "#191919",
           borderRadius: "16px",
           padding: "16px",
