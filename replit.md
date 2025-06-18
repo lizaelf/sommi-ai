@@ -53,7 +53,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Column Flex Layout**: Changed from horizontal to vertical flex layout with 8px gap between rating lines
 - **Centered Alignment**: Maintained center alignment for both rating rows while preserving 12px horizontal gaps between individual ratings
 - **Enhanced Visual Hierarchy**: ABV now displays prominently on its own line below the main wine ratings for improved readability
-- **Preserved Functionality**: Maintained hideAbv prop functionality and all existing rating display logic with new vertical layout structure
+- **Default ABV Display**: Changed hideAbv default to false and removed hideAbv={true} from WineInfoSection to ensure ABV displays by default
+- **Preserved Functionality**: Maintained hideAbv prop functionality for wine recommendation cards while enabling ABV display in main wine details
 
 ### SuggestionPills Global CSS Protection Implementation (June 18, 2025 - Previous)
 - **Comprehensive CSS Override Protection**: Added complete protection system preventing global CSS from overriding SuggestionPills styling across entire application

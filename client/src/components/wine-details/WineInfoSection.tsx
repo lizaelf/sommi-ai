@@ -238,7 +238,6 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         <WineRating 
           ratings={wine.ratings}
           variant="default"
-          hideAbv={true}
         />
       </div>
 

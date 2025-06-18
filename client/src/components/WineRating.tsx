@@ -24,7 +24,7 @@ export default function WineRating({
   className = "",
   style = {},
   align = "center",
-  hideAbv = true,
+  hideAbv = false,
 }: WineRatingProps) {
   // Check if there are any ratings to display
   const hasRatings =
