@@ -145,46 +145,46 @@ export default function WineRating({
       }}
     >
       {ratings.vn && (
-        <span style={styles.ratingItem}>
-          <span style={styles.valueStyle}>
+        <span>
+          <span>
             {variant === "compact" || variant === "minimal"
               ? `VN: ${ratings.vn}`
               : ratings.vn}
           </span>
-          {variant === "default" && <span style={styles.labelStyle}>VN</span>}
+          {variant === "default" && <span>VN</span>}
         </span>
       )}
 
       {ratings.jd && (
-        <span style={styles.ratingItem}>
-          <span style={styles.valueStyle}>
+        <span>
+          <span>
             {variant === "compact" || variant === "minimal"
               ? `JD: ${ratings.jd}`
               : ratings.jd}
           </span>
-          {variant === "default" && <span style={styles.labelStyle}>JD</span>}
+          {variant === "default" && <span>JD</span>}
         </span>
       )}
 
       {ratings.ws && (
-        <span style={styles.ratingItem}>
-          <span style={styles.valueStyle}>
+        <span>
+          <span>
             {variant === "compact" || variant === "minimal"
               ? `WS: ${ratings.ws}`
               : ratings.ws}
           </span>
-          {variant === "default" && <span style={styles.labelStyle}>WS</span>}
+          {variant === "default" && <span>WS</span>}
         </span>
       )}
 
       {ratings.abv && !hideAbv && (
-        <span style={styles.ratingItem}>
-          <span style={styles.valueStyle}>
+        <span>
+          <span>
             {variant === "compact" || variant === "minimal"
               ? `ABV: ${ratings.abv}%`
               : `${ratings.abv}%`}
           </span>
-          {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
+          {variant === "default" && <span>ABV</span>}
         </span>
       )}
     </Rating>
