@@ -14,26 +14,21 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
   wineId,
 }) => {
   const [, setLocation] = useLocation();
-  const wineTypeCards = [
+  const foodPairingCards = [
     {
-      image: "/wine-types/red.svg",
-      title: "Red Wine",
-      description: "Bold flavors with rich tannins"
+      image: "/food-pairing-meat.svg",
+      title: "Red Meat",
+      description: "Perfect for grilled steaks and lamb"
     },
     {
-      image: "/wine-types/white.svg", 
-      title: "White Wine",
-      description: "Crisp and refreshing profiles"
+      image: "/food-pairing-cheese.svg", 
+      title: "Aged Cheese",
+      description: "Pairs wonderfully with aged cheddar"
     },
     {
-      image: "/wine-types/rose.svg",
-      title: "Rosé Wine", 
-      description: "Light and elegant pink wines"
-    },
-    {
-      image: "/wine-types/sparkling.svg",
-      title: "Sparkling Wine",
-      description: "Effervescent celebration wines"
+      image: "/food-pairing-herbs.svg",
+      title: "Herbs & Spices", 
+      description: "Complements rosemary and thyme"
     }
   ];
 
@@ -55,7 +50,7 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
           margin: 0,
           textAlign: "left",
         }}>
-          Wine Types
+          Food pairings
         </h1>
         <Button
           variant="secondary"
@@ -72,7 +67,7 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
         overflowX: "auto",
         paddingBottom: "8px",
       }}>
-        {wineTypeCards.map((card, index) => (
+        {foodPairingCards.map((card, index) => (
           <FoodPairingCard
             key={index}
             image={card.image}
