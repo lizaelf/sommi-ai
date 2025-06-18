@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import Button from "./ui/Button";
+import Button from "../ui/Button";
 import { FormInput } from "./ui/FormInput";
 import typography from "@/styles/typography";
 
