@@ -1,5 +1,6 @@
 import React from "react";
 import typography from "@/styles/typography";
+import Rating from "@/components/ui/Rating";
 
 interface WineRatingProps {
   ratings: {
@@ -135,9 +136,8 @@ export default function WineRating({
   };
 
   return (
-    <section
+    <Rating
       className={className}
-      role="group"
       aria-label="Wine ratings"
       style={{
         ...styles.container,
@@ -187,6 +187,6 @@ export default function WineRating({
           {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
         </span>
       )}
-    </section>
+    </Rating>
   );
 }
