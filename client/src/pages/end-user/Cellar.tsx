@@ -1094,10 +1094,7 @@ const Cellar = () => {
                         const newPrefs = { ...notificationPreferences, email: e.target.checked };
                         setNotificationPreferences(newPrefs);
                         localStorage.setItem("notificationPreferences", JSON.stringify(newPrefs));
-                        toast({
-                          title: "Thanks! Your preferences updated",
-                          duration: 3000,
-                        });
+                        toastInfo("Thanks! Your preferences updated");
                       }}
                       style={{
                         width: "20px",
@@ -1144,10 +1141,7 @@ const Cellar = () => {
                         const newPrefs = { ...notificationPreferences, phone: e.target.checked };
                         setNotificationPreferences(newPrefs);
                         localStorage.setItem("notificationPreferences", JSON.stringify(newPrefs));
-                        toast({
-                          title: "Thanks! Your preferences updated",
-                          duration: 3000,
-                        });
+                        toastInfo("Thanks! Your preferences updated");
                       }}
                       style={{
                         width: "20px",

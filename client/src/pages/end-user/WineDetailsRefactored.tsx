@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import QRScanModal from "@/components/QRScanModal";
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
@@ -55,7 +55,7 @@ export default function WineDetailsRefactored() {
   const [showChatInput, setShowChatInput] = useState(true);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
 
-  const { toast } = useToast();
+  const { toastError } = useStandardToast();
 
   // Chat conversation management
   const {
@@ -185,11 +185,7 @@ export default function WineDetailsRefactored() {
       refetchMessages();
     } catch (error) {
       console.error("Error in message request:", error);
-      toast({
-        title: "Error",
-        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
-        variant: "destructive",
-      });
+      toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsTyping(false);
     }
