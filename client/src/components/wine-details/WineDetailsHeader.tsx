@@ -269,7 +269,7 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
         {/* Wine Image */}
         <div style={{
           width: "100px",
-          height: "120px",
+          height: "290px",
           flexShrink: 0,
           position: "relative",
         }}>

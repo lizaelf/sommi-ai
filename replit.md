@@ -51,9 +51,9 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ### Wine Image Integration in Technical Details (June 18, 2025 - Latest)
 - **Horizontal Layout Implementation**: Modified WineDetailsHeader technical details section to display wine image alongside technical specifications
 - **Flexbox Layout Enhancement**: Added display flex with 20px gap between technical details text and wine image for balanced presentation
-- **Responsive Wine Image**: Added 100px x 120px wine bottle image on right side with contain object-fit and 8px border radius
+- **Prominent Wine Image**: Updated wine bottle image to 100px x 290px dimensions for enhanced visual prominence on right side with contain object-fit and 8px border radius
 - **Optimized Technical Details**: Technical details now flex: 1 to utilize available space while wine image maintains fixed proportions
-- **Visual Balance Improvement**: Enhanced visual hierarchy with wine image complementing technical specifications display
+- **Visual Balance Improvement**: Enhanced visual hierarchy with tall wine image creating striking visual complement to technical specifications display
 
 ### Button Override Protection Enhancement (June 18, 2025 - Previous)
 - **Triple CSS Protection**: Enhanced "View chat history" button in EnhancedChatInterface with `!important` declarations to prevent any CSS overrides
