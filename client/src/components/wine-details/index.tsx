@@ -1,5 +1,6 @@
 // Export all wine details page components
 export { default as WineDetailsHero } from './WineDetailsHero';
+export { default as WineTechnicalDetailsSection } from './WineTechnicalDetailsSection';
 export { default as WineHistorySection } from './WineHistorySection';
 export { default as FoodPairingSection } from './FoodPairingSection';
 export { default as FoodPairingExpandableItem } from './FoodPairingExpandableItem';
