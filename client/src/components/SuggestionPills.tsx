@@ -727,6 +727,7 @@ export default function SuggestionPills({
 
   return (
     <div
+      className="suggestion-pills-container"
       style={{
         display: "flex",
         flexDirection: "row",
@@ -770,7 +771,7 @@ export default function SuggestionPills({
             variant="suggestion"
             disabled={isDisabled || isProcessing || isRecentlyUsed}
             onClick={() => handlePillClick(pill)}
-            className={`
+            className={`suggestion-pill-button react-button
               ${isLoading ? 'opacity-70' : isRecentlyUsed ? 'opacity-60' : 'opacity-100'}
               ${preGenStatus === "ready" && context === "voice-assistant" ? 'bg-gradient-to-br from-blue-600 to-blue-700' : ''}
               ${isRecentlyUsed ? 'bg-gray-100' : ''}

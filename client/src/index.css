@@ -597,6 +597,86 @@ div * button.suggestion-button {
   background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+/* SuggestionPills Component Protection - Highest Specificity */
+.suggestion-pill-button.react-button,
+button.suggestion-pill-button.react-button,
+.suggestion-pill-button,
+button.suggestion-pill-button {
+  /* Protect suggestion variant styling */
+  background: rgba(255, 255, 255, 0.12) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 100px !important;
+  white-space: nowrap !important;
+  min-width: fit-content !important;
+  width: auto !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: Inter, sans-serif !important;
+  cursor: pointer !important;
+  outline: none !important;
+  transition: none !important;
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  height: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+}
+
+.suggestion-pill-button.react-button:hover,
+button.suggestion-pill-button.react-button:hover,
+.suggestion-pill-button:hover,
+button.suggestion-pill-button:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+  transform: none !important;
+}
+
+.suggestion-pill-button.react-button:active,
+button.suggestion-pill-button.react-button:active,
+.suggestion-pill-button:active,
+button.suggestion-pill-button:active {
+  background: rgba(255, 255, 255, 0.20) !important;
+  background-color: rgba(255, 255, 255, 0.20) !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+  transform: none !important;
+}
+
+.suggestion-pill-button.react-button:disabled,
+button.suggestion-pill-button.react-button:disabled,
+.suggestion-pill-button:disabled,
+button.suggestion-pill-button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure SuggestionPills container is protected */
+.suggestion-pills-container {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Override any potential conflicts from parent containers */
+div * .suggestion-pill-button.react-button,
+.voice-bottom-sheet * .suggestion-pill-button.react-button,
+.chat-interface * .suggestion-pill-button.react-button {
+  background: rgba(255, 255, 255, 0.12) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  background-image: none !important;
+}
+
 
 
 /* Suggestion buttons container */
