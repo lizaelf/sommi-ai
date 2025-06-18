@@ -533,6 +533,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
     console.log("EnhancedChatInterface: Handling text-only suggestion:", content, "API prompt:", apiContent);
     
+    // Expand chat to show full conversation history
+    setShowFullConversation(true);
+    
     // Enable text-only mode to prevent automatic voice responses
     if ((window as any).voiceAssistant?.setTextOnlyMode) {
       (window as any).voiceAssistant.setTextOnlyMode(true);
@@ -615,6 +618,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const handleSendMessage = async (content: string) => {
     if (content.trim() === "" || !currentConversationId) return;
 
+    // Expand chat to show full conversation history
+    setShowFullConversation(true);
+    
     setHideSuggestions(true);
     setIsTyping(true);
 
@@ -839,7 +845,57 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               </div>
               
               <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", width: "100%" }}>
-{!isScannedPage && !isUserRegistered ? (
+{showFullConversation || messages.length > 0 ? (
+                  <>
+                    {/* Show full conversation history when expanded */}
+                    {messages.map((message: any, index: number) => (
+                      <div
+                        key={`${message.id}-${index}`}
+                        style={{
+                          display: "flex",
+                          justifyContent:
+                            message.role === "user" ? "flex-end" : "flex-start",
+                          width: "100%",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            backgroundColor:
+                              message.role === "user"
+                                ? "#DBDBDB"
+                                : "transparent",
+                            borderRadius: "16px",
+                            padding: message.role === "user" ? "16px" : "0 0 16px 0",
+                            width:
+                              message.role === "user" ? "fit-content" : "100%",
+                            maxWidth: message.role === "user" ? "80%" : "100%",
+                          }}
+                        >
+                          {message.role === "assistant" ? (
+                            <div
+                              style={{
+                                color: "#DBDBDB",
+                                ...typography.body,
+                              }}
+                            >
+                              {formatContent(message.content)}
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                color: "#000000",
+                                ...typography.body,
+                              }}
+                            >
+                              {formatContent(message.content, true)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ) : (!isScannedPage && !isUserRegistered) ? (
                   <div
                     style={{
                       display: "flex",
@@ -910,55 +966,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       </div>
                     </div>
                   </div>
-                ) : messages.length > 0 ? (
-                  <>
-                    {messages.map((message: any, index: number) => (
-                      <div
-                        key={`${message.id}-${index}`}
-                        style={{
-                          display: "flex",
-                          justifyContent:
-                            message.role === "user" ? "flex-end" : "flex-start",
-                          width: "100%",
-                          marginBottom: "16px",
-                        }}
-                      >
-                        <div
-                          style={{
-                            backgroundColor:
-                              message.role === "user"
-                                ? "#DBDBDB"
-                                : "transparent",
-                            borderRadius: "16px",
-                            padding: message.role === "user" ? "16px" : "0 0 16px 0",
-                            width:
-                              message.role === "user" ? "fit-content" : "100%",
-                            maxWidth: message.role === "user" ? "80%" : "100%",
-                          }}
-                        >
-                          {message.role === "assistant" ? (
-                            <div
-                              style={{
-                                color: "#DBDBDB",
-                                ...typography.body,
-                              }}
-                            >
-                              {formatContent(message.content)}
-                            </div>
-                          ) : (
-                            <div
-                              style={{
-                                color: "#000000",
-                                ...typography.body,
-                              }}
-                            >
-                              {formatContent(message.content, true)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </>
                 ) : (
                   <div
                     style={{
@@ -999,6 +1006,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   </div>
                 )}
               </div>
+            </div>
             </div>
 
             {/* Extra space at the bottom */}
