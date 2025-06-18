@@ -171,6 +171,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   }, []);
 
   const handleVoiceResponse = async (responseText: string) => {
+    console.log("🎵 Starting voice response for text:", responseText);
     try {
       // Generate TTS audio for the response
       const response = await fetch('/api/text-to-speech', {
@@ -181,12 +182,16 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
         body: JSON.stringify({ text: responseText }),
       });
 
+      console.log("🎵 TTS API response status:", response.status);
+
       if (!response.ok) {
         throw new Error('Failed to generate speech');
       }
 
       const audioBlob = await response.blob();
+      console.log("🎵 Audio blob size:", audioBlob.size);
       const audioUrl = URL.createObjectURL(audioBlob);
+      console.log("🎵 Audio URL created:", audioUrl);
       
       if (audioUrl && !isManuallyClosedRef.current) {
         const audio = new Audio(audioUrl);
@@ -195,9 +200,13 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
         setIsResponding(true);
         setShowUnmuteButton(false);
         
+        console.log("🎵 Starting audio playback...");
+        
         audio.play()
           .then(() => {
+            console.log("🎵 Audio playback started successfully");
             audio.onended = () => {
+              console.log("🎵 Audio playback ended");
               setIsPlayingAudio(false);
               currentAudioRef.current = null;
               URL.revokeObjectURL(audioUrl); // Clean up blob URL
@@ -208,13 +217,14 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
             };
           })
           .catch(error => {
-            console.error("Audio playback failed:", error);
+            console.error("🎵 Audio playback failed:", error);
             setIsPlayingAudio(false);
             setIsResponding(false);
             setShowAskButton(true);
             URL.revokeObjectURL(audioUrl);
           });
       } else {
+        console.log("🎵 No audio URL or manually closed");
         setIsResponding(false);
         setShowAskButton(true);
       }
