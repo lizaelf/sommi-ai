@@ -4,7 +4,7 @@ import USFlagImage from '@/components/USFlagImage';
 import WineRating from '@/components/WineRating';
 import WineTechnicalDetails from '@/components/WineTechnicalDetails';
 import typography from '@/styles/typography';
-import { WINE_CONFIG } from '@/../../shared/wineConfig';
+import { WINE_CONFIG } from '../../../shared/wineConfig';
 
 interface SelectedWine {
   id: number;

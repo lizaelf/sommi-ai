@@ -5,7 +5,7 @@ import wineryLogoPath from "@assets/winary-logo.png";
 import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import WineRating from "@/components/WineRating";
-import { getWineDisplayName } from '../../../shared/wineConfig';
+import { getWineDisplayName } from '../../../../shared/wineConfig';
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { ButtonIcon } from "@/components/ButtonIcon";
 import HomeGlobalSkeleton from "@/components/HomeGlobalSkeleton";
