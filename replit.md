@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Comprehensive Unused Component Cleanup (June 18, 2025 - Latest)
+### Admin Folder Organization Implementation (June 18, 2025 - Latest)
+- **Complete Admin Folder Structure**: Organized all admin-related pages into dedicated 'admin' folder for improved project architecture
+- **Admin Pages Migration**: Moved TenantAdmin.tsx, TenantAdminRefactored.tsx, AdminPage.tsx, SommTenantAdmin.tsx, and TenantCreate.tsx to /client/src/pages/admin/
+- **Admin Components Organization**: Relocated tenant-admin components to /client/src/components/admin/ for consistent folder structure
+- **Import Path Updates**: Updated all routing and component imports to reflect new admin folder hierarchy
+- **Enhanced Project Structure**: Centralized all administrative functionality in dedicated admin namespace for better maintainability
+
+### Comprehensive Unused Component Cleanup (June 18, 2025 - Previous)
 - **Systematic Component Removal**: Removed 30+ unused components from codebase including BackgroundGradientAnimation, ThemeToggle, Chart, HoverCard, InputOtp, Menubar, NavigationMenu, Resizable, and many others
 - **Dependency Cleanup**: Fixed import errors and removed components with broken dependencies (Calendar, Pagination, Sidebar)
 - **Directory Structure Optimization**: Removed entire shared components directory and unused wine-details components (VoiceAssistantContainer, FoodPairingExpandableItem)

@@ -5,9 +5,9 @@ import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 
 // Refactored components
-import { AdminHeader } from "@/components/tenant-admin/AdminHeader";
-import { TabNavigation } from "@/components/tenant-admin/TabNavigation";
-import { WineManagement } from "@/components/tenant-admin/WineManagement";
+import { AdminHeader } from "@/components/admin/AdminHeader";
+import { TabNavigation } from "@/components/admin/TabNavigation";
+import { WineManagement } from "@/components/admin/WineManagement";
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;
