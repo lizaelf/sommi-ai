@@ -498,6 +498,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [hideSuggestions, setHideSuggestions] = useState(false);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
+  
+  // Voice assistant state
+  const [voiceControllerRef, setVoiceControllerRef] = useState<any>(null);
   const [, setLocation] = useLocation();
   const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(
     null,
@@ -1053,9 +1056,17 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
                     onMicClick={() => {
-                      // Handle microphone click - trigger voice assistant
-                      console.log("Microphone clicked");
-                      // You can add voice assistant logic here
+                      // Trigger voice assistant through existing VoiceController
+                      const voiceButton = document.querySelector('[data-voice-button]') as HTMLButtonElement;
+                      if (voiceButton) {
+                        voiceButton.click();
+                      } else {
+                        // Alternative: dispatch voice event
+                        const event = new CustomEvent('micButtonClick', {
+                          detail: { wineKey: currentWine ? `wine_${currentWine.id}` : "wine_1" }
+                        });
+                        window.dispatchEvent(event);
+                      }
                     }}
                   />
                 </>
@@ -1102,6 +1113,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         onClose={handleCloseContactSheet}
         onSubmit={handleContactSubmit}
       />
+
+      {/* Hidden VoiceController for microphone functionality */}
+      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', visibility: 'hidden' }}>
+        <VoiceController
+          onSendMessage={handleSendMessage}
+          isProcessing={isTyping}
+          wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+        />
+      </div>
 
       {/* Legacy Contact Bottom Sheet - keeping for reference but commented out */}
       {false && animationState !== "closed" &&
