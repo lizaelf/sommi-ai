@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/UseToast";
-import Button from "@/components/ui/Button";
-import { IconButton } from "@/components/ui/IconButton";
+import Button from "../../../components/ui/Button";
+import { IconButton } from "../../../components/ui/IconButton";
 import { DropdownMenuItem } from "./DropdownMenuItem";
 import colors from "@/styles/colors";
 import typography from "@/styles/typography";
@@ -414,3 +414,5 @@ export function ButtonIcon({
     </>
   );
 }
+
+export default ButtonIcon;

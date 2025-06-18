@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Plus, Save, X, Menu, Search, User, Settings } from "lucide-react";
 import { Link } from "wouter";
 import AppHeader from "@/components/pages/shared/AppHeader";
-import { IconButton } from "@/components/pages/ui/IconButton";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface Tenant {
   id: number;
