@@ -3,7 +3,6 @@ import { Send } from 'lucide-react';
 import { IconButton } from "./ui/IconButton";
 import MicrophoneButton from '@/components/MicrophoneButton';
 import typography from "@/styles/typography";
-import { BackgroundGradientAnimation } from '@/components/ui/BackgroundGradientAnimation';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -60,22 +59,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         }}
       >
         {isFocused && (
-          <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none z-[5]">
-            <BackgroundGradientAnimation
-              gradientBackgroundStart="rgb(30, 30, 30)"
-              gradientBackgroundEnd="rgb(10, 10, 10)"
-              firstColor="74, 144, 226"
-              secondColor="139, 92, 246"
-              thirdColor="34, 197, 94"
-              fourthColor="168, 85, 247"
-              fifthColor="59, 130, 246"
-              pointerColor="99, 102, 241"
-              size="120%"
-              blendingValue="overlay"
-              interactive={false}
-              containerClassName="rounded-3xl"
-              className="opacity-30"
-            />
+          <div className="absolute inset-0 rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-slide-lr"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/15 to-transparent animate-slide-lr-delayed"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-slide-lr-slow"></div>
           </div>
         )}
         <input
