@@ -6,6 +6,7 @@ import {
   requestMicrophonePermission,
   shouldSkipPermissionPrompt,
 } from "@/utils/microphonePermissions";
+import { deploymentAudioUtils } from "@/utils/deploymentAudioSync";
 // Voice controller for wine platform
 
 interface VoiceControllerProps {
@@ -31,7 +32,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
-  // Share state globally for CircleAnimation
+  // Share state globally for CircleAnimation and audio control
   useEffect(() => {
     (window as any).voiceAssistantState = {
       isListening,
@@ -40,6 +41,9 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       showBottomSheet,
       isPlayingAudio
     };
+    
+    // Expose global audio stop function for deployment compatibility
+    (window as any).stopVoiceAudio = stopAudio;
   }, [isListening, isThinking, isResponding, showBottomSheet, isPlayingAudio]);
 
   // Initialize welcome message cache
@@ -84,37 +88,44 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       setShowAskButton(false);
       setIsResponding(true);
 
-      // Play welcome message
+      // Play welcome message with deployment synchronization
       if (welcomeAudioCacheRef.current) {
-        const audio = new Audio(welcomeAudioCacheRef.current);
-        currentAudioRef.current = audio;
-        setIsPlayingAudio(true);
-        
-        audio.onended = () => {
-          setIsPlayingAudio(false);
-          currentAudioRef.current = null;
-          if (!isManuallyClosedRef.current) {
+        deploymentAudioUtils.playAudio(welcomeAudioCacheRef.current)
+          .then(audio => {
+            currentAudioRef.current = audio;
+            setIsPlayingAudio(true);
+            
+            audio.onended = () => {
+              setIsPlayingAudio(false);
+              currentAudioRef.current = null;
+              if (!isManuallyClosedRef.current) {
+                setIsResponding(false);
+                setShowAskButton(true);
+              }
+            };
+          })
+          .catch(error => {
+            console.error("Audio playback failed:", error);
+            setIsPlayingAudio(false);
             setIsResponding(false);
             setShowAskButton(true);
-          }
-        };
-        
-        audio.play().catch(error => {
-          console.error("Audio playback failed:", error);
-          setIsPlayingAudio(false);
-          setIsResponding(false);
-          setShowAskButton(true);
-        });
+          });
       } else {
         setIsResponding(false);
         setShowAskButton(true);
       }
     };
 
+    const handleStopAudio = () => {
+      stopAudio();
+    };
+
     window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+    window.addEventListener('stopVoiceAudio', handleStopAudio);
 
     return () => {
       window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
+      window.removeEventListener('stopVoiceAudio', handleStopAudio);
     };
   }, []);
 
@@ -192,14 +203,27 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   };
 
   const stopAudio = () => {
+    // Use deployment audio synchronization for consistent stopping
+    deploymentAudioUtils.stopAllAudio();
+    
+    // Clean up local audio reference
     if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current.currentTime = 0;
-      currentAudioRef.current = null;
+      try {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+        currentAudioRef.current = null;
+      } catch (error) {
+        console.warn("Error stopping local audio reference:", error);
+      }
     }
+    
+    // Reset all audio-related states
     setIsPlayingAudio(false);
+    setIsResponding(false);
     setShowUnmuteButton(false);
     setShowAskButton(true);
+    
+    console.log("Audio stopped successfully via deployment sync");
   };
 
   return (

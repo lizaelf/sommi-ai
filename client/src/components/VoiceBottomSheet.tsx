@@ -258,7 +258,23 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
             <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
               <button
                 className="secondary-button react-button"
-                onClick={isPlayingAudio ? onStopAudio : onMute}
+                onClick={() => {
+                  // Enhanced stop functionality for deployment compatibility
+                  if (isPlayingAudio && onStopAudio) {
+                    onStopAudio();
+                  } else if (onMute) {
+                    onMute();
+                  }
+                  
+                  // Fallback: use global stop function
+                  if ((window as any).stopVoiceAudio) {
+                    (window as any).stopVoiceAudio();
+                  }
+                  
+                  // Additional fallback: dispatch stop event
+                  const stopEvent = new CustomEvent('stopVoiceAudio');
+                  window.dispatchEvent(stopEvent);
+                }}
                 style={{
                   width: '100%',
                   borderRadius: '32px',
