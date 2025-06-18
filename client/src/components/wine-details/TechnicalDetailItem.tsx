@@ -3,7 +3,7 @@ import typography from '@/styles/typography';
 
 interface TechnicalDetailItemProps {
   label: string;
-  value: string;
+  value: string | React.ReactNode;
   isLast?: boolean;
 }
 
@@ -25,8 +25,8 @@ const TechnicalDetailItem: React.FC<TechnicalDetailItemProps> = ({ label, value,
           {label}
         </span>
         <span style={{
-          ...typography.body,
-          color: "white",
+          ...typography.body1M,
+          color: "rgba(255, 255, 255, 0.6)",
           fontSize: label === "Alcohol by Volume" ? "18px" : undefined,
           fontWeight: label === "Alcohol by Volume" ? "500" : undefined,
         }}>
