@@ -7,3 +7,4 @@ export { default as ChatInputArea } from './ChatInputArea';
 export { default as EnhancedChatInterface } from './EnhancedChatInterface';
 export { default as WineChatSection } from './WineChatSection';
 export { default as WineDetailsChatInterface } from './WineDetailsChatInterface';
+export { default as ChatQuestion } from './ChatQuestion';
