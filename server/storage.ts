@@ -4,7 +4,8 @@ import {
   conversations, type Conversation, type InsertConversation,
   tenants, type Tenant, type InsertTenant,
   usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill,
-  foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory
+  foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory,
+  wineTypes, type WineType, type InsertWineType
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -48,6 +49,13 @@ export interface IStorage {
   createFoodPairingCategory(category: InsertFoodPairingCategory): Promise<FoodPairingCategory>;
   updateFoodPairingCategory(id: number, category: Partial<InsertFoodPairingCategory>): Promise<FoodPairingCategory | undefined>;
   deleteFoodPairingCategory(id: number): Promise<void>;
+  
+  // Wine types operations
+  getAllWineTypes(): Promise<WineType[]>;
+  getWineTypeByType(type: string): Promise<WineType | undefined>;
+  createWineType(wineType: InsertWineType): Promise<WineType>;
+  updateWineType(id: number, wineType: Partial<InsertWineType>): Promise<WineType | undefined>;
+  deleteWineType(id: number): Promise<void>;
 }
 
 // Database storage implementation
@@ -236,6 +244,37 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFoodPairingCategory(id: number): Promise<void> {
     await db.delete(foodPairingCategories).where(eq(foodPairingCategories.id, id));
+  }
+
+  // Wine types operations
+  async getAllWineTypes(): Promise<WineType[]> {
+    return await db.select().from(wineTypes);
+  }
+
+  async getWineTypeByType(type: string): Promise<WineType | undefined> {
+    const [wineType] = await db.select().from(wineTypes).where(eq(wineTypes.type, type));
+    return wineType || undefined;
+  }
+
+  async createWineType(insertWineType: InsertWineType): Promise<WineType> {
+    const [wineType] = await db
+      .insert(wineTypes)
+      .values(insertWineType)
+      .returning();
+    return wineType;
+  }
+
+  async updateWineType(id: number, data: Partial<InsertWineType>): Promise<WineType | undefined> {
+    const [wineType] = await db
+      .update(wineTypes)
+      .set(data)
+      .where(eq(wineTypes.id, id))
+      .returning();
+    return wineType || undefined;
+  }
+
+  async deleteWineType(id: number): Promise<void> {
+    await db.delete(wineTypes).where(eq(wineTypes.id, id));
   }
 }
 

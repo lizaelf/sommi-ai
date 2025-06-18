@@ -130,3 +130,19 @@ export const insertFoodPairingCategorySchema = createInsertSchema(foodPairingCat
 
 export type InsertFoodPairingCategory = z.infer<typeof insertFoodPairingCategorySchema>;
 export type FoodPairingCategory = typeof foodPairingCategories.$inferSelect;
+
+// Wine types table
+export const wineTypes = pgTable("wine_types", {
+  id: serial("id").primaryKey(),
+  type: text("type").notNull().unique(), // Red, Rose, White, Sparkling
+  imagePath: text("image_path").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const insertWineTypeSchema = createInsertSchema(wineTypes).pick({
+  type: true,
+  imagePath: true,
+});
+
+export type InsertWineType = z.infer<typeof insertWineTypeSchema>;
+export type WineType = typeof wineTypes.$inferSelect;

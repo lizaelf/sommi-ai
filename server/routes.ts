@@ -1490,6 +1490,89 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Wine types endpoints
+  app.get("/api/wine-types", async (req, res) => {
+    try {
+      const wineTypes = await storage.getAllWineTypes();
+      res.json(wineTypes);
+    } catch (error) {
+      console.error("Error fetching wine types:", error);
+      res.status(500).json({ error: "Failed to fetch wine types" });
+    }
+  });
+
+  app.get("/api/wine-types/:type", async (req, res) => {
+    try {
+      const { type } = req.params;
+      const wineType = await storage.getWineTypeByType(type);
+      if (!wineType) {
+        return res.status(404).json({ error: "Wine type not found" });
+      }
+      res.json(wineType);
+    } catch (error) {
+      console.error("Error fetching wine type:", error);
+      res.status(500).json({ error: "Failed to fetch wine type" });
+    }
+  });
+
+  app.post("/api/wine-types", async (req, res) => {
+    try {
+      const wineType = await storage.createWineType(req.body);
+      res.json(wineType);
+    } catch (error) {
+      console.error("Error creating wine type:", error);
+      res.status(500).json({ error: "Failed to create wine type" });
+    }
+  });
+
+  app.put("/api/wine-types/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const wineType = await storage.updateWineType(parseInt(id), req.body);
+      if (!wineType) {
+        return res.status(404).json({ error: "Wine type not found" });
+      }
+      res.json(wineType);
+    } catch (error) {
+      console.error("Error updating wine type:", error);
+      res.status(500).json({ error: "Failed to update wine type" });
+    }
+  });
+
+  app.delete("/api/wine-types/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteWineType(parseInt(id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting wine type:", error);
+      res.status(500).json({ error: "Failed to delete wine type" });
+    }
+  });
+
+  // Wine type detection endpoint
+  app.post("/api/detect-wine-type", async (req, res) => {
+    try {
+      const { wineName } = req.body;
+      if (!wineName) {
+        return res.status(400).json({ error: "Wine name is required" });
+      }
+      
+      const { detectWineType, getWineTypeImagePath } = await import('../shared/wineTypeDetection.js');
+      const detectedType = detectWineType(wineName);
+      const imagePath = getWineTypeImagePath(detectedType);
+      
+      res.json({
+        wineName,
+        detectedType,
+        imagePath
+      });
+    } catch (error) {
+      console.error("Error detecting wine type:", error);
+      res.status(500).json({ error: "Failed to detect wine type" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
