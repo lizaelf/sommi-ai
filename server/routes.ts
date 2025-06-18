@@ -1430,6 +1430,66 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Food pairing categories endpoints
+  app.get("/api/food-pairing-categories", async (req, res) => {
+    try {
+      const categories = await storage.getAllFoodPairingCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching food pairing categories:", error);
+      res.status(500).json({ error: "Failed to fetch food pairing categories" });
+    }
+  });
+
+  app.get("/api/food-pairing-categories/:type", async (req, res) => {
+    try {
+      const { type } = req.params;
+      const category = await storage.getFoodPairingCategoryByType(type);
+      if (!category) {
+        return res.status(404).json({ error: "Food pairing category not found" });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error("Error fetching food pairing category:", error);
+      res.status(500).json({ error: "Failed to fetch food pairing category" });
+    }
+  });
+
+  app.post("/api/food-pairing-categories", async (req, res) => {
+    try {
+      const category = await storage.createFoodPairingCategory(req.body);
+      res.json(category);
+    } catch (error) {
+      console.error("Error creating food pairing category:", error);
+      res.status(500).json({ error: "Failed to create food pairing category" });
+    }
+  });
+
+  app.put("/api/food-pairing-categories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const category = await storage.updateFoodPairingCategory(parseInt(id), req.body);
+      if (!category) {
+        return res.status(404).json({ error: "Food pairing category not found" });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error("Error updating food pairing category:", error);
+      res.status(500).json({ error: "Failed to update food pairing category" });
+    }
+  });
+
+  app.delete("/api/food-pairing-categories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteFoodPairingCategory(parseInt(id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting food pairing category:", error);
+      res.status(500).json({ error: "Failed to delete food pairing category" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
