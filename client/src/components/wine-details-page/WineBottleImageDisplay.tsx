@@ -17,7 +17,7 @@ const WineBottleImageDisplay: React.FC<WineBottleImageDisplayProps> = ({
 }) => {
   return (
     <img
-      src={image || ridgeWineImage}
+      src={image || placeholderImage}
       alt={wineName || "Wine bottle"}
       style={{
         height,
@@ -29,12 +29,12 @@ const WineBottleImageDisplay: React.FC<WineBottleImageDisplayProps> = ({
         console.error(`Wine bottle image failed to load: ${wineName}, attempted URL: ${target.src}`);
         
         // Try fallback images in order
-        if (target.src !== ridgeWineImage) {
-          console.log(`Falling back to Ridge wine image: ${ridgeWineImage}`);
-          target.src = ridgeWineImage;
-        } else if (target.src !== placeholderImage) {
+        if (target.src !== placeholderImage) {
           console.log(`Falling back to placeholder image: ${placeholderImage}`);
           target.src = placeholderImage;
+        } else if (target.src !== ridgeWineImage) {
+          console.log(`Falling back to Ridge wine image: ${ridgeWineImage}`);
+          target.src = ridgeWineImage;
         } else {
           console.error('All fallback images failed to load');
         }
