@@ -8,3 +8,4 @@ export { default as WineRecommendationsSection } from './WineRecommendationsSect
 export { default as WineChatSection } from './WineChatSection';
 export { default as WineRecommendationCard } from './WineRecommendationCard';
 export { default as WineCardImage } from './WineCardImage';
+export { default as WineBottleImageDisplay } from './WineBottleImageDisplay';
