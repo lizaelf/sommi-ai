@@ -24,7 +24,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
   onMicClick
 }) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black/90 p-4 border-t border-white/20 z-50">
+    <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-white/20 z-50 bg-[#000000]">
       <div className="max-w-3xl mx-auto">
         {/* Suggestion Pills from parsed table */}
         <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
