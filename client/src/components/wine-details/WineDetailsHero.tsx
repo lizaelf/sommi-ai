@@ -74,7 +74,7 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
         style={{
           marginTop: "16px",
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           padding: "0 16px",
         }}
       >
