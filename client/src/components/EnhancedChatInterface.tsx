@@ -1056,17 +1056,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
                     onMicClick={() => {
-                      // Trigger voice assistant through existing VoiceController
-                      const voiceButton = document.querySelector('[data-voice-button]') as HTMLButtonElement;
-                      if (voiceButton) {
-                        voiceButton.click();
-                      } else {
-                        // Alternative: dispatch voice event
-                        const event = new CustomEvent('micButtonClick', {
-                          detail: { wineKey: currentWine ? `wine_${currentWine.id}` : "wine_1" }
-                        });
-                        window.dispatchEvent(event);
-                      }
+                      // Dispatch the voice assistant trigger event
+                      const event = new CustomEvent('triggerVoiceAssistant');
+                      window.dispatchEvent(event);
                     }}
                   />
                 </>
