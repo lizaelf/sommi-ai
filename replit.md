@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Voice Suggestion Response Fix (June 18, 2025 - Latest)
+### Voice Assistant Component Separation (June 18, 2025 - Latest)
+- **VoiceAssistantBottomSheet Component**: Created dedicated bottom sheet component for voice assistant interface to improve code organization
+- **Component Modularity Enhancement**: Separated voice assistant UI logic from VoiceController for better maintainability and reusability
+- **Clean Architecture Implementation**: Moved all bottom sheet rendering logic into focused VoiceAssistantBottomSheet component
+- **Props Interface Standardization**: Established clear prop interfaces for voice assistant bottom sheet functionality
+- **Component Directory Organization**: Added new component to /components/voice/ directory for logical grouping
+
+### Voice Suggestion Response Fix (June 18, 2025 - Previous)
 - **Suggestion Click Voice Response**: Fixed suggestion pills in voice assistant to properly trigger voice responses with Stop button functionality
 - **State Management Enhancement**: Added proper state setting (isResponding=true, isPlayingAudio=true) when suggestions are clicked in voice context
 - **Stop Button Display**: Suggestion clicks now correctly show Stop button during TTS audio playback instead of remaining in suggestion display mode

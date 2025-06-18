@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import VoiceBottomSheet from '../VoiceBottomSheet';
+import VoiceAssistantBottomSheet from './VoiceAssistantBottomSheet';
 
 interface VoiceControllerProps {
   onSendMessage?: (message: string, options?: any) => void;
@@ -431,7 +431,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   };
 
   return (
-    <VoiceBottomSheet
+    <VoiceAssistantBottomSheet
       isOpen={showBottomSheet}
       onClose={handleClose}
       onMute={stopAudio}
