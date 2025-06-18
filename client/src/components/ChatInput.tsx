@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Send, Mic } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { IconButton } from "./ui/IconButton";
+import MicrophoneButton from '@/components/MicrophoneButton';
 import typography from "@/styles/typography";
 
 interface ChatInputProps {
@@ -134,17 +135,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
               }}
             />
           ) : (
-            <IconButton
-              icon={Mic}
+            <MicrophoneButton
               onClick={onMicClick}
-              variant="ghost"
-              size="md"
-              disabled={isProcessing}
+              isProcessing={isProcessing}
               title="Voice input"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: isProcessing ? 0.5 : 1
-              }}
             />
           )}
         </div>
