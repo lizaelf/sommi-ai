@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import FoodPairingCard from './FoodPairingCard';
-import { Button } from '@/components/ui/Button';
+import SectionHeaderButton from '../ui/SectionHeaderButton';
 import typography from '@/styles/typography';
 import { useQuery } from '@tanstack/react-query';
 
@@ -77,20 +77,9 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
         }}>
           Food pairings
         </h1>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleSeeAllClick}
-          style={{ 
-            width: "auto",
-            flexShrink: 0,
-            whiteSpace: "nowrap",
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-            border: "none"
-          }}
-        >
+        <SectionHeaderButton onClick={handleSeeAllClick}>
           See all
-        </Button>
+        </SectionHeaderButton>
       </div>
       
       <div style={{

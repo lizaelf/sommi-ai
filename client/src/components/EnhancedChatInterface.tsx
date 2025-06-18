@@ -10,6 +10,7 @@ import ChatInputArea from "./ChatInputArea";
 import VoiceController from "./voice/VoiceController";
 import SuggestionPills from "./SuggestionPills";
 import Button from "./ui/Button";
+import SectionHeaderButton from "./ui/SectionHeaderButton";
 import { FormInput } from "./ui/FormInput";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
@@ -887,21 +888,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 >
                   Chat
                 </h1>
-                <Button
-                  variant="secondary"
-                  style={{
-                    padding: "8px 16px",
-                    fontSize: "14px",
-                    fontWeight: 400,
-                    color: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.08)",
-                    border: "none",
-                    borderRadius: "20px",
-                    cursor: "pointer",
-                  }}
-                >
+                <SectionHeaderButton>
                   View all
-                </Button>
+                </SectionHeaderButton>
               </div>
               
               <div id="conversation" className="space-y-4 mb-96" style={{ paddingLeft: "16px", paddingRight: "16px", width: "100%" }}>
