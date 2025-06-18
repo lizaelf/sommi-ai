@@ -32,7 +32,7 @@ const BuyAgainSection: React.FC<BuyAgainSectionProps> = ({ buyAgainLink }) => {
             window.open(buyAgainLink, "_blank");
           }
         }}
-        variant="primary"
+        variant="brand"
         size="lg"
         className="w-full mb-6 h-14 rounded-2xl"
       >
