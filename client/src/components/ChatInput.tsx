@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Mic } from 'lucide-react';
 import { IconButton } from "./ui/IconButton";
 import typography from "@/styles/typography";
 
@@ -8,12 +8,12 @@ interface ChatInputProps {
   isProcessing: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
-  voiceButtonComponent?: React.ReactNode;
+  onMicClick?: () => void;
 }
 
 // Suggestions are now handled in the parent component
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, voiceButtonComponent }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFocus, onBlur, onMicClick }) => {
   const [message, setMessage] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -134,7 +134,18 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
               }}
             />
           ) : (
-            voiceButtonComponent
+            <IconButton
+              icon={Mic}
+              onClick={onMicClick}
+              variant="ghost"
+              size="md"
+              disabled={isProcessing}
+              title="Voice input"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: isProcessing ? 0.5 : 1
+              }}
+            />
           )}
         </div>
       </div>
