@@ -52,6 +52,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Food Pairing Assets Organization**: Moved all food pairing SVG files to dedicated `/public/food-pairing/` folder (cheese.svg, herbs.svg, meat.svg)
 - **Wine Bottle Images Organization**: Organized all wine bottle images into `/public/wines/` folder with clean naming conventions
 - **Food Categories Cleanup**: Maintained only lowercase food category images in `/public/food-categories/` folder, removing duplicate uppercase versions
+- **Database Image Path Updates**: Updated all food pairing category image paths in database to use lowercase organized folder structure (/food-categories/appetizers.png, etc.)
 - **Icons Organization**: Moved send-icon.svg to `/public/icons/` folder and added close-icon.svg for consistent icon management
 - **Logo Consolidation**: Removed duplicate logo files (logo.png, logo-updated.png, new-logo.png) and standardized to use only somm-logo.png across all components
 - **Wineries Organization**: Created `/public/wineries/` folder and moved winary-logo.png for better winery asset management
