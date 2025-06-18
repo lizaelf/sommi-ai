@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/UseToast';
+import { useStandardToast } from '@/components/ui/StandardToast';
 import { Loader2, Zap, Database, AudioLines } from 'lucide-react';
 
 interface WineDescription {
@@ -18,7 +18,7 @@ interface WineDescription {
 }
 
 export function AdminPage() {
-  const { toast } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useStandardToast();
   const queryClient = useQueryClient();
   const [selectedWine, setSelectedWine] = useState<WineDescription | null>(null);
   const [newDescription, setNewDescription] = useState('');
@@ -44,18 +44,11 @@ export function AdminPage() {
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Wine descriptions pre-generated and cached",
-      });
+      toastSuccess("Wine descriptions pre-generated and cached", "Success");
       queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toastError(error.message);
     }
   });
 
@@ -70,18 +63,11 @@ export function AdminPage() {
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Audio files pre-generated for all descriptions",
-      });
+      toastSuccess("Audio files pre-generated for all descriptions", "Success");
       queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toastError(error.message);
     }
   });
 
@@ -97,20 +83,13 @@ export function AdminPage() {
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Wine description updated and cached",
-      });
+      toastSuccess("Wine description updated and cached", "Success");
       queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
       setSelectedWine(null);
       setNewDescription('');
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toastError(error.message);
     }
   });
 

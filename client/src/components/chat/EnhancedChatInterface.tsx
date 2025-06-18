@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
@@ -208,7 +208,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [currentEventSource, setCurrentEventSource] =
     useState<EventSource | null>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
-  const { toast } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useStandardToast();
 
   // Create a ref for the chat container
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -368,11 +368,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       refetchMessages();
     } catch (error) {
       console.error("Error in suggestion request:", error);
-      toast({
-        title: "Error",
-        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
-        variant: "destructive",
-      });
+      toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsTyping(false);
 
@@ -528,11 +524,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       refetchMessages();
     } catch (error) {
       console.error("Error in chat request:", error);
-      toast({
-        title: "Error",
-        description: `Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`,
-        variant: "destructive",
-      });
+      toastSuccess(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error", "Error");
     } finally {
       setIsTyping(false);
       setCurrentEventSource(null);

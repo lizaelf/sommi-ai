@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings, Menu, Plus } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import { SegmentedPicker } from "@/components/SegmentedPicker";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
@@ -77,7 +77,7 @@ const TenantAdmin: React.FC = () => {
     const savedTab = localStorage.getItem('tenantAdminActiveTab');
     return (savedTab as "profile" | "cms" | "ai-model") || "profile";
   });
-  const { toast } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useStandardToast();
   const [, setLocation] = useLocation();
   const params = useParams();
   
@@ -117,10 +117,7 @@ const TenantAdmin: React.FC = () => {
     // Clear any stored user data
     localStorage.removeItem('userToken');
     localStorage.removeItem('tenantAdminActiveTab');
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out",
-    });
+    toastSuccess("You have been successfully logged out", "Logged out");
     // Navigate to login page or home
     setLocation('/');
   };
@@ -799,10 +796,7 @@ const TenantAdmin: React.FC = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               if (confirm(`Delete ${wine.name}?`)) {
-                                toast({
-                                  title: "Wine deleted",
-                                  description: `${wine.name} has been removed`,
-                                });
+                                toastSuccess(`${wine.name, "Wine deleted");
                               }
                             }}
                             variant="error"

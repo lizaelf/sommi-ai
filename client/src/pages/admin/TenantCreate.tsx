@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import Button from "@/components/ui/Button";
 import { FormInput } from "@/components/ui/FormInput";
 import typography from "@/styles/typography";
@@ -14,7 +14,7 @@ interface TenantFormData {
 
 export default function TenantCreate() {
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useStandardToast();
   const [scrolled, setScrolled] = useState(false);
   
   const [formData, setFormData] = useState<TenantFormData>({
@@ -41,11 +41,7 @@ export default function TenantCreate() {
   const handleSave = () => {
     // Validate required fields
     if (!formData.name.trim()) {
-      toast({
-        title: "Error",
-        description: "Tenant name is required",
-        variant: "destructive",
-      });
+      toastError("Tenant name is required");
       return;
     }
 
@@ -68,19 +64,12 @@ export default function TenantCreate() {
       const updatedTenants = [...existingTenants, newTenant];
       localStorage.setItem('sommelier-tenants', JSON.stringify(updatedTenants));
 
-      toast({
-        title: "Success",
-        description: "Tenant created successfully",
-      });
+      toastSuccess("Tenant created successfully", "Success");
 
       // Navigate back to tenant admin
       setLocation('/somm-tenant-admin');
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create tenant",
-        variant: "destructive",
-      });
+      toastError("Failed to create tenant");
     }
   };
 

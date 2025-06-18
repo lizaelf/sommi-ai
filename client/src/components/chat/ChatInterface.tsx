@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import { DataSyncManager } from "@/utils/dataSync";
@@ -55,7 +55,7 @@ export default function ChatInterface({
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [currentEventSource, setCurrentEventSource] = useState<EventSource | null>(null);
-  const { toast } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useStandardToast();
   
   // Wine and conversation state
   const [currentWine, setCurrentWine] = useState<any>(null);
@@ -177,11 +177,7 @@ export default function ChatInterface({
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
+      toastError("Failed to send message. Please try again.");
     } finally {
       setIsTyping(false);
     }
@@ -268,20 +264,13 @@ export default function ChatInterface({
       });
 
       if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Contact information saved successfully!",
-        });
+        toastSuccess("Contact information saved successfully!", "Success");
       } else {
         throw new Error("Failed to save contact information");
       }
     } catch (error) {
       console.error("Error saving contact:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save contact information. Please try again.",
-        variant: "destructive",
-      });
+      toastError("Failed to save contact information. Please try again.");
     }
   };
 

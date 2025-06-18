@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "wouter";
-import { useToast } from "@/hooks/UseToast";
+import { useStandardToast } from "@/components/ui/StandardToast";
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 
@@ -74,7 +74,7 @@ const TenantAdminRefactored: React.FC = () => {
     const savedTab = localStorage.getItem('tenantAdminActiveTab');
     return (savedTab as "profile" | "cms" | "ai-model") || "profile";
   });
-  const { toast } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useStandardToast();
   const params = useParams();
   
   // Get tenant information
@@ -162,11 +162,7 @@ const TenantAdminRefactored: React.FC = () => {
         setWineCards(allWines);
       } catch (error) {
         console.error("Error loading wine data:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load wine data",
-          variant: "destructive",
-        });
+        toastError("Failed to load wine data");
       }
     };
 
@@ -178,10 +174,7 @@ const TenantAdminRefactored: React.FC = () => {
     // Clear any stored user data
     localStorage.removeItem('userToken');
     localStorage.removeItem('tenantAdminActiveTab');
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out",
-    });
+    toastSuccess("You have been successfully logged out", "Logged out");
     // Navigate to login page or home
     window.location.href = '/';
   };

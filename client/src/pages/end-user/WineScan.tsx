@@ -10,7 +10,7 @@ export default function WineScan() {
   const [match, params] = useRoute('/scan-wine/:id');
   const [isAdding, setIsAdding] = useState(false);
   const [addedTocellar, setAddedToCellar] = useState(false);
-  const { toast } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useStandardToast();
 
   const wineId = params?.id ? parseInt(params.id, 10) : null;
   

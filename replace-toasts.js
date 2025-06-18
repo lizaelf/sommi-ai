@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // Files that need toast replacement
 const filesToUpdate = [
@@ -43,27 +43,33 @@ function updateHookUsage(content) {
 
 // Function to replace toast calls
 function replaceToastCalls(content) {
-  // Replace error toasts
+  // Replace error toasts (destructive variant)
   content = content.replace(
     /toast\(\{\s*title:\s*["']Error["'],?\s*description:\s*([^,}]+),?\s*variant:\s*["']destructive["'],?\s*\}\);?/g,
     'toastError($1);'
   );
   
-  // Replace success toasts with title
+  // Replace error toasts without title
+  content = content.replace(
+    /toast\(\{\s*description:\s*([^,}]+),?\s*variant:\s*["']destructive["'],?\s*\}\);?/g,
+    'toastError($1);'
+  );
+  
+  // Replace success toasts with title and description
   content = content.replace(
     /toast\(\{\s*title:\s*([^,}]+),?\s*description:\s*([^,}]+),?\s*\}\);?/g,
     'toastSuccess($2, $1);'
   );
   
-  // Replace simple success toasts
+  // Replace simple success toasts (title only)
   content = content.replace(
     /toast\(\{\s*title:\s*([^,}]+),?\s*\}\);?/g,
     'toastInfo($1);'
   );
   
-  // Replace complex description toasts
+  // Replace JSX description toasts
   content = content.replace(
-    /toast\(\{\s*description:\s*\(\s*<span[^>]*>\s*([^<]+)\s*<\/span>\s*\),?[^}]*\}\);?/g,
+    /toast\(\{\s*description:\s*\(\s*<[^>]*>\s*([^<]+)\s*<\/[^>]*>\s*\),?[^}]*\}\);?/g,
     'toastInfo("$1");'
   );
   
@@ -71,6 +77,12 @@ function replaceToastCalls(content) {
   content = content.replace(
     /toast\(\{\s*description:\s*([^,}]+),?[^}]*\}\);?/g,
     'toastInfo($1);'
+  );
+  
+  // Replace multiline toast calls
+  content = content.replace(
+    /toast\(\{\s*[\s\S]*?title:\s*([^,}]+)[\s\S]*?description:\s*([^,}]+)[\s\S]*?\}\);?/g,
+    'toastSuccess($2, $1);'
   );
   
   return content;

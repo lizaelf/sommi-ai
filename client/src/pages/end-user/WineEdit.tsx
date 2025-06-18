@@ -520,22 +520,14 @@ export default function WineEdit() {
                     // Validate image file
                     const validation = validateImageFile(file);
                     if (!validation.valid) {
-                      toast({
-                        description: validation.error,
-                        duration: 3000,
-                        className: "bg-red-500 text-white border-none"
-                      });
+                      toastInfo(validation.error);
                       return;
                     }
                     
                     // Check for duplicates
                     const duplicateCheck = await wineImageDeduplication.checkDuplicate(wineId, file);
                     if (duplicateCheck.isDuplicate) {
-                      toast({
-                        description: "This image already exists for this wine",
-                        duration: 3000,
-                        className: "bg-yellow-500 text-white border-none"
-                      });
+                      toastInfo("This image already exists for this wine");
                       return;
                     }
                     
