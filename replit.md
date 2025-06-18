@@ -50,7 +50,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ### Gradient Line Visual Enhancement (June 18, 2025 - Latest)
 - **Varietal Section Enhancement**: Added gradient line image to the right of Varietal block in WineDetailsHeader for visual accent
-- **Horizontal Layout Integration**: Modified Varietal section to use flexbox with text content and 60px x 2px gradient line positioned side by side
+- **Horizontal Layout Integration**: Modified Varietal section to use flexbox with text content and 100px x 2px gradient line positioned side by side
 - **Visual Balance Improvement**: Added 12px gap and center alignment between varietal information and gradient line for polished presentation
 - **Subtle Design Accent**: Integrated line-gradient image as decorative element enhancing technical details section aesthetics
 

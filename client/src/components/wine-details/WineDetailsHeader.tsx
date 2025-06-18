@@ -210,7 +210,7 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
               src="/attached_assets/line-gradient_1750243006719.png"
               alt="Gradient line"
               style={{
-                width: "60px",
+                width: "100px",
                 height: "2px",
                 objectFit: "contain",
               }}
