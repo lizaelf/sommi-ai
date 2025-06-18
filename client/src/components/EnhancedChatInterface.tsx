@@ -1052,13 +1052,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     isProcessing={isTyping}
                     onFocus={() => setIsKeyboardFocused(true)}
                     onBlur={() => setIsKeyboardFocused(false)}
-                    voiceButtonComponent={
-                      <VoiceController
-                        onSendMessage={handleSendMessage}
-                        isProcessing={isTyping}
-                        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
-                      />
-                    }
+                    onMicClick={() => {
+                      // Handle microphone click - trigger voice assistant
+                      console.log("Microphone clicked");
+                      // You can add voice assistant logic here
+                    }}
                   />
                 </>
               )}

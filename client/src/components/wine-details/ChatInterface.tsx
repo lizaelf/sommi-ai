@@ -34,7 +34,7 @@ interface ChatInterfaceProps {
   onScrollToBottom: () => void;
   onFocus: () => void;
   onBlur: () => void;
-  voiceButtonComponent: React.ReactNode;
+  onMicClick?: () => void;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -48,7 +48,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onScrollToBottom,
   onFocus,
   onBlur,
-  voiceButtonComponent,
+  onMicClick,
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -179,7 +179,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             isProcessing={isTyping}
             onFocus={onFocus}
             onBlur={onBlur}
-            voiceButtonComponent={voiceButtonComponent}
+            onMicClick={onMicClick}
           />
         </div>
       </div>
