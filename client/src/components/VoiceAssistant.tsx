@@ -55,8 +55,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   const consecutiveSilenceCountRef = useRef<number>(0);
   const recordingStartTimeRef = useRef<number>(0);
 
-  // Audio cache for TTS responses
-  const audioCache = useRef<Map<string, Blob>>(new Map());
+
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -373,23 +372,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     };
   }, []);
 
-  // Audio cache helpers
-  const getCachedAudio = (text: string): Blob | null => {
-    const cacheKey = btoa(text).slice(0, 50);
-    return audioCache.current.get(cacheKey) || null;
-  };
 
-  const setCachedAudio = (text: string, audioBlob: Blob): void => {
-    const cacheKey = btoa(text).slice(0, 50);
-    audioCache.current.set(cacheKey, audioBlob);
-    // Limit cache size to prevent memory issues
-    if (audioCache.current.size > 10) {
-      const firstKey = audioCache.current.keys().next().value;
-      if (firstKey) {
-        audioCache.current.delete(firstKey);
-      }
-    }
-  };
 
   // Add global promise rejection handler for production stability
   useEffect(() => {
@@ -1225,7 +1208,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
 
         // Check for cached audio first
-        const cachedAudio = getCachedAudio(finalMessageText);
+        const cachedAudio = audioCache.get(finalMessageText);
         if (cachedAudio) {
           console.log("Using cached TTS audio");
           const audioUrl = URL.createObjectURL(cachedAudio);
