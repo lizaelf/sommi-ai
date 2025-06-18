@@ -49,9 +49,7 @@ export default function WineDetails() {
   const isQRScan = new URLSearchParams(window.location.search).has("wine");
   const isScannedPage = location === "/scanned";
 
-  const handleToggleExpanded = (itemId: string) => {
-    setExpandedItem(expandedItem === itemId ? null : itemId);
-  };
+
 
   useEffect(() => {
     // Initialize data sync manager

@@ -11,17 +11,17 @@ const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
 }) => {
   const foodPairingCards = [
     {
-      image: "@assets/food-pairing-meat.jpg",
+      image: "/food-pairing-meat.svg",
       title: "Red Meat",
       description: "Perfect for grilled steaks and lamb"
     },
     {
-      image: "@assets/food-pairing-cheese.jpg", 
+      image: "/food-pairing-cheese.svg", 
       title: "Aged Cheese",
       description: "Pairs wonderfully with aged cheddar"
     },
     {
-      image: "@assets/food-pairing-herbs.jpg",
+      image: "/food-pairing-herbs.svg",
       title: "Herbs & Spices", 
       description: "Complements rosemary and thyme"
     }
