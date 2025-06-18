@@ -32,15 +32,12 @@ const BuyAgainSection: React.FC<BuyAgainSectionProps> = ({ buyAgainLink }) => {
             window.open(buyAgainLink, "_blank");
           }
         }}
-        variant="secondary"
+        variant="primary"
         style={{
           width: "100%",
           height: "56px",
           borderRadius: "16px",
           marginBottom: "24px",
-          color: "white",
-          backgroundColor: "transparent",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
           ...typography.body,
         }}
       >
