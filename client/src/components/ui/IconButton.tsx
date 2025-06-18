@@ -18,6 +18,8 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           return 16;
         case "iconLg":
           return 24;
+        case "md":
+          return 20;
         default:
           return 20;
       }
