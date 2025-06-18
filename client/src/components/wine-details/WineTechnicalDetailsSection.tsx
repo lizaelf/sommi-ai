@@ -209,6 +209,7 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
         height: "290px",
         flexShrink: 0,
         position: "relative",
+        overflow: "visible",
       }}>
         {/* Blurred circle background */}
         <div style={{
