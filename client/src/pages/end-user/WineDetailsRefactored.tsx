@@ -17,7 +17,7 @@ import ContactBottomSheet, { ContactFormData } from "@/components/ContactBottomS
 // Refactored components
 import { WineDetailsHeader } from "@/components/wine-details/WineDetailsHeader";
 import { WineHeroSection } from "@/components/wine-details/WineHeroSection";
-import { WineChatSection } from "@/components/wine-details/WineChatSection";
+import { WineChatSection } from "@/components/chat";
 import { WineLoadingState } from "@/components/wine-details/WineLoadingState";
 import { WineErrorState } from "@/components/wine-details/WineErrorState";
 

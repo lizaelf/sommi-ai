@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
-import EnhancedChatInterface from '@/components/EnhancedChatInterface';
+import { EnhancedChatInterface } from '@/components/chat';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
 import { DataSyncManager } from '@/utils/dataSync';
