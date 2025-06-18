@@ -28,7 +28,7 @@ interface WineHeroSectionProps {
   onImageLoad: () => void;
 }
 
-export const WineHeroSection: React.FC<WineHeroSectionProps> = ({
+const WineHeroSection: React.FC<WineHeroSectionProps> = ({
   wine,
   imageLoaded,
   onImageLoad,
@@ -156,3 +156,5 @@ export const WineHeroSection: React.FC<WineHeroSectionProps> = ({
     </div>
   );
 };
+
+export default WineHeroSection;
