@@ -43,8 +43,7 @@ const WineRecommendationCard: React.FC<WineRecommendationCardProps> = ({ wine })
         <WineCardImage 
           image={wine.image}
           alt={wine.name}
-          width="100%"
-          height="120px"
+          variant="medium"
         />
 
         <div
