@@ -49,11 +49,11 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ## Recent Changes (June 18, 2025)
 
 ### Close Button Icon Size Fix (June 18, 2025 - Latest)
-- **Direct Button Implementation**: Replaced Button component with direct button element to ensure exact 24×24px X icon display
-- **Eliminated CSS Conflicts**: Removed Button component padding conflicts that were causing icon to appear as small dot/circle
-- **Explicit Icon Sizing**: X icon now guaranteed to display at full 24×24px dimensions within 40×40px button container
-- **Maintained Visual Consistency**: Preserved transparent background, white border, and hover states matching secondaryIcon variant
-- **Zero Padding Implementation**: Direct inline styling with padding: '0' ensures no interference with icon size
+- **IconButton Implementation**: Updated VoiceBottomSheet close button to use same IconButton component as Text/Voice bottom sheet
+- **Consistent Component Usage**: Replaced direct button implementation with IconButton using "ghost" variant and "md" size
+- **Proper Icon Sizing**: X icon now displays at correct dimensions matching Text/Voice bottom sheet implementation
+- **Visual Consistency**: Close button appearance and behavior now identical across both bottom sheet components
+- **Component Standardization**: Unified close button implementation eliminates custom styling conflicts
 
 ### Voice Assistant Event Isolation Fix (June 18, 2025 - Previous)
 - **Simultaneous Event Prevention**: Fixed timing issue where welcome message and thinking state occurred simultaneously by implementing flag-based event isolation

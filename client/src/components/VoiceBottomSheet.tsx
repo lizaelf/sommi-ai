@@ -158,35 +158,22 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
         onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
-          <button
-            onClick={onClose}
-            className="react-button absolute top-4 right-4 z-10"
+          <div
             style={{
-              width: '40px',
-              height: '40px',
-              minWidth: '40px',
-              minHeight: '40px',
-              backgroundColor: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '100px',
-              color: 'white',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0',
-              outline: 'none',
-              transition: 'background-color 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              position: "absolute",
+              top: "16px",
+              right: "16px",
+              zIndex: 10,
             }}
           >
-            <X size={24} />
-          </button>
+            <IconButton
+              icon={X}
+              onClick={onClose}
+              variant="headerIcon"
+              size="md"
+              title="Close"
+            />
+          </div>
 
           {/* Wine glass animation container */}
           <div style={{ 
