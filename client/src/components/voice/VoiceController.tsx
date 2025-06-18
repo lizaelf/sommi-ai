@@ -226,7 +226,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       }, 3000);
     };
 
-    // MIC BUTTON: Direct to listening with speech detection
+    // MIC BUTTON: Show bottom sheet and go directly to listening state
     const handleTriggerMicButton = async () => {
       if (isVoiceButtonTriggered) return; // Prevent conflict with voice button
       isMicButtonTriggered = true;
