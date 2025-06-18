@@ -24,7 +24,7 @@ const SectionHeaderButton: React.FC<SectionHeaderButtonProps> = ({
         width: "auto",
         flexShrink: 0,
         whiteSpace: "nowrap",
-        backgroundColor: "rgba(255, 255, 255, 0.10)",
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
         border: "none",
         padding: "8px 16px",
         fontSize: "14px",
@@ -44,7 +44,7 @@ const SectionHeaderButton: React.FC<SectionHeaderButtonProps> = ({
       }}
       onMouseLeave={(e) => {
         if (!disabled) {
-          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.10)";
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
         }
       }}
     >
