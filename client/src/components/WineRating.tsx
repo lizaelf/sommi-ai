@@ -80,6 +80,7 @@ export default function WineRating({
         alignItems: "center",
         justifyContent: "flex-start",
         gap: "12px",
+        width: "fit-content",
         ...style,
       }}
     >
