@@ -1,6 +1,6 @@
 import React from 'react';
-import { BottomSheet } from './ui/BottomSheet';
-import Button from './ui/Button';
+import BottomSheet from '../ui/BottomSheet';
+import Button from '../ui/Button';
 
 interface QRScanModalProps {
   isOpen: boolean;
