@@ -50,6 +50,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ### Complete Button Standardization Migration (June 18, 2025 - Latest)
 - **Universal Button Component Migration**: Successfully replaced all custom button implementations across entire application with standardized Button component
+- **Secondary Button Enhancement**: Updated secondary variant with white 8% fill background and full screen width for consistent form styling
 - **TenantAdmin Component Standardization**: Updated all buttons in TenantAdmin.tsx including search clear button (iconSm variant) and add wine button (primary variant with lg size)
 - **AdminHeader Component Enhancement**: Migrated Edit Profile and Logout buttons to use ghost variant with proper spacing and red styling for logout
 - **ContactBottomSheet Standardization**: Replaced all form buttons with appropriate Button variants maintaining consistent styling and functionality
