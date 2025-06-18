@@ -27,8 +27,9 @@ export default function WineRating({
   hideAbv = false,
 }: WineRatingProps) {
   // Check if there are any ratings to display
-  const hasRatings = ratings.vn || ratings.jd || ratings.ws || (ratings.abv && !hideAbv);
-  
+  const hasRatings =
+    ratings.vn || ratings.jd || ratings.ws || (ratings.abv && !hideAbv);
+
   // If no ratings to display, return null
   if (!hasRatings) {
     return null;
@@ -36,61 +37,7 @@ export default function WineRating({
   // Define styles based on variant
   const getVariantStyles = () => {
     switch (variant) {
-      case "compact":
-        return {
-          container: {
-            display: "flex",
-            alignItems: "center",
-            gap: `${gap / 2}px`,
-            flexWrap: "wrap" as const,
-            justifyContent: align === "left" ? "flex-start" : "center",
-            width: "fit-content",
-          },
-          ratingItem: {
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            gap: "2px",
-          },
-          valueStyle: {
-            ...typography.body1R,
-            color: "white",
-            fontSize: "11px",
-          },
-          labelStyle: {
-            ...typography.body1R,
-            color: "rgba(255, 255, 255, 0.7)",
-            fontSize: "10px",
-          },
-        };
-      case "minimal":
-        return {
-          container: {
-            display: "flex",
-            alignItems: "center",
-            gap: `${gap / 4}px`,
-            flexWrap: "wrap" as const,
-            justifyContent: align === "left" ? "flex-start" : "center",
-            width: "fit-content",
-          },
-          ratingItem: {
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            gap: "2px",
-          },
-          valueStyle: {
-            ...typography.body1R,
-            color: "rgba(255, 255, 255, 0.7)",
-            fontSize: "11px",
-          },
-          labelStyle: {
-            ...typography.body1R,
-            color: "rgba(255, 255, 255, 0.7)",
-            fontSize: "11px",
-          },
-        };
-      default:
+      center:
         return {
           container: {
             display: "flex",
@@ -107,13 +54,36 @@ export default function WineRating({
             gap: "4px",
           },
           valueStyle: {
-            ...typography.num,
+              ...typography.num,
+              color: "rgba(255, 255, 255, 0.6)",
+            },
+            labelStyle: {
+              ...typography.body1R,
+              color: "white",
+        };
+        left:
+        return {
+          container: {
+            display: "flex",
+            alignItems: "left",
+            gap: `${gap}px`,
+            flexWrap: "wrap" as const,
+            justifyContent: align === "left" ? "flex-start" : "center",
+            width: "fit-content",
+          },
+          ratingItem: {
             color: "white",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
           },
-          labelStyle: {
-            ...typography.body1R,
-            color: "#999999",
-          },
+          valueStyle: {
+              ...typography.num,
+              color: "rgba(255, 255, 255, 0.6)",
+            },
+            labelStyle: {
+              ...typography.body1R,
+              color: "white",
         };
     }
   };
