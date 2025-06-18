@@ -10,17 +10,14 @@ import { DataSyncManager } from '@/utils/dataSync';
 interface Wine {
   id: number;
   name: string;
-  year?: number;
   image: string;
+  bottles: number;
   ratings: {
     vn: number;
     jd: number;
     ws: number;
     abv: number;
   };
-  location?: string;
-  description?: string;
-  foodPairing?: string[];
 }
 
 const ChatPage: React.FC = () => {
@@ -117,7 +114,7 @@ const ChatPage: React.FC = () => {
       {/* Full Chat Interface */}
       <div style={{ flex: 1, minHeight: "calc(100vh - 200px)" }}>
         <EnhancedChatInterface
-          currentWine={currentWine}
+          selectedWine={currentWine}
           isScannedPage={false}
         />
       </div>
