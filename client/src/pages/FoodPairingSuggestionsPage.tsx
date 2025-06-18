@@ -58,9 +58,35 @@ const FoodPairingSuggestionsPage: React.FC = () => {
   // Generate food pairings when wine is loaded
   useEffect(() => {
     if (currentWine) {
-      generateFoodPairings();
+      loadFoodPairings();
     }
   }, [currentWine]);
+
+  const getCacheKey = (wine: Wine) => {
+    return `food_pairings_${wine.id}`;
+  };
+
+  const loadFoodPairings = async () => {
+    if (!currentWine) return;
+
+    const cacheKey = getCacheKey(currentWine);
+    
+    // Check for cached food pairings first
+    try {
+      const cachedPairings = localStorage.getItem(cacheKey);
+      if (cachedPairings) {
+        const parsedPairings = JSON.parse(cachedPairings);
+        console.log(`Loaded ${parsedPairings.length} cached food pairings for ${currentWine.name}`);
+        setFoodPairings(parsedPairings);
+        return;
+      }
+    } catch (error) {
+      console.error('Error loading cached food pairings:', error);
+    }
+
+    // Generate new food pairings if not cached
+    await generateFoodPairings();
+  };
 
   const generateFoodPairings = async () => {
     if (!currentWine) return;
@@ -88,7 +114,18 @@ const FoodPairingSuggestionsPage: React.FC = () => {
       }
 
       const data = await response.json();
-      setFoodPairings(data.foodPairings || []);
+      const pairings = data.foodPairings || [];
+      
+      // Cache the generated food pairings
+      const cacheKey = getCacheKey(currentWine);
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(pairings));
+        console.log(`Cached ${pairings.length} food pairings for ${currentWine.name}`);
+      } catch (error) {
+        console.error('Error caching food pairings:', error);
+      }
+
+      setFoodPairings(pairings);
     } catch (error) {
       console.error('Error generating food pairings:', error);
       setError('Failed to generate food pairings. Please try again.');
@@ -99,6 +136,17 @@ const FoodPairingSuggestionsPage: React.FC = () => {
 
   const handleBackClick = () => {
     window.history.back();
+  };
+
+  const handleRefresh = async () => {
+    if (!currentWine) return;
+    
+    // Clear cached data and regenerate
+    const cacheKey = getCacheKey(currentWine);
+    localStorage.removeItem(cacheKey);
+    console.log(`Cleared cached food pairings for ${currentWine.name}`);
+    
+    await generateFoodPairings();
   };
 
   const getIntensityColor = (intensity: number) => {
@@ -170,7 +218,7 @@ const FoodPairingSuggestionsPage: React.FC = () => {
           <Button
             variant="headerIcon"
             size="icon"
-            onClick={generateFoodPairings}
+            onClick={handleRefresh}
             disabled={isLoading}
             style={{
               width: "40px",
