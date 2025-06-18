@@ -33,11 +33,11 @@ const BuyAgainSection: React.FC<BuyAgainSectionProps> = ({ buyAgainLink }) => {
           }
         }}
         variant="primary"
+        size="lg"
+        className="w-full mb-6"
         style={{
-          width: "100%",
           height: "56px",
           borderRadius: "16px",
-          marginBottom: "24px",
           ...typography.body,
         }}
       >
