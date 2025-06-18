@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useToast } from "@/hooks/UseToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import Button from "@/components/pages/ui/Button";
-import ContactInput from "@/components/pages/ui/ContactInput";
+import FormInput from "@/components/pages/ui/FormInput";
 
 
 // Default wine image removed - only authentic uploaded images will be displayed
@@ -1592,7 +1592,7 @@ const Cellar = () => {
                     marginBottom: "24px",
                   }}
                 >
-                  <ContactInput
+                  <FormInput
                     type="text"
                     name="firstName"
                     placeholder="First name"
@@ -1602,7 +1602,7 @@ const Cellar = () => {
                     errorMessage={errors.firstName}
                   />
 
-                  <ContactInput
+                  <FormInput
                     type="text"
                     name="lastName"
                     placeholder="Last name"
@@ -1612,7 +1612,7 @@ const Cellar = () => {
                     errorMessage={errors.lastName}
                   />
 
-                  <ContactInput
+                  <FormInput
                     type="email"
                     name="email"
                     placeholder="Email"
@@ -1860,14 +1860,14 @@ const Cellar = () => {
                     </div>
 
                     {/* Phone Input - Right Side */}
-                    <ContactInput
+                    <FormInput
                       type="tel"
                       placeholder="Phone"
                       value={formData.phone}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleInputChange("phone", e.target.value)
                       }
-                      error={!!errors.phone}
+                      error={errors.phone}
                       errorMessage={errors.phone}
                       className="flex-1"
                     />

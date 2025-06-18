@@ -48,3 +48,5 @@ const WineErrorState: React.FC<WineErrorStateProps> = ({ error }) => {
     </div>
   );
 };
+
+export default WineErrorState;

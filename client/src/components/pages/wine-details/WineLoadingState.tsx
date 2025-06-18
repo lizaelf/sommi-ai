@@ -2,7 +2,7 @@ import React from "react";
 import ShiningText from "@/components/pages/ui/ShiningText";
 import typography from "@/styles/typography";
 
-export const WineLoadingState: React.FC = () => {
+const WineLoadingState: React.FC = () => {
   return (
     <div
       style={{
@@ -34,3 +34,5 @@ export const WineLoadingState: React.FC = () => {
     </div>
   );
 };
+
+export default WineLoadingState;
