@@ -187,7 +187,7 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
           }}>
             <div style={{ flex: 1 }}>
               <span style={{
-                ...typography.body1R,
+                ...typography.body,
                 color: "rgba(255, 255, 255, 0.6)",
                 display: "block",
                 marginBottom: "4px",
