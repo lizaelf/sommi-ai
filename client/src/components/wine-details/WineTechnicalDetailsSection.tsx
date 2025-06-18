@@ -128,13 +128,11 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
               }
             </span>
           </div>
-          <img
-            src="/attached_assets/line-gradient_1750243006719.png"
-            alt="Gradient line"
+          <div
             style={{
               width: "100px",
               height: "2px",
-              objectFit: "contain",
+              background: "linear-gradient(90deg, rgba(117, 117, 117, 0.20) 0%, rgba(219, 219, 219, 0.50) 100%)",
             }}
           />
         </div>
