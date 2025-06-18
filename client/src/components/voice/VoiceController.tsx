@@ -231,11 +231,23 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       setIsThinking(false);
       setIsResponding(false);
       
+      // Dispatch mic status event for CircleAnimation
+      const micEvent = new CustomEvent('mic-status', {
+        detail: { status: 'listening' }
+      });
+      window.dispatchEvent(micEvent);
+      
       // Simulate voice recording for 3 seconds
       setTimeout(() => {
         // Stop listening, start thinking
         setIsListening(false);
         setIsThinking(true);
+        
+        // Dispatch processing status event
+        const processingEvent = new CustomEvent('mic-status', {
+          detail: { status: 'processing' }
+        });
+        window.dispatchEvent(processingEvent);
         
         // Simulate processing for 2 seconds
         setTimeout(() => {
@@ -243,6 +255,12 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
           setIsThinking(false);
           setIsResponding(true);
           setIsPlayingAudio(true);
+          
+          // Dispatch stopped status event (audio is playing, not listening)
+          const stoppedEvent = new CustomEvent('mic-status', {
+            detail: { status: 'stopped' }
+          });
+          window.dispatchEvent(stoppedEvent);
           
           // Generate and play a sample response
           handleVoiceResponse("This is a sample wine response based on your voice question.");
@@ -258,6 +276,12 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       setIsListening(false);
       setIsThinking(false);
       setShowAskButton(true);
+      
+      // Dispatch stopped status event on error
+      const errorEvent = new CustomEvent('mic-status', {
+        detail: { status: 'stopped' }
+      });
+      window.dispatchEvent(errorEvent);
     }
   };
 
