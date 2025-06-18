@@ -97,8 +97,19 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       });
       window.dispatchEvent(micEvent);
       
+      // Simulate voice volume events during listening for circle animation
+      const voiceVolumeInterval = setInterval(() => {
+        const volume = Math.random() * 40 + 20; // Random volume between 20-60
+        const voiceVolumeEvent = new CustomEvent('voice-volume', {
+          detail: { volume, maxVolume: 100, isActive: true }
+        });
+        window.dispatchEvent(voiceVolumeEvent);
+      }, 150); // Update every 150ms for smooth animation
+      
       // Step 1: Show listening state for 3 seconds (user speaking)
       setTimeout(() => {
+        // Clear voice volume simulation
+        clearInterval(voiceVolumeInterval);
         // Step 2: Show thinking state
         setIsListening(false);
         setIsThinking(true);
