@@ -12,7 +12,7 @@ import {
   BuyAgainSection,
   WineRecommendationsSection,
   WineChatSection
-} from "@/components/wine-details-page";
+} from "@/components/wine-details";
 
 interface SelectedWine {
   id: number;

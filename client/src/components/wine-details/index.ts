@@ -1,5 +1,13 @@
 export { default as WineDetailsHeader } from './WineDetailsHeader';
 export { default as WineInfoSection } from './WineInfoSection';
+export { default as WineHistorySection } from './WineHistorySection';
 export { default as FoodPairingSection } from './FoodPairingSection';
+export { default as FoodPairingExpandableItem } from './FoodPairingExpandableItem';
+export { default as BuyAgainSection } from './BuyAgainSection';
+export { default as WineRecommendationsSection } from './WineRecommendationsSection';
+export { default as WineChatSection } from './WineChatSection';
+export { default as WineRecommendationCard } from './WineRecommendationCard';
+export { default as WineCardImage } from './WineCardImage';
+export { default as WineBottleImageDisplay } from './WineBottleImageDisplay';
 export { default as ChatInterface } from './ChatInterface';
 export { default as VoiceAssistantContainer } from './VoiceAssistantContainer';
