@@ -216,6 +216,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
 
     // MIC BUTTON: Direct to listening with speech detection
     const handleTriggerMicButton = async () => {
+      console.log("🎤 VoiceController: handleTriggerMicButton called");
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsListening(true);
@@ -223,6 +224,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       setIsThinking(false);
       setIsPlayingAudio(false);
       setShowUnmuteButton(false);
+      console.log("🎤 VoiceController: States set - isListening should be true");
       
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

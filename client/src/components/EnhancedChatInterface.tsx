@@ -1012,9 +1012,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             onKeyboardFocus={() => setIsKeyboardFocused(true)}
             onKeyboardBlur={() => setIsKeyboardFocused(false)}
             onMicClick={() => {
+              console.log("🎤 EnhancedChatInterface: Mic button clicked, dispatching triggerMicButton event");
               // Dispatch the mic button trigger event (direct to listening)
               const event = new CustomEvent('triggerMicButton');
               window.dispatchEvent(event);
+              console.log("🎤 EnhancedChatInterface: triggerMicButton event dispatched");
             }}
           />
         </main>
