@@ -86,29 +86,29 @@ export default function WineRating({
     >
       {ratings.vn && (
         <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.body1R, color: "#999999" }}>VN:</span>
           <span style={{ ...typography.num, color: "white" }}>{ratings.vn}</span>
+          <span style={{ ...typography.body1R, color: "#999999" }}>VN</span>
         </span>
       )}
 
       {ratings.jd && (
         <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.body1R, color: "#999999" }}>JD:</span>
           <span style={{ ...typography.num, color: "white" }}>{ratings.jd}</span>
+          <span style={{ ...typography.body1R, color: "#999999" }}>JD</span>
         </span>
       )}
 
       {ratings.ws && (
         <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.body1R, color: "#999999" }}>WS:</span>
           <span style={{ ...typography.num, color: "white" }}>{ratings.ws}</span>
+          <span style={{ ...typography.body1R, color: "#999999" }}>WS</span>
         </span>
       )}
 
       {ratings.abv && !hideAbv && (
         <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.body1R, color: "#999999" }}>ABV:</span>
           <span style={{ ...typography.num, color: "white" }}>{ratings.abv}%</span>
+          <span style={{ ...typography.body1R, color: "#999999" }}>ABV</span>
         </span>
       )}
     </Rating>

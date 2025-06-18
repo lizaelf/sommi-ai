@@ -48,7 +48,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Food Pairing Response Caching Implementation (June 18, 2025 - Latest)
+### Wine Rating Display Format Update (June 18, 2025 - Latest)
+- **Value-First Display Format**: Updated WineRating component to show values before labels (e.g., "95 VN" instead of "VN: 95")
+- **Consistent Typography**: Maintained white typography.num for values and gray typography.body1R for labels with proper spacing
+- **Universal Application**: Updated format applies across all wine cards, details pages, and recommendation displays
+- **Cleaner Visual Hierarchy**: Value-first format creates more prominent number display for better readability
+
+### Food Pairing Response Caching Implementation (June 18, 2025 - Previous)
 - **localStorage Caching System**: Implemented comprehensive caching for AI-generated food pairing responses using wine ID-based cache keys
 - **Cache Key Strategy**: Created getCacheKey function generating unique identifiers (`food_pairings_${wine.id}`) for each wine's food pairing data
 - **Intelligent Cache Loading**: Enhanced loadFoodPairings function to check localStorage first before making API calls, providing instant results for cached responses
