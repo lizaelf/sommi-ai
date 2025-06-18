@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
-import AppHeader from '@/components/AppHeader';
-import HeaderSpacer from '@/components/HeaderSpacer';
+import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
 import EnhancedChatInterface from '@/components/EnhancedChatInterface';
 import Button from '@/components/ui/Button';
 import typography from '@/styles/typography';
@@ -32,7 +31,7 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     const loadWineData = async () => {
       try {
-        const wines = DataSyncManager.getAllWines();
+        const wines = DataSyncManager.getUnifiedWineData();
         // Use the first wine as default for chat context
         if (wines.length > 0) {
           setCurrentWine(wines[0]);
