@@ -10,7 +10,7 @@ export default function WineScan() {
   const [match, params] = useRoute('/scan-wine/:id');
   const [isAdding, setIsAdding] = useState(false);
   const [addedTocellar, setAddedToCellar] = useState(false);
-  const { toastSuccess, toastError, toastInfo } = useStandardToast();
+  const { toastSuccess, toastError } = useStandardToast();
 
   const wineId = params?.id ? parseInt(params.id, 10) : null;
   
@@ -39,63 +39,9 @@ export default function WineScan() {
 
       setAddedToCellar(true);
       
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {addedTocellar ? "Wine moved to top" : "Wine added to cellar"}
-          </span>
-        ),
-        duration: 2000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+      toastSuccess(addedTocellar ? "Wine moved to top" : "Wine added to cellar");
     } catch (error) {
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-            }}
-          >
-            Failed to add wine to cellar
-          </span>
-        ),
-        duration: 2000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+      toastError("Failed to add wine to cellar");
     } finally {
       setIsAdding(false);
     }
