@@ -64,12 +64,14 @@ const WineRecommendationCard: React.FC<WineRecommendationCardProps> = ({ wine })
           {wine.year ? `${wine.year} ` : ""}{wine.name}
         </div>
 
-        <WineRating
-          ratings={wine.ratings}
-          variant="compact"
-          hideAbv={true}
-          style={{ gap: "12px" }}
-        />
+        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+          <WineRating
+            ratings={wine.ratings}
+            variant="compact"
+            hideAbv={true}
+            style={{ gap: "12px" }}
+          />
+        </div>
       </div>
     </Link>
   );
