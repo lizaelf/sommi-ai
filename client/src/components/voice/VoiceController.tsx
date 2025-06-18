@@ -120,12 +120,22 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       stopAudio();
     };
 
+    const handleDeploymentAudioStopped = () => {
+      setIsPlayingAudio(false);
+      setIsResponding(false);
+      setShowUnmuteButton(false);
+      setShowAskButton(true);
+      currentAudioRef.current = null;
+    };
+
     window.addEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
     window.addEventListener('stopVoiceAudio', handleStopAudio);
+    window.addEventListener('deploymentAudioStopped', handleDeploymentAudioStopped);
 
     return () => {
       window.removeEventListener('triggerVoiceAssistant', handleTriggerVoiceAssistant);
       window.removeEventListener('stopVoiceAudio', handleStopAudio);
+      window.removeEventListener('deploymentAudioStopped', handleDeploymentAudioStopped);
     };
   }, []);
 
