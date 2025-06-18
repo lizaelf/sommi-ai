@@ -114,9 +114,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
           }}
         />
         
-        {/* Voice button or Send button based on input state */}
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" style={{ width: "40px", height: "40px" }}>
-          {message.trim() ? (
+        {/* Send button when text is entered */}
+        {message.trim() && (
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
             <IconButton
               icon={Send}
               onClick={() => {
@@ -125,23 +125,22 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
                   setMessage('');
                 }
               }}
-              variant="secondary"
-              size="md"
+              variant="secondaryIcon"
+              size="iconSm"
               disabled={isProcessing}
               title="Send message"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: isProcessing ? 0.5 : 1
-              }}
             />
-          ) : onMicClick ? (
-            <MicrophoneButton
-              onClick={() => onMicClick()}
-              isProcessing={isProcessing}
-              title="Voice input"
-            />
-          ) : null}
-        </div>
+          </div>
+        )}
+        
+        {/* Voice button when no text */}
+        {!message.trim() && onMicClick && (
+          <MicrophoneButton
+            onClick={() => onMicClick()}
+            isProcessing={isProcessing}
+            title="Voice input"
+          />
+        )}
       </div>
     </div>
   );
