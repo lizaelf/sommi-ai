@@ -1,6 +1,6 @@
 import { useLocation } from 'wouter';
 import { ChevronLeft } from 'lucide-react';
-import { useConversation } from '../hooks/UseConversation';
+import { useConversation } from '@/hooks/UseConversation';
 import { getWineDisplayName } from '../../../shared/wineConfig';
 import { TextGenerateEffect } from '../components/ui/TextGenerateEffect';
 import { useState, useEffect } from 'react';

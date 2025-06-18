@@ -4,21 +4,21 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/Toaster";
 import { TooltipProvider } from "@/components/ui/Tooltip";
 import NotFound from "@/pages/NotFound";
-import WineDetails from "@/pages/WineDetails";
-import FoodPairings from "@/pages/FoodPairings";
-import Cellar from "@/pages/Cellar";
-import ConversationDialog from "@/pages/ConversationDialog";
-import ChatPage from "@/pages/ChatPage";
-import FoodPairingSuggestionsPage from "@/pages/FoodPairingSuggestionsPage";
+import WineDetails from "@/pages/end-user/WineDetails";
+import FoodPairings from "@/pages/end-user/FoodPairings";
+import Cellar from "@/pages/end-user/Cellar";
+import ConversationDialog from "@/pages/end-user/ConversationDialog";
+import ChatPage from "@/pages/end-user/ChatPage";
+import FoodPairingSuggestionsPage from "@/pages/end-user/FoodPairingSuggestionsPage";
 
-import HomeGlobalRefactored from "@/pages/HomeGlobalRefactored";
-import WineScan from "@/pages/WineScan";
-import WineEditRefactored from "@/pages/WineEditRefactored";
+import HomeGlobalRefactored from "@/pages/end-user/HomeGlobalRefactored";
+import WineScan from "@/pages/end-user/WineScan";
+import WineEditRefactored from "@/pages/end-user/WineEditRefactored";
 import TenantAdminRefactored from "@/pages/admin/TenantAdminRefactored";
 import SommTenantAdmin from "@/pages/admin/SommTenantAdmin";
 import TenantCreate from "@/pages/admin/TenantCreate";
-import QRCodes from "@/pages/QRCodes";
-import QRDemo from "@/pages/QRDemo";
+import QRCodes from "@/pages/end-user/QRCodes";
+import QRDemo from "@/pages/end-user/QRDemo";
 import { useEffect } from "react";
 
 // Scroll restoration for deployed versions
