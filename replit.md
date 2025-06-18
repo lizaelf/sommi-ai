@@ -48,12 +48,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Voice System Rollback to Original Bottom Sheet Logic (June 18, 2025 - Latest)
-- **Microphone Button Behavior Restoration**: Rolled back microphone functionality to original bottom sheet logic from 5 days ago
-- **Welcome Message Flow**: Microphone button now opens bottom sheet with welcome message playback and Ask button
-- **Manual Recording Trigger**: Users must click Ask button to start listening → thinking → response flow instead of immediate recording
-- **Original State Management**: Restored previous voice assistant trigger behavior for consistent user experience
-- **Bottom Sheet UI**: Maintained original bottom sheet interface with suggestion pills and manual voice activation
+### Voice System Rollback to Original Git History Logic (June 18, 2025 - Latest)
+- **Git History Restoration**: Restored microphone functionality from git commit 7501769 (5 days ago) using browser speech synthesis
+- **Original Welcome Message**: Microphone button now plays "Hi and welcome to Somm.ai let me tell you about this wine?" using browser TTS
+- **Browser Speech Implementation**: Uses window.speechSynthesis with male voice preference instead of OpenAI TTS
+- **Authentic 5-Day-Ago Logic**: Exact restoration of original handleTriggerVoiceAssistant function from git history
+- **Simple Voice Flow**: Opens bottom sheet, plays browser-based welcome message, shows Ask button when complete
 
 ### ChatInputArea Component Enhancement (June 18, 2025)
 - **Buy Again Functionality Removal**: Removed Buy again button functionality from ChatInputArea component for cleaner interface
