@@ -258,7 +258,8 @@ export default function ChatInterface({
     handleSendMessage(suggestion);
   };
 
-  const handleContactSubmit = async (contactData: ContactFormData) => {
+  // Contact functionality removed for clean chat component organization
+  const handleContactSubmit = async (contactData: any) => {
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -356,7 +357,7 @@ export default function ChatInterface({
             currentWine={currentWine}
             onSendMessage={handleSendMessage}
             isTyping={isTyping}
-            onKeyboardFocus={setIsKeyboardFocused}
+            onKeyboardFocus={(focused: boolean) => setIsKeyboardFocused(focused)}
             onSuggestionClick={handleSuggestionClick}
             conversationId={currentConversationId?.toString()}
           />
@@ -368,11 +369,7 @@ export default function ChatInterface({
         />
       </div>
 
-      <ContactBottomSheet
-        isOpen={showContactSheet}
-        onClose={() => setShowContactSheet(false)}
-        onSubmit={handleContactSubmit}
-      />
+      {/* Contact functionality removed for clean chat component organization */}
     </div>
   );
 }

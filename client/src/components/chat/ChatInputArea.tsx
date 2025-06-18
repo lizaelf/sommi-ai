@@ -7,10 +7,11 @@ interface ChatInputAreaProps {
   currentConversationId?: number;
   isTyping: boolean;
   onSendMessage: (message: string) => void;
-  onSuggestionClick: (prompt: string, apiPrompt: string) => void;
-  onKeyboardFocus: () => void;
-  onKeyboardBlur: () => void;
-  onMicClick: () => void;
+  onSuggestionClick: (suggestion: string) => void;
+  onKeyboardFocus: (focused: boolean) => void;
+  showBuyButton?: boolean;
+  showChatInput?: boolean;
+  conversationId?: string;
 }
 
 const ChatInputArea: React.FC<ChatInputAreaProps> = ({
@@ -20,8 +21,9 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
   onSendMessage,
   onSuggestionClick,
   onKeyboardFocus,
-  onKeyboardBlur,
-  onMicClick
+  showBuyButton = false,
+  showChatInput = true,
+  conversationId
 }) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-white/20 z-50 bg-[#000000]">
@@ -35,7 +37,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
               console.log("ChatInputArea: SuggestionPills clicked:", prompt);
               // Use the button text for API call
               const apiPrompt = prompt;
-              onSuggestionClick(prompt, apiPrompt);
+              onSuggestionClick(prompt);
             }}
             isDisabled={isTyping}
             preferredResponseType="text"
