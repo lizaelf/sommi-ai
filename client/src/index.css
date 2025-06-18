@@ -1,6 +1,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom viewport height for mobile browsers */
+:root {
+  --vh: 1vh;
+}
+
+/* Scroll restoration and deployment fixes */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+  scroll-behavior: smooth;
+}
+
+/* Fix for iOS Safari bounce/elastic scrolling */
+html,
+body {
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ensure proper scrolling on all devices */
+#root {
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
 /* Contact Input Override - Force transparent background */
 .contact-input-override {
   background: transparent !important;

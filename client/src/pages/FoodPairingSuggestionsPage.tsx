@@ -117,12 +117,14 @@ const FoodPairingSuggestionsPage: React.FC = () => {
 
   return (
     <div 
-      className="bg-black text-white min-h-screen"
+      className="bg-black text-white"
       style={{ 
         backgroundColor: "#0a0a0a",
         minHeight: "100vh",
+        width: "100%",
         overflowY: "auto",
-        overflowX: "hidden"
+        overflowX: "hidden",
+        position: "relative"
       }}
     >
       {/* Header */}

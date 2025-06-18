@@ -21,6 +21,44 @@ import QRCodes from "@/pages/QRCodes";
 import QRDemo from "@/pages/QRDemo";
 import { useEffect } from "react";
 
+// Scroll restoration for deployed versions
+function useScrollRestoration() {
+  useEffect(() => {
+    // Ensure scroll position is at top on route changes
+    const handleRouteChange = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    // Fix iOS Safari scroll issues
+    const handleTouchMove = (e: TouchEvent) => {
+      // Prevent elastic scrolling on iOS
+      if (window.scrollY === 0 && e.touches[0].pageY > e.touches[0].clientY) {
+        e.preventDefault();
+      }
+    };
+
+    // Add scroll restoration on page navigation
+    window.addEventListener('popstate', handleRouteChange);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    // Ensure proper viewport height calculation
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+      document.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('resize', setViewportHeight);
+    };
+  }, []);
+}
 
 function Router() {
   return (
@@ -53,6 +91,7 @@ function Router() {
 // Welcome message caching is now handled entirely by VoiceAssistant component
 
 function App() {
+  useScrollRestoration();
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -48,7 +48,16 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### AI Food Pairing Suggestions Page Implementation (June 18, 2025 - Latest)
+### Deployment Scrolling Fix Implementation (June 18, 2025 - Latest)
+- **Comprehensive Scroll Restoration System**: Implemented complete scroll management for deployed versions with automatic scroll-to-top on route changes
+- **iOS Safari Compatibility**: Added fixes for elastic scrolling prevention and proper touch handling on iOS devices
+- **Viewport Height Management**: Implemented dynamic viewport height calculation using CSS custom properties (--vh) for consistent mobile browser support
+- **Cross-Platform Scroll Enhancement**: Added webkit-overflow-scrolling: touch and overscroll-behavior: none for optimal scrolling performance
+- **App-Level Scroll Management**: Integrated useScrollRestoration hook in App component with event listeners for popstate and touchmove events
+- **CSS Optimization**: Enhanced index.css with scroll-behavior: smooth, position fixes, and overflow management for all screen sizes
+- **Mobile-First Approach**: Ensured proper scrolling behavior across all devices with special handling for mobile browsers and fullscreen layouts
+
+### AI Food Pairing Suggestions Page Implementation (June 18, 2025 - Previous)
 - **FoodPairingSuggestionsPage Component Creation**: Built comprehensive AI-powered food pairing page using ChatPage layout as reference with full-screen experience
 - **OpenAI GPT-4o Integration**: Implemented `/api/generate-food-pairings` endpoint using GPT-4o model for professional sommelier-level food pairing recommendations
 - **Dynamic Food Analysis**: AI generates 8-10 detailed food pairings across categories (Appetizers, Main Course, Desserts, etc.) with intensity ratings 1-10 and pairing explanations
