@@ -3,6 +3,7 @@ import { ArrowLeft, User, LogOut, Settings } from "lucide-react";
 import { Link } from "wouter";
 import AppHeader from "@/components/AppHeader";
 import { IconButton } from "@/components/ui/IconButton";
+import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 
 interface AdminHeaderProps {
@@ -50,56 +51,24 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                 boxShadow: "0 4px 16px rgba(0, 0, 0, 0.3)",
               }}
             >
-              <button
+              <Button
                 onClick={onEditProfile}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  color: "#FFFFFF",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  ...typography.body1R,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#333";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
+                variant="ghost"
+                size="default"
+                className="w-full justify-start gap-3 px-4 py-3 text-left"
               >
                 <Settings size={16} />
                 Edit Profile
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onLogout}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  color: "#FF6B6B",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  ...typography.body1R,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#333";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
+                variant="ghost"
+                size="default"
+                className="w-full justify-start gap-3 px-4 py-3 text-left text-red-400 hover:text-red-300"
               >
                 <LogOut size={16} />
                 Logout
-              </button>
+              </Button>
             </div>
           )}
         </div>

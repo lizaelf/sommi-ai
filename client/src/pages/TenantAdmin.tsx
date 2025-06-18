@@ -414,30 +414,29 @@ const TenantAdmin: React.FC = () => {
                   }}
                 />
                 {searchTerm && (
-                  <button
+                  <Button
                     onClick={() => setSearchTerm("")}
+                    variant="ghost"
+                    size="iconSm"
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
                   >
                     <X className="w-4 h-4" />
-                  </button>
+                  </Button>
                 )}
               </div>
-              <button
+              <Button
                 onClick={() => {
                   // Create new wine with next available ID
                   const nextId = Math.max(...wineCards.map(w => w.id), 0) + 1;
                   setLocation(`/wine-edit/${nextId}?new=true`);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 transition-colors flex items-center gap-2 flex-shrink-0"
-                style={{ 
-                  height: "56px",
-                  borderRadius: "8px",
-                  boxSizing: "border-box"
-                }}
+                variant="primary"
+                size="lg"
+                className="px-4 flex-shrink-0"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 mr-2" />
                 Add wine
-              </button>
+              </Button>
             </div>
           )}
         </div>
