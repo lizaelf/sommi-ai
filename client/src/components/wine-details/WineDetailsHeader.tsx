@@ -179,26 +179,42 @@ const WineDetailsHeader: React.FC<WineDetailsHeaderProps> = ({ wine }) => {
       }}>
         <div style={{ flex: 1 }}>
           {/* Varietal */}
-          <div style={{ marginBottom: "12px" }}>
-            <span style={{
-              ...typography.body1R,
-              color: "rgba(255, 255, 255, 0.6)",
-              display: "block",
-              marginBottom: "4px",
-            }}>
-              Varietal
-            </span>
-            <span style={{
-              ...typography.body,
-              color: "white",
-            }}>
-              {wine?.technicalDetails?.varietal ? 
-                `${wine.technicalDetails.varietal.primary} ${wine.technicalDetails.varietal.primaryPercentage}%${wine.technicalDetails.varietal.secondary ? `, ${wine.technicalDetails.varietal.secondary} ${wine.technicalDetails.varietal.secondaryPercentage}%` : ''}` :
-                extractVarietalInfo(wine?.name || '').secondary ? 
-                  `${extractVarietalInfo(wine?.name || '').primary} ${extractVarietalInfo(wine?.name || '').primaryPercentage}%, ${extractVarietalInfo(wine?.name || '').secondary} ${extractVarietalInfo(wine?.name || '').secondaryPercentage}%` :
-                  `${extractVarietalInfo(wine?.name || '').primary} ${extractVarietalInfo(wine?.name || '').primaryPercentage}%`
-              }
-            </span>
+          <div style={{ 
+            marginBottom: "12px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px"
+          }}>
+            <div style={{ flex: 1 }}>
+              <span style={{
+                ...typography.body1R,
+                color: "rgba(255, 255, 255, 0.6)",
+                display: "block",
+                marginBottom: "4px",
+              }}>
+                Varietal
+              </span>
+              <span style={{
+                ...typography.body,
+                color: "white",
+              }}>
+                {wine?.technicalDetails?.varietal ? 
+                  `${wine.technicalDetails.varietal.primary} ${wine.technicalDetails.varietal.primaryPercentage}%${wine.technicalDetails.varietal.secondary ? `, ${wine.technicalDetails.varietal.secondary} ${wine.technicalDetails.varietal.secondaryPercentage}%` : ''}` :
+                  extractVarietalInfo(wine?.name || '').secondary ? 
+                    `${extractVarietalInfo(wine?.name || '').primary} ${extractVarietalInfo(wine?.name || '').primaryPercentage}%, ${extractVarietalInfo(wine?.name || '').secondary} ${extractVarietalInfo(wine?.name || '').secondaryPercentage}%` :
+                    `${extractVarietalInfo(wine?.name || '').primary} ${extractVarietalInfo(wine?.name || '').primaryPercentage}%`
+                }
+              </span>
+            </div>
+            <img
+              src="/attached_assets/line-gradient_1750243006719.png"
+              alt="Gradient line"
+              style={{
+                width: "60px",
+                height: "2px",
+                objectFit: "contain",
+              }}
+            />
           </div>
 
           {/* Appellation */}

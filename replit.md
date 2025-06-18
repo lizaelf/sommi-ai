@@ -48,7 +48,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Wine Image Integration in Technical Details (June 18, 2025 - Latest)
+### Gradient Line Visual Enhancement (June 18, 2025 - Latest)
+- **Varietal Section Enhancement**: Added gradient line image to the right of Varietal block in WineDetailsHeader for visual accent
+- **Horizontal Layout Integration**: Modified Varietal section to use flexbox with text content and 60px x 2px gradient line positioned side by side
+- **Visual Balance Improvement**: Added 12px gap and center alignment between varietal information and gradient line for polished presentation
+- **Subtle Design Accent**: Integrated line-gradient image as decorative element enhancing technical details section aesthetics
+
+### Wine Image Integration in Technical Details (June 18, 2025 - Previous)
 - **Horizontal Layout Implementation**: Modified WineDetailsHeader technical details section to display wine image alongside technical specifications
 - **Flexbox Layout Enhancement**: Added display flex with 20px gap between technical details text and wine image for balanced presentation
 - **Prominent Wine Image**: Updated wine bottle image to 100px x 290px dimensions for enhanced visual prominence on right side with contain object-fit and 8px border radius
