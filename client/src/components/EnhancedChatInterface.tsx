@@ -898,7 +898,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                     <Button
                       onClick={() => setShowContactSheet(true)}
                       variant="secondary"
-                      className="w-full h-14"
+                      className="w-full h-14 !bg-white/8 !text-white hover:!bg-white/16"
                     >
                       View chat history
                     </Button>
