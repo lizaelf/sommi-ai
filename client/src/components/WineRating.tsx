@@ -34,76 +34,38 @@ export default function WineRating({
   if (!hasRatings) {
     return null;
   }
+
   // Define styles based on variant
   const getVariantStyles = () => {
-    switch (variant) {
-      center:
-        return {
-          container: {
-            display: "flex",
-            alignItems: "center",
-            gap: `${gap}px`,
-            flexWrap: "wrap" as const,
-            justifyContent: align === "left" ? "flex-start" : "center",
-            width: "fit-content",
-          },
-          ratingItem: {
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-          },
-          valueStyle: {
-              ...typography.num,
-              color: "rgba(255, 255, 255, 0.6)",
-            },
-            labelStyle: {
-              ...typography.body1R,
-              color: "white",
-        };
-        left:
-        return {
-          container: {
-            display: "flex",
-            alignItems: "left",
-            gap: `${gap}px`,
-            flexWrap: "wrap" as const,
-            justifyContent: align === "left" ? "flex-start" : "center",
-            width: "fit-content",
-          },
-          ratingItem: {
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-          },
-          valueStyle: {
-              ...typography.num,
-              color: "rgba(255, 255, 255, 0.6)",
-            },
-            labelStyle: {
-              ...typography.body1R,
-              color: "white",
-        };
-    }
+    const baseStyles = {
+      container: {
+        display: "flex",
+        alignItems: "center",
+        gap: `${gap}px`,
+        flexWrap: "wrap" as const,
+        justifyContent: align === "left" ? "flex-start" : "center",
+        width: "fit-content",
+      },
+      ratingItem: {
+        color: "white",
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+      },
+      valueStyle: {
+        ...typography.num,
+        color: "rgba(255, 255, 255, 0.6)",
+      },
+      labelStyle: {
+        ...typography.body1R,
+        color: "white",
+      },
+    };
+
+    return baseStyles;
   };
 
   const styles = getVariantStyles();
-
-  // Format ABV value
-  const formatABV = (value: number) => {
-    return variant === "compact" || variant === "minimal"
-      ? `${value}% ABV`
-      : `${value}%`;
-  };
-
-  // Format rating value and label
-  const formatRating = (value: number, label: string) => {
-    if (variant === "compact" || variant === "minimal") {
-      return { value: `${label}: ${value}`, label: "" };
-    }
-    return { value: value.toString(), label };
-  };
 
   return (
     <Rating
@@ -115,46 +77,46 @@ export default function WineRating({
       }}
     >
       {ratings.vn && (
-        <span>
-          <span>
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
             {variant === "compact" || variant === "minimal"
               ? `VN: ${ratings.vn}`
               : ratings.vn}
           </span>
-          {variant === "default" && <span>VN</span>}
+          {variant === "default" && <span style={styles.labelStyle}>VN</span>}
         </span>
       )}
 
       {ratings.jd && (
-        <span>
-          <span>
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
             {variant === "compact" || variant === "minimal"
               ? `JD: ${ratings.jd}`
               : ratings.jd}
           </span>
-          {variant === "default" && <span>JD</span>}
+          {variant === "default" && <span style={styles.labelStyle}>JD</span>}
         </span>
       )}
 
       {ratings.ws && (
-        <span>
-          <span>
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
             {variant === "compact" || variant === "minimal"
               ? `WS: ${ratings.ws}`
               : ratings.ws}
           </span>
-          {variant === "default" && <span>WS</span>}
+          {variant === "default" && <span style={styles.labelStyle}>WS</span>}
         </span>
       )}
 
       {ratings.abv && !hideAbv && (
-        <span>
-          <span>
+        <span style={styles.ratingItem}>
+          <span style={styles.valueStyle}>
             {variant === "compact" || variant === "minimal"
               ? `ABV: ${ratings.abv}%`
               : `${ratings.abv}%`}
           </span>
-          {variant === "default" && <span>ABV</span>}
+          {variant === "default" && <span style={styles.labelStyle}>ABV</span>}
         </span>
       )}
     </Rating>
