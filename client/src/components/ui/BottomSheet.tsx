@@ -142,7 +142,7 @@ export function BottomSheet({
               <IconButton
                 icon={X}
                 onClick={handleClose}
-                variant="ghost"
+                variant="secondaryIcon"
                 size="md"
                 title="Close"
               />

@@ -62,7 +62,7 @@ export const CellarSearch: React.FC<CellarSearchProps> = ({
           <IconButton
             icon={X}
             onClick={onClearSearch}
-            variant="ghost"
+            variant="secondaryIcon"
             style={{
               position: "absolute",
               right: "8px",

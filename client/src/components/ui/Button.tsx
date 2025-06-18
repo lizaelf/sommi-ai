@@ -19,7 +19,7 @@ const buttonVariants = cva(
         headerIcon:
           "bg-transparent text-white hover:bg-white/10 active:bg-white/15 p-2",
         secondaryIcon:
-          "bg-transparent border border-white/20 text-white hover:bg-white/10 active:bg-white/15 p-2",
+          "bg-transparent text-white hover:bg-white/10 active:bg-white/15 p-2",
       },
       size: {
         sm: "h-8 px-3 text-sm",
