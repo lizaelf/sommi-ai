@@ -53,44 +53,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     }
   }, [isAnimating, isProcessing, isPlaying, size, isListening]);
 
-  // Sync state with VoiceAssistant global state
+  // Event-based state management only - no global state polling
   useEffect(() => {
-    const checkVoiceAssistantState = () => {
-      const voiceAssistant = (window as any).voiceAssistantState;
-      if (voiceAssistant) {
-        // Only log significant state changes to reduce console spam
-        const hasChange = (voiceAssistant.isListening !== isListening) || (voiceAssistant.isProcessing !== isProcessing);
-        if (hasChange) {
-          console.log("🎯 CircleAnimation: State change detected:", {
-            globalListening: voiceAssistant.isListening,
-            globalProcessing: voiceAssistant.isProcessing,
-            localListening: isListening,
-            localProcessing: isProcessing
-          });
-        }
-        
-        if (voiceAssistant.isListening && !isListening) {
-          console.log("🎯 CircleAnimation: Setting listening from global state");
-          setIsListening(true);
-          setIsProcessing(false);
-          setIsPlaying(false);
-        } else if (voiceAssistant.isProcessing && !isProcessing) {
-          console.log("🎯 CircleAnimation: Setting processing from global state");
-          setIsListening(false);
-          setIsProcessing(true);
-          setIsPlaying(false);
-        } else if (!voiceAssistant.isListening && !voiceAssistant.isProcessing) {
-          if (isListening || isProcessing) {
-            console.log("🎯 CircleAnimation: Clearing states from global state");
-            setIsListening(false);
-            setIsProcessing(false);
-            setIsPlaying(false);
-          }
-        }
-      }
-    };
-
-    const intervalId = setInterval(checkVoiceAssistantState, 1000); // reduced to 1 second to prevent loops
+    console.log("🎯 CircleAnimation: Using pure event-based state management");
 
     const handleMicStatusChange = (event: MicStatusEvent) => {
       const status = event.detail?.status;
@@ -101,10 +66,12 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
         setIsProcessing(false);
         setIsPlaying(false);
       } else if (status === 'processing') {
+        console.log("🎯 CircleAnimation: Setting processing state to true");
         setIsListening(false);
         setIsProcessing(true);
         setIsPlaying(false);
       } else if (status === 'stopped') {
+        console.log("🎯 CircleAnimation: Stopping all states");
         setIsListening(false);
         setIsProcessing(false);
         setIsPlaying(false);
@@ -117,7 +84,6 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     window.addEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
 
     return () => {
-      clearInterval(intervalId);
       window.removeEventListener('mic-status', handleMicStatusChange as EventListener);
       window.removeEventListener('voice-volume', handleVoiceVolumeChange as EventListener);
     };
