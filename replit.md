@@ -51,7 +51,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ### Component Standardization & UI Enhancements (June 18, 2025 - Latest)
 - **SectionHeaderButton Component Creation**: Created reusable SectionHeaderButton component using native button element with consistent semi-transparent styling, hover effects, and smooth transitions
 - **Component System Simplification**: Replaced Button component dependency with self-contained button implementation for section headers across food pairing and chat interfaces
-- **Wine Card Dimensions Standardization**: Set wine recommendation cards to exact 208px width × 312px height for consistent layout presentation
+- **Wine Card Dimensions Standardization**: Set wine recommendation cards to exact 208px width × 290px height for consistent layout presentation
 - **WineRating Component Optimization**: Rebuilt WineRating component with left alignment, fit-content sizing, and standardized color scheme (gray labels #999999, white values)
 - **Typography Color Standardization**: Implemented consistent gray labels (#999999) and white values using typography.body1R and typography.num
 - **Chat Interface Enhancement**: Added "View all" button positioned on the right side of Chat title using new SectionHeaderButton component
