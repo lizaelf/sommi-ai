@@ -1573,6 +1573,92 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // AI Tasting Notes Generation Endpoint
+  app.post("/api/generate-tasting-notes", async (req, res) => {
+    try {
+      console.log("Received AI tasting notes generation request");
+      
+      const { wineName, wineYear, wineLocation, wineDescription, abv } = req.body;
+      
+      if (!wineName) {
+        return res.status(400).json({ error: "Wine name is required" });
+      }
+
+      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a professional sommelier and wine expert. Generate detailed, authentic tasting notes for wines based on their characteristics. Return your response as a JSON object with a "tastingNotes" array containing objects with: id (unique string), category (flavor/aroma category), note (descriptive text), and intensity (number 1-10).
+
+Focus on these categories: Aroma, Primary Flavors, Secondary Flavors, Finish, Structure, and Overall Character. Provide professional, detailed descriptions that a sommelier would use.`
+          },
+          {
+            role: "user",
+            content: `Generate professional tasting notes for: ${wineYear ? wineYear + ' ' : ''}${wineName}${wineLocation ? ' from ' + wineLocation : ''}${abv ? ' (ABV: ' + abv + '%)' : ''}${wineDescription ? '. Wine description: ' + wineDescription : ''}. 
+
+Provide 6 detailed tasting note categories with professional sommelier-level descriptions and appropriate intensity ratings.`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+        max_tokens: 1500
+      });
+
+      const content = response.choices[0].message.content;
+      if (!content) {
+        throw new Error("No content received from OpenAI");
+      }
+
+      let tastingNotesData;
+      try {
+        tastingNotesData = JSON.parse(content);
+      } catch (parseError) {
+        console.error("Failed to parse OpenAI response:", content);
+        throw new Error("Invalid JSON response from AI");
+      }
+
+      // Validate and format the response
+      if (!tastingNotesData.tastingNotes || !Array.isArray(tastingNotesData.tastingNotes)) {
+        throw new Error("Invalid tasting notes format from AI");
+      }
+
+      // Ensure each note has proper structure
+      const formattedNotes = tastingNotesData.tastingNotes.map((note: any, index: number) => ({
+        id: note.id || `note-${index + 1}`,
+        category: note.category || "Tasting Note",
+        note: note.note || note.description || "No description available",
+        intensity: Math.min(10, Math.max(1, note.intensity || 5))
+      }));
+
+      console.log(`Generated ${formattedNotes.length} tasting notes for ${wineName}`);
+      
+      res.json({
+        tastingNotes: formattedNotes,
+        wine: {
+          name: wineName,
+          year: wineYear,
+          location: wineLocation
+        }
+      });
+
+    } catch (error) {
+      console.error("Error generating tasting notes:", error);
+      
+      // Check for quota errors
+      if (error instanceof Error && error.message.includes("quota")) {
+        return res.status(429).json({ 
+          error: "API quota exceeded. Please try again later." 
+        });
+      }
+      
+      res.status(500).json({ 
+        error: "Failed to generate tasting notes. Please try again." 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
