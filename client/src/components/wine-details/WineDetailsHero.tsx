@@ -87,23 +87,7 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
       </div>
 
       {/* Technical Details Section */}
-      <div style={{
-        backgroundColor: "rgba(255, 255, 255, 0.03)",
-        borderRadius: "12px",
-        padding: "24px",
-        marginBottom: "32px",
-      }}>
-        <h2 style={{
-          ...typography.h2,
-          marginBottom: "20px",
-          textAlign: "center",
-        }}>
-          Technical Details
-        </h2>
-        
-        {/* Technical Details Container with Wine Image */}
-        <WineTechnicalDetailsSection wine={wine} />
-      </div>
+      <WineTechnicalDetailsSection wine={wine} />
     </div>
   );
 };
