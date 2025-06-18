@@ -48,7 +48,17 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### Voice/Mic Button Separation Implementation (June 18, 2025 - Latest)
+### Real Speech Detection Implementation (June 18, 2025 - Latest)
+- **Microphone-Based Speech Detection**: Implemented real-time audio analysis using Web Audio API to detect when user stops speaking
+- **Dynamic Silence Detection**: System waits for 2 seconds of silence (below 30 volume threshold) before starting thinking phase
+- **Natural Conversation Flow**: Mic button now responds to actual speech patterns instead of fixed 3-second timer
+- **Audio Context Management**: Added proper MediaStream and AudioContext cleanup with analyser node for frequency data
+- **Enhanced Voice Volume Events**: Real-time volume monitoring drives circle animation with actual microphone input levels
+- **Fallback Protection**: Maintains timer-based flow if microphone access fails, ensuring functionality across all devices
+- **Stream Cleanup**: Proper disposal of microphone streams and audio contexts to prevent resource leaks
+- **TypeScript Compatibility**: Fixed Uint8Array iteration for cross-browser compatibility without downlevel iteration
+
+### Voice/Mic Button Separation Implementation (June 18, 2025 - Previous)
 - **Separate Voice Button Logic**: Voice button opens bottom sheet → immediate welcome message with Stop button → listening state with circle animation → thinking → response with Stop button → Ask button with suggestions
 - **Separate Mic Button Logic**: Mic button opens bottom sheet → immediate listening state with circle animation → thinking → response with Stop button → Ask button with suggestions  
 - **Distinct User Flows**: Voice button includes welcome message, mic button skips directly to listening for faster interaction

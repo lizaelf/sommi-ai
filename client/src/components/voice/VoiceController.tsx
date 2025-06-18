@@ -26,7 +26,8 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   const isManuallyClosedRef = useRef(false);
   const welcomeAudioCacheRef = useRef<string | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const handleWelcomeMessage = async () => {
     try {
@@ -126,9 +127,22 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       console.warn("Error stopping DOM audio elements:", error);
     }
     
+    // Clean up microphone streams
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    
     // Reset all audio-related states
     setIsPlayingAudio(false);
     setIsResponding(false);
+    setIsListening(false);
+    setIsThinking(false);
     setShowUnmuteButton(false);
     setShowAskButton(true);
     
@@ -168,19 +182,17 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         const response = await fetch('/api/text-to-speech', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: welcomeMessage })
+          body: JSON.stringify({ text: welcomeMessage }),
         });
-        
+
         if (response.ok) {
-          const buffer = await response.arrayBuffer();
-          const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+          const audioBlob = await response.blob();
           const audioUrl = URL.createObjectURL(audioBlob);
-          
           welcomeAudioCacheRef.current = audioUrl;
           (window as any).globalWelcomeAudioCache = audioUrl;
         }
       } catch (error) {
-        console.error("Failed to cache welcome message:", error);
+        console.warn("Failed to pre-cache welcome message:", error);
       }
     };
 
@@ -191,7 +203,6 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   useEffect(() => {
     // VOICE BUTTON: Complete flow with welcome message
     const handleTriggerVoiceAssistant = async () => {
-      // Step 1: Open voice bottom sheet
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsListening(false);
@@ -200,66 +211,11 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       setIsPlayingAudio(true);
       setShowUnmuteButton(false);
       
-      // Step 2: Immediately start welcome message with stop button
       await handleWelcomeMessage();
-      
-      // After welcome message completes, continue with listening phase
-      setTimeout(() => {
-        // Step 3: Show "Listening..." state with circle animation
-        setIsResponding(false);
-        setIsPlayingAudio(false);
-        setIsListening(true);
-        
-        // Dispatch mic status event for CircleAnimation
-        const micEvent = new CustomEvent('mic-status', {
-          detail: { status: 'listening' }
-        });
-        window.dispatchEvent(micEvent);
-        
-        // Simulate voice volume events during listening for circle animation
-        const voiceVolumeInterval = setInterval(() => {
-          const volume = Math.random() * 40 + 20; // Random volume between 20-60
-          const voiceVolumeEvent = new CustomEvent('voice-volume', {
-            detail: { volume, maxVolume: 100, isActive: true }
-          });
-          window.dispatchEvent(voiceVolumeEvent);
-        }, 150);
-        
-        // Step 4: Display listening state during speaking (3 seconds)
-        setTimeout(() => {
-          clearInterval(voiceVolumeInterval);
-          
-          // Step 5: Show "Thinking..." state
-          setIsListening(false);
-          setIsThinking(true);
-          
-          const processingEvent = new CustomEvent('mic-status', {
-            detail: { status: 'processing' }
-          });
-          window.dispatchEvent(processingEvent);
-          
-          // Step 6: After thinking, start answer with Stop button
-          setTimeout(() => {
-            setIsThinking(false);
-            setIsResponding(true);
-            setIsPlayingAudio(true);
-            
-            const stoppedEvent = new CustomEvent('mic-status', {
-              detail: { status: 'stopped' }
-            });
-            window.dispatchEvent(stoppedEvent);
-            
-            // Step 7: Generate and play response with Stop button
-            handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
-            
-          }, 2000); // 2 seconds thinking
-        }, 3000); // 3 seconds listening
-      }, 500); // Small delay after welcome message
     };
 
-    // MIC BUTTON: Direct to listening without welcome message
+    // MIC BUTTON: Direct to listening with speech detection
     const handleTriggerMicButton = async () => {
-      // Step 1: Open voice bottom sheet
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsListening(true);
@@ -268,50 +224,106 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       setIsPlayingAudio(false);
       setShowUnmuteButton(false);
       
-      // Step 2: Immediately show "Listening..." state with circle animation
-      const micEvent = new CustomEvent('mic-status', {
-        detail: { status: 'listening' }
-      });
-      window.dispatchEvent(micEvent);
-      
-      // Simulate voice volume events during listening for circle animation
-      const voiceVolumeInterval = setInterval(() => {
-        const volume = Math.random() * 40 + 20; // Random volume between 20-60
-        const voiceVolumeEvent = new CustomEvent('voice-volume', {
-          detail: { volume, maxVolume: 100, isActive: true }
-        });
-        window.dispatchEvent(voiceVolumeEvent);
-      }, 150);
-      
-      // Step 3: Display listening state during speaking (3 seconds)
-      setTimeout(() => {
-        clearInterval(voiceVolumeInterval);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        streamRef.current = stream;
         
-        // Step 4: Show "Thinking..." state
-        setIsListening(false);
-        setIsThinking(true);
+        const audioContext = new AudioContext();
+        audioContextRef.current = audioContext;
         
-        const processingEvent = new CustomEvent('mic-status', {
-          detail: { status: 'processing' }
-        });
-        window.dispatchEvent(processingEvent);
+        const analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
         
-        // Step 5: After thinking, start answer with Stop button
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        
+        // Dispatch listening event
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'listening' }
+        }));
+        
+        let silenceStart = Date.now();
+        const SILENCE_THRESHOLD = 30;
+        const SILENCE_DURATION = 2000; // 2 seconds of silence
+        
+        const checkAudioLevel = () => {
+          if (!isListening) return;
+          
+          analyser.getByteFrequencyData(dataArray);
+          let volume = 0;
+          for (let i = 0; i < dataArray.length; i++) {
+            if (dataArray[i] > volume) {
+              volume = dataArray[i];
+            }
+          }
+          
+          // Dispatch volume events for circle animation
+          window.dispatchEvent(new CustomEvent('voice-volume', {
+            detail: { volume, maxVolume: 100, isActive: volume > SILENCE_THRESHOLD }
+          }));
+          
+          if (volume > SILENCE_THRESHOLD) {
+            silenceStart = Date.now();
+          } else if (Date.now() - silenceStart > SILENCE_DURATION) {
+            console.log("🎤 User stopped speaking - starting thinking phase");
+            
+            // Clean up microphone
+            stream.getTracks().forEach(track => track.stop());
+            audioContext.close();
+            streamRef.current = null;
+            audioContextRef.current = null;
+            
+            // Start thinking phase
+            setIsListening(false);
+            setIsThinking(true);
+            
+            window.dispatchEvent(new CustomEvent('mic-status', {
+              detail: { status: 'processing' }
+            }));
+            
+            // After thinking, start response
+            setTimeout(() => {
+              setIsThinking(false);
+              setIsResponding(true);
+              setIsPlayingAudio(true);
+              
+              window.dispatchEvent(new CustomEvent('mic-status', {
+                detail: { status: 'stopped' }
+              }));
+              
+              handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+            }, 2000);
+            
+            return;
+          }
+          
+          requestAnimationFrame(checkAudioLevel);
+        };
+        
+        checkAudioLevel();
+        
+      } catch (error) {
+        console.error("Failed to access microphone:", error);
+        // Fallback to timer-based flow
         setTimeout(() => {
-          setIsThinking(false);
-          setIsResponding(true);
-          setIsPlayingAudio(true);
+          setIsListening(false);
+          setIsThinking(true);
           
-          const stoppedEvent = new CustomEvent('mic-status', {
-            detail: { status: 'stopped' }
-          });
-          window.dispatchEvent(stoppedEvent);
+          window.dispatchEvent(new CustomEvent('mic-status', {
+            detail: { status: 'processing' }
+          }));
           
-          // Step 6: Generate and play response with Stop button
-          handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
-          
-        }, 2000); // 2 seconds thinking
-      }, 3000); // 3 seconds listening
+          setTimeout(() => {
+            setIsThinking(false);
+            setIsResponding(true);
+            setIsPlayingAudio(true);
+            
+            handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+          }, 2000);
+        }, 3000);
+      }
     };
 
     const handleStopAudio = () => {
@@ -337,11 +349,10 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       window.removeEventListener('stopVoiceAudio', handleStopAudio);
       window.removeEventListener('deploymentAudioStopped', handleDeploymentAudioStopped);
     };
-  }, []);
+  }, [isListening]);
 
   const handleVoiceResponse = async (responseText: string) => {
     try {
-      // Generate TTS audio for the response
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: {
@@ -356,71 +367,29 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
 
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
-      
-      if (audioUrl && !isManuallyClosedRef.current) {
-        const audio = new Audio(audioUrl);
-        audio.volume = 1.0;
-        audio.preload = 'auto';
-        currentAudioRef.current = audio;
-        setIsPlayingAudio(true);
-        setIsResponding(true);
-        setShowUnmuteButton(false);
-        
-        // Ensure audio context is unlocked for playback
-        if (typeof window !== 'undefined' && window.AudioContext) {
-          try {
-            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-            if (audioContext.state === 'suspended') {
-              audioContext.resume();
-            }
-          } catch (e) {
-            // AudioContext not available, continue with direct play
-          }
-        }
-        
-        audio.play()
-          .then(() => {
-            audio.onended = () => {
-              setIsPlayingAudio(false);
-              currentAudioRef.current = null;
-              URL.revokeObjectURL(audioUrl);
-              if (!isManuallyClosedRef.current) {
-                setIsResponding(false);
-                setShowAskButton(true);
-              }
-            };
-          })
-          .catch(error => {
-            console.error("Audio playback failed:", error);
-            
-            // Fallback: try to play again after a short delay
-            setTimeout(() => {
-              audio.play().catch(fallbackError => {
-                console.error("Fallback audio play also failed:", fallbackError);
-                setIsPlayingAudio(false);
-                setIsResponding(false);
-                setShowAskButton(true);
-                URL.revokeObjectURL(audioUrl);
-              });
-            }, 100);
-          });
-      } else {
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
+
+      await audio.play();
+
+      audio.onended = () => {
+        setIsPlayingAudio(false);
         setIsResponding(false);
+        setShowUnmuteButton(false);
         setShowAskButton(true);
-      }
+        currentAudioRef.current = null;
+        URL.revokeObjectURL(audioUrl);
+      };
+
     } catch (error) {
-      console.error("Failed to generate voice response:", error);
+      console.error('Error in voice response:', error);
+      setIsPlayingAudio(false);
       setIsResponding(false);
       setShowAskButton(true);
     }
   };
 
   const handleClose = () => {
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current = null;
-    }
-    
     setShowBottomSheet(false);
     setIsListening(false);
     setIsResponding(false);
@@ -430,7 +399,17 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     setShowAskButton(false);
     isManuallyClosedRef.current = true;
     
-    // Reset manual close flag after a short delay
+    // Clean up any active streams
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    
     setTimeout(() => {
       isManuallyClosedRef.current = false;
     }, 1000);
@@ -444,44 +423,9 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     setIsPlayingAudio(false);
     setShowUnmuteButton(false);
     
-    // Simulate manual voice recording flow (same as mic button)
-    const micEvent = new CustomEvent('mic-status', {
-      detail: { status: 'listening' }
-    });
-    window.dispatchEvent(micEvent);
-    
-    const voiceVolumeInterval = setInterval(() => {
-      const volume = Math.random() * 40 + 20;
-      const voiceVolumeEvent = new CustomEvent('voice-volume', {
-        detail: { volume, maxVolume: 100, isActive: true }
-      });
-      window.dispatchEvent(voiceVolumeEvent);
-    }, 150);
-    
-    setTimeout(() => {
-      clearInterval(voiceVolumeInterval);
-      setIsListening(false);
-      setIsThinking(true);
-      
-      const processingEvent = new CustomEvent('mic-status', {
-        detail: { status: 'processing' }
-      });
-      window.dispatchEvent(processingEvent);
-      
-      setTimeout(() => {
-        setIsThinking(false);
-        setIsResponding(true);
-        setIsPlayingAudio(true);
-        
-        const stoppedEvent = new CustomEvent('mic-status', {
-          detail: { status: 'stopped' }
-        });
-        window.dispatchEvent(stoppedEvent);
-        
-        handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
-        
-      }, 2000);
-    }, 3000);
+    // Trigger mic button flow for Ask button
+    const event = new CustomEvent('triggerMicButton');
+    window.dispatchEvent(event);
   };
 
   return (
