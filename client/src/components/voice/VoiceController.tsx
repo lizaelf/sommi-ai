@@ -32,6 +32,102 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
+  const handleWelcomeMessage = async () => {
+    try {
+      // Use cached welcome message if available
+      if (welcomeAudioCacheRef.current) {
+        const audio = new Audio(welcomeAudioCacheRef.current);
+        audio.volume = 1.0;
+        currentAudioRef.current = audio;
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          
+          audio.onended = () => {
+            setIsPlayingAudio(false);
+            setIsResponding(false);
+            currentAudioRef.current = null;
+          };
+        }
+      } else {
+        // Generate welcome message if not cached
+        const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+        
+        const response = await fetch('/api/text-to-speech', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: welcomeMessage }),
+        });
+
+        if (response.ok) {
+          const audioBlob = await response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          welcomeAudioCacheRef.current = audioUrl;
+          
+          const audio = new Audio(audioUrl);
+          audio.volume = 1.0;
+          currentAudioRef.current = audio;
+          
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            
+            audio.onended = () => {
+              setIsPlayingAudio(false);
+              setIsResponding(false);
+              currentAudioRef.current = null;
+              URL.revokeObjectURL(audioUrl);
+            };
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to play welcome message:", error);
+      setIsPlayingAudio(false);
+      setIsResponding(false);
+    }
+  };
+
+  const stopAudio = () => {
+    console.log("🛑 VoiceController: Stopping all audio playback");
+    
+    // Clean up local audio reference
+    if (currentAudioRef.current) {
+      try {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+        currentAudioRef.current = null;
+        console.log("🛑 VoiceController: Local audio stopped");
+      } catch (error) {
+        console.warn("Error stopping local audio reference:", error);
+      }
+    }
+    
+    // Stop any global audio references
+    if ((window as any).currentOpenAIAudio) {
+      try {
+        (window as any).currentOpenAIAudio.pause();
+        (window as any).currentOpenAIAudio.currentTime = 0;
+        (window as any).currentOpenAIAudio = null;
+        console.log("🛑 VoiceController: Global audio stopped");
+      } catch (error) {
+        console.warn("Error stopping global audio:", error);
+      }
+    }
+    
+    // Reset all audio-related states
+    setIsPlayingAudio(false);
+    setIsResponding(false);
+    setShowUnmuteButton(false);
+    setShowAskButton(true);
+    
+    // Dispatch stop event for other components
+    window.dispatchEvent(new CustomEvent("tts-audio-stop"));
+    
+    console.log("🛑 VoiceController: All audio stopped successfully");
+  };
+
   // Share state globally for CircleAnimation and audio control
   useEffect(() => {
     (window as any).voiceAssistantState = {
@@ -171,63 +267,6 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({
       window.removeEventListener('deploymentAudioStopped', handleDeploymentAudioStopped);
     };
   }, []);
-
-  const handleWelcomeMessage = async () => {
-    try {
-      // Use cached welcome message if available
-      if (welcomeAudioCacheRef.current) {
-        const audio = new Audio(welcomeAudioCacheRef.current);
-        audio.volume = 1.0;
-        currentAudioRef.current = audio;
-        
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-          
-          audio.onended = () => {
-            setIsPlayingAudio(false);
-            setIsResponding(false);
-            currentAudioRef.current = null;
-          };
-        }
-      } else {
-        // Generate welcome message if not cached
-        const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
-        
-        const response = await fetch('/api/text-to-speech', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: welcomeMessage }),
-        });
-
-        if (response.ok) {
-          const audioBlob = await response.blob();
-          const audioUrl = URL.createObjectURL(audioBlob);
-          welcomeAudioCacheRef.current = audioUrl;
-          
-          const audio = new Audio(audioUrl);
-          audio.volume = 1.0;
-          currentAudioRef.current = audio;
-          
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-            await playPromise;
-            
-            audio.onended = () => {
-              setIsPlayingAudio(false);
-              setIsResponding(false);
-              currentAudioRef.current = null;
-              URL.revokeObjectURL(audioUrl);
-            };
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Failed to play welcome message:", error);
-      setIsPlayingAudio(false);
-      setIsResponding(false);
-    }
-  };
 
   const handleVoiceResponse = async (responseText: string) => {
     try {
