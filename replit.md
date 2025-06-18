@@ -64,6 +64,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Static File Server Configuration**: Added Express static file serving for /food-categories and /wine-types directories
 - **UI Component Optimization**: Simplified food pairing cards to show only category names without descriptions for cleaner presentation
 - **Compact Button Styling**: Updated "See all" button to hug content width with proper secondary variant styling
+- **Food Pairing Card Sizing**: Optimized cards to 120px width with 120x120px images and 8px vertical text padding for balanced presentation
 
 ### Food Pairing Categories Database Implementation (June 18, 2025 - Previous)
 - **PostgreSQL Database Schema**: Created food_pairing_categories table with type-image mapping for food pairing categories
