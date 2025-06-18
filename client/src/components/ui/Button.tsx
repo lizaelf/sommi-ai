@@ -11,7 +11,7 @@ const buttonVariants = cva(
         secondary: "bg-white/10 w-full text-white hover:bg-white/16 active:bg-white/20",
         brand: "bg-[#6C1E2C] w-full text-white hover:bg-[#7C2E3C] active:bg-[#5C1E2C]",
         error: "bg-[#8A332C] text-white hover:bg-[#9A433C] active:bg-[#7A232C]",
-        suggestion: "bg-white/8 text-white hover:bg-white/16 active:bg-white/20 whitespace-nowrap",
+        suggestion: "bg-white/10 text-white hover:bg-white/16 active:bg-white/20 whitespace-nowrap",
         headerIcon: "bg-transparent text-white hover:bg-white/10 active:bg-white/15 p-2",
         secondaryIcon: "bg-transparent border border-white/20 text-white hover:bg-white/10 active:bg-white/15 p-2"
       },
