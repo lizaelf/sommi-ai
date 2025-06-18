@@ -210,6 +210,19 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
         flexShrink: 0,
         position: "relative",
       }}>
+        {/* Blurred circle background */}
+        <div style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "240px",
+          height: "240px",
+          background: "radial-gradient(circle, rgba(139, 69, 19, 0.3) 0%, rgba(139, 69, 19, 0.1) 50%, transparent 100%)",
+          borderRadius: "50%",
+          filter: "blur(40px)",
+          zIndex: 0,
+        }} />
         <img
           src={wine?.image}
           alt={wine?.name}
@@ -218,6 +231,8 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
             height: "100%",
             objectFit: "contain",
             borderRadius: "8px",
+            position: "relative",
+            zIndex: 1,
           }}
           onLoad={() => console.log(`Wine bottle image loaded: ${wine?.name}`)}
         />
