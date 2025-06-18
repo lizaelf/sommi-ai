@@ -1,6 +1,6 @@
 import React from 'react';
 import { Mic } from 'lucide-react';
-import { IconButton } from '@/components/ui/IconButton';
+import { Button } from '@/components/ui/Button';
 
 interface MicrophoneButtonProps {
   onClick: () => void;
@@ -16,22 +16,19 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
   title = "Voice input"
 }) => {
   return (
-    <button
+    <Button
+      variant="secondary"
+      size="icon"
       onClick={onClick}
       disabled={isProcessing || disabled}
       title={title}
-      className="react-button inline-flex items-center justify-center rounded-[100px] font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:pointer-events-none disabled:opacity-50"
+      className="w-10 h-10"
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         opacity: isProcessing ? 0.5 : 1,
-        width: '40px',
-        height: '40px',
-        border: 'none',
-        color: 'white'
       }}
     >
       <Mic size={24} />
-    </button>
+    </Button>
   );
 };
 
