@@ -10,7 +10,7 @@ interface FoodPairingCardProps {
 const FoodPairingCard: React.FC<FoodPairingCardProps> = ({ image, title, description }) => {
   return (
     <div style={{
-      width: "120px",
+      width: "100px",
       height: "140px",
       backgroundColor: "#191919",
       borderRadius: "16px",
