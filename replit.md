@@ -48,7 +48,12 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### SectionHeaderButton Background Enhancement (June 18, 2025 - Latest)
+### ChatInput Button Container Sizing (June 18, 2025 - Latest)
+- **Fixed Button Container Dimensions**: Updated ChatInput voice/send button container to exactly 40×40px for consistent sizing
+- **Uniform Button Area**: Both microphone and send buttons now have identical container dimensions
+- **Improved Layout Consistency**: Fixed positioning ensures consistent button appearance across chat interfaces
+
+### SectionHeaderButton Background Enhancement (June 18, 2025 - Previous)
 - **Enhanced Button Visibility**: Updated SectionHeaderButton component background from 8% to 10% white opacity for improved visibility
 - **Consistent Hover States**: Maintained 12% hover state while updating base state to match new opacity level
 - **Universal Application**: Change applies to all "View all" and "See all" buttons across food pairing and chat sections

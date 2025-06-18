@@ -115,7 +115,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isProcessing, onFo
         />
         
         {/* Voice button or Send button based on input state */}
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10">
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" style={{ width: "40px", height: "40px" }}>
           {message.trim() ? (
             <IconButton
               icon={Send}
