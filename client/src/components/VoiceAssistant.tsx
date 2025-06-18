@@ -838,45 +838,57 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Store the canStopEarly flag globally for voice detection
       (window as any).canStopEarly = false;
 
-      // Absolute timeout: force stop after 4 seconds regardless of state
+      // IMMEDIATE timeout setup - confirm it's being set
+      console.log("🎤 TIMEOUT: Setting 3-second force stop timeout NOW");
       const forceStopTimeout = setTimeout(() => {
-        console.log("🎤 FORCE STOP: Auto-stopping listening after 4 seconds");
+        console.log("🎤 FORCE STOP TRIGGERED: Auto-stopping listening after 3 seconds");
         
-        // Stop media recorder if active
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        // Immediate state reset
+        setIsListening(false);
+        setIsThinking(true);
+        
+        // Stop any audio detection
+        try {
+          stopVoiceDetection();
+        } catch (e) {
+          console.log("Voice detection already stopped");
+        }
+        
+        // Stop media recorder
+        if (mediaRecorderRef.current) {
           try {
-            mediaRecorderRef.current.stop();
+            if (mediaRecorderRef.current.state !== "inactive") {
+              mediaRecorderRef.current.stop();
+            }
           } catch (e) {
-            console.log("🎤 Media recorder already stopped");
+            console.log("Media recorder stop failed:", e);
           }
         }
         
-        // Force state updates
-        setIsListening(false);
-        setIsThinking(true);
-        stopVoiceDetection();
-        
-        // Emit processing status for circle animation
+        // Update circle animation to processing
         window.dispatchEvent(
           new CustomEvent("mic-status", {
             detail: { status: "processing" },
           }),
         );
         
-        // Simulate thinking then return to ask button
+        // Quick transition to stopped state
         setTimeout(() => {
+          console.log("🎤 TIMEOUT COMPLETE: Returning to ask button");
           setIsThinking(false);
           setShowAskButton(true);
           
-          // Emit stopped status for circle animation
+          // Final stopped event for circle animation
           window.dispatchEvent(
             new CustomEvent("mic-status", {
               detail: { status: "stopped" },
             }),
           );
-        }, 2000);
+        }, 1500);
         
-      }, 4000);
+      }, 3000);
+      
+      console.log("🎤 TIMEOUT: Force stop timeout ID:", forceStopTimeout);
     } catch (error) {
       console.error("🎤 DEPLOY DEBUG: Error in setupRecording:", error);
 
