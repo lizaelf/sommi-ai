@@ -77,39 +77,55 @@ export default function WineRating({
       aria-label="Wine ratings"
       style={{
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "12px",
+        gap: "8px",
         width: "fit-content",
         ...style,
       }}
     >
-      {ratings.vn && (
-        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.num, color: "white" }}>{ratings.vn}</span>
-          <span style={{ ...typography.body1R, color: "#999999" }}>VN</span>
-        </span>
-      )}
+      {/* First line: VN, JD, WS ratings */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "12px",
+      }}>
+        {ratings.vn && (
+          <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ ...typography.num, color: "white" }}>{ratings.vn}</span>
+            <span style={{ ...typography.body1R, color: "#999999" }}>VN</span>
+          </span>
+        )}
 
-      {ratings.jd && (
-        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.num, color: "white" }}>{ratings.jd}</span>
-          <span style={{ ...typography.body1R, color: "#999999" }}>JD</span>
-        </span>
-      )}
+        {ratings.jd && (
+          <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ ...typography.num, color: "white" }}>{ratings.jd}</span>
+            <span style={{ ...typography.body1R, color: "#999999" }}>JD</span>
+          </span>
+        )}
 
-      {ratings.ws && (
-        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.num, color: "white" }}>{ratings.ws}</span>
-          <span style={{ ...typography.body1R, color: "#999999" }}>WS</span>
-        </span>
-      )}
+        {ratings.ws && (
+          <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ ...typography.num, color: "white" }}>{ratings.ws}</span>
+            <span style={{ ...typography.body1R, color: "#999999" }}>WS</span>
+          </span>
+        )}
+      </div>
 
+      {/* Second line: ABV */}
       {ratings.abv && !hideAbv && (
-        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <span style={{ ...typography.num, color: "white" }}>{ratings.abv}%</span>
-          <span style={{ ...typography.body1R, color: "#999999" }}>ABV</span>
-        </span>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ ...typography.num, color: "white" }}>{ratings.abv}%</span>
+            <span style={{ ...typography.body1R, color: "#999999" }}>ABV</span>
+          </span>
+        </div>
       )}
     </Rating>
   );

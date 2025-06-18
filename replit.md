@@ -48,7 +48,14 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### SuggestionPills Global CSS Protection Implementation (June 18, 2025 - Latest)
+### WineRating Component Two-Line Layout Update (June 18, 2025 - Latest)
+- **Two-Line Rating Display**: Updated WineRating component to show VN/JD/WS ratings on first line and ABV value on second line
+- **Column Flex Layout**: Changed from horizontal to vertical flex layout with 8px gap between rating lines
+- **Centered Alignment**: Maintained center alignment for both rating rows while preserving 12px horizontal gaps between individual ratings
+- **Enhanced Visual Hierarchy**: ABV now displays prominently on its own line below the main wine ratings for improved readability
+- **Preserved Functionality**: Maintained hideAbv prop functionality and all existing rating display logic with new vertical layout structure
+
+### SuggestionPills Global CSS Protection Implementation (June 18, 2025 - Previous)
 - **Comprehensive CSS Override Protection**: Added complete protection system preventing global CSS from overriding SuggestionPills styling across entire application
 - **High-Specificity CSS Rules**: Implemented `.suggestion-pill-button` class with maximum specificity using `!important` declarations for all button states (default, hover, active, disabled)
 - **Multi-Context Protection**: Protected SuggestionPills in voice assistant, chat interface, and all nested component scenarios with container-level overrides
