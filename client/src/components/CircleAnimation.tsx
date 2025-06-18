@@ -78,7 +78,9 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
 
     const handleMicStatusChange = (event: MicStatusEvent) => {
       const status = event.detail?.status;
+      console.log("🎯 CircleAnimation: Received mic-status event:", status);
       if (status === 'listening') {
+        console.log("🎯 CircleAnimation: Setting listening state to true");
         setIsListening(true);
         setIsProcessing(false);
         setIsPlaying(false);

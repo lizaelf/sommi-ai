@@ -123,6 +123,21 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
           position: 'relative'
         }}>
           <CircleAnimation isAnimating={isListening || isResponding} size={156} />
+          {/* Debug info */}
+          {process.env.NODE_ENV === 'development' && (
+            <div style={{
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              color: 'white',
+              fontSize: '12px',
+              background: 'rgba(0,0,0,0.7)',
+              padding: '4px 8px',
+              borderRadius: '4px'
+            }}>
+              Listening: {isListening ? 'true' : 'false'} | Responding: {isResponding ? 'true' : 'false'}
+            </div>
+          )}
         </div>
 
         {/* Status Content */}

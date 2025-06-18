@@ -242,6 +242,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         const dataArray = new Uint8Array(bufferLength);
         
         // Dispatch listening event
+        console.log("🎤 VoiceController: Dispatching mic-status listening event");
         window.dispatchEvent(new CustomEvent('mic-status', {
           detail: { status: 'listening' }
         }));
