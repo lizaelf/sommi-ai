@@ -97,6 +97,7 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
       display: "flex",
       alignItems: "flex-start",
       gap: "20px",
+      padding: "0 16px",
     }}>
       <div style={{ flex: 1 }}>
         {/* Varietal */}

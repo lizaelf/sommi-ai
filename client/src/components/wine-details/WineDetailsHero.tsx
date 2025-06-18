@@ -43,7 +43,7 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
     <div style={{
       backgroundColor: "#0a0a0a",
       color: "white",
-      padding: "32px 16px",
+      padding: "32px 0px",
       minHeight: "100vh",
       position: "relative",
     }}>
@@ -51,6 +51,7 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
       <div style={{
         marginBottom: "24px",
         textAlign: "center",
+        padding: "0 16px",
       }}>
         <h1 style={{
           ...typography.h1,
@@ -67,6 +68,7 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
         justifyContent: "center",
         gap: "8px",
         marginBottom: "24px",
+        padding: "0 16px",
       }}>
         <USFlagImage />
         <span style={{
@@ -78,7 +80,10 @@ const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
       </div>
 
       {/* Wine Ratings */}
-      <div style={{ marginBottom: "32px" }}>
+      <div style={{ 
+        marginBottom: "32px",
+        padding: "0 16px",
+      }}>
         <WineRating 
           ratings={wine.ratings}
           variant="default"
