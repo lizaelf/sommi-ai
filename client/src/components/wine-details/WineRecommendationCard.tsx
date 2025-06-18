@@ -27,6 +27,7 @@ const WineRecommendationCard: React.FC<WineRecommendationCardProps> = ({ wine })
       <div
         style={{
           minWidth: "208px",
+          height: "312px",
           backgroundColor: "#191919",
           borderRadius: "16px",
           padding: "16px",
