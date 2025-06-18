@@ -2,11 +2,25 @@ import React from 'react';
 import EnhancedChatInterface from './EnhancedChatInterface';
 
 interface WineChatSectionProps {
-  wineId: string;
+  wine: any;
+  messages: any[];
+  isTyping: boolean;
+  hideSuggestions: boolean;
+  showChatInput: boolean;
+  isKeyboardFocused: boolean;
+  currentConversationId: number | null;
+  onSendMessage: (content: string) => Promise<void>;
+  onSuggestionClick: (content: string) => Promise<void>;
+  onKeyboardFocus: (focused: boolean) => void;
+  onToggleHideSuggestions: () => void;
   isScannedPage: boolean;
 }
 
-const WineChatSection: React.FC<WineChatSectionProps> = ({ wineId, isScannedPage }) => {
+const WineChatSection: React.FC<WineChatSectionProps> = ({ 
+  wine, 
+  isScannedPage,
+  ...otherProps 
+}) => {
   return (
     <div
       style={{
@@ -17,7 +31,7 @@ const WineChatSection: React.FC<WineChatSectionProps> = ({ wineId, isScannedPage
       }}
     >
       <EnhancedChatInterface
-        wineId={wineId}
+        selectedWine={wine}
         isScannedPage={isScannedPage}
       />
     </div>

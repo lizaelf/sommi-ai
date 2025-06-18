@@ -9,8 +9,7 @@ import { createStreamingClient, isStreamingSupported } from "@/lib/streamingClie
 import typography from "@/styles/typography";
 import ChatMessageList, { Message } from "./ChatMessageList";
 import ChatInputArea from "./ChatInputArea";
-import ContactBottomSheet, { ContactFormData } from "./ContactBottomSheet";
-import ScrollToBottomButton from "./ScrollToBottomButton";
+import ScrollToBottomButton from "@/components/ScrollToBottomButton";
 
 // Extend Window interface to include voiceAssistant
 declare global {
