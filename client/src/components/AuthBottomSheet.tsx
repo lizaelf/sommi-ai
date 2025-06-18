@@ -5,29 +5,27 @@ import Button from "./ui/Button";
 import { FormInput } from "./ui/FormInput";
 import typography from "@/styles/typography";
 
-export interface ContactFormData {
-  firstName: string;
-  lastName: string;
+export interface AuthFormData {
   email: string;
-  phone: string;
+  password: string;
 }
 
-interface ContactBottomSheetProps {
+interface AuthBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ContactFormData) => void;
+  onSubmit: (data: AuthFormData) => void;
+  mode?: 'login' | 'signup';
 }
 
-export default function ContactBottomSheet({
+export default function AuthBottomSheet({
   isOpen,
   onClose,
   onSubmit,
-}: ContactBottomSheetProps) {
-  const [formData, setFormData] = useState<ContactFormData>({
-    firstName: "",
-    lastName: "",
+  mode = 'login',
+}: AuthBottomSheetProps) {
+  const [formData, setFormData] = useState<AuthFormData>({
     email: "",
-    phone: "",
+    password: "",
   });
   const [animationState, setAnimationState] = useState<"closed" | "opening" | "open" | "closing">("closed");
   const portalElement = useRef<HTMLElement | null>(null);
@@ -58,7 +56,7 @@ export default function ContactBottomSheet({
     onClose();
   };
 
-  const handleInputChange = (field: keyof ContactFormData, value: string) => {
+  const handleInputChange = (field: keyof AuthFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -124,7 +122,7 @@ export default function ContactBottomSheet({
               margin: "0 0 12px 0",
             }}
           >
-            Want to see wine history?
+            {mode === 'login' ? 'Welcome back' : 'Create account'}
           </h2>
 
           <p
@@ -135,39 +133,13 @@ export default function ContactBottomSheet({
               margin: "0 0 8px 0",
             }}
           >
-            Enter your contact info
+            {mode === 'login' ? 'Sign in to access your wine history' : 'Sign up to save your wine conversations'}
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
           <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "24px" }}>
-            {/* First Name & Last Name Row */}
-            <div style={{ display: "flex", gap: "12px" }}>
-              <div style={{ flex: 1 }}>
-                <FormInput
-                  type="text"
-                  name="firstName"
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={(value) => handleInputChange("firstName", value)}
-                  required
-                  className=""
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <FormInput
-                  type="text"
-                  name="lastName"
-                  placeholder="Last name"
-                  value={formData.lastName}
-                  onChange={(value) => handleInputChange("lastName", value)}
-                  required
-                  className=""
-                />
-              </div>
-            </div>
-
             {/* Email */}
             <FormInput
               type="email"
@@ -178,13 +150,13 @@ export default function ContactBottomSheet({
               required
             />
 
-            {/* Phone */}
+            {/* Password */}
             <FormInput
-              type="tel"
-              name="phone"
-              placeholder="Phone"
-              value={formData.phone}
-              onChange={(value) => handleInputChange("phone", value)}
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(value) => handleInputChange("password", value)}
               required
             />
           </div>
@@ -196,7 +168,7 @@ export default function ContactBottomSheet({
             size="lg"
             className="w-full"
           >
-            Submit
+            {mode === 'login' ? 'Sign In' : 'Create Account'}
           </Button>
         </form>
       </div>

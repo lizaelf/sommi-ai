@@ -21,7 +21,7 @@ import {
   isStreamingSupported,
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
-import ContactBottomSheet, { ContactFormData } from "./ContactBottomSheet";
+import AuthBottomSheet, { AuthFormData } from "./AuthBottomSheet";
 
 // Extend Window interface to include voiceAssistant
 declare global {
