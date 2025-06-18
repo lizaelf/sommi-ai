@@ -48,7 +48,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 18, 2025)
 
-### WineCardComponent Creation and Refactoring (June 18, 2025 - Latest)
+### WineRating Component Left Alignment Update (June 18, 2025 - Latest)
+- **Left Alignment Implementation**: Updated WineRating component to align all content to the left using flex-start properties
+- **Container Alignment**: Changed main container alignItems and justifyContent from center to flex-start
+- **Line Alignment**: Updated both rating lines (VN/JD/WS and ABV) to use flex-start justification for consistent left alignment
+- **Two-Line Structure Maintained**: Preserved two-line layout with VN/JD/WS on first line and ABV on second line, now left-aligned
+
+### WineCardComponent Creation and Refactoring (June 18, 2025 - Previous)
 - **Reusable Component Creation**: Created WineCardComponent in `/components/ui/` as a standalone, reusable wine card component with identical functionality to original implementation
 - **Component Architecture Improvement**: Extracted wine card logic into dedicated component with optional className and style props for enhanced flexibility
 - **Implementation Replacement**: Updated WineCard to use WineCardComponent instance, maintaining all existing functionality while improving code organization

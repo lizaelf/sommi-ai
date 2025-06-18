@@ -78,8 +78,8 @@ export default function WineRating({
       style={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: "flex-start",
+        justifyContent: "flex-start",
         gap: "8px",
         width: "fit-content",
         ...style,
@@ -89,7 +89,7 @@ export default function WineRating({
       <div style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         gap: "12px",
       }}>
         {ratings.vn && (
@@ -119,7 +119,7 @@ export default function WineRating({
         <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "flex-start",
         }}>
           <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <span style={{ ...typography.num, color: "white" }}>{ratings.abv}%</span>
