@@ -907,7 +907,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                       gap: "16px",
                       minHeight: "200px",
                       width: "100%",
-                      padding: "16px 0",
+                      padding: "0 0 16px 0",
                     }}
                   >
                     {/* Sample Question */}
