@@ -838,19 +838,37 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       // Store the canStopEarly flag globally for voice detection
       (window as any).canStopEarly = false;
 
-      // Primary backup: stop after 8 seconds
+      // Primary backup: stop after 6 seconds
       setTimeout(() => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          console.log("Primary backup auto-stop after 8 seconds");
+          console.log("🎤 Primary backup auto-stop after 6 seconds");
+          stopListening();
+        }
+      }, 6000);
+
+      // Secondary backup: stop after 8 seconds
+      setTimeout(() => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+          console.log("🎤 Secondary backup auto-stop after 8 seconds - silence detection failed");
           stopListening();
         }
       }, 8000);
 
-      // Secondary backup: stop after 10 seconds
+      // Absolute failsafe: force stop listening state after 10 seconds
       setTimeout(() => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-          console.log("Secondary backup auto-stop after 10 seconds - silence detection failed");
-          stopListening();
+        if (isListening) {
+          console.log("🎤 FAILSAFE: Force stopping listening state after 10 seconds");
+          setIsListening(false);
+          setIsThinking(false);
+          setShowAskButton(true);
+          stopVoiceDetection();
+          
+          // Emit stopped status for circle animation
+          window.dispatchEvent(
+            new CustomEvent("mic-status", {
+              detail: { status: "stopped" },
+            }),
+          );
         }
       }, 10000);
     } catch (error) {
