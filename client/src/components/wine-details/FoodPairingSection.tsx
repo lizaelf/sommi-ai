@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import FoodPairingCard from './FoodPairingCard';
 import { Button } from '@/components/ui/Button';
 import typography from '@/styles/typography';
+import { useQuery } from '@tanstack/react-query';
 
 interface FoodPairingSectionProps {
   foodPairing?: string[];
   wineId?: number;
+  wineName?: string;
 }
 
 const FoodPairingSection: React.FC<FoodPairingSectionProps> = ({
