@@ -50,7 +50,6 @@ const WineRecommendationCard: React.FC<WineRecommendationCardProps> = ({ wine })
           style={{
             color: "white",
             marginBottom: "8px",
-            lineHeight: "1.3",
             ...typography.buttonPlus1,
             display: "-webkit-box",
             WebkitLineClamp: 3,
