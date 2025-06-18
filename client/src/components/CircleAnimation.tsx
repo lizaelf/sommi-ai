@@ -58,18 +58,30 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
     const checkVoiceAssistantState = () => {
       const voiceAssistant = (window as any).voiceAssistantState;
       if (voiceAssistant) {
+        console.log("🎯 CircleAnimation: Global state check:", {
+          globalListening: voiceAssistant.isListening,
+          globalProcessing: voiceAssistant.isProcessing,
+          localListening: isListening,
+          localProcessing: isProcessing
+        });
+        
         if (voiceAssistant.isListening && !isListening) {
+          console.log("🎯 CircleAnimation: Setting listening from global state");
           setIsListening(true);
           setIsProcessing(false);
           setIsPlaying(false);
         } else if (voiceAssistant.isProcessing && !isProcessing) {
+          console.log("🎯 CircleAnimation: Setting processing from global state");
           setIsListening(false);
           setIsProcessing(true);
           setIsPlaying(false);
         } else if (!voiceAssistant.isListening && !voiceAssistant.isProcessing) {
-          setIsListening(false);
-          setIsProcessing(false);
-          setIsPlaying(false);
+          if (isListening || isProcessing) {
+            console.log("🎯 CircleAnimation: Clearing states from global state");
+            setIsListening(false);
+            setIsProcessing(false);
+            setIsPlaying(false);
+          }
         }
       }
     };

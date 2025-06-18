@@ -267,6 +267,11 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             detail: { volume, maxVolume: 100, isActive: volume > SILENCE_THRESHOLD }
           }));
           
+          // Debug volume levels
+          if (volume > SILENCE_THRESHOLD) {
+            console.log("🎤 VoiceController: Voice detected, volume:", volume);
+          }
+          
           if (volume > SILENCE_THRESHOLD) {
             silenceStart = Date.now();
           } else if (Date.now() - silenceStart > SILENCE_DURATION) {
@@ -308,12 +313,30 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         checkAudioLevel();
         
       } catch (error) {
-        console.error("Failed to access microphone:", error);
+        console.error("🎤 VoiceController: Failed to access microphone:", error);
+        console.log("🎤 VoiceController: Using fallback timer-based flow");
+        
+        // Dispatch listening event for fallback
+        console.log("🎤 VoiceController: Dispatching fallback mic-status listening event");
+        window.dispatchEvent(new CustomEvent('mic-status', {
+          detail: { status: 'listening' }
+        }));
+        
+        // Simulate voice volume events during fallback listening
+        const fallbackVolumeInterval = setInterval(() => {
+          const volume = Math.random() * 40 + 20;
+          window.dispatchEvent(new CustomEvent('voice-volume', {
+            detail: { volume, maxVolume: 100, isActive: true }
+          }));
+        }, 150);
+        
         // Fallback to timer-based flow
         setTimeout(() => {
+          clearInterval(fallbackVolumeInterval);
           setIsListening(false);
           setIsThinking(true);
           
+          console.log("🎤 VoiceController: Dispatching mic-status processing event");
           window.dispatchEvent(new CustomEvent('mic-status', {
             detail: { status: 'processing' }
           }));
@@ -322,6 +345,11 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             setIsThinking(false);
             setIsResponding(true);
             setIsPlayingAudio(true);
+            
+            console.log("🎤 VoiceController: Dispatching mic-status stopped event");
+            window.dispatchEvent(new CustomEvent('mic-status', {
+              detail: { status: 'stopped' }
+            }));
             
             handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
           }, 2000);
