@@ -1,6 +1,5 @@
 import React from 'react';
-const ridgeWineImage = '/wines/wine-1-ridge-lytton-springs-dry-creek-zinfandel.png';
-import placeholderImage from '@assets/Placeholder.png';
+import WineImage from './WineImage';
 
 interface WineBottleImageDisplayProps {
   image?: string;
@@ -26,30 +25,12 @@ const WineBottleImageDisplay: React.FC<WineBottleImageDisplayProps> = ({
         justifyContent: "center",
       }}
     >
-      <img
-        src={image || placeholderImage}
-        alt={wineName || "Wine bottle"}
+      <WineImage
+        src={image}
+        wineName={wineName}
         style={{
           height: "100%",
           width: "auto",
-          objectFit: "contain",
-          borderRadius: "8px",
-        }}
-        onLoad={() => console.log(`Wine bottle image loaded: ${wineName}`)}
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          console.error(`Wine bottle image failed to load: ${wineName}, attempted URL: ${target.src}`);
-          
-          // Try fallback images in order
-          if (target.src !== placeholderImage) {
-            console.log(`Falling back to placeholder image: ${placeholderImage}`);
-            target.src = placeholderImage;
-          } else if (target.src !== ridgeWineImage) {
-            console.log(`Falling back to Ridge wine image: ${ridgeWineImage}`);
-            target.src = ridgeWineImage;
-          } else {
-            console.error('All fallback images failed to load');
-          }
         }}
       />
     </div>
