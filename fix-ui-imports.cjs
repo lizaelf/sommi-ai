@@ -16,7 +16,8 @@ const importMappings = {
   '@/components/ui/Toaster': '@/components/ui/feedback/Toaster',
   '@/components/ui/LoadingSpinner': '@/components/ui/feedback/LoadingSpinner',
   '@/components/ui/Skeleton': '@/components/ui/feedback/Skeleton',
-  '@/components/ui/BottomSheet': '@/components/ui/layout/BottomSheet',
+  '@/components/ui/BottomSheet': '@/components/bottom-sheet/BottomSheet',
+  '@/components/ui/layout/BottomSheet': '@/components/bottom-sheet/BottomSheet',
   '@/components/ui/Separator': '@/components/ui/layout/Separator',
   '@/components/ui/card': '@/components/ui/layout/card',
   '@/components/ui/Table': '@/components/ui/data-display/Table',
@@ -24,7 +25,8 @@ const importMappings = {
   '@/components/ui/badge': '@/components/ui/data-display/badge',
   '@/components/ui/WineCard': '@/components/ui/data-display/WineCard',
   '@/components/ui/WineCardComponent': '@/components/ui/data-display/WineCardComponent',
-  '@/components/ui/ConfirmationDialog': '@/components/ui/overlays/ConfirmationDialog',
+  '@/components/ui/ConfirmationDialog': '@/components/bottom-sheet/ConfirmationDialog',
+  '@/components/ui/overlays/ConfirmationDialog': '@/components/bottom-sheet/ConfirmationDialog',
   '@/components/ui/Tooltip': '@/components/ui/overlays/Tooltip',
   '@/components/ui/Select': '@/components/ui/primitives/Select',
   '@/components/ui/Switch': '@/components/ui/primitives/Switch',
@@ -33,12 +35,17 @@ const importMappings = {
   '@/components/ui/IconButton': '@/components/ui/buttons/IconButton',
   '@/components/ui/SectionHeaderButton': '@/components/ui/buttons/SectionHeaderButton',
   '@/components/ui/TextGenerateEffect': '@/components/ui/misc/TextGenerateEffect',
+  '@/components/AuthBottomSheet': '@/components/bottom-sheet/AuthBottomSheet',
+  '@/components/VoiceBottomSheet': '@/components/bottom-sheet/VoiceBottomSheet',
+  '@/components/voice/VoiceAssistantBottomSheet': '@/components/bottom-sheet/VoiceAssistantBottomSheet',
   './ui/Button': './ui/buttons/Button',
   './ui/IconButton': './ui/buttons/IconButton',
-  './ui/BottomSheet': './ui/layout/BottomSheet',
+  './ui/BottomSheet': '../bottom-sheet/BottomSheet',
+  './ui/layout/BottomSheet': '../bottom-sheet/BottomSheet',
   './ui/StandardToast': './ui/feedback/StandardToast',
   './ui/LoadingSpinner': './ui/feedback/LoadingSpinner',
-  './ui/SearchInterface': './ui/forms/SearchInterface'
+  './ui/SearchInterface': './ui/forms/SearchInterface',
+  '../ui/layout/BottomSheet': '../bottom-sheet/BottomSheet'
 };
 
 function updateImports(filePath) {
