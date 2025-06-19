@@ -1294,33 +1294,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
         console.log("🎤 VOICE BUTTON: Showing error toast:", errorMessage);
 
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-              }}
-            >
-              {errorMessage}
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
+        toastError(errorMessage);
       }
     }
   };
