@@ -213,6 +213,15 @@ const TenantAdminRefactored: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleEditWine = (wine: WineCardData) => {
+    // For now, just log the wine data - you can implement edit functionality here
+    console.log('Edit wine:', wine);
+    toast({
+      title: "Edit Wine",
+      description: `Opening edit mode for ${wine.name}`,
+    });
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "profile":
@@ -236,6 +245,7 @@ const TenantAdminRefactored: React.FC = () => {
             onToggleEditMode={handleToggleEditMode}
             onImportData={handleImportData}
             onExportData={handleExportData}
+            onEditWine={handleEditWine}
             fileInputRef={fileInputRef}
           />
         );
