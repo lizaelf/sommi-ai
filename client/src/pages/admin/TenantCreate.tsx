@@ -16,6 +16,7 @@ export default function TenantCreate() {
   const [, setLocation] = useLocation();
   const { toastSuccess, toastError } = useStandardToast();
   const [scrolled, setScrolled] = useState(false);
+  const [parsing, setParsing] = useState(false);
   
   const [formData, setFormData] = useState<TenantFormData>({
     name: '',
@@ -77,6 +78,43 @@ export default function TenantCreate() {
     setLocation('/somm-tenant-admin');
   };
 
+  const handleParseWebsite = async () => {
+    if (!formData.website) {
+      toastError('Please enter a website URL first');
+      return;
+    }
+
+    setParsing(true);
+    try {
+      const response = await fetch('/api/auto-populate-winery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: formData.website,
+          additionalPaths: ['/wines', '/portfolio', '/current-releases']
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to parse website');
+      }
+
+      const result = await response.json();
+      toastSuccess(`Successfully created ${result.winery} with ${result.winesCreated} wines`);
+      
+      // Navigate back to admin after successful import
+      setLocation('/tenant-admin');
+      
+    } catch (error) {
+      console.error('Parse error:', error);
+      toastError(error instanceof Error ? error.message : 'Failed to parse website');
+    } finally {
+      setParsing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen mobile-fullscreen" style={{ backgroundColor: '#3a3a3a' }}>
       {/* Fixed Header */}
@@ -124,14 +162,24 @@ export default function TenantCreate() {
           {/* Parse Website Button */}
           <div className="mt-4">
             <button
-              onClick={() => setLocation('/winery-import')}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors"
+              onClick={handleParseWebsite}
+              disabled={!formData.website || parsing}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               style={typography.body1R}
             >
-              <Globe size={16} />
-              Parse website automatically
+              {parsing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Parsing website...
+                </>
+              ) : (
+                <>
+                  <Globe size={16} />
+                  Parse website automatically
+                </>
+              )}
             </button>
-            <p className="text-white/40 text-xs mt-2" style={typography.body2}>
+            <p className="text-white/40 text-xs mt-2" style={typography.body1R}>
               Extract winery and wine data automatically from website
             </p>
           </div>
