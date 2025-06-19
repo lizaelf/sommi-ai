@@ -191,6 +191,12 @@ const TenantAdminRefactored: React.FC = () => {
 
   const [, setLocation] = useLocation();
 
+  const handleAddWine = () => {
+    console.log('Add wine clicked');
+    // Navigate to the wine edit page with new=true parameter
+    setLocation('/wine-edit/new?new=true');
+  };
+
   const handleEditWine = (wine: WineCardData) => {
     console.log('Edit wine clicked:', wine);
     // Navigate to the existing wine edit page
@@ -240,10 +246,7 @@ const TenantAdminRefactored: React.FC = () => {
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
       <AdminHeader
         currentTenant={currentTenant}
-        onAddTenant={() => {
-          // TODO: Implement add tenant functionality
-          console.log('Add tenant clicked');
-        }}
+        onAddWine={handleAddWine}
       />
       <HeaderSpacer />
 

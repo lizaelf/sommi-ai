@@ -7,12 +7,12 @@ import typography from "@/styles/typography";
 
 interface AdminHeaderProps {
   currentTenant: { name: string; slug: string } | null;
-  onAddTenant: () => void;
+  onAddWine: () => void;
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({
   currentTenant,
-  onAddTenant,
+  onAddWine,
 }) => {
   return (
     <AppHeader
@@ -20,13 +20,13 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
       showBackButton={true}
       rightContent={
         <Button
-          onClick={onAddTenant}
+          onClick={onAddWine}
           variant="primary"
           size="default"
           className="flex items-center gap-2"
         >
           <Plus size={16} />
-          Add Tenant
+          Add Wine
         </Button>
       }
     />
