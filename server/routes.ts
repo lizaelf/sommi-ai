@@ -1413,6 +1413,40 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Wine data migration endpoint
+  app.post("/api/migrate-wines", async (req, res) => {
+    try {
+      const wineData = req.body.wines || [];
+      console.log(`Migrating ${wineData.length} wines from localStorage to database`);
+      
+      const migratedWines = [];
+      for (const wine of wineData) {
+        try {
+          // Check if wine already exists
+          const existing = await storage.getWine(wine.id);
+          if (!existing) {
+            const migratedWine = await storage.createWine(wine);
+            migratedWines.push(migratedWine);
+            console.log(`Migrated wine: ${wine.name}`);
+          } else {
+            console.log(`Wine ${wine.id} already exists in database`);
+          }
+        } catch (wineError) {
+          console.error(`Error migrating wine ${wine.id}:`, wineError);
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        migrated: migratedWines.length,
+        message: `Successfully migrated ${migratedWines.length} wines to database`
+      });
+    } catch (error) {
+      console.error("Wine migration error:", error);
+      res.status(500).json({ success: false, message: "Failed to migrate wine data" });
+    }
+  });
+
   // Wine management endpoints
   app.get("/api/wines", async (_req, res) => {
     try {

@@ -313,15 +313,19 @@ export class DatabaseStorage implements IStorage {
   async createWine(insertWine: InsertWine): Promise<Wine> {
     const [wine] = await db
       .insert(wines)
-      .values(insertWine)
+      .values(insertWine as any)
       .returning();
     return wine;
   }
 
   async updateWine(id: number, data: Partial<InsertWine>): Promise<Wine | undefined> {
+    if (Object.keys(data).length === 0) {
+      return this.getWine(id);
+    }
+    
     const [wine] = await db
       .update(wines)
-      .set({ ...data, updatedAt: new Date() })
+      .set(data as any)
       .where(eq(wines.id, id))
       .returning();
     return wine || undefined;

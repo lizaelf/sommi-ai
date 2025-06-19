@@ -1,164 +1,166 @@
-import { WINE_CONFIG } from '@shared/wineConfig';
-// Default images removed - only authentic uploaded images will be displayed
+import { Wine } from "@shared/schema";
 
-export interface WineData {
-  id: number;
-  name: string;
-  year: number;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  buyAgainLink: string;
-  qrCode: string;
-  qrLink: string;
+export class WineDataManager {
+  private static instance: WineDataManager;
+  private wines: Wine[] = [];
+  private isLoaded = false;
+
+  static getInstance(): WineDataManager {
+    if (!WineDataManager.instance) {
+      WineDataManager.instance = new WineDataManager();
+    }
+    return WineDataManager.instance;
+  }
+
+  async loadWines(): Promise<Wine[]> {
+    if (this.isLoaded) {
+      return this.wines;
+    }
+
+    try {
+      // First try to load from database
+      const response = await fetch('/api/wines');
+      if (response.ok) {
+        this.wines = await response.json();
+        console.log(`Loaded ${this.wines.length} wines from database`);
+        this.isLoaded = true;
+        return this.wines;
+      }
+    } catch (error) {
+      console.error('Error loading wines from database:', error);
+    }
+
+    // Fallback to localStorage if database fails
+    return this.loadFromLocalStorage();
+  }
+
+  private loadFromLocalStorage(): Wine[] {
+    try {
+      const storedData = localStorage.getItem('unifiedWineData');
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        this.wines = parsedData.wines || [];
+        console.log(`Loaded ${this.wines.length} wines from localStorage`);
+        
+        // Attempt to migrate to database
+        this.migrateToDatabase();
+        
+        return this.wines;
+      }
+    } catch (error) {
+      console.error('Error loading wines from localStorage:', error);
+    }
+    
+    return [];
+  }
+
+  private async migrateToDatabase(): Promise<void> {
+    try {
+      console.log('Migrating wine data from localStorage to database...');
+      const response = await fetch('/api/migrate-wines', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ wines: this.wines }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Migration result:', result.message);
+        
+        // Clear localStorage after successful migration
+        if (result.success && result.migrated > 0) {
+          localStorage.removeItem('unifiedWineData');
+          console.log('Cleared localStorage after successful migration');
+        }
+      }
+    } catch (error) {
+      console.error('Error migrating wine data:', error);
+    }
+  }
+
+  async getWine(id: number): Promise<Wine | undefined> {
+    const wines = await this.loadWines();
+    return wines.find(wine => wine.id === id);
+  }
+
+  async getAllWines(): Promise<Wine[]> {
+    return this.loadWines();
+  }
+
+  async updateWine(id: number, updateData: Partial<Wine>): Promise<Wine | null> {
+    try {
+      const response = await fetch(`/api/wines/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (response.ok) {
+        const updatedWine = await response.json();
+        
+        // Update local cache
+        const index = this.wines.findIndex(wine => wine.id === id);
+        if (index !== -1) {
+          this.wines[index] = updatedWine;
+        }
+        
+        return updatedWine;
+      }
+    } catch (error) {
+      console.error('Error updating wine:', error);
+    }
+    
+    return null;
+  }
+
+  async createWine(wineData: Omit<Wine, 'id' | 'createdAt' | 'updatedAt'>): Promise<Wine | null> {
+    try {
+      const response = await fetch('/api/wines', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(wineData),
+      });
+
+      if (response.ok) {
+        const newWine = await response.json();
+        this.wines.push(newWine);
+        return newWine;
+      }
+    } catch (error) {
+      console.error('Error creating wine:', error);
+    }
+    
+    return null;
+  }
+
+  // Legacy compatibility for existing code
+  getWineDisplayData() {
+    return this.wines.map(wine => ({
+      id: wine.id,
+      name: wine.name,
+      year: wine.year,
+      bottles: wine.bottles || 0,
+      image: wine.image,
+      ratings: wine.ratings,
+      buyAgainLink: wine.buyAgainLink,
+      qrCode: wine.qrCode,
+      qrLink: wine.qrLink,
+      location: wine.location,
+      description: wine.description,
+      foodPairing: wine.foodPairing,
+      conversationHistory: wine.conversationHistory || [],
+      technicalDetails: wine.technicalDetails,
+      hasCustomImage: wine.hasCustomImage || false,
+      imagePrefix: wine.imagePrefix,
+      imageSize: wine.imageSize || 0
+    }));
+  }
 }
 
-// Get current wine configuration with any saved overrides
-export const getCurrentWineConfig = () => {
-  try {
-    const saved = localStorage.getItem('wine-config');
-    if (saved) {
-      return { ...WINE_CONFIG, ...JSON.parse(saved) };
-    }
-    return WINE_CONFIG;
-  } catch {
-    return WINE_CONFIG;
-  }
-};
-
-// Save wine configuration updates
-export const saveWineConfig = (updates: any) => {
-  try {
-    const current = getCurrentWineConfig();
-    const updated = { ...current, ...updates };
-    localStorage.setItem('wine-config', JSON.stringify(updated));
-    return updated;
-  } catch (error) {
-    console.error('Failed to save wine config:', error);
-    return getCurrentWineConfig();
-  }
-};
-
-// Get default wines - always available
-const getDefaultWines = (): WineData[] => {
-  const config = getCurrentWineConfig();
-  let wineName = config.name;
-  if (wineName.includes('Ridge "') && wineName.includes('"')) {
-    wineName = wineName.replace('Ridge "', '').replace('" Dry Creek Zinfandel', '');
-  }
-  
-  return [
-    {
-      id: 1,
-      name: wineName,
-      year: config.vintage,
-      bottles: 6,
-      image: "", // No default image - will show "No Image" until user uploads authentic image
-      ratings: {
-        vn: 95,
-        jd: 93,
-        ws: config.ratings.ws,
-        abv: 14.8
-      },
-      buyAgainLink: "https://ridgewine.com/wines/lytton-springs",
-      qrCode: "QR_001",
-      qrLink: "https://ridgewine.com/qr/001"
-    },
-    {
-      id: 2,
-      name: "Monte Bello Cabernet Sauvignon",
-      year: 2021,
-      bottles: 2,
-      image: "", // No default image - will show "No Image" until user uploads authentic image
-      ratings: { vn: 95, jd: 93, ws: 93, abv: 14.3 },
-      buyAgainLink: "https://ridge.com/product/monte-bello",
-      qrCode: "QR_002",
-      qrLink: "https://ridge.com/wines/monte-bello"
-    }
-  ];
-};
-
-// Get all wines from storage
-export const getAllWines = (): WineData[] => {
-  try {
-    const defaultWines = getDefaultWines();
-    const stored = localStorage.getItem('admin-wines');
-    
-    if (stored) {
-      const storedWines = JSON.parse(stored);
-      
-      // Ensure ID1 and ID2 are always present by merging with defaults
-      const mergedWines = [...defaultWines];
-      
-      // Add or update wines from storage
-      storedWines.forEach((storedWine: WineData) => {
-        const existingIndex = mergedWines.findIndex(w => w.id === storedWine.id);
-        if (existingIndex >= 0) {
-          // Update existing wine (ID1 or ID2)
-          mergedWines[existingIndex] = storedWine;
-        } else {
-          // Add new wine (ID > 2)
-          mergedWines.push(storedWine);
-        }
-      });
-      
-      return mergedWines;
-    }
-    
-    // Return default wines if none stored
-    return defaultWines;
-  } catch {
-    return getDefaultWines();
-  }
-};
-
-// Save all wines to storage
-export const saveAllWines = (wines: WineData[]) => {
-  try {
-    localStorage.setItem('admin-wines', JSON.stringify(wines));
-  } catch (error) {
-    console.error('Failed to save wines:', error);
-  }
-};
-
-// Get wine data for admin editing
-export const getEditableWineData = (wineId: number): WineData | null => {
-  const wines = getAllWines();
-  return wines.find(wine => wine.id === wineId) || null;
-};
-
-// Save editable wine data and update configuration
-export const saveEditableWineData = (wineData: WineData) => {
-  // Get all current wines
-  const wines = getAllWines();
-  
-  // Update or add the wine
-  const updatedWines = wines.some(w => w.id === wineData.id)
-    ? wines.map(w => w.id === wineData.id ? wineData : w)
-    : [...wines, wineData];
-  
-  // Save all wines
-  saveAllWines(updatedWines);
-  
-  // If this is wine ID 1, also update the main wine config
-  if (wineData.id === 1) {
-    const configUpdates = {
-      name: `Ridge "${wineData.name}" Dry Creek Zinfandel`,
-      fullName: `Ridge "${wineData.name}" Dry Creek Zinfandel`,
-      vintage: wineData.year,
-      ratings: {
-        ...getCurrentWineConfig().ratings,
-        ws: wineData.ratings.ws
-      }
-    };
-    
-    return saveWineConfig(configUpdates);
-  }
-  
-  return getCurrentWineConfig();
-};
+export const wineDataManager = WineDataManager.getInstance();
