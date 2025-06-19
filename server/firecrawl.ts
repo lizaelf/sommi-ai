@@ -42,7 +42,8 @@ export async function parseWineryWebsite(url: string): Promise<WineryData> {
       formats: ['markdown'],
       includeTags: ['h1', 'h2', 'h3', 'p', 'div', 'span', 'li'],
       excludeTags: ['script', 'style', 'nav', 'footer', 'header'],
-      waitFor: 2000
+      waitFor: 2000,
+      skipTlsVerification: true
     });
 
     console.log('Firecrawl response received:', {
@@ -120,13 +121,27 @@ export async function parseWineryWebsite(url: string): Promise<WineryData> {
     // Parse the AI response
     let wineryData: WineryData;
     try {
-      const jsonMatch = extractionResponse.match(/\{[\s\S]*\}/);
+      // Handle both string and object responses from OpenAI
+      let responseContent: string;
+      if (typeof extractionResponse === 'string') {
+        responseContent = extractionResponse;
+      } else if (extractionResponse && typeof extractionResponse === 'object' && 'message' in extractionResponse) {
+        responseContent = (extractionResponse as any).message.content || '';
+      } else {
+        responseContent = JSON.stringify(extractionResponse);
+      }
+
+      console.log('AI response content:', responseContent.substring(0, 200) + '...');
+
+      const jsonMatch = responseContent.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        throw new Error('No JSON found in response');
+        throw new Error('No JSON found in AI response');
       }
       wineryData = JSON.parse(jsonMatch[0]);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
+      console.error('Response type:', typeof extractionResponse);
+      console.error('Response preview:', extractionResponse);
       throw new Error('Failed to extract structured wine data');
     }
 
@@ -157,7 +172,8 @@ export async function crawlComprehensiveWineryData(baseUrl: string, additionalPa
         formats: ['markdown'],
         includeTags: ['h1', 'h2', 'h3', 'p', 'div', 'li'],
         excludeTags: ['script', 'style', 'nav', 'footer'],
-        waitFor: 2000
+        waitFor: 2000,
+        skipTlsVerification: true
       }).then(result => ({
         url,
         success: result.success,
