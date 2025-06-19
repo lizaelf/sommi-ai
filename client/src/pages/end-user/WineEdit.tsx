@@ -6,7 +6,7 @@ import typography from "@/styles/typography";
 import { SimpleQRCode } from "@/components/qr/SimpleQRCode";
 import { WINE_CONFIG } from "@shared/wineConfig";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
-import { getCurrentWineConfig } from "@/utils/wineDataManager";
+// Removed getCurrentWineConfig import as it's not needed
 import { 
   wineImageDeduplication, 
   validateImageFile, 
@@ -196,9 +196,35 @@ export default function WineEdit() {
         }
       }
       
-      // Save to unified data system
-      DataSyncManager.addOrUpdateWine(wineToSave);
-      console.log('Successfully saved to unified data system');
+      // Save to database first, then update localStorage
+      try {
+        // For new wines, don't send ID to let database auto-generate
+        const wineData = isNewWine ? { ...wineToSave } : wineToSave;
+        if (isNewWine) {
+          delete wineData.id;
+        }
+        
+        const response = await fetch(`/api/wines${isNewWine ? '' : `/${wineToSave.id}`}`, {
+          method: isNewWine ? 'POST' : 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(wineData),
+        });
+
+        if (response.ok) {
+          console.log('Successfully saved wine to database');
+          // Also update localStorage for immediate UI consistency
+          DataSyncManager.addOrUpdateWine(wineToSave);
+        } else {
+          const errorText = await response.text();
+          throw new Error(`Database save failed: ${errorText}`);
+        }
+      } catch (dbError) {
+        console.error('Database save failed, falling back to localStorage:', dbError);
+        // Fallback to localStorage only
+        DataSyncManager.addOrUpdateWine(wineToSave);
+      }
 
       toastSuccess(isNewWine ? "Wine added" : "Wine updated");
 
@@ -238,8 +264,25 @@ export default function WineEdit() {
         }
       }
       
-      // Use DataSyncManager to remove wine from unified system
-      DataSyncManager.removeWine(wine.id);
+      // Delete from database first, then remove from localStorage
+      try {
+        const response = await fetch(`/api/wines/${wine.id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          console.log('Successfully deleted wine from database');
+          // Also remove from localStorage for immediate UI consistency
+          DataSyncManager.removeWine(wine.id);
+        } else {
+          const errorText = await response.text();
+          throw new Error(`Database delete failed: ${errorText}`);
+        }
+      } catch (dbError) {
+        console.error('Database delete failed, falling back to localStorage:', dbError);
+        // Fallback to localStorage only
+        DataSyncManager.removeWine(wine.id);
+      }
       
       // Clean up any legacy storage entries
       try {
