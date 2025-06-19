@@ -1370,38 +1370,38 @@ Format: Return only the description text, no quotes or additional formatting.`;
 
   // Additional sync endpoints
 
-  app.get("/api/wines/sync-status", async (_req, res) => {
-    try {
-      const { compareWineData } = await import('./wineDataSync.js');
-      const syncStatus = compareWineData();
-      res.json(syncStatus);
-    } catch (error) {
-      console.error("Error checking sync status:", error);
-      res.status(500).json({ error: "Failed to check sync status" });
-    }
-  });
+  // app.get("/api/wines/sync-status", async (_req, res) => {
+  //   try {
+  //     const { compareWineData } = await import('./wineDataSync.js');
+  //     const syncStatus = compareWineData();
+  //     res.json(syncStatus);
+  //   } catch (error) {
+  //     console.error("Error checking sync status:", error);
+  //     res.status(500).json({ error: "Failed to check sync status" });
+  //   }
+  // });
 
-  app.post("/api/wines/sync", async (req, res) => {
-    try {
-      const { wines } = req.body;
+  // app.post("/api/wines/sync", async (req, res) => {
+  //   try {
+  //     const { wines } = req.body;
       
-      if (!wines || !Array.isArray(wines)) {
-        return res.status(400).json({ error: "Invalid wine data format" });
-      }
+  //     if (!wines || !Array.isArray(wines)) {
+  //       return res.status(400).json({ error: "Invalid wine data format" });
+  //     }
       
-      const { syncToDeployed } = await import('./wineDataSync.js');
-      const result = syncToDeployed(wines);
+  //     const { syncToDeployed } = await import('./wineDataSync.js');
+  //     const result = syncToDeployed(wines);
       
-      if (result.success) {
-        res.json(result);
-      } else {
-        res.status(500).json(result);
-      }
-    } catch (error) {
-      console.error("Wine sync error:", error);
-      res.status(500).json({ error: "Failed to sync wine data" });
-    }
-  });
+  //     if (result.success) {
+  //       res.json(result);
+  //     } else {
+  //       res.status(500).json(result);
+  //     }
+  //   } catch (error) {
+  //     console.error("Wine sync error:", error);
+  //     res.status(500).json({ error: "Failed to sync wine data" });
+  //   }
+  // });
 
   // Wine data migration endpoint
   app.post("/api/migrate-wines", async (req, res) => {

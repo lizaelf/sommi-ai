@@ -1,593 +1,69 @@
-// Unified Wine Data Synchronization System
-// Ensures all users see identical wine inventory across all environments
-
-// No default images - only authentic uploaded images will be displayed
-
-export interface UnifiedWineData {
-  id: number;
-  name: string;
-  year: number;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  buyAgainLink: string;
-  qrCode: string;
-  qrLink: string;
-  location?: string;
-  description?: string;
-  foodPairing?: string[];
-  conversationHistory?: Array<{
-    id: string;
-    timestamp: number;
-    messages: Array<{
-      role: 'user' | 'assistant';
-      content: string;
-      timestamp: number;
-    }>;
-  }>;
-  // New comprehensive wine catalog fields
-  sku?: string;
-  varietal?: string;
-  tastingNotes?: string;
-  productionNotes?: string;
-  criticReviews?: string;
-  releaseDate?: string;
-  price?: number;
-  // Wine Club Info
-  clubName?: string;
-  membershipTiers?: string;
-  clubPricing?: string;
-  clubBenefits?: string;
-  // Technical Details
-  technicalDetails?: {
-    varietal?: {
-      primary: string;
-      primaryPercentage: number;
-      secondary?: string;
-      secondaryPercentage?: number;
-    };
-    appellation?: string;
-    aging?: {
-      drinkNow: boolean;
-      ageUpTo: string;
-    };
-    customAbv?: number; // Override for ratings.abv when manually set
-  };
-}
-
-// Master wine data - this is the canonical source of truth
-const MASTER_WINE_DATA: UnifiedWineData[] = [
-  {
-    id: 1,
-    name: "Ridge \"Lytton Springs\" Dry Creek Zinfandel",
-    year: 2021,
-    bottles: 6,
-    image: "/@assets/wine-1-ridge-lytton-springs-dry-creek-zinfandel-1749209989253.png",
-    ratings: {
-      vn: 95,
-      jd: 93,
-      ws: 92,
-      abv: 14.8
-    },
-    buyAgainLink: "https://www.ridgewine.com/wines/2021-lytton-springs/",
-    qrCode: "QR_001",
-    qrLink: "/scanned?wine=1",
-    location: "Dry Creek Valley, Sonoma County, California",
-    description: "The 2021 Ridge \"Lytton Springs\" Dry Creek Zinfandel exhibits a rich tapestry of blackberry and raspberry notes, underscored by a peppery spice typical of the varietal. Matured in American oak, it possesses a well-structured tannin profile and a finish that resonates with the minerality of its Dry Creek Valley terroir.",
-    foodPairing: ["Grilled lamb", "BBQ ribs", "Aged cheddar", "Dark chocolate desserts"],
-    conversationHistory: []
-  },
-  {
-    id: 2,
-    name: "Monte Bello Cabernet Sauvignon",
-    year: 2021,
-    bottles: 2,
-    image: "/@assets/wine-2-monte-bello-cabernet-sauvignon-1749210160812.png",
-    ratings: {
-      vn: 95,
-      jd: 93,
-      ws: 93,
-      abv: 14.3
-    },
-    buyAgainLink: "https://ridge.com/product/monte-bello",
-    qrCode: "QR_002",
-    qrLink: "/scanned?wine=2",
-    location: "Santa Cruz Mountains, California",
-    description: "The 2020 Monte Bello Cabernet Sauvignon offers a complex palate of ripe blackcurrant, tobacco, and mocha, underpinned by a robust tannic structure typical of the varietal. This full-bodied Californian wine showcases the distinctive minerality and cool-climate elegance of the Santa Cruz Mountains terroir.",
-    foodPairing: ["Grilled steak", "Lamb chops", "Aged cheeses", "Dark chocolate"],
-    conversationHistory: []
-  },
-  {
-    id: 3,
-    name: "regin",
-    year: 2022,
-    bottles: 0,
-    image: "",
-    ratings: {
-      vn: 0,
-      jd: 0,
-      ws: 0,
-      abv: 0
-    },
-    buyAgainLink: "",
-    qrCode: "QR_003",
-    qrLink: "/scanned?wine=3",
-    location: "",
-    description: "The 2022 Regin is a youthful and vibrant wine, showcasing an expressive bouquet of fresh white fruits and delicate floral undertones. The palate is refreshingly crisp, with a harmonious balance of acidity and minerality, indicative of its terroir. This wine exhibits the classic characteristics of a cool-climate white, offering a long, clean finish.",
-    foodPairing: ["Fresh seafood", "Goat cheese salad", "Light pasta", "Asian cuisine"],
-    conversationHistory: []
-  },
-  {
-    id: 4,
-    name: "cherdoney",
-    year: 2021,
-    bottles: 0,
-    image: "",
-    ratings: {
-      vn: 0,
-      jd: 0,
-      ws: 0,
-      abv: 0
-    },
-    buyAgainLink: "",
-    qrCode: "QR_004",
-    qrLink: "/scanned?wine=4",
-    location: "",
-    description: "The 2021 cherdoney showcases vibrant acidity balanced by rich, buttery mouthfeel, indicative of its Chardonnay roots. It reveals notes of tart green apple, ripe pear, and hints of vanilla with subtle minerality that speaks to cool-climate terroir.",
-    foodPairing: ["Grilled chicken", "Seafood", "Creamy pasta", "Light cheeses"],
-    conversationHistory: []
-  }
-];
-
-const STORAGE_KEY = 'unified-wine-data';
-const SYNC_VERSION_KEY = 'wine-data-version';
-const CURRENT_VERSION = '2.3.0';
+import { Wine } from "@/types/wine";
 
 export class DataSyncManager {
-  
-  // Database migration method
-  static async migrateToDatabase(wines: UnifiedWineData[]): Promise<void> {
+  static async getUnifiedWineData(): Promise<Wine[]> {
     try {
-      console.log('DataSyncManager: Migrating wine data to database...');
-      const response = await fetch('/api/migrate-wines', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ wines }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('DataSyncManager: Migration result:', result.message);
-        
-        // Clear localStorage after successful migration
-        if (result.success && result.migrated > 0) {
-          localStorage.removeItem(STORAGE_KEY);
-          localStorage.removeItem(SYNC_VERSION_KEY);
-          console.log('DataSyncManager: Cleared localStorage after successful migration');
-        }
-      }
-    } catch (error) {
-      console.error('DataSyncManager: Error migrating wine data:', error);
-    }
-  }
-
-  // Get unified wine data from database with localStorage fallback
-  static async getUnifiedWineDataAsync(): Promise<UnifiedWineData[]> {
-    try {
-      // First try to load from database
       const response = await fetch('/api/wines');
-      if (response.ok) {
-        const wines: UnifiedWineData[] = await response.json();
-        console.log('DataSyncManager: Loaded from database:', wines.map(w => ({ id: w.id, name: w.name })));
-        return wines;
-      }
-    } catch (error) {
-      console.error('DataSyncManager: Error loading from database:', error);
+      return response.ok ? await response.json() : [];
+    } catch {
+      return [];
     }
-
-    // Fallback to localStorage and migrate
-    const localWines = this.getUnifiedWineData();
-    if (localWines.length > 0) {
-      this.migrateToDatabase(localWines);
-    }
-    return localWines;
   }
 
-  // Get unified wine data (same for all users) - ALWAYS preserves uploaded images
-  static getUnifiedWineData(): UnifiedWineData[] {
+  static async getWineById(id: number): Promise<Wine | undefined> {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const version = localStorage.getItem(SYNC_VERSION_KEY);
-      
-      console.log('DataSyncManager: Loading data - stored exists:', !!stored, 'version match:', version === CURRENT_VERSION);
-      
-      if (!stored) {
-        // First time loading - use master data
-        console.log('DataSyncManager: No stored data, using master data');
-        this.saveUnifiedWineData([...MASTER_WINE_DATA]);
-        return [...MASTER_WINE_DATA];
-      }
-      
-      const storedWines = JSON.parse(stored) as UnifiedWineData[];
-      
-      // Version mismatch - preserve images but update other data from master
-      if (version !== CURRENT_VERSION) {
-        console.log('DataSyncManager: Version mismatch - preserving uploaded images while updating structure');
-        
-        const updatedWines = MASTER_WINE_DATA.map(masterWine => {
-          const existingWine = storedWines.find(w => w.id === masterWine.id);
-          return {
-            ...masterWine,
-            // Preserve only valid uploaded images (base64 data)
-            image: (existingWine && existingWine.image && existingWine.image.startsWith('data:')) 
-              ? existingWine.image 
-              : masterWine.image
-          };
-        });
-        
-        this.saveUnifiedWineData(updatedWines);
-        localStorage.setItem(SYNC_VERSION_KEY, CURRENT_VERSION);
-        console.log('DataSyncManager: Updated to new version while preserving uploaded images');
-        return updatedWines;
-      }
-      
-      console.log('DataSyncManager: Loaded from storage:', storedWines.map(w => ({ 
-        id: w.id, 
-        name: w.name, 
-        hasCustomImage: w.image?.startsWith('data:'),
-        imagePrefix: w.image?.substring(0, 30) + '...',
-        imageSize: w.image?.length || 0
-      })));
-      
-      return storedWines.length > 0 ? storedWines : [...MASTER_WINE_DATA];
-    } catch (error) {
-      console.error('Error loading unified wine data:', error);
-      this.saveUnifiedWineData([...MASTER_WINE_DATA]);
-      return [...MASTER_WINE_DATA];
+      const response = await fetch(`/api/wines/${id}`);
+      return response.ok ? await response.json() : undefined;
+    } catch {
+      return undefined;
     }
-  }
-  
-  // Save unified wine data
-  static saveUnifiedWineData(wines: UnifiedWineData[]): void {
-    try {
-      const dataString = JSON.stringify(wines);
-      const dataSize = new Blob([dataString]).size;
-      console.log(`DataSyncManager: Attempting to save ${wines.length} wines (${Math.round(dataSize / 1024)}KB)`);
-      
-      // Check if data might be too large for localStorage (5MB limit)
-      if (dataSize > 4 * 1024 * 1024) { // 4MB warning threshold
-        console.warn('Wine data is very large, may exceed localStorage limits');
-      }
-      
-      // Debug: Log images before saving
-      console.log('Saving wines with images:', wines.map(w => ({ 
-        id: w.id, 
-        imageLen: w.image?.length || 0, 
-        startsWithData: w.image?.startsWith('data:'),
-        imageValid: w.image?.startsWith('data:image/') 
-      })));
-      
-      localStorage.setItem(STORAGE_KEY, dataString);
-      localStorage.setItem(SYNC_VERSION_KEY, CURRENT_VERSION);
-      
-      // Also update legacy storage for backwards compatibility
-      localStorage.setItem('admin-wines', dataString);
-      
-      console.log('Unified wine data saved successfully');
-    } catch (error) {
-      console.error('Error saving unified wine data:', error);
-      
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        console.error('LocalStorage quota exceeded. Wine data too large.');
-        throw new Error('Storage limit exceeded. Try using smaller images or remove unused wines.');
-      }
-      
-      throw error;
-    }
-  }
-  
-  // Get wine by ID - optimized for speed
-  static getWineById(id: number): UnifiedWineData | undefined {
-    const wines = this.getUnifiedWineData();
-    return wines.find(w => w.id === id);
   }
 
-  // Reset to master data
-  static resetToMasterData(): void {
-    this.saveUnifiedWineData([...MASTER_WINE_DATA]);
-    console.log('Reset to master wine data');
-  }
-
-  // Clear all stored data to fix corrupted references
-  static clearStoredData(): void {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(SYNC_VERSION_KEY);
-    localStorage.removeItem('admin-wines');
-    console.log('Cleared all stored wine data');
-  }
-  
-  // Add or update a wine
-  static addOrUpdateWine(wine: UnifiedWineData): void {
-    console.log(`DataSyncManager: Adding/updating wine with ID ${wine.id}:`, { id: wine.id, name: wine.name, year: wine.year });
-    const wines = this.getUnifiedWineData();
-    console.log(`DataSyncManager: Current wines before add/update:`, wines.map(w => ({ id: w.id, name: w.name })));
-    
-    const existingIndex = wines.findIndex(w => w.id === wine.id);
-    
-    if (existingIndex >= 0) {
-      console.log(`DataSyncManager: Updating existing wine at index ${existingIndex}`);
-      wines[existingIndex] = wine;
-    } else {
-      console.log(`DataSyncManager: Adding new wine`);
-      wines.push(wine);
-    }
-    
-    console.log(`DataSyncManager: Wines after add/update:`, wines.map(w => ({ id: w.id, name: w.name })));
-    this.saveUnifiedWineData(wines);
-    console.log(`DataSyncManager: Wine ${wine.id} add/update completed`);
-  }
-  
-  // Remove a wine
-  static removeWine(wineId: number): void {
-    console.log(`DataSyncManager: Removing wine with ID ${wineId}`);
-    const wines = this.getUnifiedWineData();
-    console.log(`DataSyncManager: Current wines before removal:`, wines.map(w => ({ id: w.id, name: w.name })));
-    
-    const filteredWines = wines.filter(w => w.id !== wineId);
-    console.log(`DataSyncManager: Wines after filtering:`, filteredWines.map(w => ({ id: w.id, name: w.name })));
-    
-    this.saveUnifiedWineData(filteredWines);
-    console.log(`DataSyncManager: Wine ${wineId} removal completed`);
-  }
-  
-  // Update wine-specific metadata
-  static updateWineMetadata(wineId: number, metadata: {
-    location?: string;
-    description?: string;
-    foodPairing?: string[];
-  }): void {
-    const wines = this.getUnifiedWineData();
-    const wine = wines.find(w => w.id === wineId);
-    
-    if (wine) {
-      if (metadata.location) wine.location = metadata.location;
-      if (metadata.description) wine.description = metadata.description;
-      if (metadata.foodPairing) wine.foodPairing = metadata.foodPairing;
-      
-      this.saveUnifiedWineData(wines);
-      console.log(`Updated metadata for wine ID ${wineId}`);
-    }
-  }
-  
-  // Add conversation to wine history
-  static addConversationToWine(wineId: number, conversation: {
-    id: string;
-    messages: Array<{
-      role: 'user' | 'assistant';
-      content: string;
-      timestamp: number;
-    }>;
-  }): void {
-    const wines = this.getUnifiedWineData();
-    const wine = wines.find(w => w.id === wineId);
-    
-    if (wine) {
-      if (!wine.conversationHistory) {
-        wine.conversationHistory = [];
-      }
-      
-      wine.conversationHistory.push({
-        id: conversation.id,
-        timestamp: Date.now(),
-        messages: conversation.messages
-      });
-      
-      // Keep only the last 10 conversations to prevent excessive storage
-      if (wine.conversationHistory.length > 10) {
-        wine.conversationHistory = wine.conversationHistory.slice(-10);
-      }
-      
-      this.saveUnifiedWineData(wines);
-      console.log(`Added conversation to wine ID ${wineId} history`);
-    }
-  }
-  
-  // Export data for synchronization
-  static exportData(): string {
-    const wines = this.getUnifiedWineData();
-    const exportData = {
-      version: CURRENT_VERSION,
-      timestamp: new Date().toISOString(),
-      wines: wines
-    };
-    return JSON.stringify(exportData, null, 2);
-  }
-  
-  // Import data from another environment
-  static importData(jsonData: string): { success: boolean; message: string } {
+  static async addWine(wine: Omit<Wine, 'id'>): Promise<Wine | undefined> {
     try {
-      const importData = JSON.parse(jsonData);
-      
-      if (!importData.wines || !Array.isArray(importData.wines)) {
-        return { success: false, message: 'Invalid data format: missing wines array' };
-      }
-      
-      // Validate each wine has required fields
-      for (const wine of importData.wines) {
-        if (!wine.id || !wine.name || !wine.year) {
-          return { success: false, message: 'Invalid wine data: missing required fields' };
-        }
-      }
-      
-      this.saveUnifiedWineData(importData.wines);
-      
-      return { 
-        success: true, 
-        message: `Successfully imported ${importData.wines.length} wines` 
-      };
-    } catch (error) {
-      return { 
-        success: false, 
-        message: `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
-      };
-    }
-  }
-  
-  // Synchronize with deployed environment
-  static async syncWithDeployedEnvironment(): Promise<{
-    success: boolean;
-    message: string;
-    syncNeeded?: boolean;
-    localCount?: number;
-    deployedCount?: number;
-    details?: any;
-  }> {
-    try {
-      console.log('DataSyncManager: Starting comprehensive sync check...');
-      
-      // Get detailed sync status from the server
-      const statusResponse = await fetch('/api/wines/sync-status');
-      if (!statusResponse.ok) {
-        throw new Error(`Failed to fetch sync status: ${statusResponse.statusText}`);
-      }
-      
-      const syncStatus = await statusResponse.json();
-      console.log('DataSyncManager: Sync status:', syncStatus);
-      
-      // Get local wine data
-      const localWines = this.getUnifiedWineData();
-      
-      if (syncStatus.inSync) {
-        return {
-          success: true,
-          message: 'Development and deployed environments are perfectly synchronized',
-          syncNeeded: false,
-          localCount: syncStatus.developmentCount,
-          deployedCount: syncStatus.deployedCount,
-          details: {
-            missingInDeployed: syncStatus.missingInDeployed.length,
-            differences: syncStatus.differences.length,
-            inSync: true
-          }
-        };
-      }
-      
-      // Sync is needed - push development data to deployed environment
-      console.log('DataSyncManager: Synchronization needed, pushing development data...');
-      
-      const syncResponse = await fetch('/api/wines/sync', {
+      const response = await fetch('/api/wines', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ wines: localWines })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(wine),
       });
-      
-      if (!syncResponse.ok) {
-        throw new Error(`Failed to sync data: ${syncResponse.statusText}`);
-      }
-      
-      const syncResult = await syncResponse.json();
-      
-      return {
-        success: true,
-        message: `Successfully synchronized ${localWines.length} wines. Missing wines: ${syncStatus.missingInDeployed.length}, Updated wines: ${syncStatus.differences.length}`,
-        syncNeeded: true,
-        localCount: syncStatus.developmentCount,
-        deployedCount: syncStatus.deployedCount,
-        details: {
-          missingInDeployed: syncStatus.missingInDeployed.length,
-          differences: syncStatus.differences.length,
-          inSync: false
-        }
-      };
-      
-    } catch (error) {
-      console.error('DataSyncManager: Sync error:', error);
-      return {
-        success: false,
-        message: `Failed to sync with deployed environment: ${error instanceof Error ? error.message : 'Unknown error'}`
-      };
+      return response.ok ? await response.json() : undefined;
+    } catch {
+      return undefined;
     }
   }
 
-  // Push local data to deployed environment
-  static async pushToDeployedEnvironment(): Promise<{ success: boolean; message: string }> {
+  static async updateWine(id: number, wine: Partial<Wine>): Promise<Wine | undefined> {
     try {
-      const localWines = this.getUnifiedWineData();
-      const deployedUrl = window.location.origin.replace('-00-', '-');
-      
-      const response = await fetch(`${deployedUrl}/api/wines/sync`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ wines: localWines })
+      const response = await fetch(`/api/wines/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(wine),
       });
-      
-      if (!response.ok) {
-        return {
-          success: false,
-          message: 'Failed to push data to deployed environment'
-        };
-      }
-      
-      return {
-        success: true,
-        message: `Successfully synchronized ${localWines.length} wines to deployed environment`
-      };
-      
-    } catch (error) {
-      return {
-        success: false,
-        message: `Push failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-      };
+      return response.ok ? await response.json() : undefined;
+    } catch {
+      return undefined;
     }
   }
 
-  // Initialize data on app start
-  static initialize(): void {
-    // Ensure we have valid data and attempt database migration
-    const wines = this.getUnifiedWineData();
-    console.log(`Initialized unified wine data with ${wines.length} wines`);
-    
-    // Attempt to migrate to database if data exists
-    if (wines.length > 0) {
-      this.migrateToDatabase(wines);
-    }
-  }
-
-  // Initialize data asynchronously with database priority
-  static async initializeAsync(): Promise<void> {
+  static async removeWine(id: number): Promise<boolean> {
     try {
-      const wines = await this.getUnifiedWineDataAsync();
-      console.log(`Initialized unified wine data with ${wines.length} wines from database`);
-    } catch (error) {
-      console.error('Error initializing wine data:', error);
-      // Fallback to localStorage initialization
-      this.initialize();
+      const response = await fetch(`/api/wines/${id}`, { method: 'DELETE' });
+      return response.ok;
+    } catch {
+      return false;
     }
   }
 }
 
-// Helper function for backwards compatibility
-export function getAllWines(): UnifiedWineData[] {
-  return DataSyncManager.getUnifiedWineData();
+export async function getAllWines(): Promise<Wine[]> {
+  return await DataSyncManager.getUnifiedWineData();
 }
 
-// Async helper function for database-first wine loading
-export async function getAllWinesAsync(): Promise<UnifiedWineData[]> {
-  return DataSyncManager.getUnifiedWineDataAsync();
+export async function getAllWinesAsync(): Promise<Wine[]> {
+  return await DataSyncManager.getUnifiedWineData();
 }
 
-// Helper function to save all wines (backwards compatibility)
-export function saveAllWines(wines: UnifiedWineData[]): void {
-  DataSyncManager.saveUnifiedWineData(wines);
+export async function saveAllWines(wines: Wine[]): Promise<void> {
+  // Можно реализовать массовое обновление через API, если потребуется
+  // Сейчас функция-заглушка
 }
