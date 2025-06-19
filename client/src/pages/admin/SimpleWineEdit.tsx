@@ -314,31 +314,23 @@ const SimpleWineEdit: React.FC = () => {
                 </div>
               )}
 
-              {/* Upload Area */}
-              <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-white/40 transition-colors">
+              {/* Upload Button */}
+              <div className="mb-4">
                 {uploading ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     <span style={typography.body1R}>Uploading image...</span>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center gap-2">
-                    <ImageIcon size={32} className="text-white/40" />
-                    <div>
-                      <Button
-                        variant="secondary"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center gap-2"
-                        type="button"
-                      >
-                        <Upload size={16} />
-                        {imagePreview ? 'Replace Image' : 'Upload Image'}
-                      </Button>
-                    </div>
-                    <p style={typography.body1R} className="text-white/60 text-sm">
-                      PNG, JPG, or WebP (max 10MB)
-                    </p>
-                  </div>
+                  <Button
+                    variant="secondary"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2"
+                    type="button"
+                  >
+                    <Upload size={16} />
+                    Replace Image
+                  </Button>
                 )}
               </div>
 
