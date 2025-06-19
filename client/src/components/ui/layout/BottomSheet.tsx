@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { IconButton } from "./IconButton";
+import { IconButton } from "../buttons/IconButton";
 
 interface BottomSheetProps {
   isOpen: boolean;
