@@ -406,7 +406,7 @@ const TenantAdminRefactored: React.FC = () => {
               </div>
               <Button 
                 variant="primary" 
-                onClick={() => navigate('/wine-edit/new')}
+                onClick={() => setLocation('/wine-edit/new')}
                 className="flex items-center gap-2 whitespace-nowrap"
               >
                 <span className="text-lg">+</span>
@@ -426,15 +426,14 @@ const TenantAdminRefactored: React.FC = () => {
                   <div className="w-16 h-20 flex-shrink-0">
                     <WineImage
                       wineName={wine.name}
-                      imagePath={wine.imagePath}
-                      size="small"
-                      className="w-full h-full object-contain"
+                      alt={wine.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
                   </div>
                   
                   {/* Wine Info */}
                   <div className="flex-1">
-                    <h3 style={typography.h3} className="text-white mb-1">
+                    <h3 style={typography.buttonPlus1} className="text-white mb-1">
                       {wine.name}
                     </h3>
                     <p style={typography.body1R} className="text-white/60">
