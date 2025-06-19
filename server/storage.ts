@@ -311,10 +311,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createWine(insertWine: InsertWine): Promise<Wine> {
-    const [wine] = await db
+    const [created] = await db
       .insert(wines)
       .values(insertWine as any)
       .returning();
+    // Після вставки робимо select по id
+    const [wine] = await db.select().from(wines).where(eq(wines.id, created.id));
     return wine;
   }
 
@@ -322,12 +324,12 @@ export class DatabaseStorage implements IStorage {
     if (Object.keys(data).length === 0) {
       return this.getWine(id);
     }
-    
-    const [wine] = await db
+    await db
       .update(wines)
       .set(data as any)
-      .where(eq(wines.id, id))
-      .returning();
+      .where(eq(wines.id, id));
+    // Після оновлення робимо select по id
+    const [wine] = await db.select().from(wines).where(eq(wines.id, id));
     return wine || undefined;
   }
 

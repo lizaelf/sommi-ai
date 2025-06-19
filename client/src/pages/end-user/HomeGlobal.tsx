@@ -3,23 +3,7 @@ import { useLocation } from "wouter";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { WelcomeSection } from "@/components/home-global/WelcomeSection";
 import { WineCollection } from "@/components/home-global/WineCollection";
-
-interface Wine {
-  id: number;
-  name: string;
-  year: number;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  buyAgainLink?: string;
-  qrCode?: string;
-  qrLink?: string;
-}
+import { Wine } from "@/types/wine";
 
 const HomeGlobal = () => {
   const [location, setLocation] = useLocation();

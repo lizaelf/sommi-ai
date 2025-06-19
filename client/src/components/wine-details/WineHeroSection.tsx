@@ -3,27 +3,10 @@ import WineBottleImage from "./WineBottleImage";
 
 import WineRating from "./WineRating";
 import typography from "@/styles/typography";
-
-interface SelectedWine {
-  id: number;
-  name: string;
-  year?: number;
-  image: string;
-  bottles: number;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  location?: string;
-  description?: string;
-  foodPairing?: string[];
-  buyAgainLink?: string;
-}
+import { Wine } from "@/types/wine";
 
 interface WineHeroSectionProps {
-  wine: SelectedWine;
+  wine: Wine;
   imageLoaded: boolean;
   onImageLoad: () => void;
 }
@@ -102,29 +85,6 @@ const WineHeroSection: React.FC<WineHeroSectionProps> = ({
         >
           {wine.name}
         </h1>
-
-        {/* Location */}
-        {wine.location && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              marginBottom: "20px",
-            }}
-          >
-            <img src="/us-flag.png" alt="US Flag" style={{ width: '20px', height: '15px' }} />
-            <span
-              style={{
-                ...typography.body1R,
-                color: "#CECECE",
-              }}
-            >
-              {wine.location}
-            </span>
-          </div>
-        )}
 
         {/* Wine Ratings */}
         <div

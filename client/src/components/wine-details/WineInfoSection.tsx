@@ -5,41 +5,10 @@ import WineRating from './WineRating';
 import WineTechnicalDetails from './WineTechnicalDetails';
 import typography from '@/styles/typography';
 import { WINE_CONFIG } from '../../../../shared/wineConfig';
-
-interface SelectedWine {
-  id: number;
-  name: string;
-  year?: number;
-  image: string;
-  bottles: number;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  location?: string;
-  description?: string;
-  foodPairing?: string[];
-  buyAgainLink?: string;
-  technicalDetails?: {
-    varietal?: {
-      primary: string;
-      primaryPercentage: number;
-      secondary?: string;
-      secondaryPercentage?: number;
-    };
-    appellation?: string;
-    aging?: {
-      drinkNow: boolean;
-      ageUpTo: string;
-    };
-    customAbv?: number;
-  };
-}
+import { Wine } from '@/types/wine';
 
 interface WineInfoSectionProps {
-  wine: SelectedWine;
+  wine: Wine;
   imageLoaded: boolean;
   onImageLoad: () => void;
   imageRef: React.RefObject<HTMLImageElement>;
@@ -178,21 +147,6 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         </h1>
       </div>
 
-      {/* Location */}
-      {wine.location && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{
-            ...typography.body1R,
-            color: '#999'
-          }}>
-            {wine.location}
-          </span>
-        </div>
-      )}
 
       {/* Technical Details Section */}
       <div style={{
@@ -201,10 +155,10 @@ const WineInfoSection: React.FC<WineInfoSectionProps> = ({
         marginTop: '32px'
       }}>
         <WineTechnicalDetails
-          varietal={wine.technicalDetails?.varietal || extractVarietalInfo(wine.name)}
-          appellation={wine.technicalDetails?.appellation || wine.location?.split(',')[0] || 'Unknown Appellation'}
-          aging={wine.technicalDetails?.aging || getAgingRecommendations(wine.name, wine.year)}
-          abv={wine.technicalDetails?.customAbv || wine.ratings?.abv}
+          varietal={ extractVarietalInfo(wine.name)}
+          appellation={ wine?.location || 'Unknown Appellation'}
+          aging={ getAgingRecommendations(wine.name, wine.year)}
+          abv={ wine.ratings?.abv}
         />
       </div>
 

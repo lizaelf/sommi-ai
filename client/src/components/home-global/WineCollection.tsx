@@ -1,23 +1,7 @@
 import React from "react";
 import { WineCard } from "./WineCard";
 import typography from "@/styles/typography";
-
-interface Wine {
-  id: number;
-  name: string;
-  year: number;
-  bottles: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  buyAgainLink?: string;
-  qrCode?: string;
-  qrLink?: string;
-}
+import { Wine } from "@/types/wine";
 
 interface WineCollectionProps {
   wines: Wine[];

@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, MoreHorizontal, Trash2 } from "lucide-react";
-import { Link, useLocation, useParams } from "wouter";
+import { useLocation, useParams } from "wouter";
 import QRScanModal from "@/components/qr/QRScanModal";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
-import { DataSyncManager } from "@/utils/dataSync";
 import typography from "@/styles/typography";
 import {
   WineDetailsHero,
@@ -13,41 +11,15 @@ import {
   WineRecommendationsSection
 } from "@/components/wine-details";
 import { WineChatSection } from "@/components/chat";
-
-interface SelectedWine {
-  id: number;
-  name: string;
-  year?: number;
-  image: string;
-  bottles: number;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  location?: string;
-  description?: string;
-  foodPairing?: string[];
-  buyAgainLink?: string;
-  qrCode?: string;
-  qrLink?: string;
-  conversationHistory?: any[];
-}
+import { Wine } from "@/types/wine";
 
 export default function WineDetails() {
   const [location] = useLocation();
   const { id } = useParams();
-  const [wine, setWine] = useState<SelectedWine | null>(null);
+  const [wine, setWine] = useState<Wine | null>(null);
   const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error' | 'notfound'>('loading');
-  const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
-
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const imageRef = useRef<HTMLImageElement>(null);
-
-  const isQRScan = new URLSearchParams(window.location.search).has("wine");
   const isScannedPage = location === "/scanned";
 
   useEffect(() => {
@@ -65,7 +37,7 @@ export default function WineDetails() {
         const response = await fetch(`/api/wines/${wineId}`);
         if (response.ok) {
           const wineData = await response.json();
-          const transformedWine = {
+          const transformedWine: Wine = {
             id: wineData.id,
             name: wineData.name,
             year: wineData.year,
@@ -75,10 +47,7 @@ export default function WineDetails() {
             buyAgainLink: wineData.buyAgainLink,
             qrCode: wineData.qrCode,
             qrLink: wineData.qrLink,
-            location: wineData.location,
-            description: wineData.description,
-            foodPairing: wineData.foodPairing,
-            conversationHistory: wineData.conversationHistory || [],
+            description: wineData.description
           };
           setWine(transformedWine);
           setLoadingState('loaded');
@@ -134,11 +103,6 @@ export default function WineDetails() {
       window.removeEventListener("qr-reset", handleQRReset);
     };
   }, []);
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-    console.log("Wine image loaded successfully:", wine?.image);
-  };
 
   // Optimized scrolling initialization
   useEffect(() => {
@@ -205,7 +169,7 @@ export default function WineDetails() {
       <HeaderSpacer />
 
       {/* Wine Details Hero Section */}
-      <WineDetailsHero wine={wine} />
+      {wine && <WineDetailsHero {...wine} />}
 
       {/* Tasting Notes */}
       <WineHistorySection description={wine?.description} />

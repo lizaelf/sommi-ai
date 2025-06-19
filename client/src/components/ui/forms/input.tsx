@@ -41,8 +41,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             background: "transparent !important",
             backgroundColor: "transparent !important",
             backgroundImage: "none !important",
-            WebkitAppearance: "none !important",
-            appearance: "none !important",
+            // WebkitAppearance: "none !important",
+            // appearance: "none !important",
           }}
           ref={ref}
           onFocus={handleFocus}

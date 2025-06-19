@@ -1,34 +1,10 @@
 import React from "react";
 import typography from "@/styles/typography";
 import TechnicalDetailItem from "./TechnicalDetailItem";
+import { Wine } from "@/types/wine";
 
 interface WineTechnicalDetailsSectionProps {
-  wine: {
-    name: string;
-    year?: number;
-    image: string;
-    location?: string;
-    ratings: {
-      vn: number;
-      jd: number;
-      ws: number;
-      abv: number;
-    };
-    technicalDetails?: {
-      varietal?: {
-        primary: string;
-        primaryPercentage: number;
-        secondary?: string;
-        secondaryPercentage?: number;
-      };
-      appellation?: string;
-      aging?: {
-        drinkNow: boolean;
-        ageUpTo?: string;
-      };
-      customAbv?: number;
-    };
-  };
+  wine: Wine
 }
 
 const WineTechnicalDetailsSection: React.FC<
@@ -97,6 +73,7 @@ const WineTechnicalDetailsSection: React.FC<
       ageUpTo: "2028",
     };
   };
+  console.log(wine)
 
   return (
     <div
@@ -140,9 +117,7 @@ const WineTechnicalDetailsSection: React.FC<
         <TechnicalDetailItem
           label="Appellation"
           value={
-            wine?.technicalDetails?.appellation ||
-            wine?.location?.split(",")[0] ||
-            "Dry Creek Valley"
+            wine?.location 
           }
         />
 
@@ -168,7 +143,7 @@ const WineTechnicalDetailsSection: React.FC<
 
         <TechnicalDetailItem
           label="ABV"
-          value={`${wine?.technicalDetails?.customAbv || wine?.ratings?.abv || 14.8}%`}
+          value={`${ wine?.ratings?.abv}%`}
           isLast={true}
         />
       </div>

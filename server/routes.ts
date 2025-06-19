@@ -1357,28 +1357,18 @@ Format: Return only the description text, no quotes or additional formatting.`;
   });
 
   // Wine data synchronization endpoints
-  app.get("/api/wines", async (_req, res) => {
-    try {
-      const { getDeployedWineData } = await import('./wineDataSync.js');
-      const wineData = getDeployedWineData();
-      res.json(wineData);
-    } catch (error) {
-      console.error("Error fetching deployed wines:", error);
-      res.status(500).json({ error: "Failed to fetch deployed wine data" });
-    }
-  });
+  // app.get("/api/wines", async (_req, res) => {
+  //   try {
+  //     const { getDevelopmentWineData } = await import('./wineDataSync.js');
+  //     const wineData = getDevelopmentWineData();
+  //     res.json(wineData);
+  //   } catch (error) {
+  //     console.error("Error fetching deployed wines:", error);
+  //     res.status(500).json({ error: "Failed to fetch deployed wine data" });
+  //   }
+  // });
 
   // Additional sync endpoints
-  app.get("/api/wines/development", async (_req, res) => {
-    try {
-      const { getDevelopmentWineData } = await import('./wineDataSync.js');
-      const wineData = getDevelopmentWineData();
-      res.json(wineData);
-    } catch (error) {
-      console.error("Error fetching development wines:", error);
-      res.status(500).json({ error: "Failed to fetch development wine data" });
-    }
-  });
 
   app.get("/api/wines/sync-status", async (_req, res) => {
     try {
@@ -1480,6 +1470,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
   app.post("/api/wines", async (req, res) => {
     try {
       const wine = await storage.createWine(req.body);
+      console.log('Created wine:', wine);
       res.status(201).json(wine);
     } catch (error) {
       console.error("Error creating wine:", error);
@@ -1487,7 +1478,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  app.put("/api/wines/:id", async (req, res) => {
+  app.patch("/api/wines/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -1495,6 +1486,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
       }
       
       const wine = await storage.updateWine(id, req.body);
+      console.log('Updated wine:', wine);
       if (!wine) {
         return res.status(404).json({ message: "Wine not found" });
       }

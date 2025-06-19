@@ -1,21 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import WineRecommendationCard from './WineRecommendationCard';
 import typography from '@/styles/typography';
-
-interface Wine {
-  id: number;
-  name: string;
-  year: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-  location?: string;
-  bottles?: number;
-}
+import { Wine } from '@/types/wine';
 
 interface WineRecommendationsSectionProps {
   currentWineId: number;
@@ -73,7 +59,7 @@ const WineRecommendationsSection: React.FC<WineRecommendationsSectionProps> = ({
         className="[&::-webkit-scrollbar]:hidden"
       >
         {recommendedWines.map((wine, index) => (
-          <WineRecommendationCard key={wine.id} wine={wine} />
+          <WineRecommendationCard key={wine.id} {...wine} />
         ))}
       </div>
     </div>

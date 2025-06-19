@@ -4,38 +4,9 @@ import { MapPin } from "lucide-react";
 import WineRating from "./WineRating";
 import WineTechnicalDetailsSection from "./WineTechnicalDetailsSection";
 import typography from "@/styles/typography";
+import { Wine } from "@/types/wine";
 
-interface WineDetailsHeroProps {
-  wine: {
-    id: number;
-    name: string;
-    year?: number;
-    image: string;
-    location?: string;
-    ratings: {
-      vn: number;
-      jd: number;
-      ws: number;
-      abv: number;
-    };
-    technicalDetails?: {
-      varietal?: {
-        primary: string;
-        primaryPercentage: number;
-        secondary?: string;
-        secondaryPercentage?: number;
-      };
-      appellation?: string;
-      aging?: {
-        drinkNow: boolean;
-        ageUpTo?: string;
-      };
-      customAbv?: number;
-    };
-  } | null;
-}
-
-const WineDetailsHero: React.FC<WineDetailsHeroProps> = ({ wine }) => {
+const WineDetailsHero: React.FC<Wine> = ( wine ) => {
   if (!wine) return null;
 
   return (

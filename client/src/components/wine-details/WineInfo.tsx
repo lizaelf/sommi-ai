@@ -3,24 +3,9 @@ import WineBottleImage from './WineBottleImage';
 
 import WineRating from './WineRating';
 import typography from '@/styles/typography';
+import { Wine } from '@/types/wine';
 
-interface WineInfoProps {
-  wine: {
-    id: number;
-    name: string;
-    year?: number;
-    image: string;
-    location?: string;
-    ratings: {
-      vn: number;
-      jd: number;
-      ws: number;
-      abv: number;
-    };
-  };
-}
-
-export const WineInfo: React.FC<WineInfoProps> = ({ wine }) => {
+export const WineInfo: React.FC<Wine> = ( wine ) => {
   if (!wine) return null;
 
   return (
@@ -50,28 +35,7 @@ export const WineInfo: React.FC<WineInfoProps> = ({ wine }) => {
       >
         {wine.year ? `${wine.year} ${wine.name}` : wine.name}
       </div>
-
-      {/* Wine region with typography styling and flag */}
-      <div
-        style={{
-          textAlign: "center",
-          justifyContent: "center",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          color: "rgba(255, 255, 255, 0.60)",
-          wordWrap: "break-word",
-          position: "relative",
-          zIndex: 2,
-          padding: "20px 20px",
-          gap: "6px",
-          marginBottom: "0",
-          ...typography.body,
-        }}
-      >
-        <img src="/us-flag.png" alt="US Flag" style={{ width: '20px', height: '15px' }} />
-        <span>{wine.location || "Santa Cruz Mountains | California | United States"}</span>
-      </div>
+ 
 
       {/* Wine ratings section */}
       <WineRating

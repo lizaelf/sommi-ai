@@ -3,25 +3,9 @@ import { Link } from 'wouter';
 import WineRating from './WineRating';
 import WineCardImage from './WineCardImage';
 import typography from '@/styles/typography';
+import { Wine } from '@/types/wine';
 
-interface Wine {
-  id: number;
-  name: string;
-  year?: number;
-  image: string;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-}
-
-interface WineRecommendationCardProps {
-  wine: Wine;
-}
-
-const WineRecommendationCard: React.FC<WineRecommendationCardProps> = ({ wine }) => {
+const WineRecommendationCard: React.FC<Wine> = ( wine ) => {
   return (
     <Link to={`/wine-details/${wine.id}`}>
       <div
