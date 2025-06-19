@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import AppHeader from "@/components/layout/AppHeader";
@@ -6,6 +6,7 @@ import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
+import { Upload, X, Image as ImageIcon } from "lucide-react";
 
 const SimpleWineEdit: React.FC = () => {
   const { id } = useParams();
@@ -14,6 +15,9 @@ const SimpleWineEdit: React.FC = () => {
   const [wine, setWine] = useState<Wine | null>(null);
   const [loading, setLoading] = useState(true);
   const [isNewWine, setIsNewWine] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const loadWine = async () => {
@@ -76,6 +80,75 @@ const SimpleWineEdit: React.FC = () => {
 
     loadWine();
   }, [id]);
+
+  // Initialize image preview when wine data loads
+  useEffect(() => {
+    if (wine && wine.image) {
+      setImagePreview(wine.image);
+    }
+  }, [wine]);
+
+  const handleImageUpload = async (file: File) => {
+    if (!wine) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('wineId', wine.id.toString());
+      formData.append('wineName', wine.name || '');
+
+      const response = await fetch('/api/upload-wine-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update wine with new image URL
+        setWine({ ...wine, image: result.imageUrl });
+        setImagePreview(result.imageUrl);
+        toastSuccess('Image uploaded successfully');
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      toastError('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toastError('Please select an image file');
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toastError('Image size must be less than 10MB');
+        return;
+      }
+
+      handleImageUpload(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (wine) {
+      setWine({ ...wine, image: '' });
+      setImagePreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const handleSave = async () => {
     if (!wine || !wine.name.trim()) {
@@ -180,15 +253,63 @@ const SimpleWineEdit: React.FC = () => {
             />
           </div>
 
-          {/* Image URL */}
+          {/* Wine Image Upload */}
           <div>
-            <label style={typography.body1R} className="block mb-2">Image URL</label>
+            <label style={typography.body1R} className="block mb-2">Wine Image</label>
+            
+            {/* Image Preview */}
+            {imagePreview && (
+              <div className="mb-4 relative inline-block">
+                <img
+                  src={imagePreview}
+                  alt="Wine preview"
+                  className="w-32 h-32 object-cover rounded-lg border border-white/20"
+                />
+                <button
+                  onClick={handleRemoveImage}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                  type="button"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* Upload Area */}
+            <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-white/40 transition-colors">
+              {uploading ? (
+                <div className="flex flex-col items-center gap-2">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  <span style={typography.body1R}>Uploading image...</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-2">
+                  <ImageIcon size={32} className="text-white/40" />
+                  <div>
+                    <Button
+                      variant="secondary"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center gap-2"
+                      type="button"
+                    >
+                      <Upload size={16} />
+                      {imagePreview ? 'Replace Image' : 'Upload Image'}
+                    </Button>
+                  </div>
+                  <p style={typography.body1R} className="text-white/60 text-sm">
+                    PNG, JPG, or WebP (max 10MB)
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Hidden File Input */}
             <input
-              type="text"
-              value={wine.image}
-              onChange={(e) => setWine({ ...wine, image: e.target.value })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Image URL"
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
             />
           </div>
 

@@ -11,6 +11,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
 import OpenAI from "openai";
+import { v2 as cloudinary } from 'cloudinary';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,6 +19,13 @@ const __dirname = dirname(__filename);
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Configure multer for audio file uploads
@@ -32,6 +40,22 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error('Only audio files are allowed'));
+    }
+  },
+});
+
+// Configure multer for image uploads
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for images
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
     }
   },
 });
@@ -170,92 +194,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload image endpoint
-  app.post("/api/upload-image", async (req, res) => {
+  // Upload image to Cloudinary endpoint
+  app.post("/api/upload-wine-image", imageUpload.single('image'), async (req, res) => {
     try {
-      const { imageData, wineId, fileName, wineName } = req.body;
-      
-      if (!imageData || !wineId) {
-        return res.status(400).json({ error: "Missing image data or wine ID" });
+      if (!req.file) {
+        return res.status(400).json({ error: "No image file provided" });
       }
 
-      // Create assets directory if it doesn't exist
-      const assetsDir = join(__dirname, "..", "attached_assets");
-      if (!existsSync(assetsDir)) {
-        mkdirSync(assetsDir, { recursive: true });
+      const { wineId, wineName } = req.body;
+      
+      if (!wineId) {
+        return res.status(400).json({ error: "Wine ID is required" });
       }
 
-      // Extract base64 data and convert to buffer
-      const base64Data = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
-      const buffer = Buffer.from(base64Data, 'base64');
+      // Generate a unique public_id for Cloudinary
+      const cleanWineName = wineName ? 
+        wineName.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').toLowerCase() : 
+        'wine';
+      const publicId = `wines/${cleanWineName}-${wineId}-${Date.now()}`;
+
+      // Upload to Cloudinary
+      const uploadPromise = new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'image',
+            public_id: publicId,
+            folder: 'wine-collection',
+            transformation: [
+              { width: 800, height: 800, crop: 'limit', quality: 'auto' },
+              { format: 'webp' }
+            ]
+          },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        ).end(req.file!.buffer);
+      });
+
+      const uploadResult = await uploadPromise as any;
       
-      // Generate descriptive filename based on wine name
-      const timestamp = Date.now();
-      const extension = imageData.match(/^data:image\/([a-z]+);base64,/)?.[1] || 'jpg';
-      
-      let uniqueFileName;
-      if (fileName) {
-        uniqueFileName = fileName;
-      } else if (wineName) {
-        // Clean wine name for filename (remove special characters, spaces)
-        const cleanWineName = wineName
-          .replace(/[^a-zA-Z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-          .replace(/\s+/g, '-') // Replace spaces with hyphens
-          .toLowerCase();
-        uniqueFileName = `wine-${wineId}-${cleanWineName}-${timestamp}.${extension}`;
-      } else {
-        uniqueFileName = `wine-${wineId}-${timestamp}.${extension}`;
-      }
-      
-      // Save file to assets directory
-      const filePath = join(assetsDir, uniqueFileName);
-      writeFileSync(filePath, buffer);
-      
-      // Return the relative path for use in the frontend
-      const relativePath = `/@assets/${uniqueFileName}`;
-      
-      console.log(`Saved wine image: ${uniqueFileName} (${Math.round(buffer.length / 1024)}KB)`);
+      console.log(`Uploaded wine image to Cloudinary: ${uploadResult.public_id} (${Math.round(uploadResult.bytes / 1024)}KB)`);
       
       res.json({ 
         success: true, 
-        imagePath: relativePath,
-        fileName: uniqueFileName,
-        size: buffer.length
+        imageUrl: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+        size: uploadResult.bytes
       });
       
     } catch (error) {
-      console.error("Image upload error:", error);
-      res.status(500).json({ error: "Failed to save image" });
+      console.error("Cloudinary upload error:", error);
+      res.status(500).json({ error: "Failed to upload image to Cloudinary" });
     }
   });
 
-  // Delete image endpoint
-  app.delete("/api/delete-image", async (req, res) => {
+  // Delete image from Cloudinary endpoint
+  app.delete("/api/delete-wine-image", async (req, res) => {
     try {
-      const { imagePath } = req.body;
+      const { publicId } = req.body;
       
-      if (!imagePath || !imagePath.startsWith('/@assets/')) {
-        return res.status(400).json({ error: "Invalid image path" });
+      if (!publicId) {
+        return res.status(400).json({ error: "Public ID is required" });
       }
 
-      // Extract filename from path
-      const fileName = imagePath.replace('/@assets/', '');
-      const assetsDir = join(__dirname, "..", "attached_assets");
-      const filePath = join(assetsDir, fileName);
+      // Delete from Cloudinary
+      const deleteResult = await cloudinary.uploader.destroy(publicId);
       
-      // Check if file exists and delete it
-      if (existsSync(filePath)) {
-        const { unlinkSync } = await import("fs");
-        unlinkSync(filePath);
-        console.log(`Deleted wine image: ${fileName}`);
+      if (deleteResult.result === 'ok') {
+        console.log(`Deleted wine image from Cloudinary: ${publicId}`);
         res.json({ success: true, message: "Image deleted successfully" });
       } else {
-        res.status(404).json({ error: "Image file not found" });
+        res.status(404).json({ error: "Image not found in Cloudinary" });
       }
       
     } catch (error) {
-      console.error("Image deletion error:", error);
-      res.status(500).json({ error: "Failed to delete image" });
+      console.error("Cloudinary deletion error:", error);
+      res.status(500).json({ error: "Failed to delete image from Cloudinary" });
     }
   });
 
