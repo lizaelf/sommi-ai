@@ -13,7 +13,7 @@ import FoodPairingSuggestionsPage from "@/pages/end-user/FoodPairingSuggestionsP
 
 import HomeGlobal from "@/pages/end-user/HomeGlobal";
 import WineScan from "@/pages/end-user/WineScan";
-import WineEditRefactored from "@/pages/end-user/WineEditRefactored";
+import WineEdit from "@/pages/end-user/WineEdit";
 import TenantAdminRefactored from "@/pages/admin/TenantAdminRefactored";
 import SommTenantAdmin from "@/pages/admin/SommTenantAdmin";
 import TenantCreate from "@/pages/admin/TenantCreate";
@@ -78,7 +78,7 @@ function Router() {
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
       <Route path="/tenant-create" component={TenantCreate} />
 
-      <Route path="/wine-edit/:id" component={WineEditRefactored} />
+      <Route path="/wine-edit/:id" component={WineEdit} />
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route path="/qr-codes" component={QRCodes} />
       <Route path="/qr-demo" component={QRDemo} />

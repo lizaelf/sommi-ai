@@ -48,6 +48,7 @@ const WineEditRefactored: React.FC = () => {
         const wineData = DataSyncManager.getWineById(wineId);
         
         if (!wineData) {
+          console.log(`Wine with ID ${wineId} not found in DataSyncManager`);
           setLoadingState('error');
           return;
         }
@@ -55,10 +56,10 @@ const WineEditRefactored: React.FC = () => {
         const wine: Wine = {
           id: wineData.id,
           name: wineData.name,
-          year: wineData.year,
-          bottles: wineData.bottles,
-          image: wineData.image,
-          ratings: wineData.ratings,
+          year: wineData.year || new Date().getFullYear(),
+          bottles: wineData.bottles || 0,
+          image: wineData.image || '',
+          ratings: wineData.ratings || { vn: 0, jd: 0, ws: 0, abv: 0 },
         };
 
         setWine(wine);
