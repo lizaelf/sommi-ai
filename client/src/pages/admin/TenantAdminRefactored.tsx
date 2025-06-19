@@ -208,13 +208,7 @@ const TenantAdminRefactored: React.FC = () => {
           </div>
         );
       case "cms":
-        return editingWine ? (
-          <WineEditForm
-            wine={editingWine}
-            onSave={handleSaveWine}
-            onClose={handleCloseEdit}
-          />
-        ) : (
+        return (
           <WineManagement
             wineCards={wineCards}
             searchTerm={searchTerm}
