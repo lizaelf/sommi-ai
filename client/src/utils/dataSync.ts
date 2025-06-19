@@ -150,6 +150,56 @@ const CURRENT_VERSION = '2.3.0';
 
 export class DataSyncManager {
   
+  // Database migration method
+  static async migrateToDatabase(wines: UnifiedWineData[]): Promise<void> {
+    try {
+      console.log('DataSyncManager: Migrating wine data to database...');
+      const response = await fetch('/api/migrate-wines', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ wines }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('DataSyncManager: Migration result:', result.message);
+        
+        // Clear localStorage after successful migration
+        if (result.success && result.migrated > 0) {
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(SYNC_VERSION_KEY);
+          console.log('DataSyncManager: Cleared localStorage after successful migration');
+        }
+      }
+    } catch (error) {
+      console.error('DataSyncManager: Error migrating wine data:', error);
+    }
+  }
+
+  // Get unified wine data from database with localStorage fallback
+  static async getUnifiedWineDataAsync(): Promise<UnifiedWineData[]> {
+    try {
+      // First try to load from database
+      const response = await fetch('/api/wines');
+      if (response.ok) {
+        const wines: UnifiedWineData[] = await response.json();
+        console.log('DataSyncManager: Loaded from database:', wines.map(w => ({ id: w.id, name: w.name })));
+        return wines;
+      }
+    } catch (error) {
+      console.error('DataSyncManager: Error loading from database:', error);
+    }
+
+    // Fallback to localStorage and migrate
+    const localWines = this.getUnifiedWineData();
+    if (localWines.length > 0) {
+      this.migrateToDatabase(localWines);
+    }
+    return localWines;
+  }
+
   // Get unified wine data (same for all users) - ALWAYS preserves uploaded images
   static getUnifiedWineData(): UnifiedWineData[] {
     try {
@@ -504,15 +554,37 @@ export class DataSyncManager {
 
   // Initialize data on app start
   static initialize(): void {
-    // Ensure we have valid data
+    // Ensure we have valid data and attempt database migration
     const wines = this.getUnifiedWineData();
     console.log(`Initialized unified wine data with ${wines.length} wines`);
+    
+    // Attempt to migrate to database if data exists
+    if (wines.length > 0) {
+      this.migrateToDatabase(wines);
+    }
+  }
+
+  // Initialize data asynchronously with database priority
+  static async initializeAsync(): Promise<void> {
+    try {
+      const wines = await this.getUnifiedWineDataAsync();
+      console.log(`Initialized unified wine data with ${wines.length} wines from database`);
+    } catch (error) {
+      console.error('Error initializing wine data:', error);
+      // Fallback to localStorage initialization
+      this.initialize();
+    }
   }
 }
 
 // Helper function for backwards compatibility
 export function getAllWines(): UnifiedWineData[] {
   return DataSyncManager.getUnifiedWineData();
+}
+
+// Async helper function for database-first wine loading
+export async function getAllWinesAsync(): Promise<UnifiedWineData[]> {
+  return DataSyncManager.getUnifiedWineDataAsync();
 }
 
 // Helper function to save all wines (backwards compatibility)
