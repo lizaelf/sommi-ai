@@ -4,7 +4,7 @@ import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import Button from "@/components/ui/buttons/Button";
 import { FormInput } from "@/components/ui/forms/FormInput";
 import typography from "@/styles/typography";
-import { ArrowLeft, Save, X } from "lucide-react";
+import { ArrowLeft, Save, X, Globe } from "lucide-react";
 
 interface TenantFormData {
   name: string;
@@ -121,6 +121,20 @@ export default function TenantCreate() {
             placeholder="https://example.com"
           />
 
+          {/* Parse Website Button */}
+          <div className="mt-4">
+            <button
+              onClick={() => setLocation('/winery-import')}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors"
+              style={typography.body1R}
+            >
+              <Globe size={16} />
+              Parse website automatically
+            </button>
+            <p className="text-white/40 text-xs mt-2" style={typography.body2}>
+              Extract winery and wine data automatically from website
+            </p>
+          </div>
 
         </div>
       </div>
