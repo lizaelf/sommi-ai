@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useStandardToast, toastError } from "@/components/ui/feedback/StandardToast";
-import VoiceBottomSheet from "./bottom-sheet/VoiceBottomSheet";
+import VoiceBottomSheet from "../bottom-sheet/VoiceBottomSheet";
 import {
   getMicrophonePermission,
   requestMicrophonePermission,
   shouldSkipPermissionPrompt,
   syncMicrophonePermissionWithBrowser,
 } from "@/utils/microphonePermissions";
-import { WINE_CONFIG } from "../../../shared/wineConfig";
+import { WINE_CONFIG } from "../../../../shared/wineConfig";
 
 // ✅ Centralized dynamic welcome message generator
 const getDynamicWelcomeMessage = () => {

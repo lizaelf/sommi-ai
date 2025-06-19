@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import CircleAnimation from '../CircleAnimation';
+import CircleAnimation from '../animations/CircleAnimation';
 import { ShiningText } from '../ShiningText';
 import Button from '@/components/ui/buttons/Button';
 import { IconButton } from '@/components/ui/buttons/IconButton';
