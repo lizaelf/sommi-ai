@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useLocation, useRoute } from "wouter";
-import { useStandardToast } from "@/components/ui/feedback/StandardToast";
+import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
@@ -92,7 +92,7 @@ const TenantAdminRefactored: React.FC = () => {
   const [showDataSync, setShowDataSync] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
 
   // Filter wines based on search term
   const filteredWines = useMemo(() => {

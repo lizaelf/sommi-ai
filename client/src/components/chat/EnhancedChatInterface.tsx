@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
-import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { X } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
@@ -22,6 +21,7 @@ import {
   isStreamingSupported,
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
+import { Wine } from "@/types/wine";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -84,18 +84,16 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       const wineId = urlParams.get("wine");
 
       if (wineId) {
-        const unifiedWines = DataSyncManager.getUnifiedWineData();
-        const wine = unifiedWines.find((w: any) => w.id === parseInt(wineId));
-        if (wine) {
-          const crmWines = JSON.parse(
-            localStorage.getItem("admin-wines") || "[]",
-          );
-          const fullWine = crmWines.find((w: any) => w.id === parseInt(wineId));
-          setCurrentWine(fullWine || wine);
-          setIsComponentReady(true);
-          onReady?.();
-          return;
-        }
+        DataSyncManager.getUnifiedWineData().then((unifiedWines) => {
+          const wine = unifiedWines.find((w: Wine) => w.id === parseInt(wineId));
+          if (wine) {
+            const crmWines = JSON.parse(localStorage.getItem("admin-wines") || "[]");
+            const fullWine = crmWines.find((w: any) => w.id === parseInt(wineId));
+            setCurrentWine(fullWine || wine);
+            setIsComponentReady(true);
+            onReady?.();
+          }
+        });
       }
 
       // Fallback to first wine in CRM
@@ -108,8 +106,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       }
     }
   }, [selectedWine, onReady]);
-
-
 
   // Use conversation hook
   const {
@@ -208,7 +204,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [currentEventSource, setCurrentEventSource] =
     useState<EventSource | null>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
-  const { toastSuccess, toastError, toastInfo } = useStandardToast();
 
   // Create a ref for the chat container
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -368,7 +363,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       refetchMessages();
     } catch (error) {
       console.error("Error in suggestion request:", error);
-      toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
+      // toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsTyping(false);
 
@@ -524,7 +519,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       refetchMessages();
     } catch (error) {
       console.error("Error in chat request:", error);
-      toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
+      // toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsTyping(false);
       setCurrentEventSource(null);

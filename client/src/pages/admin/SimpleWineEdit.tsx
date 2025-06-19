@@ -135,7 +135,7 @@ const SimpleWineEdit: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-gray-600">
       <AppHeader 
         title={pageTitle} 
         showBackButton 
@@ -151,7 +151,7 @@ const SimpleWineEdit: React.FC = () => {
               type="text"
               value={wine.name}
               onChange={(e) => setWine({ ...wine, name: e.target.value })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="Enter wine name"
             />
           </div>
@@ -163,7 +163,7 @@ const SimpleWineEdit: React.FC = () => {
               type="number"
               value={wine.year}
               onChange={(e) => setWine({ ...wine, year: parseInt(e.target.value) || 0 })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="Year"
             />
           </div>
@@ -175,7 +175,7 @@ const SimpleWineEdit: React.FC = () => {
               type="number"
               value={wine.bottles}
               onChange={(e) => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="Number of bottles"
             />
           </div>
@@ -187,7 +187,7 @@ const SimpleWineEdit: React.FC = () => {
               type="text"
               value={wine.image}
               onChange={(e) => setWine({ ...wine, image: e.target.value })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="Image URL"
             />
           </div>
@@ -203,7 +203,7 @@ const SimpleWineEdit: React.FC = () => {
                   ...wine, 
                   ratings: { ...wine.ratings, vn: parseInt(e.target.value) || 0 }
                 })}
-                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
                 placeholder="VN Rating"
               />
             </div>
@@ -216,7 +216,7 @@ const SimpleWineEdit: React.FC = () => {
                   ...wine, 
                   ratings: { ...wine.ratings, jd: parseInt(e.target.value) || 0 }
                 })}
-                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
                 placeholder="JD Rating"
               />
             </div>
@@ -229,7 +229,7 @@ const SimpleWineEdit: React.FC = () => {
                   ...wine, 
                   ratings: { ...wine.ratings, ws: parseInt(e.target.value) || 0 }
                 })}
-                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
                 placeholder="WS Rating"
               />
             </div>
@@ -243,7 +243,7 @@ const SimpleWineEdit: React.FC = () => {
                   ...wine, 
                   ratings: { ...wine.ratings, abv: parseFloat(e.target.value) || 0 }
                 })}
-                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-white"
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
                 placeholder="ABV"
               />
             </div>

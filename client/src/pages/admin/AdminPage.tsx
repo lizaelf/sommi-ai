@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Button from '@/components/ui/buttons/Button';
-import { Input } from '@/components/ui/forms/input';
 import { Textarea } from '@/components/ui/forms/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/layout/card';
 import { Badge } from '@/components/ui/data-display/badge';
-import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import { Loader2, Zap, Database, AudioLines } from 'lucide-react';
 
 interface WineDescription {
@@ -18,8 +16,7 @@ interface WineDescription {
 }
 
 export function AdminPage() {
-  const { toastSuccess, toastError, toastInfo } = useStandardToast();
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const [selectedWine, setSelectedWine] = useState<WineDescription | null>(null);
   const [newDescription, setNewDescription] = useState('');
 
@@ -34,73 +31,70 @@ export function AdminPage() {
   });
 
   // Pre-generate descriptions for all wines
-  const pregenerateDescriptions = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/admin/pregenerate-descriptions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) throw new Error('Failed to pregenerate descriptions');
-      return response.json();
-    },
-    onSuccess: () => {
-      toastSuccess("Wine descriptions pre-generated and cached", "Success");
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
-    },
-    onError: (error: any) => {
-      toastError(error.message);
-    }
-  });
+  // const pregenerateDescriptions = useMutation({
+  //   mutationFn: async () => {
+  //     const response = await fetch('/api/admin/pregenerate-descriptions', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' }
+  //     });
+  //     if (!response.ok) throw new Error('Failed to pregenerate descriptions');
+  //     return response.json();
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
+  //   },
+  //   onError: (error: any) => {
+  //     toastError(error.message);
+  //   }
+  // });
 
   // Pre-generate audio for all cached descriptions
-  const pregenerateAudio = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/admin/pregenerate-audio', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) throw new Error('Failed to pregenerate audio');
-      return response.json();
-    },
-    onSuccess: () => {
-      toastSuccess("Audio files pre-generated for all descriptions", "Success");
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
-    },
-    onError: (error: any) => {
-      toastError(error.message);
-    }
-  });
+  // const pregenerateAudio = useMutation({
+  //   mutationFn: async () => {
+  //     const response = await fetch('/api/admin/pregenerate-audio', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' }
+  //     });
+  //     if (!response.ok) throw new Error('Failed to pregenerate audio');
+  //     return response.json();
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
+  //   },
+  //   onError: (error: any) => {
+  //     toastError(error.message);
+  //   }
+  // });
 
-  // Update wine description
-  const updateDescription = useMutation({
-    mutationFn: async ({ wineId, description }: { wineId: number; description: string }) => {
-      const response = await fetch(`/api/admin/wines/${wineId}/description`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description })
-      });
-      if (!response.ok) throw new Error('Failed to update description');
-      return response.json();
-    },
-    onSuccess: () => {
-      toastSuccess("Wine description updated and cached", "Success");
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
-      setSelectedWine(null);
-      setNewDescription('');
-    },
-    onError: (error: any) => {
-      toastError(error.message);
-    }
-  });
+  // // Update wine description
+  // const updateDescription = useMutation({
+  //   mutationFn: async ({ wineId, description }: { wineId: number; description: string }) => {
+  //     const response = await fetch(`/api/admin/wines/${wineId}/description`, {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ description })
+  //     });
+  //     if (!response.ok) throw new Error('Failed to update description');
+  //     return response.json();
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['/api/admin/wines'] });
+  //     setSelectedWine(null);
+  //     setNewDescription('');
+  //   },
+  //   onError: (error: any) => {
+  //     toastError(error.message);
+  //   }
+  // });
 
-  const handleUpdateDescription = () => {
-    if (selectedWine && newDescription.trim()) {
-      updateDescription.mutate({ 
-        wineId: selectedWine.id, 
-        description: newDescription.trim() 
-      });
-    }
-  };
+  // const handleUpdateDescription = () => {
+  //   if (selectedWine && newDescription.trim()) {
+  //     updateDescription.mutate({ 
+  //       wineId: selectedWine.id, 
+  //       description: newDescription.trim() 
+  //     });
+  //   }
+  // };
 
   if (isLoading) {
     return (
@@ -112,7 +106,7 @@ export function AdminPage() {
 
   return (
     <div className="mx-auto p-6 space-y-6" style={{ maxWidth: "1200px" }}>
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Wine Management Admin</h1>
         <div className="flex gap-2">
           <Button
@@ -140,7 +134,7 @@ export function AdminPage() {
             Pre-generate Audio
           </Button>
         </div>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Wine List */}
@@ -212,7 +206,7 @@ export function AdminPage() {
                   className="resize-none"
                 />
                 <div className="flex gap-2">
-                  <Button
+                  {/* <Button
                     onClick={handleUpdateDescription}
                     disabled={updateDescription.isPending || !newDescription.trim()}
                     className="flex items-center gap-2"
@@ -223,7 +217,7 @@ export function AdminPage() {
                       <Zap className="h-4 w-4" />
                     )}
                     Update & Cache
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="secondary"
                     onClick={() => {

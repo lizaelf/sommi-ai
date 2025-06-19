@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useStandardToast, toastError } from "@/components/ui/feedback/StandardToast";
+import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import VoiceBottomSheet from "../bottom-sheet/VoiceBottomSheet";
 import {
   getMicrophonePermission,
@@ -542,7 +542,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
 
   // Mobile-specific state management
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const { toastSuccess, toastError, toastInfo } = useStandardToast();
+  const { toastError } = useStandardToast();
 
   // Stop audio function
   const stopAudio = () => {

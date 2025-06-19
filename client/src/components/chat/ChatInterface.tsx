@@ -55,7 +55,7 @@ export default function ChatInterface({
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [currentEventSource, setCurrentEventSource] = useState<EventSource | null>(null);
-  const { toastSuccess, toastError, toastInfo } = useStandardToast();
+  const { toastSuccess, toastError } = useStandardToast();
   
   // Wine and conversation state
   const [currentWine, setCurrentWine] = useState<any>(null);

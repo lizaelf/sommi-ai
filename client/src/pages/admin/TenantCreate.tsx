@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useStandardToast } from "@/components/ui/feedback/StandardToast";
+import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import Button from "@/components/ui/buttons/Button";
 import { FormInput } from "@/components/ui/forms/FormInput";
 import typography from "@/styles/typography";
@@ -14,7 +14,7 @@ interface TenantFormData {
 
 export default function TenantCreate() {
   const [, setLocation] = useLocation();
-  const { toastSuccess, toastError, toastInfo } = useStandardToast();
+  const { toastSuccess, toastError } = useStandardToast();
   const [scrolled, setScrolled] = useState(false);
   
   const [formData, setFormData] = useState<TenantFormData>({

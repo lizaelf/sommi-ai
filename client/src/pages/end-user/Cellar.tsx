@@ -2,7 +2,6 @@ import { X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import Button from "@/components/ui/buttons/Button";
 import { ContactInput } from "@/components/ui/forms/ContactInput";
@@ -16,7 +15,6 @@ import logoImage from "@asse../layout/Logo.png";
 import AppHeader from "@/components/layout/AppHeader";
 
 const Cellar = () => {
-  const { toastInfo } = useStandardToast();
   const [showModal, setShowModal] = useState(() => {
     // Only show modal automatically if user hasn't shared contact AND hasn't closed it before
     const hasShared = localStorage.getItem("hasSharedContact") === "true";
@@ -398,7 +396,7 @@ const Cellar = () => {
         setTimeout(() => setAnimationState("closed"), 300);
 
         // Show toast notification
-        toastInfo("Select wine to see past info and chats");
+      
       } else {
         console.error("Failed to save contact:", data);
         // Handle server validation errors if needed
@@ -1088,7 +1086,7 @@ const Cellar = () => {
                         const newPrefs = { ...notificationPreferences, email: e.target.checked };
                         setNotificationPreferences(newPrefs);
                         localStorage.setItem("notificationPreferences", JSON.stringify(newPrefs));
-                        toastInfo("Thanks! Your preferences updated");
+                        
                       }}
                       style={{
                         width: "20px",
@@ -1135,7 +1133,7 @@ const Cellar = () => {
                         const newPrefs = { ...notificationPreferences, phone: e.target.checked };
                         setNotificationPreferences(newPrefs);
                         localStorage.setItem("notificationPreferences", JSON.stringify(newPrefs));
-                        toastInfo("Thanks! Your preferences updated");
+                        
                       }}
                       style={{
                         width: "20px",

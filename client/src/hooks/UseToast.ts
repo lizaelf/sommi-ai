@@ -6,7 +6,7 @@ import type {
 } from "@/components/ui/feedback/Toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_REMOVE_DELAY = 1000_000
 
 type ToasterToast = ToastProps & {
   id: string

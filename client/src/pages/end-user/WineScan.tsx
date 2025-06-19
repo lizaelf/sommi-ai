@@ -2,21 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { useRoute } from 'wouter';
 import { CellarManager } from '@/utils/cellarManager';
 import { DataSyncManager } from '@/utils/dataSync';
-import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import typography from '@/styles/typography';
 import { ChevronLeft } from 'lucide-react';
+import { Wine } from '@/types/wine';
 
 export default function WineScan() {
   const [match, params] = useRoute('/scan-wine/:id');
   const [isAdding, setIsAdding] = useState(false);
   const [addedTocellar, setAddedToCellar] = useState(false);
-  const { toastSuccess, toastError } = useStandardToast();
 
   const wineId = params?.id ? parseInt(params.id, 10) : null;
   
-  // Get wine data from the unified data system
-  const allWines = DataSyncManager.getUnifiedWineData();
-  const wine = wineId ? allWines.find(w => w.id === wineId) : null;
+  const [wine, setWine] = useState<Wine | null>(null);
+
+  useEffect(() => {
+    if (!wineId) return;
+    DataSyncManager.getUnifiedWineData().then((wines) => {
+      const found = wines.find((w: Wine) => w.id === wineId);
+      setWine(found || null);
+    });
+  }, [wineId]);
 
   useEffect(() => {
     // Check if wine is already in cellar
@@ -39,9 +44,8 @@ export default function WineScan() {
 
       setAddedToCellar(true);
       
-      toastSuccess(addedTocellar ? "Wine moved to top" : "Wine added to cellar");
     } catch (error) {
-      toastError("Failed to add wine to cellar");
+
     } finally {
       setIsAdding(false);
     }
