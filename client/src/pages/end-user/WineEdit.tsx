@@ -5,7 +5,8 @@ import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { SimpleQRCode } from "@/components/qr/SimpleQRCode";
 import { WINE_CONFIG } from "@shared/wineConfig";
-import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
+import { DataSyncManager } from "@/utils/dataSync";
+import { Wine } from "@/types/wine";
 // Removed getCurrentWineConfig import as it's not needed
 import { 
   wineImageDeduplication, 
@@ -16,11 +17,11 @@ import {
 import placeholderImage from "@assets/Placeholder.png";
 import AppHeader from "@/components/layout/AppHeader";
 
-// Use unified wine data interface
-type WineCardData = UnifiedWineData;
+// Use wine interface
+type WineCardData = Wine;
 
-const getCRMWines = (): WineCardData[] => {
-  return DataSyncManager.getUnifiedWineData();
+const getCRMWines = async (): Promise<WineCardData[]> => {
+  return await DataSyncManager.getUnifiedWineData();
 };
 
 export default function WineEdit() {
@@ -34,70 +35,62 @@ export default function WineEdit() {
   // Check if this is a new wine being added
   const isNewWine = new URLSearchParams(window.location.search).get('new') === 'true';
 
-  // Get wine data from CRM storage
-  const getStoredWines = (): WineCardData[] => {
-    try {
-      return getCRMWines();
-    } catch {
-      return [];
-    }
-  };
-
   const [wine, setWine] = useState<WineCardData>(() => {
-    // If this is a new wine, create empty wine data
-    if (isNewWine) {
-      return {
-        id: wineId,
-        name: "",
-        year: new Date().getFullYear(),
-        bottles: 0,
-        image: "",
-        ratings: {
-          vn: 0,
-          jd: 0,
-          ws: 0,
-          abv: 0
-        },
-        buyAgainLink: "",
-        qrCode: `QR_${wineId.toString().padStart(3, '0')}`,
-        qrLink: `${window.location.origin}/wine-details/${wineId}`
-      };
-    }
-    
-    // Get wine from unified data system
-    const editableWine = DataSyncManager.getWineById(wineId);
-    console.log(
-      "Loading wine data for ID:",
-      wineId,
-      "Editable wine:",
-      editableWine,
-    );
-    if (editableWine) {
-      return editableWine;
-    }
-
-    // Fallback to stored wines
-    const wines = getStoredWines();
-    const fallbackWine = wines.find((w) => w.id === wineId) || wines[0];
-    console.log("Using fallback wine:", fallbackWine);
-    
-    // If no wine found, create a default one to prevent errors
-    if (!fallbackWine) {
-      return {
-        id: wineId,
-        name: "",
-        year: new Date().getFullYear(),
-        bottles: 0,
-        image: "",
-        ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
-        buyAgainLink: "",
-        qrCode: `QR_${String(wineId).padStart(3, '0')}`,
-        qrLink: ""
-      };
-    }
-    
-    return fallbackWine;
+    // Create default wine data
+    return {
+      id: wineId,
+      name: "",
+      year: new Date().getFullYear(),
+      bottles: 0,
+      image: "",
+      ratings: {
+        vn: 0,
+        jd: 0,
+        ws: 0,
+        abv: 0
+      },
+      buyAgainLink: "",
+      qrCode: `QR_${wineId.toString().padStart(3, '0')}`,
+      qrLink: `${window.location.origin}/wine-details/${wineId}`
+    };
   });
+
+  // Load wine data asynchronously
+  useEffect(() => {
+    const loadWineData = async () => {
+      try {
+        if (isNewWine) {
+          // For new wines, keep the default data
+          return;
+        }
+
+        console.log("Loading wine data for ID:", wineId);
+        
+        // Try to get wine by ID first
+        const wineData = await DataSyncManager.getWineById(wineId);
+        if (wineData) {
+          console.log("Loaded wine from database:", wineData);
+          setWine(wineData);
+          return;
+        }
+
+        // Fallback to getting all wines and finding the one
+        const allWines = await DataSyncManager.getUnifiedWineData();
+        const foundWine = allWines.find((w) => w.id === wineId);
+        if (foundWine) {
+          console.log("Found wine in all wines list:", foundWine);
+          setWine(foundWine);
+          return;
+        }
+
+        console.log("No wine found for ID:", wineId);
+      } catch (error) {
+        console.error("Error loading wine data:", error);
+      }
+    };
+
+    loadWineData();
+  }, [wineId, isNewWine]);
 
   // Add scroll listener to detect when page is scrolled
   useEffect(() => {
