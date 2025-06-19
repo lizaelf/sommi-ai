@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
@@ -86,6 +86,7 @@ const TenantAdminRefactored: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(true);
   const [showDataSync, setShowDataSync] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<TenantData>({
@@ -188,9 +189,13 @@ const TenantAdminRefactored: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const [, setLocation] = useLocation();
+
   const handleEditWine = (wine: WineCardData) => {
     console.log('Edit wine clicked:', wine);
     toastInfo(`Opening edit mode for ${wine.name}`);
+    // Navigate to the existing wine edit page
+    setLocation(`/wine-edit/${wine.id}`);
   };
 
   const renderTabContent = () => {
@@ -203,7 +208,13 @@ const TenantAdminRefactored: React.FC = () => {
           </div>
         );
       case "cms":
-        return (
+        return editingWine ? (
+          <WineEditForm
+            wine={editingWine}
+            onSave={handleSaveWine}
+            onClose={handleCloseEdit}
+          />
+        ) : (
           <WineManagement
             wineCards={wineCards}
             searchTerm={searchTerm}
