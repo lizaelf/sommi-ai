@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import Logo from "@/components/Logo";
+import Logo from "@/components/layout/Logo";
 import { IconButton } from "@/components/ui/buttons/IconButton";
 
 interface AppHeaderProps {

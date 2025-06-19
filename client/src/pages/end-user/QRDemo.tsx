@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import QRScanModal from '@/components/QRScanModal';
+import QRScanModal from '@/components/qr/QRScanModal';
 import Button from '@/components/ui/buttons/Button';
 import VoiceAssistant from '@/components/VoiceAssistant';
 

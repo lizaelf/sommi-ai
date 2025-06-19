@@ -7,7 +7,7 @@ import { SegmentedPicker } from "@/components/SegmentedPicker";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";
-import { SimpleQRCode } from "@/components/SimpleQRCode";
+import { SimpleQRCode } from "@/components/qr/SimpleQRCode";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import placeholderImage from "@assets/Placeholder.png";
 import AppHeader from "@/components/layout/AppHeader";

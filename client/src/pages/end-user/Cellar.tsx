@@ -11,7 +11,7 @@ import { CellarSearch, CellarFilters } from "@/components/cellar";
 
 // Default wine image removed - only authentic uploaded images will be displayed
 import usFlagImage from "@assets/US-flag.png";
-import logoImage from "@assets/Logo.png";
+import logoImage from "@asse../layout/Logo.png";
 
 import AppHeader from "@/components/layout/AppHeader";
 
