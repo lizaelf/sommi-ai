@@ -74,7 +74,7 @@ const WineryImport: React.FC = () => {
 
   const handlePreview = async () => {
     if (!url) {
-      StandardToast.error('Please enter a winery URL');
+      showToast('Please enter a winery URL', 'error');
       return;
     }
 
@@ -98,11 +98,11 @@ const WineryImport: React.FC = () => {
       }
 
       setPreview(result.winery);
-      StandardToast.success(`Preview loaded: ${result.winery.name} with ${result.winery.wineCount} wines`);
+      showToast(`Preview loaded: ${result.winery.name} with ${result.winery.wineCount} wines`);
 
     } catch (error) {
       console.error('Preview error:', error);
-      StandardToast.error(error instanceof Error ? error.message : 'Failed to preview winery');
+      showToast(error instanceof Error ? error.message : 'Failed to preview winery', 'error');
     } finally {
       setPreviewing(false);
     }
@@ -110,7 +110,7 @@ const WineryImport: React.FC = () => {
 
   const handleImport = async () => {
     if (!url) {
-      StandardToast.error('Please enter a winery URL');
+      showToast('Please enter a winery URL', 'error');
       return;
     }
 
@@ -139,7 +139,7 @@ const WineryImport: React.FC = () => {
         winesCreated: result.winesCreated
       });
 
-      StandardToast.success(result.message);
+      showToast(result.message);
 
       // Reset form
       setUrl('');
@@ -149,7 +149,7 @@ const WineryImport: React.FC = () => {
 
     } catch (error) {
       console.error('Import error:', error);
-      StandardToast.error(error instanceof Error ? error.message : 'Failed to import winery');
+      showToast(error instanceof Error ? error.message : 'Failed to import winery', 'error');
     } finally {
       setLoading(false);
     }
