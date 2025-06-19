@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/buttons/Button';
 import { Input } from '@/components/ui/forms/input';
 import { Textarea } from '@/components/ui/forms/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/layout/card';

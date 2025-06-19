@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import CircleAnimation from '../CircleAnimation';
 import { ShiningText } from '../ShiningText';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/buttons/Button';
 import SuggestionPills from '../SuggestionPills';
 
 interface VoiceAssistantBottomSheetProps {

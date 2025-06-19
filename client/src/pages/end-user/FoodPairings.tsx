@@ -4,7 +4,7 @@ import { Link, useParams } from "wouter";
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import typography from "@/styles/typography";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/buttons/Button";
 
 interface SelectedWine {
   id: number;

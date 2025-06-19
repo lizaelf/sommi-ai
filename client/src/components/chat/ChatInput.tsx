@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Send } from 'lucide-react';
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/ui/buttons/IconButton";
 import MicrophoneButton from '@/components/MicrophoneButton';
 import typography from "@/styles/typography";
 

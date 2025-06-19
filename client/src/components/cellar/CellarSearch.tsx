@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, X } from "lucide-react";
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/ui/buttons/IconButton";
 import typography from "@/styles/typography";
 
 interface CellarSearchProps {

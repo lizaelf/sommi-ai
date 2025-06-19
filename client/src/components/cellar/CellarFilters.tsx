@@ -1,6 +1,6 @@
 import React from "react";
 import { Filter } from "lucide-react";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 
 interface CellarFiltersProps {

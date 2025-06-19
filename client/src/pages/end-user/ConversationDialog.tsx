@@ -2,7 +2,7 @@ import { useLocation } from 'wouter';
 import { ChevronLeft } from 'lucide-react';
 import { useConversation } from '@/hooks/UseConversation';
 import { getWineDisplayName } from '../../../../shared/wineConfig';
-import { TextGenerateEffect } from '@/components/ui/TextGenerateEffect';
+import { TextGenerateEffect } from '@/components/ui/misc/TextGenerateEffect';
 import { useState, useEffect } from 'react';
 import typography from '@/styles/typography';
 import AppHeader from '@/components/AppHeader';

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import Logo from "@/components/Logo";
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/ui/buttons/IconButton";
 
 interface AppHeaderProps {
   title?: string;

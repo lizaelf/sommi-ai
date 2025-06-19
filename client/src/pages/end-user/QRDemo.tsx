@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import QRScanModal from '@/components/QRScanModal';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/buttons/Button';
 import VoiceAssistant from '@/components/VoiceAssistant';
 
 export default function QRDemo() {

@@ -2,8 +2,8 @@ import React from "react";
 import { ArrowLeft, User, LogOut, Settings } from "lucide-react";
 import { Link } from "wouter";
 import AppHeader from "@/components/AppHeader";
-import { IconButton } from "@/components/ui/IconButton";
-import Button from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/buttons/IconButton";
+import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 
 interface AdminHeaderProps {

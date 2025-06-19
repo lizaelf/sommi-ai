@@ -8,11 +8,14 @@ const importMappings = {
   '@/components/ui/Input': '@/components/ui/forms/Input',
   '@/components/ui/input': '@/components/ui/forms/input',
   '@/components/ui/textarea': '@/components/ui/forms/textarea',
+  '@/components/ui/SearchInterface': '@/components/ui/forms/SearchInterface',
   '@/components/ui/Breadcrumb': '@/components/ui/navigation/Breadcrumb',
   '@/components/ui/DropdownMenu': '@/components/ui/navigation/DropdownMenu',
   '@/components/ui/Alert': '@/components/ui/feedback/Alert',
   '@/components/ui/Toast': '@/components/ui/feedback/Toast',
   '@/components/ui/Toaster': '@/components/ui/feedback/Toaster',
+  '@/components/ui/LoadingSpinner': '@/components/ui/feedback/LoadingSpinner',
+  '@/components/ui/Skeleton': '@/components/ui/feedback/Skeleton',
   '@/components/ui/BottomSheet': '@/components/ui/layout/BottomSheet',
   '@/components/ui/Separator': '@/components/ui/layout/Separator',
   '@/components/ui/card': '@/components/ui/layout/card',
@@ -25,7 +28,17 @@ const importMappings = {
   '@/components/ui/Tooltip': '@/components/ui/overlays/Tooltip',
   '@/components/ui/Select': '@/components/ui/primitives/Select',
   '@/components/ui/Switch': '@/components/ui/primitives/Switch',
-  '@/components/ui/Toggle': '@/components/ui/primitives/Toggle'
+  '@/components/ui/Toggle': '@/components/ui/primitives/Toggle',
+  '@/components/ui/Button': '@/components/ui/buttons/Button',
+  '@/components/ui/IconButton': '@/components/ui/buttons/IconButton',
+  '@/components/ui/SectionHeaderButton': '@/components/ui/buttons/SectionHeaderButton',
+  '@/components/ui/TextGenerateEffect': '@/components/ui/misc/TextGenerateEffect',
+  './ui/Button': './ui/buttons/Button',
+  './ui/IconButton': './ui/buttons/IconButton',
+  './ui/BottomSheet': './ui/layout/BottomSheet',
+  './ui/StandardToast': './ui/feedback/StandardToast',
+  './ui/LoadingSpinner': './ui/feedback/LoadingSpinner',
+  './ui/SearchInterface': './ui/forms/SearchInterface'
 };
 
 function updateImports(filePath) {

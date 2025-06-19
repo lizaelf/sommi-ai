@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import CircleAnimation from './CircleAnimation';
 import { ShiningText } from './ShiningText';
-import Button from '@/components/ui/Button';
-import { IconButton } from '@/components/ui/IconButton';
+import Button from '@/components/ui/buttons/Button';
+import { IconButton } from '@/components/ui/buttons/IconButton';
 import SuggestionPills from './SuggestionPills';
 import { suggestionCache } from '@/utils/suggestionCache';
 

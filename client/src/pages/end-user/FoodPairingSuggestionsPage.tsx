@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import AppHeader, { HeaderSpacer } from '@/components/AppHeader';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/buttons/Button';
 import typography from '@/styles/typography';
 import { DataSyncManager } from '@/utils/dataSync';
 

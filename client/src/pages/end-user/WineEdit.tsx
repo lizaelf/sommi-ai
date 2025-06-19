@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { WINE_CONFIG } from "@shared/wineConfig";
