@@ -48,7 +48,15 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 19, 2025)
 
-### Console Error Resolution & Wine Edit Component Fix (June 19, 2025 - Latest)
+### Admin Page Organization & Dedicated Add Wine Page (June 19, 2025 - Latest)
+- **SimpleWineEdit Component Migration**: Moved SimpleWineEdit from end-user to admin folder for proper organization since it's used for admin wine editing functionality
+- **Dedicated AddWine Page Creation**: Created comprehensive AddWine component with full wine form including name, year, bottles, location, description, ratings, and image URL fields
+- **Admin Navigation Enhancement**: Updated AdminHeader "Add Wine" button to navigate to dedicated `/add-wine` route instead of reusing wine edit page
+- **Complete Wine Creation Flow**: Integrated AddWine component with DataSyncManager for proper database storage and form validation
+- **Route Organization**: Added `/add-wine` route to App.tsx with proper admin page organization
+- **Component Architecture**: Separated wine creation from wine editing for cleaner admin workflow and better user experience
+
+### Console Error Resolution & Wine Edit Component Fix (June 19, 2025 - Previous)
 - **Console Error Resolution Complete**: Fixed "Error loading wine data: {}" console errors by properly handling async DataSyncManager methods across all components
 - **ChatInterface.tsx Fix**: Added missing `await` keyword to DataSyncManager.getWineById() call to prevent promise handling errors
 - **TenantAdminRefactored.tsx Fix**: Removed non-existent initialize() method call and properly awaited getUnifiedWineData() method
