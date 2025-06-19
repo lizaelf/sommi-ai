@@ -318,9 +318,12 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                   boxSizing: 'border-box'
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
-                </svg>
+                <img 
+                  src="/icons/stop.svg" 
+                  alt="Stop"
+                  width="20" 
+                  height="20"
+                />
                 Stop
               </button>
             </div>
@@ -385,9 +388,13 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                       gap: '8px'
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                    </svg>
+                    <img 
+                      src="/icons/volume-x.svg" 
+                      alt="Unmute"
+                      width="20" 
+                      height="20"
+                      style={{ filter: 'brightness(0) invert(1)' }}
+                    />
                     Unmute
                   </Button>
                 </div>
@@ -423,9 +430,12 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                       boxSizing: 'border-box'
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="#000000">
-                      <path d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"/>
-                    </svg>
+                    <img 
+                      src="/icons/mic-alt.svg" 
+                      alt="Ask"
+                      width="20" 
+                      height="20"
+                    />
                     Ask
                   </button>
                 </div>

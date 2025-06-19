@@ -2304,22 +2304,17 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             transition: "background-color 0.2s ease",
           }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
+          <img 
+            src="/icons/mic-alt.svg" 
+            alt="Voice Assistant"
+            width="24" 
             height="24"
-            viewBox="0 0 20 20"
             style={{
-              color: isProcessing
-                ? "rgba(255, 255, 255, 0.5)"
-                : "rgba(255, 255, 255, 1)",
+              filter: isProcessing
+                ? 'brightness(0) invert(1) opacity(0.5)'
+                : 'brightness(0) invert(1)',
             }}
-          >
-            <path
-              fill="currentColor"
-              d="M5.5 10a.5.5 0 0 0-1 0a5.5 5.5 0 0 0 5 5.478V17.5a.5.5 0 0 0 1 0v-2.022a5.5 5.5 0 0 0 5-5.478a.5.5 0 0 0-1 0a4.5 4.5 0 1 1-9 0m7.5 0a3 3 0 0 1-6 0V5a3 3 0 0 1 6 0z"
-            />
-          </svg>
+          />
         </div>
       )}
 
