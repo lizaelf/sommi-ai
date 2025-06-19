@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/StandardToast";
 import Button from "@/components/ui/Button";
-import { FormInput } from "@/components/ui/FormInput";
+import { FormInput } from "@/components/ui/forms/FormInput";
 import typography from "@/styles/typography";
 import { ArrowLeft, Save, X } from "lucide-react";
 
