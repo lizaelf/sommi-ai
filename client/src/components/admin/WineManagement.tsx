@@ -39,28 +39,26 @@ export const WineManagement: React.FC<WineManagementProps> = ({
     <div>
       {/* Search and Controls */}
       <div style={{ padding: "16px 20px" }}>
-        <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
-          <Button
-            variant={showSearch ? "primary" : "secondary"}
-            onClick={onToggleSearch}
-          >
-            <Search size={16} />
-            Search
-          </Button>
-          <Button
-            variant={showDataSync ? "primary" : "secondary"}
-            onClick={onToggleDataSync}
-          >
-            <RefreshCw size={16} />
-            Data Sync
-          </Button>
-          <Button
-            variant={isEditMode ? "primary" : "secondary"}
-            onClick={onToggleEditMode}
-          >
-            {isEditMode ? "View Mode" : "Edit Mode"}
-          </Button>
-        </div>
+        <Button
+          variant={showSearch ? "primary" : "secondary"}
+          onClick={onToggleSearch}
+        >
+          <Search size={16} />
+          Search
+        </Button>
+        <Button
+          variant={showDataSync ? "primary" : "secondary"}
+          onClick={onToggleDataSync}
+        >
+          <RefreshCw size={16} />
+          Data Sync
+        </Button>
+        <Button
+          variant={isEditMode ? "primary" : "secondary"}
+          onClick={onToggleEditMode}
+        >
+          {isEditMode ? "View Mode" : "Edit Mode"}
+        </Button>
 
         {showSearch && (
           <div style={{ marginBottom: "16px" }}>
