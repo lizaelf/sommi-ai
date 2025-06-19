@@ -4,6 +4,8 @@ import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
+import Button from "@/components/ui/buttons/Button";
+import typography from "@/styles/typography";
 
 // Refactored components
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -395,9 +397,126 @@ const TenantAdminRefactored: React.FC = () => {
         );
       case "ai-model":
         return (
-          <div style={{ padding: "20px" }}>
-            <h2>AI Model Configuration</h2>
-            <p>Configure your AI sommelier settings here.</p>
+          <div className="p-6 space-y-6">
+            {/* First Row: Knowledge Scope and Personality Style */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label style={typography.body1R} className="block mb-2 text-white/80">
+                  Knowledge Scope
+                </label>
+                <select
+                  value={formData.aiModel.knowledgeScope}
+                  onChange={(e) => {
+                    const value = e.target.value as "winery-only" | "winery-plus-global";
+                    setFormData({
+                      ...formData,
+                      aiModel: { ...formData.aiModel, knowledgeScope: value }
+                    });
+                  }}
+                  className="w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white focus:border-white/40 focus:outline-none"
+                >
+                  <option value="winery-only">Winery Only</option>
+                  <option value="winery-plus-global">Winery Plus Global</option>
+                </select>
+              </div>
+              <div>
+                <label style={typography.body1R} className="block mb-2 text-white/80">
+                  Personality Style
+                </label>
+                <select
+                  value={formData.aiModel.personalityStyle}
+                  onChange={(e) => {
+                    const value = e.target.value as "educator" | "sommelier" | "tasting-room-host" | "luxury-concierge" | "casual-friendly";
+                    setFormData({
+                      ...formData,
+                      aiModel: { ...formData.aiModel, personalityStyle: value }
+                    });
+                  }}
+                  className="w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white focus:border-white/40 focus:outline-none"
+                >
+                  <option value="sommelier">Sommelier</option>
+                  <option value="educator">Educator</option>
+                  <option value="tasting-room-host">Tasting Room Host</option>
+                  <option value="luxury-concierge">Luxury Concierge</option>
+                  <option value="casual-friendly">Casual Friendly</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Brand Guide */}
+            <div>
+              <label style={typography.body1R} className="block mb-2 text-white/80">
+                Brand Guide
+              </label>
+              <textarea
+                value={formData.aiModel.brandGuide}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  aiModel: { ...formData.aiModel, brandGuide: e.target.value }
+                })}
+                className="w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:border-white/40 focus:outline-none resize-none"
+                placeholder="Define your brand voice, values, and key messaging guidelines that the AI should follow when representing your winery"
+                rows={4}
+              />
+            </div>
+
+            {/* Tone Preferences */}
+            <div>
+              <label style={typography.body1R} className="block mb-2 text-white/80">
+                Tone Preferences
+              </label>
+              <textarea
+                value={formData.aiModel.tonePreferences}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  aiModel: { ...formData.aiModel, tonePreferences: e.target.value }
+                })}
+                className="w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:border-white/40 focus:outline-none resize-none"
+                placeholder="Specify the desired tone: formal, casual, educational, enthusiastic, etc. Include any specific language preferences or communication style guidelines"
+                rows={4}
+              />
+            </div>
+
+            {/* Knowledge Documents */}
+            <div>
+              <label style={typography.body1R} className="block mb-2 text-white/80">
+                Knowledge Documents
+              </label>
+              <div className="space-y-3">
+                <div 
+                  className="w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white/60 cursor-pointer hover:bg-white/8 transition-colors flex items-center justify-center"
+                  onClick={() => {
+                    // Handle file upload
+                    toastInfo("Document upload functionality coming soon");
+                  }}
+                >
+                  <span>Click to upload documents</span>
+                </div>
+                <textarea
+                  value={formData.aiModel.knowledgeDocuments}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    aiModel: { ...formData.aiModel, knowledgeDocuments: e.target.value }
+                  })}
+                  className="w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:border-white/40 focus:outline-none resize-none"
+                  placeholder="List uploaded knowledge documents or paste additional context about your wines, history, and expertise"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="pt-6">
+              <Button 
+                variant="primary" 
+                onClick={() => {
+                  toastSuccess("AI Model settings saved successfully");
+                }}
+                className="w-full md:w-auto"
+              >
+                Save AI Model Settings
+              </Button>
+            </div>
           </div>
         );
       default:
