@@ -115,7 +115,7 @@ export default function ChatInterface({
         const wineIdFromPath = window.location.pathname.match(/wine-details\/(\d+)/)?.[1];
         const wineId = wineIdFromUrl || wineIdFromPath || selectedWine?.id?.toString() || "1";
         
-        const wineData = DataSyncManager.getWineById(parseInt(wineId));
+        const wineData = await DataSyncManager.getWineById(parseInt(wineId));
         if (wineData) {
           setCurrentWine(wineData);
         }

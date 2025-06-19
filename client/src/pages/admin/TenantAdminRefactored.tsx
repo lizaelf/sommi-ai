@@ -147,8 +147,7 @@ const TenantAdminRefactored: React.FC = () => {
   useEffect(() => {
     const loadWineData = async () => {
       try {
-        await DataSyncManager.initialize();
-        const allWines = DataSyncManager.getUnifiedWineData();
+        const allWines = await DataSyncManager.getUnifiedWineData();
         setWineCards(allWines);
       } catch (error) {
         console.error("Error loading wine data:", error);
