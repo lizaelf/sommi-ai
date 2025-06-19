@@ -431,7 +431,7 @@ const VoiceBottomSheet: React.FC<VoiceBottomSheetProps> = ({
                     }}
                   >
                     <img 
-                      src="/icons/mic-alt.svg" 
+                      src="/icons/mic.svg" 
                       alt="Ask"
                       width="20" 
                       height="20"
