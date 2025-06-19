@@ -13,7 +13,7 @@ import { CellarSearch, CellarFilters } from "@/components/cellar";
 import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@assets/Logo.png";
 
-import AppHeader from "@/components/AppHeader";
+import AppHeader from "@/components/layout/AppHeader";
 
 const Cellar = () => {
   const { toastInfo } = useStandardToast();

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { WelcomeSection } from "@/components/home-global/WelcomeSection";
 import { WineCollection } from "@/components/home-global/WineCollection";
 

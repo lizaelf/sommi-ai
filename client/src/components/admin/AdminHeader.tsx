@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowLeft, User, LogOut, Settings } from "lucide-react";
 import { Link } from "wouter";
-import AppHeader from "@/components/AppHeader";
+import AppHeader from "@/components/layout/AppHeader";
 import { IconButton } from "@/components/ui/buttons/IconButton";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";

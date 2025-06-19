@@ -10,7 +10,7 @@ import { generateWineQRData } from "@/utils/cellarManager";
 import { SimpleQRCode } from "@/components/SimpleQRCode";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
 import placeholderImage from "@assets/Placeholder.png";
-import AppHeader from "@/components/AppHeader";
+import AppHeader from "@/components/layout/AppHeader";
 
 // Use unified wine data interface
 type WineCardData = UnifiedWineData;

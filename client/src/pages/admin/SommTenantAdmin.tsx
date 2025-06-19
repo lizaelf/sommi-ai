@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Plus, Save, X, Menu, Search, User, Settings } from "lucide-react";
 import { Link } from "wouter";
-import AppHeader from "@/components/AppHeader";
+import AppHeader from "@/components/layout/AppHeader";
 import { IconButton } from "@/components/ui/buttons/IconButton";
 
 interface Tenant {

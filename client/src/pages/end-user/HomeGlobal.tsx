@@ -6,7 +6,7 @@ import typography from "@/styles/typography";
 import Logo from "@/components/Logo";
 import WineRating from "@/components/wine-details/WineRating";
 import { getWineDisplayName } from '../../../../shared/wineConfig';
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { ButtonIcon } from "@/components/ButtonIcon";
 import HomeGlobalSkeleton from "@/components/HomeGlobalSkeleton";
 

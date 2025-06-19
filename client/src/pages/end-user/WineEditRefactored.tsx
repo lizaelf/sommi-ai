@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { DataSyncManager } from "@/utils/dataSync";
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { WineEditForm } from "@/components/admin/WineEditForm";
 import { ShiningText } from "@/components/ShiningText";
 import typography from "@/styles/typography";

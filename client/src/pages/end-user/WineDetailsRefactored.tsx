@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import QRScanModal from "@/components/QRScanModal";
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";

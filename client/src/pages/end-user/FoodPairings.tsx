@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "wouter";
-import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import typography from "@/styles/typography";
 import { Button } from "@/components/ui/buttons/Button";
