@@ -6,7 +6,8 @@ import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Upload, X, Image as ImageIcon, Download, QrCode } from "lucide-react";
+import * as QRCodeReact from "qrcode.react";
 
 const SimpleWineEdit: React.FC = () => {
   const { id } = useParams();
@@ -150,6 +151,42 @@ const SimpleWineEdit: React.FC = () => {
     }
   };
 
+  const generateQRCodeValue = () => {
+    if (!wine) return '';
+    // Generate QR code value based on wine details
+    const baseUrl = window.location.origin;
+    return wine.qrLink || `${baseUrl}/wine-details/${wine.id}`;
+  };
+
+  const downloadQRCode = () => {
+    const svg = document.querySelector('#wine-qr-code svg') as SVGElement;
+    if (svg) {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      canvas.width = 256;
+      canvas.height = 256;
+      
+      img.onload = () => {
+        if (ctx) {
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, 256, 256);
+          ctx.drawImage(img, 0, 0);
+          
+          const url = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = `wine-${wine?.id || 'new'}-qr-code.png`;
+          link.href = url;
+          link.click();
+        }
+      };
+      
+      img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    }
+  };
+
   const handleSave = async () => {
     if (!wine || !wine.name.trim()) {
       toastError("Wine name is required");
@@ -253,64 +290,106 @@ const SimpleWineEdit: React.FC = () => {
             />
           </div>
 
-          {/* Wine Image Upload */}
-          <div>
-            <label style={typography.body1R} className="block mb-2">Wine Image</label>
-            
-            {/* Image Preview */}
-            {imagePreview && (
-              <div className="mb-4 relative inline-block">
-                <img
-                  src={imagePreview}
-                  alt="Wine preview"
-                  className="w-32 h-32 object-cover rounded-lg border border-white/20"
-                />
-                <button
-                  onClick={handleRemoveImage}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
-                  type="button"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-
-            {/* Upload Area */}
-            <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-white/40 transition-colors">
-              {uploading ? (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                  <span style={typography.body1R}>Uploading image...</span>
+          {/* Wine Image and QR Code Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Wine Image Upload */}
+            <div>
+              <label style={typography.body1R} className="block mb-2">Wine Image</label>
+              
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="mb-4 relative inline-block">
+                  <img
+                    src={imagePreview}
+                    alt="Wine preview"
+                    className="w-32 h-32 object-cover rounded-lg border border-white/20"
+                  />
+                  <button
+                    onClick={handleRemoveImage}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                    type="button"
+                  >
+                    <X size={14} />
+                  </button>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <ImageIcon size={32} className="text-white/40" />
-                  <div>
+              )}
+
+              {/* Upload Area */}
+              <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-white/40 transition-colors">
+                {uploading ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    <span style={typography.body1R}>Uploading image...</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <ImageIcon size={32} className="text-white/40" />
+                    <div>
+                      <Button
+                        variant="secondary"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex items-center gap-2"
+                        type="button"
+                      >
+                        <Upload size={16} />
+                        {imagePreview ? 'Replace Image' : 'Upload Image'}
+                      </Button>
+                    </div>
+                    <p style={typography.body1R} className="text-white/60 text-sm">
+                      PNG, JPG, or WebP (max 10MB)
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Hidden File Input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
+
+            {/* QR Code Section */}
+            <div>
+              <label style={typography.body1R} className="block mb-2">QR Code</label>
+              
+              {wine && (
+                <div className="flex flex-col items-center gap-4">
+                  {/* QR Code Display */}
+                  <div 
+                    id="wine-qr-code"
+                    className="bg-white p-4 rounded-lg border border-white/20"
+                  >
+                    <QRCodeReact.QRCodeSVG
+                      value={generateQRCodeValue()}
+                      size={128}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                      level="M"
+                    />
+                  </div>
+                  
+                  {/* QR Code Info */}
+                  <div className="text-center">
+                    <p style={typography.body1R} className="text-white/60 text-sm mb-2">
+                      Scan to view wine details
+                    </p>
                     <Button
                       variant="secondary"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={downloadQRCode}
                       className="flex items-center gap-2"
                       type="button"
                     >
-                      <Upload size={16} />
-                      {imagePreview ? 'Replace Image' : 'Upload Image'}
+                      <Download size={16} />
+                      Download QR Code
                     </Button>
                   </div>
-                  <p style={typography.body1R} className="text-white/60 text-sm">
-                    PNG, JPG, or WebP (max 10MB)
-                  </p>
                 </div>
               )}
             </div>
-
-            {/* Hidden File Input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
           </div>
 
           {/* Ratings */}

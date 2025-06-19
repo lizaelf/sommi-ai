@@ -48,7 +48,17 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 19, 2025)
 
-### Complete Admin Panel Form Implementation (June 19, 2025 - Latest)
+### Cloudinary Image Upload & QR Code Integration (June 19, 2025 - Latest)
+- **Complete Cloudinary Integration**: Implemented full Cloudinary image upload system for wine images with automatic optimization (800x800 limit, WebP conversion, quality auto)
+- **Backend API Endpoints**: Created `/api/upload-wine-image` and `/api/delete-wine-image` endpoints with proper multer configuration and error handling
+- **Enhanced SimpleWineEdit Interface**: Replaced text-based image URL input with professional drag-and-drop upload interface featuring image preview, remove functionality, and upload progress
+- **QR Code Generation & Download**: Added side-by-side layout with wine image upload on left and QR code display with download functionality on right
+- **Image Validation**: Implemented comprehensive validation (10MB max file size, image type verification, proper error messaging)
+- **Responsive Grid Layout**: Created mobile-friendly grid layout that stacks vertically on small screens and displays side-by-side on desktop
+- **Database URL Storage**: Images uploaded to Cloudinary return secure URLs that are saved directly to wine database records
+- **Admin Header Enhancement**: Replaced "Add Wine" button with "More" dropdown containing "Delete Tenant" option for improved admin functionality
+
+### Complete Admin Panel Form Implementation (June 19, 2025 - Previous)
 - **Profile Tab Complete**: Created comprehensive profile form with all fields from screenshot including Winery Name, Year Established, Description, Contact Email/Phone, Website URL, Address, Hours of Operation, and Social Media Links
 - **AI Model Tab Complete**: Implemented complete AI configuration form with Knowledge Scope dropdown, Personality Style selector, Brand Guide textarea, Tone Preferences field, and Knowledge Documents upload section
 - **Consistent Form Architecture**: All forms use proper state management, dark theme styling, responsive grid layouts, and typography system
