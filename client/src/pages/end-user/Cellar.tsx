@@ -440,39 +440,37 @@ const Cellar = () => {
 
   // Load cellar wines effect
   useEffect(() => {
-    const loadCellarWines = () => {
-      const wines = CellarManager.getCellarWines();
-      console.log('Cellar wines loaded:', wines.map(w => ({ 
-        id: w.id, 
-        name: w.name, 
-        hasImage: !!w.image, 
-        imageType: w.image?.substring(0, 20) + '...' 
-      })));
-      
-      // Always ensure wine ID 1 is at the top of the cellar if it exists in admin data
-      const adminWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-      const wine1 = adminWines.find((w: any) => w.id === 1);
-      
-      if (wine1) {
-        // Check if wine 1 is already in cellar
-        const hasWine1 = wines.some(w => w.id === 1);
-        
-        if (!hasWine1) {
-          // Add wine 1 to cellar automatically
-          const wine1ForCellar = {
-            id: wine1.id,
-            name: wine1.name,
-            year: wine1.year || 2021,
-            image: wine1.image,
+    const loadCellarWines = async () => {
+      try {
+        // First try to load from database
+        const response = await fetch('/api/wines');
+        if (response.ok) {
+          const dbWines = await response.json();
+          console.log('Database wines loaded:', dbWines.length);
+          
+          // Convert database wines to cellar format
+          const cellarWines = dbWines.map((wine: any) => ({
+            id: wine.id,
+            name: wine.name,
+            year: wine.year || 2021,
+            image: wine.image || '',
             addedAt: Date.now(),
             scannedCount: 0
-          };
-          wines.unshift(wine1ForCellar);
-          console.log('Auto-added wine ID 1 to cellar:', wine1ForCellar);
+          }));
+          
+          setCellarWines(cellarWines);
+        } else {
+          console.error('Failed to load wines from database, falling back to localStorage');
+          // Fallback to localStorage
+          const wines = CellarManager.getCellarWines();
+          setCellarWines(wines);
         }
+      } catch (error) {
+        console.error('Error loading wines from database:', error);
+        // Fallback to localStorage
+        const wines = CellarManager.getCellarWines();
+        setCellarWines(wines);
       }
-      
-      setCellarWines(wines);
     };
 
     loadCellarWines();

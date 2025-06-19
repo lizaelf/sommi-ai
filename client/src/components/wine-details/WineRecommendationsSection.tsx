@@ -1,21 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import WineRecommendationCard from './WineRecommendationCard';
-import { DataSyncManager } from '@/utils/dataSync';
 import typography from '@/styles/typography';
+
+interface Wine {
+  id: number;
+  name: string;
+  year: number;
+  image: string;
+  ratings: {
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  };
+  location?: string;
+  bottles?: number;
+}
 
 interface WineRecommendationsSectionProps {
   currentWineId: number;
 }
 
 const WineRecommendationsSection: React.FC<WineRecommendationsSectionProps> = ({ currentWineId }) => {
-  const getRecommendedWines = () => {
-    const allWines = DataSyncManager.getUnifiedWineData();
-    return allWines
-      .filter(wine => wine.id !== currentWineId)
-      .slice(0, 3);
-  };
+  const [recommendedWines, setRecommendedWines] = useState<Wine[]>([]);
 
-  const recommendedWines = getRecommendedWines();
+  useEffect(() => {
+    const loadRecommendedWines = async () => {
+      try {
+        const response = await fetch('/api/wines');
+        if (response.ok) {
+          const allWines = await response.json();
+          const filtered = allWines
+            .filter((wine: Wine) => wine.id !== currentWineId)
+            .slice(0, 3);
+          setRecommendedWines(filtered);
+        }
+      } catch (error) {
+        console.error('Error loading recommended wines:', error);
+      }
+    };
+
+    loadRecommendedWines();
+  }, [currentWineId]);
 
   return (
     <div
@@ -43,8 +69,8 @@ const WineRecommendationsSection: React.FC<WineRecommendationsSectionProps> = ({
           overflowX: "auto",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
-          WebkitScrollbar: { display: "none" },
         }}
+        className="[&::-webkit-scrollbar]:hidden"
       >
         {recommendedWines.map((wine, index) => (
           <WineRecommendationCard key={wine.id} wine={wine} />

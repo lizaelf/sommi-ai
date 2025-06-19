@@ -55,8 +55,8 @@ const HomeGlobal = () => {
         const response = await fetch('/api/wines');
         if (response.ok) {
           const allWines = await response.json();
-          const filteredWines = allWines.filter((wine: Wine) => wine.id === 1 || wine.id === 2);
-          setWines(filteredWines);
+          // Show all wines from the database
+          setWines(allWines);
         } else {
           console.error('Failed to load wines from database');
         }
