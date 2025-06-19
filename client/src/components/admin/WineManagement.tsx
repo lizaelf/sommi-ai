@@ -2,6 +2,7 @@ import React from "react";
 import { Upload, Download, Search, RefreshCw } from "lucide-react";
 import Button from "@/components/ui/buttons/Button";
 import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
+import { AdminTitle } from "./AdminTitle";
 import typography from "@/styles/typography";
 
 type WineCardData = UnifiedWineData;
@@ -115,11 +116,12 @@ export const WineManagement: React.FC<WineManagementProps> = ({
       </div>
 
       {/* Wine Cards List */}
+      <AdminTitle 
+        title="Wine Collection" 
+        count={wineCards.length} 
+      />
+      
       <div style={{ padding: "0 20px" }}>
-        <h3 style={{ ...typography.h2, marginBottom: "16px" }}>
-          Wine Collection ({wineCards.length})
-        </h3>
-        
         {wineCards.length === 0 ? (
           <div style={{ 
             ...typography.body1R, 
