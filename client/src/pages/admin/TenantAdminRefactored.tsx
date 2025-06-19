@@ -193,7 +193,6 @@ const TenantAdminRefactored: React.FC = () => {
 
   const handleEditWine = (wine: WineCardData) => {
     console.log('Edit wine clicked:', wine);
-    toastInfo(`Opening edit mode for ${wine.name}`);
     // Navigate to the existing wine edit page
     setLocation(`/wine-edit/${wine.id}`);
   };
