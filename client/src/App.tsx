@@ -11,7 +11,7 @@ import ConversationDialog from "@/pages/end-user/ConversationDialog";
 import ChatPage from "@/pages/end-user/ChatPage";
 import FoodPairingSuggestionsPage from "@/pages/end-user/FoodPairingSuggestionsPage";
 
-import HomeGlobalRefactored from "@/pages/end-user/HomeGlobalRefactored";
+import HomeGlobal from "@/pages/end-user/HomeGlobal";
 import WineScan from "@/pages/end-user/WineScan";
 import WineEditRefactored from "@/pages/end-user/WineEditRefactored";
 import TenantAdminRefactored from "@/pages/admin/TenantAdminRefactored";
@@ -63,7 +63,7 @@ function useScrollRestoration() {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={HomeGlobalRefactored} />
+      <Route path="/" component={HomeGlobal} />
       <Route path="/scanned" component={WineDetails} />
       <Route path="/cellar" component={Cellar} />
       <Route path="/wine/conversation" component={ConversationDialog} />
