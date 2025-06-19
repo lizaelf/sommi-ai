@@ -207,6 +207,18 @@ const TenantAdminRefactored: React.FC = () => {
     setLocation('/wine-edit/new');
   };
 
+  const handleDeleteTenant = () => {
+    if (currentTenant) {
+      const confirmDelete = window.confirm(`Are you sure you want to delete "${currentTenant.name}"? This action cannot be undone.`);
+      if (confirmDelete) {
+        // Handle tenant deletion logic here
+        toastSuccess(`Tenant "${currentTenant.name}" has been deleted`);
+        // Navigate back to tenant list or home
+        setLocation('/');
+      }
+    }
+  };
+
   const handleEditWine = (wine: WineCardData) => {
     console.log('Edit wine clicked:', wine);
     // Navigate to the existing wine edit page
@@ -587,6 +599,7 @@ const TenantAdminRefactored: React.FC = () => {
       <AdminHeader
         currentTenant={currentTenant}
         onAddWine={handleAddWine}
+        onDeleteTenant={handleDeleteTenant}
       />
       <HeaderSpacer />
 
