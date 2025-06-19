@@ -105,7 +105,13 @@ export function AppHeader({
 
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
-            {rightContent}
+            {rightContent || (
+              <Link to="/cellar">
+                <button className="secondary-button react-button">
+                  My cellar
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
