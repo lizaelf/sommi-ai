@@ -254,42 +254,6 @@ const SimpleWineEdit: React.FC = () => {
       
       <div className="pt-[75px] p-6">
         <div className="space-y-6">
-          {/* Wine Name */}
-          <div>
-            <label style={typography.body1R} className="block mb-2">Wine Name</label>
-            <input
-              type="text"
-              value={wine.name}
-              onChange={(e) => setWine({ ...wine, name: e.target.value })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Enter wine name"
-            />
-          </div>
-
-          {/* Year */}
-          <div>
-            <label style={typography.body1R} className="block mb-2">Year</label>
-            <input
-              type="number"
-              value={wine.year}
-              onChange={(e) => setWine({ ...wine, year: parseInt(e.target.value) || 0 })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Year"
-            />
-          </div>
-
-          {/* Bottles */}
-          <div>
-            <label style={typography.body1R} className="block mb-2">Bottles</label>
-            <input
-              type="number"
-              value={wine.bottles}
-              onChange={(e) => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Number of bottles"
-            />
-          </div>
-
           {/* Wine Image and QR Code Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Wine Image Upload */}
@@ -382,6 +346,42 @@ const SimpleWineEdit: React.FC = () => {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Wine Name */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Wine Name</label>
+            <input
+              type="text"
+              value={wine.name}
+              onChange={(e) => setWine({ ...wine, name: e.target.value })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Enter wine name"
+            />
+          </div>
+
+          {/* Year */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Year</label>
+            <input
+              type="number"
+              value={wine.year}
+              onChange={(e) => setWine({ ...wine, year: parseInt(e.target.value) || 0 })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Year"
+            />
+          </div>
+
+          {/* Bottles */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Bottles</label>
+            <input
+              type="number"
+              value={wine.bottles}
+              onChange={(e) => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Number of bottles"
+            />
           </div>
 
           {/* Ratings */}
