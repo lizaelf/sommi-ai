@@ -39,14 +39,27 @@ export async function parseWineryWebsite(url: string): Promise<WineryData> {
     
     // Crawl the website with wine-specific extraction
     const crawlResult = await firecrawl.scrapeUrl(url, {
-      formats: ['markdown', 'html'],
+      formats: ['markdown'],
       includeTags: ['h1', 'h2', 'h3', 'p', 'div', 'span', 'li'],
       excludeTags: ['script', 'style', 'nav', 'footer', 'header'],
       waitFor: 2000
     });
 
-    if (!crawlResult.success || !crawlResult.markdown) {
+    console.log('Firecrawl response structure:', {
+      success: crawlResult.success,
+      keys: Object.keys(crawlResult)
+    });
+
+    if (!crawlResult.success) {
+      console.error('Firecrawl failed:', crawlResult);
       throw new Error('Failed to crawl website');
+    }
+
+    // Handle different response structures
+    const content = (crawlResult as any).markdown || (crawlResult as any).data?.markdown || '';
+    if (!content.trim()) {
+      console.error('No content found in response:', crawlResult);
+      throw new Error('No content extracted from website');
     }
 
     console.log('Website crawled successfully, extracting wine data...');
@@ -85,7 +98,7 @@ export async function parseWineryWebsite(url: string): Promise<WineryData> {
     If information is not available, use null instead of guessing.
     
     Website content:
-    ${crawlResult.markdown}
+    ${content}
     `;
 
     // Use OpenAI to structure the wine data
@@ -145,7 +158,7 @@ export async function crawlComprehensiveWineryData(baseUrl: string, additionalPa
       }).then(result => ({
         url,
         success: result.success,
-        content: result.success ? result.data?.markdown || '' : ''
+        content: result.success ? result.markdown || '' : ''
       }))
     );
 
