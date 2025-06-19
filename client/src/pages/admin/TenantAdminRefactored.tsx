@@ -193,8 +193,8 @@ const TenantAdminRefactored: React.FC = () => {
 
   const handleAddWine = () => {
     console.log('Add wine clicked');
-    // Navigate to the dedicated add wine page
-    setLocation('/add-wine');
+    // Navigate to wine edit page with "new" parameter for adding wines
+    setLocation('/wine-edit/new');
   };
 
   const handleEditWine = (wine: WineCardData) => {

@@ -13,10 +13,32 @@ const SimpleWineEdit: React.FC = () => {
   const { toastSuccess, toastError } = useStandardToast();
   const [wine, setWine] = useState<Wine | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isNewWine, setIsNewWine] = useState(false);
 
   useEffect(() => {
     const loadWine = async () => {
       try {
+        // Check if this is a new wine creation (id = "new")
+        if (id === "new") {
+          setIsNewWine(true);
+          setWine({
+            id: 0, // Temporary ID for new wine
+            name: "",
+            year: new Date().getFullYear(),
+            bottles: 0,
+            image: "",
+            ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+            description: "",
+            buyAgainLink: "",
+            qrCode: "",
+            qrLink: "",
+            foodPairing: [],
+            location: ""
+          });
+          setLoading(false);
+          return;
+        }
+
         if (!id) {
           setLoading(false);
           return;
@@ -56,29 +78,44 @@ const SimpleWineEdit: React.FC = () => {
   }, [id]);
 
   const handleSave = async () => {
-    if (!wine) return;
+    if (!wine || !wine.name.trim()) {
+      toastError("Wine name is required");
+      return;
+    }
 
     try {
-      if (wine.id && wine.name) {
-        await DataSyncManager.updateWine(wine.id, wine);
-        toastSuccess("Wine updated successfully");
-      } else {
-        const newWine = await DataSyncManager.addWine(wine);
+      if (isNewWine) {
+        // Create new wine (exclude the temporary id)
+        const { id, ...wineData } = wine;
+        const newWine = await DataSyncManager.addWine(wineData);
         if (newWine) {
-          toastSuccess("Wine created successfully");
+          toastSuccess("Wine added successfully");
+          setLocation("/winery-tenant-admin");
+        } else {
+          toastError("Failed to add wine");
+        }
+      } else {
+        // Update existing wine
+        const updatedWine = await DataSyncManager.updateWine(wine.id, wine);
+        if (updatedWine) {
+          toastSuccess("Wine updated successfully");
+          setLocation("/winery-tenant-admin");
+        } else {
+          toastError("Failed to update wine");
         }
       }
-      setLocation("/winery-tenant-admin");
     } catch (error) {
       console.error("Error saving wine:", error);
-      toastError("Failed to save wine");
+      toastError(isNewWine ? "Failed to add wine" : "Failed to update wine");
     }
   };
+
+  const pageTitle = isNewWine ? "Add New Wine" : "Edit Wine";
 
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <AppHeader title="Edit Wine" showBackButton onBack={() => setLocation("/winery-tenant-admin")} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/winery-tenant-admin")} />
         <div className="pt-[75px] p-6">
           <div style={typography.body}>Loading wine data...</div>
         </div>
@@ -89,7 +126,7 @@ const SimpleWineEdit: React.FC = () => {
   if (!wine) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <AppHeader title="Edit Wine" showBackButton onBack={() => setLocation("/winery-tenant-admin")} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/winery-tenant-admin")} />
         <div className="pt-[75px] p-6">
           <div style={typography.body}>Wine not found</div>
         </div>
@@ -100,7 +137,7 @@ const SimpleWineEdit: React.FC = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <AppHeader 
-        title="Edit Wine" 
+        title={pageTitle} 
         showBackButton 
         onBack={() => setLocation("/winery-tenant-admin")} 
       />
@@ -219,7 +256,7 @@ const SimpleWineEdit: React.FC = () => {
               onClick={handleSave}
               className="w-full"
             >
-              Save Wine
+              {isNewWine ? "Add Wine" : "Save Changes"}
             </Button>
           </div>
         </div>
