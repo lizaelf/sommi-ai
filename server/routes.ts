@@ -1413,6 +1413,80 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Wine management endpoints
+  app.get("/api/wines", async (_req, res) => {
+    try {
+      const wines = await storage.getAllWines();
+      res.json(wines);
+    } catch (error) {
+      console.error("Error fetching wines:", error);
+      res.status(500).json({ message: "Failed to fetch wines" });
+    }
+  });
+
+  app.get("/api/wines/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid wine ID" });
+      }
+      
+      const wine = await storage.getWine(id);
+      if (!wine) {
+        return res.status(404).json({ message: "Wine not found" });
+      }
+      
+      res.json(wine);
+    } catch (error) {
+      console.error("Error fetching wine:", error);
+      res.status(500).json({ message: "Failed to fetch wine" });
+    }
+  });
+
+  app.post("/api/wines", async (req, res) => {
+    try {
+      const wine = await storage.createWine(req.body);
+      res.status(201).json(wine);
+    } catch (error) {
+      console.error("Error creating wine:", error);
+      res.status(500).json({ message: "Failed to create wine" });
+    }
+  });
+
+  app.put("/api/wines/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid wine ID" });
+      }
+      
+      const wine = await storage.updateWine(id, req.body);
+      if (!wine) {
+        return res.status(404).json({ message: "Wine not found" });
+      }
+      
+      res.json(wine);
+    } catch (error) {
+      console.error("Error updating wine:", error);
+      res.status(500).json({ message: "Failed to update wine" });
+    }
+  });
+
+  app.delete("/api/wines/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid wine ID" });
+      }
+      
+      await storage.deleteWine(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting wine:", error);
+      res.status(500).json({ message: "Failed to delete wine" });
+    }
+  });
+
   // Tenant management endpoints
   app.get("/api/tenants", async (_req, res) => {
     try {

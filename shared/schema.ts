@@ -149,3 +149,64 @@ export const insertWineTypeSchema = createInsertSchema(wineTypes).pick({
 
 export type InsertWineType = z.infer<typeof insertWineTypeSchema>;
 export type WineType = typeof wineTypes.$inferSelect;
+
+// Model for wines
+export const wines = pgTable("wines", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  year: integer("year"),
+  bottles: integer("bottles").default(0),
+  image: text("image"),
+  ratings: json("ratings").$type<{
+    vn: number;
+    jd: number;
+    ws: number;
+    abv: number;
+  }>(),
+  buyAgainLink: text("buy_again_link"),
+  qrCode: text("qr_code"),
+  qrLink: text("qr_link"),
+  location: text("location"),
+  description: text("description"),
+  foodPairing: json("food_pairing").$type<string[]>(),
+  technicalDetails: json("technical_details").$type<{
+    varietal?: {
+      primary?: { name: string; percentage: number };
+      secondary?: { name: string; percentage: number };
+    };
+    appellation?: string;
+    aging?: {
+      drinkNow: boolean;
+      ageUpTo?: number;
+    };
+    customAbv?: number;
+  }>(),
+  hasCustomImage: boolean("has_custom_image").default(false),
+  imagePrefix: text("image_prefix"),
+  imageSize: integer("image_size").default(0),
+  conversationHistory: json("conversation_history").$type<any[]>().default([]),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const insertWineSchema = createInsertSchema(wines).pick({
+  name: true,
+  year: true,
+  bottles: true,
+  image: true,
+  ratings: true,
+  buyAgainLink: true,
+  qrCode: true,
+  qrLink: true,
+  location: true,
+  description: true,
+  foodPairing: true,
+  technicalDetails: true,
+  hasCustomImage: true,
+  imagePrefix: true,
+  imageSize: true,
+  conversationHistory: true,
+});
+
+export type InsertWine = z.infer<typeof insertWineSchema>;
+export type Wine = typeof wines.$inferSelect;

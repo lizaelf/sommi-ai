@@ -5,7 +5,8 @@ import {
   tenants, type Tenant, type InsertTenant,
   usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill,
   foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory,
-  wineTypes, type WineType, type InsertWineType
+  wineTypes, type WineType, type InsertWineType,
+  wines, type Wine, type InsertWine
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -58,6 +59,13 @@ export interface IStorage {
   createWineType(wineType: InsertWineType): Promise<WineType>;
   updateWineType(id: number, wineType: Partial<InsertWineType>): Promise<WineType | undefined>;
   deleteWineType(id: number): Promise<void>;
+  
+  // Wine operations
+  getAllWines(): Promise<Wine[]>;
+  getWine(id: number): Promise<Wine | undefined>;
+  createWine(wine: InsertWine): Promise<Wine>;
+  updateWine(id: number, wine: Partial<InsertWine>): Promise<Wine | undefined>;
+  deleteWine(id: number): Promise<void>;
 }
 
 // Database storage implementation
@@ -290,6 +298,37 @@ export class DatabaseStorage implements IStorage {
 
   async deleteWineType(id: number): Promise<void> {
     await db.delete(wineTypes).where(eq(wineTypes.id, id));
+  }
+
+  // Wine operations
+  async getAllWines(): Promise<Wine[]> {
+    return await db.select().from(wines);
+  }
+
+  async getWine(id: number): Promise<Wine | undefined> {
+    const [wine] = await db.select().from(wines).where(eq(wines.id, id));
+    return wine || undefined;
+  }
+
+  async createWine(insertWine: InsertWine): Promise<Wine> {
+    const [wine] = await db
+      .insert(wines)
+      .values(insertWine)
+      .returning();
+    return wine;
+  }
+
+  async updateWine(id: number, data: Partial<InsertWine>): Promise<Wine | undefined> {
+    const [wine] = await db
+      .update(wines)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(wines.id, id))
+      .returning();
+    return wine || undefined;
+  }
+
+  async deleteWine(id: number): Promise<void> {
+    await db.delete(wines).where(eq(wines.id, id));
   }
 }
 
