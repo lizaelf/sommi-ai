@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Send } from 'lucide-react';
 import { IconButton } from "@/components/ui/buttons/IconButton";
-import MicrophoneButton from '@/components/MicrophoneButton';
+import MicrophoneButton from '@/components/misc/MicrophoneButton';
 import typography from "@/styles/typography";
 
 interface ChatInputProps {

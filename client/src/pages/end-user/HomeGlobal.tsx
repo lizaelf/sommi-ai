@@ -8,7 +8,7 @@ import WineRating from "@/components/wine-details/WineRating";
 import { getWineDisplayName } from '../../../../shared/wineConfig';
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { ButtonIcon } from "@/components/navigation/ButtonIcon";
-import HomeGlobalSkeleton from "@/components/HomeGlobalSkeleton";
+import HomeGlobalSkeleton from "@/components/misc/HomeGlobalSkeleton";
 
 interface Wine {
   id: number;

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings, Menu, Plus } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
-import { SegmentedPicker } from "@/components/SegmentedPicker";
+import { SegmentedPicker } from "@/components/misc/SegmentedPicker";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { generateWineQRData } from "@/utils/cellarManager";

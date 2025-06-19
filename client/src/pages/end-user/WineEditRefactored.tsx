@@ -4,7 +4,7 @@ import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { DataSyncManager } from "@/utils/dataSync";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { WineEditForm } from "@/components/admin/WineEditForm";
-import { ShiningText } from "@/components/ShiningText";
+import { ShiningText } from "@/components/animations/ShiningText";
 import typography from "@/styles/typography";
 
 interface Wine {

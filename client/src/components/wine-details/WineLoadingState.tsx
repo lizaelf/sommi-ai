@@ -1,5 +1,5 @@
 import React from "react";
-import { ShiningText } from "@/components/ShiningText";
+import { ShiningText } from "@/components/animations/ShiningText";
 import typography from "@/styles/typography";
 
 export const WineLoadingState: React.FC = () => {

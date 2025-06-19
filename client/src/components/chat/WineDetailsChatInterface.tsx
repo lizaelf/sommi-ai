@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import ChatInput from './ChatInput';
-import SuggestionPills from '@/components/SuggestionPills';
-import { ShiningText } from '@/components/ShiningText';
+import SuggestionPills from '@/components/chat/SuggestionPills';
+import { ShiningText } from '@/components/animations/ShiningText';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
 

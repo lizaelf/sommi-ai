@@ -1,6 +1,6 @@
 import React from 'react';
 import ChatInput from './ChatInput';
-import SuggestionPills from '@/components/SuggestionPills';
+import SuggestionPills from '@/components/chat/SuggestionPills';
 
 interface ChatInputAreaProps {
   currentWine?: any;

@@ -9,14 +9,14 @@ import ChatInput from "./ChatInput";
 import ChatInputArea from "./ChatInputArea";
 import ChatAnswer from "./ChatAnswer";
 import VoiceController from "@/components/voice/VoiceController";
-import SuggestionPills from "@/components/SuggestionPills";
+import SuggestionPills from "@/components/chat/SuggestionPills";
 import Button from "@/components/ui/buttons/Button";
 import SectionHeaderButton from "@/components/ui/buttons/SectionHeaderButton";
 import { FormInput } from "@/components/ui/forms/FormInput";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import { DataSyncManager } from "@/utils/dataSync";
-import { ShiningText } from "@/components/ShiningText";
+import { ShiningText } from "@/components/animations/ShiningText";
 import {
   createStreamingClient,
   isStreamingSupported,
