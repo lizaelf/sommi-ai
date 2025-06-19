@@ -48,7 +48,16 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 19, 2025)
 
-### Cloudinary Image Upload & QR Code Integration (June 19, 2025 - Latest)
+### Automatic Background Removal & Transparent PNG Generation (June 19, 2025 - Latest)
+- **Automatic Background Removal**: Implemented Cloudinary's background removal for wine bottle images to detect and remove white/solid backgrounds automatically
+- **Transparent PNG Creation**: System automatically generates PNG versions with alpha transparency for wine bottles against white backgrounds
+- **Smart Fallback System**: If background removal fails, original image is preserved ensuring no upload failures
+- **Dual Upload Process**: First uploads original, then creates transparent version using Cloudinary's AI background removal transformation
+- **Enhanced Wine Display**: All wine images now display with transparent backgrounds for cleaner presentation against any background color
+- **Streamlined Interface**: Removed image remove button from upload preview, simplified to "Replace Image" button only
+- **Top Layout Priority**: Moved wine image and QR code sections to top of edit form for visual-first workflow
+
+### Cloudinary Image Upload & QR Code Integration (June 19, 2025 - Previous)
 - **Complete Cloudinary Integration**: Implemented full Cloudinary image upload system for wine images with automatic optimization (800x800 limit, WebP conversion, quality auto)
 - **Backend API Endpoints**: Created `/api/upload-wine-image` and `/api/delete-wine-image` endpoints with proper multer configuration and error handling
 - **Enhanced SimpleWineEdit Interface**: Replaced text-based image URL input with professional drag-and-drop upload interface featuring image preview, remove functionality, and upload progress

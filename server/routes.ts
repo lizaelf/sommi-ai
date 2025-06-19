@@ -213,16 +213,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'wine';
       const publicId = `wines/${cleanWineName}-${wineId}-${Date.now()}`;
 
-      // Upload to Cloudinary
-      const uploadPromise = new Promise((resolve, reject) => {
+      // First upload the original image to Cloudinary
+      const originalUploadPromise = new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
             resource_type: 'image',
             public_id: publicId,
             folder: 'wine-collection',
             transformation: [
-              { width: 800, height: 800, crop: 'limit', quality: 'auto' },
-              { format: 'webp' }
+              { width: 800, height: 800, crop: 'limit', quality: 'auto' }
             ]
           },
           (error, result) => {
@@ -235,15 +234,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ).end(req.file!.buffer);
       });
 
-      const uploadResult = await uploadPromise as any;
+      const originalResult = await originalUploadPromise as any;
+      console.log(`Uploaded original wine image: ${originalResult.public_id}`);
+
+      // Check if image has white background and create transparent version
+      let finalImageUrl = originalResult.secure_url;
+      let transparentPublicId = null;
+
+      try {
+        // Create transparent version using Cloudinary's background removal
+        const transparentId = `${publicId}-transparent`;
+        
+        const transparentUploadPromise = new Promise((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              resource_type: 'image',
+              public_id: transparentId,
+              folder: 'wine-collection',
+              transformation: [
+                { effect: 'background_removal' }, // Remove background
+                { width: 800, height: 800, crop: 'limit', quality: 'auto' },
+                { format: 'png' } // Ensure PNG format for transparency
+              ]
+            },
+            (error, result) => {
+              if (error) {
+                console.log(`Background removal failed, using original: ${error.message}`);
+                resolve(null); // Don't reject, just use original
+              } else {
+                resolve(result);
+              }
+            }
+          ).end(req.file!.buffer);
+        });
+
+        const transparentResult = await transparentUploadPromise as any;
+        
+        if (transparentResult) {
+          console.log(`Created transparent version: ${transparentResult.public_id}`);
+          finalImageUrl = transparentResult.secure_url;
+          transparentPublicId = transparentResult.public_id;
+          
+          // Delete the original since we have the transparent version
+          try {
+            await cloudinary.uploader.destroy(originalResult.public_id);
+            console.log(`Deleted original image, using transparent version`);
+          } catch (deleteError) {
+            console.log(`Warning: Could not delete original image: ${deleteError}`);
+          }
+        }
+      } catch (backgroundRemovalError) {
+        console.log(`Background removal process failed, using original: ${backgroundRemovalError}`);
+      }
       
-      console.log(`Uploaded wine image to Cloudinary: ${uploadResult.public_id} (${Math.round(uploadResult.bytes / 1024)}KB)`);
+      console.log(`Final wine image URL: ${finalImageUrl}`);
       
       res.json({ 
         success: true, 
-        imageUrl: uploadResult.secure_url,
-        publicId: uploadResult.public_id,
-        size: uploadResult.bytes
+        imageUrl: finalImageUrl,
+        publicId: transparentPublicId || originalResult.public_id,
+        size: originalResult.bytes,
+        hasTransparentBackground: !!transparentPublicId
       });
       
     } catch (error) {
