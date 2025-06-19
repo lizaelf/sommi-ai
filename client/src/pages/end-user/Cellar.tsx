@@ -656,18 +656,13 @@ const Cellar = () => {
                 showWineSearch ? "text-white scale-110" : "text-white/80 hover:text-white"
               }`}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
+              <img
+                src="/icons/search.svg"
+                alt="Search"
                 width="24"
                 height="24"
-                viewBox="0 0 24 24"
                 className="transition-all duration-200"
-              >
-                <path
-                  fill="currentColor"
-                  d="M15.102 16.162a8 8 0 1 1 1.06-1.06l4.618 4.618a.75.75 0 1 1-1.06 1.06zM16.5 10a6.5 6.5 0 1 0-13 0a6.5 6.5 0 0 0 13 0"
-                ></path>
-              </svg>
+              />
             </div>
 
 
@@ -701,12 +696,13 @@ const Cellar = () => {
                 zIndex: 1,
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.744a1 1 0 0 1-1.32 1.497l-.094-.083l-4.744-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z"
-                  fill="#959493"
-                />
-              </svg>
+              <img
+                src="/icons/search-alt.svg"
+                alt="Search"
+                width="18"
+                height="18"
+                style={{ filter: 'brightness(0) saturate(100%) invert(59%) sepia(0%) saturate(1547%) hue-rotate(146deg) brightness(97%) contrast(91%)' }}
+              />
             </div>
             <input
               type="text"
@@ -1394,21 +1390,13 @@ const Cellar = () => {
                                   }}
                                   style={{ cursor: "pointer", padding: "8px" }}
                                 >
-                                  <svg
+                                  <img
+                                    src="/icons/x.svg"
+                                    alt="Close"
                                     width="20"
                                     height="20"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M18 6L6 18M6 6L18 18"
-                                      stroke="white"
-                                      strokeWidth="2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                  </svg>
+                                    style={{ filter: 'brightness(0) invert(1)' }}
+                                  />
                                 </div>
                               </div>
 
@@ -1423,17 +1411,13 @@ const Cellar = () => {
                                     zIndex: 1,
                                   }}
                                 >
-                                  <svg
+                                  <img
+                                    src="/icons/search-alt.svg"
+                                    alt="Search"
                                     width="18"
                                     height="18"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.744a1 1 0 0 1-1.32 1.497l-.094-.083l-4.744-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z"
-                                      fill="#959493"
-                                    />
-                                  </svg>
+                                    style={{ filter: 'brightness(0) saturate(100%) invert(59%) sepia(0%) saturate(1547%) hue-rotate(146deg) brightness(97%) contrast(91%)' }}
+                                  />
                                 </div>
                                 <input
                                   type="text"
