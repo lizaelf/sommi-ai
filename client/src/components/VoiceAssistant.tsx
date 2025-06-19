@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useStandardToast } from "@/components/ui/StandardToast";
+import { useStandardToast, toastError } from "@/components/ui/StandardToast";
 import VoiceBottomSheet from "./VoiceBottomSheet";
 import {
   getMicrophonePermission,
@@ -1922,34 +1922,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }
           (window as any).currentOpenAIAudio = null;
 
-          toast({
-            description: (
-              <span
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "16px",
-                  fontWeight: 500,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Failed to play audio - please try again
-              </span>
-            ),
-            duration: 3000,
-            className: "bg-white text-black border-none",
-            style: {
-              position: "fixed",
-              top: "74px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: "auto",
-              maxWidth: "none",
-              padding: "8px 24px",
-              borderRadius: "32px",
-              boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-              zIndex: 9999,
-            },
-          });
+          toastError("Failed to play audio - please try again");
         };
 
         audio.onabort = () => {
@@ -2150,34 +2123,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }
         }
 
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {errorMessage}
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
+        toastError(errorMessage);
       }
     } catch (globalError) {
       console.error("Unhandled error in handleUnmute:", globalError);
@@ -2331,35 +2277,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setIsListening(false);
       setShowAskButton(true);
 
-      toast({
-        description: (
-          <span
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              fontWeight: 500,
-            }}
-          >
-            {error instanceof Error && error.name === "NotAllowedError"
-              ? "Microphone access required for voice input"
-              : "Failed to start voice recording"}
-          </span>
-        ),
-        duration: 3000,
-        className: "bg-white text-black border-none",
-        style: {
-          position: "fixed",
-          top: "74px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "auto",
-          maxWidth: "none",
-          padding: "8px 24px",
-          borderRadius: "32px",
-          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-          zIndex: 9999,
-        },
-      });
+      toastError(
+        error instanceof Error && error.name === "NotAllowedError"
+          ? "Microphone access required for voice input"
+          : "Failed to start voice recording"
+      );
     }
   };
 
