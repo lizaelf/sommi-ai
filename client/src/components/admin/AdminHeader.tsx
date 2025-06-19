@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, Plus, LogOut, Settings, MoreVertical, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, LogOut, Settings, MoreVertical, Trash2, Globe } from "lucide-react";
 import { Link } from "wouter";
 import AppHeader from "@/components/layout/AppHeader";
 import Button from "@/components/ui/buttons/Button";
@@ -44,6 +44,16 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           {showDropdown && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-black/90 border border-white/20 rounded-lg shadow-lg z-50">
               <div className="py-2">
+                <Link href="/winery-import">
+                  <button
+                    onClick={() => setShowDropdown(false)}
+                    className="w-full px-4 py-2 text-left text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
+                    style={typography.body1R}
+                  >
+                    <Globe size={16} />
+                    Parse website
+                  </button>
+                </Link>
                 <button
                   onClick={handleDeleteTenant}
                   className="w-full px-4 py-2 text-left text-red-400 hover:bg-white/5 flex items-center gap-2 transition-colors"
