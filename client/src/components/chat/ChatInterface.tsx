@@ -348,6 +348,10 @@ export default function ChatInterface({
             isTyping={isTyping}
             onKeyboardFocus={(focused: boolean) => setIsKeyboardFocused(focused)}
             onSuggestionClick={handleSuggestionClick}
+            onMicClick={() => {
+              // Trigger voice assistant via mic button
+              window.dispatchEvent(new CustomEvent('triggerMicButton'));
+            }}
             conversationId={currentConversationId?.toString()}
           />
         </main>

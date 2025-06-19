@@ -789,6 +789,10 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             onKeyboardFocus={(focused: boolean) =>
               setIsKeyboardFocused(focused)
             }
+            onMicClick={() => {
+              // Trigger voice assistant via mic button
+              window.dispatchEvent(new CustomEvent('triggerMicButton'));
+            }}
           />
         </main>
 

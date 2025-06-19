@@ -9,6 +9,7 @@ interface ChatInputAreaProps {
   onSendMessage: (message: string) => void;
   onSuggestionClick: (suggestion: string) => void;
   onKeyboardFocus: (focused: boolean) => void;
+  onMicClick?: () => void;
   showBuyButton?: boolean;
   showChatInput?: boolean;
   conversationId?: string;
@@ -21,6 +22,7 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
   onSendMessage,
   onSuggestionClick,
   onKeyboardFocus,
+  onMicClick,
   showBuyButton = false,
   showChatInput = true,
   conversationId
@@ -47,6 +49,9 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
         <ChatInput
           onSendMessage={onSendMessage}
           isProcessing={isTyping}
+          onMicClick={onMicClick}
+          onFocus={() => onKeyboardFocus(true)}
+          onBlur={() => onKeyboardFocus(false)}
         />
       </div>
     </div>
