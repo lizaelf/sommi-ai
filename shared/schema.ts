@@ -85,6 +85,10 @@ export const tenants = pgTable("tenants", {
   slug: text("slug").notNull().unique(), // URL-friendly identifier
   logo: text("logo"), // Logo URL or base64
   description: text("description"),
+  location: text("location"), // Winery location/address
+  established: integer("established"), // Year established
+  website: text("website"), // Winery website URL
+  isActive: boolean("is_active").default(true),
   aiTone: text("ai_tone"), // AI personality/tone for this winery
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -94,6 +98,10 @@ export const insertTenantSchema = createInsertSchema(tenants).pick({
   slug: true,
   logo: true,
   description: true,
+  location: true,
+  established: true,
+  website: true,
+  isActive: true,
   aiTone: true,
 });
 
@@ -168,6 +176,10 @@ export const wines = pgTable("wines", {
   qrLink: text("qr_link"),
   location: text("location"),
   description: text("description"),
+  winery: text("winery"), // Winery name
+  varietal: text("varietal"), // Grape variety
+  appellation: text("appellation"), // Wine region/appellation
+  tenantId: integer("tenant_id").references(() => tenants.id),
   foodPairing: json("food_pairing").$type<string[]>(),
   technicalDetails: json("technical_details").$type<{
     varietal?: {
