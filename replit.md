@@ -57,6 +57,8 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **Preview System**: Preview functionality allows verification of extracted data before importing to database
 - **Enhanced Schema**: Extended database schema with winery fields (location, established, website) and wine fields (winery, varietal, appellation, tenantId)
 - **Error Handling**: Comprehensive error handling with graceful fallbacks and user feedback throughout parsing process
+- **Streamlined Interface**: "Parse website" button positioned directly below URL input for immediate parsing functionality
+- **Admin Integration**: Added "Parse website" button to AdminHeader dropdown menu for easy access from wine management interface
 
 ### Automatic Background Removal & Transparent PNG Generation (June 19, 2025 - Previous)
 - **Automatic Background Removal**: Implemented Cloudinary's background removal for wine bottle images to detect and remove white/solid backgrounds automatically

@@ -183,6 +183,21 @@ const WineryImport: React.FC = () => {
               className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="https://example-winery.com"
             />
+            
+            {/* Parse Website Button */}
+            <Button
+              variant="primary"
+              onClick={handlePreview}
+              disabled={!url || previewing}
+              className="flex items-center gap-2 mt-3"
+            >
+              {previewing ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Globe size={16} />
+              )}
+              Parse Website
+            </Button>
           </div>
 
           {/* Tenant Slug */}
@@ -238,36 +253,24 @@ const WineryImport: React.FC = () => {
             </Button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-4">
-            <Button
-              variant="secondary"
-              onClick={handlePreview}
-              disabled={!url || previewing}
-              className="flex items-center gap-2"
-            >
-              {previewing ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Eye size={16} />
-              )}
-              Preview Data
-            </Button>
-
-            <Button
-              variant="primary"
-              onClick={handleImport}
-              disabled={!url || loading}
-              className="flex items-center gap-2"
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Download size={16} />
-              )}
-              Import Winery
-            </Button>
-          </div>
+          {/* Import Button - Only shown when preview data exists */}
+          {preview && (
+            <div className="flex justify-end">
+              <Button
+                variant="primary"
+                onClick={handleImport}
+                disabled={loading}
+                className="flex items-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Download size={16} />
+                )}
+                Import Winery
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Preview Results */}
