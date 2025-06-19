@@ -697,7 +697,7 @@ const Cellar = () => {
               }}
             >
               <img
-                src="/icons/search-alt.svg"
+                src="/icons/search.svg"
                 alt="Search"
                 width="18"
                 height="18"
@@ -1412,7 +1412,7 @@ const Cellar = () => {
                                   }}
                                 >
                                   <img
-                                    src="/icons/search-alt.svg"
+                                    src="/icons/search.svg"
                                     alt="Search"
                                     width="18"
                                     height="18"

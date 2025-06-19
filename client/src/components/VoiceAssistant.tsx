@@ -2305,7 +2305,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           }}
         >
           <img 
-            src="/icons/mic-alt.svg" 
+            src="/icons/mic.svg" 
             alt="Voice Assistant"
             width="24" 
             height="24"
