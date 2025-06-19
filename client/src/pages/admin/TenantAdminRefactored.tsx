@@ -167,7 +167,7 @@ const TenantAdminRefactored: React.FC = () => {
     };
 
     loadWineData();
-  }, [toast]);
+  }, []);
 
   // Handle logout
   const handleLogout = () => {

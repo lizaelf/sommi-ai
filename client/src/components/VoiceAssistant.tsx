@@ -1180,63 +1180,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       setShowBottomSheet(false);
 
       if (error instanceof Error && error.name === "NotAllowedError") {
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Microphone access denied
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
+        toastError("Microphone access denied");
       } else {
-        toast({
-          description: (
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "16px",
-                fontWeight: 500,
-                whiteSpace: "nowrap",
-              }}
-            >
-              Failed to start voice recording
-            </span>
-          ),
-          duration: 3000,
-          className: "bg-white text-black border-none",
-          style: {
-            position: "fixed",
-            top: "74px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "auto",
-            maxWidth: "none",
-            padding: "8px 24px",
-            borderRadius: "32px",
-            boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-            zIndex: 9999,
-          },
-        });
+        toastError("Failed to start voice recording");
       }
     }
   };
