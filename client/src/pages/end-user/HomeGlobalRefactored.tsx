@@ -25,6 +25,7 @@ const HomeGlobalRefactored = () => {
   const [location, setLocation] = useLocation();
   const [wines, setWines] = useState<Wine[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleWineClick = (wineId: number) => {
     // Navigate to wine details page for any wine
@@ -32,10 +33,21 @@ const HomeGlobalRefactored = () => {
   };
 
   useEffect(() => {
-    // Load wines from CRM storage - show only wines with ID1 and ID2
-    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-    const filteredWines = crmWines.filter((wine: Wine) => wine.id === 1 || wine.id === 2);
-    setWines(filteredWines);
+    setIsLoading(true);
+    setError(null);
+    fetch('/api/wines')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch wines');
+        return res.json();
+      })
+      .then((data: Wine[]) => {
+        setWines(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setError('Не вдалося завантажити вина. Спробуйте пізніше.');
+        setIsLoading(false);
+      });
   }, []);
 
   return (
@@ -43,6 +55,9 @@ const HomeGlobalRefactored = () => {
       <AppHeader />
       <HeaderSpacer />
       <WelcomeSection />
+      {error && (
+        <div style={{ color: '#FF6B6B', textAlign: 'center', margin: '24px 0' }}>{error}</div>
+      )}
       <WineCollection 
         wines={wines}
         onWineClick={handleWineClick}

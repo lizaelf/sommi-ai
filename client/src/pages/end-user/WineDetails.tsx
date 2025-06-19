@@ -39,6 +39,7 @@ export default function WineDetails() {
   const [location] = useLocation();
   const { id } = useParams();
   const [wine, setWine] = useState<SelectedWine | null>(null);
+  const [loadingState, setLoadingState] = useState<'loading' | 'loaded' | 'error' | 'notfound'>('loading');
   const [showActions, setShowActions] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [interactionChoiceMade, setInteractionChoiceMade] = useState(false);
@@ -49,102 +50,52 @@ export default function WineDetails() {
   const isQRScan = new URLSearchParams(window.location.search).has("wine");
   const isScannedPage = location === "/scanned";
 
-
-
   useEffect(() => {
-    // Load wine data from database
     const loadWineData = async () => {
-      // Get wine ID from URL params (either route param or query param)
+      setLoadingState('loading');
       const urlParams = new URLSearchParams(window.location.search);
       const wineIdFromQuery = urlParams.get("wine");
-      const wineId = id || wineIdFromQuery || "1"; // Default to wine ID 1 if none provided
-
-      console.log("WineDetails: Checking for wine ID:", {
-        id,
-        wineIdFromQuery,
-        wineId,
-        location,
-      });
-
-      if (wineId && !wine) {
-        try {
-          // First try to load from database
-          const response = await fetch(`/api/wines/${wineId}`);
-          if (response.ok) {
-            const wineData = await response.json();
-            console.log("WineDetails: Looking for wine ID", wineId, "found:", wineData);
-            
-            const transformedWine = {
-              id: wineData.id,
-              name: wineData.name,
-              year: wineData.year,
-              bottles: wineData.bottles,
-              image: wineData.image,
-              ratings: wineData.ratings,
-              buyAgainLink: wineData.buyAgainLink,
-              qrCode: wineData.qrCode,
-              qrLink: wineData.qrLink,
-              location: wineData.location,
-              description: wineData.description,
-              foodPairing: wineData.foodPairing,
-              conversationHistory: wineData.conversationHistory || [],
-            };
-            setWine(transformedWine);
-            console.log("WineDetails: Wine loaded successfully from database:", transformedWine.name);
-          } else {
-            // Fallback to DataSyncManager for localStorage data
-            const wineData = DataSyncManager.getWineById(parseInt(wineId));
-            if (wineData) {
-              console.log("WineDetails: Found in localStorage, migrating to database");
-              const transformedWine = {
-                id: wineData.id,
-                name: wineData.name,
-                year: wineData.year,
-                bottles: wineData.bottles,
-                image: wineData.image,
-                ratings: wineData.ratings,
-                buyAgainLink: wineData.buyAgainLink,
-                qrCode: wineData.qrCode,
-                qrLink: wineData.qrLink,
-                location: wineData.location,
-                description: wineData.description,
-                foodPairing: wineData.foodPairing,
-                conversationHistory: wineData.conversationHistory || [],
-              };
-              setWine(transformedWine);
-            } else {
-              console.log("WineDetails: Wine not found for ID:", wineId);
-            }
-          }
-        } catch (error) {
-          console.error("WineDetails: Error loading wine data:", error);
-          // Fallback to DataSyncManager for localStorage data
-          const wineData = DataSyncManager.getWineById(parseInt(wineId));
-          if (wineData) {
-            console.log("WineDetails: Found in localStorage fallback");
-            const transformedWine = {
-              id: wineData.id,
-              name: wineData.name,
-              year: wineData.year,
-              bottles: wineData.bottles,
-              image: wineData.image,
-              ratings: wineData.ratings,
-              buyAgainLink: wineData.buyAgainLink,
-              qrCode: wineData.qrCode,
-              qrLink: wineData.qrLink,
-              location: wineData.location,
-              description: wineData.description,
-              foodPairing: wineData.foodPairing,
-              conversationHistory: wineData.conversationHistory || [],
-            };
-            setWine(transformedWine);
-          }
+      const wineId = id || wineIdFromQuery || "1";
+      if (!wineId) {
+        setLoadingState('notfound');
+        setWine(null);
+        return;
+      }
+      try {
+        const response = await fetch(`/api/wines/${wineId}`);
+        if (response.ok) {
+          const wineData = await response.json();
+          const transformedWine = {
+            id: wineData.id,
+            name: wineData.name,
+            year: wineData.year,
+            bottles: wineData.bottles,
+            image: wineData.image,
+            ratings: wineData.ratings,
+            buyAgainLink: wineData.buyAgainLink,
+            qrCode: wineData.qrCode,
+            qrLink: wineData.qrLink,
+            location: wineData.location,
+            description: wineData.description,
+            foodPairing: wineData.foodPairing,
+            conversationHistory: wineData.conversationHistory || [],
+          };
+          setWine(transformedWine);
+          setLoadingState('loaded');
+        } else if (response.status === 404) {
+          setWine(null);
+          setLoadingState('notfound');
+        } else {
+          setWine(null);
+          setLoadingState('error');
         }
+      } catch (error) {
+        setWine(null);
+        setLoadingState('error');
       }
     };
-
     loadWineData();
-  }, [id, wine, location]);
+  }, [id, location]);
 
   // Detect QR code access and show interaction choice
   useEffect(() => {
@@ -197,7 +148,7 @@ export default function WineDetails() {
     document.documentElement.style.overflow = "auto";
   }, []);
 
-  if (!wine) {
+  if (loadingState === 'loading') {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-100px)]">
         <div className="text-center">
@@ -214,6 +165,30 @@ export default function WineDetails() {
             }}
           >
             Loading wine details...
+          </p>
+        </div>
+      </div>
+    );
+  }
+  if (loadingState === 'notfound') {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+        <div className="text-center">
+          <h2 style={{ color: "#FF6B6B", marginBottom: "16px", ...typography.h1 }}>Wine Not Found</h2>
+          <p style={{ ...typography.body, color: "#CECECE" }}>
+            The wine you're trying to view doesn't exist or couldn't be loaded.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  if (loadingState === 'error') {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-100px)]">
+        <div className="text-center">
+          <h2 style={{ color: "#FF6B6B", marginBottom: "16px", ...typography.h1 }}>Error</h2>
+          <p style={{ ...typography.body, color: "#CECECE" }}>
+            Failed to load wine details. Please try again later.
           </p>
         </div>
       </div>

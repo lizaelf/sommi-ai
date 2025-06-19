@@ -27,6 +27,11 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:5000',
+    },
+  },
   root: path.resolve(__dirname, "client"),
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
