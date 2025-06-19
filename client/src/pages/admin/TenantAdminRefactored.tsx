@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
-import { DataSyncManager, type UnifiedWineData } from "@/utils/dataSync";
+import { DataSyncManager } from "@/utils/dataSync";
+import { Wine } from "@/types/wine";
 
 // Refactored components
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -10,7 +11,7 @@ import { TabNavigation } from "@/components/admin/TabNavigation";
 import { WineManagement } from "@/components/admin/WineManagement";
 
 // Use unified wine data interface
-type WineCardData = UnifiedWineData;
+type WineCardData = Wine;
 
 interface TenantData {
   id: number;
