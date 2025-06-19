@@ -1,24 +1,64 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import React, { forwardRef, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  error?: boolean;
+  errorMessage?: string;
+}
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, error, errorMessage, onFocus, onBlur, ...props }, ref) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true);
+      onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+      onBlur?.(e);
+    };
+
     return (
-      <input
-        type={type}
-        className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-          className
+      <div className="w-full">
+        <input
+          type={type}
+          className={cn(
+            "flex h-14 w-full items-center px-6 py-4 text-white font-inter text-base outline-none box-border",
+            "rounded-xl border transition-all duration-200",
+            "placeholder:text-[#999999]",
+            error 
+              ? "border-[#FF6B6B]" 
+              : "border-[rgba(255,255,255,0.12)]",
+            isFocused
+              ? "border-[rgba(255,255,255,0.3)]"
+              : "",
+            className
+          )}
+          style={{
+            background: "transparent !important",
+            backgroundColor: "transparent !important",
+            backgroundImage: "none !important",
+            WebkitAppearance: "none !important",
+            appearance: "none !important",
+          }}
+          ref={ref}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          {...props}
+        />
+        {error && errorMessage && (
+          <div className="text-[#ff4444] text-sm mt-1 font-inter">
+            {errorMessage}
+          </div>
         )}
-        ref={ref}
-        {...props}
-      />
-    )
+      </div>
+    );
   }
-)
-Input.displayName = "Input"
+);
 
-export { Input }
+Input.displayName = "Input";
+
+export { Input };
