@@ -305,8 +305,8 @@ const SimpleWineEdit: React.FC = () => {
                     <QRCodeReact.QRCodeSVG
                       value={generateQRCodeValue()}
                       size={128}
-                      bgColor="#ffffff"
-                      fgColor="#000000"
+                      bgColor="#000000"
+                      fgColor="#ffffff"
                       level="M"
                     />
                   </div>
