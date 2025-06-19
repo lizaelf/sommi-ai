@@ -45,7 +45,7 @@ export async function parseWineryWebsite(url: string): Promise<WineryData> {
       waitFor: 2000
     });
 
-    if (!crawlResult.success || !crawlResult.content) {
+    if (!crawlResult.success || !crawlResult.markdown) {
       throw new Error('Failed to crawl website');
     }
 
@@ -85,7 +85,7 @@ export async function parseWineryWebsite(url: string): Promise<WineryData> {
     If information is not available, use null instead of guessing.
     
     Website content:
-    ${crawlResult.content}
+    ${crawlResult.markdown}
     `;
 
     // Use OpenAI to structure the wine data
@@ -252,7 +252,7 @@ export async function createTenantFromWineryData(wineryData: WineryData, slug?: 
           name: wineData.name,
           year: wineData.year,
           description: wineData.description || `${wineData.name} from ${wineryData.name}`,
-          imageUrl: '', // Will be populated later with uploaded images
+          image: '', // Will be populated later with uploaded images
           bottles: 1, // Default bottle count
           ratings: {
             vn: wineData.ratings?.vn || 0,
