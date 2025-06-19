@@ -18,6 +18,7 @@ interface WineManagementProps {
   onToggleEditMode: () => void;
   onImportData: () => void;
   onExportData: () => void;
+  onEditWine: (wine: WineCardData) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
 }
 
@@ -33,6 +34,7 @@ export const WineManagement: React.FC<WineManagementProps> = ({
   onToggleEditMode,
   onImportData,
   onExportData,
+  onEditWine,
   fileInputRef,
 }) => {
   return (
@@ -136,6 +138,7 @@ export const WineManagement: React.FC<WineManagementProps> = ({
               .map((wine) => (
                 <div
                   key={wine.id}
+                  onClick={() => onEditWine(wine)}
                   style={{
                     padding: "16px",
                     backgroundColor: "#1A1A1A",
@@ -144,6 +147,14 @@ export const WineManagement: React.FC<WineManagementProps> = ({
                     display: "flex",
                     alignItems: "center",
                     gap: "16px",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#2A2A2A";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#1A1A1A";
                   }}
                 >
                   <img
