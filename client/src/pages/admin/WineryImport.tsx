@@ -1,8 +1,29 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { StandardToast } from '@/components/ui/toast';
-import { typography } from '@/lib/typography';
+import { Button } from '@/components/ui/buttons/Button';
 import { Globe, Plus, Eye, Download, Loader2 } from 'lucide-react';
+
+const typography = {
+  h1: { fontSize: '32px', fontWeight: '700', lineHeight: '1.2' },
+  h2: { fontSize: '24px', fontWeight: '600', lineHeight: '1.3' },
+  h3: { fontSize: '20px', fontWeight: '600', lineHeight: '1.4' },
+  body1R: { fontSize: '16px', fontWeight: '400', lineHeight: '1.5' },
+  body1B: { fontSize: '16px', fontWeight: '600', lineHeight: '1.5' },
+  body2: { fontSize: '14px', fontWeight: '400', lineHeight: '1.4' }
+};
+
+const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+  // Simple toast implementation
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed; top: 20px; right: 20px; z-index: 9999;
+    padding: 12px 24px; border-radius: 8px; color: white;
+    background: ${type === 'success' ? '#059669' : '#DC2626'};
+    font-size: 14px; max-width: 400px;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => document.body.removeChild(toast), 3000);
+};
 
 interface WinePreview {
   name: string;

@@ -14,6 +14,7 @@ import FoodPairingSuggestionsPage from "@/pages/end-user/FoodPairingSuggestionsP
 import HomeGlobal from "@/pages/end-user/HomeGlobal";
 import WineScan from "@/pages/end-user/WineScan";
 import SimpleWineEdit from "@/pages/admin/SimpleWineEdit";
+import WineryImport from "@/pages/admin/WineryImport";
 
 import TenantAdminRefactored from "@/pages/admin/TenantAdminRefactored";
 import SommTenantAdmin from "@/pages/admin/SommTenantAdmin";
@@ -81,6 +82,7 @@ function Router() {
 
 
       <Route path="/wine-edit/:id" component={SimpleWineEdit} />
+      <Route path="/winery-import" component={WineryImport} />
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route path="/qr-codes" component={QRCodes} />
       <Route path="/qr-demo" component={QRDemo} />
