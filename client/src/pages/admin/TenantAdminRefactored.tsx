@@ -86,9 +86,7 @@ const TenantAdminRefactored: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(true);
   const [showDataSync, setShowDataSync] = useState(false);
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState<TenantData>({
     id: 1,
@@ -169,21 +167,7 @@ const TenantAdminRefactored: React.FC = () => {
     loadWineData();
   }, []);
 
-  // Handle logout
-  const handleLogout = () => {
-    // Clear any stored user data
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('tenantAdminActiveTab');
-    toastSuccess("You have been successfully logged out", "Logged out");
-    // Navigate to login page or home
-    window.location.href = '/';
-  };
 
-  // Handle edit profile
-  const handleEditProfile = () => {
-    setActiveTab('profile');
-    setShowUserDropdown(false);
-  };
 
   // Wine management handlers
   const handleToggleSearch = () => {
@@ -261,11 +245,10 @@ const TenantAdminRefactored: React.FC = () => {
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
       <AdminHeader
         currentTenant={currentTenant}
-        showUserDropdown={showUserDropdown}
-        onToggleDropdown={() => setShowUserDropdown(!showUserDropdown)}
-        onEditProfile={handleEditProfile}
-        onLogout={handleLogout}
-        dropdownRef={dropdownRef}
+        onAddTenant={() => {
+          // TODO: Implement add tenant functionality
+          console.log('Add tenant clicked');
+        }}
       />
       <HeaderSpacer />
 
