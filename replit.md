@@ -48,19 +48,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 19, 2025)
 
-### Firecrawl Winery Data Parsing System (June 19, 2025 - Latest)
-- **AI-Powered Winery Parsing**: Implemented comprehensive Firecrawl integration with OpenAI to automatically extract wine data from winery websites
-- **Complete Admin Interface**: Created WineryImport page with preview functionality, comprehensive crawling options, and intelligent data extraction
-- **Multi-Page Crawling**: Support for parsing multiple pages (wines, portfolio, current-releases) for comprehensive wine collection data
-- **Structured Data Extraction**: AI extracts wine names, vintages, descriptions, varietals, regions, ratings (VN/JD/WS/ABV), and pricing information
-- **Database Integration**: Automatically creates tenant (winery) and populates wine database with extracted information including technical details
-- **Preview System**: Preview functionality allows verification of extracted data before importing to database
-- **Enhanced Schema**: Extended database schema with winery fields (location, established, website) and wine fields (winery, varietal, appellation, tenantId)
-- **Error Handling**: Comprehensive error handling with graceful fallbacks and user feedback throughout parsing process
-- **Streamlined Interface**: Website parsing functionality integrated directly into TenantCreate page for seamless tenant creation workflow
-- **Simplified Architecture**: Removed separate WineryImport page, consolidating all tenant creation functionality into single interface
-
-### Automatic Background Removal & Transparent PNG Generation (June 19, 2025 - Previous)
+### Automatic Background Removal & Transparent PNG Generation (June 19, 2025 - Latest)
 - **Automatic Background Removal**: Implemented Cloudinary's background removal for wine bottle images to detect and remove white/solid backgrounds automatically
 - **Transparent PNG Creation**: System automatically generates PNG versions with alpha transparency for wine bottles against white backgrounds
 - **Smart Fallback System**: If background removal fails, original image is preserved ensuring no upload failures
