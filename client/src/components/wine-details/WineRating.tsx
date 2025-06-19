@@ -1,6 +1,6 @@
 import React from "react";
 import typography from "@/styles/typography";
-import Rating from "@/components/ui/Rating";
+import Rating from "@/components/ui/data-display/Rating";
 
 interface WineRatingProps {
   ratings: {

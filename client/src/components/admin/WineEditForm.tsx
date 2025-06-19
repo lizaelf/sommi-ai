@@ -3,7 +3,7 @@ import { Upload, Save, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import typography from "@/styles/typography";
-import { FormInput } from "@/components/ui/FormInput";
+import { FormInput } from "@/components/ui/forms/FormInput";
 
 interface WineEditFormProps {
   wine: {

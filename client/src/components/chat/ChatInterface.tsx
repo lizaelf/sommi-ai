@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { useStandardToast } from "@/components/ui/StandardToast";
+import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { useConversation } from "@/hooks/UseConversation";
 import { ClientMessage } from "@/lib/types";
 import { DataSyncManager } from "@/utils/dataSync";

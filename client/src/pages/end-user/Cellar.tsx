@@ -2,10 +2,10 @@ import { X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useStandardToast } from "@/components/ui/StandardToast";
+import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { CellarManager, type CellarWine } from "@/utils/cellarManager";
 import Button from "@/components/ui/Button";
-import { ContactInput } from "@/components/ui/ContactInput";
+import { ContactInput } from "@/components/ui/forms/ContactInput";
 import { CellarSearch, CellarFilters } from "@/components/cellar";
 
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useStandardToast } from '@/components/ui/StandardToast';
+import { Input } from '@/components/ui/forms/input';
+import { Textarea } from '@/components/ui/forms/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/layout/card';
+import { Badge } from '@/components/ui/data-display/badge';
+import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import { Loader2, Zap, Database, AudioLines } from 'lucide-react';
 
 interface WineDescription {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
-import { useStandardToast } from "@/components/ui/StandardToast";
+import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { DataSyncManager } from "@/utils/dataSync";
 import AppHeader, { HeaderSpacer } from "@/components/AppHeader";
 import { WineEditForm } from "@/components/admin/WineEditForm";

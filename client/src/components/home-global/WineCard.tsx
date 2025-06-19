@@ -2,7 +2,7 @@ import React from "react";
 import WineRating from "@/components/wine-details/WineRating";
 import typography from "@/styles/typography";
 import WineBottleImageDisplay from "@/components/wine-details/WineBottleImageDisplay";
-import WineCardComponent from "@/components/ui/WineCardComponent";
+import WineCardComponent from "@/components/ui/data-display/WineCardComponent";
 
 interface Wine {
   id: number;

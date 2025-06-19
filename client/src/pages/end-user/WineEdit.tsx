@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
-import { useStandardToast } from "@/components/ui/StandardToast";
+import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";
 import { SimpleQRCode } from "@/components/SimpleQRCode";

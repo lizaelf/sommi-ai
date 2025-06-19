@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload, Download, Search, X, RefreshCw, User, LogOut, Settings, Menu, Plus } from "lucide-react";
 import { Link, useLocation, useParams } from "wouter";
-import { useStandardToast } from "@/components/ui/StandardToast";
+import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { SegmentedPicker } from "@/components/SegmentedPicker";
 import Button from "@/components/ui/Button";
 import typography from "@/styles/typography";

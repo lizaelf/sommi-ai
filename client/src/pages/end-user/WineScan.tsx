@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRoute } from 'wouter';
 import { CellarManager } from '@/utils/cellarManager';
 import { DataSyncManager } from '@/utils/dataSync';
-import { useStandardToast } from '@/components/ui/StandardToast';
+import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import typography from '@/styles/typography';
 import { ChevronLeft } from 'lucide-react';
 
