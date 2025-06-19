@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import VoiceAssistantBottomSheet from './VoiceAssistantBottomSheet';
+import VoiceAssistantBottomSheet from '../bottom-sheet/VoiceAssistantBottomSheet';
 
 interface VoiceControllerProps {
   onSendMessage?: (message: string, options?: any) => void;
