@@ -52,54 +52,98 @@ export default function WineDetails() {
 
 
   useEffect(() => {
-    // Initialize data sync manager
-    DataSyncManager.initialize();
+    // Load wine data from database
+    const loadWineData = async () => {
+      // Get wine ID from URL params (either route param or query param)
+      const urlParams = new URLSearchParams(window.location.search);
+      const wineIdFromQuery = urlParams.get("wine");
+      const wineId = id || wineIdFromQuery || "1"; // Default to wine ID 1 if none provided
 
-    // Get wine ID from URL params (either route param or query param)
-    const urlParams = new URLSearchParams(window.location.search);
-    const wineIdFromQuery = urlParams.get("wine");
-    const wineId = id || wineIdFromQuery || "1"; // Default to wine ID 1 if none provided
+      console.log("WineDetails: Checking for wine ID:", {
+        id,
+        wineIdFromQuery,
+        wineId,
+        location,
+      });
 
-    console.log("WineDetails: Checking for wine ID:", {
-      id,
-      wineIdFromQuery,
-      wineId,
-      location,
-    });
-
-    if (wineId && !wine) {
-      const wineData = DataSyncManager.getWineById(parseInt(wineId));
-      if (wineData) {
-        console.log(
-          "WineDetails: Looking for wine ID",
-          wineId,
-          "found:",
-          wineData,
-        );
-        const transformedWine = {
-          id: wineData.id,
-          name: wineData.name,
-          year: wineData.year,
-          bottles: wineData.bottles,
-          image: wineData.image,
-          ratings: wineData.ratings,
-          buyAgainLink: wineData.buyAgainLink,
-          qrCode: wineData.qrCode,
-          qrLink: wineData.qrLink,
-          location: wineData.location,
-          description: wineData.description,
-          foodPairing: wineData.foodPairing,
-          conversationHistory: wineData.conversationHistory || [],
-        };
-        setWine(transformedWine);
-        console.log(
-          "WineDetails: Wine loaded successfully:",
-          transformedWine.name,
-        );
-      } else {
-        console.log("WineDetails: Wine not found for ID:", wineId);
+      if (wineId && !wine) {
+        try {
+          // First try to load from database
+          const response = await fetch(`/api/wines/${wineId}`);
+          if (response.ok) {
+            const wineData = await response.json();
+            console.log("WineDetails: Looking for wine ID", wineId, "found:", wineData);
+            
+            const transformedWine = {
+              id: wineData.id,
+              name: wineData.name,
+              year: wineData.year,
+              bottles: wineData.bottles,
+              image: wineData.image,
+              ratings: wineData.ratings,
+              buyAgainLink: wineData.buyAgainLink,
+              qrCode: wineData.qrCode,
+              qrLink: wineData.qrLink,
+              location: wineData.location,
+              description: wineData.description,
+              foodPairing: wineData.foodPairing,
+              conversationHistory: wineData.conversationHistory || [],
+            };
+            setWine(transformedWine);
+            console.log("WineDetails: Wine loaded successfully from database:", transformedWine.name);
+          } else {
+            // Fallback to DataSyncManager for localStorage data
+            const wineData = DataSyncManager.getWineById(parseInt(wineId));
+            if (wineData) {
+              console.log("WineDetails: Found in localStorage, migrating to database");
+              const transformedWine = {
+                id: wineData.id,
+                name: wineData.name,
+                year: wineData.year,
+                bottles: wineData.bottles,
+                image: wineData.image,
+                ratings: wineData.ratings,
+                buyAgainLink: wineData.buyAgainLink,
+                qrCode: wineData.qrCode,
+                qrLink: wineData.qrLink,
+                location: wineData.location,
+                description: wineData.description,
+                foodPairing: wineData.foodPairing,
+                conversationHistory: wineData.conversationHistory || [],
+              };
+              setWine(transformedWine);
+            } else {
+              console.log("WineDetails: Wine not found for ID:", wineId);
+            }
+          }
+        } catch (error) {
+          console.error("WineDetails: Error loading wine data:", error);
+          // Fallback to DataSyncManager for localStorage data
+          const wineData = DataSyncManager.getWineById(parseInt(wineId));
+          if (wineData) {
+            console.log("WineDetails: Found in localStorage fallback");
+            const transformedWine = {
+              id: wineData.id,
+              name: wineData.name,
+              year: wineData.year,
+              bottles: wineData.bottles,
+              image: wineData.image,
+              ratings: wineData.ratings,
+              buyAgainLink: wineData.buyAgainLink,
+              qrCode: wineData.qrCode,
+              qrLink: wineData.qrLink,
+              location: wineData.location,
+              description: wineData.description,
+              foodPairing: wineData.foodPairing,
+              conversationHistory: wineData.conversationHistory || [],
+            };
+            setWine(transformedWine);
+          }
+        }
       }
-    }
+    };
+
+    loadWineData();
   }, [id, wine, location]);
 
   // Detect QR code access and show interaction choice

@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 const wineryLogoPath = "/wineries/winary-logo.png";
 // Default images removed - only authentic uploaded images will be displayed
 import typography from "@/styles/typography";
-import Logo from "@/components/layo../layout/Logo";
+import Logo from "@/components/layout/Logo";
 import WineRating from "@/components/wine-details/WineRating";
 import { getWineDisplayName } from '../../../../shared/wineConfig';
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
@@ -48,10 +48,26 @@ const HomeGlobal = () => {
   }, []);
 
   useEffect(() => {
-    // Load wines from CRM storage - show only wines with ID1 and ID2
-    const crmWines = JSON.parse(localStorage.getItem('admin-wines') || '[]');
-    const filteredWines = crmWines.filter((wine: Wine) => wine.id === 1 || wine.id === 2);
-    setWines(filteredWines);
+    // Load wines from database - show only wines with ID1 and ID2
+    const loadWines = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/wines');
+        if (response.ok) {
+          const allWines = await response.json();
+          const filteredWines = allWines.filter((wine: Wine) => wine.id === 1 || wine.id === 2);
+          setWines(filteredWines);
+        } else {
+          console.error('Failed to load wines from database');
+        }
+      } catch (error) {
+        console.error('Error loading wines:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWines();
   }, []);
 
 
