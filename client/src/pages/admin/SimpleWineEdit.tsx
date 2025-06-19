@@ -6,7 +6,7 @@ import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
-import { Upload, X, Image as ImageIcon, Download, QrCode } from "lucide-react";
+import { Upload, Image as ImageIcon, Download, QrCode } from "lucide-react";
 import * as QRCodeReact from "qrcode.react";
 
 const SimpleWineEdit: React.FC = () => {
@@ -141,16 +141,6 @@ const SimpleWineEdit: React.FC = () => {
     }
   };
 
-  const handleRemoveImage = () => {
-    if (wine) {
-      setWine({ ...wine, image: '' });
-      setImagePreview(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
-  };
-
   const generateQRCodeValue = () => {
     if (!wine) return '';
     // Generate QR code value based on wine details
@@ -262,19 +252,12 @@ const SimpleWineEdit: React.FC = () => {
               
               {/* Image Preview */}
               {imagePreview && (
-                <div className="mb-4 relative inline-block">
+                <div className="mb-4 inline-block">
                   <img
                     src={imagePreview}
                     alt="Wine preview"
                     className="w-32 h-32 object-cover rounded-lg border border-white/20"
                   />
-                  <button
-                    onClick={handleRemoveImage}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
-                    type="button"
-                  >
-                    <X size={14} />
-                  </button>
                 </div>
               )}
 
