@@ -214,12 +214,8 @@ const TenantAdminRefactored: React.FC = () => {
   };
 
   const handleEditWine = (wine: WineCardData) => {
-    // For now, just log the wine data - you can implement edit functionality here
-    console.log('Edit wine:', wine);
-    toast({
-      title: "Edit Wine",
-      description: `Opening edit mode for ${wine.name}`,
-    });
+    console.log('Edit wine clicked:', wine);
+    toastInfo(`Opening edit mode for ${wine.name}`);
   };
 
   const renderTabContent = () => {
