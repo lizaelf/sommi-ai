@@ -75,11 +75,7 @@ export const useStandardToast = () => {
                        'bg-white text-black'} border-none`;
     return toast({
       title,
-      description: (
-        <span style={getToastStyles()}>
-          {description}
-        </span>
-      ),
+      description,
       duration,
       className,
       style: getToastStyles(),
