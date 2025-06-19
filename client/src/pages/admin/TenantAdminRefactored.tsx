@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams, useLocation } from "wouter";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useParams, useLocation, useRoute } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
+import WineImage from "@/components/wine-details/WineImage";
 
 // Refactored components
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -91,6 +92,15 @@ const TenantAdminRefactored: React.FC = () => {
   const [showDataSync, setShowDataSync] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [location, setLocation] = useLocation();
+
+  // Filter wines based on search term
+  const filteredWines = useMemo(() => {
+    if (!searchTerm) return wineCards;
+    return wineCards.filter((wine: Wine) => 
+      wine.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [wineCards, searchTerm]);
   
   const [formData, setFormData] = useState<TenantData>({
     id: 1,
@@ -190,8 +200,6 @@ const TenantAdminRefactored: React.FC = () => {
     link.click();
     URL.revokeObjectURL(url);
   };
-
-  const [, setLocation] = useLocation();
 
   const handleAddWine = () => {
     console.log('Add wine clicked');
@@ -379,21 +387,72 @@ const TenantAdminRefactored: React.FC = () => {
         );
       case "cms":
         return (
-          <WineManagement
-            wineCards={wineCards}
-            searchTerm={searchTerm}
-            showSearch={showSearch}
-            showDataSync={showDataSync}
-            isEditMode={isEditMode}
-            onSearchChange={setSearchTerm}
-            onToggleSearch={handleToggleSearch}
-            onToggleDataSync={handleToggleDataSync}
-            onToggleEditMode={handleToggleEditMode}
-            onImportData={handleImportData}
-            onExportData={handleExportData}
-            onEditWine={handleEditWine}
-            fileInputRef={fileInputRef}
-          />
+          <div className="p-6">
+            {/* Search Bar and Add Wine Button */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-1 relative">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search wines..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:border-white/40 focus:outline-none"
+                />
+              </div>
+              <Button 
+                variant="primary" 
+                onClick={() => navigate('/wine-edit/new')}
+                className="flex items-center gap-2 whitespace-nowrap"
+              >
+                <span className="text-lg">+</span>
+                Add wine
+              </Button>
+            </div>
+
+            {/* Wine Grid */}
+            <div className="space-y-4">
+              {filteredWines.map((wine) => (
+                <div 
+                  key={wine.id} 
+                  className="flex items-center gap-4 p-4 bg-white/5 border border-white/20 rounded-lg hover:bg-white/8 transition-colors cursor-pointer"
+                  onClick={() => handleEditWine(wine)}
+                >
+                  {/* Wine Image */}
+                  <div className="w-16 h-20 flex-shrink-0">
+                    <WineImage
+                      wineName={wine.name}
+                      imagePath={wine.imagePath}
+                      size="small"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  
+                  {/* Wine Info */}
+                  <div className="flex-1">
+                    <h3 style={typography.h3} className="text-white mb-1">
+                      {wine.name}
+                    </h3>
+                    <p style={typography.body1R} className="text-white/60">
+                      ID: {wine.id}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {filteredWines.length === 0 && (
+                <div className="text-center py-12">
+                  <p style={typography.body1R} className="text-white/60">
+                    {searchTerm ? 'No wines found matching your search.' : 'No wines available. Add your first wine to get started.'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         );
       case "ai-model":
         return (
