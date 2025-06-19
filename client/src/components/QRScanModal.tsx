@@ -1,5 +1,5 @@
 import React from 'react';
-import { BottomSheet } from '../bottom-sheet/BottomSheet';
+import { BottomSheet } from './bottom-sheet/BottomSheet';
 import Button from './ui/buttons/Button';
 
 interface QRScanModalProps {
