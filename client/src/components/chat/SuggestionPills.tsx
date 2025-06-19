@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { suggestionCache } from "@/utils/suggestionCache";
 import { ChatQuestion } from "@/components/chat";
 import typography from "@/styles/typography";
-import wineResponses from "../../../shared/wineResponses.json";
+import wineResponses from "../../../../shared/wineResponses.json";
 
 // Helper function to generate cache keys for suggestions
 const getSuggestionCacheKey = (

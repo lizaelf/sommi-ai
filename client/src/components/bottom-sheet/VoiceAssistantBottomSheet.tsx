@@ -1,9 +1,9 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import CircleAnimation from '../animations/CircleAnimation';
-import { ShiningText } from '../ShiningText';
+import { ShiningText } from '../animations/ShiningText';
 import Button from '@/components/ui/buttons/Button';
-import SuggestionPills from '../SuggestionPills';
+import SuggestionPills from '../chat/SuggestionPills';
 
 interface VoiceAssistantBottomSheetProps {
   isOpen: boolean;
