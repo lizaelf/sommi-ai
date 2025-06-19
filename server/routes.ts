@@ -1652,6 +1652,70 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  // Firecrawl winery parsing endpoints
+  app.post("/api/auto-populate-winery", async (req, res) => {
+    try {
+      const { url, tenantSlug, additionalPaths } = req.body;
+      
+      if (!url) {
+        return res.status(400).json({ error: "Winery URL is required" });
+      }
+
+      const { autoPopulateWinery } = await import('./firecrawl.js');
+      
+      console.log(`Starting winery parsing for: ${url}`);
+      
+      const result = await autoPopulateWinery(url, tenantSlug, additionalPaths);
+      
+      res.json({
+        success: true,
+        message: `Successfully created winery with ${result.winesCreated} wines`,
+        tenantId: result.tenantId,
+        winesCreated: result.winesCreated
+      });
+      
+    } catch (error) {
+      console.error("Winery parsing error:", error);
+      res.status(500).json({ 
+        error: "Failed to parse winery data",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Preview winery data without creating tenant
+  app.post("/api/preview-winery", async (req, res) => {
+    try {
+      const { url, additionalPaths } = req.body;
+      
+      if (!url) {
+        return res.status(400).json({ error: "Winery URL is required" });
+      }
+
+      const { parseWineryWebsite, crawlComprehensiveWineryData } = await import('./firecrawl.js');
+      
+      console.log(`Previewing winery data for: ${url}`);
+      
+      // Use comprehensive crawling if additional paths provided
+      const wineryData = additionalPaths && additionalPaths.length > 0
+        ? await crawlComprehensiveWineryData(url, additionalPaths)
+        : await parseWineryWebsite(url);
+      
+      res.json({
+        success: true,
+        winery: wineryData,
+        wineCount: wineryData.wines.length
+      });
+      
+    } catch (error) {
+      console.error("Winery preview error:", error);
+      res.status(500).json({ 
+        error: "Failed to preview winery data",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
   // Tenant management endpoints
   app.get("/api/tenants", async (_req, res) => {
     try {

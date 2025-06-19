@@ -45,20 +45,23 @@ export async function parseWineryWebsite(url: string): Promise<WineryData> {
       waitFor: 2000
     });
 
-    console.log('Firecrawl response structure:', {
+    console.log('Firecrawl response received:', {
       success: crawlResult.success,
+      type: typeof crawlResult,
       keys: Object.keys(crawlResult)
     });
 
     if (!crawlResult.success) {
       console.error('Firecrawl failed:', crawlResult);
-      throw new Error('Failed to crawl website');
+      throw new Error(`Failed to crawl website: ${(crawlResult as any).error || 'Unknown error'}`);
     }
 
-    // Handle different response structures
-    const content = (crawlResult as any).markdown || (crawlResult as any).data?.markdown || '';
+    // Extract content from successful response
+    const successResult = crawlResult as any;
+    const content = successResult.markdown || successResult.data?.markdown || successResult.content || '';
+    
     if (!content.trim()) {
-      console.error('No content found in response:', crawlResult);
+      console.error('No content found in response:', successResult);
       throw new Error('No content extracted from website');
     }
 
@@ -158,7 +161,7 @@ export async function crawlComprehensiveWineryData(baseUrl: string, additionalPa
       }).then(result => ({
         url,
         success: result.success,
-        content: result.success ? result.markdown || '' : ''
+        content: result.success ? ((result as any).markdown || (result as any).data?.markdown || (result as any).content || '') : ''
       }))
     );
 
