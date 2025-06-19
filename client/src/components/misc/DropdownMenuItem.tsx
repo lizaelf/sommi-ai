@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import Button from "./ui/buttons/Button";
+import Button from "@/components/ui/buttons/Button";
 import { cn } from "@/lib/utils";
 
 interface DropdownMenuItemProps {

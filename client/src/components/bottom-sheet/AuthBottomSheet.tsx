@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import Button from "./ui/buttons/Button";
-import { FormInput } from "./ui/FormInput";
+import Button from "@/components/ui/buttons/Button";
+import { FormInput } from "@/components/ui/FormInput";
 import typography from "@/styles/typography";
 
 export interface AuthFormData {
