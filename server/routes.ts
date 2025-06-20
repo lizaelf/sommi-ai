@@ -1575,7 +1575,6 @@ Format: Return only the description text, no quotes or additional formatting.`;
       }
       
       const wine = await storage.updateWine(id, req.body);
-      console.log('Updated wine via PUT:', wine);
       if (!wine) {
         return res.status(404).json({ message: "Wine not found" });
       }

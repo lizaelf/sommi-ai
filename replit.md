@@ -46,9 +46,17 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - **Welcome Message under code freeze - require user approval before any changes (finalized June 16, 2025)**
   - **VoiceAssistant Component System under complete code freeze - require explicit user approval before any modifications (finalized June 17, 2025)**
 
-## Recent Changes (June 19, 2025)
+## Recent Changes (June 20, 2025)
 
-### Automatic Background Removal & Transparent PNG Generation (June 19, 2025 - Latest)
+### Critical Database Persistence Bug Fix (June 20, 2025 - Latest)
+- **PUT API Endpoint Addition**: Fixed critical missing PUT /api/wines/:id endpoint that was causing database update failures during image uploads
+- **Database Persistence Resolution**: Resolved bug where Cloudinary URLs weren't being saved to database after successful image uploads
+- **API Method Mismatch Fix**: DataSyncManager was sending PUT requests but server only had PATCH endpoint, causing silent update failures
+- **Automatic Database Saving**: Enhanced image upload process to automatically save Cloudinary URLs to database immediately after successful upload
+- **Debug Logging Enhancement**: Added comprehensive logging to storage layer for better debugging of database operations
+- **Complete Upload Workflow**: Full end-to-end image upload now works: file upload → Cloudinary processing → transparent PNG creation → database persistence → preview update
+
+### Automatic Background Removal & Transparent PNG Generation (June 19, 2025 - Previous)
 - **Automatic Background Removal**: Implemented Cloudinary's background removal for wine bottle images to detect and remove white/solid backgrounds automatically
 - **Transparent PNG Creation**: System automatically generates PNG versions with alpha transparency for wine bottles against white backgrounds
 - **Smart Fallback System**: If background removal fails, original image is preserved ensuring no upload failures
