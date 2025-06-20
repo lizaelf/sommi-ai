@@ -8,6 +8,17 @@ interface Window {
     muteAndSavePosition: () => void;
     resumeFromMute: () => void;
   };
+  voiceAudioManager?: {
+    stopAudio: () => void;
+    playWelcomeMessage: () => void;
+    getCachedAudio?: (text: string) => Blob | null;
+    setCachedAudio?: (text: string, audioBlob: Blob) => void;
+  };
+  voiceRecorder?: {
+    startRecording: () => void;
+    stopRecording: () => void;
+    cleanup: () => void;
+  };
 }
 
 // Define SpeechRecognition interface for TypeScript

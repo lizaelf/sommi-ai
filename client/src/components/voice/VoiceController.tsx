@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import VoiceAssistantBottomSheet from '../bottom-sheet/VoiceAssistantBottomSheet';
 
+const SILENCE_THRESHOLD = 30;
+const SILENCE_DURATION = 2000;
+
 interface VoiceControllerProps {
   onSendMessage?: (message: string, options?: any) => void;
   onAddMessage?: (message: any) => void;
@@ -29,6 +32,11 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   const currentTTSRequestRef = useRef<AbortController | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const silenceStartRef = useRef<number | null>(null);
+  const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleWelcomeMessage = async () => {
     try {
@@ -263,8 +271,6 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         }));
         
         let silenceStart = Date.now();
-        const SILENCE_THRESHOLD = 30;
-        const SILENCE_DURATION = 2000; // 2 seconds of silence
         
         const checkAudioLevel = () => {
           if (!isListening) return;
@@ -496,41 +502,139 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     setShowUnmuteButton(false);
     setShowAskButton(false);
     isManuallyClosedRef.current = true;
-    
-    // Clean up any active streams
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-    
+    stopRecording();
     setTimeout(() => {
       isManuallyClosedRef.current = false;
     }, 1000);
   };
 
   const handleAskRecording = () => {
-    setShowAskButton(false);
-    setIsListening(true);
-    setIsResponding(false);
-    setIsThinking(false);
-    setIsPlayingAudio(false);
-    setShowUnmuteButton(false);
-    
-    // Trigger mic button flow for Ask button
-    const event = new CustomEvent('triggerMicButton');
-    window.dispatchEvent(event);
+    startRecording();
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      // --- Додаємо аналізатор для тиші ---
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = audioContext;
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+      const dataArray = new Uint8Array(analyser.fftSize);
+
+      // --- Функція перевірки тиші ---
+      const checkSilence = () => {
+        analyser.getByteTimeDomainData(dataArray);
+        // Розрахунок середньої амплітуди
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += Math.abs(dataArray[i] - 128);
+        }
+        const avg = sum / dataArray.length;
+
+        if (avg < SILENCE_THRESHOLD) {
+          if (!silenceStartRef.current) silenceStartRef.current = Date.now();
+          if (Date.now() - (silenceStartRef.current || 0) > SILENCE_DURATION) {
+            // Тиша достатньо довго — зупиняємо запис
+            if (mediaRecorder.state === "recording") {
+              mediaRecorder.stop();
+            }
+            stream.getTracks().forEach(track => track.stop());
+            audioContext.close();
+            return;
+          }
+        } else {
+          silenceStartRef.current = null;
+        }
+        // Продовжуємо перевірку
+        silenceTimeoutRef.current = setTimeout(checkSilence, 100);
+      };
+
+      // --- Запускаємо перевірку тиші ---
+      checkSilence();
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        // Очищаємо таймери та контексти
+        if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+          audioContextRef.current = null;
+        }
+        analyserRef.current = null;
+        silenceStartRef.current = null;
+
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('audio', audioBlob);
+
+        setIsThinking(true);
+        setIsListening(false);
+
+        try {
+          const response = await fetch('/api/transcribe', {
+            method: 'POST',
+            body: formData,
+          });
+          const result = await response.json();
+          if (result.text && onSendMessage) {
+            onSendMessage(result.text.trim());
+          }
+        } catch (err) {
+          console.error("Transcribe error:", err);
+        } finally {
+          setIsThinking(false);
+          setIsResponding(false);
+        }
+      };
+
+      mediaRecorder.start();
+      setIsListening(true);
+      setIsResponding(false);
+      setIsThinking(false);
+      setIsPlayingAudio(false);
+      setShowUnmuteButton(false);
+      setShowAskButton(false);
+
+      // --- (Опціонально) Автостоп через 10 секунд як запасний варіант ---
+      setTimeout(() => {
+        if (mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+        }
+        stream.getTracks().forEach(track => track.stop());
+        if (audioContextRef.current) audioContextRef.current.close();
+      }, 10000);
+
+    } catch (error) {
+      console.error("Failed to start recording:", error);
+      setIsListening(false);
+      setIsThinking(false);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
   };
 
   return (
     <VoiceAssistantBottomSheet
       isOpen={showBottomSheet}
       onClose={handleClose}
-      onMute={stopAudio}
+      onMute={stopRecording}
       onAsk={handleAskRecording}
       isListening={isListening}
       isResponding={isResponding}
@@ -539,26 +643,11 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       showUnmuteButton={showUnmuteButton}
       showAskButton={showAskButton}
       showSuggestions={true}
-      onStopAudio={stopAudio}
-      onUnmute={stopAudio}
+      onStopAudio={stopRecording}
+      onUnmute={stopRecording}
       wineKey={wineKey}
       onSuggestionClick={(suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => {
-        console.log("VoiceController: Handling suggestion click:", suggestion);
-        
-        // Set states for voice response with Stop button
-        setShowAskButton(false);
-        setIsListening(false);
-        setIsThinking(false);
-        setIsResponding(true);
-        setIsPlayingAudio(true);
-        setShowUnmuteButton(false);
-        
-        // Handle voice suggestion with TTS
-        if (options?.instantResponse) {
-          console.log("VoiceController: Playing instant response with TTS");
-          handleVoiceResponse(options.instantResponse);
-        } else if (onSendMessage) {
-          console.log("VoiceController: Sending message for API response");
+        if (onSendMessage) {
           onSendMessage(suggestion);
         }
       }}
