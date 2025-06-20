@@ -1,4 +1,5 @@
 import { Wine } from "@/types/wine";
+import getWineDB from "@/lib/indexedDB";
 
 export class DataSyncManager {
   static async getUnifiedWineData(): Promise<Wine[]> {

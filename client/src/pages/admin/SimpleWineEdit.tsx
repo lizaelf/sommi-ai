@@ -8,6 +8,8 @@ import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
 import { Upload, Image as ImageIcon, Download, QrCode } from "lucide-react";
 import * as QRCodeReact from "qrcode.react";
+import WineActionsDropdown from "@/components/admin/WineActionsDropdown";
+
 
 const SimpleWineEdit: React.FC = () => {
   const { id } = useParams();
@@ -218,6 +220,23 @@ const SimpleWineEdit: React.FC = () => {
     }
   };
 
+  // Функция удаления вина
+  const handleDeleteWine = async () => {
+    if (!wine || isNewWine) return;
+    if (!window.confirm("Are you sure you want to delete this wine? This action cannot be undone.")) return;
+    try {
+      const ok = await DataSyncManager.removeWine(wine.id);
+      if (ok) {
+        toastSuccess("Wine deleted successfully");
+        setLocation("/winery-tenant-admin");
+      } else {
+        toastError("Failed to delete wine");
+      }
+    } catch (error) {
+      toastError("Failed to delete wine");
+    }
+  };
+
   const pageTitle = isNewWine ? "Add New Wine" : "Edit Wine";
 
   if (loading) {
@@ -247,7 +266,12 @@ const SimpleWineEdit: React.FC = () => {
       <AppHeader 
         title={pageTitle} 
         showBackButton 
-        onBack={() => setLocation("/winery-tenant-admin")} 
+        onBack={() => setLocation("/winery-tenant-admin")}
+        rightContent={
+          !isNewWine && wine?.id ? (
+            <WineActionsDropdown onDeleteWine={handleDeleteWine} />
+          ) : null
+        }
       />
       
       <div className="pt-[75px] p-6">

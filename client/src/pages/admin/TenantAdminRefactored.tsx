@@ -9,9 +9,9 @@ import typography from "@/styles/typography";
 import WineImage from "@/components/wine-details/WineImage";
 
 // Refactored components
-import { AdminHeader } from "@/components/admin/AdminHeader";
 import { TabNavigation } from "@/components/admin/TabNavigation";
 import { WineManagement } from "@/components/admin/WineManagement";
+import AdminActionsDropdown from "@/components/admin/AdminActionsDropdown";
 
 // Use unified wine data interface
 type WineCardData = Wine;
@@ -596,10 +596,12 @@ const TenantAdminRefactored: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
-      <AdminHeader
-        currentTenant={currentTenant}
-        onAddWine={handleAddWine}
-        onDeleteTenant={handleDeleteTenant}
+      <AppHeader
+        title={currentTenant?.name || "Admin Panel"}
+        showBackButton={true}
+        rightContent={
+          <AdminActionsDropdown onDeleteTenant={handleDeleteTenant} />
+        }
       />
       <HeaderSpacer />
 
