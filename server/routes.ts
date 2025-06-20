@@ -1567,6 +1567,26 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
+  app.put("/api/wines/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid wine ID" });
+      }
+      
+      const wine = await storage.updateWine(id, req.body);
+      console.log('Updated wine via PUT:', wine);
+      if (!wine) {
+        return res.status(404).json({ message: "Wine not found" });
+      }
+      
+      res.json(wine);
+    } catch (error) {
+      console.error("Error updating wine:", error);
+      res.status(500).json({ message: "Failed to update wine" });
+    }
+  });
+
   app.delete("/api/wines/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
