@@ -272,70 +272,127 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         
         let silenceStart = Date.now();
         
+        let animationId: number;
+        
         const checkAudioLevel = () => {
-          if (!isListening) return;
-          
-          analyser.getByteFrequencyData(dataArray);
-          let volume = 0;
-          for (let i = 0; i < dataArray.length; i++) {
-            if (dataArray[i] > volume) {
-              volume = dataArray[i];
-            }
-          }
-          
-          // Dispatch volume events for circle animation
-          window.dispatchEvent(new CustomEvent('voice-volume', {
-            detail: { volume, maxVolume: 100, isActive: volume > SILENCE_THRESHOLD }
-          }));
-          
-          // Debug volume levels
-          if (volume > SILENCE_THRESHOLD) {
-            console.log("🎤 VoiceController: Voice detected, volume:", volume);
-          }
-          
-          if (volume > SILENCE_THRESHOLD) {
-            silenceStart = Date.now();
-          } else if (Date.now() - silenceStart > SILENCE_DURATION) {
-            console.log("🎤 User stopped speaking - starting thinking phase");
-            
-            // Clean up microphone
-            stream.getTracks().forEach(track => track.stop());
-            audioContext.close();
-            streamRef.current = null;
-            audioContextRef.current = null;
-            
-            // Start thinking phase
-            setIsListening(false);
-            setIsThinking(true);
-            
-            window.dispatchEvent(new CustomEvent('mic-status', {
-              detail: { status: 'processing' }
-            }));
-            
-            // After thinking, start response
-            setTimeout(() => {
-              setIsThinking(false);
-              setIsResponding(true);
-              setIsPlayingAudio(true);
-              
-              window.dispatchEvent(new CustomEvent('mic-status', {
-                detail: { status: 'stopped' }
-              }));
-              
-              handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
-            }, 2000);
-            
+          // Stop if listening state changed or microphone was cleaned up
+          if (!isListening || !streamRef.current || !audioContextRef.current) {
+            console.log("🎤 VoiceController: Stopping audio level check - listening state changed");
             return;
           }
           
-          requestAnimationFrame(checkAudioLevel);
+          try {
+            analyser.getByteFrequencyData(dataArray);
+            let volume = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+              if (dataArray[i] > volume) {
+                volume = dataArray[i];
+              }
+            }
+            
+            // Dispatch volume events for circle animation
+            window.dispatchEvent(new CustomEvent('voice-volume', {
+              detail: { volume, maxVolume: 100, isActive: volume > SILENCE_THRESHOLD }
+            }));
+            
+            // Debug volume levels
+            if (volume > SILENCE_THRESHOLD) {
+              console.log("🎤 VoiceController: Voice detected, volume:", volume);
+            }
+            
+            if (volume > SILENCE_THRESHOLD) {
+              silenceStart = Date.now();
+            } else if (Date.now() - silenceStart > SILENCE_DURATION) {
+              console.log("🎤 User stopped speaking - starting thinking phase");
+              
+              // Clean up microphone
+              if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current = null;
+              }
+              if (audioContextRef.current) {
+                audioContextRef.current.close();
+                audioContextRef.current = null;
+              }
+              
+              // Start thinking phase
+              setIsListening(false);
+              setIsThinking(true);
+              
+              window.dispatchEvent(new CustomEvent('mic-status', {
+                detail: { status: 'processing' }
+              }));
+              
+              // After thinking, start response
+              setTimeout(() => {
+                setIsThinking(false);
+                setIsResponding(true);
+                setIsPlayingAudio(true);
+                
+                window.dispatchEvent(new CustomEvent('mic-status', {
+                  detail: { status: 'stopped' }
+                }));
+                
+                handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+                
+                // Reset mic button flag after response
+                setTimeout(() => {
+                  isMicButtonTriggered = false;
+                }, 1000);
+              }, 2000);
+              
+              return;
+            }
+            
+            animationId = requestAnimationFrame(checkAudioLevel);
+          } catch (error) {
+            console.error("🎤 VoiceController: Error in audio level check:", error);
+            // Clean up on error
+            if (streamRef.current) {
+              streamRef.current.getTracks().forEach(track => track.stop());
+              streamRef.current = null;
+            }
+            if (audioContextRef.current) {
+              audioContextRef.current.close();
+              audioContextRef.current = null;
+            }
+            setIsListening(false);
+            setShowAskButton(true);
+            isMicButtonTriggered = false;
+          }
         };
         
-        checkAudioLevel();
+        // Store animation ID for cleanup
+        animationId = requestAnimationFrame(checkAudioLevel);
+        
+        // Store cleanup function for potential early termination
+        const cleanup = () => {
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+          }
+          if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+          }
+          if (audioContextRef.current) {
+            audioContextRef.current.close();
+            audioContextRef.current = null;
+          }
+        };
+        
+        // Store cleanup function for potential use
+        (window as any).voiceCleanup = cleanup;
         
       } catch (error) {
         console.error("🎤 VoiceController: Failed to access microphone:", error);
         console.log("🎤 VoiceController: Using fallback timer-based flow");
+        
+        // Check if we should proceed with fallback
+        if (!isListening) {
+          console.log("🎤 VoiceController: Listening stopped, aborting fallback");
+          isMicButtonTriggered = false;
+          return;
+        }
         
         // Dispatch listening event for fallback
         console.log("🎤 VoiceController: Dispatching fallback mic-status listening event");
@@ -344,7 +401,15 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         }));
         
         // Simulate voice volume events during fallback listening
-        const fallbackVolumeInterval = setInterval(() => {
+        let fallbackVolumeInterval: NodeJS.Timeout;
+        let fallbackTimeout: NodeJS.Timeout;
+        
+        fallbackVolumeInterval = setInterval(() => {
+          // Stop if listening state changed
+          if (!isListening) {
+            clearInterval(fallbackVolumeInterval);
+            return;
+          }
           const volume = Math.random() * 40 + 20;
           window.dispatchEvent(new CustomEvent('voice-volume', {
             detail: { volume, maxVolume: 100, isActive: true }
@@ -352,8 +417,16 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         }, 150);
         
         // Fallback to timer-based flow
-        setTimeout(() => {
+        fallbackTimeout = setTimeout(() => {
           clearInterval(fallbackVolumeInterval);
+          
+          // Check if still in listening state
+          if (!isListening) {
+            console.log("🎤 VoiceController: Listening stopped during fallback, aborting");
+            isMicButtonTriggered = false;
+            return;
+          }
+          
           setIsListening(false);
           setIsThinking(true);
           
@@ -380,6 +453,12 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             }, 1000);
           }, 2000);
         }, 3000);
+        
+        // Store cleanup for fallback timers
+        (window as any).voiceFallbackCleanup = () => {
+          clearInterval(fallbackVolumeInterval);
+          clearTimeout(fallbackTimeout);
+        };
       }
       
       // Reset mic button flag on error
@@ -389,7 +468,35 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
     };
 
     const handleStopAudio = () => {
-      console.log("🛑 VoiceController: Stop button clicked - aborting all audio");
+      console.log("🛑 VoiceController: Stop button clicked - aborting all audio and listening");
+      
+      // Stop listening state immediately
+      setIsListening(false);
+      setIsThinking(false);
+      setIsResponding(false);
+      setIsPlayingAudio(false);
+      setShowUnmuteButton(false);
+      setShowAskButton(true);
+      
+      // Clean up microphone streams and audio context
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+      
+      // Clean up animation frames and timers
+      if ((window as any).voiceCleanup) {
+        (window as any).voiceCleanup();
+        (window as any).voiceCleanup = null;
+      }
+      if ((window as any).voiceFallbackCleanup) {
+        (window as any).voiceFallbackCleanup();
+        (window as any).voiceFallbackCleanup = null;
+      }
       
       // Abort ongoing TTS request
       if (currentTTSRequestRef.current) {
@@ -406,11 +513,14 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         currentAudioRef.current = null;
       }
       
-      // Reset all states
-      setIsPlayingAudio(false);
-      setIsResponding(false);
-      setShowUnmuteButton(false);
-      setShowAskButton(true);
+      // Reset flags
+      isMicButtonTriggered = false;
+      isVoiceButtonTriggered = false;
+      
+      // Dispatch stop event for circle animation
+      window.dispatchEvent(new CustomEvent('mic-status', {
+        detail: { status: 'stopped' }
+      }));
       
       // Call original stop function
       stopAudio();
