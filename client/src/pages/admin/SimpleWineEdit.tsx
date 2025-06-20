@@ -498,48 +498,7 @@ const SimpleWineEdit: React.FC = () => {
             />
           </div>
 
-{/* Ratings */}
-<div className="grid grid-cols-2 gap-4">
-            <div>
-              <label style={typography.body1R} className="block mb-2">VN Rating</label>
-              <input
-                type="number"
-                value={wine.ratings.vn}
-                onChange={(e) => setWine({ 
-                  ...wine, 
-                  ratings: { ...wine.ratings, vn: parseInt(e.target.value) || 0 }
-                })}
-                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
-                placeholder="VN Rating"
-              />
-            </div>
-            <div>
-              <label style={typography.body1R} className="block mb-2">JD Rating</label>
-              <input
-                type="number"
-                value={wine.ratings.jd}
-                onChange={(e) => setWine({ 
-                  ...wine, 
-                  ratings: { ...wine.ratings, jd: parseInt(e.target.value) || 0 }
-                })}
-                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
-                placeholder="JD Rating"
-              />
-            </div>
-            <div>
-              <label style={typography.body1R} className="block mb-2">WS Rating</label>
-              <input
-                type="number"
-                value={wine.ratings.ws}
-                onChange={(e) => setWine({ 
-                  ...wine, 
-                  ratings: { ...wine.ratings, ws: parseInt(e.target.value) || 0 }
-                })}
-                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
-                placeholder="WS Rating"
-              />
-            </div>
-            <div>
+          <div>
               <label style={typography.body1R} className="block mb-2">ABV</label>
               <input
                 type="number"
@@ -553,7 +512,49 @@ const SimpleWineEdit: React.FC = () => {
                 placeholder="ABV"
               />
             </div>
-          </div>
+
+{/* Ratings */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div>
+    <label style={typography.body1R} className="block mb-2">VN Rating</label>
+    <input
+      type="number"
+      value={wine.ratings.vn}
+      onChange={(e) => setWine({ 
+        ...wine, 
+        ratings: { ...wine.ratings, vn: parseInt(e.target.value) || 0 }
+      })}
+      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
+      placeholder="VN Rating"
+    />
+  </div>
+  <div>
+    <label style={typography.body1R} className="block mb-2">JD Rating</label>
+    <input
+      type="number"
+      value={wine.ratings.jd}
+      onChange={(e) => setWine({ 
+        ...wine, 
+        ratings: { ...wine.ratings, jd: parseInt(e.target.value) || 0 }
+      })}
+      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
+      placeholder="JD Rating"
+    />
+  </div>
+  <div>
+    <label style={typography.body1R} className="block mb-2">WS Rating</label>
+    <input
+      type="number"
+      value={wine.ratings.ws}
+      onChange={(e) => setWine({ 
+        ...wine, 
+        ratings: { ...wine.ratings, ws: parseInt(e.target.value) || 0 }
+      })}
+      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg "
+      placeholder="WS Rating"
+    />
+  </div>
+</div>
 
           {/* Food Pairing */}
           <div>
