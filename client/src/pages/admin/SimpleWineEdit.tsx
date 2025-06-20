@@ -95,7 +95,11 @@ const SimpleWineEdit: React.FC = () => {
   // Initialize image preview when wine data loads
   useEffect(() => {
     if (wine && wine.image) {
+      // Use the Cloudinary URL directly from wine data
       setImagePreview(wine.image);
+    } else if (wine && !wine.image) {
+      // Clear preview if no image is set
+      setImagePreview(null);
     }
   }, [wine]);
 
