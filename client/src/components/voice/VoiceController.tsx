@@ -252,19 +252,59 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       console.log("🎤 VoiceController: States set - isListening should be true");
       
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Add deployment environment detection
+        const isDeployment = window.location.hostname.includes('.replit.app') || 
+                           window.location.hostname !== 'localhost';
+        
+        console.log("🎤 VoiceController: Environment detection - isDeployment:", isDeployment);
+        
+        // Enhanced microphone access with deployment-specific settings
+        const constraints = {
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            // Add deployment-specific audio constraints
+            ...(isDeployment && {
+              sampleRate: 44100,
+              channelCount: 1,
+              volume: 1.0
+            })
+          }
+        };
+        
+        console.log("🎤 VoiceController: Requesting microphone access with constraints:", constraints);
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         streamRef.current = stream;
         
-        const audioContext = new AudioContext();
+        console.log("🎤 VoiceController: Microphone access granted, creating audio context");
+        
+        // Enhanced AudioContext creation for deployment
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const audioContext = new AudioContextClass({
+          sampleRate: 44100,
+          latencyHint: 'interactive'
+        });
+        
+        // Resume audio context if suspended (common in deployment)
+        if (audioContext.state === 'suspended') {
+          console.log("🎤 VoiceController: Resuming suspended audio context");
+          await audioContext.resume();
+        }
+        
         audioContextRef.current = audioContext;
         
         const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.8;
+        
         const microphone = audioContext.createMediaStreamSource(stream);
         microphone.connect(analyser);
         
-        analyser.fftSize = 256;
         const bufferLength = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
+        
+        console.log("🎤 VoiceController: Audio pipeline established successfully");
         
         // Dispatch listening event
         console.log("🎤 VoiceController: Dispatching mic-status listening event");
@@ -388,7 +428,28 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         
       } catch (error) {
         console.error("🎤 VoiceController: Failed to access microphone:", error);
-        console.log("🎤 VoiceController: Using fallback timer-based flow");
+        const errorInfo = error instanceof Error ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        } : { message: String(error) };
+        
+        console.log("🎤 VoiceController: Error details:", {
+          ...errorInfo,
+          userAgent: navigator.userAgent,
+          protocol: window.location.protocol,
+          hostname: window.location.hostname
+        });
+        
+        // Enhanced deployment fallback
+        const isDeployment = window.location.hostname.includes('.replit.app') || 
+                           window.location.hostname !== 'localhost';
+        
+        if (isDeployment) {
+          console.log("🎤 VoiceController: Deployment environment detected, using enhanced fallback");
+        } else {
+          console.log("🎤 VoiceController: Development environment, using standard fallback");
+        }
         
         // Check if we should proceed with fallback
         if (!isListeningRef.current) {
@@ -419,7 +480,10 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
           }));
         }, 150);
         
-        // Fallback to timer-based flow
+        // Enhanced fallback with deployment-specific timing
+        const fallbackDelay = isDeployment ? 4000 : 3000; // Longer delay for deployment
+        console.log(`🎤 VoiceController: Using fallback delay of ${fallbackDelay}ms for ${isDeployment ? 'deployment' : 'development'}`);
+        
         fallbackTimeout = setTimeout(() => {
           clearInterval(fallbackVolumeInterval);
           
@@ -430,6 +494,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             return;
           }
           
+          console.log("🎤 VoiceController: Fallback timer completed, transitioning to thinking");
           setIsListening(false);
           isListeningRef.current = false; // Update ref immediately
           setIsThinking(true);
@@ -439,24 +504,35 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             detail: { status: 'processing' }
           }));
           
+          // Enhanced thinking phase for deployment
+          const thinkingDelay = isDeployment ? 2500 : 2000;
+          console.log(`🎤 VoiceController: Using thinking delay of ${thinkingDelay}ms`);
+          
           setTimeout(() => {
-            setIsThinking(false);
-            setIsResponding(true);
-            setIsPlayingAudio(true);
-            
-            console.log("🎤 VoiceController: Dispatching mic-status stopped event");
-            window.dispatchEvent(new CustomEvent('mic-status', {
-              detail: { status: 'stopped' }
-            }));
-            
-            handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
-            
-            // Reset mic button flag after response
-            setTimeout(() => {
+            if (!isListeningRef.current && isThinking) { // Only proceed if still in thinking state
+              console.log("🎤 VoiceController: Thinking phase complete, starting response");
+              setIsThinking(false);
+              setIsResponding(true);
+              setIsPlayingAudio(true);
+              
+              console.log("🎤 VoiceController: Dispatching mic-status stopped event");
+              window.dispatchEvent(new CustomEvent('mic-status', {
+                detail: { status: 'stopped' }
+              }));
+              
+              handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
+              
+              // Reset mic button flag after response
+              setTimeout(() => {
+                isMicButtonTriggered = false;
+                console.log("🎤 VoiceController: Mic button flag reset complete");
+              }, 1000);
+            } else {
+              console.log("🎤 VoiceController: Thinking phase interrupted, not proceeding to response");
               isMicButtonTriggered = false;
-            }, 1000);
-          }, 2000);
-        }, 3000);
+            }
+          }, thinkingDelay);
+        }, fallbackDelay);
         
         // Store cleanup for fallback timers
         (window as any).voiceFallbackCleanup = () => {

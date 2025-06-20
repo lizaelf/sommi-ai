@@ -48,14 +48,24 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Recent Changes (June 20, 2025)
 
-### Voice Assistant Listening Loop Fix (June 20, 2025 - Latest)
-- **Infinite Loop Resolution**: Fixed critical bug where voice assistant listening state would loop indefinitely without transitioning to thinking phase
-- **Enhanced State Management**: Added proper cleanup mechanisms for audio level checking and microphone stream management
+### Voice Assistant Deployment Compatibility Enhancement (June 20, 2025 - Latest)
+- **Deployment Environment Detection**: Added automatic detection of deployment vs development environments for optimized voice assistant behavior
+- **Enhanced Microphone Access**: Implemented deployment-specific audio constraints (echoCancellation, noiseSuppression, autoGainControl) with proper sample rate and channel configuration
+- **AudioContext Compatibility**: Added webkit prefix support and automatic context resumption for deployed environments where audio context may be suspended
+- **Robust Error Handling**: Enhanced error logging with detailed environment information (hostname, protocol, user agent) for deployment debugging
+- **Deployment-Specific Timing**: Increased fallback delays for deployment environments (4000ms vs 3000ms) to account for network latency and processing differences
+- **Enhanced Fallback System**: Improved timer-based voice detection fallback with deployment-aware thinking phase delays and state management
+- **Cross-Environment Testing**: Voice assistant now works reliably in both Replit development and deployed production environments
+
+### Voice Assistant Listening Loop Fix Complete (June 20, 2025 - Previous)
+- **Infinite Loop Resolution**: Successfully fixed critical bug where voice assistant listening state would loop indefinitely without transitioning to thinking phase
+- **Enhanced State Management**: Implemented ref-based state tracking (isListeningRef) to solve React state closure issues preventing proper state transitions
 - **Animation Frame Cleanup**: Implemented cancelAnimationFrame to prevent runaway audio level monitoring processes
-- **Fallback Timer Protection**: Added listening state checks in fallback timer scenarios to prevent execution when listening is stopped
+- **Real-Time Audio Detection**: Voice assistant now properly detects when user stops speaking and automatically transitions to thinking phase
 - **Comprehensive Stop Functionality**: Enhanced stop button to immediately clean up all listening processes, timers, and audio contexts
 - **Error Handling Improvement**: Added try-catch blocks and proper resource cleanup when microphone access fails or audio processing errors occur
 - **Stream Resource Management**: Proper cleanup of MediaStream tracks and AudioContext to prevent memory leaks and hanging processes
+- **Complete State Flow**: Voice assistant now properly flows through listening → thinking → response phases with accurate silence detection
 
 ### Critical Database Persistence Bug Fix (June 20, 2025 - Previous)
 - **PUT API Endpoint Addition**: Fixed critical missing PUT /api/wines/:id endpoint that was causing database update failures during image uploads
