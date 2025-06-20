@@ -37,6 +37,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const silenceStartRef = useRef<number | null>(null);
   const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isListeningRef = useRef<boolean>(false);
 
   const handleWelcomeMessage = async () => {
     try {
@@ -243,6 +244,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       setShowBottomSheet(true);
       setShowAskButton(false);
       setIsListening(true);
+      isListeningRef.current = true; // Update ref immediately
       setIsResponding(false);
       setIsThinking(false);
       setIsPlayingAudio(false);
@@ -276,7 +278,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         
         const checkAudioLevel = () => {
           // Stop if listening state changed or microphone was cleaned up
-          if (!isListening || !streamRef.current || !audioContextRef.current) {
+          if (!isListeningRef.current || !streamRef.current || !audioContextRef.current) {
             console.log("🎤 VoiceController: Stopping audio level check - listening state changed");
             return;
           }
@@ -317,6 +319,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
               
               // Start thinking phase
               setIsListening(false);
+              isListeningRef.current = false; // Update ref immediately
               setIsThinking(true);
               
               window.dispatchEvent(new CustomEvent('mic-status', {
@@ -388,7 +391,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         console.log("🎤 VoiceController: Using fallback timer-based flow");
         
         // Check if we should proceed with fallback
-        if (!isListening) {
+        if (!isListeningRef.current) {
           console.log("🎤 VoiceController: Listening stopped, aborting fallback");
           isMicButtonTriggered = false;
           return;
@@ -406,7 +409,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         
         fallbackVolumeInterval = setInterval(() => {
           // Stop if listening state changed
-          if (!isListening) {
+          if (!isListeningRef.current) {
             clearInterval(fallbackVolumeInterval);
             return;
           }
@@ -421,13 +424,14 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
           clearInterval(fallbackVolumeInterval);
           
           // Check if still in listening state
-          if (!isListening) {
+          if (!isListeningRef.current) {
             console.log("🎤 VoiceController: Listening stopped during fallback, aborting");
             isMicButtonTriggered = false;
             return;
           }
           
           setIsListening(false);
+          isListeningRef.current = false; // Update ref immediately
           setIsThinking(true);
           
           console.log("🎤 VoiceController: Dispatching mic-status processing event");
@@ -472,6 +476,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       
       // Stop listening state immediately
       setIsListening(false);
+      isListeningRef.current = false; // Update ref immediately
       setIsThinking(false);
       setIsResponding(false);
       setIsPlayingAudio(false);
