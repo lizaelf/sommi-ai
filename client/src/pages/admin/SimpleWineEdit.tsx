@@ -256,7 +256,6 @@ const SimpleWineEdit: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Wine Image Upload */}
             <div>
-              <label style={typography.body1R} className="block mb-2">Wine Image</label>
               
               {/* Image Preview */}
               {imagePreview && (
@@ -284,7 +283,7 @@ const SimpleWineEdit: React.FC = () => {
                     type="button"
                   >
                     <Upload size={16} />
-                    Replace Image
+                    Replace
                   </Button>
                 )}
               </div>
@@ -301,7 +300,6 @@ const SimpleWineEdit: React.FC = () => {
 
             {/* QR Code Section */}
             <div>
-              <label style={typography.body1R} className="block mb-2">QR Code</label>
               
               {wine && (
                 <div className="flex flex-col items-center gap-4">
@@ -321,9 +319,6 @@ const SimpleWineEdit: React.FC = () => {
                   
                   {/* QR Code Info */}
                   <div className="text-center">
-                    <p style={typography.body1R} className="text-white/60 text-sm mb-2">
-                      Scan to view wine details
-                    </p>
                     <Button
                       variant="secondary"
                       onClick={downloadQRCode}
@@ -331,7 +326,7 @@ const SimpleWineEdit: React.FC = () => {
                       type="button"
                     >
                       <Download size={16} />
-                      Download QR Code
+                      Download QR
                     </Button>
                   </div>
                 </div>
@@ -477,6 +472,18 @@ const SimpleWineEdit: React.FC = () => {
             </div>
           </div>
 
+          {/* Appellation */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Appellation</label>
+            <input
+              type="text"
+              value={wine.location || ""}
+              onChange={e => setWine({ ...wine, location: e.target.value })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Appellation"
+            />
+          </div>
+
           {/* Technical Details: Aging */}
           <div>
             <label style={typography.body1R} className="block mb-2">Age Up To</label>
@@ -556,7 +563,7 @@ const SimpleWineEdit: React.FC = () => {
   </div>
 </div>
 
-          {/* Food Pairing */}
+          {/* Food Pairing
           <div>
             <label style={typography.body1R} className="block mb-2">Food Pairing (comma separated)</label>
             <input
@@ -566,19 +573,9 @@ const SimpleWineEdit: React.FC = () => {
               className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="e.g. cheese, meat, pasta"
             />
-          </div>
+          </div> */}
 
-          {/* Location */}
-          <div>
-            <label style={typography.body1R} className="block mb-2">Location</label>
-            <input
-              type="text"
-              value={wine.location || ""}
-              onChange={e => setWine({ ...wine, location: e.target.value })}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Location"
-            />
-          </div>
+
 
           {/* Bottles */}
           <div>
@@ -610,7 +607,7 @@ const SimpleWineEdit: React.FC = () => {
               onClick={handleSave}
               className="w-full"
             >
-              {isNewWine ? "Add Wine" : "Save Changes"}
+              {isNewWine ? "Add Wine" : "Save"}
             </Button>
           </div>
         </div>
