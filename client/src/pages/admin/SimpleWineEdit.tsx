@@ -122,8 +122,20 @@ const SimpleWineEdit: React.FC = () => {
 
       if (result.success) {
         // Update wine with new image URL
-        setWine({ ...wine, image: result.imageUrl });
+        const updatedWine = { ...wine, image: result.imageUrl };
+        setWine(updatedWine);
         setImagePreview(result.imageUrl);
+        
+        // Automatically save the updated wine data to database
+        if (!isNewWine) {
+          try {
+            await DataSyncManager.updateWine(wine.id, updatedWine);
+            console.log('Wine image URL saved to database:', result.imageUrl);
+          } catch (saveError) {
+            console.error('Failed to save image URL to database:', saveError);
+          }
+        }
+        
         toastSuccess('Image uploaded successfully');
       } else {
         throw new Error(result.error || 'Upload failed');
