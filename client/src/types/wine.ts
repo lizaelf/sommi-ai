@@ -24,7 +24,6 @@ export interface Wine {
       secondaryPercentage?: string;
     }
     aging?: {
-      drinkNow?: string;
       ageUpTo?: string;
     }
   }

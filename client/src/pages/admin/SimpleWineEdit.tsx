@@ -38,7 +38,11 @@ const SimpleWineEdit: React.FC = () => {
             qrCode: "",
             qrLink: "",
             foodPairing: [],
-            location: ""
+            location: "",
+            technicalDetails: {
+              varietal: { primary: "", secondary: "", primaryPercentage: "", secondaryPercentage: "" },
+              aging: { ageUpTo: "" }
+            }
           });
           setLoading(false);
           return;
@@ -69,7 +73,11 @@ const SimpleWineEdit: React.FC = () => {
             year: new Date().getFullYear(),
             bottles: 0,
             image: "",
-            ratings: { vn: 0, jd: 0, ws: 0, abv: 0 }
+            ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+            technicalDetails: {
+              varietal: { primary: "", secondary: "", primaryPercentage: "", secondaryPercentage: "" },
+              aging: {  ageUpTo: "" }
+            }
           });
         }
         setLoading(false);
@@ -355,20 +363,143 @@ const SimpleWineEdit: React.FC = () => {
             />
           </div>
 
-          {/* Bottles */}
+          
+          
+
+
+          {/* Buy Again Link */}
           <div>
-            <label style={typography.body1R} className="block mb-2">Bottles</label>
+            <label style={typography.body1R} className="block mb-2">Buy Again Link</label>
             <input
-              type="number"
-              value={wine.bottles}
-              onChange={(e) => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })}
+              type="text"
+              value={wine.buyAgainLink || ""}
+              onChange={e => setWine({ ...wine, buyAgainLink: e.target.value })}
               className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Number of bottles"
+              placeholder="https://..."
             />
           </div>
 
-          {/* Ratings */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* QR Link */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">QR Link</label>
+            <input
+              type="text"
+              value={wine.qrLink || ""}
+              onChange={e => setWine({ ...wine, qrLink: e.target.value })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="https://..."
+            />
+          </div>
+
+
+
+          {/* Technical Details: Varietal (2 columns) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Primary varietal and percentage */}
+            <div>
+              <label style={typography.body1R} className="block mb-2">Varietal Primary</label>
+              <input
+                type="text"
+                value={wine.technicalDetails?.varietal?.primary || ""}
+                onChange={e => setWine({
+                  ...wine,
+                  technicalDetails: {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      primary: e.target.value
+                    }
+                  }
+                })}
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                placeholder="Primary varietal"
+              />
+            </div>
+            <div>
+              <label style={typography.body1R} className="block mb-2">Primary Percentage</label>
+              <input
+                type="text"
+                value={wine.technicalDetails?.varietal?.primaryPercentage || ""}
+                onChange={e => setWine({
+                  ...wine,
+                  technicalDetails: {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      primaryPercentage: e.target.value
+                    }
+                  }
+                })}
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                placeholder="Primary %"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Secondary varietal and percentage */}
+            <div>
+              <label style={typography.body1R} className="block mb-2">Varietal Secondary</label>
+              <input
+                type="text"
+                value={wine.technicalDetails?.varietal?.secondary || ""}
+                onChange={e => setWine({
+                  ...wine,
+                  technicalDetails: {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      secondary: e.target.value
+                    }
+                  }
+                })}
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                placeholder="Secondary varietal"
+              />
+            </div>
+            <div>
+              <label style={typography.body1R} className="block mb-2">Secondary Percentage</label>
+              <input
+                type="text"
+                value={wine.technicalDetails?.varietal?.secondaryPercentage || ""}
+                onChange={e => setWine({
+                  ...wine,
+                  technicalDetails: {
+                    ...wine.technicalDetails,
+                    varietal: {
+                      ...wine.technicalDetails?.varietal,
+                      secondaryPercentage: e.target.value
+                    }
+                  }
+                })}
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                placeholder="Secondary %"
+              />
+            </div>
+          </div>
+
+          {/* Technical Details: Aging */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Age Up To</label>
+            <input
+              type="text"
+              value={wine.technicalDetails?.aging?.ageUpTo || ""}
+              onChange={e => setWine({
+                ...wine,
+                technicalDetails: {
+                  ...wine.technicalDetails,
+                  aging: {
+                    ...wine.technicalDetails?.aging,
+                    ageUpTo: e.target.value
+                  }
+                }
+              })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Age up to"
+            />
+          </div>
+
+{/* Ratings */}
+<div className="grid grid-cols-2 gap-4">
             <div>
               <label style={typography.body1R} className="block mb-2">VN Rating</label>
               <input
@@ -422,6 +553,53 @@ const SimpleWineEdit: React.FC = () => {
                 placeholder="ABV"
               />
             </div>
+          </div>
+
+          {/* Food Pairing */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Food Pairing (comma separated)</label>
+            <input
+              type="text"
+              value={wine.foodPairing?.join(", ") || ""}
+              onChange={e => setWine({ ...wine, foodPairing: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="e.g. cheese, meat, pasta"
+            />
+          </div>
+
+          {/* Location */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Location</label>
+            <input
+              type="text"
+              value={wine.location || ""}
+              onChange={e => setWine({ ...wine, location: e.target.value })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Location"
+            />
+          </div>
+
+          {/* Bottles */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Bottles</label>
+            <input
+              type="number"
+              value={wine.bottles}
+              onChange={(e) => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Number of bottles"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label style={typography.body1R} className="block mb-2">Description</label>
+            <textarea
+              value={wine.description || ""}
+              onChange={e => setWine({ ...wine, description: e.target.value })}
+              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+              placeholder="Wine description"
+            />
           </div>
 
           {/* Save Button */}

@@ -11,7 +11,6 @@ interface WineTechnicalDetailsProps {
   };
   appellation?: string;
   aging?: {
-    drinkNow: boolean;
     ageUpTo?: string;
   };
   abv?: number;
@@ -32,12 +31,8 @@ const WineTechnicalDetails: React.FC<WineTechnicalDetailsProps> = ({
   const formatAgingText = () => {
     if (!aging) return null;
     
-    if (aging.drinkNow && aging.ageUpTo) {
-      return `Drink now or age up to ${aging.ageUpTo}`;
-    } else if (aging.drinkNow) {
-      return "Drink now";
-    } else if (aging.ageUpTo) {
-      return `Age up to ${aging.ageUpTo}`;
+    if (aging.ageUpTo) {
+      return `Drink now or age up to ${aging.ageUpTo} years`;
     }
     return null;
   };
@@ -50,7 +45,7 @@ const WineTechnicalDetails: React.FC<WineTechnicalDetailsProps> = ({
             background: ${colors.background.primary};
             padding: 24px;
             border-radius: 12px;
-            border: 1px solid ${colors.border.subtle};
+            border: 1px solid ${colors.background};
             display: flex;
             flex-direction: column;
             gap: 24px;
@@ -72,8 +67,8 @@ const WineTechnicalDetails: React.FC<WineTechnicalDetailsProps> = ({
             height: 1px;
             background: linear-gradient(
               90deg, 
-              ${colors.border.subtle} 0%, 
-              ${colors.border.subtle} 60%, 
+              white 0%, 
+              white 60%, 
               transparent 100%
             );
           }

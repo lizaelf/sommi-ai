@@ -125,12 +125,7 @@ const WineTechnicalDetailsSection: React.FC<
           label="Aging"
           value={
             wine?.technicalDetails?.aging
-              ? wine.technicalDetails.aging.drinkNow &&
-                wine.technicalDetails.aging.ageUpTo
-                ? `Drink now or age up to ${wine.technicalDetails.aging.ageUpTo}`
-                : wine.technicalDetails.aging.drinkNow
-                  ? "Drink now"
-                  : wine.technicalDetails.aging.ageUpTo
+              ? wine.technicalDetails.aging.ageUpTo
                     ? `Age up to ${wine.technicalDetails.aging.ageUpTo}`
                     : "Drink now"
               : getAgingRecommendations(wine?.name || "", wine?.year)

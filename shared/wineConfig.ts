@@ -25,7 +25,6 @@ export const WINE_CONFIG = {
     },
     appellation: 'Dry Creek Valley',
     aging: {
-      drinkNow: true,
       ageUpTo: '10-12 years'
     },
     abv: 14.3

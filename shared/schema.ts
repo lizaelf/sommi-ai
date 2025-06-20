@@ -176,7 +176,6 @@ export const wines = pgTable("wines", {
     };
     appellation?: string;
     aging?: {
-      drinkNow: boolean;
       ageUpTo?: number;
     };
     customAbv?: number;
