@@ -6,9 +6,9 @@ import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { DataSyncManager } from "@/utils/dataSync";
 import { Wine } from "@/types/wine";
-import { Upload, Image as ImageIcon, Download, QrCode } from "lucide-react";
+import { Upload, Image as ImageIcon, Download, QrCode, Trash2 } from "lucide-react";
 import * as QRCodeReact from "qrcode.react";
-import WineActionsDropdown from "@/components/admin/WineActionsDropdown";
+import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 
 
 const SimpleWineEdit: React.FC = () => {
@@ -237,6 +237,17 @@ const SimpleWineEdit: React.FC = () => {
     }
   };
 
+  // Дії для дропдауна
+  const actions: ActionDropdownItem[] = [
+    {
+      label: "Delete Wine",
+      icon: <Trash2 size={16} />,
+      onClick: handleDeleteWine,
+      colorClass: "text-red-400",
+      disabled: false,
+    },
+  ];
+
   const pageTitle = isNewWine ? "Add New Wine" : "Edit Wine";
 
   if (loading) {
@@ -269,7 +280,7 @@ const SimpleWineEdit: React.FC = () => {
         onBack={() => setLocation("/winery-tenant-admin")}
         rightContent={
           !isNewWine && wine?.id ? (
-            <WineActionsDropdown onDeleteWine={handleDeleteWine} />
+            <ActionDropdown actions={actions} />
           ) : null
         }
       />

@@ -7,11 +7,12 @@ import { Wine } from "@/types/wine";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import WineImage from "@/components/wine-details/WineImage";
+import { Trash2 } from "lucide-react";
 
 // Refactored components
 import { TabNavigation } from "@/components/admin/TabNavigation";
 import { WineManagement } from "@/components/admin/WineManagement";
-import AdminActionsDropdown from "@/components/admin/AdminActionsDropdown";
+import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 
 // Use unified wine data interface
 type WineCardData = Wine;
@@ -594,13 +595,24 @@ const TenantAdminRefactored: React.FC = () => {
     }
   };
 
+  // Дії для дропдауна
+  const actions: ActionDropdownItem[] = [
+    {
+      label: "Delete Tenant",
+      icon: <Trash2 size={16} />,
+      onClick: handleDeleteTenant,
+      colorClass: "text-red-400",
+      disabled: false,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
       <AppHeader
         title={currentTenant?.name || "Admin Panel"}
         showBackButton={true}
         rightContent={
-          <AdminActionsDropdown onDeleteTenant={handleDeleteTenant} />
+          <ActionDropdown actions={actions} />
         }
       />
       <HeaderSpacer />
