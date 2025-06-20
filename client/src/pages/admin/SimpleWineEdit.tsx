@@ -129,7 +129,7 @@ const SimpleWineEdit: React.FC = () => {
         // Automatically save the updated wine data to database
         if (!isNewWine) {
           try {
-            await DataSyncManager.updateWine(wine.id, updatedWine);
+            await DataSyncManager.updateWine(wine.id, { image: result.imageUrl });
             console.log('Wine image URL saved to database:', result.imageUrl);
           } catch (saveError) {
             console.error('Failed to save image URL to database:', saveError);
