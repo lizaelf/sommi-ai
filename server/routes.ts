@@ -55,7 +55,7 @@ const imageUpload = multer({
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Only images are allowed'));
     }
   },
 });
@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/upload-wine-image", imageUpload.single('image'), async (req, res) => {
     try {
       if (!req.file) {
-        return res.status(400).json({ error: "No image file provided" });
+        return res.status(400).json({ error: "No image provided" });
       }
 
       const { wineId, wineName } = req.body;
@@ -328,7 +328,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate wine description endpoint
+  // Generate wine tasting notes endpoint
   app.post("/api/generate-wine-description", async (req, res) => {
     try {
       const { wineName, year } = req.body;
@@ -337,8 +337,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Wine name is required" });
       }
 
-      // Create a focused prompt for wine description generation
-      const prompt = `Generate a concise, professional wine description for "${wineName}" ${year ? `(${year} vintage)` : ''}. 
+      // Create a focused prompt for wine tasting notes generation
+      const prompt = `Generate a concise, professional wine tasting notes description for "${wineName}" ${year ? `(${year} vintage)` : ''}. 
 
 Requirements:
 - 2-3 sentences maximum
@@ -352,7 +352,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
 
       // Create wine data object for dynamic system prompt
       const wineData = {
-        id: 0, // Temporary ID for description generation
+        id: 0, // Temporary ID for tasting notes generation
         name: wineName,
         year: year || new Date().getFullYear(),
         bottles: 0,
@@ -537,46 +537,46 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Delete a conversation or clear all conversations
-  app.delete("/api/conversations/:id", async (req, res) => {
-    try {
-      const idParam = req.params.id;
+  // // Delete a conversation or clear all conversations
+  // app.delete("/api/conversations/:id", async (req, res) => {
+  //   try {
+  //     const idParam = req.params.id;
       
-      if (idParam === "clear-all") {
-        // Delete all conversations
-        const conversations = await storage.getAllConversations();
-        for (const conversation of conversations) {
-          await storage.deleteConversation(conversation.id);
-        }
-        res.json({ message: "All conversations cleared successfully" });
-      } else {
-        // Delete specific conversation
-        const id = parseInt(idParam);
-        if (isNaN(id)) {
-          return res.status(400).json({ message: "Invalid conversation ID" });
-        }
-        await storage.deleteConversation(id);
-        res.status(204).send();
-      }
-    } catch (error) {
-      console.error("Error deleting conversation:", error);
-      res.status(500).json({ message: "Failed to delete conversation" });
-    }
-  });
+  //     if (idParam === "clear-all") {
+  //       // Delete all conversations
+  //       const conversations = await storage.getAllConversations();
+  //       for (const conversation of conversations) {
+  //         await storage.deleteConversation(conversation.id);
+  //       }
+  //       res.json({ message: "All conversations cleared successfully" });
+  //     } else {
+  //       // Delete specific conversation
+  //       const id = parseInt(idParam);
+  //       if (isNaN(id)) {
+  //         return res.status(400).json({ message: "Invalid conversation ID" });
+  //       }
+  //       await storage.deleteConversation(id);
+  //       res.status(204).send();
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting conversation:", error);
+  //     res.status(500).json({ message: "Failed to delete conversation" });
+  //   }
+  // });
 
-  // Clear all conversations (chat history)
-  app.delete("/api/conversations", async (_req, res) => {
-    try {
-      const conversations = await storage.getAllConversations();
-      for (const conversation of conversations) {
-        await storage.deleteConversation(conversation.id);
-      }
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error clearing all conversations:", error);
-      res.status(500).json({ message: "Failed to clear chat history" });
-    }
-  });
+  // // Clear all conversations (chat history)
+  // app.delete("/api/conversations", async (_req, res) => {
+  //   try {
+  //     const conversations = await storage.getAllConversations();
+  //     for (const conversation of conversations) {
+  //       await storage.deleteConversation(conversation.id);
+  //     }
+  //     res.status(204).send();
+  //   } catch (error) {
+  //     console.error("Error clearing all conversations:", error);
+  //     res.status(500).json({ message: "Failed to clear chat history" });
+  //   }
+  // });
 
   // Get messages for a conversation
   app.get("/api/conversations/:id/messages", async (req, res) => {
@@ -1144,55 +1144,55 @@ Format: Return only the description text, no quotes or additional formatting.`;
     }
   });
 
-  // Contact form submission endpoint
-  app.post("/api/contact", async (req, res) => {
-    try {
-      const { firstName, lastName, email, phone, countryCode } = req.body;
+  // // Contact form submission endpoint
+  // app.post("/api/contact", async (req, res) => {
+  //   try {
+  //     const { firstName, lastName, email, phone, countryCode } = req.body;
 
-      // Validate required fields
-      if (!firstName || !lastName || !email || !phone) {
-        return res.status(400).json({ 
-          message: "All fields are required",
-          errors: {
-            firstName: !firstName ? "First name is required" : "",
-            lastName: !lastName ? "Last name is required" : "",
-            email: !email ? "Email is required" : "",
-            phone: !phone ? "Phone is required" : ""
-          }
-        });
-      }
+  //     // Validate required fields
+  //     if (!firstName || !lastName || !email || !phone) {
+  //       return res.status(400).json({ 
+  //         message: "All fields are required",
+  //         errors: {
+  //           firstName: !firstName ? "First name is required" : "",
+  //           lastName: !lastName ? "Last name is required" : "",
+  //           email: !email ? "Email is required" : "",
+  //           phone: !phone ? "Phone is required" : ""
+  //         }
+  //       });
+  //     }
 
-      const contactData = {
-        firstName,
-        lastName,
-        email,
-        phone,
-        countryCode: countryCode || "+1",
-        submittedAt: new Date().toISOString()
-      };
+  //     const contactData = {
+  //       firstName,
+  //       lastName,
+  //       email,
+  //       phone,
+  //       countryCode: countryCode || "+1",
+  //       submittedAt: new Date().toISOString()
+  //     };
 
-      // Save to Google Sheets if credentials are available
-      try {
-        await saveToGoogleSheets(contactData);
-      } catch (sheetsError) {
-        console.error("Google Sheets error:", sheetsError);
-        // Continue even if Google Sheets fails
-      }
+  //     // Save to Google Sheets if credentials are available
+  //     try {
+  //       await saveToGoogleSheets(contactData);
+  //     } catch (sheetsError) {
+  //       console.error("Google Sheets error:", sheetsError);
+  //       // Continue even if Google Sheets fails
+  //     }
 
-      // Return success response
-      res.json({ 
-        success: true, 
-        message: "Contact information saved successfully" 
-      });
+  //     // Return success response
+  //     res.json({ 
+  //       success: true, 
+  //       message: "Contact information saved successfully" 
+  //     });
 
-    } catch (error: any) {
-      console.error("Error saving contact data:", error);
-      res.status(500).json({ 
-        message: "Failed to save contact information",
-        error: error?.message || "Unknown error" 
-      });
-    }
-  });
+  //   } catch (error: any) {
+  //     console.error("Error saving contact data:", error);
+  //     res.status(500).json({ 
+  //       message: "Failed to save contact information",
+  //       error: error?.message || "Unknown error" 
+  //     });
+  //   }
+  // });
 
   // Real-time streaming chat endpoint for first-token TTS
   app.get("/api/chat-stream", async (req, res) => {
@@ -1621,13 +1621,13 @@ Format: Return only the description text, no quotes or additional formatting.`;
       
       const tenant = await storage.getTenant(id);
       if (!tenant) {
-        return res.status(404).json({ message: "Tenant not found" });
+        return res.status(404).json({ message: "Winary not found" });
       }
       
       res.json(tenant);
     } catch (error) {
       console.error("Error fetching tenant:", error);
-      res.status(500).json({ message: "Failed to fetch tenant" });
+      res.status(500).json({ message: "Failed to fetch winary" });
     }
   });
 
@@ -1637,23 +1637,27 @@ Format: Return only the description text, no quotes or additional formatting.`;
       const tenant = await storage.getTenantBySlug(slug);
       
       if (!tenant) {
-        return res.status(404).json({ message: "Tenant not found" });
+        return res.status(404).json({ message: "Winary not found" });
       }
       
       res.json(tenant);
     } catch (error) {
       console.error("Error fetching tenant by slug:", error);
-      res.status(500).json({ message: "Failed to fetch tenant" });
+      res.status(500).json({ message: "Failed to fetch winary" });
     }
   });
 
   app.post("/api/tenants", async (req, res) => {
     try {
+      console.log("Tenant payload:", req.body);
       const tenant = await storage.createTenant(req.body);
       res.status(201).json(tenant);
     } catch (error) {
       console.error("Error creating tenant:", error);
-      res.status(500).json({ message: "Failed to create tenant" });
+      res.status(500).json({ 
+        message: "Failed to create winary", 
+        error: (error instanceof Error ? error.message : String(error)) 
+      });
     }
   });
 
@@ -1661,18 +1665,18 @@ Format: Return only the description text, no quotes or additional formatting.`;
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid tenant ID" });
+        return res.status(400).json({ message: "Invalid winary ID" });
       }
       
       const tenant = await storage.updateTenant(id, req.body);
       if (!tenant) {
-        return res.status(404).json({ message: "Tenant not found" });
+        return res.status(404).json({ message: "Winary not found" });
       }
       
       res.json(tenant);
     } catch (error) {
       console.error("Error updating tenant:", error);
-      res.status(500).json({ message: "Failed to update tenant" });
+      res.status(500).json({ message: "Failed to update winary" });
     }
   });
 
@@ -1680,14 +1684,14 @@ Format: Return only the description text, no quotes or additional formatting.`;
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid tenant ID" });
+        return res.status(400).json({ message: "Invalid winary ID" });
       }
       
       await storage.deleteTenant(id);
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting tenant:", error);
-      res.status(500).json({ message: "Failed to delete tenant" });
+      res.status(500).json({ message: "Failed to delete winary" });
     }
   });
 

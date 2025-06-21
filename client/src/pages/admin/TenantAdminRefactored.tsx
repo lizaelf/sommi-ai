@@ -13,65 +13,12 @@ import { Trash2 } from "lucide-react";
 import { TabNavigation } from "@/components/admin/TabNavigation";
 import { WineManagement } from "@/components/admin/WineManagement";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
+import { Tenant } from "@/types/tenant";
 
 // Use unified wine data interface
 type WineCardData = Wine;
 
-interface TenantData {
-  id: number;
-  name: string;
-  slug: string;
-  logo?: string;
-  description?: string;
-  aiTone?: string;
-  profile: {
-    wineryName: string;
-    wineryDescription: string;
-    yearEstablished: string;
-    wineryLogo: string;
-    contactEmail: string;
-    contactPhone: string;
-    websiteURL: string;
-    address: string;
-    hoursOfOperation: string;
-    socialMediaLinks: string;
-  };
-  cms: {
-    wineEntries: Array<{
-      wineName: string;
-      vintageYear: string;
-      sku: string;
-      varietal: string;
-      tastingNotes: string;
-      foodPairings: string;
-      productionNotes: string;
-      imageUpload: string;
-      criticReviews: string;
-      releaseDate: string;
-      price: string;
-      inventoryCount: string;
-    }>;
-    wineClub: {
-      clubName: string;
-      description: string;
-      membershipTiers: string;
-      pricing: string;
-      clubBenefits: string;
-    };
-  };
-  aiModel: {
-    knowledgeScope: "winery-only" | "winery-plus-global";
-    personalityStyle:
-      | "educator"
-      | "sommelier"
-      | "tasting-room-host"
-      | "luxury-concierge"
-      | "casual-friendly";
-    brandGuide: string;
-    tonePreferences: string;
-    knowledgeDocuments: string;
-  };
-}
+
 
 const TenantAdminRefactored: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"profile" | "cms" | "ai-model">(() => {
@@ -103,7 +50,7 @@ const TenantAdminRefactored: React.FC = () => {
     );
   }, [wineCards, searchTerm]);
   
-  const [formData, setFormData] = useState<TenantData>({
+  const [formData, setFormData] = useState<Tenant>({
     id: 1,
     name: "Sample Winery",
     slug: "sample-winery",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, CSSProperties } from "react";
 
 interface FormInputProps {
   type?: "text" | "email" | "password" | "number" | "tel" | "url";
@@ -65,7 +65,7 @@ export function FormInput({
 
   const validationError = getValidationError();
 
-  const inputStyles = {
+  const inputStyles: CSSProperties = {
     width: "100%",
     height: "56px",
     padding: leftIcon ? "16px 24px 16px 48px" : rightIcon ? "16px 48px 16px 24px" : "16px 24px",
@@ -75,7 +75,7 @@ export function FormInput({
       : "1px solid rgba(255, 255, 255, 0.12)",
     background: "transparent",
     backgroundImage: "none",
-    color: "white",
+    color: "#4a4a4a",
     fontSize: "16px",
     fontFamily: "Inter, sans-serif",
     outline: "none",

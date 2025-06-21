@@ -82,10 +82,57 @@ export type ChatCompletionResponse = z.infer<typeof chatCompletionResponseSchema
 export const tenants = pgTable("tenants", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  slug: text("slug").notNull().unique(), // URL-friendly identifier
-  logo: text("logo"), // Logo URL or base64
+  slug: text("slug").notNull().unique(),
+  logo: text("logo"),
   description: text("description"),
-  aiTone: text("ai_tone"), // AI personality/tone for this winery
+  aiTone: text("ai_tone"),
+  profile: json("profile").$type<{
+    wineryName: string;
+    wineryDescription: string;
+    yearEstablished: string;
+    wineryLogo: string;
+    contactEmail: string;
+    contactPhone: string;
+    websiteURL: string;
+    address: string;
+    hoursOfOperation: string;
+    socialMediaLinks: string;
+  }>(),
+  cms: json("cms").$type<{
+    wineEntries: Array<{
+      wineName: string;
+      vintageYear: string;
+      sku: string;
+      varietal: string;
+      tastingNotes: string;
+      foodPairings: string;
+      productionNotes: string;
+      imageUpload: string;
+      criticReviews: string;
+      releaseDate: string;
+      price: string;
+      inventoryCount: string;
+    }>;
+    wineClub: {
+      clubName: string;
+      description: string;
+      membershipTiers: string;
+      pricing: string;
+      clubBenefits: string;
+    };
+  }>(),
+  aiModel: json("ai_model").$type<{
+    knowledgeScope: "winery-only" | "winery-plus-global";
+    personalityStyle:
+      | "educator"
+      | "sommelier"
+      | "tasting-room-host"
+      | "luxury-concierge"
+      | "casual-friendly";
+    brandGuide: string;
+    tonePreferences: string;
+    knowledgeDocuments: string;
+  }>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -95,6 +142,9 @@ export const insertTenantSchema = createInsertSchema(tenants).pick({
   logo: true,
   description: true,
   aiTone: true,
+  profile: true,
+  cms: true,
+  aiModel: true,
 });
 
 export type InsertTenant = z.infer<typeof insertTenantSchema>;

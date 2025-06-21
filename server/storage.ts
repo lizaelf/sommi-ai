@@ -194,7 +194,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(tenants).orderBy(desc(tenants.createdAt));
   }
 
-  async createTenant(insertTenant: InsertTenant): Promise<Tenant> {
+  async createTenant(insertTenant: Tenant): Promise<Tenant> {
     const result = await db
       .insert(tenants)
       .values({
@@ -205,7 +205,7 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async updateTenant(id: number, data: Partial<InsertTenant>): Promise<Tenant | undefined> {
+  async updateTenant(id: number, data: Partial<Tenant>): Promise<Tenant | undefined> {
     const result = await db
       .update(tenants)
       .set(data)

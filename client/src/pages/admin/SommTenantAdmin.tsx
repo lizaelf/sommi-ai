@@ -3,17 +3,9 @@ import { Plus, Save, X, Menu, Search, User, Settings } from "lucide-react";
 import { Link } from "wouter";
 import AppHeader from "@/components/layout/AppHeader";
 import { IconButton } from "@/components/ui/buttons/IconButton";
+import { Tenant } from "@/types/tenant";
+import ActionDropdown from "@/components/admin/ActionDropdown";
 
-interface Tenant {
-  id: number;
-  name: string;
-  slug: string;
-  logo?: string;
-  description?: string;
-  status: "active" | "inactive";
-  createdAt: string;
-  wineCount: number;
-}
 
 const SommTenantAdmin: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
@@ -21,45 +13,21 @@ const SommTenantAdmin: React.FC = () => {
 
   const menuDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load tenants from localStorage
+  // Завантаження tenants з API
   useEffect(() => {
-    // Force refresh to ensure only "Test winery" exists
-    const singleTestWinery: Tenant[] = [
-      {
-        id: 1,
-        name: "Test winery",
-        slug: "test-winery",
-        description:
-          "Premium Napa Valley wine collection specializing in Cabernet Sauvignon",
-        status: "active",
-        createdAt: "2024-01-15",
-        wineCount: 12,
-      },
-    ];
-    setTenants(singleTestWinery);
-    localStorage.setItem("sommelier-tenants", JSON.stringify(singleTestWinery));
-    
-    // Legacy code for fallback (not needed now)
-    const storedTenants = localStorage.getItem("sommelier-tenants");
-    if (false && storedTenants) {
-      setTenants(JSON.parse(storedTenants || "[]"));
-    } else {
-      // Initialize with single test winery
-      const sampleTenants: Tenant[] = [
-        {
-          id: 1,
-          name: "Test winery",
-          slug: "test-winery",
-          description:
-            "Premium Napa Valley wine collection specializing in Cabernet Sauvignon",
-          status: "active",
-          createdAt: "2024-01-15",
-          wineCount: 12,
-        },
-      ];
-      setTenants(sampleTenants);
-      localStorage.setItem("sommelier-tenants", JSON.stringify(sampleTenants));
-    }
+    const fetchTenants = async () => {
+      try {
+        const res = await fetch("/api/tenants");
+        if (!res.ok) throw new Error("Failed to fetch tenants");
+        const data = await res.json();
+        setTenants(data);
+      } catch (error) {
+        setTenants([]);
+        // Можна додати toast або індикатор помилки
+        console.error("Error loading tenants:", error);
+      }
+    };
+    fetchTenants();
   }, []);
 
   // Close dropdown when clicking outside
@@ -88,6 +56,19 @@ const SommTenantAdmin: React.FC = () => {
     console.log("Opening profile management...");
     setShowMenuDropdown(false);
     // Add profile management functionality here
+  };
+
+  // Обработчик удаления tenant
+  const handleDeleteTenant = async (tenantId: string) => {
+    if (!window.confirm("Are you sure you want to delete this tenant?")) return;
+    try {
+      const res = await fetch(`/api/tenants/${tenantId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete tenant");
+      setTenants((prev) => prev.filter((t) => String(t.id) !== String(tenantId)));
+    } catch (error) {
+      alert("Error deleting tenant");
+      console.error(error);
+    }
   };
 
   return (
@@ -133,6 +114,14 @@ const SommTenantAdmin: React.FC = () => {
                   >
                     {tenant.name}
                   </h3>
+                  <ActionDropdown
+                    actions={[
+                      {
+                        label: "Delete",
+                        onClick: () => handleDeleteTenant(tenant.id.toString()),
+                      },
+                    ]}
+                  />
                 </div>
               </div>
             </Link>
