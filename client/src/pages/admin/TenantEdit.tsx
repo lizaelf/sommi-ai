@@ -1,338 +1,403 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import { useStandardToast } from '@/components/ui/feedback/StandardToast';
-import { FormInput } from "@/components/ui/forms/FormInput";
-import { ArrowLeft } from "lucide-react";
+import { useParams, useLocation } from "wouter";
+import { useStandardToast } from "@/components/ui/feedback/StandardToast";
+import AppHeader from "@/components/layout/AppHeader";
+import Button from "@/components/ui/buttons/Button";
+import typography from "@/styles/typography";
+import { Trash2 } from "lucide-react";
+import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 import { Tenant } from "@/types/tenant";
 
-export default function TenantEdit() {
+// API helpers (замініть на ваші реальні)
+const fetchTenantById = async (id: number) => {
+  const res = await fetch(`/api/tenants/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch tenant");
+  return res.json();
+};
+const createTenant = async (data: Omit<Tenant, "id">) => {
+  const res = await fetch("/api/tenants", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create tenant");
+  return res.json();
+};
+const updateTenant = async (id: number, data: Partial<Tenant>) => {
+  const res = await fetch(`/api/tenants/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update tenant");
+  return res.json();
+};
+const deleteTenant = async (id: number) => {
+  const res = await fetch(`/api/tenants/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete tenant");
+  return true;
+};
+
+const defaultTenant: Omit<Tenant, "id"> = {
+  profile: {
+    wineryName: "",
+    wineryDescription: "",
+    yearEstablished: "",
+    wineryLogo: "",
+    contactEmail: "",
+    contactPhone: "",
+    websiteURL: "",
+    address: "",
+    hoursOfOperation: "",
+    socialMediaLinks: "",
+  },
+  cms: {
+    wineEntries: [],
+    wineClub: {
+      clubName: "",
+      description: "",
+      membershipTiers: "",
+      pricing: "",
+      clubBenefits: "",
+    },
+  },
+  aiModel: {
+    knowledgeScope: "winery-only",
+    personalityStyle: "sommelier",
+    brandGuide: "",
+    tonePreferences: "",
+    knowledgeDocuments: "",
+  },
+};
+
+const TenantEdit: React.FC = () => {
+  const { id } = useParams();
   const [, setLocation] = useLocation();
   const { toastSuccess, toastError } = useStandardToast();
-  const [scrolled, setScrolled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [tenant, setTenant] = useState<Omit<Tenant, "id"> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isNewTenant, setIsNewTenant] = useState(false);
 
-  // Базова структура для вкладених полів
-  const [formData, setFormData] = useState<Partial<Tenant>>({
-    profile: {
-      wineryName: "",
-      wineryDescription: "",
-      yearEstablished: "",
-      wineryLogo: "",
-      contactEmail: "",
-      contactPhone: "",
-      websiteURL: "",
-      address: "",
-      hoursOfOperation: "",
-      socialMediaLinks: "",
-    },
-    cms: {
-      wineEntries: [],
-      wineClub: {
-        clubName: "",
-        description: "",
-        membershipTiers: "",
-        pricing: "",
-        clubBenefits: "",
-      },
-    },
-    aiModel: {
-      knowledgeScope: "winery-only",
-      personalityStyle: "educator",
-      brandGuide: "",
-      tonePreferences: "",
-      knowledgeDocuments: "",
-    },
-  });
-
-  // Отримання ID tenant з URL
-  const getTenantId = () => {
-    const path = window.location.pathname;
-    const match = path.match(/\/tenant-edit\/(\d+)/);
-    return match ? match[1] : null;
-  };
-
-  // Завантаження даних tenant
   useEffect(() => {
-    const tenantId = getTenantId();
-    if (!tenantId) {
-      toastError("Invalid tenant ID");
-      setLocation('/somm-tenant-admin');
-      return;
-    }
-
-    const fetchTenant = async () => {
+    const loadTenant = async () => {
+      if (id === "new") {
+        setIsNewTenant(true);
+        setTenant({ ...defaultTenant });
+        setLoading(false);
+        return;
+      }
+      if (!id) {
+        setLoading(false);
+        return;
+      }
       try {
-        const res = await fetch(`/api/tenants/${tenantId}`);
-        if (!res.ok) throw new Error("Failed to fetch tenant");
-        const data = await res.json();
-        setFormData(data);
+        const tenantId = parseInt(id);
+        if (isNaN(tenantId)) {
+          setLoading(false);
+          return;
+        }
+        const data = await fetchTenantById(tenantId);
+        setTenant(data);
       } catch (error) {
         toastError("Failed to load tenant");
-        setLocation('/somm-tenant-admin');
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
+    loadTenant();
+    // eslint-disable-next-line
+  }, [id]);
 
-    fetchTenant();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 0);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Для вкладених полів
-  const handleNestedChange = <T extends keyof Tenant>(
-    section: T,
-    field: string,
-    value: any
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: {
-        ...((prev[section] as object) || {}),
-        [field]: value,
-      },
-    }));
+  // --- Handlers for all fields ---
+  const handleProfileChange = (field: string, value: string) => {
+    setTenant((prev) =>
+      prev
+        ? { ...prev, profile: { ...prev.profile, [field]: value } }
+        : prev
+    );
   };
-
-  // Для вкладених полів wineClub
   const handleWineClubChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      cms: {
-        ...prev.cms,
-        wineEntries: prev.cms?.wineEntries || [],
-        wineClub: {
-          clubName: prev.cms?.wineClub?.clubName || "",
-          description: prev.cms?.wineClub?.description || "",
-          membershipTiers: prev.cms?.wineClub?.membershipTiers || "",
-          pricing: prev.cms?.wineClub?.pricing || "",
-          clubBenefits: prev.cms?.wineClub?.clubBenefits || "",
-          [field]: value,
-        },
-      },
-    }));
+    setTenant((prev) =>
+      prev
+        ? { ...prev, cms: { ...prev.cms, wineClub: { ...prev.cms.wineClub, [field]: value } } }
+        : prev
+    );
+  };
+  const handleAiModelChange = (field: string, value: string) => {
+    setTenant((prev) =>
+      prev
+        ? { ...prev, aiModel: { ...prev.aiModel, [field]: value } }
+        : prev
+    );
+  };
+  const handleWineEntryChange = (index: number, field: string, value: string) => {
+    setTenant((prev) => {
+      if (!prev) return prev;
+      const wineEntries = [...prev.cms.wineEntries];
+      wineEntries[index] = { ...wineEntries[index], [field]: value };
+      return { ...prev, cms: { ...prev.cms, wineEntries } };
+    });
+  };
+  const addWineEntry = () => {
+    setTenant((prev) =>
+      prev
+        ? {
+            ...prev,
+            cms: {
+              ...prev.cms,
+              wineEntries: [
+                ...prev.cms.wineEntries,
+                {
+                  wineName: "",
+                  vintageYear: "",
+                  sku: "",
+                  varietal: "",
+                  tastingNotes: "",
+                  foodPairings: "",
+                  productionNotes: "",
+                  imageUpload: "",
+                  criticReviews: "",
+                  releaseDate: "",
+                  price: "",
+                  inventoryCount: "",
+                },
+              ],
+            },
+          }
+        : prev
+    );
+  };
+  const removeWineEntry = (index: number) => {
+    setTenant((prev) => {
+      if (!prev) return prev;
+      const wineEntries = [...prev.cms.wineEntries];
+      wineEntries.splice(index, 1);
+      return { ...prev, cms: { ...prev.cms, wineEntries } };
+    });
   };
 
+  // --- Save/Delete ---
   const handleSave = async () => {
-    const tenantId = getTenantId();
-    if (!tenantId) {
-      toastError("Invalid tenant ID");
-      return;
-    }
-
-    if (!formData.profile?.wineryName?.trim()) {
+    if (!tenant || !tenant.profile?.wineryName?.trim()) {
       toastError("Winery name is required");
       return;
     }
-
     try {
-      const res = await fetch(`/api/tenants/${tenantId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error("Failed to update tenant");
-      toastSuccess("Tenant updated successfully", "Success");
-      setLocation('/somm-tenant-admin');
+      if (isNewTenant) {
+        await createTenant(tenant);
+        toastSuccess("Tenant created successfully");
+      } else {
+        await updateTenant(Number(id), tenant);
+        toastSuccess("Tenant updated successfully");
+      }
+      setLocation("/somm-tenant-admin");
     } catch (error) {
-      toastError("Failed to update tenant");
+      toastError(isNewTenant ? "Failed to create tenant" : "Failed to update tenant");
     }
   };
 
-  const handleCancel = () => setLocation('/somm-tenant-admin');
+  const handleDelete = async () => {
+    if (isNewTenant || !id) return;
+    if (!window.confirm("Are you sure you want to delete this tenant? This action cannot be undone.")) return;
+    try {
+      await deleteTenant(Number(id));
+      toastSuccess("Tenant deleted successfully");
+      setLocation("/somm-tenant-admin");
+    } catch (error) {
+      toastError("Failed to delete tenant");
+    }
+  };
 
-  if (isLoading) {
+  // --- Dropdown actions ---
+  const actions: ActionDropdownItem[] = [
+    {
+      label: "Delete Tenant",
+      icon: <Trash2 size={16} />,
+      onClick: handleDelete,
+      colorClass: "text-red-400",
+      disabled: false,
+    },
+  ];
+
+  const pageTitle = isNewTenant ? "Add New Tenant" : "Edit Tenant";
+
+  if (loading) {
     return (
-      <div className="min-h-screen mobile-fullscreen text-gray-600 flex items-center justify-center" style={{ backgroundColor: '#3a3a3a' }}>
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen bg-black text-white">
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/somm-tenant-admin")} />
+        <div className="pt-[75px] p-6">
+          <div style={typography.body}>Loading tenant data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!tenant) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/somm-tenant-admin")} />
+        <div className="pt-[75px] p-6">
+          <div style={typography.body}>Tenant not found</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen mobile-fullscreen text-gray-600" style={{ backgroundColor: '#3a3a3a' }}>
-      {/* Fixed Header */}
-      <div className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-200 ${
-        scrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'
-      }`}>
-        <button 
-          onClick={handleCancel}
-          className="tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-white" />
-        </button>
-        <h1 className="text-lg font-medium" style={{ color: "white" }}>
-          Edit Tenant
-        </h1>
-        <div className="w-10"></div>
-      </div>
-      {/* Content */}
-      <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px", paddingBottom: "120px" }}>
+    <div className="min-h-screen bg-black text-gray-600">
+      <AppHeader
+        title={pageTitle}
+        showBackButton
+        onBack={() => setLocation("/somm-tenant-admin")}
+        rightContent={
+          !isNewTenant && id ? <ActionDropdown actions={actions} /> : null
+        }
+      />
+      <div className="pt-[75px] p-6">
         <div className="space-y-6">
           {/* Profile */}
-          <div className="pt-2 pb-1 text-white font-semibold">Profile</div>
-          <FormInput
-            label="Winery Name"
-            type="text"
-            value={formData.profile?.wineryName || ""}
-            onChange={(value: string) => handleNestedChange("profile", "wineryName", value)}
-            placeholder="Winery name"
-            required
-          />
-          <FormInput
-            label="Website"
-            type="url"
-            value={formData.profile?.websiteURL || ""}
-            onChange={(value: string) => handleNestedChange("profile", "websiteURL", value)}
-            placeholder="https://example.com"
-          />
-          <FormInput
-            label="Address"
-            type="text"
-            value={formData.profile?.address || ""}
-            onChange={(value: string) => handleNestedChange("profile", "address", value)}
-            placeholder="Address"
-          />
-          <FormInput
-            label="Phone"
-            type="tel"
-            value={formData.profile?.contactPhone || ""}
-            onChange={(value: string) => handleNestedChange("profile", "contactPhone", value)}
-            placeholder="Phone"
-          />
-          <FormInput
-            label="Email"
-            type="email"
-            value={formData.profile?.contactEmail || ""}
-            onChange={(value: string) => handleNestedChange("profile", "contactEmail", value)}
-            placeholder="Email"
-          />
-          <FormInput
-            label="Year Established"
-            type="text"
-            value={formData.profile?.yearEstablished || ""}
-            onChange={(value: string) => handleNestedChange("profile", "yearEstablished", value)}
-            placeholder="Year established"
-          />
-          <FormInput
-            label="Winery Logo URL"
-            type="url"
-            value={formData.profile?.wineryLogo || ""}
-            onChange={(value: string) => handleNestedChange("profile", "wineryLogo", value)}
-            placeholder="https://example.com/winery-logo.png"
-          />
-          <FormInput
-            label="Hours of Operation"
-            type="text"
-            value={formData.profile?.hoursOfOperation || ""}
-            onChange={(value: string) => handleNestedChange("profile", "hoursOfOperation", value)}
-            placeholder="Hours of operation"
-          />
-          <FormInput
-            label="Social Media Links"
-            type="text"
-            value={formData.profile?.socialMediaLinks || ""}
-            onChange={(value: string) => handleNestedChange("profile", "socialMediaLinks", value)}
-            placeholder="Social media links"
-          />
-          <FormInput
-            label="Winery Description"
-            type="text"
-            value={formData.profile?.wineryDescription || ""}
-            onChange={(value: string) => handleNestedChange("profile", "wineryDescription", value)}
-            placeholder="Winery description"
-          />
+          <div className="border-t border-white/10 pt-4">
+            <h2 className="text-white font-semibold mb-2">Profile</h2>
+            {Object.entries(tenant.profile).map(([key, value]) => (
+              <div key={key} className="mb-2">
+                <label style={typography.body1R} className="block mb-1">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                <input
+                  type="text"
+                  value={value}
+                  onChange={e => handleProfileChange(key, e.target.value)}
+                  className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                  placeholder={key}
+                />
+              </div>
+            ))}
+          </div>
 
           {/* Wine Club */}
-          <div className="pt-2 pb-1 text-white font-semibold">Wine Club</div>
-          <FormInput
-            label="Club Name"
-            type="text"
-            value={formData.cms?.wineClub?.clubName || ""}
-            onChange={(value: string) => handleWineClubChange("clubName", value)}
-            placeholder="Club name"
-          />
-          <FormInput
-            label="Club Description"
-            type="text"
-            value={formData.cms?.wineClub?.description || ""}
-            onChange={(value: string) => handleWineClubChange("description", value)}
-            placeholder="Club description"
-          />
-          <FormInput
-            label="Membership Tiers"
-            type="text"
-            value={formData.cms?.wineClub?.membershipTiers || ""}
-            onChange={(value: string) => handleWineClubChange("membershipTiers", value)}
-            placeholder="Membership tiers"
-          />
-          <FormInput
-            label="Pricing"
-            type="text"
-            value={formData.cms?.wineClub?.pricing || ""}
-            onChange={(value: string) => handleWineClubChange("pricing", value)}
-            placeholder="Pricing"
-          />
-          <FormInput
-            label="Club Benefits"
-            type="text"
-            value={formData.cms?.wineClub?.clubBenefits || ""}
-            onChange={(value: string) => handleWineClubChange("clubBenefits", value)}
-            placeholder="Club benefits"
-          />
+          <div className="border-t border-white/10 pt-4">
+            <h2 className="text-white font-semibold mb-2">Wine Club</h2>
+            {Object.entries(tenant.cms.wineClub).map(([key, value]) => (
+              <div key={key} className="mb-2">
+                <label style={typography.body1R} className="block mb-1">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                <input
+                  type="text"
+                  value={value}
+                  onChange={e => handleWineClubChange(key, e.target.value)}
+                  className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                  placeholder={key}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Wine Entries */}
+          <div className="border-t border-white/10 pt-4">
+            <h2 className="text-white font-semibold mb-2">Wine Entries</h2>
+            {tenant.cms.wineEntries.map((entry, idx) => (
+              <div key={idx} className="mb-4 border border-white/10 rounded-lg p-3">
+                {Object.entries(entry).map(([key, value]) => (
+                  <div key={key} className="mb-2">
+                    <label style={typography.body1R} className="block mb-1">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                    <input
+                      type="text"
+                      value={value}
+                      onChange={e => handleWineEntryChange(idx, key, e.target.value)}
+                      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                      placeholder={key}
+                    />
+                  </div>
+                ))}
+                <button
+                  className="text-red-400 mt-2 text-sm"
+                  onClick={() => removeWineEntry(idx)}
+                  type="button"
+                >
+                  Remove Entry
+                </button>
+              </div>
+            ))}
+            <button
+              className="text-blue-400 mt-2 text-sm"
+              onClick={addWineEntry}
+              type="button"
+            >
+              + Add Wine Entry
+            </button>
+          </div>
 
           {/* AI Model */}
-          <div className="pt-2 pb-1 text-white font-semibold">AI Model</div>
-          <FormInput
-            label="Knowledge Scope"
-            type="text"
-            value={formData.aiModel?.knowledgeScope || ""}
-            onChange={(value: string) => handleNestedChange("aiModel", "knowledgeScope", value)}
-            placeholder="Knowledge Scope"
-          />
-          <FormInput
-            label="Personality Style"
-            type="text"
-            value={formData.aiModel?.personalityStyle || ""}
-            onChange={(value: string) => handleNestedChange("aiModel", "personalityStyle", value)}
-            placeholder="Personality Style"
-          />
-          <FormInput
-            label="Brand Guide"
-            type="text"
-            value={formData.aiModel?.brandGuide || ""}
-            onChange={(value: string) => handleNestedChange("aiModel", "brandGuide", value)}
-            placeholder="Brand Guide"
-          />
-          <FormInput
-            label="Tone Preferences"
-            type="text"
-            value={formData.aiModel?.tonePreferences || ""}
-            onChange={(value: string) => handleNestedChange("aiModel", "tonePreferences", value)}
-            placeholder="Tone Preferences"
-          />
-          <FormInput
-            label="Knowledge Documents"
-            type="text"
-            value={formData.aiModel?.knowledgeDocuments || ""}
-            onChange={(value: string) => handleNestedChange("aiModel", "knowledgeDocuments", value)}
-            placeholder="Knowledge Documents"
-          />
+          <div className="border-t border-white/10 pt-4">
+            <h2 className="text-white font-semibold mb-2">AI Model</h2>
+            <div className="mb-2">
+              <label className="block text-white mb-1">Knowledge Scope</label>
+              <select
+                className="w-full p-2 rounded bg-black/20 text-white"
+                value={tenant.aiModel.knowledgeScope}
+                onChange={e => handleAiModelChange("knowledgeScope", e.target.value)}
+              >
+                <option value="winery-only">winery-only</option>
+                <option value="winery-plus-global">winery-plus-global</option>
+              </select>
+            </div>
+            <div className="mb-2">
+              <label className="block text-white mb-1">Personality Style</label>
+              <select
+                className="w-full p-2 rounded bg-black/20 text-white"
+                value={tenant.aiModel.personalityStyle}
+                onChange={e => handleAiModelChange("personalityStyle", e.target.value)}
+              >
+                <option value="educator">educator</option>
+                <option value="sommelier">sommelier</option>
+                <option value="tasting-room-host">tasting-room-host</option>
+                <option value="luxury-concierge">luxury-concierge</option>
+                <option value="casual-friendly">casual-friendly</option>
+              </select>
+            </div>
+            <div>
+              <label style={typography.body1R} className="block mb-2">Brand Guide</label>
+              <input
+                type="text"
+                value={tenant.aiModel.brandGuide}
+                onChange={e => handleAiModelChange("brandGuide", e.target.value)}
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                placeholder="Brand Guide"
+              />
+            </div>
+            <div>
+              <label style={typography.body1R} className="block mb-2">Tone Preferences</label>
+              <input
+                type="text"
+                value={tenant.aiModel.tonePreferences}
+                onChange={e => handleAiModelChange("tonePreferences", e.target.value)}
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                placeholder="Tone Preferences"
+              />
+            </div>
+            <div>
+              <label style={typography.body1R} className="block mb-2">Knowledge Documents</label>
+              <input
+                type="text"
+                value={tenant.aiModel.knowledgeDocuments}
+                onChange={e => handleAiModelChange("knowledgeDocuments", e.target.value)}
+                className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                placeholder="Knowledge Documents"
+              />
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="pt-6">
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              className="w-full"
+            >
+              {isNewTenant ? "Add Tenant" : "Save"}
+            </Button>
+          </div>
         </div>
-      </div>
-      {/* Bottom Action Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
-        <button
-          onClick={handleSave}
-          className="w-full flex items-center justify-center px-6 py-4 bg-[#6A53E7] text-white rounded-lg hover:bg-[#5a43d7] transition-colors font-medium text-lg"
-        >
-          Update
-        </button>
       </div>
     </div>
   );
-} 
+};
+
+export default TenantEdit; 

@@ -21,7 +21,7 @@ import TenantCreate from "@/pages/admin/TenantCreate";
 import QRCodes from "@/pages/end-user/QRCodes";
 import QRDemo from "@/pages/end-user/QRDemo";
 import { useEffect } from "react";
-import SimpleTenantEdit from "./pages/admin/SimpleTenantEdit";
+import TenantEdit from "./pages/admin/TenantEdit";
 
 // Scroll restoration for deployed versions
 function useScrollRestoration() {
@@ -78,7 +78,7 @@ function Router() {
       <Route path="/winery-tenant-admin" component={TenantAdminRefactored} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
       <Route path="/tenant-create" component={TenantCreate} />
-      <Route path="/tenant-edit/:id" component={SimpleTenantEdit} />
+      <Route path="/tenant-edit/:id" component={TenantEdit} />
 
 
       <Route path="/wine-edit/:id" component={SimpleWineEdit} />
