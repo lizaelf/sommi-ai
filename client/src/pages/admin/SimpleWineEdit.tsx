@@ -10,8 +10,13 @@ import { Upload, Image as ImageIcon, Download, QrCode, Trash2 } from "lucide-rea
 import * as QRCodeReact from "qrcode.react";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 
+interface SimpleWineEditProps {
+  wine?: any | null;
+  onSave?: (updatedWine: any) => void;
+  onCancel?: () => void;
+}
 
-const SimpleWineEdit: React.FC = () => {
+const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave, onCancel }) => {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const { toastSuccess, toastError } = useStandardToast();
@@ -22,75 +27,80 @@ const SimpleWineEdit: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Якщо передано пропс wine, використовуємо його
+  const isModalMode = !!propWine || !!onSave || !!onCancel;
+
   useEffect(() => {
     const loadWine = async () => {
-      try {
-        // Check if this is a new wine creation (id = "new")
-        if (id === "new") {
-          setIsNewWine(true);
-          setWine({
-            id: 0, // Temporary ID for new wine
-            name: "",
-            year: new Date().getFullYear(),
-            bottles: 0,
-            image: "",
-            ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
-            description: "",
-            buyAgainLink: "",
-            qrCode: "",
-            qrLink: "",
-            foodPairing: [],
-            location: "",
-            technicalDetails: {
-              varietal: { primary: "", secondary: "", primaryPercentage: "", secondaryPercentage: "" },
-              aging: { ageUpTo: "" }
-            }
-          });
-          setLoading(false);
-          return;
-        }
-
-        if (!id) {
-          setLoading(false);
-          return;
-        }
-
-        const wineId = parseInt(id);
-        if (isNaN(wineId)) {
-          setLoading(false);
-          return;
-        }
-
-        console.log("Loading wine with ID:", wineId);
-        const wineData = await DataSyncManager.getWineById(wineId);
-        
-        if (wineData) {
-          console.log("Loaded wine data:", wineData);
-          setWine(wineData);
-        } else {
-          console.log("Wine not found, creating default");
-          setWine({
-            id: wineId,
-            name: "",
-            year: new Date().getFullYear(),
-            bottles: 0,
-            image: "",
-            ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
-            technicalDetails: {
-              varietal: { primary: "", secondary: "", primaryPercentage: "", secondaryPercentage: "" },
-              aging: {  ageUpTo: "" }
-            }
-          });
-        }
+      // Якщо це модальний режим і передано wine
+      if (isModalMode && propWine) {
+        setWine(propWine);
         setLoading(false);
-      } catch (error) {
-        console.error("Error loading wine:", error);
-        setLoading(false);
+        return;
       }
+
+      // Check if this is a new wine creation (id = "new")
+      if (id === "new") {
+        setIsNewWine(true);
+        setWine({
+          id: 0, // Temporary ID for new wine
+          name: "",
+          year: new Date().getFullYear(),
+          bottles: 0,
+          image: "",
+          ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+          description: "",
+          buyAgainLink: "",
+          qrCode: "",
+          qrLink: "",
+          foodPairing: [],
+          location: "",
+          technicalDetails: {
+            varietal: { primary: "", secondary: "", primaryPercentage: "", secondaryPercentage: "" },
+            aging: { ageUpTo: "" }
+          }
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+
+      const wineId = parseInt(id);
+      if (isNaN(wineId)) {
+        setLoading(false);
+        return;
+      }
+
+      console.log("Loading wine with ID:", wineId);
+      const wineData = await DataSyncManager.getWineById(wineId);
+      
+      if (wineData) {
+        console.log("Loaded wine data:", wineData);
+        setWine(wineData);
+      } else {
+        console.log("Wine not found, creating default");
+        setWine({
+          id: wineId,
+          name: "",
+          year: new Date().getFullYear(),
+          bottles: 0,
+          image: "",
+          ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+          technicalDetails: {
+            varietal: { primary: "", secondary: "", primaryPercentage: "", secondaryPercentage: "" },
+            aging: {  ageUpTo: "" }
+          }
+        });
+      }
+      setLoading(false);
     };
 
     loadWine();
-  }, [id]);
+  }, [id, isModalMode, propWine]);
 
   // Initialize image preview when wine data loads
   useEffect(() => {
@@ -209,6 +219,12 @@ const SimpleWineEdit: React.FC = () => {
       return;
     }
 
+    // Якщо це модальний режим, використовуємо onSave callback
+    if (isModalMode && onSave) {
+      onSave(wine);
+      return;
+    }
+
     try {
       if (isNewWine) {
         // Create new wine (exclude the temporary id)
@@ -216,7 +232,8 @@ const SimpleWineEdit: React.FC = () => {
         const newWine = await DataSyncManager.addWine(wineData);
         if (newWine) {
           toastSuccess("Wine added successfully");
-          setLocation("/winery-tenant-admin");
+          // Повертаємося назад до сторінки редагування tenant
+          setLocation("/tenant-edit/new");
         } else {
           toastError("Failed to add wine");
         }
@@ -225,7 +242,8 @@ const SimpleWineEdit: React.FC = () => {
         const updatedWine = await DataSyncManager.updateWine(wine.id, wine);
         if (updatedWine) {
           toastSuccess("Wine updated successfully");
-          setLocation("/winery-tenant-admin");
+          // Повертаємося назад до сторінки редагування tenant
+          setLocation("/tenant-edit/new");
         } else {
           toastError("Failed to update wine");
         }
@@ -244,7 +262,7 @@ const SimpleWineEdit: React.FC = () => {
       const ok = await DataSyncManager.removeWine(wine.id);
       if (ok) {
         toastSuccess("Wine deleted successfully");
-        setLocation("/winery-tenant-admin");
+        setLocation("/tenant-edit/new");
       } else {
         toastError("Failed to delete wine");
       }
@@ -269,7 +287,7 @@ const SimpleWineEdit: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/winery-tenant-admin")} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/tenant-edit/new")} />
         <div className="pt-[75px] p-6">
           <div style={typography.body}>Loading wine data...</div>
         </div>
@@ -280,7 +298,7 @@ const SimpleWineEdit: React.FC = () => {
   if (!wine) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/winery-tenant-admin")} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/tenant-edit/new")} />
         <div className="pt-[75px] p-6">
           <div style={typography.body}>Wine not found</div>
         </div>
@@ -290,18 +308,20 @@ const SimpleWineEdit: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-gray-600">
-      <AppHeader 
-        title={pageTitle} 
-        showBackButton 
-        onBack={() => setLocation("/winery-tenant-admin")}
-        rightContent={
-          !isNewWine && wine?.id ? (
-            <ActionDropdown actions={actions} />
-          ) : null
-        }
-      />
+      {!isModalMode && (
+        <AppHeader 
+          title={pageTitle} 
+          showBackButton 
+          onBack={() => setLocation("/tenant-edit/new")}
+          rightContent={
+            !isNewWine && wine?.id ? (
+              <ActionDropdown actions={actions} />
+            ) : null
+          }
+        />
+      )}
       
-      <div className="pt-[75px] p-6">
+      <div className={`${!isModalMode ? 'pt-[75px]' : ''} p-6`}>
         <div className="space-y-6">
           {/* Wine Image and QR Code Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -653,13 +673,23 @@ const SimpleWineEdit: React.FC = () => {
 
           {/* Save Button */}
           <div className="pt-6">
-            <Button 
-              variant="primary" 
-              onClick={handleSave}
-              className="w-full"
-            >
-              {isNewWine ? "Add Wine" : "Save"}
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="primary" 
+                onClick={handleSave}
+                className="flex-1"
+              >
+                {isNewWine ? "Add Wine" : "Save"}
+              </Button>
+              {isModalMode && onCancel && (
+                <Button 
+                  variant="secondary" 
+                  onClick={onCancel}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

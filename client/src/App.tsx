@@ -62,6 +62,9 @@ function useScrollRestoration() {
   }, []);
 }
 
+// Обгортка для SimpleWineEdit щоб він працював як роут-компонент
+const SimpleWineEditRoute = () => <SimpleWineEdit />;
+
 function Router() {
   return (
     <Switch>
@@ -81,7 +84,7 @@ function Router() {
       <Route path="/tenant-edit/:id" component={TenantEdit} />
 
 
-      <Route path="/wine-edit/:id" component={SimpleWineEdit} />
+      <Route path="/wine-edit/:id" component={SimpleWineEditRoute} />
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route path="/qr-codes" component={QRCodes} />
       <Route path="/qr-demo" component={QRDemo} />

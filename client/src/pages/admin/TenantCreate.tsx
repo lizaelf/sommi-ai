@@ -4,11 +4,21 @@ import { useStandardToast } from '@/components/ui/feedback/StandardToast';
 import { FormInput } from "@/components/ui/forms/FormInput";
 import { ArrowLeft } from "lucide-react";
 import { Tenant } from "@/types/tenant";
+import Button from "@/components/ui/buttons/Button";
+
+const TABS = [
+  { key: 'profile', label: 'Profile' },
+  { key: 'cms', label: 'CMS' },
+  { key: 'wineclub', label: 'Wine club' },
+  { key: 'ai', label: 'AI Model' },
+];
 
 export default function TenantCreate() {
   const [, setLocation] = useLocation();
   const { toastSuccess, toastError } = useStandardToast();
   const [scrolled, setScrolled] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [search, setSearch] = useState('');
 
   // Базова структура для вкладених полів
   const [formData, setFormData] = useState<Partial<Tenant>>({
@@ -42,6 +52,11 @@ export default function TenantCreate() {
       knowledgeDocuments: "Wine production guides, tasting notes, food pairing recommendations",
     },
   });
+
+  // Фільтровані вина для CMS табу
+  const filteredWines = formData.cms?.wineEntries?.filter(wine =>
+    wine.wineName.toLowerCase().includes(search.toLowerCase())
+  ) || [];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 0);
@@ -104,6 +119,16 @@ export default function TenantCreate() {
 
   const handleCancel = () => setLocation('/somm-tenant-admin');
 
+  // Навігація до сторінки додавання вина
+  const handleAddWine = () => {
+    setLocation('/wine-edit/new');
+  };
+
+  // Навігація до сторінки редагування вина
+  const handleEditWine = (wineIndex: number) => {
+    setLocation(`/wine-edit/${wineIndex}`);
+  };
+
   return (
     <div className="min-h-screen mobile-fullscreen text-gray-600" style={{ backgroundColor: '#3a3a3a' }}>
       {/* Fixed Header */}
@@ -121,8 +146,20 @@ export default function TenantCreate() {
         </h1>
         <div className="w-10"></div>
       </div>
-      {/* Content */}
-      <div style={{ paddingTop: "100px", paddingLeft: "24px", paddingRight: "24px", paddingBottom: "120px" }}>
+      {/* Tabs */}
+      <div className="flex mb-6 mt-20">
+        {TABS.map(tab => (
+          <button
+            key={tab.key}
+            className={`px-4 py-2 rounded-full mx-1 ${activeTab === tab.key ? 'bg-white text-black' : 'bg-black text-white border border-white/20'}`}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      {/* Tab content */}
+      {activeTab === 'profile' && (
         <div className="space-y-6">
           {/* Profile */}
           <div className="pt-2 pb-1 text-white font-semibold">Profile</div>
@@ -197,7 +234,39 @@ export default function TenantCreate() {
             onChange={(value: string) => handleNestedChange("profile", "wineryDescription", value)}
             placeholder="Winery description"
           />
-
+        </div>
+      )}
+      {activeTab === 'cms' && (
+        <div>
+          <div className="flex items-center mb-4">
+            <input
+              type="text"
+              placeholder="Search wines..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="flex-1 p-2 rounded bg-black/20 text-white border border-white/20"
+            />
+            <Button className="ml-2" onClick={handleAddWine}>+ Add wine</Button>
+          </div>
+          {/* Список вин */}
+          <div>
+            {filteredWines.map((wine, idx) => (
+              <div key={idx} className="flex items-center p-2 border-b border-white/10 cursor-pointer" onClick={() => handleEditWine(idx)}>
+                <span className="text-white flex-1">{wine.wineName}</span>
+                <span className="text-xs text-gray-400 ml-2">ID: {idx+1}</span>
+              </div>
+            ))}
+            {filteredWines.length === 0 && (
+              <div className="text-center py-8 text-gray-400">
+                <p>No wines found</p>
+                <p className="text-sm mt-2">Click "Add wine" to get started</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {activeTab === 'wineclub' && (
+        <div className="space-y-6">
           {/* Wine Club */}
           <div className="pt-2 pb-1 text-white font-semibold">Wine Club</div>
           <FormInput
@@ -235,7 +304,10 @@ export default function TenantCreate() {
             onChange={(value: string) => handleWineClubChange("clubBenefits", value)}
             placeholder="Club benefits"
           />
-
+        </div>
+      )}
+      {activeTab === 'ai' && (
+        <div className="space-y-6">
           {/* AI Model */}
           <div className="pt-2 pb-1 text-white font-semibold">AI Model</div>
           <FormInput
@@ -274,7 +346,7 @@ export default function TenantCreate() {
             placeholder="Knowledge Documents"
           />
         </div>
-      </div>
+      )}
       {/* Bottom Action Button */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
         <button
