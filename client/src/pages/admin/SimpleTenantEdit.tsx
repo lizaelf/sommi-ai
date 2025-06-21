@@ -39,11 +39,6 @@ const deleteTenant = async (id: number) => {
 };
 
 const defaultTenant: Omit<Tenant, "id"> = {
-  name: "",
-  slug: "",
-  logo: "",
-  description: "",
-  aiTone: "",
   profile: {
     wineryName: "",
     wineryDescription: "",
@@ -114,9 +109,6 @@ const SimpleTenantEdit: React.FC = () => {
   }, [id]);
 
   // --- Handlers for all fields ---
-  const handleInputChange = (field: keyof Omit<Tenant, "id">, value: any) => {
-    setTenant((prev) => prev ? { ...prev, [field]: value } : prev);
-  };
   const handleProfileChange = (field: string, value: string) => {
     setTenant((prev) =>
       prev
@@ -186,8 +178,8 @@ const SimpleTenantEdit: React.FC = () => {
 
   // --- Save/Delete ---
   const handleSave = async () => {
-    if (!tenant || !tenant.name.trim() || !tenant.slug.trim()) {
-      toastError("Name and slug are required");
+    if (!tenant || !tenant.profile?.wineryName?.trim()) {
+      toastError("Winery name is required");
       return;
     }
     try {
@@ -263,57 +255,6 @@ const SimpleTenantEdit: React.FC = () => {
       />
       <div className="pt-[75px] p-6">
         <div className="space-y-6">
-          {/* Основні поля */}
-          <div>
-            <label style={typography.body1R} className="block mb-2">Name</label>
-            <input
-              type="text"
-              value={tenant.name}
-              onChange={e => handleInputChange("name", e.target.value)}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Tenant name"
-            />
-          </div>
-          <div>
-            <label style={typography.body1R} className="block mb-2">Slug</label>
-            <input
-              type="text"
-              value={tenant.slug}
-              onChange={e => handleInputChange("slug", e.target.value)}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Slug"
-            />
-          </div>
-          <div>
-            <label style={typography.body1R} className="block mb-2">Logo URL</label>
-            <input
-              type="text"
-              value={tenant.logo}
-              onChange={e => handleInputChange("logo", e.target.value)}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Logo URL"
-            />
-          </div>
-          <div>
-            <label style={typography.body1R} className="block mb-2">Description</label>
-            <textarea
-              value={tenant.description}
-              onChange={e => handleInputChange("description", e.target.value)}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Description"
-            />
-          </div>
-          <div>
-            <label style={typography.body1R} className="block mb-2">AI Tone</label>
-            <input
-              type="text"
-              value={tenant.aiTone}
-              onChange={e => handleInputChange("aiTone", e.target.value)}
-              className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="AI Tone"
-            />
-          </div>
-
           {/* Profile */}
           <div className="border-t border-white/10 pt-4">
             <h2 className="text-white font-semibold mb-2">Profile</h2>

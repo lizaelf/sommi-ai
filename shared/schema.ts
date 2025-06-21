@@ -81,11 +81,6 @@ export type ChatCompletionResponse = z.infer<typeof chatCompletionResponseSchema
 // Model for tenants (wineries)
 export const tenants = pgTable("tenants", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  slug: text("slug").notNull().unique(),
-  logo: text("logo"),
-  description: text("description"),
-  aiTone: text("ai_tone"),
   profile: json("profile").$type<{
     wineryName: string;
     wineryDescription: string;
@@ -137,11 +132,6 @@ export const tenants = pgTable("tenants", {
 });
 
 export const insertTenantSchema = createInsertSchema(tenants).pick({
-  name: true,
-  slug: true,
-  logo: true,
-  description: true,
-  aiTone: true,
   profile: true,
   cms: true,
   aiModel: true,

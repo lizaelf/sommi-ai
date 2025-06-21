@@ -5,43 +5,77 @@ import { FormInput } from "@/components/ui/forms/FormInput";
 import { ArrowLeft } from "lucide-react";
 import { Tenant } from "@/types/tenant";
 
-export default function TenantCreate() {
+export default function TenantEdit() {
   const [, setLocation] = useLocation();
   const { toastSuccess, toastError } = useStandardToast();
   const [scrolled, setScrolled] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Базова структура для вкладених полів
   const [formData, setFormData] = useState<Partial<Tenant>>({
     profile: {
-      wineryName: "Test Winery & Vineyards",
-      wineryDescription: "Family-owned winery producing exceptional wines since 1995",
-      yearEstablished: "1995",
-      wineryLogo: "https://example.com/winery-logo.png",
-      contactEmail: "info@testwinery.com",
-      contactPhone: "+1-555-123-4567",
-      websiteURL: "https://testwinery.com",
-      address: "123 Wine Valley Road, Napa, CA 94558",
-      hoursOfOperation: "Mon-Fri: 10AM-6PM, Sat-Sun: 11AM-7PM",
-      socialMediaLinks: "Instagram: @testwinery, Facebook: /testwinery",
+      wineryName: "",
+      wineryDescription: "",
+      yearEstablished: "",
+      wineryLogo: "",
+      contactEmail: "",
+      contactPhone: "",
+      websiteURL: "",
+      address: "",
+      hoursOfOperation: "",
+      socialMediaLinks: "",
     },
     cms: {
       wineEntries: [],
       wineClub: {
-        clubName: "Test Winery Club",
-        description: "Exclusive wine club for connoisseurs",
-        membershipTiers: "Bronze, Silver, Gold, Platinum",
-        pricing: "Bronze: $99/year, Silver: $199/year, Gold: $299/year, Platinum: $499/year",
-        clubBenefits: "Monthly wine shipments, exclusive tastings, member discounts",
+        clubName: "",
+        description: "",
+        membershipTiers: "",
+        pricing: "",
+        clubBenefits: "",
       },
     },
     aiModel: {
       knowledgeScope: "winery-only",
       personalityStyle: "educator",
-      brandGuide: "Professional, knowledgeable, approachable",
-      tonePreferences: "Educational but friendly, not overly formal",
-      knowledgeDocuments: "Wine production guides, tasting notes, food pairing recommendations",
+      brandGuide: "",
+      tonePreferences: "",
+      knowledgeDocuments: "",
     },
   });
+
+  // Отримання ID tenant з URL
+  const getTenantId = () => {
+    const path = window.location.pathname;
+    const match = path.match(/\/tenant-edit\/(\d+)/);
+    return match ? match[1] : null;
+  };
+
+  // Завантаження даних tenant
+  useEffect(() => {
+    const tenantId = getTenantId();
+    if (!tenantId) {
+      toastError("Invalid tenant ID");
+      setLocation('/somm-tenant-admin');
+      return;
+    }
+
+    const fetchTenant = async () => {
+      try {
+        const res = await fetch(`/api/tenants/${tenantId}`);
+        if (!res.ok) throw new Error("Failed to fetch tenant");
+        const data = await res.json();
+        setFormData(data);
+      } catch (error) {
+        toastError("Failed to load tenant");
+        setLocation('/somm-tenant-admin');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTenant();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 0);
@@ -84,25 +118,40 @@ export default function TenantCreate() {
   };
 
   const handleSave = async () => {
+    const tenantId = getTenantId();
+    if (!tenantId) {
+      toastError("Invalid tenant ID");
+      return;
+    }
+
     if (!formData.profile?.wineryName?.trim()) {
       toastError("Winery name is required");
       return;
     }
+
     try {
-      const res = await fetch("/api/tenants", {
-        method: "POST",
+      const res = await fetch(`/api/tenants/${tenantId}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (!res.ok) throw new Error("Failed to create tenant");
-      toastSuccess("Tenant created successfully", "Success");
+      if (!res.ok) throw new Error("Failed to update tenant");
+      toastSuccess("Tenant updated successfully", "Success");
       setLocation('/somm-tenant-admin');
     } catch (error) {
-      toastError("Failed to create tenant");
+      toastError("Failed to update tenant");
     }
   };
 
   const handleCancel = () => setLocation('/somm-tenant-admin');
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen mobile-fullscreen text-gray-600 flex items-center justify-center" style={{ backgroundColor: '#3a3a3a' }}>
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen mobile-fullscreen text-gray-600" style={{ backgroundColor: '#3a3a3a' }}>
@@ -117,7 +166,7 @@ export default function TenantCreate() {
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>
         <h1 className="text-lg font-medium" style={{ color: "white" }}>
-          Create New Tenant
+          Edit Tenant
         </h1>
         <div className="w-10"></div>
       </div>
@@ -281,9 +330,9 @@ export default function TenantCreate() {
           onClick={handleSave}
           className="w-full flex items-center justify-center px-6 py-4 bg-[#6A53E7] text-white rounded-lg hover:bg-[#5a43d7] transition-colors font-medium text-lg"
         >
-          Create
+          Update
         </button>
       </div>
     </div>
   );
-}
+} 

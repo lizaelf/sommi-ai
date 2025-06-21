@@ -95,7 +95,7 @@ const SommTenantAdmin: React.FC = () => {
         {/* Tenants Cards */}
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {tenants.map((tenant) => (
-            <Link key={tenant.id} href={`/tenants/${tenant.slug}/admin`}>
+            <Link key={tenant.id} href={`/tenant-edit/${tenant.id}`}>
               <div
                 className="rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5"
                 style={{
@@ -112,7 +112,7 @@ const SommTenantAdmin: React.FC = () => {
                       color: "white",
                     }}
                   >
-                    {tenant.name}
+                    {tenant.profile?.wineryName || `Tenant ${tenant.id}`}
                   </h3>
                   <ActionDropdown
                     actions={[
