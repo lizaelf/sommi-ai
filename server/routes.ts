@@ -2,8 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech, generateConversationSummary, ParallelTTSProcessor } from "./openai";
-import { chatCompletionRequestSchema, type ChatCompletionRequest, insertUsedSuggestionPillSchema } from "@shared/schema";
-import suggestionPillsData from "@shared/suggestionPills.json";
+import { chatCompletionRequestSchema, type ChatCompletionRequest, insertUsedSuggestionPillSchema } from "../shared/schema";
+import suggestionPillsData from "../shared/suggestionPills.json";
 import { z } from "zod";
 import { google } from "googleapis";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
@@ -12,6 +12,7 @@ import { fileURLToPath } from "url";
 import multer from "multer";
 import OpenAI from "openai";
 import { v2 as cloudinary } from 'cloudinary';
+import { WineData } from "../shared/wine";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -359,12 +360,16 @@ Format: Return only the description text, no quotes or additional formatting.`;
         ratings: { vn: 0, jd: 0, ws: 0, abv: 0 }
       };
 
-      const response = await chatCompletion([
-        {
-          role: "user",
-          content: prompt
-        }
-      ], wineData);
+      const response = await chatCompletion({
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        wineData,
+        userId: "system" // або будь-який інший рядок, якщо немає реального userId
+      });
 
       const description = response.content.trim();
       
@@ -830,7 +835,7 @@ Format: Return only the description text, no quotes or additional formatting.`;
           }
           if (tenantId) tenantId = Number(tenantId);
           // Fetch all wines and filter by tenantId
-          let tenantWines = [];
+          let tenantWines: WineData[] = [];
           if (tenantId) {
             const allWines = await storage.getAllWines();
             tenantWines = allWines.filter(w => w.wineryId === tenantId);
@@ -936,15 +941,31 @@ Format: Return only the description text, no quotes or additional formatting.`;
         res.end();
         return;
       }
+
+        // Define what is tenant wines
+      let tenantId = null;
+if (req.body && req.body.tenantId) {
+  tenantId = req.body.tenantId;
+} else if (req.headers['x-tenant-id']) {
+  tenantId = req.headers['x-tenant-id'];
+} else if ((req as any).session && (req as any).session.tenantId) {
+  tenantId = (req as any).session.tenantId;
+}
+if (tenantId) tenantId = Number(tenantId);
+let tenantWines: WineData[] = [];
+if (tenantId) {
+  const allWines = await storage.getAllWines();
+  tenantWines = allWines.filter(w => w.wineryId === tenantId);
+}
       
       // Fallback to regular response with timeout protection
       const chatPromise = chatCompletion({
         messages: allMessages,
         wineData,
-        userId: validatedData?.userId,         // додайте userId, якщо потрібно
-        memory: validatedData?.memory,         // додайте memory, якщо потрібно
-        newWineId: validatedData?.newWineId,      // додайте, якщо потрібно
-        userQuestion: validatedData?.userQuestion,    // додайте, якщо потрібно
+        userId: validatedData?.userId !== undefined && validatedData?.userId !== null ? String(validatedData.userId) : "system",
+        memory: (typeof validatedData?.memory === "object" && validatedData.memory !== null && !Array.isArray(validatedData.memory)) ? validatedData.memory : undefined,
+        newWineId: typeof validatedData?.newWineId === "number" ? validatedData.newWineId : undefined,
+        userQuestion: typeof validatedData?.userQuestion === "string" ? validatedData.userQuestion : undefined,
         wines: tenantWines // <-- pass tenant wines
       });
       const chatTimeoutPromise = new Promise((_, reject) => {
