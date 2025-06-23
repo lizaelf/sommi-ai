@@ -818,8 +818,26 @@ Format: Return only the description text, no quotes or additional formatting.`;
           const apiCallStart = performance.now();
           console.log("📡 Starting OpenAI API call");
           
+          // --- TENANT WINES LOGIC ---
+          // Get tenantId from body, header, or session
+          let tenantId = null;
+          if (req.body && req.body.tenantId) {
+            tenantId = req.body.tenantId;
+          } else if (req.headers['x-tenant-id']) {
+            tenantId = req.headers['x-tenant-id'];
+          } else if ((req as any).session && (req as any).session.tenantId) {
+            tenantId = (req as any).session.tenantId;
+          }
+          if (tenantId) tenantId = Number(tenantId);
+          // Fetch all wines and filter by tenantId
+          let tenantWines = [];
+          if (tenantId) {
+            const allWines = await storage.getAllWines();
+            tenantWines = allWines.filter(w => w.wineryId === tenantId);
+          }
+          
           // Start streaming response from OpenAI
-          const stream = await chatCompletionStream(allMessages, wineData);
+          const stream = await chatCompletionStream(allMessages, wineData, tenantWines);
           let fullContent = '';
           let firstTokenReceived = false;
           let ttsProcessor = new ParallelTTSProcessor();
@@ -926,7 +944,8 @@ Format: Return only the description text, no quotes or additional formatting.`;
         userId: validatedData?.userId,         // додайте userId, якщо потрібно
         memory: validatedData?.memory,         // додайте memory, якщо потрібно
         newWineId: validatedData?.newWineId,      // додайте, якщо потрібно
-        userQuestion: validatedData?.userQuestion    // додайте, якщо потрібно
+        userQuestion: validatedData?.userQuestion,    // додайте, якщо потрібно
+        wines: tenantWines // <-- pass tenant wines
       });
       const chatTimeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Chat completion timeout after 20 seconds')), 20000);

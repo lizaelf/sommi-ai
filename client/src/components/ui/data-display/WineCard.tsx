@@ -1,18 +1,8 @@
 import React from "react";
-import WineRating from "@/components/wine-details/WineRating";
+import WineRating from "../../../components/wine-details/WineRating";
+import { WineData } from "../../../../../shared/wine";
 
-interface WineCardProps {
-  id: number;
-  name: string;
-  year?: number;
-  image?: string;
-  bottles?: number;
-  ratings?: {
-    vn?: number;
-    jd?: number;
-    ws?: number;
-    abv?: number;
-  };
+interface WineCardProps extends WineData {
   onClick?: (id: number) => void;
   className?: string;
   showImage?: boolean;
