@@ -700,6 +700,36 @@ Format: Return only the description text, no quotes or additional formatting.`;
       // Get messages from request
       const { messages, conversationId, wineData } = validatedData;
       
+      // Extract wineId from wineData
+      const wineId = wineData?.id;
+      let wine = null;
+      if (wineId) {
+        wine = await storage.getWine(wineId);
+      }
+      // Extract expectedWineryId from header, session, body, or wineData
+      let expectedWineryId = null;
+      if (req.headers['x-winery-id']) {
+        expectedWineryId = req.headers['x-winery-id'];
+      } else if ((req as any).session && (req as any).session.wineryId) {
+        expectedWineryId = (req as any).session.wineryId;
+      } else if (req.body && req.body.wineryId) {
+        expectedWineryId = req.body.wineryId;
+      } else if (wineData && typeof wineData.wineryId !== 'undefined') {
+        expectedWineryId = wineData.wineryId;
+      }
+      if (expectedWineryId) expectedWineryId = Number(expectedWineryId);
+      // Pre-prompt validation: wine must exist and belong to the current winery
+      const wineHasWineryId = wine && Object.prototype.hasOwnProperty.call(wine, 'wineryId');
+      if (!wine || !expectedWineryId || !wineHasWineryId || (wineHasWineryId && (wine as any).wineryId !== expectedWineryId)) {
+        return res.json({
+          message: {
+            role: 'assistant',
+            content: "Sorry, I can only help with wines from this specific winery. Please contact the winery for assistance with other wines."
+          },
+          handoff: true
+        });
+      }
+      
       // Check for text-only request flags
       const isTextOnly = req.body.text_only === true || req.body.disable_audio === true;
       console.log("Chat request flags:", { text_only: req.body.text_only, disable_audio: req.body.disable_audio, isTextOnly });
@@ -890,7 +920,14 @@ Format: Return only the description text, no quotes or additional formatting.`;
       }
       
       // Fallback to regular response with timeout protection
-      const chatPromise = chatCompletion(allMessages, wineData);
+      const chatPromise = chatCompletion({
+        messages: allMessages,
+        wineData,
+        userId: validatedData?.userId,         // додайте userId, якщо потрібно
+        memory: validatedData?.memory,         // додайте memory, якщо потрібно
+        newWineId: validatedData?.newWineId,      // додайте, якщо потрібно
+        userQuestion: validatedData?.userQuestion    // додайте, якщо потрібно
+      });
       const chatTimeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Chat completion timeout after 20 seconds')), 20000);
       });

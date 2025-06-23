@@ -8,21 +8,8 @@ export function generateDynamicWineSystemPrompt(wineData: any): string {
   const ratings = wineData.ratings || {};
   
   // Check if this is a description generation request (temporary ID 0)
-  if (wineData.id === 0) {
-    return `You are a professional sommelier and wine expert. Generate authentic, concise wine descriptions based on wine names and vintages.
-
-TASK: Create a professional wine description for ${wineName} (${wineYear}).
-
-REQUIREMENTS:
-- Focus EXCLUSIVELY on ${wineName} (${wineYear})
-- 2-3 sentences maximum
-- Authentic tasting notes and characteristics
-- Include varietal-specific traits when identifiable
-- Mention terroir or region if apparent from the name
-- Professional wine industry language
-- No marketing fluff or superlatives
-
-Return only the description text, no quotes or additional formatting.`;
+  if (wineData && wineData.id === 0) {
+    return getDescriptionPrompt(wineName, wineYear);
   }
   
   return `You are a wine expert specializing EXCLUSIVELY in ${wineName} (${wineYear}).
@@ -96,19 +83,40 @@ export async function checkApiStatus(): Promise<{ isValid: boolean; message: str
 }
 
 // Function to generate chat completion from OpenAI API
-export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
+export async function chatCompletion({
+  messages,
+  wineData,
+  memorySummary = "",
+  memory = {},
+  newWineId,
+  userQuestion
+}: {
+  messages: ChatMessage[],
+  wineData?: any,
+  userId: string,
+  memorySummary?: string,
+  memory?: any,
+  newWineId?: number,
+  userQuestion?: string
+}) {
   try {
     console.log('Chat completion called with wine data:', wineData ? { id: wineData.id, name: wineData.name, year: wineData.year } : 'No wine data provided');
     
-    // Generate the system prompt - use dynamic wine data if provided, otherwise use default config
+    // Fetch user memory
+    if (memorySummary.trim()) {
+      console.log('Using provided memory summary:', memorySummary);
+    }
+
+    // Inject into system prompt
     const wineSystemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
+    const systemPrompt = `${wineSystemPrompt}\n\n${memorySummary}`;
     console.log('Using wine system prompt for:', wineData ? `${wineData.name} (${wineData.year})` : 'Default wine config');
-    console.log('Generated wine system prompt:', wineSystemPrompt.substring(0, 200) + '...');
+    console.log('Generated wine system prompt:', systemPrompt.substring(0, 200) + '...');
     
     // Always enforce the system prompt - either replace an existing one or add it
     const filteredMessages = messages.filter(msg => msg.role !== 'system');
     const newMessages = [
-      { role: 'system' as const, content: wineSystemPrompt },
+      { role: 'system' as const, content: systemPrompt },
       ...filteredMessages
     ];
 
@@ -169,8 +177,12 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       
       // Request deduplication - prevent duplicate API calls for identical requests
       if (pendingRequests.has(cacheKey)) {
-        console.log('Request deduplication - waiting for pending identical request');
-        return await pendingRequests.get(cacheKey);
+        console.log('Request deduplication - ignoring duplicate request');
+        return {
+          content: "Your previous request is still being processed. Please wait for the response.",
+          usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 },
+          ignored: true
+        };
       }
     }
 
@@ -268,10 +280,22 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       console.log('API call successful - circuit breaker reset');
     }
 
+    // After response, update memory
+    const updatedMemory = {
+      recentWines: newWineId
+        ? [...(memory?.recentWines || []), newWineId].filter(Boolean).slice(-5)
+        : (memory?.recentWines || []),
+      lastQuestions: userQuestion
+        ? [...(memory?.lastQuestions || []), userQuestion].slice(-5)
+        : (memory?.lastQuestions || []),
+      preferences: { ...memory?.preferences, prefersFoodPairings: true }
+    };
+
     // Return the assistant's response
     return {
       content: finalResponse.choices[0].message.content || "I don't know how to respond to that.",
-      usage: finalResponse.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+      usage: finalResponse.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 },
+      updatedMemory
     };
   } catch (err) {
     const error = err as any;
@@ -299,10 +323,16 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
       throw new Error(`The requested AI model is not available for your API key.`);
     }
     
+    const updatedMemory = {
+      recentWines: [],
+      lastQuestions: [],
+      preferences: {}
+    };
+    
     // Generic fallback for any API error
     return {
-      content: 'This Ridge Lytton Springs Zinfandel is an exceptional wine with rich character.',
-      usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+      content: emergencyFallbackMessage,
+      loading: true
     };
   }
 }
@@ -415,19 +445,8 @@ const responseCache = new Map<string, { content: string; timestamp: number; acce
 const MAX_RESPONSE_CACHE_SIZE = 200;
 const pendingRequests = new Map<string, Promise<any>>(); // Request deduplication
 
-// Emergency fallback responses for when API is slow or fails
-const emergencyFallbacks = new Map<string, string>([
-  ['history', 'Ridge Vineyards crafts this Lytton Springs Zinfandel from historic Sonoma County vineyards.'],
-  ['tasting', 'Rich blackberry and raspberry flavors with signature Zinfandel spice and oak integration.'],
-  ['notes', 'Bold fruit character with peppery spice, structured tannins, and Dry Creek Valley minerality.'],
-  ['food', 'Perfect with grilled meats, aged cheeses, and hearty dishes that complement its bold character.'],
-  ['pairing', 'Excellent with BBQ, grilled lamb, aged cheddar, and chocolate desserts.'],
-  ['region', 'Dry Creek Valley in Sonoma County, renowned for exceptional Zinfandel terroir.'],
-  ['vintage', 'The 2021 vintage delivers classic varietal character with balanced structure.'],
-  ['where', 'Sourced from Dry Creek Valley vineyards in Sonoma County, California.'],
-  ['tell me', 'This Ridge Lytton Springs Zinfandel showcases the best of California winemaking.'],
-  ['what', 'A premium Zinfandel from Ridge Vineyards with rich fruit and spice complexity.']
-]);
+// Loading state fallback for when API is slow or fails
+const emergencyFallbackMessage = "I'm still preparing your answer. Please wait a moment…";
 
 // Circuit breaker for API failures
 let failureCount = 0;
@@ -667,4 +686,51 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     
     throw new Error(`Failed to convert text to speech: ${(error as any)?.message || "Unknown error"}`);
   }
+}
+
+function needsEscalation(userInput: string): { escalate: boolean, reason?: string } {
+  const lower = userInput.toLowerCase();
+
+  // Account/order queries
+  if (/(where.*order|track.*order|my shipment|my account|my address|change.*address|refund|cancel.*order)/.test(lower)) {
+    return { escalate: true, reason: "account/order" };
+  }
+
+  // Pricing, legal, or medical
+  if (/(price|cost|how much|legal|law|age.*drink|medical|health|doctor|prescription)/.test(lower)) {
+    return { escalate: true, reason: "pricing/legal/medical" };
+  }
+
+  // Add more as needed...
+
+  return { escalate: false };
+}
+
+const testPrompts = [
+  "Tell me more about this wine",
+  "What should I eat with it?",
+  "Is this good for aging?",
+  "How many bottles are available?",
+  "What is the alcohol content?",
+  "Who is the winemaker?",
+  "What's the story behind this vintage?",
+  "What's the best way to serve it?",
+  "Is this wine dry or sweet?",
+  "What's the ideal drinking window?",
+  "How does this compare to last year's vintage?",
+  "What's the price?",
+  "Can I visit the winery?",
+  "What awards has this wine won?",
+  "Is this wine organic?",
+  "What's the best food pairing for a vegetarian?",
+  "How should I store this wine?",
+  "What's the region's climate like?",
+  "Is this wine sulfite-free?",
+  "What's the recommended glassware?"
+];
+
+function getDescriptionPrompt(wineName: string, wineYear: string) {
+  return `You are a professional sommelier and wine expert. Generate authentic, concise wine descriptions based on wine names and vintages.
+
+TASK: Create a professional wine description for ${wineName} (${wineYear}).`;
 }
