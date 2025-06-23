@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import VoiceAssistantBottomSheet from '../bottom-sheet/VoiceAssistantBottomSheet';
 
-const SILENCE_THRESHOLD = 30;
+const SILENCE_THRESHOLD = 150;
 const SILENCE_DURATION = 2000;
 
 interface VoiceControllerProps {
@@ -385,6 +385,8 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
               }, 2000);
               
               return;
+            } else {
+              console.log("Silence detected, volume:", volume);
             }
             
             animationId = requestAnimationFrame(checkAudioLevel);
