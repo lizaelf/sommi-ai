@@ -1,6 +1,6 @@
 import React from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { AppHeader } from "@/components/layout/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 
 const QRCodes: React.FC = () => {
   // The deployed domain will be automatically provided by Replit Deployments

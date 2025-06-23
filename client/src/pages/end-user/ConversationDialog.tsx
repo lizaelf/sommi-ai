@@ -5,7 +5,7 @@ import { getWineDisplayName } from '../../../../shared/wineConfig';
 import { TextGenerateEffect } from '@/components/ui/misc/TextGenerateEffect';
 import { useState, useEffect } from 'react';
 import typography from '@/styles/typography';
-import AppHeader from '@/components/layout/AppHeader';
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import { ButtonIcon } from '@/components/navigation/ButtonIcon';
 
 export default function ConversationDialog() {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Plus, LogOut, Settings, MoreVertical, Trash2 } from "lucide-react";
 import { Link } from "wouter";
-import AppHeader from "@/components/layout/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 
