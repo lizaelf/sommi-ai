@@ -12,7 +12,7 @@ import { CellarSearch, CellarFilters } from "@/components/cellar";
 import usFlagImage from "@assets/US-flag.png";
 import logoImage from "@asse../layout/Logo.png";
 
-import AppHeader from "@/components/layout/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 
 const Cellar = () => {
   const [showModal, setShowModal] = useState(() => {

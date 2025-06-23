@@ -5,7 +5,7 @@ import { FormInput } from "@/components/ui/forms/FormInput";
 import { ArrowLeft } from "lucide-react";
 import { Tenant } from "@/types/tenant";
 import Button from "@/components/ui/buttons/Button";
-import AppHeader from "@/components/layout/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import typography from "@/styles/typography";
 import { Trash2 } from "lucide-react";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";

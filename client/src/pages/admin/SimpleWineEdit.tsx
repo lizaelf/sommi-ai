@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
-import AppHeader from "@/components/layout/AppHeader";
+import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
 import { DataSyncManager } from "@/utils/dataSync";
