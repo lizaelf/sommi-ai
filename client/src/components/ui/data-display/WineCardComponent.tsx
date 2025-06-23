@@ -32,9 +32,8 @@ export const WineCardComponent: React.FC<WineCardComponentProps> = ({
 }) => {
   return (
     <div
-      className={`rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5 ${className}`}
+      className={`rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5 w-full ${className}`}
       style={{
-        width: "208px",
         border: "1px solid #494949",
         ...style,
       }}
