@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { generateWineSystemPrompt } from "../shared/wineConfig.js";
 import { WineData } from "../shared/wine";
+import 'dotenv/config';
 
 // Somm.ai base system prompt for all completions
 const BASE_SOMM_SYSTEM_PROMPT = `You are Somm.ai, a winery-specific AI sommelier agent. Your primary role is to assist winery customers who have received a wine shipment. You warmly greet users, help them explore and enjoy their specific wines, provide expert education, suggest food pairings and experiences, and encourage deeper engagement with the winery brand.
