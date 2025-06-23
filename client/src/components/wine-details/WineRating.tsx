@@ -1,14 +1,10 @@
 import React from "react";
-import typography from "@/styles/typography";
-import Rating from "@/components/ui/data-display/Rating";
+import typography from "../../styles/typography";
+import Rating from "../ui/data-display/Rating";
+import type { WineData } from "../../../../shared/wine";
 
 interface WineRatingProps {
-  ratings: {
-    vn?: number;
-    jd?: number;
-    ws?: number;
-    abv?: number;
-  };
+  ratings: WineData["ratings"];
   variant?: "default" | "compact" | "minimal";
   gap?: number;
   className?: string;
@@ -28,7 +24,7 @@ export default function WineRating({
 }: WineRatingProps) {
   // Check if there are any ratings to display
   const hasRatings =
-    ratings.vn || ratings.jd || ratings.ws || (ratings.abv && !hideAbv);
+    ratings?.vn || ratings?.jd || ratings?.ws || (ratings?.abv && !hideAbv);
 
   // If no ratings to display, return null
   if (!hasRatings) {
