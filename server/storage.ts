@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, messages, type Message, type InsertMessage, conversations, type Conversation, type InsertConversation, tenants, type Tenant, type InsertTenant, usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill, foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory, wineTypes, type WineType, type InsertWineType, wines, type Wine, type InsertWine } from '@shared/schema'
+import { users, type User, type InsertUser, messages, type Message, type InsertMessage, conversations, type Conversation, type InsertConversation, tenants, type Tenant, type InsertTenant, usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill, foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory, wineTypes, type WineType, type InsertWineType, wines, type Wine, type InsertWine } from '../shared/schema.js'
 import { db } from './db'
 import { eq, desc } from 'drizzle-orm'
 
