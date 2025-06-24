@@ -856,6 +856,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
   };
 
   return (
+    // <></>
     <VoiceAssistantBottomSheet
       isOpen={showBottomSheet}
       onClose={handleClose}

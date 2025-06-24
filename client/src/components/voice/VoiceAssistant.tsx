@@ -227,7 +227,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               updateState({ isListening: false, showAskButton: true });
             }}
           />
-          <VoiceAssistantBottomSheet
+          {/* <VoiceAssistantBottomSheet
             isOpen={showBottomSheet}
             onClose={resetState}
             onMute={() => {
@@ -255,7 +255,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
             showUnmuteButton={showUnmuteButton}
             showAskButton={showAskButton}
             wineKey={wineKey}
-          />
+          /> */}
         </>
       )}
     </VoiceStateManager>

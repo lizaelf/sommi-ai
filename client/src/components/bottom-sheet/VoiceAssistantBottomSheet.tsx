@@ -16,7 +16,7 @@ interface VoiceAssistantBottomSheetProps {
   showSuggestions?: boolean;
   showListenButton?: boolean;
   showAskButton?: boolean;
-  showUnmuteButton?: boolean;
+  showUnmuteButton: boolean;
   isLoadingAudio?: boolean;
   isVoiceActive?: boolean;
   isPlayingAudio?: boolean;
@@ -351,7 +351,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                   Unmute
                 </Button>
               </div>
-            )}
+            )} 
 
             {/* Listen Response Button */}
             {showListenButton && onListenResponse && !showUnmuteButton && !showAskButton && (

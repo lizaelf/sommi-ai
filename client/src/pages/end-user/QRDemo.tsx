@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import QRScanModal from '@/components/qr/QRScanModal';
 import Button from '@/components/ui/buttons/Button';
 import VoiceAssistant from '@/components/voice/VoiceAssistant';
+import { VoiceController } from '@/components/voice';
 
 export default function QRDemo() {
   const [showQRModal, setShowQRModal] = useState(false);
@@ -104,10 +105,11 @@ export default function QRDemo() {
 
       {/* Voice Assistant */}
       {showVoiceAssistant && (
-        <VoiceAssistant
-          onSendMessage={handleSendMessage}
-          isProcessing={isProcessing}
-        />
+      <VoiceController
+      onSendMessage={handleSendMessage} // додає текст у чат
+      // isProcessing={isTyping}
+      // wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+    />
       )}
     </div>
   );

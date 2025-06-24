@@ -779,7 +779,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
       />
 
-      <VoiceAssistantBottomSheet
+      {/* <VoiceAssistantBottomSheet
         isOpen={voiceSheetOpen}
         isListening={voiceState.isListening}
         isThinking={voiceState.isThinking}
@@ -794,7 +794,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         onUnmute={handleUnmute}
         onSuggestionClick={handleSuggestionClick}
         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
-      />
+      /> */}
     </div>
   );
 };
