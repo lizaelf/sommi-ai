@@ -28,7 +28,7 @@ const WineDetailsHero: React.FC<Wine> = ( wine ) => {
         <h1
           style={{
             ...typography.h1,
-            marginBottom: "8px",
+            marginBottom: "24px",
           }}
         >
           {wine.year} {wine.name}
@@ -43,7 +43,6 @@ const WineDetailsHero: React.FC<Wine> = ( wine ) => {
       {/* Wine Ratings below Technical Details Section */}
       <div
         style={{
-          marginTop: "16px",
           display: "flex",
           justifyContent: "flex-start",
           padding: "0 16px",

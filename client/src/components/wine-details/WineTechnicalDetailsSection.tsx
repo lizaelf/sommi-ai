@@ -88,37 +88,24 @@ const WineTechnicalDetailsSection: React.FC<
         <TechnicalDetailItem
           label="Varietal"
           value={
-            wine?.technicalDetails?.varietal ? (
-              <>
-                {wine.technicalDetails.varietal.primary}{" "}
-                {wine.technicalDetails.varietal.primaryPercentage}%
-                {wine.technicalDetails.varietal.secondary && (
-                  <>
-                    <br />
-                    {wine.technicalDetails.varietal.secondary}{" "}
-                    {wine.technicalDetails.varietal.secondaryPercentage}%
+            wine?.technicalDetails?.varietal
+              ? <>
+                  {wine.technicalDetails.varietal.primary} {wine.technicalDetails.varietal.primaryPercentage}%
+                  {wine.technicalDetails.varietal.secondary && <><br />{wine.technicalDetails.varietal.secondary} {wine.technicalDetails.varietal.secondaryPercentage}%</>}
+                </>
+              : extractVarietalInfo(wine?.name || "").secondary
+                ? <>
+                    {extractVarietalInfo(wine?.name || "").primary} {extractVarietalInfo(wine?.name || "").primaryPercentage}%<br />{extractVarietalInfo(wine?.name || "").secondary} {extractVarietalInfo(wine?.name || "").secondaryPercentage}%
                   </>
-                )}
-              </>
-            ) : extractVarietalInfo(wine?.name || "").secondary ? (
-              <>
-                {extractVarietalInfo(wine?.name || "").primary}{" "}
-                {extractVarietalInfo(wine?.name || "").primaryPercentage}%
-                <br />
-                {extractVarietalInfo(wine?.name || "").secondary}{" "}
-                {extractVarietalInfo(wine?.name || "").secondaryPercentage}%
-              </>
-            ) : (
-              `${extractVarietalInfo(wine?.name || "").primary} ${extractVarietalInfo(wine?.name || "").primaryPercentage}%`
-            )
+                : extractVarietalInfo(wine?.name || "").primary
+                  ? `${extractVarietalInfo(wine?.name || "").primary} ${extractVarietalInfo(wine?.name || "").primaryPercentage}%`
+                  : '–'
           }
         />
 
         <TechnicalDetailItem
           label="Appellation"
-          value={
-            wine?.location 
-          }
+          value={wine?.location || '–'}
         />
 
         <TechnicalDetailItem
@@ -126,19 +113,19 @@ const WineTechnicalDetailsSection: React.FC<
           value={
             wine?.technicalDetails?.aging
               ? wine.technicalDetails.aging.ageUpTo
-                    ? `Age up to ${wine.technicalDetails.aging.ageUpTo}`
-                    : "Drink now"
-              : getAgingRecommendations(wine?.name || "", wine?.year)
-                    .drinkNow &&
-                  getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo
-                ? `Drink now or age up to ${getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo}`
+                ? `Age up to ${wine.technicalDetails.aging.ageUpTo}`
                 : "Drink now"
+              : getAgingRecommendations(wine?.name || "", wine?.year).drinkNow && getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo
+                ? `Drink now or age up to ${getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo}`
+                : getAgingRecommendations(wine?.name || "", wine?.year).drinkNow
+                  ? "Drink now"
+                  : '–'
           }
         />
 
         <TechnicalDetailItem
           label="ABV"
-          value={`${ wine?.ratings?.abv}%`}
+          value={typeof wine?.ratings?.abv === 'number' ? `${wine.ratings.abv}%` : '–'}
           isLast={true}
         />
       </div>
