@@ -119,3 +119,5 @@ export function ConfirmationDialog({
     </BottomSheet>
   );
 }
+
+export default ConfirmationDialog;
