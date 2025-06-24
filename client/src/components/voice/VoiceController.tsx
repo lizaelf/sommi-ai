@@ -277,6 +277,52 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         streamRef.current = stream;
         
+        // 1. Налаштовуємо MediaRecorder для запису аудіо
+        const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+        mediaRecorderRef.current = mediaRecorder;
+        audioChunksRef.current = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        // 2. Обробляємо зупинку запису: транскрибуємо і відправляємо в чат
+        mediaRecorder.onstop = async () => {
+          console.log("🎤 Запис зупинено, обробка транскрипції.");
+          setIsListening(false);
+          isListeningRef.current = false;
+          setIsThinking(true);
+          window.dispatchEvent(new CustomEvent('mic-status', { detail: { status: 'processing' } }));
+
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' });
+          const formData = new FormData();
+          formData.append('audio', audioBlob, 'recording.webm');
+
+          try {
+            const response = await fetch('/api/transcribe', {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (!response.ok) throw new Error('Не вдалося транскрибувати аудіо');
+
+            const result = await response.json();
+            if (result.text && onSendMessage) {
+              console.log("🎤 Транскрипція успішна:", result.text);
+              onSendMessage(result.text.trim());
+            } else {
+              console.warn("🎤 Результат транскрипції порожній.");
+            }
+          } catch (err) {
+            console.error("🎤 Помилка транскрипції:", err);
+          } finally {
+            setIsThinking(false);
+            setShowAskButton(true);
+          }
+        };
+
         console.log("🎤 VoiceController: Microphone access granted, creating audio context");
         
         // Enhanced AudioContext creation for deployment
@@ -305,6 +351,9 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         const dataArray = new Uint8Array(bufferLength);
         
         console.log("🎤 VoiceController: Audio pipeline established successfully");
+        
+        // 3. Запускаємо запис
+        mediaRecorder.start();
         
         // Dispatch listening event
         console.log("🎤 VoiceController: Dispatching mic-status listening event");
@@ -345,7 +394,12 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             if (volume > SILENCE_THRESHOLD) {
               silenceStart = Date.now();
             } else if (Date.now() - silenceStart > SILENCE_DURATION) {
-              console.log("🎤 User stopped speaking - starting thinking phase");
+              console.log("🎤 Користувач перестав говорити - зупиняємо запис для транскрипції");
+
+              // 4. Зупиняємо запис при виявленні тиші
+              if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+                mediaRecorderRef.current.stop();
+              }
               
               // Clean up microphone
               if (streamRef.current) {
@@ -356,37 +410,11 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
                 audioContextRef.current.close();
                 audioContextRef.current = null;
               }
-              
-              // Start thinking phase
-              setIsListening(false);
-              isListeningRef.current = false; // Update ref immediately
-              setIsThinking(true);
-              
-              window.dispatchEvent(new CustomEvent('mic-status', {
-                detail: { status: 'processing' }
-              }));
-              
-              // After thinking, start response
-              setTimeout(() => {
-                setIsThinking(false);
-                setIsResponding(true);
-                setIsPlayingAudio(true);
-                
-                window.dispatchEvent(new CustomEvent('mic-status', {
-                  detail: { status: 'stopped' }
-                }));
-                
-                handleVoiceResponse("Based on your question about this Ridge Zinfandel, I can tell you it's a bold wine with rich blackberry and spice notes, perfect for grilled meats and aged cheeses.");
-                
-                // Reset mic button flag after response
-                setTimeout(() => {
-                  isMicButtonTriggered = false;
-                }, 1000);
-              }, 2000);
-              
+              cancelAnimationFrame(animationId);
               return;
             } else {
-              console.log("Silence detected, volume:", volume);
+              // Цей console.log може спамити, тому я його приберу
+              // console.log("Silence detected, volume:", volume);
             }
             
             animationId = requestAnimationFrame(checkAudioLevel);
