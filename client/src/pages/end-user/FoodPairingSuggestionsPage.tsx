@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Utensils } from 'lucide-react';
 import AppHeader, { HeaderSpacer } from '@/components/layout/AppHeader';
 import Button from '@/components/ui/buttons/Button';
 import typography from '@/styles/typography';
@@ -28,7 +28,28 @@ interface FoodPairing {
   dish: string;
   description: string;
   pairing_reason: string;
-  intensity: number;
+}
+
+// Emoji mapping for dish types
+function getDishEmoji(dish: string): string {
+  const lower = dish.toLowerCase();
+  if (lower.match(/steak|beef|meat|veal|ribeye|tenderloin|sirloin/)) return '🥩';
+  if (lower.match(/cheese|brie|cheddar|gorgonzola|parmesan/)) return '🧀';
+  if (lower.match(/pasta|spaghetti|lasagna|fettuccine|penne|ravioli/)) return '🍝';
+  if (lower.match(/fish|salmon|tuna|trout|cod|sea bass/)) return '🐟';
+  if (lower.match(/chicken|poultry|hen|turkey/)) return '🍗';
+  if (lower.match(/pizza/)) return '🍕';
+  if (lower.match(/salad|greens|lettuce|arugula/)) return '🥗';
+  if (lower.match(/bread|baguette|toast/)) return '🍞';
+  if (lower.match(/dessert|cake|tart|pie|brownie|mousse/)) return '🍰';
+  if (lower.match(/sushi/)) return '🍣';
+  if (lower.match(/shrimp|prawn/)) return '🍤';
+  if (lower.match(/mushroom|porcini|chanterelle/)) return '🍄';
+  if (lower.match(/lamb/)) return '🐑';
+  if (lower.match(/duck/)) return '🦆';
+  if (lower.match(/pork/)) return '🐖';
+  if (lower.match(/soup|broth|bisque/)) return '🍲';
+  return '🍽️';
 }
 
 const FoodPairingSuggestionsPage: React.FC = () => {
@@ -42,7 +63,7 @@ const FoodPairingSuggestionsPage: React.FC = () => {
   useEffect(() => {
     const loadWineData = async () => {
       try {
-        const wines = DataSyncManager.getUnifiedWineData();
+        const wines = await DataSyncManager.getUnifiedWineData();
         // Use the first wine as default for food pairing context
         if (wines.length > 0) {
           setCurrentWine(wines[0]);
@@ -149,20 +170,6 @@ const FoodPairingSuggestionsPage: React.FC = () => {
     await generateFoodPairings();
   };
 
-  const getIntensityColor = (intensity: number) => {
-    if (intensity >= 8) return '#EF4444'; // Red - Strong
-    if (intensity >= 6) return '#14B8A6'; // Teal - Medium
-    if (intensity >= 4) return '#3B82F6'; // Blue - Light
-    return '#10B981'; // Green - Subtle
-  };
-
-  const getIntensityLabel = (intensity: number) => {
-    if (intensity >= 8) return 'Perfect Match';
-    if (intensity >= 6) return 'Great Pairing';
-    if (intensity >= 4) return 'Good Match';
-    return 'Light Pairing';
-  };
-
   return (
     <div 
       className="bg-black text-white"
@@ -176,73 +183,8 @@ const FoodPairingSuggestionsPage: React.FC = () => {
       }}
     >
       {/* Header */}
-      <AppHeader />
+      <AppHeader showBackButton={true} onBack={handleBackClick} />
       <HeaderSpacer />
-
-      {/* Food Pairings Page Header */}
-      <div
-        style={{
-          padding: "0 16px 16px 16px",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "8px",
-          }}
-        >
-          <Button
-            variant="headerIcon"
-            size="icon"
-            onClick={handleBackClick}
-            style={{
-              width: "40px",
-              height: "40px",
-              padding: "8px",
-            }}
-          >
-            <ArrowLeft size={20} color="white" />
-          </Button>
-          <h1
-            style={{
-              ...typography.h1,
-              color: "white",
-              margin: "0",
-            }}
-          >
-            AI Food Pairings
-          </h1>
-          <Button
-            variant="headerIcon"
-            size="icon"
-            onClick={handleRefresh}
-            disabled={isLoading}
-            style={{
-              width: "40px",
-              height: "40px",
-              padding: "8px",
-              marginLeft: "auto",
-            }}
-          >
-            <RefreshCw size={20} color="white" className={isLoading ? "animate-spin" : ""} />
-          </Button>
-        </div>
-        {currentWine && (
-          <p
-            style={{
-              ...typography.body,
-              color: "rgba(255, 255, 255, 0.6)",
-              margin: "0",
-              paddingLeft: "52px",
-            }}
-          >
-            Curated pairings for {currentWine.year ? currentWine.year + ' ' : ''}{currentWine.name}
-          </p>
-        )}
-      </div>
 
       {/* Content */}
       <div style={{ padding: "24px 16px", flex: 1 }}>
@@ -312,7 +254,7 @@ const FoodPairingSuggestionsPage: React.FC = () => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "flex-start",
-                    marginBottom: "12px",
+                    marginBottom: "4px",
                   }}
                 >
                   <div style={{ flex: 1 }}>
@@ -321,80 +263,25 @@ const FoodPairingSuggestionsPage: React.FC = () => {
                         ...typography.h2,
                         color: "white",
                         margin: "0 0 4px 0",
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
                       }}
                     >
+                      <span style={{fontSize: 18, flexShrink: 0}}>{getDishEmoji(pairing.dish)}</span>
                       {pairing.dish}
                     </h3>
-                    <p
-                      style={{
-                        ...typography.body,
-                        color: "rgba(255, 255, 255, 0.6)",
-                        margin: "0",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {pairing.category}
-                    </p>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span
-                      style={{
-                        ...typography.body,
-                        color: getIntensityColor(pairing.intensity),
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {getIntensityLabel(pairing.intensity)}
-                    </span>
-                    <div
-                      style={{
-                        width: "60px",
-                        height: "4px",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        borderRadius: "2px",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${(pairing.intensity / 10) * 100}%`,
-                          height: "100%",
-                          backgroundColor: getIntensityColor(pairing.intensity),
-                        }}
-                      />
-                    </div>
                   </div>
                 </div>
 
                 <p
                   style={{
                     ...typography.body,
-                    color: "rgba(255, 255, 255, 0.8)",
-                    margin: "0 0 12px 0",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {pairing.description}
-                </p>
-
-                <p
-                  style={{
-                    ...typography.body,
                     color: "rgba(255, 255, 255, 0.6)",
                     margin: "0",
-                    fontSize: "14px",
-                    fontStyle: "italic",
                   }}
                 >
-                  {pairing.pairing_reason}
+                  {pairing.description}{pairing.pairing_reason ? ` ${pairing.pairing_reason}` : ''}
                 </p>
               </div>
             ))}

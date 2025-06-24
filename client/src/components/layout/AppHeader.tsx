@@ -10,6 +10,7 @@ interface AppHeaderProps {
   rightContent?: React.ReactNode;
   className?: string;
   showBackButton?: boolean;
+  transparent?: boolean;
 }
 
 export function AppHeader({
@@ -18,6 +19,7 @@ export function AppHeader({
   rightContent,
   className = "",
   showBackButton = false,
+  transparent = false,
 }: AppHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -68,14 +70,23 @@ export function AppHeader({
     };
   }, []);
 
-  const headerStyles = {
-    backgroundColor: scrolled ? "rgba(10, 10, 10, 0.85)" : "transparent",
-    backdropFilter: scrolled ? "blur(8px)" : "none",
-    WebkitBackdropFilter: scrolled ? "blur(8px)" : "none",
-    borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.08)" : "none",
-    transition: "background-color 0.3s ease, border-bottom 0.3s ease, backdrop-filter 0.3s ease",
-    willChange: "background-color, border-bottom, backdrop-filter",
-  };
+  const headerStyles = transparent
+    ? {
+        backgroundColor: "transparent",
+        backdropFilter: "none",
+        WebkitBackdropFilter: "none",
+        borderBottom: "none",
+        transition: "background-color 0.3s ease, border-bottom 0.3s ease, backdrop-filter 0.3s ease",
+        willChange: "background-color, border-bottom, backdrop-filter",
+      }
+    : {
+        backgroundColor: scrolled ? "rgba(10, 10, 10, 0.85)" : "transparent",
+        backdropFilter: scrolled ? "blur(8px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(8px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(255, 255, 255, 0.08)" : "none",
+        transition: "background-color 0.3s ease, border-bottom 0.3s ease, backdrop-filter 0.3s ease",
+        willChange: "background-color, border-bottom, backdrop-filter",
+      };
 
   console.log("Header render - scrolled:", scrolled, "styles:", headerStyles);
 

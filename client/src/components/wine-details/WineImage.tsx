@@ -1,5 +1,5 @@
 import React from 'react';
-import placeholderImage from '@assets/Placeholder.png';
+import placeholderImage from '/attached_assets/Placeholder.png';
 
 const ridgeWineImage = '/wines/wine-1-ridge-lytton-springs-dry-creek-zinfandel.png';
 

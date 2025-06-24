@@ -12,7 +12,7 @@ const FoodPairingCard: React.FC<FoodPairingCardProps> = ({ image, title, descrip
     <div style={{
       width: "120px",
       height: "160px",
-      backgroundColor: "#191919",
+      backgroundColor: "transparent",
       borderRadius: "16px",
       overflow: "hidden",
       flexShrink: 0,
