@@ -252,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               public_id: transparentId,
               folder: 'wine-collection',
               transformation: [
-                { effect: 'background_removal' }, // Remove background
+                { effect: 'make_transparent:50' }, // Remove only white background
                 { width: 800, height: 800, crop: 'limit', quality: 'auto' },
                 { format: 'png' } // Ensure PNG format for transparency
               ]
