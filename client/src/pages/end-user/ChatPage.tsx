@@ -6,30 +6,16 @@ import { EnhancedChatInterface } from '@/components/chat';
 import Button from '@/components/ui/buttons/Button';
 import typography from '@/styles/typography';
 import { DataSyncManager } from '@/utils/dataSync';
-
-interface Wine {
-  id: number;
-  name: string;
-  year: number;
-  image: string;
-  bottles: number;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-}
+import { Wine } from '@/types/wine';
 
 const ChatPage: React.FC = () => {
-  const [, setLocation] = useLocation();
   const [currentWine, setCurrentWine] = useState<Wine | null>(null);
 
   // Load current wine data
   useEffect(() => {
     const loadWineData = async () => {
       try {
-        const wines = DataSyncManager.getUnifiedWineData();
+        const wines = await DataSyncManager.getUnifiedWineData();
         // Use the first wine as default for chat context
         if (wines.length > 0) {
           setCurrentWine(wines[0]);

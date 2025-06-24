@@ -1,19 +1,9 @@
 import React from 'react';
 import EnhancedChatInterface from './EnhancedChatInterface';
+import { Wine } from '@/types/wine';
 
 interface ChatSectionProps {
-  wine: {
-    id: number;
-    name: string;
-    image: string;
-    bottles: number;
-    ratings: {
-      vn: number;
-      jd: number;
-      ws: number;
-      abv: number;
-    };
-  };
+  wine: Wine
   messages?: any[];
   onReady?: () => void;
   isScannedPage?: boolean;
@@ -31,13 +21,7 @@ export const ChatSection: React.FC<ChatSectionProps> = ({
     <div className="mt-0 pb-10">
       <EnhancedChatInterface 
         showBuyButton={true} 
-        selectedWine={{
-          id: wine.id,
-          name: wine.name,
-          image: wine.image,
-          bottles: wine.bottles,
-          ratings: wine.ratings
-        }}
+        selectedWine={wine}
         onReady={onReady}
         isScannedPage={isScannedPage}
       />

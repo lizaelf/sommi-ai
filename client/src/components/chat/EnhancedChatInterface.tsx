@@ -36,22 +36,9 @@ declare global {
   }
 }
 
-interface SelectedWine {
-  id: number;
-  name: string;
-  image: string;
-  bottles: number;
-  ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
-  };
-}
-
 interface EnhancedChatInterfaceProps {
   showBuyButton?: boolean;
-  selectedWine?: SelectedWine | null;
+  selectedWine?: Wine | null;
   onReady?: () => void;
   isScannedPage?: boolean; // true for scanned page (current session), false for wine details (historical)
 }
@@ -710,20 +697,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                             textOverflow: "ellipsis",
                           }}
                         >
-                          This 2021 Ridge "Lytton Springs" Dry Creek Zinfandel
-                          is exceptional because it comes from one of Sonoma
-                          County's most prestigious vineyard sites. The Lytton
-                          Springs vineyard has been producing world-class
-                          Zinfandel since the 1970s, with old-vine fruit that
-                          delivers incredible concentration and complexity. The
-                          wine showcases the classic Dry Creek Valley terroir
-                          with its rich blackberry and raspberry notes,
-                          complemented by the signature peppery spice that makes
-                          Zinfandel so distinctive. Ridge's traditional
-                          winemaking approach, including fermentation with
-                          native yeasts and aging in American oak, allows the
-                          vineyard's unique character to shine through in every
-                          bottle.
+                          {selectedWine?.description}
                         </div>
                       </div>
                     </div>
