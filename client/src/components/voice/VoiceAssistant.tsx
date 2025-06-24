@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
-import VoiceBottomSheet from "../bottom-sheet/VoiceBottomSheet";
+
 import { Wine } from "@/types/wine";
 import VoiceStateManager from './VoiceStateManager';
 import VoiceAudioManager from './VoiceAudioManager';
 import VoiceRecorder from './VoiceRecorder';
+import { VoiceAssistantBottomSheet } from "../bottom-sheet";
 
 interface VoiceAssistantProps {
   onSendMessage: (
@@ -226,7 +227,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               updateState({ isListening: false, showAskButton: true });
             }}
           />
-          <VoiceBottomSheet
+          <VoiceAssistantBottomSheet
             isOpen={showBottomSheet}
             onClose={resetState}
             onMute={() => {

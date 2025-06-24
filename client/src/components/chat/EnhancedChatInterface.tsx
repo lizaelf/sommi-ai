@@ -22,7 +22,7 @@ import {
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
 import { Wine } from "@/types/wine";
-import VoiceBottomSheet from "@/components/bottom-sheet/VoiceBottomSheet";
+import { VoiceAssistantBottomSheet } from "../bottom-sheet";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -263,7 +263,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [messages.length]);
 
-  // VoiceBottomSheet state
   const [voiceSheetOpen, setVoiceSheetOpen] = useState(false);
   const [voiceState, setVoiceState] = useState({
     isListening: false,
@@ -780,7 +779,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
       />
 
-      <VoiceBottomSheet
+      <VoiceAssistantBottomSheet
         isOpen={voiceSheetOpen}
         isListening={voiceState.isListening}
         isThinking={voiceState.isThinking}
@@ -790,7 +789,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         showAskButton={voiceState.showAskButton}
         showSuggestions={voiceState.showSuggestions}
         onClose={() => setVoiceSheetOpen(false)}
-        onStop={handleStop}
+        onMute={handleStop}
         onAsk={handleAsk}
         onUnmute={handleUnmute}
         onSuggestionClick={handleSuggestionClick}
