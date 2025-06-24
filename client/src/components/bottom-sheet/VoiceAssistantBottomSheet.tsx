@@ -131,25 +131,38 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
 
         {/* Status Content */}
         {isListening ? (
-          <div style={{ 
-            width: '100%', 
-            maxWidth: '320px', 
-            height: '56px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            paddingLeft: '16px',
-            paddingRight: '16px',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{
-              display: 'flex',
+          <>
+            <div style={{ 
+              width: '100%', 
+              maxWidth: '320px', 
+              height: '56px', 
+              display: 'flex', 
+              justifyContent: 'center', 
               alignItems: 'center',
-              gap: '8px'
+              paddingLeft: '16px',
+              paddingRight: '16px',
+              boxSizing: 'border-box'
             }}>
-              <ShiningText text="Listening..." />
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <ShiningText text="Listening..." />
+              </div>
             </div>
-          </div>
+            {onSuggestionClick && (
+              <div style={{ marginTop: 24, width: "100%", padding: "0 16px" }}>
+                <SuggestionPills
+                  wineKey={wineKey}
+                  onSuggestionClick={onSuggestionClick}
+                  isDisabled={false}
+                  preferredResponseType="voice"
+                  context="voice-assistant"
+                />
+              </div>
+            )}
+          </>
         ) : isThinking ? (
           <div style={{ 
             width: '100%', 
