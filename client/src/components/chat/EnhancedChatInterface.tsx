@@ -7,7 +7,7 @@ import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import ChatInputArea from "./ChatInputArea";
 import ChatAnswer from "./ChatAnswer";
-import VoiceController from "@/components/voice/VoiceController";
+import { VoiceController } from "@/components/voice";
 import SuggestionPills from "@/components/chat/SuggestionPills";
 import Button from "@/components/ui/buttons/Button";
 import SectionHeaderButton from "@/components/ui/buttons/SectionHeaderButton";
@@ -22,6 +22,7 @@ import {
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
 import { Wine } from "@/types/wine";
+import VoiceBottomSheet from "@/components/bottom-sheet/VoiceBottomSheet";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -262,103 +263,94 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     }
   }, [messages.length]);
 
-  // Handle suggestion button clicks - TEXT ONLY responses
-  const handleSuggestionClick = async (
-    displayText: string,
-    apiPrompt?: string,
-  ) => {
-    const content = displayText;
-    const apiContent = apiPrompt || displayText;
+  // VoiceBottomSheet state
+  const [voiceSheetOpen, setVoiceSheetOpen] = useState(false);
+  const [voiceState, setVoiceState] = useState({
+    isListening: false,
+    isThinking: false,
+    isResponding: false,
+    isPlayingAudio: false,
+    showUnmuteButton: false,
+    showAskButton: false,
+    showSuggestions: true,
+  });
 
-    if (content.trim() === "" || !currentConversationId) return;
+  // onMicClick — просто тригерить глобальну подію
+  const handleMicClick = () => {
+    window.dispatchEvent(new CustomEvent('triggerMicButton'));
+  };
 
-    console.log(
-      "EnhancedChatInterface: Handling text-only suggestion:",
-      content,
-      "API prompt:",
-      apiContent,
-    );
+  // Stop - stops everything and resets states
+  const handleStop = () => {
+    // here we stop recording, audio, TTS
+    setVoiceState({
+      isListening: false,
+      isThinking: false,
+      isResponding: false,
+      isPlayingAudio: false,
+      showUnmuteButton: false,
+      showAskButton: true,
+      showSuggestions: true,
+    });
+  };
 
-    // Expand chat to show full conversation history
-    setShowFullConversation(true);
+  // Unmute - restores audio
+  const handleUnmute = () => {
+    // here we restore audio
+    setVoiceState({
+      ...voiceState,
+      isListening: false,
+      isThinking: false,
+      isResponding: true,
+      isPlayingAudio: true,
+      showUnmuteButton: false,
+      showAskButton: false,
+      showSuggestions: false,
+    });
+  };
 
-    // Enable text-only mode to prevent automatic voice responses
-    if ((window as any).voiceAssistant?.setTextOnlyMode) {
-      (window as any).voiceAssistant.setTextOnlyMode(true);
-    }
+  // Ask - starts a new recording
+  const handleAsk = () => {
+    setVoiceState({
+      isListening: true,
+      isThinking: false,
+      isResponding: false,
+      isPlayingAudio: false,
+      showUnmuteButton: false,
+      showAskButton: false,
+      showSuggestions: false,
+    });
+    // here we start recording
+  };
 
-    setHideSuggestions(true);
-    setIsTyping(true);
+  // onSuggestionClick immediately adds text to chat
+  const handleSuggestionClick = (suggestion: string) => {
+    handleSendMessage(suggestion);
+    setVoiceSheetOpen(false);
+    setVoiceState({
+      isListening: false,
+      isThinking: false,
+      isResponding: false,
+      isPlayingAudio: false,
+      showUnmuteButton: false,
+      showAskButton: false,
+      showSuggestions: true,
+    });
+  };
 
-    try {
-      const tempUserMessage: ClientMessage = {
-        id: Date.now(),
-        content,
-        role: "user",
-        conversationId: currentConversationId,
-        createdAt: new Date().toISOString(),
-      };
-
-      await addMessage(tempUserMessage);
-
-      const requestBody = {
-        messages: [{ role: "user", content: apiContent }], // Use API prompt for processing
-        conversationId: currentConversationId,
-        wineData: currentWine,
-        optimize_for_speed: true,
-        text_only: true, // Ensure text-only response
-        disable_audio: true, // Explicitly disable any audio processing
-      };
-
-      console.log(
-        "EnhancedChatInterface: Sending text-only request:",
-        requestBody,
-      );
-
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "X-Priority": "high",
-        },
-        body: JSON.stringify(requestBody),
-        credentials: "same-origin",
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const responseData = await response.json();
-
-      if (responseData.message && responseData.message.content) {
-        const assistantMessage: ClientMessage = {
-          id: Date.now() + 1,
-          content: responseData.message.content,
-          role: "assistant",
-          conversationId: currentConversationId,
-          createdAt: new Date().toISOString(),
-        };
-
-        await addMessage(assistantMessage);
-        console.log(
-          "EnhancedChatInterface: Text-only response added successfully",
-        );
-      }
-
-      refetchMessages();
-    } catch (error) {
-      console.error("Error in suggestion request:", error);
-      // toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
-    } finally {
-      setIsTyping(false);
-
-      // Disable text-only mode after processing
-      if ((window as any).voiceAssistant?.setTextOnlyMode) {
-        (window as any).voiceAssistant.setTextOnlyMode(false);
-      }
-    }
+  // onTranscribe - when recording is finished and there's text
+  const handleTranscribe = (text: string) => {
+    handleSendMessage(text);
+    setVoiceSheetOpen(false);
+    setVoiceState({
+      isListening: false,
+      isThinking: false,
+      isResponding: false,
+      isPlayingAudio: false,
+      showUnmuteButton: false,
+      showAskButton: false,
+      showSuggestions: true,
+    });
   };
 
   // Handle sending a message
@@ -758,10 +750,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             onKeyboardFocus={(focused: boolean) =>
               setIsKeyboardFocused(focused)
             }
-            onMicClick={() => {
-              // Trigger voice assistant via mic button
-              window.dispatchEvent(new CustomEvent('triggerMicButton'));
-            }}
+            onMicClick={handleMicClick}
           />
         </main>
 
@@ -784,10 +773,27 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         )}
       </div>
 
-      {/* VoiceController for microphone functionality */}
+      {/* VoiceController — один раз на сторінку, слухає події, керує всім флоу */}
       <VoiceController
-        onSendMessage={handleSendMessage}
+        onSendMessage={handleSendMessage} // додає текст у чат
         isProcessing={isTyping}
+        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
+      />
+
+      <VoiceBottomSheet
+        isOpen={voiceSheetOpen}
+        isListening={voiceState.isListening}
+        isThinking={voiceState.isThinking}
+        isResponding={voiceState.isResponding}
+        isPlayingAudio={voiceState.isPlayingAudio}
+        showUnmuteButton={voiceState.showUnmuteButton}
+        showAskButton={voiceState.showAskButton}
+        showSuggestions={voiceState.showSuggestions}
+        onClose={() => setVoiceSheetOpen(false)}
+        onStop={handleStop}
+        onAsk={handleAsk}
+        onUnmute={handleUnmute}
+        onSuggestionClick={handleSuggestionClick}
         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
       />
     </div>
