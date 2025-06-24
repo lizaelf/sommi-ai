@@ -672,6 +672,10 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         URL.revokeObjectURL(audioUrl);
       };
 
+      if (responseText && onSendMessage) {
+        onSendMessage(responseText.trim());
+      }
+
     } catch (error: any) {
       if (error?.name === 'AbortError') {
         console.log("🛑 VoiceController: TTS request was aborted by stop button");

@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import ChatInput from './ChatInput';
 import SuggestionPills from '@/components/chat/SuggestionPills';
 import { ShiningText } from '@/components/animations/ShiningText';
 import { ClientMessage } from '@/lib/types';
 import typography from '@/styles/typography';
+import VoiceController from '@/components/voice/VoiceController';
 
 interface SelectedWine {
   id: number;
@@ -223,6 +224,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           />
         </button>
       )}
+
+      <VoiceController
+        onSendMessage={onSendMessage}
+        // ...
+      />
     </>
   );
 };

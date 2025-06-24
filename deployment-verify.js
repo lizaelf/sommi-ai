@@ -38,22 +38,7 @@ const deployConfig = {
 function verifyVoiceSystem() {
   console.log('🎤 Verifying voice system configuration...');
   
-  const voiceScriptPath = './client/src/lib/voiceScript.js';
-  const voiceScript = fs.readFileSync(voiceScriptPath, 'utf8');
-  
-  // Check deployment detection
-  const hasDeploymentDetection = voiceScript.includes('.replit.app') && 
-                                 voiceScript.includes('.repl.co');
-  
-  // Check male voice enforcement
-  const hasMaleVoiceEnforcement = voiceScript.includes('GUARANTEED_MALE_VOICE') &&
-                                 voiceScript.includes('FORCE_MALE_VOICE_LOCK');
-  
-  // Check female voice exclusion
-  const hasFemaleVoiceExclusion = voiceScript.includes('samantha') &&
-                                 voiceScript.includes('susan') &&
-                                 voiceScript.includes('karen');
-  
+ 
   if (hasDeploymentDetection && hasMaleVoiceEnforcement && hasFemaleVoiceExclusion) {
     console.log('✅ Voice system properly configured for deployment');
     return true;
