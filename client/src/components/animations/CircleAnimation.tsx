@@ -27,21 +27,29 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
 
   // Handle voice volume changes
   const handleVoiceVolumeChange = useCallback((event: VoiceVolumeEvent) => {
-    const { volume } = event.detail;
+    const { volume, isActive } = event.detail;
     const currentState = stateRef.current;
 
     setVoiceVolume(volume);
 
-    if (currentState.isListening) {
+    if (currentState.isListening && isActive) {
       const baseSize = currentState.size;
       let scale = 1.0;
 
-      if (volume > 5) {
-        const volumeScale = Math.min(volume / 100, 0.3); // Max 30%
+      // More sensitive volume detection with better scaling
+      if (volume > 10) {
+        // Use logarithmic scaling for more natural response
+        const normalizedVolume = Math.min(volume / 255, 1.0); // Normalize to 0-1
+        const volumeScale = Math.pow(normalizedVolume, 0.5) * 0.4; // Max 40% scaling with square root for smoother response
         scale = 1.0 + volumeScale;
+        
+        console.log(`🎯 CircleAnimation: Volume ${volume} -> Scale ${scale.toFixed(2)}`);
       }
 
       setSize(baseSize * scale);
+    } else if (currentState.isListening && !isActive) {
+      // Return to base size when no voice detected
+      setSize(currentState.size);
     }
   }, []);
 
@@ -100,8 +108,8 @@ export default function CircleAnimation({ isAnimating = false, size = 300 }: Cir
           height: `${currentSize}px`,
           opacity: opacity,
           transition: isListening 
-            ? 'width 0.05s ease-out, height 0.05s ease-out' 
-            : 'width 0.15s ease-out, height 0.15s ease-out',
+            ? 'width 0.08s ease-out, height 0.08s ease-out' 
+            : 'width 0.2s ease-out, height 0.2s ease-out',
         }}
       />
 
