@@ -34,6 +34,40 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
   const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+  // Сначала объявляем cleanup
+  const cleanup = useCallback(() => {
+    // Clear timers
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    
+    if (voiceDetectionIntervalRef.current) {
+      clearInterval(voiceDetectionIntervalRef.current);
+      voiceDetectionIntervalRef.current = null;
+    }
+    
+    // Close audio context safely
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close().catch(console.error);
+    }
+    audioContextRef.current = null;
+    
+    // Stop media stream
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    
+    // Reset refs
+    mediaRecorderRef.current = null;
+    analyserRef.current = null;
+    silenceStartTimeRef.current = null;
+    lastVoiceDetectedRef.current = 0;
+    consecutiveSilenceCountRef.current = 0;
+    recordingStartTimeRef.current = 0;
+  }, []);
+
   const setupVoiceDetection = useCallback((stream: MediaStream) => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -163,53 +197,21 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       onRecordingError("Failed to start recording");
       cleanup();
     }
-  }, [onRecordingStateChange, onRecordingComplete, onRecordingError, setupVoiceDetection]);
+  }, [onRecordingStateChange, onRecordingComplete, onRecordingError, setupVoiceDetection, cleanup]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
+    } else {
+      // If recorder is not active, cleanup directly
+      cleanup();
     }
     
     onRecordingStateChange({ 
       isListening: false, 
       isVoiceActive: false 
     });
-    
-    cleanup();
-  }, [onRecordingStateChange]);
-
-  const cleanup = useCallback(() => {
-    // Clear timers
-    if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = null;
-    }
-    
-    if (voiceDetectionIntervalRef.current) {
-      clearInterval(voiceDetectionIntervalRef.current);
-      voiceDetectionIntervalRef.current = null;
-    }
-    
-    // Close audio context
-    if (audioContextRef.current) {
-      audioContextRef.current.close().catch(console.error);
-      audioContextRef.current = null;
-    }
-    
-    // Stop media stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    
-    // Reset refs
-    mediaRecorderRef.current = null;
-    analyserRef.current = null;
-    silenceStartTimeRef.current = null;
-    lastVoiceDetectedRef.current = 0;
-    consecutiveSilenceCountRef.current = 0;
-    recordingStartTimeRef.current = 0;
-  }, []);
+  }, [onRecordingStateChange, cleanup]);
 
   // Expose methods globally
   React.useEffect(() => {

@@ -144,28 +144,11 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
 
     // Enhanced caching with request deduplication and emergency fallbacks
     const enableResponseCache = process.env.ENABLE_RESPONSE_CACHE !== 'false';
-    const cacheTTL = parseInt(process.env.CACHE_TTL_SECONDS || '600') * 1000;
     
     if (enableResponseCache) {
       const userMessage = messages[messages.length - 1]?.content || '';
       const wineId = wineData?.id || 'none';
       const cacheKey = `${userMessage.toLowerCase()}_${wineId}_${responseTemplate}_${maxTokens}`;
-      
-      // Circuit breaker disabled to allow full responses
-      
-      // Emergency fallbacks disabled to allow full detailed responses
-      // (Removed emergency fallback system to enable proper 200-token responses)
-      
-      // Response cache temporarily disabled to ensure fresh 200-token responses
-      // const cached = responseCache.get(cacheKey);
-      // if (cached && (Date.now() - cached.timestamp) < cacheTTL) {
-      //   console.log('Using cached response for faster TTFB');
-      //   cached.accessCount++;
-      //   return {
-      //     content: cached.content,
-      //     usage: { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-      //   };
-      // }
       
       // Request deduplication - prevent duplicate API calls for identical requests
       if (pendingRequests.has(cacheKey)) {
@@ -333,7 +316,6 @@ export async function generateConversationSummary(messages: ChatMessage[], wineD
     
     // Extract key information without API call for speed
     const userQuestions = messages.filter(m => m.role === 'user').map(m => m.content);
-    const assistantResponses = messages.filter(m => m.role === 'assistant').map(m => m.content);
     
     // Create fast local summary
     const fastSummary = `Previous conversation about ${wineName}: User asked about ${userQuestions.slice(-3).join(', ')}. Key topics covered included wine characteristics and recommendations.`;
@@ -411,28 +393,11 @@ const voiceCache = new Map<string, Buffer>();
 const MAX_CACHE_SIZE = 50;
 
 // Enhanced response cache with LRU eviction and request deduplication
-const responseCache = new Map<string, { content: string; timestamp: number; accessCount: number }>();
-const MAX_RESPONSE_CACHE_SIZE = 200;
 const pendingRequests = new Map<string, Promise<any>>(); // Request deduplication
-
-// Emergency fallback responses for when API is slow or fails
-const emergencyFallbacks = new Map<string, string>([
-  ['history', 'Ridge Vineyards crafts this Lytton Springs Zinfandel from historic Sonoma County vineyards.'],
-  ['tasting', 'Rich blackberry and raspberry flavors with signature Zinfandel spice and oak integration.'],
-  ['notes', 'Bold fruit character with peppery spice, structured tannins, and Dry Creek Valley minerality.'],
-  ['food', 'Perfect with grilled meats, aged cheeses, and hearty dishes that complement its bold character.'],
-  ['pairing', 'Excellent with BBQ, grilled lamb, aged cheddar, and chocolate desserts.'],
-  ['region', 'Dry Creek Valley in Sonoma County, renowned for exceptional Zinfandel terroir.'],
-  ['vintage', 'The 2021 vintage delivers classic varietal character with balanced structure.'],
-  ['where', 'Sourced from Dry Creek Valley vineyards in Sonoma County, California.'],
-  ['tell me', 'This Ridge Lytton Springs Zinfandel showcases the best of California winemaking.'],
-  ['what', 'A premium Zinfandel from Ridge Vineyards with rich fruit and spice complexity.']
-]);
 
 // Circuit breaker for API failures
 let failureCount = 0;
 const MAX_FAILURES = 3;
-const CIRCUIT_BREAKER_TIMEOUT = 60000; // 1 minute
 let lastFailureTime = 0;
 
 // Pre-cached wine descriptions for instant responses
