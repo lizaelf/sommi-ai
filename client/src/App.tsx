@@ -7,8 +7,6 @@ import NotFound from "@/pages/NotFound";
 import WineDetails from "@/pages/end-user/WineDetails";
 import FoodPairings from "@/pages/end-user/FoodPairings";
 import Cellar from "@/pages/end-user/Cellar";
-import ConversationDialog from "@/pages/end-user/ConversationDialog";
-import ChatPage from "@/pages/end-user/ChatPage";
 import FoodPairingSuggestionsPage from "@/pages/end-user/FoodPairingSuggestionsPage";
 
 import HomeGlobal from "@/pages/end-user/HomeGlobal";
@@ -69,21 +67,14 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomeGlobal} />
-      <Route path="/scanned" component={WineDetails} />
       <Route path="/cellar" component={Cellar} />
-      <Route path="/wine/conversation" component={ConversationDialog} />
-      <Route path="/chat" component={ChatPage} />
       <Route path="/food-pairings-ai" component={FoodPairingSuggestionsPage} />
-      <Route path="/wine-details/:id" component={() => 
-        <WineDetails key={`wine-${Date.now()}`} />
-      } />
+      <Route path="/wine-details/:id" component={WineDetails} />
       <Route path="/food-pairings/:id" component={FoodPairings} />
       <Route path="/winery-tenant-admin" component={TenantAdminRefactored} />
       <Route path="/somm-tenant-admin" component={SommTenantAdmin} />
       <Route path="/tenant-create" component={TenantCreate} />
       <Route path="/tenant-edit/:id" component={TenantEdit} />
-
-
       <Route path="/wine-edit/:id" component={SimpleWineEditRoute} />
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route path="/qr-codes" component={QRCodes} />

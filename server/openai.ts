@@ -1,8 +1,8 @@
 import OpenAI from "openai";
-import { generateWineSystemPrompt } from "../shared/wineConfig.js";
+import { Wine } from "@/types/wine.js";
 
 // Generate dynamic system prompt based on wine data from CRM
-export function generateDynamicWineSystemPrompt(wineData: any): string {
+export function generateDynamicWineSystemPrompt(wineData: Wine): string {
   const wineName = wineData.name || "Unknown Wine";
   const wineYear = wineData.year || "Unknown Year";
   const ratings = wineData.ratings || {};
@@ -101,7 +101,7 @@ export async function chatCompletion(messages: ChatMessage[], wineData?: any) {
     console.log('Chat completion called with wine data:', wineData ? { id: wineData.id, name: wineData.name, year: wineData.year } : 'No wine data provided');
     
     // Generate the system prompt - use dynamic wine data if provided, otherwise use default config
-    const wineSystemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
+    const wineSystemPrompt = generateDynamicWineSystemPrompt(wineData);
     console.log('Using wine system prompt for:', wineData ? `${wineData.name} (${wineData.year})` : 'Default wine config');
     console.log('Generated wine system prompt:', wineSystemPrompt.substring(0, 200) + '...');
     
@@ -460,7 +460,7 @@ export async function chatCompletionStream(messages: ChatMessage[], wineData?: a
   const startTime = performance.now();
   console.log("🚀 Starting real-time streaming with GPT-4o for maximum speed");
   
-  const systemPrompt = wineData ? generateDynamicWineSystemPrompt(wineData) : generateWineSystemPrompt();
+  const systemPrompt = generateDynamicWineSystemPrompt(wineData);
   const newMessages = [
     { role: "system" as const, content: systemPrompt },
     ...messages

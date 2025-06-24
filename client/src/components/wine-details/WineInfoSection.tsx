@@ -4,7 +4,6 @@ import WineBottleImage from './WineBottleImage';
 import WineRating from './WineRating';
 import WineTechnicalDetails from './WineTechnicalDetails';
 import typography from '@/styles/typography';
-import { WINE_CONFIG } from '../../../../shared/wineConfig';
 import { Wine } from '@/types/wine';
 
 interface WineInfoSectionProps {
