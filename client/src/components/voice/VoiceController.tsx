@@ -143,7 +143,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       streamRef.current = null;
     }
     
-    if (audioContextRef.current) {
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
@@ -406,7 +406,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
                 streamRef.current.getTracks().forEach(track => track.stop());
                 streamRef.current = null;
               }
-              if (audioContextRef.current) {
+              if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
                 audioContextRef.current.close();
                 audioContextRef.current = null;
               }
@@ -425,7 +425,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
               streamRef.current.getTracks().forEach(track => track.stop());
               streamRef.current = null;
             }
-            if (audioContextRef.current) {
+            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
               audioContextRef.current.close();
               audioContextRef.current = null;
             }
@@ -447,7 +447,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
             streamRef.current.getTracks().forEach(track => track.stop());
             streamRef.current = null;
           }
-          if (audioContextRef.current) {
+          if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
             audioContextRef.current.close();
             audioContextRef.current = null;
           }
@@ -594,7 +594,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
         streamRef.current.getTracks().forEach(track => track.stop());
         streamRef.current = null;
       }
-      if (audioContextRef.current) {
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close();
         audioContextRef.current = null;
       }
@@ -794,7 +794,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
       mediaRecorder.onstop = async () => {
         // Очищаємо таймери та контексти
         if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
-        if (audioContextRef.current) {
+        if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
           audioContextRef.current.close();
           audioContextRef.current = null;
         }
@@ -839,7 +839,7 @@ const VoiceController: React.FC<VoiceControllerProps> = ({
           mediaRecorder.stop();
         }
         stream.getTracks().forEach(track => track.stop());
-        if (audioContextRef.current) audioContextRef.current.close();
+        if (audioContextRef.current && audioContextRef.current.state !== 'closed') audioContextRef.current.close();
       }, 10000);
 
     } catch (error) {
