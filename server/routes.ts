@@ -6,7 +6,6 @@ import { chatCompletionRequestSchema, type ChatCompletionRequest, insertUsedSugg
 import suggestionPillsData from "@shared/suggestionPills.json";
 import { z } from "zod";
 import { google } from "googleapis";
-import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";

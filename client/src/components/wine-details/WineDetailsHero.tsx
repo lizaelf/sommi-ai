@@ -12,7 +12,7 @@ const WineDetailsHero: React.FC<Wine> = ( wine ) => {
   return (
     <div
       style={{
-        backgroundColor: "#0a0a0a",
+        backgroundColor: "transparent",
         color: "white",
         position: "relative",
       }}
