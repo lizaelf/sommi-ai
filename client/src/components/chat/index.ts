@@ -1,6 +1,5 @@
 export { default as ChatMessage } from './ChatMessage';
 export { default as ChatMessageList } from './ChatMessageList';
-export { default as ChatSection } from './ChatSection';
 export { default as ChatInput } from './ChatInput';
 export { default as ChatInputArea } from './ChatInputArea';
 export { default as EnhancedChatInterface } from './EnhancedChatInterface';
