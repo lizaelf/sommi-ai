@@ -316,14 +316,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       )}
 
       {/* Content */}
-      <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6`}>
+      <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6`} style={{ paddingBottom: '96px' }}>
         {/* Tabs */}
         <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Tab content */}
         {activeTab === 'profile' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">Profile</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
@@ -429,7 +428,12 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                 onChange={e => setSearch(e.target.value)}
                 className="flex-1 p-2 rounded bg-black/20 text-white border border-white/20"
               />
-              <Button className="ml-2" onClick={handleAddWine}>+ Add wine</Button>
+              <Button
+                className="ml-2 flex-shrink-0 w-auto min-w-0 px-4 py-2"
+                onClick={handleAddWine}
+              >
+                + Add wine
+              </Button>
             </div>
             {/* Wine list */}
             <div>
@@ -451,7 +455,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
         {activeTab === 'wineclub' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">Wine Club</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
@@ -513,7 +516,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
         {activeTab === 'ai' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">AI Model</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
@@ -614,30 +616,16 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             )}
           </div>
         )}
-
-        {/* Save Button */}
-        {isCreateMode ? (
-          // Fixed bottom button for create mode
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
-            <button
-              onClick={handleSave}
-              className="w-full flex items-center justify-center px-6 py-4 bg-[#6A53E7] text-white rounded-lg hover:bg-[#5a43d7] transition-colors font-medium text-lg"
-            >
-              Create
-            </button>
-          </div>
-        ) : (
-          // Regular button for edit mode
-          <div className="pt-6">
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              className="w-full"
-            >
-              {isNewTenant ? "Add Tenant" : "Save"}
-            </Button>
-          </div>
-        )}
+      </div>
+      {/* Fixed Save Button for both modes */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50">
+        <Button
+          variant="primary"
+          onClick={handleSave}
+          className="primary-button w-full"
+        >
+          {isCreateMode ? "Create" : isNewTenant ? "Add Tenant" : "Save"}
+        </Button>
       </div>
     </div>
   );
