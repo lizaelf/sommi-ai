@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Plus, Save, X, Menu, Search, User, Settings } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import AppHeader from "@/components/layout/AppHeader";
 import { IconButton } from "@/components/ui/buttons/IconButton";
@@ -93,16 +93,18 @@ const SommTenantAdmin: React.FC = () => {
         }}
       >
         {/* Tenants Cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ display: "block", width: "100%" }}>
           {tenants.map((tenant) => (
-            <Link key={tenant.id} href={`/tenant-edit/${tenant.id}`}>
-              <div
-                className="rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5"
-                style={{
-                  border: "1px solid #494949",
-                }}
-              >
-                <div className="flex items-center justify-between">
+            <div
+              key={tenant.id}
+              className="rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5"
+              style={{
+                border: "1px solid #494949",
+                width: "100%",
+              }}
+            >
+              <div className="flex items-center justify-between" style={{ gap: "16px" }}>
+                <Link href={`/tenant-edit/${tenant.id}`} style={{ flexGrow: 1 }}>
                   <h3
                     style={{
                       fontFamily: "Inter, sans-serif",
@@ -110,21 +112,29 @@ const SommTenantAdmin: React.FC = () => {
                       lineHeight: "28px",
                       fontWeight: 500,
                       color: "white",
+                      width: "100%",
+                      margin: 0,
+                      padding: 0,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {tenant.profile?.wineryName || `Tenant ${tenant.id}`}
                   </h3>
-                  <ActionDropdown
-                    actions={[
-                      {
-                        label: "Delete",
-                        onClick: () => handleDeleteTenant(tenant.id.toString()),
-                      },
-                    ]}
-                  />
-                </div>
+                </Link>
+                <ActionDropdown
+                  actions={[
+                    {
+                      label: "Delete",
+                      icon: <Trash2 size={16} />, 
+                      onClick: () => handleDeleteTenant(tenant.id.toString()),
+                      colorClass: "text-red-400",
+                    },
+                  ]}
+                />
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 
