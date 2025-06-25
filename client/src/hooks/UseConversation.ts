@@ -32,6 +32,7 @@ interface UseConversationReturn {
   createNewConversation: () => Promise<number | null>;
   clearConversation: () => Promise<void>;
   refetchMessages: () => Promise<any>;
+  updateLastAssistantMessage: (content: string) => void;
 }
 
 /**
@@ -269,6 +270,18 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     }
   }, [currentConversationId]);
   
+  // Оновити content останнього assistant-повідомлення у messages
+  const updateLastAssistantMessage = useCallback((content: string) => {
+    setMessages(prev => {
+      const lastIndex = [...prev].reverse().findIndex(m => m.role === 'assistant');
+      if (lastIndex === -1) return prev;
+      const idx = prev.length - 1 - lastIndex;
+      const updated = [...prev];
+      updated[idx] = { ...updated[idx], content };
+      return updated;
+    });
+  }, []);
+  
   // Set the current conversation ID and update localStorage
   const setCurrentConversationId = useCallback(async (id: number | null) => {
     setCurrentConversationIdState(id);
@@ -346,6 +359,7 @@ export function useConversation(wineId?: string | number): UseConversationReturn
     conversations: localConversations,
     createNewConversation,
     clearConversation,
-    refetchMessages
+    refetchMessages,
+    updateLastAssistantMessage
   };
 }

@@ -105,6 +105,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     createNewConversation,
     clearConversation,
     refetchMessages,
+    updateLastAssistantMessage,
   } = useConversation(currentWine ? `wine_${currentWine.id}` : "default");
 
   // Clear old conversation data if wine doesn't match stored messages
@@ -180,6 +181,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [hideSuggestions, setHideSuggestions] = useState(false);
   const [latestMessageId, setLatestMessageId] = useState<number | null>(null);
   const [showFullConversation, setShowFullConversation] = useState(false);
+  // Для стрімінгу: локальний стейт для поточного assistant-повідомлення
+  const [assistantStreamingMessage, setAssistantStreamingMessage] = useState<ClientMessage | null>(null);
 
   // Voice assistant state
   const voiceControllerRef = useRef<any>(null);
@@ -383,86 +386,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         optimize_for_speed: true,
       };
 
-      // Check if streaming is enabled
-      const enableStreaming = import.meta.env.VITE_ENABLE_STREAMING === "true";
-
-      if (enableStreaming && isStreamingSupported()) {
-        // Streaming implementation
-        const eventSource = new EventSource(
-          `/api/chat-stream?${new URLSearchParams({
-            messages: JSON.stringify([{ role: "user", content }]),
-            conversationId: currentConversationId?.toString() || "",
-            wineData: JSON.stringify(currentWine),
-            optimize_for_speed: "true",
-          })}`,
-        );
-
-        setCurrentEventSource(eventSource);
-
-        let streamingContent = "";
-        let assistantMessageId = Date.now() + 1;
-
-        eventSource.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-
-            switch (data.type) {
-              case "first_token":
-                streamingContent = data.content;
-
-                if (data.start_tts && window.voiceAssistant?.speakResponse) {
-                  window.voiceAssistant.speakResponse(data.content);
-                }
-
-                const initialMessage: ClientMessage = {
-                  id: assistantMessageId,
-                  content: streamingContent,
-                  role: "assistant",
-                  conversationId: currentConversationId,
-                  createdAt: new Date().toISOString(),
-                };
-
-                handleAddMessage(initialMessage);
-                setLatestMessageId(assistantMessageId);
-                break;
-
-              case "token":
-                if (data.content) {
-                  streamingContent += data.content;
-                  refetchMessages();
-                }
-                break;
-
-              case "complete":
-                (window as any).lastAssistantMessageText = streamingContent;
-                window.dispatchEvent(new CustomEvent("showUnmuteButton"));
-                eventSource.close();
-                setCurrentEventSource(null);
-                refetchMessages();
-                break;
-
-              case "error":
-                console.error("Streaming error:", data.message);
-                eventSource.close();
-                setCurrentEventSource(null);
-                throw new Error(data.message || "Streaming failed");
-            }
-          } catch (parseError) {
-            console.error("Error parsing streaming event:", parseError);
-            eventSource.close();
-            setCurrentEventSource(null);
-          }
-        };
-
-        eventSource.onerror = (error) => {
-          console.error("EventSource error:", error);
-          eventSource.close();
-          setCurrentEventSource(null);
-          throw new Error("Streaming connection failed");
-        };
-
-        return;
-      }
+      // ВІДМІНЯЄМО СТРІМІНГ: завжди використовуємо простий fetch
 
       // Fallback to regular request
       const response = await fetch("/api/chat", {

@@ -91,23 +91,25 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
         setIsThinking(true);
         setShowAskButton(false);
         window.dispatchEvent(new CustomEvent('mic-status', { detail: { status: 'processing' } }));
+
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const formData = new FormData();
         formData.append('audio', audioBlob, 'recording.webm');
+
         try {
           const response = await fetch('/api/transcribe', {
             method: 'POST',
             body: formData,
           });
+
           if (!response.ok) throw new Error('Не вдалося транскрибувати аудіо');
+
           const result = await response.json();
           if (result.text && onSendMessage) {
             console.log("🎤 Транскрипція успішна:", result.text);
             onSendMessage(result.text.trim());
           } else {
             console.warn("🎤 Результат транскрипції порожній.");
-            setIsThinking(false);
-            setShowAskButton(true);
           }
         } catch (err) {
           console.error("🎤 Помилка транскрипції:", err);
@@ -119,8 +121,6 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
           }
           // Call handleVoiceResponse to trigger audio and show Unmute button
           handleVoiceResponse(fallbackResponse);
-          setIsThinking(false);
-          setShowAskButton(true);
         }
       };
       console.log("🎤 VoiceController: Microphone access granted, creating audio context");
@@ -632,9 +632,6 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
             
             // Call handleVoiceResponse to trigger audio and show Unmute button
             handleVoiceResponse(fallbackResponse);
-          } finally {
-            setIsThinking(false);
-            setShowAskButton(true);
           }
         };
 
@@ -1061,7 +1058,6 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
       if (responseText && onSendMessage) {
         onSendMessage(responseText.trim());
       }
-
     } catch (error: any) {
       if (error?.name === 'AbortError') {
         console.log("🛑 VoiceController: TTS request was aborted by stop button");
@@ -1189,9 +1185,6 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
           
           // Call handleVoiceResponse to trigger audio and show Unmute button
           handleVoiceResponse(fallbackResponse);
-        } finally {
-          setIsThinking(false);
-          setIsResponding(false);
         }
       };
 
