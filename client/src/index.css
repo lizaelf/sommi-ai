@@ -256,11 +256,9 @@ body {
   /* Segmented Picker Active State - Force White Fill */
   .segmented-picker-active {
     background-color: #ffffff !important;
-    background: #ffffff !important;
     color: #000000 !important;
     border: none !important;
     outline: none !important;
-    background-image: none !important;
   }
 
   .segmented-picker-active:hover {
