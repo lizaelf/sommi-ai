@@ -764,23 +764,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
           />
         </main>
 
-        {/* Scroll to Bottom Floating Button */}
-        {showScrollToBottom && (
-          <Button
-            onClick={scrollToBottom}
-            variant="secondary"
-            size="icon"
-            className="fixed bottom-[100px] right-5 w-12 h-12 rounded-3xl shadow-lg z-[1000] backdrop-blur-sm p-0"
-          >
-            <img
-              src="/icons/scroll-down.svg"
-              alt="Scroll down"
-              width="20"
-              height="20"
-              style={{ filter: 'brightness(0) invert(1)' }}
-            />
-          </Button>
-        )}
       </div>
 
       {/* VoiceController — один раз на сторінку, слухає події, керує всім флоу */}

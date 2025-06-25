@@ -443,13 +443,6 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
         )}
       </div>
 
-      <VoiceController
-        ref={voiceControllerRef}
-        onSendMessage={onSendMessage}
-        onAddMessage={addMessage}
-        conversationId={conversationId ? Number(conversationId) : undefined}
-        wineKey={wine ? `wine_${wine.id}` : undefined}
-      />
     </>
   );
 
