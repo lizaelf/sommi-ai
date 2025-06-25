@@ -616,28 +616,15 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         )}
 
         {/* Save Button */}
-        {isCreateMode ? (
-          // Fixed bottom button for create mode
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
-            <button
-              onClick={handleSave}
-              className="w-full flex items-center justify-center px-6 py-4 bg-[#6A53E7] text-white rounded-lg hover:bg-[#5a43d7] transition-colors font-medium text-lg"
-            >
-              Create
-            </button>
-          </div>
-        ) : (
-          // Regular button for edit mode
-          <div className="pt-6">
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              className="w-full"
-            >
-              {isNewTenant ? "Add Tenant" : "Save"}
-            </Button>
-          </div>
-        )}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50">
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            className="w-full"
+          >
+            {isCreateMode ? "Create" : isNewTenant ? "Add Tenant" : "Save"}
+          </Button>
+        </div>
       </div>
     </div>
   );
