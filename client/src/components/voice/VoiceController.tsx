@@ -89,6 +89,7 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
         setIsListening(false);
         isListeningRef.current = false;
         setIsThinking(true);
+        setShowAskButton(false);
         window.dispatchEvent(new CustomEvent('mic-status', { detail: { status: 'processing' } }));
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const formData = new FormData();
@@ -105,6 +106,8 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
             onSendMessage(result.text.trim());
           } else {
             console.warn("🎤 Результат транскрипції порожній.");
+            setIsThinking(false);
+            setShowAskButton(true);
           }
         } catch (err) {
           console.error("🎤 Помилка транскрипції:", err);
@@ -116,7 +119,6 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
           }
           // Call handleVoiceResponse to trigger audio and show Unmute button
           handleVoiceResponse(fallbackResponse);
-        } finally {
           setIsThinking(false);
           setShowAskButton(true);
         }
@@ -595,6 +597,7 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
           setIsListening(false);
           isListeningRef.current = false;
           setIsThinking(true);
+          setShowAskButton(false);
           window.dispatchEvent(new CustomEvent('mic-status', { detail: { status: 'processing' } }));
 
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
@@ -1246,8 +1249,8 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
       audio.onended = () => {
         setIsPlayingAudio(false);
         setIsResponding(false);
-        setShowUnmuteButton(true);
-        setShowAskButton(false);
+        setShowUnmuteButton(false);
+        setShowAskButton(true);
         currentAudioRef.current = null;
         currentTTSRequestRef.current = null;
         URL.revokeObjectURL(audioUrl);
@@ -1266,11 +1269,16 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
     await handleTriggerMicButton();
   };
 
+  const onAssistantMessageReceived = (text: string) => {
+    setIsThinking(false);
+    setShowUnmuteButton(true);
+    setShowAskButton(false);
+    setLastAssistantText(text);
+  };
+
   useImperativeHandle(ref, () => ({
     showUnmuteForText: (text: string) => {
-      setLastAssistantText(text);
-      setShowUnmuteButton(true);
-      setShowAskButton(false);
+      onAssistantMessageReceived(text);
     },
     handleVoiceResponse,
     startVoiceInput,

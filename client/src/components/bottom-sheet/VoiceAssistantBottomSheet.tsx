@@ -276,7 +276,9 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 fontWeight: 500,
                 outline: 'none',
                 transition: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                background: '#D32F2F',
+                color: 'white',
               }}
             >
               <img 
@@ -284,6 +286,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 alt="Stop"
                 width="20" 
                 height="20"
+                style={{ filter: 'brightness(0) invert(1)' }}
               />
               Stop
             </button>
@@ -328,10 +331,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
             )}
 
             {/* Unmute Button */}
-            {(() => {
-              console.log("🎤 VoiceAssistantBottomSheet: Checking Unmute button conditions:", { showUnmuteButton, hasOnUnmute: !!onUnmute, showAskButton });
-              return showUnmuteButton && onUnmute && !showAskButton;
-            })() && (
+            {showUnmuteButton && onUnmute && !showAskButton && !isThinking && (
               <div style={{
                 width: '100%',
                 paddingLeft: '16px',
@@ -367,7 +367,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
             )}
 
             {/* Listen Response Button */}
-            {showListenButton && onListenResponse && !showUnmuteButton && !showAskButton && (
+            {showListenButton && onListenResponse && !showUnmuteButton && !showAskButton && !isThinking && (
               <div style={{
                 width: '100%',
                 paddingLeft: '16px',
@@ -403,7 +403,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
             )}
 
             {/* Ask Button */}
-            {showAskButton && (
+            {showAskButton && !isThinking && (
               <div style={{
                 width: '100%',
                 paddingLeft: '16px',
