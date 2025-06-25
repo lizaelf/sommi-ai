@@ -25,16 +25,13 @@ export default function WineDetails() {
   useEffect(() => {
     const loadWineData = async () => {
       setLoadingState('loading');
-      const urlParams = new URLSearchParams(window.location.search);
-      const wineIdFromQuery = urlParams.get("wine");
-      const wineId = id || wineIdFromQuery || "1";
-      if (!wineId) {
+      if (!id) {
         setLoadingState('notfound');
         setWine(null);
         return;
       }
       try {
-        const response = await fetch(`/api/wines/${wineId}`);
+        const response = await fetch(`/api/wines/${id}`);
         if (response.ok) {
           const wineData = await response.json();
           const transformedWine: Wine = {
@@ -189,7 +186,7 @@ export default function WineDetails() {
 
       {/* Wine Chat Section */}
       <WineChatSection 
-        wineId={wine?.id?.toString() || "1"}
+        wine={wine}
         isScannedPage={isScannedPage}
       />
 

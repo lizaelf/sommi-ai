@@ -3,7 +3,7 @@ import EnhancedChatInterface from './EnhancedChatInterface';
 import { Wine } from '@/types/wine';
 
 interface WineChatSectionProps {
-  wine: Wine;
+  wine: Wine | null;
   isScannedPage: boolean;
 }
 
@@ -21,7 +21,7 @@ const WineChatSection: React.FC<WineChatSectionProps> = ({
       }}
     >
       <EnhancedChatInterface
-      wine={wine}
+      selectedWine={wine || null}
         isScannedPage={isScannedPage}
       />
     </div>

@@ -41,7 +41,6 @@ interface EnhancedChatInterfaceProps {
   selectedWine?: Wine | null;
   onReady?: () => void;
   isScannedPage?: boolean; 
-  wine: Wine
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
@@ -49,18 +48,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   selectedWine = null,
   onReady,
   isScannedPage = false,
-  wine
 }) => {
-  const [currentWine, setCurrentWine] = useState<Wine>(selectedWine || wine || null);
+  const [currentWine, setCurrentWine] = useState<Wine | null>(selectedWine || null);
   const [isComponentReady, setIsComponentReady] = useState(false);
   const [isUserRegistered, setIsUserRegistered] = useState(false); // FIX: Define missing variable
 
   // Initialize component and signal when ready
   useEffect(() => {
-    if (selectedWine) {
-      setCurrentWine(wine);
-      return
-    }
+
     if (selectedWine) {
       setCurrentWine(selectedWine);
       setIsComponentReady(true);
