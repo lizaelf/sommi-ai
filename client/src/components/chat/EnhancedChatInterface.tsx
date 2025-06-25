@@ -422,7 +422,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   createdAt: new Date().toISOString(),
                 };
 
-                addMessage(initialMessage);
+                handleAddMessage(initialMessage);
                 setLatestMessageId(assistantMessageId);
                 break;
 
@@ -493,7 +493,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
         setLatestMessageId(assistantMessage.id);
         (window as any).lastAssistantMessageText = assistantMessage.content;
-        await addMessage(assistantMessage);
+        handleAddMessage(assistantMessage);
         window.dispatchEvent(new CustomEvent("showUnmuteButton"));
       }
 
