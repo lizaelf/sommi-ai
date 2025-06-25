@@ -19,7 +19,6 @@ interface ActionDropdownProps {
 
 const ActionDropdown: React.FC<ActionDropdownProps> = ({
   actions,
-  buttonLabel = "More",
   buttonDisabled = false,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -39,7 +38,6 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
         disabled={buttonDisabled}
       >
         <MoreVertical size={16} />
-        {buttonLabel}
       </Button>
       {showDropdown && (
         <>
@@ -49,12 +47,12 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
                 <button
                   key={idx}
                   onClick={() => handleAction(action)}
-                  className={`w-full px-4 py-2 text-left hover:bg-white/5 flex items-center gap-2 transition-colors ${action.colorClass || ""}`}
+                  className={`block w-full px-4 py-2 text-left hover:bg-white/5 flex items-center gap-2 transition-colors whitespace-nowrap ${action.colorClass || ""}`}
                   style={typography.body1R}
                   disabled={action.disabled}
                 >
                   {action.icon}
-                  {action.label}
+                  <span className="truncate">{action.label}</span>
                 </button>
               ))}
             </div>

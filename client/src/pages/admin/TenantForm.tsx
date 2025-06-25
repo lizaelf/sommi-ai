@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { FormInput } from "@/components/ui/forms/FormInput";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { Tenant } from "@/types/tenant";
 import Button from "@/components/ui/buttons/Button";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import typography from "@/styles/typography";
-import { Trash2 } from "lucide-react";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
+import TenantTabs from "../../components/ui/TenantTabs";
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -318,17 +318,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       {/* Content */}
       <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6`}>
         {/* Tabs */}
-        <div className="flex mb-6">
-          {TABS.map(tab => (
-            <button
-              key={tab.key}
-              className={`px-4 py-2 rounded-full mx-1 ${activeTab === tab.key ? 'bg-white text-black' : 'bg-black text-white border border-white/20'}`}
-              onClick={() => setActiveTab(tab.key)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Tab content */}
         {activeTab === 'profile' && (
