@@ -5,7 +5,6 @@ import { Wine } from "@/types/wine";
 import VoiceStateManager from './VoiceStateManager';
 import VoiceAudioManager from './VoiceAudioManager';
 import VoiceRecorder from './VoiceRecorder';
-import { VoiceAssistantBottomSheet } from "../bottom-sheet";
 
 interface VoiceAssistantProps {
   onSendMessage: (
@@ -227,35 +226,6 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               updateState({ isListening: false, showAskButton: true });
             }}
           />
-          {/* <VoiceAssistantBottomSheet
-            isOpen={showBottomSheet}
-            onClose={resetState}
-            onMute={() => {
-              if (window.voiceAudioManager) window.voiceAudioManager.stopAudio();
-              updateState({ isResponding: false, isPlayingAudio: false, showUnmuteButton: true });
-            }}
-            onUnmute={() => {
-              if (window.voiceAudioManager) window.voiceAudioManager.playWelcomeMessage();
-              updateState({ isResponding: true, isPlayingAudio: true, showUnmuteButton: false });
-            }}
-            onAsk={() => {
-              if (window.voiceRecorder) {
-                window.voiceRecorder.startRecording();
-                setTimeout(() => {
-                  if (window.voiceRecorder) window.voiceRecorder.stopRecording();
-                }, 4000);
-              }
-              updateState({ isListening: true, showAskButton: false });
-            }}
-            isListening={isListening}
-            isResponding={isResponding}
-            isThinking={isThinking}
-            isPlayingAudio={isPlayingAudio}
-            isVoiceActive={isVoiceActive}
-            showUnmuteButton={showUnmuteButton}
-            showAskButton={showAskButton}
-            wineKey={wineKey}
-          /> */}
         </>
       )}
     </VoiceStateManager>

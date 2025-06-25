@@ -5,6 +5,7 @@ import { ShiningText } from '../animations/ShiningText';
 import Button from '@/components/ui/buttons/Button';
 import SuggestionPills from '../chat/SuggestionPills';
 import VoiceController from '../voice/VoiceController';
+import { Wine } from '@/types/wine';
 
 interface VoiceAssistantBottomSheetProps {
   isOpen: boolean;
@@ -29,7 +30,7 @@ interface VoiceAssistantBottomSheetProps {
   onSendMessage?: (message: string) => void;
   addMessage?: (message: any) => void;
   conversationId?: string;
-  wine?: any;
+  wine?: Wine;
 }
 
 const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({

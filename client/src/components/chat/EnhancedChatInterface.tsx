@@ -22,7 +22,6 @@ import {
 } from "@/lib/streamingClient";
 import typography from "@/styles/typography";
 import { Wine } from "@/types/wine";
-import { VoiceAssistantBottomSheet } from "../bottom-sheet";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -41,7 +40,8 @@ interface EnhancedChatInterfaceProps {
   showBuyButton?: boolean;
   selectedWine?: Wine | null;
   onReady?: () => void;
-  isScannedPage?: boolean; // true for scanned page (current session), false for wine details (historical)
+  isScannedPage?: boolean; 
+  wine: Wine
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
@@ -49,13 +49,18 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   selectedWine = null,
   onReady,
   isScannedPage = false,
+  wine
 }) => {
-  const [currentWine, setCurrentWine] = useState<any>(selectedWine || null);
+  const [currentWine, setCurrentWine] = useState<Wine>(selectedWine || wine || null);
   const [isComponentReady, setIsComponentReady] = useState(false);
   const [isUserRegistered, setIsUserRegistered] = useState(false); // FIX: Define missing variable
 
   // Initialize component and signal when ready
   useEffect(() => {
+    if (selectedWine) {
+      setCurrentWine(wine);
+      return
+    }
     if (selectedWine) {
       setCurrentWine(selectedWine);
       setIsComponentReady(true);
@@ -789,25 +794,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         onSendMessage={handleSendMessage}
         onAddMessage={handleAddMessage}
         isProcessing={isTyping}
-        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
       />
 
-      <VoiceAssistantBottomSheet
-        showUnmuteButton={showUnmuteButton}
-        onUnmute={handleUnmute}
-        isOpen={voiceSheetOpen}
-        isListening={voiceState.isListening}
-        isThinking={voiceState.isThinking}
-        isResponding={voiceState.isResponding}
-        isPlayingAudio={voiceState.isPlayingAudio}
-        showAskButton={voiceState.showAskButton}
-        showSuggestions={voiceState.showSuggestions}
-        onClose={() => setVoiceSheetOpen(false)}
-        onMute={handleStop}
-        onAsk={handleAsk}
-        onSuggestionClick={handleSuggestionClick}
-        wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
-      />
     </div>
   );
 };

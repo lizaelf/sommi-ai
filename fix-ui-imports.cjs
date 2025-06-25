@@ -36,7 +36,6 @@ const importMappings = {
   '@/components/ui/SectionHeaderButton': '@/components/ui/buttons/SectionHeaderButton',
   '@/components/ui/TextGenerateEffect': '@/components/ui/misc/TextGenerateEffect',
   '@/components/VoiceBottomSheet': '@/components/bottom-sheet/VoiceBottomSheet',
-  '@/components/voice/VoiceAssistantBottomSheet': '@/components/bottom-sheet/VoiceAssistantBottomSheet',
   './ui/Button': './ui/buttons/Button',
   './ui/IconButton': './ui/buttons/IconButton',
   './ui/BottomSheet': '../bottom-sheet/BottomSheet',
