@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import CircleAnimation from '../animations/CircleAnimation';
 import { ShiningText } from '../animations/ShiningText';
 import Button from '@/components/ui/buttons/Button';
 import SuggestionPills from '../chat/SuggestionPills';
+import VoiceController from '../voice/VoiceController';
 
 interface VoiceAssistantBottomSheetProps {
   isOpen: boolean;
@@ -25,6 +26,10 @@ interface VoiceAssistantBottomSheetProps {
   onListenResponse?: () => void;
   onUnmute?: () => void;
   onStopAudio?: () => void;
+  onSendMessage?: (message: string) => void;
+  addMessage?: (message: any) => void;
+  conversationId?: string;
+  wine?: any;
 }
 
 const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
@@ -47,7 +52,13 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
   onListenResponse,
   onUnmute,
   onStopAudio,
+  onSendMessage,
+  addMessage,
+  conversationId,
+  wine,
 }) => {
+  const voiceControllerRef = useRef<any>(null);
+
   if (!isOpen) return null;
 
   const content = (
@@ -318,7 +329,10 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
             )}
 
             {/* Unmute Button */}
-            {showUnmuteButton && onUnmute && !showAskButton && (
+            {(() => {
+              console.log("🎤 VoiceAssistantBottomSheet: Checking Unmute button conditions:", { showUnmuteButton, hasOnUnmute: !!onUnmute, showAskButton });
+              return showUnmuteButton && onUnmute && !showAskButton;
+            })() && (
               <div style={{
                 width: '100%',
                 paddingLeft: '16px',
@@ -351,7 +365,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                   Unmute
                 </Button>
               </div>
-            )} 
+            )}
 
             {/* Listen Response Button */}
             {showListenButton && onListenResponse && !showUnmuteButton && !showAskButton && (
@@ -427,6 +441,14 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
           </div>
         )}
       </div>
+
+      <VoiceController
+        ref={voiceControllerRef}
+        onSendMessage={onSendMessage}
+        onAddMessage={addMessage}
+        conversationId={conversationId ? Number(conversationId) : undefined}
+        wineKey={wine ? `wine_${wine.id}` : undefined}
+      />
     </>
   );
 

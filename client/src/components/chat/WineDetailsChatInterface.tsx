@@ -36,6 +36,8 @@ interface ChatInterfaceProps {
   onFocus: () => void;
   onBlur: () => void;
   onMicClick?: () => void;
+  addMessage: (message: ClientMessage) => void;
+  conversationId: string;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -50,8 +52,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onFocus,
   onBlur,
   onMicClick,
+  addMessage,
+  conversationId,
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const voiceControllerRef = useRef<any>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -64,6 +69,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       }
     }
   }, [messages]);
+
+  // Функция для отправки сообщения ассистенту и обработки ответа
+  const handleSendMessage = async (messageText: string) => {
+    if (!messageText.trim()) return;
+    // Отправляем сообщение пользователя
+    onSendMessage(messageText);
+    // Здесь предполагается, что addMessage будет вызван после получения ответа ассистента
+  };
+
+  // Обертка для addMessage, чтобы озвучивать ассистентский ответ
+  const handleAddMessage = (message: ClientMessage) => {
+    if (message.role === 'assistant' && voiceControllerRef.current?.showUnmuteForText) {
+      voiceControllerRef.current.showUnmuteForText(message.content);
+    }
+    addMessage(message);
+  };
 
   return (
     <>
@@ -226,8 +247,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       )}
 
       <VoiceController
-        onSendMessage={onSendMessage}
-        // ...
+        ref={voiceControllerRef}
+        onAddMessage={handleAddMessage}
+        conversationId={conversationId ? Number(conversationId) : undefined}
+        wineKey={wine ? `wine_${wine.id}` : undefined}
       />
     </>
   );

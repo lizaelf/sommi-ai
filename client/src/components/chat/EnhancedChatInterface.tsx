@@ -182,7 +182,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [showFullConversation, setShowFullConversation] = useState(false);
 
   // Voice assistant state
-  const [voiceControllerRef, setVoiceControllerRef] = useState<any>(null);
+  const voiceControllerRef = useRef<any>(null);
   const [, setLocation] = useLocation();
   const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(
     null,
@@ -274,6 +274,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     showSuggestions: true,
   });
 
+  const [showUnmuteButton, setShowUnmuteButton] = useState(false);
+
   // onMicClick — просто тригерить глобальну подію
   const handleMicClick = () => {
     window.dispatchEvent(new CustomEvent('triggerMicButton'));
@@ -306,6 +308,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       showAskButton: false,
       showSuggestions: false,
     });
+    setShowUnmuteButton(false);
   };
 
   // Ask - starts a new recording
@@ -513,6 +516,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       }
     };
   }, [currentEventSource]);
+
+  // Обертка для addMessage, чтобы показывать Unmute и готовить текст для озвучки
+  const handleAddMessage = (message: ClientMessage) => {
+    if (message.role === 'assistant' && voiceControllerRef.current?.showUnmuteForText) {
+      voiceControllerRef.current.showUnmuteForText(message.content);
+    }
+    addMessage(message);
+  };
 
   // Show loading state while initializing
   if (!isComponentReady || !currentConversationId) {
@@ -774,27 +785,29 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
 
       {/* VoiceController — один раз на сторінку, слухає події, керує всім флоу */}
       <VoiceController
-        onSendMessage={handleSendMessage} // додає текст у чат
+        ref={voiceControllerRef}
+        onSendMessage={handleSendMessage}
+        onAddMessage={handleAddMessage}
         isProcessing={isTyping}
         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
       />
 
-      {/* <VoiceAssistantBottomSheet
+      <VoiceAssistantBottomSheet
+        showUnmuteButton={showUnmuteButton}
+        onUnmute={handleUnmute}
         isOpen={voiceSheetOpen}
         isListening={voiceState.isListening}
         isThinking={voiceState.isThinking}
         isResponding={voiceState.isResponding}
         isPlayingAudio={voiceState.isPlayingAudio}
-        showUnmuteButton={voiceState.showUnmuteButton}
         showAskButton={voiceState.showAskButton}
         showSuggestions={voiceState.showSuggestions}
         onClose={() => setVoiceSheetOpen(false)}
         onMute={handleStop}
         onAsk={handleAsk}
-        onUnmute={handleUnmute}
         onSuggestionClick={handleSuggestionClick}
         wineKey={currentWine ? `wine_${currentWine.id}` : "wine_1"}
-      /> */}
+      />
     </div>
   );
 };

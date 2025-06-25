@@ -10,6 +10,7 @@ import typography from "@/styles/typography";
 import ChatMessageList, { Message } from "./ChatMessageList";
 import ChatInputArea from "./ChatInputArea";
 import ScrollToBottomButton from "@/components/misc/ScrollToBottomButton";
+import VoiceController from "@/components/voice/VoiceController";
 
 // Extend Window interface to include voiceAssistant
 declare global {
@@ -50,6 +51,7 @@ export default function ChatInterface({
 }: ChatInterfaceProps) {
   const [location, setLocation] = useLocation();
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const voiceControllerRef = useRef<any>(null);
   const [isComponentReady, setIsComponentReady] = useState(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
@@ -168,8 +170,6 @@ export default function ChatInterface({
         createdAt: new Date(),
       };
 
-      addMessage(userMessage);
-
       if (isStreamingSupported()) {
         await handleStreamingResponse(userMessage);
       } else {
@@ -205,8 +205,6 @@ export default function ChatInterface({
         conversationId: currentConversationId || 0,
         createdAt: new Date(),
       };
-
-      addMessage(assistantMessageObj);
 
       for await (const chunk of stream) {
         if (chunk.content) {
@@ -283,6 +281,14 @@ export default function ChatInterface({
       }
     };
   }, [currentEventSource]);
+
+  // Обертка для addMessage, чтобы показывать Unmute и готовить текст для озвучки
+  const handleAddMessage = (message: ClientMessage) => {
+    if (message.role === 'assistant' && voiceControllerRef.current?.showUnmuteForText) {
+      voiceControllerRef.current.showUnmuteForText(message.content);
+    }
+    addMessage(message);
+  };
 
   // Show loading state while initializing
   if (!isComponentReady || !currentConversationId) {
@@ -362,7 +368,13 @@ export default function ChatInterface({
         />
       </div>
 
-      {/* Contact functionality removed for clean chat component organization */}
+      <VoiceController
+        ref={voiceControllerRef}
+        onSendMessage={handleSendMessage}
+        onAddMessage={handleAddMessage}
+        conversationId={currentConversationId ? Number(currentConversationId) : undefined}
+        wineKey={currentWine ? `wine_${currentWine.id}` : undefined}
+      />
     </div>
   );
 }
