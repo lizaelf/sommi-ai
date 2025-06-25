@@ -74,14 +74,14 @@ const SommTenantAdmin: React.FC = () => {
   return (
     <div className="min-h-screen mobile-fullscreen" style={{ backgroundColor: "#3a3a3a" }}>
       <AppHeader 
-        title="Somm tenant admin"
+        title="Somm winery admin"
         rightContent={
           <IconButton
             icon={Plus}
-            onClick={() => (window.location.href = "/tenant-create")}
+            onClick={() => (window.location.href = "/winery-create")}
             variant="headerIcon"
             size="md"
-            title="Create new tenant"
+            title="Create new winery"
           />
         }
       />
@@ -92,7 +92,7 @@ const SommTenantAdmin: React.FC = () => {
           paddingRight: "24px",
         }}
       >
-        {/* Tenants Cards */}
+        {/* Wineries Cards */}
         <div style={{ display: "block", width: "100%" }}>
           {tenants.map((tenant) => (
             <div
@@ -104,7 +104,7 @@ const SommTenantAdmin: React.FC = () => {
               }}
             >
               <div className="flex items-center justify-between" style={{ gap: "16px" }}>
-                <Link href={`/tenant-edit/${tenant.id}`} style={{ flexGrow: 1 }}>
+                <Link href={`/winery-edit/${tenant.id}`} style={{ flexGrow: 1 }}>
                   <h3
                     style={{
                       fontFamily: "Inter, sans-serif",
@@ -120,13 +120,13 @@ const SommTenantAdmin: React.FC = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {tenant.profile?.wineryName || `Tenant ${tenant.id}`}
+                    {tenant.profile?.wineryName || `Winery ${tenant.id}`}
                   </h3>
                 </Link>
                 <ActionDropdown
                   actions={[
                     {
-                      label: "Delete",
+                      label: "Delete Winery",
                       icon: <Trash2 size={16} />, 
                       onClick: () => handleDeleteTenant(tenant.id.toString()),
                       colorClass: "text-red-400",
@@ -141,15 +141,15 @@ const SommTenantAdmin: React.FC = () => {
         {/* Empty State */}
         {tenants.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">No tenants available.</div>
+            <div className="text-gray-400 mb-4">No wineries available.</div>
             <IconButton
               icon={Plus}
-              onClick={() => (window.location.href = "/tenant-create")}
+              onClick={() => (window.location.href = "/winery-create")}
               variant="primary"
               size="lg"
               className="px-4 py-2"
             >
-              Create Your First Tenant
+              Create Your First Winery
             </IconButton>
           </div>
         )}
