@@ -4,7 +4,6 @@ import CircleAnimation from '../animations/CircleAnimation';
 import { ShiningText } from '../animations/ShiningText';
 import Button from '@/components/ui/buttons/Button';
 import SuggestionPills from '../chat/SuggestionPills';
-import VoiceController from '../voice/VoiceController';
 import { Wine } from '@/types/wine';
 
 interface VoiceAssistantBottomSheetProps {
@@ -58,7 +57,6 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
   conversationId,
   wine,
 }) => {
-  const voiceControllerRef = useRef<any>(null);
 
   if (!isOpen) return null;
 
