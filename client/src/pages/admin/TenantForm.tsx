@@ -257,7 +257,8 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     },
   ];
 
-  const pageTitle = isNewTenant ? "Add New Tenant" : "Edit Tenant";
+  const wineryName = tenant?.profile?.wineryName?.trim() || "Winery";
+  const pageTitle = isCreateMode ? `Create ${wineryName}` : `Edit ${wineryName}`;
 
   // Filtered wines for CMS tab
   const filteredWines = tenant?.cms.wineEntries.filter(wine =>
@@ -301,7 +302,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
           <h1 className="text-lg font-medium" style={{ color: "white" }}>
-            Create New Tenant
+            Create winery
           </h1>
           <div className="w-10"></div>
         </div>
@@ -323,7 +324,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         {/* Tab content */}
         {activeTab === 'profile' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">Profile</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
@@ -451,7 +451,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
         {activeTab === 'wineclub' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">Wine Club</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
@@ -513,7 +512,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
         {activeTab === 'ai' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">AI Model</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
