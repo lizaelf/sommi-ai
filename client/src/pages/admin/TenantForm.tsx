@@ -333,7 +333,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                   value={tenant.profile?.wineryName || ""}
                   onChange={(value: string) => handleProfileChange("wineryName", value)}
                   placeholder="Winery name"
-                  required
+                  required={true}
                 />
                 <FormInput
                   label="Website"
