@@ -420,8 +420,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         handleAddMessage(assistantMessage);
         window.dispatchEvent(new CustomEvent("showUnmuteButton"));
       }
-
-      refetchMessages();
     } catch (error) {
       console.error("Error in chat request:", error);
       // toastError(`Failed to get a response: ${error instanceof Error ? error.message : "Unknown error"}`);
