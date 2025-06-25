@@ -926,32 +926,6 @@ div * .suggestion-pill-button.react-button,
     background-image: none !important;
   }
 
-  input {
-    border-radius: 12px !important;
-    background: #FFF !important;
-    box-shadow: 0px 8px 22px -6px rgba(24, 39, 75, 0.12), 0px 14px 64px -4px rgba(24, 39, 75, 0.12) !important;
-  }
-
-  /* Secondary input styling - simple and clean */
-  .contact-form-input {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-    box-shadow: none !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    border-radius: 8px !important;
-  }
-
-  /* Filled inputs - keep transparent */
-  .contact-form-input:not(:placeholder-shown) {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-  }
-
   /* Header buttons without global button styling */
   .header-button {
     all: unset !important;
@@ -1029,11 +1003,6 @@ div * .suggestion-pill-button.react-button,
   .min-h-\[100vh\] {
     min-height: 100dvh;
   }
-}
-
-/* Custom shadow for inputs */
-.shadow-input {
-  box-shadow: 0px 8px 22px -6px rgba(24, 39, 75, 0.12), 0px 14px 64px -4px rgba(24, 39, 75, 0.12);
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -1245,4 +1214,34 @@ div * .suggestion-pill-button.react-button,
   filter: blur(20px);
   z-index: -1;
   opacity: 0.8;
+}
+
+/* Input styles */
+label {
+  color: rgba(255,255,255,0.5) !important;
+}
+
+input {
+  color: #fff !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0px 8px 22px -6px rgba(24, 39, 75, 0.12), 0px 14px 64px -4px rgba(24, 39, 75, 0.12) !important;
+}
+
+input::placeholder {
+  color: rgba(255,255,255,0.5) !important;
+  opacity: 1 !important;
+}
+
+.input-error {
+  border: 1.5px solid #F96D6D !important;
+  color: #F96D6D !important;
+}
+
+.input-error-message {
+  color: #F96D6D !important;
+  font-size: 1.1em;
+  margin-top: 4px;
+  font-weight: 500;
 }
