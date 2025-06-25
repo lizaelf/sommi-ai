@@ -1245,3 +1245,11 @@ input::placeholder {
   margin-top: 4px;
   font-weight: 500;
 }
+
+.react-button[data-variant="icon"],
+button.react-button[data-variant="icon"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}

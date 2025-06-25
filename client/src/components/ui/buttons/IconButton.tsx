@@ -10,7 +10,7 @@ interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>,
 }
 
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ icon: Icon, className, variant = "headerIcon", size = "icon", iconSize, children, ...props }, ref) => {
+  ({ icon: Icon, className, variant = "icon", size = "icon", iconSize, children, ...props }, ref) => {
     const getIconSize = () => {
       if (iconSize) return iconSize;
       switch (size) {
@@ -24,20 +24,6 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           return 20;
       }
     };
-
-    // Legacy support for headerIcon variant with specific styling
-    if (variant === "headerIcon") {
-      return (
-        <button
-          className={cn("header-icon-button react-button", className)}
-          ref={ref}
-          {...props}
-        >
-          <Icon size={getIconSize()} />
-          {children}
-        </button>
-      );
-    }
 
     return (
       <button

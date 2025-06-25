@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import Button from "@/components/ui/buttons/Button";
 import typography from "@/styles/typography";
+import { IconButton } from "@/components/ui/buttons/IconButton";
 
 interface AdminHeaderProps {
   currentTenant: { name: string; slug: string } | null;
@@ -31,15 +32,12 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
       showBackButton={true}
       rightContent={
         <div className="relative">
-          <Button
+          <IconButton
+            icon={MoreVertical}
             onClick={() => setShowDropdown(!showDropdown)}
-            variant="secondary"
-            size="default"
-            className="flex items-center gap-2"
-          >
-            <MoreVertical size={16} />
-            More
-          </Button>
+            variant="headerIcon"
+            aria-label="More actions"
+          />
           
           {showDropdown && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-black/90 border border-white/20 rounded-lg shadow-lg z-50">
