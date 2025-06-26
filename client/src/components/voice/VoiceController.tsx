@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import VoiceAssistantBottomSheet from '../bottom-sheet/VoiceAssistantBottomSheet';
+import VoiceAssistantBottomSheet from './VoiceAssistantBottomSheet';
 
 const SILENCE_THRESHOLD = 150;
 const SILENCE_DURATION = 2000;
