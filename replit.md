@@ -167,7 +167,6 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - BottomSheet.tsx (core bottom sheet component)
   - VoiceBottomSheet.tsx (voice interface modal)
   - VoiceAssistantBottomSheet.tsx (voice assistant interface)
-  - ConfirmationDialog.tsx (confirmation dialogs)
 - **Clean Index Exports**: Created index.ts for organized component imports throughout application
 - **Import Path Updates**: Fixed all import references across entire codebase to use new bottom-sheet folder structure
 - **UI Folder Cleanup**: Removed bottom sheet references from UI layout and overlays folders for cleaner organization

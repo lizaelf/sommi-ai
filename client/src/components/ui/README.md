@@ -85,19 +85,6 @@ Full-screen search overlay with results area.
 />
 ```
 
-### ConfirmationDialog
-Modal for confirming destructive actions.
-```tsx
-<ConfirmationDialog
-  isOpen={showConfirm}
-  onClose={() => setShowConfirm(false)}
-  onConfirm={handleDelete}
-  title="Delete Account"
-  message="Are you sure you want to delete your account?"
-  variant="danger"
-/>
-```
-
 ### NotificationSettings
 Pre-built notification preferences interface.
 ```tsx
@@ -176,6 +163,5 @@ import {
   Button, 
   FormInput,
   WineCard,
-  ConfirmationDialog 
 } from '@/components/ui';
 ```

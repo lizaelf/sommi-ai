@@ -10,7 +10,7 @@ import WineImage from "@/components/wine-details/WineImage";
 import { Trash2 } from "lucide-react";
 
 // Refactored components
-import { TabNavigation } from "@/components/admin/TabNavigation";
+import { TabNavigation } from "@/components/nav/TabNavigation";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 import { Tenant } from "@/types/tenant";
 

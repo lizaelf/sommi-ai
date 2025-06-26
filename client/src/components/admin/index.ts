@@ -1,2 +1,2 @@
 export { AdminHeader } from './AdminHeader';
-export { TabNavigation } from './TabNavigation';
+export { TabNavigation } from '../nav/TabNavigation';

@@ -25,8 +25,6 @@ const importMappings = {
   '@/components/ui/badge': '@/components/ui/data-display/badge',
   '@/components/ui/WineCard': '@/components/ui/data-display/WineCard',
   '@/components/ui/WineCardComponent': '@/components/ui/data-display/WineCardComponent',
-  '@/components/ui/ConfirmationDialog': '@/components/bottom-sheet/ConfirmationDialog',
-  '@/components/ui/overlays/ConfirmationDialog': '@/components/bottom-sheet/ConfirmationDialog',
   '@/components/ui/Tooltip': '@/components/ui/overlays/Tooltip',
   '@/components/ui/Select': '@/components/ui/primitives/Select',
   '@/components/ui/Switch': '@/components/ui/primitives/Switch',
