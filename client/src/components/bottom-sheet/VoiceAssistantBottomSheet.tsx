@@ -161,7 +161,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 <ShiningText text="Listening..." />
               </div>
             </div>
-            {onSuggestionClick && (
+            {/* {onSuggestionClick && (
               <div style={{ marginTop: 24, width: "100%", padding: "0 16px" }}>
                 <SuggestionPills
                   wineKey={wineKey}
@@ -171,7 +171,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                   context="voice-assistant"
                 />
               </div>
-            )}
+            )} */}
           </>
         ) : isThinking ? (
           <div style={{ 
@@ -299,7 +299,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
           }}>
             
             {/* Suggestions Section */}
-            {showSuggestions && onSuggestionClick && (showAskButton || !showAskButton) && (
+            {showSuggestions && onSuggestionClick && showAskButton && (
               <div style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
@@ -311,7 +311,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 paddingRight: '16px'
               }}>
                 {/* Wine-specific suggestion pills with text+voice responses */}
-                {/* <div className="scrollbar-hide overflow-x-auto">
+                <div className="scrollbar-hide overflow-x-auto">
                   <SuggestionPills
                     wineKey={wineKey}
                     onSuggestionClick={(prompt, pillId, options) => {
@@ -326,7 +326,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                     preferredResponseType="voice"
                     context="voice-assistant"
                   />
-                </div> */}
+                </div>
               </div>
             )}
 
