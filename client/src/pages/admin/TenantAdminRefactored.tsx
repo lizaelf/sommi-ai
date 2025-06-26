@@ -11,7 +11,6 @@ import { Trash2 } from "lucide-react";
 
 // Refactored components
 import { TabNavigation } from "@/components/admin/TabNavigation";
-import { WineManagement } from "@/components/admin/WineManagement";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 import { Tenant } from "@/types/tenant";
 
@@ -52,8 +51,6 @@ const TenantAdminRefactored: React.FC = () => {
   
   const [formData, setFormData] = useState<Tenant>({
     id: 1,
-    name: "Sample Winery",
-    slug: "sample-winery",
     profile: {
       wineryName: "",
       wineryDescription: "",

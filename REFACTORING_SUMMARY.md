@@ -28,7 +28,6 @@ Completed comprehensive refactoring of all page components into smaller, reusabl
 **Refactored into**:
 - `client/src/components/tenant-admin/AdminHeader.tsx` - Admin header with user dropdown
 - `client/src/components/tenant-admin/TabNavigation.tsx` - Tab navigation component
-- `client/src/components/tenant-admin/WineManagement.tsx` - Wine management interface
 - `client/src/pages/TenantAdminRefactored.tsx` - Orchestrating component
 
 ### Wine Edit Page
@@ -117,7 +116,6 @@ client/src/
 │   ├── tenant-admin/
 │   │   ├── AdminHeader.tsx
 │   │   ├── TabNavigation.tsx
-│   │   └── WineManagement.tsx
 │   ├── wine-details/
 │   │   ├── WineChatSection.tsx
 │   │   ├── WineDetailsHeader.tsx

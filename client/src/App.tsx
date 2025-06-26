@@ -68,7 +68,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomeGlobal} />
-      {/* <Route path="/tmp" component={AdminPage} /> */}
+      {/* <Route path="/tmp" component={WineManagement} /> */}
       <Route path="/cellar" component={Cellar} />
       <Route path="/food-pairings-ai" component={FoodPairingSuggestionsPage} />
       <Route path="/wine-details/:id" component={WineDetails} />

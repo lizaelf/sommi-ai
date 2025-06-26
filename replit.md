@@ -918,7 +918,6 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 - **TenantAdmin Page Refactoring**: Organized into 3 components:
   - AdminHeader.tsx - Header with user dropdown and navigation
   - TabNavigation.tsx - Tab switching interface
-  - WineManagement.tsx - Wine CRUD operations and data management
 - **Shared Component Library Creation**:
   - PageLayout.tsx - Unified page layout wrapper
   - LoadingSpinner.tsx - Reusable loading states
