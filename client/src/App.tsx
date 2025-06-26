@@ -21,6 +21,7 @@ import QRDemo from "@/pages/end-user/QRDemo";
 import { useEffect } from "react";
 import TenantEdit from "./pages/admin/TenantEdit";
 
+
 // Scroll restoration for deployed versions
 function useScrollRestoration() {
   useEffect(() => {
@@ -67,6 +68,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomeGlobal} />
+      {/* <Route path="/tmp" component={AdminPage} /> */}
       <Route path="/cellar" component={Cellar} />
       <Route path="/food-pairings-ai" component={FoodPairingSuggestionsPage} />
       <Route path="/wine-details/:id" component={WineDetails} />

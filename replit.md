@@ -261,7 +261,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 ### Complete Page Organization Implementation (June 18, 2025 - Previous)
 - **Admin Folder Organization**: Organized all admin-related pages into dedicated 'admin' folder for improved project architecture
 - **End-User Folder Organization**: Moved all end-user pages to dedicated 'end-user' folder while keeping shared pages like NotFound at root level
-- **Admin Pages Migration**: Moved TenantAdmin.tsx, TenantAdminRefactored.tsx, AdminPage.tsx, SommTenantAdmin.tsx, and TenantCreate.tsx to /client/src/pages/admin/
+- **Admin Pages Migration**: Moved TenantAdmin.tsx, TenantAdminRefactored.tsx, SommTenantAdmin.tsx, and TenantCreate.tsx to /client/src/pages/admin/
 - **End-User Pages Migration**: Moved all user-facing pages (WineDetails, Cellar, ChatPage, HomeGlobal, etc.) to /client/src/pages/end-user/
 - **Admin Components Organization**: Relocated tenant-admin components to /client/src/components/admin/ for consistent folder structure
 - **Import Path Updates**: Updated all routing and component imports to reflect new folder hierarchy with admin and end-user namespaces
