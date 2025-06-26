@@ -311,7 +311,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 paddingRight: '16px'
               }}>
                 {/* Wine-specific suggestion pills with text+voice responses */}
-                <div className="scrollbar-hide overflow-x-auto">
+                {/* <div className="scrollbar-hide overflow-x-auto">
                   <SuggestionPills
                     wineKey={wineKey}
                     onSuggestionClick={(prompt, pillId, options) => {
@@ -326,7 +326,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                     preferredResponseType="voice"
                     context="voice-assistant"
                   />
-                </div>
+                </div> */}
               </div>
             )}
 
