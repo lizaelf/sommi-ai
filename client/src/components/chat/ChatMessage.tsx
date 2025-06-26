@@ -47,7 +47,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     
     // Remove markdown formatting
     processedText = processedText.replace(/\*\*(.*?)\*\*/g, '$1');
-    processedText = processedText.replace(/```(.*?)```/gs, '$1');
+    processedText = processedText.replace(/```([\s\S]*?)```/g, '$1');
     
     // Clean up extra spaces
     processedText = processedText.replace(/\s+/g, ' ').trim();
