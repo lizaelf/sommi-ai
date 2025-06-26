@@ -4,7 +4,6 @@ const path = require('path');
 const importMappings = {
   '@/components/ui/StandardToast': '@/components/ui/feedback/StandardToast',
   '@/components/ui/FormInput': '@/components/ui/forms/FormInput',
-  '@/components/ui/ContactInput': '@/components/ui/forms/ContactInput',
   '@/components/ui/Input': '@/components/ui/forms/Input',
   '@/components/ui/input': '@/components/ui/forms/input',
   '@/components/ui/textarea': '@/components/ui/forms/textarea',
