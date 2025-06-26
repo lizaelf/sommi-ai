@@ -2,6 +2,7 @@ import React from "react";
 import typography from "@/styles/typography";
 import TechnicalDetailItem from "./TechnicalDetailItem";
 import { Wine } from "@/types/wine";
+import WineRating from "./WineRating";
 
 interface WineTechnicalDetailsSectionProps {
   wine: Wine
@@ -79,46 +80,38 @@ const WineTechnicalDetailsSection: React.FC<
     <div
       style={{
         display: "flex",
-        alignItems: "flex-start",
+        alignItems: "stretch",
         gap: "12px",
-        padding: "0 16px",
+        padding: "0 16px"
       }}
     >
       <div style={{ flex: 1 }}>
         <TechnicalDetailItem
           label="Varietal"
           value={
-            wine?.technicalDetails?.varietal ? (
-              <>
-                {wine.technicalDetails.varietal.primary}{" "}
-                {wine.technicalDetails.varietal.primaryPercentage}%
-                {wine.technicalDetails.varietal.secondary && (
-                  <>
-                    <br />
-                    {wine.technicalDetails.varietal.secondary}{" "}
-                    {wine.technicalDetails.varietal.secondaryPercentage}%
-                  </>
-                )}
-              </>
-            ) : extractVarietalInfo(wine?.name || "").secondary ? (
-              <>
-                {extractVarietalInfo(wine?.name || "").primary}{" "}
-                {extractVarietalInfo(wine?.name || "").primaryPercentage}%
-                <br />
-                {extractVarietalInfo(wine?.name || "").secondary}{" "}
-                {extractVarietalInfo(wine?.name || "").secondaryPercentage}%
-              </>
-            ) : (
-              `${extractVarietalInfo(wine?.name || "").primary} ${extractVarietalInfo(wine?.name || "").primaryPercentage}%`
-            )
+            wine?.technicalDetails?.varietal
+              ? <>
+                  {wine.technicalDetails.varietal.primary} {wine.technicalDetails.varietal.primaryPercentage}%
+                  {wine.technicalDetails.varietal.secondary && (
+                    <><br />{wine.technicalDetails.varietal.secondary} {wine.technicalDetails.varietal.secondaryPercentage}%</>
+                  )}
+                </>
+              : wine?.name
+                ? extractVarietalInfo(wine?.name || "").primary
+                  ? extractVarietalInfo(wine?.name || "").secondary
+                    ? <>
+                        {extractVarietalInfo(wine?.name || "").primary} {extractVarietalInfo(wine?.name || "").primaryPercentage}%<br />
+                        {extractVarietalInfo(wine?.name || "").secondary} {extractVarietalInfo(wine?.name || "").secondaryPercentage}%
+                      </>
+                    : `${extractVarietalInfo(wine?.name || "").primary} ${extractVarietalInfo(wine?.name || "").primaryPercentage}%`
+                  : "–"
+                : "–"
           }
         />
 
         <TechnicalDetailItem
           label="Appellation"
-          value={
-            wine?.location 
-          }
+          value={wine?.location ? wine.location : "–"}
         />
 
         <TechnicalDetailItem
@@ -126,28 +119,30 @@ const WineTechnicalDetailsSection: React.FC<
           value={
             wine?.technicalDetails?.aging
               ? wine.technicalDetails.aging.ageUpTo
-                    ? `Age up to ${wine.technicalDetails.aging.ageUpTo}`
-                    : "Drink now"
-              : getAgingRecommendations(wine?.name || "", wine?.year)
-                    .drinkNow &&
-                  getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo
-                ? `Drink now or age up to ${getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo}`
+                ? `Age up to ${wine.technicalDetails.aging.ageUpTo}`
                 : "Drink now"
+              : wine?.name
+                ? getAgingRecommendations(wine?.name || "", wine?.year).drinkNow && getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo
+                  ? `Drink now or age up to ${getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo}`
+                  : "Drink now"
+                : "–"
           }
         />
 
         <TechnicalDetailItem
           label="ABV"
-          value={`${ wine?.ratings?.abv}%`}
-          isLast={true}
+          value={wine?.ratings?.abv ? `${wine.ratings.abv}%` : "–"}
         />
+
+        {/* Wine Ratings below Technical Details Section */}
+        <WineRating ratings={wine.ratings} align="left" hideAbv={true} />
       </div>
 
       {/* Wine Image */}
       <div
         style={{
           width: "100px",
-          height: "290px",
+          minHeight: 0,
           flexShrink: 0,
           position: "relative",
           overflow: "visible",

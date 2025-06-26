@@ -1,7 +1,5 @@
 import React, { useRef } from "react";
 import WineBottleImage from "./WineBottleImage";
-
-import WineRating from "./WineRating";
 import typography from "@/styles/typography";
 import { Wine } from "@/types/wine";
 

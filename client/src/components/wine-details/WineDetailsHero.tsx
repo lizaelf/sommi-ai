@@ -12,7 +12,7 @@ const WineDetailsHero: React.FC<Wine> = ( wine ) => {
   return (
     <div
       className="bg-transparent text-white"
-      style={{ minHeight: "100vh", overflowY: "auto", overflowX: "hidden" }}
+      style={{ overflowY: "auto", overflowX: "hidden" }}
     >
       {/* Wine Title */}
       <div
@@ -31,14 +31,8 @@ const WineDetailsHero: React.FC<Wine> = ( wine ) => {
           {wine.year} {wine.name}
         </h1>
       </div>
-
       {/* Technical Details Section */}
       <WineTechnicalDetailsSection wine={wine} />
-
-      {/* Wine Ratings below Technical Details Section */}
-      <div style={{ marginTop: "0", padding: "0 2px" }}>
-        <WineRating ratings={wine.ratings} align="left" />
-      </div>
     </div>
   );
 };
