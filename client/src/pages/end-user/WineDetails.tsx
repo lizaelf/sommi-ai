@@ -105,8 +105,6 @@ export default function WineDetails() {
   useEffect(() => {
     // Streamlined scroll setup
     window.scrollTo(0, 0);
-    document.body.style.overflow = "auto";
-    document.documentElement.style.overflow = "auto";
   }, []);
 
   if (loadingState === 'loading') {
@@ -157,10 +155,7 @@ export default function WineDetails() {
   }
 
   return (
-    <div
-      className="bg-black text-white"
-      style={{ minHeight: "100vh", overflowY: "auto", overflowX: "hidden" }}
-    >
+    <div className="bg-red-500 min-h-screen">
       {/* Header - Same as HomeGlobal */}
       <AppHeader />
       <HeaderSpacer />
