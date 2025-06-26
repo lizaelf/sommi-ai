@@ -15,7 +15,6 @@ const WineChatSection: React.FC<WineChatSectionProps> = ({
     <div
       style={{
         width: "100%",
-        background: "black",
         paddingTop: "40px",
         marginTop: "-20px",
       }}
