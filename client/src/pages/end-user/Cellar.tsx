@@ -412,6 +412,7 @@ const Cellar = () => {
                 width="24"
                 height="24"
                 className="transition-all duration-200"
+                style={{ filter: 'invert(1)' }}
               />
             </div>
 

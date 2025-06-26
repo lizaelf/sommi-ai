@@ -27,18 +27,19 @@ export const WineCollection: React.FC<WineCollectionProps> = ({
       </h1>
 
       {/* Wine Cards */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%" }}>
         {isLoading ? (
           <div style={{ ...typography.body1R, color: "#666666" }}>
             Loading wines...
           </div>
         ) : wines.length > 0 ? (
           wines.map((wine) => (
-            <WineCard
-              key={wine.id}
-              wine={wine}
-              onClick={onWineClick}
-            />
+            <div key={wine.id} style={{ width: "100%" }}>
+              <WineCard
+                wine={wine}
+                onClick={onWineClick}
+              />
+            </div>
           ))
         ) : (
           <div style={{ ...typography.body1R, color: "#666666" }}>

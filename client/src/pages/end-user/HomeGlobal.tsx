@@ -29,7 +29,7 @@ const HomeGlobal = () => {
         setIsLoading(false);
       })
       .catch((err) => {
-        setError('Не вдалося завантажити вина. Спробуйте пізніше.');
+        setError('Wines could not be loaded. Try again later.');
         setIsLoading(false);
       });
   }, []);
