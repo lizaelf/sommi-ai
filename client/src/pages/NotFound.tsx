@@ -39,32 +39,32 @@ export default function NotFound() {
         Don't worry, our best discoveries are the result of an error
       </p>
       
-      <Link to="/" style={{ width: "100%", maxWidth: "400px" }}>
-        <button
-          style={{
-            ...typography.button,
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            borderRadius: "32px",
-            padding: "16px",
-            color: "white",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            outline: "none",
-            height: "56px",
-            width: "100%",
-            boxSizing: "border-box"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
-          }}
-        >
-          Continue exploring
-        </button>
-      </Link>
+      <button
+        style={{
+          ...typography.button,
+          backgroundColor: "rgba(255, 255, 255, 0.1)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          borderRadius: "32px",
+          padding: "16px",
+          color: "white",
+          cursor: "pointer",
+          transition: "all 0.2s ease",
+          outline: "none",
+          height: "56px",
+          width: "100%",
+          maxWidth: "400px",
+          boxSizing: "border-box"
+        }}
+        onClick={() => window.history.back()}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+        }}
+      >
+        Back
+      </button>
     </div>
   );
 }
