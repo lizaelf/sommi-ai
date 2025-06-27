@@ -694,6 +694,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         onSendMessage={handleSendMessage}
         onAddMessage={handleAddMessage}
         isProcessing={isTyping}
+        conversationId={currentConversationId}
       />
 
     </div>

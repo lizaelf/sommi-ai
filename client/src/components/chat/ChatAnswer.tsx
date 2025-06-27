@@ -1,5 +1,6 @@
 import React from 'react';
 import typography from '@/styles/typography';
+import { useConversation } from '@/hooks/UseConversation';
 
 interface ChatAnswerProps {
   content: string;

@@ -21,17 +21,9 @@ interface SuggestionPill {
 }
 
 interface SuggestionPillsProps {
-  wineKey: string;
-  conversationId?: string;
-  onSuggestionClick: (
-    prompt: string,
-    pillId?: string,
-    options?: {
-      textOnly?: boolean;
-      instantResponse?: string;
-      conversationId?: string;
-    },
-  ) => void;
+  wineKey?: string | number;
+  conversationId?: string | number | null;
+  onSuggestionClick?: (suggestion: string) => void;
   isDisabled?: boolean;
   preferredResponseType?: "text" | "voice";
   context?: "chat" | "voice-assistant";
@@ -170,7 +162,7 @@ export default function SuggestionPills({
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "_");
       const cacheKey = getSuggestionCacheKey(
-        effectiveWineKey,
+        String(effectiveWineKey),
         suggestionId,
         "audio",
       );
@@ -343,7 +335,7 @@ export default function SuggestionPills({
       // Fallback to cache lookup if no spreadsheet response
       if (!instantResponse) {
         instantResponse = await suggestionCache.getCachedResponse(
-          effectiveWineKey,
+          String(effectiveWineKey),
           suggestionId,
         );
       }
@@ -371,7 +363,7 @@ export default function SuggestionPills({
             id: Date.now(),
             content: pill.text,
             role: "user" as const,
-            conversationId: conversationId || 0,
+            conversationId: conversationId !== undefined && conversationId !== null ? String(conversationId) : undefined,
             createdAt: new Date().toISOString(),
           };
 
@@ -379,7 +371,7 @@ export default function SuggestionPills({
             id: Date.now() + 1,
             content: instantResponse,
             role: "assistant" as const,
-            conversationId: conversationId || 0,
+            conversationId: conversationId !== undefined && conversationId !== null ? String(conversationId) : undefined,
             createdAt: new Date().toISOString(),
           };
 
@@ -399,7 +391,7 @@ export default function SuggestionPills({
             id: Date.now(),
             content: pill.text,
             role: "user" as const,
-            conversationId: conversationId || 0,
+            conversationId: conversationId !== undefined && conversationId !== null ? String(conversationId) : undefined,
             createdAt: new Date().toISOString(),
           };
 
@@ -409,10 +401,7 @@ export default function SuggestionPills({
             }),
           );
 
-          onSuggestionClick(pill.prompt, pill.id, {
-            textOnly: true,
-            conversationId,
-          });
+          onSuggestionClick?.(pill.prompt);
         }
 
         // Mark as used temporarily during processing
@@ -448,7 +437,7 @@ export default function SuggestionPills({
 
           const audioCache = (window as any).suggestionAudioCache || {};
           const cacheKey = getSuggestionCacheKey(
-            effectiveWineKey,
+            String(effectiveWineKey),
             suggestionId,
             "audio",
           );
@@ -490,7 +479,7 @@ export default function SuggestionPills({
               id: Date.now(),
               content: pill.prompt,
               role: "user" as const,
-              conversationId: conversationId || 0,
+              conversationId: conversationId !== undefined && conversationId !== null ? String(conversationId) : undefined,
               createdAt: new Date().toISOString(),
             };
 
@@ -498,7 +487,7 @@ export default function SuggestionPills({
               id: Date.now() + 1,
               content: instantResponse,
               role: "assistant" as const,
-              conversationId: conversationId || 0,
+              conversationId: conversationId !== undefined && conversationId !== null ? String(conversationId) : undefined,
               createdAt: new Date().toISOString(),
             };
 
@@ -602,7 +591,7 @@ export default function SuggestionPills({
             id: Date.now(),
             content: pill.prompt,
             role: "user" as const,
-            conversationId: conversationId || 0,
+            conversationId: conversationId !== undefined && conversationId !== null ? String(conversationId) : undefined,
             createdAt: new Date().toISOString(),
           };
 
@@ -610,7 +599,7 @@ export default function SuggestionPills({
             id: Date.now() + 1,
             content: instantResponse,
             role: "assistant" as const,
-            conversationId: conversationId || 0,
+            conversationId: conversationId !== undefined && conversationId !== null ? String(conversationId) : undefined,
             createdAt: new Date().toISOString(),
           };
 
@@ -639,10 +628,7 @@ export default function SuggestionPills({
           "🎤 VOICE: No cache - making direct API call for voice response",
         );
 
-        onSuggestionClick(pill.prompt, pill.id, {
-          textOnly: false,
-          conversationId,
-        });
+        onSuggestionClick?.(pill.prompt);
 
         // Mark as used temporarily
         setUsedPills((prev) => new Set(prev).add(pill.id));
@@ -660,10 +646,7 @@ export default function SuggestionPills({
 
       // Fallback for unknown context
       console.warn("⚠️ Unknown context:", context, "- using default behavior");
-      onSuggestionClick(pill.prompt, pill.id, {
-        textOnly: context === "chat",
-        conversationId,
-      });
+      onSuggestionClick?.(pill.prompt);
     } catch (error) {
       // Rollback optimistic update on error
       setUsedPills((prev) => {
@@ -756,7 +739,7 @@ export default function SuggestionPills({
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "_");
         const cacheKey = getSuggestionCacheKey(
-          effectiveWineKey,
+          String(effectiveWineKey),
           suggestionId,
           "audio",
         );

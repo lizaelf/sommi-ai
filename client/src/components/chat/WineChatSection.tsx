@@ -20,7 +20,7 @@ const WineChatSection: React.FC<WineChatSectionProps> = ({
       }}
     >
       <EnhancedChatInterface
-      selectedWine={wine || null}
+        selectedWine={wine || null}
         isScannedPage={isScannedPage}
       />
     </div>

@@ -33,14 +33,9 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
         {/* Suggestion Pills from parsed table */}
         <div className="scrollbar-hide overflow-x-auto mb-2 sm:mb-3 pb-1 -mt-1 flex gap-1.5 sm:gap-2 w-full">
           <SuggestionPills
-            wineKey={currentWine ? `wine_${currentWine.id}` : "default"}
-            conversationId={currentConversationId?.toString()}
-            onSuggestionClick={(prompt, pillId, options) => {
-              console.log("ChatInputArea: SuggestionPills clicked:", prompt);
-              // Use the button text for API call
-              const apiPrompt = prompt;
-              onSuggestionClick(prompt);
-            }}
+            wineKey={currentWine?.id}
+            conversationId={currentConversationId?.toString() || undefined}
+            onSuggestionClick={onSuggestionClick}
             isDisabled={isTyping}
             preferredResponseType="text"
             context="chat"
