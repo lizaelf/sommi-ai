@@ -328,21 +328,19 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               
               {/* Image Preview */}
               {imagePreview ? (
-                <div className="mb-4 flex items-center justify-center bg-white p-4 rounded-lg border border-white/20" style={{ width: 150, height: 150 }}>
+                <div className="mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent">
                   <img
                     src={imagePreview}
                     alt="Wine preview"
                     className="max-w-full max-h-full object-contain"
-                    style={{ width: '100%', height: '100%' }}
                   />
                 </div>
               ) : (
-                <div className="mb-4 flex items-center justify-center bg-white p-4 rounded-lg border border-white/20" style={{ width: 150, height: 150 }}>
+                <div className="mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent">
                   <img
                     src={placeholderImage}
                     alt="Placeholder wine preview"
                     className="max-w-full max-h-full object-contain opacity-80"
-                    style={{ width: '100%', height: '100%' }}
                   />
                 </div>
               )}
@@ -385,8 +383,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
                   {/* QR Code Display */}
                   <div 
                     id="wine-qr-code"
-                    className="bg-white p-4 rounded-lg border border-white/20"
-                    style={{ width: 150, height: 150 }}
+                    className="p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent"
                   >
                     <QRCodeReact.QRCodeSVG
                       value={generateQRCodeValue()}
