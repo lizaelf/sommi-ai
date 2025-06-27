@@ -84,6 +84,7 @@ const SommTenantAdmin: React.FC = () => {
             title="Create new tenant"
           />
         }
+        hideCellarButton={true}
       />
       <div
         style={{

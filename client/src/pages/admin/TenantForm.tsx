@@ -331,7 +331,8 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
           title={pageTitle}
           showBackButton
           onBack={handleCancel}
-          rightContent={!isNewTenant && tenantId ? <ActionDropdown actions={actions} /> : null}
+          rightContent={null}
+          hideCellarButton={true}
         />
       )}
 

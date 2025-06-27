@@ -10,6 +10,7 @@ interface AppHeaderProps {
   rightContent?: React.ReactNode;
   className?: string;
   showBackButton?: boolean;
+  hideCellarButton?: boolean;
 }
 
 export function AppHeader({
@@ -18,6 +19,7 @@ export function AppHeader({
   rightContent,
   className = "",
   showBackButton = false,
+  hideCellarButton = false,
 }: AppHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -105,6 +107,13 @@ export function AppHeader({
 
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
+            {!hideCellarButton && (
+              <Link href="/cellar">
+                <a className="flex items-center gap-2 px-4 py-2 rounded-full text-white bg-white/10 hover:bg-white/20 transition-colors font-medium text-sm" style={{ border: 'none' }}>
+                  My cellar
+                </a>
+              </Link>
+            )}
             {rightContent}
           </div>
         </div>
