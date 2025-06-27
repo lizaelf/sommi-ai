@@ -215,30 +215,16 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
           </div>
         ) : (isResponding || isPlayingAudio) ? (
           <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
-            <button
-              className="secondary-button react-button"
+            <Button
               onClick={() => {
-                console.log("🛑 Stop button clicked - attempting to stop audio");
-                
-                // Primary stop method
-                if (onStopAudio) {
-                  console.log("🛑 Calling onStopAudio prop");
-                  onStopAudio();
-                }
-                
-                // Secondary stop method
                 if (onMute) {
                   console.log("🛑 Calling onMute prop");
                   onMute();
                 }
-                
-                // Global stop function fallback
                 if ((window as any).stopVoiceAudio) {
                   console.log("🛑 Calling global stopVoiceAudio");
                   (window as any).stopVoiceAudio();
                 }
-                
-                // Stop all audio elements directly
                 try {
                   const audioElements = document.querySelectorAll('audio');
                   audioElements.forEach((audio) => {
@@ -251,34 +237,19 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 } catch (error) {
                   console.warn("Error stopping audio elements:", error);
                 }
-                
-                // Dispatch multiple stop events
                 window.dispatchEvent(new CustomEvent('stopVoiceAudio'));
                 window.dispatchEvent(new CustomEvent('tts-audio-stop'));
                 window.dispatchEvent(new CustomEvent('deploymentAudioStopped'));
-                
                 console.log("🛑 Stop button processing complete");
               }}
+              variant="brand"
+              className="w-full rounded-[32px] h-14 flex justify-center items-center gap-2 font-medium text-[16px]"
               style={{
-                width: '100%',
-                borderRadius: '32px',
-                height: '56px',
-                padding: '0 16px',
-                margin: 0,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px',
                 border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '16px',
-                fontWeight: 500,
                 outline: 'none',
-                transition: 'none',
                 boxSizing: 'border-box',
-                background: '#D32F2F',
-                color: 'white',
+                transition: 'all 0.2s ease',
+                fontFamily: 'Inter, sans-serif',
               }}
             >
               <img 
@@ -289,7 +260,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 style={{ filter: 'brightness(0) invert(1)' }}
               />
               Stop
-            </button>
+            </Button>
           </div>
         ) : (
           <div style={{ 
@@ -323,7 +294,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
               }}>
                 <Button
                   onClick={onUnmute}
-                  variant="secondary"
+                  variant="primary"
                   style={{
                     width: '100%',
                     borderRadius: '32px',
@@ -395,7 +366,7 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
               }}>
                 <Button
                   onClick={onAsk}
-                  variant="secondary"
+                  variant="primary"
                   style={{
                     width: '100%',
                     borderRadius: '32px',
