@@ -336,7 +336,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       )}
 
       {/* Content */}
-      <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6`}>
+      <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6 pb-32`}>
         {/* Tabs */}
         <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
