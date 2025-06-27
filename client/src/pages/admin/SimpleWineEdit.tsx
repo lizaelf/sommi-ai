@@ -9,6 +9,7 @@ import { Wine } from "@/types/wine";
 import { Upload, Image as ImageIcon, Download, QrCode, Trash2 } from "lucide-react";
 import * as QRCodeReact from "qrcode.react";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
+import placeholderImage from "@assets/Placeholder.png";
 
 interface SimpleWineEditProps {
   wine?: any | null;
@@ -233,7 +234,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         if (newWine) {
           toastSuccess("Wine added successfully");
           // Повертаємося назад до сторінки редагування tenant
-          setLocation("/tenant-edit/new");
+          setLocation("/tenant-edit/new?tab=cms");
         } else {
           toastError("Failed to add wine");
         }
@@ -243,7 +244,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         if (updatedWine) {
           toastSuccess("Wine updated successfully");
           // Повертаємося назад до сторінки редагування tenant
-          setLocation("/tenant-edit/new");
+          setLocation("/tenant-edit/new?tab=cms");
         } else {
           toastError("Failed to update wine");
         }
@@ -262,7 +263,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
       const ok = await DataSyncManager.removeWine(wine.id);
       if (ok) {
         toastSuccess("Wine deleted successfully");
-        setLocation("/tenant-edit/new");
+        setLocation("/tenant-edit/new?tab=cms");
       } else {
         toastError("Failed to delete wine");
       }
@@ -287,7 +288,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/tenant-edit/new")} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/tenant-edit/new?tab=cms")} />
         <div className="pt-[75px] p-6">
           <div style={typography.body}>Loading wine data...</div>
         </div>
@@ -298,7 +299,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   if (!wine) {
     return (
       <div className="min-h-screen bg-black text-white">
-        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/tenant-edit/new")} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation("/tenant-edit/new?tab=cms")} />
         <div className="pt-[75px] p-6">
           <div style={typography.body}>Wine not found</div>
         </div>
@@ -312,7 +313,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         <AppHeader 
           title={pageTitle} 
           showBackButton 
-          onBack={() => setLocation("/tenant-edit/new")}
+          onBack={() => setLocation("/tenant-edit/new?tab=cms")}
           rightContent={
             !isNewWine && wine?.id ? (
               <ActionDropdown actions={actions} />
@@ -324,17 +325,25 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
       <div className={`${!isModalMode ? 'pt-[75px]' : ''} p-6`}>
         <div className="space-y-6">
           {/* Wine Image and QR Code Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 items-start">
             {/* Wine Image Upload */}
-            <div>
+            <div className="min-w-0">
               
               {/* Image Preview */}
-              {imagePreview && (
-                <div className="mb-4 inline-block">
+              {imagePreview ? (
+                <div className="mb-4 inline-block w-32 h-32">
                   <img
                     src={imagePreview}
                     alt="Wine preview"
                     className="w-32 h-32 object-cover rounded-lg border border-white/20"
+                  />
+                </div>
+              ) : (
+                <div className="mb-4 inline-block w-32 h-32">
+                  <img
+                    src={placeholderImage}
+                    alt="Placeholder wine preview"
+                    className="w-32 h-32 object-cover rounded-lg border border-white/20 opacity-80"
                   />
                 </div>
               )}
@@ -354,7 +363,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
                     type="button"
                   >
                     <Upload size={16} />
-                    Replace
+                    Upload
                   </Button>
                 )}
               </div>
@@ -370,7 +379,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             </div>
 
             {/* QR Code Section */}
-            <div>
+            <div className="min-w-0">
               
               {wine && (
                 <div className="flex flex-col items-center gap-4">
@@ -407,25 +416,27 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
 
           {/* Wine Name */}
           <div>
-            <label style={typography.body1R} className="block mb-2">Wine Name</label>
+            <label style={typography.body1R} className="block mb-2">Wine Name<span style={{ color: "#FF6B6B", marginLeft: 4 }}>*</span></label>
             <input
               type="text"
               value={wine.name}
               onChange={(e) => setWine({ ...wine, name: e.target.value })}
               className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="Enter wine name"
+              required
             />
           </div>
 
           {/* Year */}
           <div>
-            <label style={typography.body1R} className="block mb-2">Year</label>
+            <label style={typography.body1R} className="block mb-2">Year<span style={{ color: "#FF6B6B", marginLeft: 4 }}>*</span></label>
             <input
               type="number"
               value={wine.year}
               onChange={(e) => setWine({ ...wine, year: parseInt(e.target.value) || 0 })}
               className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
-              placeholder="Year"
+              placeholder={String(new Date().getFullYear())}
+              required
             />
           </div>
 
@@ -650,13 +661,14 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
 
           {/* Bottles */}
           <div>
-            <label style={typography.body1R} className="block mb-2">Bottles</label>
+            <label style={typography.body1R} className="block mb-2">Bottles<span style={{ color: "#FF6B6B", marginLeft: 4 }}>*</span></label>
             <input
               type="number"
               value={wine.bottles}
               onChange={(e) => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })}
               className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
               placeholder="Number of bottles"
+              required
             />
           </div>
 
@@ -672,7 +684,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
           </div>
 
           {/* Save Button */}
-          <div className="pt-6">
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50">
             <div className="flex gap-2">
               <Button 
                 variant="primary" 

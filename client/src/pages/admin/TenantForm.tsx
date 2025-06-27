@@ -9,6 +9,7 @@ import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
 import typography from "@/styles/typography";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 import TenantTabs from "../../components/ui/TenantTabs";
+import DropdownInput from "@/components/ui/forms/DropdownInput";
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -118,14 +119,22 @@ interface TenantFormProps {
   mode: 'create' | 'edit';
 }
 
+// Helper to get query param
+function getQueryParam(search: string, key: string): string | null {
+  const params = new URLSearchParams(search);
+  return params.get(key);
+}
+
 const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const { id } = useParams();
-  const [, setLocation] = useLocation();
+  const [{}, setLocation] = useLocation();
   const { toastSuccess, toastError } = useStandardToast();
   const [tenant, setTenant] = useState<Omit<Tenant, "id"> | null>(null);
   const [loading, setLoading] = useState(true);
   const [isNewTenant, setIsNewTenant] = useState(false);
-  const [activeTab, setActiveTab] = useState('profile');
+  const searchParams = typeof window !== 'undefined' ? window.location.search : '';
+  const initialTab = getQueryParam(searchParams, 'tab') || 'profile';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [search, setSearch] = useState('');
   const [scrolled, setScrolled] = useState(false);
 
@@ -139,10 +148,14 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   }, [id]);
 
   // Використовуємо useCallback для стабільних функцій
-  const handleCancel = useCallback(() => setLocation('/somm-tenant-admin'), [setLocation]);
+  const handleCancel = useCallback(() => {
+    setLocation('/somm-tenant-admin?tab=cms');
+  }, [setLocation]);
   const handleAddWine = useCallback(() => setLocation('/wine-edit/new'), [setLocation]);
   const handleEditWine = useCallback((wineIndex: number) => setLocation(`/wine-edit/${wineIndex}`), [setLocation]);
-  const handleSaveSuccess = useCallback(() => setLocation("/somm-tenant-admin"), [setLocation]);
+  const handleSaveSuccess = useCallback(() => {
+    setLocation('/somm-tenant-admin?tab=cms');
+  }, [setLocation]);
 
   useEffect(() => {
     const loadTenant = async () => {
@@ -264,6 +277,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     wine.wineName.toLowerCase().includes(search.toLowerCase())
   ) || [];
 
+  // Tab change handler that updates the query param
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    const base = window.location.pathname;
+    setLocation(`${base}?tab=${key}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -318,12 +338,11 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       {/* Content */}
       <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6`}>
         {/* Tabs */}
-        <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+        <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
         {/* Tab content */}
         {activeTab === 'profile' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">Profile</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
@@ -429,7 +448,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                 onChange={e => setSearch(e.target.value)}
                 className="flex-1 p-2 rounded bg-black/20 text-white border border-white/20"
               />
-              <Button className="ml-2" onClick={handleAddWine}>+ Add wine</Button>
+              <Button onClick={handleAddWine} variant="secondary">+ Add wine</Button>
             </div>
             {/* Wine list */}
             <div>
@@ -451,7 +470,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
         {activeTab === 'wineclub' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">Wine Club</div>
             {isCreateMode ? (
               // FormInput components for create mode
               <>
@@ -513,22 +531,30 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
         {activeTab === 'ai' && (
           <div className="space-y-6">
-            <div className="pt-2 pb-1 text-white font-semibold">AI Model</div>
             {isCreateMode ? (
-              // FormInput components for create mode
+              // DropdownInput components for create mode
               <>
-                <FormInput
+                <DropdownInput
                   label="Knowledge Scope"
-                  type="text"
                   value={tenant.aiModel?.knowledgeScope || ""}
                   onChange={(value: string) => handleAiModelChange("knowledgeScope", value)}
+                  options={[
+                    { value: "winery-only", label: "winery-only" },
+                    { value: "winery-plus-global", label: "winery-plus-global" },
+                  ]}
                   placeholder="Knowledge Scope"
                 />
-                <FormInput
+                <DropdownInput
                   label="Personality Style"
-                  type="text"
                   value={tenant.aiModel?.personalityStyle || ""}
                   onChange={(value: string) => handleAiModelChange("personalityStyle", value)}
+                  options={[
+                    { value: "educator", label: "educator" },
+                    { value: "sommelier", label: "sommelier" },
+                    { value: "tasting-room-host", label: "tasting-room-host" },
+                    { value: "luxury-concierge", label: "luxury-concierge" },
+                    { value: "casual-friendly", label: "casual-friendly" },
+                  ]}
                   placeholder="Personality Style"
                 />
                 <FormInput
@@ -616,28 +642,15 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         )}
 
         {/* Save Button */}
-        {isCreateMode ? (
-          // Fixed bottom button for create mode
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10">
-            <button
-              onClick={handleSave}
-              className="w-full flex items-center justify-center px-6 py-4 bg-[#6A53E7] text-white rounded-lg hover:bg-[#5a43d7] transition-colors font-medium text-lg"
-            >
-              Create
-            </button>
-          </div>
-        ) : (
-          // Regular button for edit mode
-          <div className="pt-6">
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              className="w-full"
-            >
-              {isNewTenant ? "Add Tenant" : "Save"}
-            </Button>
-          </div>
-        )}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50">
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            className="w-full text-lg font-medium py-4"
+          >
+            {isCreateMode ? "Create" : isNewTenant ? "Add Tenant" : "Save"}
+          </Button>
+        </div>
       </div>
     </div>
   );
