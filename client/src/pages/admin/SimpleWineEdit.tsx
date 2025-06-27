@@ -314,8 +314,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
           title={pageTitle} 
           showBackButton 
           onBack={() => setLocation("/tenant-edit/new?tab=cms")}
-          rightContent={null}
-          hideCellarButton={true}
+          rightContent={
+            !isNewWine && wine?.id ? (
+              <ActionDropdown actions={actions} />
+            ) : null
+          }
         />
       )}
       

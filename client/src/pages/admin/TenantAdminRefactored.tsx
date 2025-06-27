@@ -558,7 +558,6 @@ const TenantAdminRefactored: React.FC = () => {
         rightContent={
           <ActionDropdown actions={actions} />
         }
-        hideCellarButton={true}
       />
       <HeaderSpacer />
 
