@@ -119,14 +119,22 @@ interface TenantFormProps {
   mode: 'create' | 'edit';
 }
 
+// Helper to get query param
+function getQueryParam(search: string, key: string): string | null {
+  const params = new URLSearchParams(search);
+  return params.get(key);
+}
+
 const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const { id } = useParams();
-  const [, setLocation] = useLocation();
+  const [{}, setLocation] = useLocation();
   const { toastSuccess, toastError } = useStandardToast();
   const [tenant, setTenant] = useState<Omit<Tenant, "id"> | null>(null);
   const [loading, setLoading] = useState(true);
   const [isNewTenant, setIsNewTenant] = useState(false);
-  const [activeTab, setActiveTab] = useState('profile');
+  const searchParams = typeof window !== 'undefined' ? window.location.search : '';
+  const initialTab = getQueryParam(searchParams, 'tab') || 'profile';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [search, setSearch] = useState('');
   const [scrolled, setScrolled] = useState(false);
 
@@ -140,10 +148,14 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   }, [id]);
 
   // Використовуємо useCallback для стабільних функцій
-  const handleCancel = useCallback(() => setLocation('/somm-tenant-admin'), [setLocation]);
+  const handleCancel = useCallback(() => {
+    setLocation('/somm-tenant-admin?tab=cms');
+  }, [setLocation]);
   const handleAddWine = useCallback(() => setLocation('/wine-edit/new'), [setLocation]);
   const handleEditWine = useCallback((wineIndex: number) => setLocation(`/wine-edit/${wineIndex}`), [setLocation]);
-  const handleSaveSuccess = useCallback(() => setLocation("/somm-tenant-admin"), [setLocation]);
+  const handleSaveSuccess = useCallback(() => {
+    setLocation('/somm-tenant-admin?tab=cms');
+  }, [setLocation]);
 
   useEffect(() => {
     const loadTenant = async () => {
@@ -265,6 +277,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     wine.wineName.toLowerCase().includes(search.toLowerCase())
   ) || [];
 
+  // Tab change handler that updates the query param
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    const base = window.location.pathname;
+    setLocation(`${base}?tab=${key}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -319,7 +338,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       {/* Content */}
       <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6`}>
         {/* Tabs */}
-        <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+        <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
         {/* Tab content */}
         {activeTab === 'profile' && (
@@ -429,7 +448,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                 onChange={e => setSearch(e.target.value)}
                 className="flex-1 p-2 rounded bg-black/20 text-white border border-white/20"
               />
-              <Button className="ml-2" onClick={handleAddWine}>+ Add wine</Button>
+              <Button onClick={handleAddWine} variant="secondary">+ Add wine</Button>
             </div>
             {/* Wine list */}
             <div>
