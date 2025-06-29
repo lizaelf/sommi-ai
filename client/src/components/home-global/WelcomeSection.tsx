@@ -2,7 +2,7 @@ import React from "react";
 import wineryLogoPath from "@assets/winary-logo.png";
 import typography from "@/styles/typography";
 
-export const WelcomeSection: React.FC = () => {
+export const WelcomeSection: React.FC<{ logoUrl?: string; wineryName?: string }> = ({ logoUrl, wineryName }) => {
   return (
     <div className="px-4">
       {/* Ridge Vineyards Logo */}
@@ -30,8 +30,8 @@ export const WelcomeSection: React.FC = () => {
           }}
         />
         <img
-          src={wineryLogoPath}
-          alt="Ridge Vineyards"
+          src={logoUrl || wineryLogoPath}
+          alt={wineryName || "Winery Logo"}
           className="mx-auto"
           style={{
             height: "54px",
@@ -51,7 +51,7 @@ export const WelcomeSection: React.FC = () => {
             color: "#CECECE",
           }}
         >
-          Welcome to Ridge Vineyards where each bottle is a story of place,
+          Welcome to {wineryName || 'the winery'} where each bottle is a story of place,
           time, and the people who bring it to life.
         </p>
       </div>

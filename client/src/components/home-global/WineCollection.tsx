@@ -35,10 +35,10 @@ export const WineCollection: React.FC<WineCollectionProps> = ({
         ) : wines.length > 0 ? (
           wines.map((wine) => (
             <div key={wine.id} style={{ width: "100%" }}>
-              <WineCard
-                wine={wine}
-                onClick={onWineClick}
-              />
+            <WineCard
+              wine={wine}
+              onClick={onWineClick}
+            />
             </div>
           ))
         ) : (

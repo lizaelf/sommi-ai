@@ -81,6 +81,7 @@ function Router() {
       <Route path="/scan-wine/:id" component={WineScan} />
       <Route path="/qr-codes" component={QRCodes} />
       <Route path="/qr-demo" component={QRDemo} />
+      <Route path="/homeglobal/:slug" component={HomeGlobal} />
       <Route component={NotFound} />
     </Switch>
   );
