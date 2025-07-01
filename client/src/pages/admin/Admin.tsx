@@ -6,7 +6,7 @@ import { IconButton } from '@/components/ui/buttons/IconButton'
 import { Tenant } from '@/types/tenant'
 import ActionDropdown from '@/components/admin/ActionDropdown'
 
-const TenantsAdmin: React.FC = () => {
+const Admin: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
 
@@ -138,4 +138,4 @@ const TenantsAdmin: React.FC = () => {
   )
 }
 
-export default TenantsAdmin
+export default Admin
