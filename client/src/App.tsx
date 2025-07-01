@@ -5,7 +5,6 @@ import { Toaster } from '@/components/ui/feedback/Toaster'
 import { TooltipProvider } from '@/components/ui/overlays/Tooltip'
 import NotFound from '@/pages/NotFound'
 import WineDetails from '@/pages/end-user/WineDetails'
-import FoodPairings from '@/pages/end-user/FoodPairings'
 import Cellar from '@/pages/end-user/Cellar'
 import FoodPairingSuggestionsPage from '@/pages/end-user/FoodPairingSuggestionsPage'
 
