@@ -27,7 +27,7 @@ const TenantAdmin: React.FC = () => {
   const params = useParams()
 
   // Get tenant information
-  const [currentTenant, setCurrentTenant] = useState<{ name: string; slug: string } | null>(null)
+  const [currentTenant, setCurrentTenant] = useState<{ name: string; tenantName: string } | null>(null)
 
   // Wine management state
   const [isEditMode, setIsEditMode] = useState(false)
@@ -48,6 +48,7 @@ const TenantAdmin: React.FC = () => {
   const [formData, setFormData] = useState<Tenant>({
     id: 1,
     profile: {
+      tenantName: '',
       wineryName: '',
       wineryDescription: '',
       yearEstablished: '',
@@ -78,17 +79,20 @@ const TenantAdmin: React.FC = () => {
     },
   })
 
+  // Додаю валідацію tenantName
+  const validateTenantName = (name: string) => /^[a-zA-Z0-9_-]+$/.test(name)
+
   useEffect(() => {
     // Extract tenant from URL or get stored tenants
     const storedTenants = localStorage.getItem('sommelier-tenants')
-    if (storedTenants && params.tenantSlug) {
+    if (storedTenants && params.tenantName) {
       const tenants = JSON.parse(storedTenants)
-      const tenant = tenants.find((t: any) => t.slug === params.tenantSlug)
+      const tenant = tenants.find((t: any) => t.tenantName === params.tenantName)
       if (tenant) {
-        setCurrentTenant({ name: tenant.name, slug: tenant.slug })
+        setCurrentTenant({ name: tenant.name, tenantName: tenant.tenantName })
       }
     }
-  }, [params.tenantSlug])
+  }, [params.tenantName])
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {
@@ -167,24 +171,14 @@ const TenantAdmin: React.FC = () => {
       case 'profile':
         return (
           <div className='p-6 space-y-6'>
-            {/* First Row: Winery Name and Year Established */}
+            {/* First Row: Tenant Name and Year Established */}
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               <div>
                 <label style={typography.body1R} className='block mb-2 text-white/80'>
-                  Winery Name
+                  Tenant Name (URL key)
                 </label>
-                <input
-                  type='text'
-                  value={formData.profile.wineryName}
-                  onChange={e =>
-                    setFormData({
-                      ...formData,
-                      profile: { ...formData.profile, wineryName: e.target.value },
-                    })
-                  }
-                  className='w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:border-white/40 focus:outline-none'
-                  placeholder='Enter winery name'
-                />
+                <input type='text' value={formData.profile.tenantName} onChange={e => setFormData({ ...formData, profile: { ...formData.profile, tenantName: e.target.value } })} className='w-full p-4 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:border-white/40 focus:outline-none' placeholder='example-tenant' required />
+                {formData.profile.tenantName && !validateTenantName(formData.profile.tenantName) && <div className='text-red-400 text-sm mt-1'>Only a-z, A-Z, 0-9, -, _ allowed</div>}
               </div>
               <div>
                 <label style={typography.body1R} className='block mb-2 text-white/80'>

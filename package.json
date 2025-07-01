@@ -12,7 +12,8 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "migrate:tenant-name": "tsx scripts/migrate-tenant-name.ts"
   },
   "dependencies": {
     "@fluentui/react-icons": "^2.0.301",

@@ -1,6 +1,6 @@
-import React from "react";
-import TenantForm from "./TenantForm";
+import React from 'react'
+import TenantForm from './TenantForm'
 
 export default function TenantEdit() {
-  return <TenantForm mode="edit" />;
-} 
+  return <TenantForm mode='edit' />
+}

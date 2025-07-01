@@ -1,6 +1,6 @@
 import { users, type User, type InsertUser, messages, type Message, type InsertMessage, conversations, type Conversation, type InsertConversation, tenants, type Tenant, type InsertTenant, usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill, foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory, wineTypes, type WineType, type InsertWineType, wines, type Wine, type InsertWine } from '@shared/schema'
 import { db } from './db'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, sql } from 'drizzle-orm'
 
 // Interface for storage operations
 export interface IStorage {
@@ -26,7 +26,7 @@ export interface IStorage {
 
   // Tenant operations
   getTenant(id: number): Promise<Tenant | undefined>
-  getTenantBySlug(slug: string): Promise<Tenant | undefined>
+  getTenantByTenantName(tenantName: string): Promise<Tenant | undefined>
   getAllTenants(): Promise<Tenant[]>
   createTenant(tenant: InsertTenant): Promise<Tenant>
   updateTenant(id: number, tenant: Partial<InsertTenant>): Promise<Tenant | undefined>
@@ -157,9 +157,9 @@ export class DatabaseStorage implements IStorage {
     return results.length > 0 ? results[0] : undefined
   }
 
-  async getTenantBySlug(slug: string): Promise<Tenant | undefined> {
-    const results = await db.select().from(tenants).where(eq(tenants.id, parseInt(slug)))
-    return results.length > 0 ? results[0] : undefined
+  async getTenantByTenantName(tenantName: string): Promise<Tenant | undefined> {
+    const results = (await db.execute(sql`SELECT * FROM tenants WHERE profile->>'tenantName' = ${tenantName} LIMIT 1`)) as { rows: Tenant[] }
+    return results.rows && results.rows.length > 0 ? results.rows[0] : undefined
   }
 
   async getAllTenants(): Promise<Tenant[]> {
