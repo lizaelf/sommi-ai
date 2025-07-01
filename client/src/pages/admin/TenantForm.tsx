@@ -10,7 +10,38 @@ import typography from "@/styles/typography";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 import TenantTabs from "../../components/ui/TenantTabs";
 import DropdownInput from "@/components/ui/forms/DropdownInput";
-import { generateSlug, validateSlug, checkSlugAvailability } from "../../../shared/slugUtils";
+// Inline slug utility functions for now
+const generateSlug = (wineryName: string): string => {
+  if (!wineryName) return "";
+  return wineryName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+};
+
+const validateSlug = (slug: string): { isValid: boolean; error?: string } => {
+  if (!slug) return { isValid: false, error: "Slug is required" };
+  if (slug.length < 2) return { isValid: false, error: "Slug must be at least 2 characters" };
+  if (slug.length > 50) return { isValid: false, error: "Slug must be 50 characters or less" };
+  const slugPattern = /^[a-z0-9-]+$/;
+  if (!slugPattern.test(slug)) return { isValid: false, error: "Slug can only contain lowercase letters, numbers, and hyphens" };
+  if (slug.includes('--')) return { isValid: false, error: "Slug cannot contain consecutive hyphens" };
+  if (slug.startsWith('-') || slug.endsWith('-')) return { isValid: false, error: "Slug cannot start or end with a hyphen" };
+  return { isValid: true };
+};
+
+const checkSlugAvailability = async (slug: string, excludeId?: number): Promise<{ available: boolean; message?: string }> => {
+  try {
+    const url = excludeId ? `/api/check-slug/${slug}?exclude=${excludeId}` : `/api/check-slug/${slug}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    return { available: data.available, message: data.available ? "Slug is available" : "Slug is already taken" };
+  } catch (error) {
+    return { available: false, message: "Error checking slug availability" };
+  }
+};
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -46,6 +77,7 @@ const deleteTenant = async (id: number) => {
 };
 
 const defaultTenant: Omit<Tenant, "id"> = {
+  slug: "",
   profile: {
     wineryName: "",
     wineryDescription: "",
@@ -78,6 +110,7 @@ const defaultTenant: Omit<Tenant, "id"> = {
 };
 
 const defaultTenantWithData: Omit<Tenant, "id"> = {
+  slug: "test-winery-vineyards",
   profile: {
     wineryName: "Test Winery & Vineyards",
     wineryDescription: "Family-owned winery producing exceptional wines since 1995",
@@ -224,6 +257,46 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         : prev
     );
   };
+
+  // Slug management
+  const handleSlugChange = async (value: string) => {
+    const normalizedSlug = value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    
+    setTenant((prev) => prev ? { ...prev, slug: normalizedSlug } : prev);
+    
+    // Validate slug format
+    const validation = validateSlug(normalizedSlug);
+    if (!validation.isValid) {
+      setSlugError(validation.error || "Invalid slug");
+      return;
+    }
+    
+    // Check availability if slug is valid
+    if (normalizedSlug.length >= 2) {
+      try {
+        const result = await checkSlugAvailability(normalizedSlug, tenantId || undefined);
+        if (!result.available) {
+          setSlugError("This URL slug is already taken");
+        } else {
+          setSlugError("");
+        }
+      } catch (error) {
+        setSlugError("Error checking slug availability");
+      }
+    } else {
+      setSlugError("");
+    }
+  };
+
+  // Auto-generate slug from winery name
+  useEffect(() => {
+    if (tenant?.profile?.wineryName && (!tenant.slug || tenant.slug === "")) {
+      const generatedSlug = generateSlug(tenant.profile.wineryName);
+      if (generatedSlug) {
+        handleSlugChange(generatedSlug);
+      }
+    }
+  }, [tenant?.profile?.wineryName]);
 
   // Save/Delete
   const handleSave = async () => {
