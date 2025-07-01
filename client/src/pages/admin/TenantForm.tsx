@@ -154,13 +154,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
   // Використовуємо useCallback для стабільних функцій
   const handleCancel = useCallback(() => {
-    setLocation(`/${tenantName}/tenant-admin?tab=cms`)
-  }, [setLocation, tenantName])
+    setLocation(`/admin`)
+  }, [setLocation])
   const handleAddWine = useCallback(() => setLocation('/wine-edit/new'), [setLocation])
   const handleEditWine = useCallback((wineIndex: number) => setLocation(`/wine-edit/${wineIndex}`), [setLocation])
   const handleSaveSuccess = useCallback(() => {
-    setLocation(`/${tenantName}/tenant-admin?tab=cms`)
-  }, [setLocation, tenantName])
+    setLocation(`/admin`)
+  }, [setLocation])
 
   useEffect(() => {
     const loadTenant = async () => {
