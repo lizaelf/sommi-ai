@@ -12,7 +12,7 @@ import HomeGlobal from '@/pages/end-user/HomeGlobal'
 import WineScan from '@/pages/end-user/WineScan'
 import SimpleWineEdit from '@/pages/admin/SimpleWineEdit'
 
-import TenantAdminRefactored from '@/pages/admin/TenantAdminRefactored'
+import TenantAdminRefactored from '@/pages/admin/TenantAdmin'
 import SommTenantAdmin from '@/pages/admin/SommTenantAdmin'
 import TenantCreate from '@/pages/admin/TenantCreate'
 import QRCodes from '@/pages/end-user/QRCodes'
