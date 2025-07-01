@@ -69,12 +69,12 @@ function Router() {
       <Route path='/admin' component={Admin} />
       <Route path='/tenant-create' component={TenantCreate} />
       <Route path='/tenant-edit/:id' component={TenantEdit} />
+      <Route path='/wine-edit/:id' component={SimpleWineEditRoute} />
       ////////////// end-user routes
       <Route path='/:tenantName' component={HomeGlobal} />
       <Route path='/:tenantName/wine-details/:id' component={WineDetails} />
       <Route path='/:tenantName/cellar' component={Cellar} />
       <Route path='/:tenantName/food-pairings-ai' component={FoodPairingSuggestionsPage} />
-      <Route path='/:tenantName/wine-edit/:id' component={SimpleWineEditRoute} />
       {/* <Route path="/tmp" component={WineManagement} /> */}
       <Route path='/scan-wine/:id' component={WineScan} />
       <Route path='/qr-codes' component={QRCodes} />

@@ -1,3 +1,4 @@
+import { Wine } from '@/types/wine'
 export interface Tenant {
   id: number
   profile: {
@@ -14,20 +15,7 @@ export interface Tenant {
     socialMediaLinks: string
   }
   cms: {
-    wineEntries: Array<{
-      wineName: string
-      vintageYear: string
-      sku: string
-      varietal: string
-      tastingNotes: string
-      foodPairings: string
-      productionNotes: string
-      imageUpload: string
-      criticReviews: string
-      releaseDate: string
-      price: string
-      inventoryCount: string
-    }>
+    wineEntries: Array<Wine>
     wineClub: {
       clubName: string
       description: string

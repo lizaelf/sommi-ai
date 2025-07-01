@@ -233,8 +233,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         const newWine = await DataSyncManager.addWine(wineData)
         if (newWine) {
           toastSuccess('Wine added successfully')
-          // Повертаємося назад до сторінки редагування tenant
-          setLocation(`/${tenantName}/tenant-edit/new?tab=cms`)
+          setLocation(`/admin`)
         } else {
           toastError('Failed to add wine')
         }
@@ -243,8 +242,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         const updatedWine = await DataSyncManager.updateWine(wine.id, wine)
         if (updatedWine) {
           toastSuccess('Wine updated successfully')
-          // Повертаємося назад до сторінки редагування tenant
-          setLocation(`/${tenantName}/tenant-edit/new?tab=cms`)
+          setLocation(`/admin`)
         } else {
           toastError('Failed to update wine')
         }
@@ -263,7 +261,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
       const ok = await DataSyncManager.removeWine(wine.id)
       if (ok) {
         toastSuccess('Wine deleted successfully')
-        setLocation(`/${tenantName}/tenant-edit/new?tab=cms`)
+        setLocation(`/admin`)
       } else {
         toastError('Failed to delete wine')
       }
@@ -288,7 +286,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   if (loading) {
     return (
       <div className='min-h-screen bg-black text-white'>
-        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation(`/${tenantName}/tenant-edit/new?tab=cms`)} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation(`/admin`)} />
         <div className='pt-[75px] p-6'>
           <div style={typography.body}>Loading wine data...</div>
         </div>
@@ -299,7 +297,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   if (!wine) {
     return (
       <div className='min-h-screen bg-black text-white'>
-        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation(`/${tenantName}/tenant-edit/new?tab=cms`)} />
+        <AppHeader title={pageTitle} showBackButton onBack={() => setLocation(`/admin`)} />
         <div className='pt-[75px] p-6'>
           <div style={typography.body}>Wine not found</div>
         </div>
@@ -309,7 +307,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
 
   return (
     <div className='min-h-screen bg-black text-gray-600'>
-      {!isModalMode && <AppHeader title={pageTitle} showBackButton onBack={() => setLocation(`/${tenantName}/tenant-edit/new?tab=cms`)} rightContent={!isNewWine && wine?.id ? <ActionDropdown actions={actions} /> : null} />}
+      {!isModalMode && <AppHeader title={pageTitle} showBackButton onBack={() => setLocation(`/admin`)} rightContent={!isNewWine && wine?.id ? <ActionDropdown actions={actions} /> : null} />}
 
       <div className={`${!isModalMode ? 'pt-[75px]' : ''} p-6 pb-32`}>
         <div className='space-y-6'>

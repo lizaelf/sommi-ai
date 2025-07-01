@@ -269,8 +269,8 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const pageTitle = isNewTenant ? 'Add New Tenant' : 'Edit Tenant'
 
   // Filtered wines for CMS tab
-  const filteredWines = tenant?.cms.wineEntries.filter(wine => wine.wineName.toLowerCase().includes(search.toLowerCase())) || []
-
+  const filteredWines = tenant?.cms.wineEntries.filter(wine => wine.name.toLowerCase().includes(search.toLowerCase())) || []
+  console.log('tenant', tenant)
   // Tab change handler that updates the query param
   const handleTabChange = (key: string) => {
     setActiveTab(key)
@@ -371,7 +371,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             <div>
               {filteredWines.map((wine, idx) => (
                 <div key={idx} className='flex items-center p-2 border-b border-white/10 cursor-pointer' onClick={() => handleEditWine(idx)}>
-                  <span className='text-white flex-1'>{wine.wineName}</span>
+                  <span className='text-white flex-1'>{wine.name}</span>
                   <span className='text-xs text-gray-400 ml-2'>ID: {idx + 1}</span>
                 </div>
               ))}
