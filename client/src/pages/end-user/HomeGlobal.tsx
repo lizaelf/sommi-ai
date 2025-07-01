@@ -50,7 +50,7 @@ const HomeGlobal = () => {
 
   return (
     <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
-      <AppHeader />
+      <AppHeader showMyCellarLink={true} />
       <HeaderSpacer />
       <WelcomeSection logoUrl={tenant?.profile?.wineryLogo} wineryName={tenant?.profile?.wineryName} />
       {error && (

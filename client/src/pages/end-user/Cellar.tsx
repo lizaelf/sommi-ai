@@ -415,10 +415,9 @@ const Cellar = () => {
                 style={{ filter: 'invert(1)' }}
               />
             </div>
-
-
           </>
         }
+        showMyCellarLink={true}
       />
 
       {/* Wine Search Interface */}

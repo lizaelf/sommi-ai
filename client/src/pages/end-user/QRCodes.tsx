@@ -53,6 +53,7 @@ const QRCodes: React.FC = () => {
         title="QR Codes for Deployment"
         showBackButton={true}
         onBack={() => window.history.back()}
+        showMyCellarLink={true}
       />
       
       <div className="container mx-auto px-4 py-8 pt-24">

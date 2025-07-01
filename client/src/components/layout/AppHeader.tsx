@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import Logo from "@/components/layout/Logo";
 import { IconButton } from "@/components/ui/buttons/IconButton";
+import { Button } from "@/components/ui/buttons/Button";
 
 interface AppHeaderProps {
   title?: string;
@@ -10,6 +11,7 @@ interface AppHeaderProps {
   rightContent?: React.ReactNode;
   className?: string;
   showBackButton?: boolean;
+  showMyCellarLink?: boolean;
 }
 
 export function AppHeader({
@@ -18,6 +20,7 @@ export function AppHeader({
   rightContent,
   className = "",
   showBackButton = false,
+  showMyCellarLink = false,
 }: AppHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -106,6 +109,13 @@ export function AppHeader({
           {/* Right side - Custom content */}
           <div className="flex items-center gap-3">
             {rightContent}
+            {showMyCellarLink && (
+              <Link href="/cellar">
+                <Button variant="secondary" size="md" hug>
+                  My Cellar
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -141,7 +141,7 @@ For each category, explain why these pairings work with this specific wine's cha
   if (isLoading) {
     return (
       <div className="bg-black text-white min-h-screen">
-        <AppHeader />
+        <AppHeader showMyCellarLink={true} />
         <HeaderSpacer />
         <div className="flex items-center justify-center h-[calc(100vh-200px)]">
           <div className="text-center">
@@ -166,7 +166,7 @@ For each category, explain why these pairings work with this specific wine's cha
   if (error || !wine) {
     return (
       <div className="bg-black text-white min-h-screen">
-        <AppHeader />
+        <AppHeader showMyCellarLink={true} />
         <HeaderSpacer />
         <div className="flex items-center justify-center h-[calc(100vh-200px)]">
           <div className="text-center">
@@ -186,7 +186,7 @@ For each category, explain why these pairings work with this specific wine's cha
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <AppHeader />
+      <AppHeader showMyCellarLink={true} />
       <HeaderSpacer />
       
       {/* Header with back button */}
