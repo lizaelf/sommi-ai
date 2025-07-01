@@ -27,9 +27,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   const fileInputRef = useRef<HTMLInputElement>(null)
   console.log('SimpleWineEdit', wine)
   useEffect(() => {
+    console.log('SimpleWineEdit useEffect:', { propWine: !!propWine, propWineId: propWine?.id })
     if (propWine) {
       setWine(propWine)
       setIsNewWine(false)
+      console.log('Setting isNewWine to false (editing existing wine)')
     } else {
       setWine({
         id: 0,
@@ -50,6 +52,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         },
       })
       setIsNewWine(true)
+      console.log('Setting isNewWine to true (creating new wine)')
     }
     setLoading(false)
   }, [propWine])
@@ -176,6 +179,8 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
 
   const pageTitle = isNewWine ? 'Add New Wine' : 'Edit Wine'
 
+  console.log('SimpleWineEdit render:', { isNewWine, propWine: !!propWine, wineId: wine?.id })
+
   if (loading) {
     return <div>Loading wine data...</div>
   }
@@ -186,6 +191,9 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   return (
     <div className='min-h-screen bg-black text-gray-600'>
       <div className={`p-6 pb-32`}>
+        <div className='mb-4'>
+          <h2 className='text-lg font-semibold text-white'>{isNewWine ? 'Add New Wine' : 'Edit Wine'}</h2>
+        </div>
         <div className='space-y-6'>
           {/* Wine Image and QR Code Section */}
           <div className='grid grid-cols-2 gap-6 items-start'>

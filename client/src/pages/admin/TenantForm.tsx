@@ -157,6 +157,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     setLocation(`/admin`)
   }, [setLocation])
   const handleAddWine = useCallback(() => {
+    console.log('handleAddWine - creating new wine')
     setEditingWineIndex(null)
     setShowWineEditor(true)
   }, [])
@@ -424,6 +425,9 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             {showWineEditor && (
               <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70'>
                 <div className='bg-white rounded-lg p-6 w-full max-w-lg'>
+                  <div className='mb-4'>
+                    <h2 className='text-lg font-semibold text-gray-800'>{editingWineIndex !== null ? 'Edit Wine' : 'Add New Wine'}</h2>
+                  </div>
                   <SimpleWineEdit
                     wine={editingWineIndex !== null ? filteredWines[editingWineIndex] : null}
                     onSave={handleSaveWine}
@@ -541,11 +545,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         )}
 
         {/* Save Button */}
-        <div className='fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50'>
-          <Button variant='primary' onClick={handleSave} className='w-full text-lg font-medium py-4'>
-            {isCreateMode ? 'Create' : isNewTenant ? 'Add Tenant' : 'Save'}
-          </Button>
-        </div>
+        {!showWineEditor && (
+          <div className='fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50'>
+            <Button variant='primary' onClick={handleSave} className='w-full text-lg font-medium py-4'>
+              {isCreateMode ? 'Create' : isNewTenant ? 'Add Tenant' : 'Save'}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
