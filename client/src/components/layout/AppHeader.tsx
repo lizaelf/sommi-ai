@@ -88,7 +88,7 @@ export function AppHeader({ title, onBack, rightContent, className = '', showBac
             {rightContent}
             {showMyCellarLink && (
               <Link href='/cellar'>
-                <Button variant='secondary' size='md' hug>
+                <Button variant='secondary' size='md'>
                   My Cellar
                 </Button>
               </Link>
