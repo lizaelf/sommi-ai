@@ -1,0 +1,54 @@
+{
+  "suggestions": [
+    {
+      "id": "taste_profile",
+      "text": "What does this taste like?",
+      "prompt": "Describe the taste profile of this wine in detail, including primary flavors, tannins, acidity, and finish."
+    },
+    {
+      "id": "food_pairing",
+      "text": "What food pairs well?",
+      "prompt": "What specific foods and dishes pair perfectly with this wine? Please provide detailed pairing suggestions."
+    },
+    {
+      "id": "serving_temp",
+      "text": "Serving temperature?",
+      "prompt": "What is the ideal serving temperature for this wine and why?"
+    },
+    {
+      "id": "vintage_notes",
+      "text": "Tell me about this vintage",
+      "prompt": "What makes this particular vintage special? Discuss the growing conditions and characteristics of this year."
+    },
+    {
+      "id": "price_value",
+      "text": "Is this good value?",
+      "prompt": "Analyze the price point and value proposition of this wine compared to similar wines in its category."
+    },
+    {
+      "id": "aging_potential",
+      "text": "How long will this age?",
+      "prompt": "What is the aging potential of this wine? When will it be at its peak drinking window?"
+    },
+    {
+      "id": "winemaker_story",
+      "text": "Tell me about the winemaker",
+      "prompt": "Share the story behind this winemaker and what makes their approach unique."
+    },
+    {
+      "id": "terroir_influence",
+      "text": "How does terroir affect this?",
+      "prompt": "Explain how the terroir and vineyard location specifically influences this wine's character."
+    },
+    {
+      "id": "similar_wines",
+      "text": "What's similar to this?",
+      "prompt": "Recommend similar wines that have comparable characteristics and quality."
+    },
+    {
+      "id": "decanting_tips",
+      "text": "Should I decant this?",
+      "prompt": "Does this wine benefit from decanting? If so, provide specific decanting recommendations."
+    }
+  ]
+}

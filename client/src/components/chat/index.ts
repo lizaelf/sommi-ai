@@ -1,0 +1,11 @@
+export { default as ChatInterface } from './ChatInterface';
+export { default as ChatMessage } from './ChatMessage';
+export { default as ChatMessageList } from './ChatMessageList';
+export { default as ChatSection } from './ChatSection';
+export { default as ChatInput } from './ChatInput';
+export { default as ChatInputArea } from './ChatInputArea';
+export { default as EnhancedChatInterface } from './EnhancedChatInterface';
+export { default as WineChatSection } from './WineChatSection';
+export { default as WineDetailsChatInterface } from './WineDetailsChatInterface';
+export { default as ChatQuestion } from './ChatQuestion';
+export { default as ChatAnswer } from './ChatAnswer';
