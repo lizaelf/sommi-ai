@@ -1,54 +1,48 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
-import { WelcomeSection } from "@/components/home-global/WelcomeSection";
-import { WineCollection } from "@/components/home-global/WineCollection";
-import { Wine } from "@/types/wine";
+import { useState, useEffect } from 'react'
+import { useLocation, useParams } from 'wouter'
+import AppHeader, { HeaderSpacer } from '@/components/layout/AppHeader'
+import { WelcomeSection } from '@/components/home-global/WelcomeSection'
+import { WineCollection } from '@/components/home-global/WineCollection'
+import { Wine } from '@/types/wine'
 
 const HomeGlobal = () => {
-  const [location, setLocation] = useLocation();
-  const [wines, setWines] = useState<Wine[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [location, setLocation] = useLocation()
+  const { tenantName } = useParams()
+  const [wines, setWines] = useState<Wine[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleWineClick = (wineId: number) => {
-    // Navigate to wine details page for any wine
-    setLocation(`/wine-details/${wineId}`);
-  };
+    setLocation(`/${tenantName}/wine-details/${wineId}`)
+  }
 
   useEffect(() => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
     fetch('/api/wines')
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch wines');
-        return res.json();
+        if (!res.ok) throw new Error('Failed to fetch wines')
+        return res.json()
       })
       .then((data: Wine[]) => {
-        setWines(data);
-        setIsLoading(false);
+        setWines(data)
+        setIsLoading(false)
       })
-      .catch((err) => {
-        setError('Wines could not be loaded. Try again later.');
-        setIsLoading(false);
-      });
-  }, []);
+      .catch(err => {
+        setError('Wines could not be loaded. Try again later.')
+        setIsLoading(false)
+      })
+  }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white mx-auto" style={{ maxWidth: "1200px" }}>
+    <div className='min-h-screen bg-black text-white mx-auto' style={{ maxWidth: '1200px' }}>
       <AppHeader showMyCellarLink={true} />
       <HeaderSpacer />
       <WelcomeSection />
-      {error && (
-        <div style={{ color: '#FF6B6B', textAlign: 'center', margin: '24px 0' }}>{error}</div>
-      )}
-      <WineCollection 
-        wines={wines}
-        onWineClick={handleWineClick}
-        isLoading={isLoading}
-      />
+      {error && <div style={{ color: '#FF6B6B', textAlign: 'center', margin: '24px 0' }}>{error}</div>}
+      <WineCollection wines={wines} onWineClick={handleWineClick} isLoading={isLoading} />
     </div>
-  );
-};
+  )
+}
 
-export default HomeGlobal;
+export default HomeGlobal

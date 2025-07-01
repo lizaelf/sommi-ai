@@ -131,7 +131,7 @@ function getQueryParam(search: string, key: string): string | null {
 const validateTenantName = (name: string) => /^[a-zA-Z0-9_-]+$/.test(name)
 
 const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
-  const { id } = useParams()
+  const { id, tenantName } = useParams()
   const [{}, setLocation] = useLocation()
   const { toastSuccess, toastError } = useStandardToast()
   const [tenant, setTenant] = useState<Omit<Tenant, 'id'> | null>(null)
@@ -154,13 +154,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
   // Використовуємо useCallback для стабільних функцій
   const handleCancel = useCallback(() => {
-    setLocation('/tenant-admin?tab=cms')
-  }, [setLocation])
+    setLocation(`/${tenantName}/tenant-admin?tab=cms`)
+  }, [setLocation, tenantName])
   const handleAddWine = useCallback(() => setLocation('/wine-edit/new'), [setLocation])
   const handleEditWine = useCallback((wineIndex: number) => setLocation(`/wine-edit/${wineIndex}`), [setLocation])
   const handleSaveSuccess = useCallback(() => {
-    setLocation('/tenant-admin?tab=cms')
-  }, [setLocation])
+    setLocation(`/${tenantName}/tenant-admin?tab=cms`)
+  }, [setLocation, tenantName])
 
   useEffect(() => {
     const loadTenant = async () => {

@@ -65,17 +65,17 @@ const SimpleWineEditRoute = () => <SimpleWineEdit />
 function Router() {
   return (
     <Switch>
-      ////////////// end-user routes
-      <Route path='/' component={HomeGlobal} />
-      <Route path='/wine-details/:id' component={WineDetails} />
-      <Route path='/cellar' component={Cellar} />
-      <Route path='/food-pairings-ai' component={FoodPairingSuggestionsPage} />
       ////////////// admin routes
       <Route path='/tenant-admin' component={TenantAdmin} />
       <Route path='/tenants-admin' component={TenantsAdmin} />
       <Route path='/tenant-create' component={TenantCreate} />
-      <Route path='/tenant-edit/:id' component={TenantEdit} />
-      <Route path='/wine-edit/:id' component={SimpleWineEditRoute} />
+      <Route path='/tenant-edit/:tenantName' component={TenantEdit} />
+      ////////////// end-user routes
+      <Route path='/:tenantName' component={HomeGlobal} />
+      <Route path='/:tenantName/wine-details/:id' component={WineDetails} />
+      <Route path='/:tenantName/cellar' component={Cellar} />
+      <Route path='/:tenantName/food-pairings-ai' component={FoodPairingSuggestionsPage} />
+      <Route path='/:tenantName/wine-edit/:id' component={SimpleWineEditRoute} />
       {/* <Route path="/tmp" component={WineManagement} /> */}
       <Route path='/scan-wine/:id' component={WineScan} />
       <Route path='/qr-codes' component={QRCodes} />

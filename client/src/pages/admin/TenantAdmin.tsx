@@ -25,6 +25,7 @@ const TenantAdmin: React.FC = () => {
   })
   const { toastSuccess, toastError, toastInfo } = useStandardToast()
   const params = useParams()
+  const { tenantName } = useParams()
 
   // Get tenant information
   const [currentTenant, setCurrentTenant] = useState<{ name: string; tenantName: string } | null>(null)
