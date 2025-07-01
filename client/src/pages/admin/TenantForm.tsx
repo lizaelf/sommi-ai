@@ -10,6 +10,8 @@ import typography from '@/styles/typography'
 import ActionDropdown, { ActionDropdownItem } from '@/components/admin/ActionDropdown'
 import TenantTabs from '../../components/ui/TenantTabs'
 import DropdownInput from '@/components/ui/forms/DropdownInput'
+import SimpleWineEdit from './SimpleWineEdit'
+import { Wine } from '@/types/wine'
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -58,15 +60,13 @@ const defaultTenant: Omit<Tenant, 'id'> = {
     hoursOfOperation: '',
     socialMediaLinks: '',
   },
-  cms: {
-    wineEntries: [],
-    wineClub: {
-      clubName: '',
-      description: '',
-      membershipTiers: '',
-      pricing: '',
-      clubBenefits: '',
-    },
+  wineEntries: [],
+  wineClub: {
+    clubName: '',
+    description: '',
+    membershipTiers: '',
+    pricing: '',
+    clubBenefits: '',
   },
   aiModel: {
     knowledgeScope: 'winery-only',
@@ -91,15 +91,13 @@ const defaultTenantWithData: Omit<Tenant, 'id'> = {
     hoursOfOperation: 'Mon-Fri: 10AM-6PM, Sat-Sun: 11AM-7PM',
     socialMediaLinks: 'Instagram: @testwinery, Facebook: /testwinery',
   },
-  cms: {
-    wineEntries: [],
-    wineClub: {
-      clubName: 'Test Winery Club',
-      description: 'Exclusive wine club for connoisseurs',
-      membershipTiers: 'Bronze, Silver, Gold, Platinum',
-      pricing: 'Bronze: $99/year, Silver: $199/year, Gold: $299/year, Platinum: $499/year',
-      clubBenefits: 'Monthly wine shipments, exclusive tastings, member discounts',
-    },
+  wineEntries: [],
+  wineClub: {
+    clubName: 'Test Winery Club',
+    description: 'Exclusive wine club for connoisseurs',
+    membershipTiers: 'Bronze, Silver, Gold, Platinum',
+    pricing: 'Bronze: $99/year, Silver: $199/year, Gold: $299/year, Platinum: $499/year',
+    clubBenefits: 'Monthly wine shipments, exclusive tastings, member discounts',
   },
   aiModel: {
     knowledgeScope: 'winery-only',
@@ -134,7 +132,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const { id, tenantName } = useParams()
   const [{}, setLocation] = useLocation()
   const { toastSuccess, toastError } = useStandardToast()
-  const [tenant, setTenant] = useState<Omit<Tenant, 'id'> | null>(null)
+  const [tenant, setTenant] = useState<(Omit<Tenant, 'id'> & { wineEntries: Wine[]; wineClub: any }) | null>(null)
   const [loading, setLoading] = useState(true)
   const [isNewTenant, setIsNewTenant] = useState(false)
   const searchParams = typeof window !== 'undefined' ? window.location.search : ''
@@ -142,6 +140,8 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const [activeTab, setActiveTab] = useState(initialTab)
   const [search, setSearch] = useState('')
   const [scrolled, setScrolled] = useState(false)
+  const [editingWineIndex, setEditingWineIndex] = useState<number | null>(null)
+  const [showWineEditor, setShowWineEditor] = useState(false)
 
   const isCreateMode = mode === 'create'
 
@@ -156,8 +156,14 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const handleCancel = useCallback(() => {
     setLocation(`/admin`)
   }, [setLocation])
-  const handleAddWine = useCallback(() => setLocation('/wine-edit/new'), [setLocation])
-  const handleEditWine = useCallback((wineIndex: number) => setLocation(`/wine-edit/${wineIndex}`), [setLocation])
+  const handleAddWine = useCallback(() => {
+    setEditingWineIndex(null)
+    setShowWineEditor(true)
+  }, [])
+  const handleEditWine = useCallback((wineIndex: number) => {
+    setEditingWineIndex(wineIndex)
+    setShowWineEditor(true)
+  }, [])
   const handleSaveSuccess = useCallback(() => {
     setLocation(`/admin`)
   }, [setLocation])
@@ -206,7 +212,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   }
 
   const handleWineClubChange = (field: string, value: string) => {
-    setTenant(prev => (prev ? { ...prev, cms: { ...prev.cms, wineClub: { ...prev.cms.wineClub, [field]: value } } } : prev))
+    setTenant(prev => (prev ? { ...prev, wineClub: { ...prev.wineClub, [field]: value } } : prev))
   }
 
   const handleAiModelChange = (field: string, value: string) => {
@@ -269,13 +275,40 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const pageTitle = isNewTenant ? 'Add New Tenant' : 'Edit Tenant'
 
   // Filtered wines for CMS tab
-  const filteredWines = tenant?.cms.wineEntries.filter(wine => wine.name.toLowerCase().includes(search.toLowerCase())) || []
+  const filteredWines = tenant?.wineEntries || [] //.filter(wine => wine.name.toLowerCase().includes(search.toLowerCase())) || []
   console.log('tenant', tenant)
   // Tab change handler that updates the query param
   const handleTabChange = (key: string) => {
     setActiveTab(key)
     const base = window.location.pathname
     setLocation(`${base}?tab=${key}`)
+  }
+
+  // --- Додаю функції для роботи з масивом вин ---
+  const handleSaveWine = (wine: Wine) => {
+    console.log('handleSaveWine', wine)
+    setTenant(prev => {
+      if (!prev) return prev
+      const wines = prev.wineEntries ? [...prev.wineEntries] : []
+      if (editingWineIndex === null) {
+        wines.push(wine)
+      } else {
+        // Оновлюємо існуюче
+        wines[editingWineIndex] = wine
+      }
+      return { ...prev, wineEntries: wines }
+    })
+    setShowWineEditor(false)
+    setEditingWineIndex(null)
+  }
+
+  const handleDeleteWine = (wineIndex: number) => {
+    setTenant(prev => {
+      if (!prev) return prev
+      const wines = prev.wineEntries ? [...prev.wineEntries] : []
+      wines.splice(wineIndex, 1)
+      return { ...prev, wineEntries: wines }
+    })
   }
 
   if (loading) {
@@ -351,7 +384,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                     <label style={typography.body1R} className='block mb-1'>
                       {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     </label>
-                    <input type='text' value={value} onChange={e => handleProfileChange(key, e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={key} />
+                    <input type='text' value={value !== undefined && value !== null ? String(value) : ''} onChange={e => handleProfileChange(key, e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={key} />
                   </div>
                 ))}
               </>
@@ -370,8 +403,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             {/* Wine list */}
             <div>
               {filteredWines.map((wine, idx) => (
-                <div key={idx} className='flex items-center p-2 border-b border-white/10 cursor-pointer' onClick={() => handleEditWine(idx)}>
-                  <span className='text-white flex-1'>{wine.name}</span>
+                <div key={idx} className='flex items-center p-2 border-b border-white/10'>
+                  <span className='text-white flex-1 cursor-pointer' onClick={() => handleEditWine(idx)}>
+                    {wine.name}
+                  </span>
+                  <button className='ml-2 text-red-400' onClick={() => handleDeleteWine(idx)}>
+                    Видалити
+                  </button>
                   <span className='text-xs text-gray-400 ml-2'>ID: {idx + 1}</span>
                 </div>
               ))}
@@ -382,6 +420,21 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                 </div>
               )}
             </div>
+            {/* SimpleWineEdit modal */}
+            {showWineEditor && (
+              <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70'>
+                <div className='bg-white rounded-lg p-6 w-full max-w-lg'>
+                  <SimpleWineEdit
+                    wine={editingWineIndex !== null ? filteredWines[editingWineIndex] : null}
+                    onSave={handleSaveWine}
+                    onCancel={() => {
+                      setShowWineEditor(false)
+                      setEditingWineIndex(null)
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -390,21 +443,21 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             {isCreateMode ? (
               // FormInput components for create mode
               <>
-                <FormInput label='Club Name' type='text' value={tenant.cms?.wineClub?.clubName || ''} onChange={(value: string) => handleWineClubChange('clubName', value)} placeholder='Club name' />
-                <FormInput label='Club Description' type='text' value={tenant.cms?.wineClub?.description || ''} onChange={(value: string) => handleWineClubChange('description', value)} placeholder='Club description' />
-                <FormInput label='Membership Tiers' type='text' value={tenant.cms?.wineClub?.membershipTiers || ''} onChange={(value: string) => handleWineClubChange('membershipTiers', value)} placeholder='Membership tiers' />
-                <FormInput label='Pricing' type='text' value={tenant.cms?.wineClub?.pricing || ''} onChange={(value: string) => handleWineClubChange('pricing', value)} placeholder='Pricing' />
-                <FormInput label='Club Benefits' type='text' value={tenant.cms?.wineClub?.clubBenefits || ''} onChange={(value: string) => handleWineClubChange('clubBenefits', value)} placeholder='Club benefits' />
+                <FormInput label='Club Name' type='text' value={tenant.wineClub?.clubName || ''} onChange={(value: string) => handleWineClubChange('clubName', value)} placeholder='Club name' />
+                <FormInput label='Club Description' type='text' value={tenant.wineClub?.description || ''} onChange={(value: string) => handleWineClubChange('description', value)} placeholder='Club description' />
+                <FormInput label='Membership Tiers' type='text' value={tenant.wineClub?.membershipTiers || ''} onChange={(value: string) => handleWineClubChange('membershipTiers', value)} placeholder='Membership tiers' />
+                <FormInput label='Pricing' type='text' value={tenant.wineClub?.pricing || ''} onChange={(value: string) => handleWineClubChange('pricing', value)} placeholder='Pricing' />
+                <FormInput label='Club Benefits' type='text' value={tenant.wineClub?.clubBenefits || ''} onChange={(value: string) => handleWineClubChange('clubBenefits', value)} placeholder='Club benefits' />
               </>
             ) : (
               // Regular inputs for edit mode
               <>
-                {Object.entries(tenant.cms.wineClub).map(([key, value]) => (
+                {Object.entries(tenant.wineClub).map(([key, value]) => (
                   <div key={key} className='mb-2'>
                     <label style={typography.body1R} className='block mb-1'>
                       {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     </label>
-                    <input type='text' value={value} onChange={e => handleWineClubChange(key, e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={key} />
+                    <input type='text' value={value !== undefined && value !== null ? String(value) : ''} onChange={e => handleWineClubChange(key, e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={key} />
                   </div>
                 ))}
               </>

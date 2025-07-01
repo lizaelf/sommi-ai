@@ -2,7 +2,7 @@ import type { Express } from 'express'
 import { createServer, type Server } from 'http'
 import { storage } from './storage'
 import { chatCompletion, chatCompletionStream, checkApiStatus, textToSpeech, generateConversationSummary, ParallelTTSProcessor } from './openai'
-import { chatCompletionRequestSchema, type ChatCompletionRequest, insertUsedSuggestionPillSchema } from '@shared/schema'
+import { chatCompletionRequestSchema, type ChatCompletionRequest, insertUsedSuggestionPillSchema, type Wine } from '@shared/schema'
 import suggestionPillsData from '@shared/suggestionPills.json'
 import { z } from 'zod'
 import { google } from 'googleapis'
@@ -1420,182 +1420,6 @@ Format: Return only the description text, no quotes or additional formatting.`
     }
   })
 
-  // Wine data synchronization endpoints
-  // app.get("/api/wines", async (_req, res) => {
-  //   try {
-  //     const { getDevelopmentWineData } = await import('./wineDataSync.js');
-  //     const wineData = getDevelopmentWineData();
-  //     res.json(wineData);
-  //   } catch (error) {
-  //     console.error("Error fetching deployed wines:", error);
-  //     res.status(500).json({ error: "Failed to fetch deployed wine data" });
-  //   }
-  // });
-
-  // Additional sync endpoints
-
-  // app.get("/api/wines/sync-status", async (_req, res) => {
-  //   try {
-  //     const { compareWineData } = await import('./wineDataSync.js');
-  //     const syncStatus = compareWineData();
-  //     res.json(syncStatus);
-  //   } catch (error) {
-  //     console.error("Error checking sync status:", error);
-  //     res.status(500).json({ error: "Failed to check sync status" });
-  //   }
-  // });
-
-  // app.post("/api/wines/sync", async (req, res) => {
-  //   try {
-  //     const { wines } = req.body;
-
-  //     if (!wines || !Array.isArray(wines)) {
-  //       return res.status(400).json({ error: "Invalid wine data format" });
-  //     }
-
-  //     const { syncToDeployed } = await import('./wineDataSync.js');
-  //     const result = syncToDeployed(wines);
-
-  //     if (result.success) {
-  //       res.json(result);
-  //     } else {
-  //       res.status(500).json(result);
-  //     }
-  //   } catch (error) {
-  //     console.error("Wine sync error:", error);
-  //     res.status(500).json({ error: "Failed to sync wine data" });
-  //   }
-  // });
-
-  // Wine data migration endpoint
-  app.post('/api/migrate-wines', async (req, res) => {
-    try {
-      const wineData = req.body.wines || []
-      console.log(`Migrating ${wineData.length} wines from localStorage to database`)
-
-      const migratedWines = []
-      for (const wine of wineData) {
-        try {
-          // Check if wine already exists
-          const existing = await storage.getWine(wine.id)
-          if (!existing) {
-            const migratedWine = await storage.createWine(wine)
-            migratedWines.push(migratedWine)
-            console.log(`Migrated wine: ${wine.name}`)
-          } else {
-            console.log(`Wine ${wine.id} already exists in database`)
-          }
-        } catch (wineError) {
-          console.error(`Error migrating wine ${wine.id}:`, wineError)
-        }
-      }
-
-      res.json({
-        success: true,
-        migrated: migratedWines.length,
-        message: `Successfully migrated ${migratedWines.length} wines to database`,
-      })
-    } catch (error) {
-      console.error('Wine migration error:', error)
-      res.status(500).json({ success: false, message: 'Failed to migrate wine data' })
-    }
-  })
-
-  // Wine management endpoints
-  app.get('/api/wines', async (_req, res) => {
-    try {
-      const wines = await storage.getAllWines()
-      res.json(wines)
-    } catch (error) {
-      console.error('Error fetching wines:', error)
-      res.status(500).json({ message: 'Failed to fetch wines' })
-    }
-  })
-
-  app.get('/api/wines/:id', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id)
-      if (isNaN(id)) {
-        return res.status(400).json({ message: 'Invalid wine ID' })
-      }
-
-      const wine = await storage.getWine(id)
-      if (!wine) {
-        return res.status(404).json({ message: 'Wine not found' })
-      }
-
-      res.json(wine)
-    } catch (error) {
-      console.error('Error fetching wine:', error)
-      res.status(500).json({ message: 'Failed to fetch wine' })
-    }
-  })
-
-  app.post('/api/wines', async (req, res) => {
-    try {
-      const wine = await storage.createWine(req.body)
-      console.log('Created wine:', wine)
-      res.status(201).json(wine)
-    } catch (error) {
-      console.error('Error creating wine:', error)
-      res.status(500).json({ message: 'Failed to create wine' })
-    }
-  })
-
-  app.patch('/api/wines/:id', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id)
-      if (isNaN(id)) {
-        return res.status(400).json({ message: 'Invalid wine ID' })
-      }
-
-      const wine = await storage.updateWine(id, req.body)
-      console.log('Updated wine:', wine)
-      if (!wine) {
-        return res.status(404).json({ message: 'Wine not found' })
-      }
-
-      res.json(wine)
-    } catch (error) {
-      console.error('Error updating wine:', error)
-      res.status(500).json({ message: 'Failed to update wine' })
-    }
-  })
-
-  app.put('/api/wines/:id', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id)
-      if (isNaN(id)) {
-        return res.status(400).json({ message: 'Invalid wine ID' })
-      }
-
-      const wine = await storage.updateWine(id, req.body)
-      if (!wine) {
-        return res.status(404).json({ message: 'Wine not found' })
-      }
-
-      res.json(wine)
-    } catch (error) {
-      console.error('Error updating wine:', error)
-      res.status(500).json({ message: 'Failed to update wine' })
-    }
-  })
-
-  app.delete('/api/wines/:id', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id)
-      if (isNaN(id)) {
-        return res.status(400).json({ message: 'Invalid wine ID' })
-      }
-
-      await storage.deleteWine(id)
-      res.status(204).send()
-    } catch (error) {
-      console.error('Error deleting wine:', error)
-      res.status(500).json({ message: 'Failed to delete wine' })
-    }
-  })
-
   // Tenant management endpoints
   app.get('/api/tenants', async (_req, res) => {
     try {
@@ -1644,11 +1468,11 @@ Format: Return only the description text, no quotes or additional formatting.`
 
   app.post('/api/tenants', async (req, res) => {
     try {
-      const { tenantName } = req.body
-      if (!tenantName || !/^[a-zA-Z0-9_-]+$/.test(tenantName)) {
+      const { profile, wineEntries, wineClub, aiModel } = req.body
+      if (!profile?.tenantName || !/^[a-zA-Z0-9_-]+$/.test(profile.tenantName)) {
         return res.status(400).json({ message: 'Invalid or missing tenantName. Use only a-z, A-Z, 0-9, -, _' })
       }
-      const tenant = await storage.createTenant(req.body)
+      const tenant = await storage.createTenant({ profile, wineEntries, wineClub, aiModel })
       res.status(201).json(tenant)
     } catch (error) {
       console.error('Error creating tenant:', error)
@@ -1661,15 +1485,15 @@ Format: Return only the description text, no quotes or additional formatting.`
 
   app.put('/api/tenants/:id', async (req, res) => {
     try {
-      const { tenantName } = req.body
-      if (!tenantName || !/^[a-zA-Z0-9_-]+$/.test(tenantName)) {
+      const { profile, wineEntries, wineClub, aiModel } = req.body
+      if (!profile?.tenantName || !/^[a-zA-Z0-9_-]+$/.test(profile.tenantName)) {
         return res.status(400).json({ message: 'Invalid or missing tenantName. Use only a-z, A-Z, 0-9, -, _' })
       }
       const id = parseInt(req.params.id)
       if (isNaN(id)) {
         return res.status(400).json({ message: 'Invalid winary ID' })
       }
-      const tenant = await storage.updateTenant(id, req.body)
+      const tenant = await storage.updateTenant(id, { profile, wineEntries, wineClub, aiModel })
       if (!tenant) {
         return res.status(404).json({ message: 'Winary not found' })
       }
@@ -2024,6 +1848,15 @@ Provide 8-10 detailed food pairings across different categories (appetizers, mai
     } catch (error) {
       console.error('Error fetching tenant by tenantName:', error)
       res.status(500).json({ message: 'Failed to fetch tenant by tenantName' })
+    }
+  })
+
+  app.delete('/api/wines/clear-all', async (_req, res) => {
+    try {
+      await storage.clearAllWines()
+      res.json({ success: true, message: 'All wines deleted from DB' })
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Failed to clear wines' })
     }
   })
 

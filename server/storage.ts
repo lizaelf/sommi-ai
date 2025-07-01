@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, messages, type Message, type InsertMessage, conversations, type Conversation, type InsertConversation, tenants, type Tenant, type InsertTenant, usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill, foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory, wineTypes, type WineType, type InsertWineType, wines, type Wine, type InsertWine } from '@shared/schema'
+import { users, type User, type InsertUser, messages, type Message, type InsertMessage, conversations, type Conversation, type InsertConversation, tenants, type Tenant, type InsertTenant, usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill, foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory, wineTypes, type WineType, type InsertWineType, wines, type Wine as SharedWine, type InsertWine } from '@shared/schema'
 import { db } from './db'
 import { eq, desc, sql } from 'drizzle-orm'
 
@@ -52,11 +52,12 @@ export interface IStorage {
   deleteWineType(id: number): Promise<void>
 
   // Wine operations
-  getAllWines(): Promise<Wine[]>
-  getWine(id: number): Promise<Wine | undefined>
-  createWine(wine: InsertWine): Promise<Wine>
-  updateWine(id: number, wine: Partial<InsertWine>): Promise<Wine | undefined>
+  getAllWines(): Promise<SharedWine[]>
+  getWine(id: number): Promise<SharedWine | undefined>
+  createWine(wine: InsertWine): Promise<SharedWine>
+  updateWine(id: number, wine: Partial<InsertWine>): Promise<SharedWine | undefined>
   deleteWine(id: number): Promise<void>
+  clearAllWines(): Promise<void>
 }
 
 // Database storage implementation
@@ -166,19 +167,32 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(tenants).orderBy(desc(tenants.createdAt))
   }
 
-  async createTenant(insertTenant: Tenant): Promise<Tenant> {
+  async createTenant(insertTenant: InsertTenant): Promise<Tenant> {
     const result = await db
       .insert(tenants)
       .values({
         ...insertTenant,
-        createdAt: new Date(),
+        profile: insertTenant.profile as Tenant['profile'],
+        wineEntries: (insertTenant.wineEntries ?? []) as SharedWine[],
+        wineClub: insertTenant.wineClub as Tenant['wineClub'],
+        aiModel: insertTenant.aiModel as Tenant['aiModel'],
       })
       .returning()
     return result[0]
   }
 
-  async updateTenant(id: number, data: Partial<Tenant>): Promise<Tenant | undefined> {
-    const result = await db.update(tenants).set(data).where(eq(tenants.id, id)).returning()
+  async updateTenant(id: number, data: Partial<InsertTenant>): Promise<Tenant | undefined> {
+    const result = await db
+      .update(tenants)
+      .set({
+        ...data,
+        profile: data.profile as Tenant['profile'],
+        wineEntries: (data.wineEntries ?? []) as SharedWine[],
+        wineClub: data.wineClub as Tenant['wineClub'],
+        aiModel: data.aiModel as Tenant['aiModel'],
+      })
+      .where(eq(tenants.id, id))
+      .returning()
     return result.length > 0 ? result[0] : undefined
   }
 
@@ -248,16 +262,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Wine operations
-  async getAllWines(): Promise<Wine[]> {
+  async getAllWines(): Promise<SharedWine[]> {
     return await db.select().from(wines)
   }
 
-  async getWine(id: number): Promise<Wine | undefined> {
+  async getWine(id: number): Promise<SharedWine | undefined> {
     const [wine] = await db.select().from(wines).where(eq(wines.id, id))
     return wine || undefined
   }
 
-  async createWine(insertWine: InsertWine): Promise<Wine> {
+  async createWine(insertWine: InsertWine): Promise<SharedWine> {
     const [created] = await db
       .insert(wines)
       .values(insertWine as any)
@@ -267,7 +281,7 @@ export class DatabaseStorage implements IStorage {
     return wine
   }
 
-  async updateWine(id: number, data: Partial<InsertWine>): Promise<Wine | undefined> {
+  async updateWine(id: number, data: Partial<InsertWine>): Promise<SharedWine | undefined> {
     if (Object.keys(data).length === 0) {
       return this.getWine(id)
     }
@@ -284,6 +298,10 @@ export class DatabaseStorage implements IStorage {
 
   async deleteWine(id: number): Promise<void> {
     await db.delete(wines).where(eq(wines.id, id))
+  }
+
+  async clearAllWines(): Promise<void> {
+    await db.delete(wines)
   }
 }
 

@@ -14,15 +14,13 @@ export interface Tenant {
     hoursOfOperation: string
     socialMediaLinks: string
   }
-  cms: {
-    wineEntries: Array<Wine>
-    wineClub: {
-      clubName: string
-      description: string
-      membershipTiers: string
-      pricing: string
-      clubBenefits: string
-    }
+  wineEntries: Wine[]
+  wineClub: {
+    clubName: string
+    description: string
+    membershipTiers: string
+    pricing: string
+    clubBenefits: string
   }
   aiModel: {
     knowledgeScope: 'winery-only' | 'winery-plus-global'

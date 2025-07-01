@@ -5,10 +5,12 @@ import AppHeader, { HeaderSpacer } from '@/components/layout/AppHeader'
 import { IconButton } from '@/components/ui/buttons/IconButton'
 import { Tenant } from '@/types/tenant'
 import ActionDropdown from '@/components/admin/ActionDropdown'
+import { Wine } from '@/types/wine'
 
 const Admin: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
+  const [wineCards, setWineCards] = useState<Wine[]>([])
 
   const menuDropdownRef = useRef<HTMLDivElement>(null)
 

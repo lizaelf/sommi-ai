@@ -14,9 +14,6 @@ import { TabNavigation } from '@/components/nav/TabNavigation'
 import ActionDropdown, { ActionDropdownItem } from '@/components/admin/ActionDropdown'
 import { Tenant } from '@/types/tenant'
 
-// Use unified wine data interface
-type WineCardData = Wine
-
 const TenantAdmin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'cms' | 'ai-model'>(() => {
     // Restore tab from localStorage if available
@@ -28,11 +25,11 @@ const TenantAdmin: React.FC = () => {
   const { tenantName } = useParams()
 
   // Get tenant information
-  const [currentTenant, setCurrentTenant] = useState<{ name: string; tenantName: string } | null>(null)
+  const [currentTenant, setCurrentTenant] = useState<{ name: string; tenantName: string; wineEntries: Wine[] } | null>(null)
 
   // Wine management state
   const [isEditMode, setIsEditMode] = useState(false)
-  const [wineCards, setWineCards] = useState<WineCardData[]>([])
+  const [wineCards, setWineCards] = useState<Wine[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [showSearch, setShowSearch] = useState(true)
   const [showDataSync, setShowDataSync] = useState(false)
@@ -41,10 +38,7 @@ const TenantAdmin: React.FC = () => {
   const [, setLocation] = useLocation()
 
   // Filter wines based on search term
-  const filteredWines = useMemo(() => {
-    if (!searchTerm) return wineCards
-    return wineCards.filter((wine: Wine) => wine.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  }, [wineCards, searchTerm])
+  const filteredWines = Array.isArray(currentTenant?.wineEntries) ? currentTenant.wineEntries.filter(wine => wine.name.toLowerCase().includes(searchTerm.toLowerCase())) : []
 
   const [formData, setFormData] = useState<Tenant>({
     id: 1,
@@ -61,15 +55,13 @@ const TenantAdmin: React.FC = () => {
       hoursOfOperation: '',
       socialMediaLinks: '',
     },
-    cms: {
-      wineEntries: [],
-      wineClub: {
-        clubName: '',
-        description: '',
-        membershipTiers: '',
-        pricing: '',
-        clubBenefits: '',
-      },
+    wineEntries: [],
+    wineClub: {
+      clubName: '',
+      description: '',
+      membershipTiers: '',
+      pricing: '',
+      clubBenefits: '',
     },
     aiModel: {
       knowledgeScope: 'winery-only',
@@ -89,7 +81,8 @@ const TenantAdmin: React.FC = () => {
       fetch(`/api/tenants/by-tenant-name/${tenantName}`)
         .then(res => res.json())
         .then(tenant => {
-          setCurrentTenant({ name: tenant.profile?.wineryName, tenantName: tenant.profile?.tenantName })
+          setCurrentTenant(tenant)
+          setFormData(data => ({ ...data, wineEntries: Array.isArray(data.wineEntries) ? data.wineEntries : [] }))
         })
         .catch(() => setCurrentTenant(null))
     }
@@ -161,7 +154,7 @@ const TenantAdmin: React.FC = () => {
     }
   }
 
-  const handleEditWine = (wine: WineCardData) => {
+  const handleEditWine = (wine: Wine) => {
     console.log('Edit wine clicked:', wine)
     // Navigate to the existing wine edit page
     setLocation(`/wine-edit/${wine.id}`)

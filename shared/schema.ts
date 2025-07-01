@@ -96,28 +96,13 @@ export const tenants = pgTable('tenants', {
     hoursOfOperation: string
     socialMediaLinks: string
   }>(),
-  cms: json('cms').$type<{
-    wineEntries: Array<{
-      wineName: string
-      vintageYear: string
-      sku: string
-      varietal: string
-      tastingNotes: string
-      foodPairings: string
-      productionNotes: string
-      imageUpload: string
-      criticReviews: string
-      releaseDate: string
-      price: string
-      inventoryCount: string
-    }>
-    wineClub: {
-      clubName: string
-      description: string
-      membershipTiers: string
-      pricing: string
-      clubBenefits: string
-    }
+  wineEntries: json('wine_entries').$type<Wine[]>(),
+  wineClub: json('wine_club').$type<{
+    clubName: string
+    description: string
+    membershipTiers: string
+    pricing: string
+    clubBenefits: string
   }>(),
   aiModel: json('ai_model').$type<{
     knowledgeScope: 'winery-only' | 'winery-plus-global'
@@ -131,7 +116,8 @@ export const tenants = pgTable('tenants', {
 
 export const insertTenantSchema = createInsertSchema(tenants).pick({
   profile: true,
-  cms: true,
+  wineEntries: true,
+  wineClub: true,
   aiModel: true,
 })
 
