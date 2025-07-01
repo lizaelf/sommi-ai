@@ -12,7 +12,7 @@ import HomeGlobal from '@/pages/end-user/HomeGlobal'
 import WineScan from '@/pages/end-user/WineScan'
 import SimpleWineEdit from '@/pages/admin/SimpleWineEdit'
 
-import TenantAdminRefactored from '@/pages/admin/TenantAdmin'
+import TenantAdmin from '@/pages/admin/TenantAdmin'
 import SommTenantAdmin from '@/pages/admin/SommTenantAdmin'
 import TenantCreate from '@/pages/admin/TenantCreate'
 import QRCodes from '@/pages/end-user/QRCodes'
@@ -70,7 +70,7 @@ function Router() {
       <Route path='/cellar' component={Cellar} />
       <Route path='/food-pairings-ai' component={FoodPairingSuggestionsPage} />
       <Route path='/wine-details/:id' component={WineDetails} />
-      <Route path='/winery-tenant-admin' component={TenantAdminRefactored} />
+      <Route path='/winery-tenant-admin' component={TenantAdmin} />
       <Route path='/somm-tenant-admin' component={SommTenantAdmin} />
       {/* <Route path="/tmp" component={WineManagement} /> */}
       <Route path='/tenant-create' component={TenantCreate} />
