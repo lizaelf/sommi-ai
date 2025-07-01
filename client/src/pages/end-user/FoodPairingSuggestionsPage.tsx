@@ -31,6 +31,23 @@ interface FoodPairing {
   intensity: number;
 }
 
+// Додаю функцію для підбору emoji за назвою страви
+function getDishEmoji(dish: string) {
+  const d = dish.toLowerCase();
+  if (d.includes('steak') || d.includes('beef') || d.includes('lamb') || d.includes('pork') || d.includes('rib') || d.includes('veal')) return '🥩';
+  if (d.includes('chicken') || d.includes('duck') || d.includes('turkey') || d.includes('poultry')) return '🍗';
+  if (d.includes('fish') || d.includes('salmon') || d.includes('tuna') || d.includes('trout') || d.includes('seafood') || d.includes('shrimp') || d.includes('crab')) return '🐟';
+  if (d.includes('cheese')) return '🧀';
+  if (d.includes('mushroom') || d.includes('veggie') || d.includes('vegetarian') || d.includes('eggplant') || d.includes('ratatouille') || d.includes('vegetable')) return '🍄';
+  if (d.includes('dessert') || d.includes('cake') || d.includes('tart') || d.includes('pudding') || d.includes('sweet')) return '🍰';
+  if (d.includes('pizza')) return '🍕';
+  if (d.includes('pasta') || d.includes('spaghetti') || d.includes('lasagna')) return '🍝';
+  if (d.includes('bread')) return '🍞';
+  if (d.includes('salad')) return '🥗';
+  if (d.includes('soup')) return '🥣';
+  return '🍽️';
+}
+
 const FoodPairingSuggestionsPage: React.FC = () => {
   const [, setLocation] = useLocation();
   const [currentWine, setCurrentWine] = useState<Wine | null>(null);
@@ -42,7 +59,7 @@ const FoodPairingSuggestionsPage: React.FC = () => {
   useEffect(() => {
     const loadWineData = async () => {
       try {
-        const wines = DataSyncManager.getUnifiedWineData();
+        const wines = await DataSyncManager.getUnifiedWineData();
         // Use the first wine as default for food pairing context
         if (wines.length > 0) {
           setCurrentWine(wines[0]);
@@ -149,20 +166,6 @@ const FoodPairingSuggestionsPage: React.FC = () => {
     await generateFoodPairings();
   };
 
-  const getIntensityColor = (intensity: number) => {
-    if (intensity >= 8) return '#EF4444'; // Red - Strong
-    if (intensity >= 6) return '#14B8A6'; // Teal - Medium
-    if (intensity >= 4) return '#3B82F6'; // Blue - Light
-    return '#10B981'; // Green - Subtle
-  };
-
-  const getIntensityLabel = (intensity: number) => {
-    if (intensity >= 8) return 'Perfect Match';
-    if (intensity >= 6) return 'Great Pairing';
-    if (intensity >= 4) return 'Good Match';
-    return 'Light Pairing';
-  };
-
   return (
     <div 
       className="bg-black text-white"
@@ -175,75 +178,12 @@ const FoodPairingSuggestionsPage: React.FC = () => {
         position: "relative"
       }}
     >
-      {/* Header */}
-      <AppHeader />
+      <AppHeader 
+        showBackButton={true}
+        onBack={() => window.history.back()}
+        title={currentWine?.name || ''}
+      />
       <HeaderSpacer />
-
-      {/* Food Pairings Page Header */}
-      <div
-        style={{
-          padding: "0 16px 16px 16px",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "8px",
-          }}
-        >
-          <Button
-            variant="headerIcon"
-            size="icon"
-            onClick={handleBackClick}
-            style={{
-              width: "40px",
-              height: "40px",
-              padding: "8px",
-            }}
-          >
-            <ArrowLeft size={20} color="white" />
-          </Button>
-          <h1
-            style={{
-              ...typography.h1,
-              color: "white",
-              margin: "0",
-            }}
-          >
-            AI Food Pairings
-          </h1>
-          <Button
-            variant="headerIcon"
-            size="icon"
-            onClick={handleRefresh}
-            disabled={isLoading}
-            style={{
-              width: "40px",
-              height: "40px",
-              padding: "8px",
-              marginLeft: "auto",
-            }}
-          >
-            <RefreshCw size={20} color="white" className={isLoading ? "animate-spin" : ""} />
-          </Button>
-        </div>
-        {currentWine && (
-          <p
-            style={{
-              ...typography.body,
-              color: "rgba(255, 255, 255, 0.6)",
-              margin: "0",
-              paddingLeft: "52px",
-            }}
-          >
-            Curated pairings for {currentWine.year ? currentWine.year + ' ' : ''}{currentWine.name}
-          </p>
-        )}
-      </div>
-
       {/* Content */}
       <div style={{ padding: "24px 16px", flex: 1 }}>
         {isLoading && (
@@ -321,77 +261,21 @@ const FoodPairingSuggestionsPage: React.FC = () => {
                         ...typography.h2,
                         color: "white",
                         margin: "0 0 4px 0",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
                       }}
                     >
-                      {pairing.dish}
+                      <span role="img" aria-label="dish-emoji" style={{fontSize: '1.1em', marginRight: '6px'}}>{getDishEmoji(pairing.dish)}</span>{pairing.dish}
                     </h3>
-                    <p
-                      style={{
-                        ...typography.body,
-                        color: "rgba(255, 255, 255, 0.6)",
-                        margin: "0",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {pairing.category}
-                    </p>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span
-                      style={{
-                        ...typography.body,
-                        color: getIntensityColor(pairing.intensity),
-                        fontSize: "12px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {getIntensityLabel(pairing.intensity)}
-                    </span>
-                    <div
-                      style={{
-                        width: "60px",
-                        height: "4px",
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        borderRadius: "2px",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${(pairing.intensity / 10) * 100}%`,
-                          height: "100%",
-                          backgroundColor: getIntensityColor(pairing.intensity),
-                        }}
-                      />
-                    </div>
                   </div>
                 </div>
-
                 <p
                   style={{
                     ...typography.body,
                     color: "rgba(255, 255, 255, 0.8)",
                     margin: "0 0 12px 0",
                     lineHeight: 1.5,
-                  }}
-                >
-                  {pairing.description}
-                </p>
-
-                <p
-                  style={{
-                    ...typography.body,
-                    color: "rgba(255, 255, 255, 0.6)",
-                    margin: "0",
-                    fontSize: "14px",
-                    fontStyle: "italic",
                   }}
                 >
                   {pairing.pairing_reason}
