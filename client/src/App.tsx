@@ -13,7 +13,7 @@ import WineScan from '@/pages/end-user/WineScan'
 import SimpleWineEdit from '@/pages/admin/SimpleWineEdit'
 
 import TenantAdmin from '@/pages/admin/TenantAdmin'
-import SommTenantAdmin from '@/pages/admin/SommTenantAdmin'
+import TenantsAdmin from '@/pages/admin/TenantsAdmin'
 import TenantCreate from '@/pages/admin/TenantCreate'
 import QRCodes from '@/pages/end-user/QRCodes'
 import QRDemo from '@/pages/end-user/QRDemo'
@@ -65,17 +65,18 @@ const SimpleWineEditRoute = () => <SimpleWineEdit />
 function Router() {
   return (
     <Switch>
-      // end-user routes
+      ////////////// end-user routes
       <Route path='/' component={HomeGlobal} />
+      <Route path='/wine-details/:id' component={WineDetails} />
       <Route path='/cellar' component={Cellar} />
       <Route path='/food-pairings-ai' component={FoodPairingSuggestionsPage} />
-      <Route path='/wine-details/:id' component={WineDetails} />
-      <Route path='/winery-tenant-admin' component={TenantAdmin} />
-      <Route path='/somm-tenant-admin' component={SommTenantAdmin} />
-      {/* <Route path="/tmp" component={WineManagement} /> */}
+      ////////////// admin routes
+      <Route path='/tenant-admin' component={TenantAdmin} />
+      <Route path='/tenants-admin' component={TenantsAdmin} />
       <Route path='/tenant-create' component={TenantCreate} />
       <Route path='/tenant-edit/:id' component={TenantEdit} />
       <Route path='/wine-edit/:id' component={SimpleWineEditRoute} />
+      {/* <Route path="/tmp" component={WineManagement} /> */}
       <Route path='/scan-wine/:id' component={WineScan} />
       <Route path='/qr-codes' component={QRCodes} />
       <Route path='/qr-demo' component={QRDemo} />
