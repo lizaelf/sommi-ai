@@ -10,6 +10,7 @@ import typography from "@/styles/typography";
 import ActionDropdown, { ActionDropdownItem } from "@/components/admin/ActionDropdown";
 import TenantTabs from "../../components/ui/TenantTabs";
 import DropdownInput from "@/components/ui/forms/DropdownInput";
+import { generateSlug, validateSlug, checkSlugAvailability } from "../../../shared/slugUtils";
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -137,6 +138,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [search, setSearch] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const [slugError, setSlugError] = useState<string>("");
 
   const isCreateMode = mode === 'create';
 
@@ -353,6 +355,15 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                   onChange={(value: string) => handleProfileChange("wineryName", value)}
                   placeholder="Winery name"
                   required
+                />
+                <FormInput
+                  label="URL Slug"
+                  type="text"
+                  value={tenant.slug || ""}
+                  onChange={handleSlugChange}
+                  placeholder="winery-name"
+                  required
+                  error={slugError}
                 />
                 <FormInput
                   label="Website"

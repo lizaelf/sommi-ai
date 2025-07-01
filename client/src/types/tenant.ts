@@ -1,5 +1,6 @@
 export interface Tenant {
   id: number;
+  slug: string;
   profile: {
     wineryName: string;
     wineryDescription: string;
