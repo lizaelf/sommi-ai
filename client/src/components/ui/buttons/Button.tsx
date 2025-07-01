@@ -8,11 +8,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-white text-black hover:bg-white/90 active:bg-white/80 active:scale-[0.98]",
+          "bg-white w-full text-black hover:bg-white/90 active:bg-white/80 active:scale-[0.98]",
         secondary:
-          "bg-white/16 text-white hover:bg-white/20 active:bg-white/24",
+          "bg-white/16 w-full text-white hover:bg-white/20 active:bg-white/24",
         brand:
-          "bg-[#6C1E2C] text-white hover:bg-[#7C2E3C] active:bg-[#5C1E2C]",
+          "bg-[#6C1E2C] w-full text-white hover:bg-[#7C2E3C] active:bg-[#5C1E2C]",
         error: "bg-[#8A332C] text-white hover:bg-[#9A433C] active:bg-[#7A232C]",
         suggestion:
           "bg-white/12 text-white hover:bg-white/16 active:bg-white/20 whitespace-nowrap",
@@ -30,15 +30,10 @@ const buttonVariants = cva(
         iconSm: "h-8 w-8",
         iconLg: "h-12 w-12",
       },
-      hug: {
-        true: "w-auto",
-        false: "w-full",
-      },
     },
     defaultVariants: {
       variant: "secondary",
       size: "default",
-      hug: false,
     },
   },
 );
@@ -48,14 +43,13 @@ interface ButtonProps
     VariantProps<typeof buttonVariants> {
   children: React.ReactNode;
   asChild?: boolean;
-  hug?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, hug = false, children, ...props }, ref) => {
+  ({ className, variant, size, children, ...props }, ref) => {
     return (
       <button
-        className={cn(buttonVariants({ variant, size, hug }), className)}
+        className={cn(buttonVariants({ variant, size }), className)}
         data-variant={variant}
         ref={ref}
         {...props}

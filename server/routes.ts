@@ -197,8 +197,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload image to Cloudinary endpoint
   app.post("/api/upload-wine-image", imageUpload.single('image'), async (req, res) => {
     try {
-      if (!req.file || !req.file.buffer) {
-        return res.status(400).json({ error: "No image buffer provided" });
+      if (!req.file) {
+        return res.status(400).json({ error: "No image provided" });
       }
 
       const { wineId, wineName } = req.body;
@@ -300,46 +300,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Cloudinary upload error:", error);
       res.status(500).json({ error: "Failed to upload image to Cloudinary" });
-    }
-  });
-
-  // Upload winery logo to Cloudinary
-  app.post("/api/upload-winery-logo", imageUpload.single('image'), async (req, res) => {
-    try {
-      if (!req.file || !req.file.buffer) {
-        return res.status(400).json({ error: "No image buffer provided" });
-      }
-
-      const { wineryName } = req.body;
-      const cleanWineryName = wineryName
-        ? wineryName.replace(/[^a-zA-Z0-9\\s-]/g, '').replace(/\\s+/g, '-').toLowerCase()
-        : 'winery';
-      const publicId = `wineries/${cleanWineryName}-${Date.now()}`;
-
-      const uploadResult = await new Promise<any>((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          {
-            resource_type: 'image',
-            public_id: publicId,
-            folder: 'wineries',
-            transformation: [
-              { width: 400, height: 400, crop: 'limit', quality: 'auto' }
-            ]
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        ).end(req.file.buffer);
-      });
-
-      res.json({
-        success: true,
-        imageUrl: uploadResult.secure_url,
-        publicId: uploadResult.public_id,
-      });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to upload logo" });
     }
   });
 

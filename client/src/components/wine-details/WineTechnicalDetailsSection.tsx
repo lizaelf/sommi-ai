@@ -92,17 +92,17 @@ const WineTechnicalDetailsSection: React.FC<
             wine?.technicalDetails?.varietal
               ? <>
                   {wine.technicalDetails.varietal.primary} {wine.technicalDetails.varietal.primaryPercentage}%
-                {wine.technicalDetails.varietal.secondary && (
+                  {wine.technicalDetails.varietal.secondary && (
                     <><br />{wine.technicalDetails.varietal.secondary} {wine.technicalDetails.varietal.secondaryPercentage}%</>
-                )}
-              </>
+                  )}
+                </>
               : wine?.name
                 ? extractVarietalInfo(wine?.name || "").primary
                   ? extractVarietalInfo(wine?.name || "").secondary
                     ? <>
                         {extractVarietalInfo(wine?.name || "").primary} {extractVarietalInfo(wine?.name || "").primaryPercentage}%<br />
                         {extractVarietalInfo(wine?.name || "").secondary} {extractVarietalInfo(wine?.name || "").secondaryPercentage}%
-              </>
+                      </>
                     : `${extractVarietalInfo(wine?.name || "").primary} ${extractVarietalInfo(wine?.name || "").primaryPercentage}%`
                   : "–"
                 : "–"
@@ -119,12 +119,12 @@ const WineTechnicalDetailsSection: React.FC<
           value={
             wine?.technicalDetails?.aging
               ? wine.technicalDetails.aging.ageUpTo
-                    ? `Age up to ${wine.technicalDetails.aging.ageUpTo}`
-                    : "Drink now"
+                ? `Age up to ${wine.technicalDetails.aging.ageUpTo}`
+                : "Drink now"
               : wine?.name
                 ? getAgingRecommendations(wine?.name || "", wine?.year).drinkNow && getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo
-                ? `Drink now or age up to ${getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo}`
-                : "Drink now"
+                  ? `Drink now or age up to ${getAgingRecommendations(wine?.name || "", wine?.year).ageUpTo}`
+                  : "Drink now"
                 : "–"
           }
         />

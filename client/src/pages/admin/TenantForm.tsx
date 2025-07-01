@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStandardToast } from "@/components/ui/feedback/StandardToast";
 import { FormInput } from "@/components/ui/forms/FormInput";
-import { ArrowLeft, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { Tenant } from "@/types/tenant";
 import Button from "@/components/ui/buttons/Button";
 import AppHeader, { HeaderSpacer } from "@/components/layout/AppHeader";
@@ -47,12 +47,12 @@ const deleteTenant = async (id: number) => {
 const defaultTenant: Omit<Tenant, "id"> = {
   profile: {
     wineryName: "",
-    wineryLogo: "",
-    websiteURL: "",
     wineryDescription: "",
     yearEstablished: "",
+    wineryLogo: "",
     contactEmail: "",
     contactPhone: "",
+    websiteURL: "",
     address: "",
     hoursOfOperation: "",
     socialMediaLinks: "",
@@ -238,9 +238,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
           toastError("Invalid tenant ID");
           return;
         }
-        // Remove service fields before updating
-        const { createdAt, updatedAt, id, ...tenantToSend } = tenant as any;
-        await updateTenant(tenantId, tenantToSend);
+        await updateTenant(tenantId, tenant);
         toastSuccess("Tenant updated successfully");
       }
       handleSaveSuccess();
@@ -272,7 +270,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     },
   ];
 
-  const pageTitle = isNewTenant ? "Add winery" : "Edit winery";
+  const pageTitle = isNewTenant ? "Add New Tenant" : "Edit Tenant";
 
   // Filtered wines for CMS tab
   const filteredWines = tenant?.cms.wineEntries.filter(wine =>
@@ -345,169 +343,98 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         {/* Tab content */}
         {activeTab === 'profile' && (
           <div className="space-y-6">
-            {/* Unified profile form for both create and edit modes */}
-            <FormInput
-              label="Winery Name"
-              type="text"
-              value={tenant.profile?.wineryName || ""}
-              onChange={(value: string) => handleProfileChange("wineryName", value)}
-              placeholder="Winery name"
-              required
-            />
-            {/* Winery Logo Upload */}
-            <div className="mb-4">
-              <label style={typography.body1R} className="block mb-2">Winery Logo</label>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center p-2 rounded-lg border border-white/20 w-[80px] h-[80px] bg-transparent">
-                  {tenant.profile?.wineryLogo ? (
-                    <img
-                      src={tenant.profile.wineryLogo}
-                      alt="Winery logo preview"
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  ) : (
-                    <span className="text-white/60 text-sm">Logo</span>
-                  )}
-                </div>
-                <div>
-                  <input
-                    id="winery-logo-upload"
-                    name="image"
-                    type="file"
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      if (!file.type.startsWith('image/')) {
-                        toastError('Please select an image file');
-                        return;
-                      }
-                      if (file.size > 10 * 1024 * 1024) {
-                        toastError('Image size must be less than 10MB');
-                        return;
-                      }
-                      try {
-                        const formData = new FormData();
-                        formData.append('image', file);
-                        formData.append('wineryName', tenant.profile?.wineryName || '');
-                        const response = await fetch('/api/upload-winery-logo', {
-                          method: 'POST',
-                          body: formData,
-                        });
-                        const result = await response.json();
-                        if (result.success) {
-                          handleProfileChange('wineryLogo', result.imageUrl);
-                          toastSuccess('Logo uploaded successfully');
-                        } else {
-                          throw new Error(result.error || 'Upload failed');
-                        }
-                      } catch (error) {
-                        toastError('Failed to upload logo');
-                      }
-                    }}
-                  />
-                  <Button
-                    variant="secondary"
-                    onClick={() => document.getElementById('winery-logo-upload')?.click()}
-                    type="button"
-                    className="flex items-center gap-2"
-                  >
-                    <Upload size={16} />
-                    Upload Logo
-                  </Button>
-                </div>
-              </div>
-            </div>
-            <FormInput
-              label="Website"
-              type="url"
-              value={tenant.profile?.websiteURL || ""}
-              onChange={(value: string) => handleProfileChange("websiteURL", value)}
-              placeholder="https://example.com"
-            />
-            <FormInput
-              label="Address"
-              type="text"
-              value={tenant.profile?.address || ""}
-              onChange={(value: string) => handleProfileChange("address", value)}
-              placeholder="Address"
-            />
-            <FormInput
-              label="Phone"
-              type="tel"
-              value={tenant.profile?.contactPhone || ""}
-              onChange={(value: string) => handleProfileChange("contactPhone", value)}
-              placeholder="Phone"
-            />
-            <FormInput
-              label="Email"
-              type="email"
-              value={tenant.profile?.contactEmail || ""}
-              onChange={(value: string) => handleProfileChange("contactEmail", value)}
-              placeholder="Email"
-            />
-            <FormInput
-              label="Year Established"
-              type="text"
-              value={tenant.profile?.yearEstablished || ""}
-              onChange={(value: string) => handleProfileChange("yearEstablished", value)}
-              placeholder="Year established"
-            />
-            <FormInput
-              label="Hours of Operation"
-              type="text"
-              value={tenant.profile?.hoursOfOperation || ""}
-              onChange={(value: string) => handleProfileChange("hoursOfOperation", value)}
-              placeholder="Hours of operation"
-            />
-            <FormInput
-              label="Social Media Links"
-              type="text"
-              value={tenant.profile?.socialMediaLinks || ""}
-              onChange={(value: string) => handleProfileChange("socialMediaLinks", value)}
-              placeholder="Social media links"
-            />
-            <FormInput
-              label="Winery Description"
-              type="text"
-              value={tenant.profile?.wineryDescription || ""}
-              onChange={(value: string) => handleProfileChange("wineryDescription", value)}
-              placeholder="Winery description"
-            />
-            {/* HomeGlobal Link (slug) */}
-            <div className="mb-4 flex items-end gap-2">
-              <div className="flex-1">
-                <label style={typography.body1R} className="block mb-2">HomeGlobal Link</label>
-                <input
+            {isCreateMode ? (
+              // FormInput components for create mode
+              <>
+                <FormInput
+                  label="Winery Name"
                   type="text"
-                  value={`/homeglobal/${
-                    (tenant.profile?.wineryName || "")
-                      .toLowerCase()
-                      .replace(/[^a-z0-9]+/g, '-')
-                      .replace(/^-+|-+$/g, '')
-                  }`}
-                  readOnly
-                  className="w-full p-3 bg-white/5 border border-white/20 rounded-lg text-gray-400 cursor-not-allowed"
+                  value={tenant.profile?.wineryName || ""}
+                  onChange={(value: string) => handleProfileChange("wineryName", value)}
+                  placeholder="Winery name"
+                  required
                 />
-              </div>
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={() => {
-                  const slug = (tenant.profile?.wineryName || "")
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-                  window.open(`/homeglobal/${slug}`, '_blank');
-                }}
-                className="h-[48px] flex items-center justify-center px-3"
-                aria-label="Open HomeGlobal page"
-                hug
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 13V19A2 2 0 0 1 16 21H5A2 2 0 0 1 3 19V8A2 2 0 0 1 5 6H11M15 3H21M21 3V9M21 3L10 14" /></svg>
-              </Button>
-            </div>
+                <FormInput
+                  label="Website"
+                  type="url"
+                  value={tenant.profile?.websiteURL || ""}
+                  onChange={(value: string) => handleProfileChange("websiteURL", value)}
+                  placeholder="https://example.com"
+                />
+                <FormInput
+                  label="Address"
+                  type="text"
+                  value={tenant.profile?.address || ""}
+                  onChange={(value: string) => handleProfileChange("address", value)}
+                  placeholder="Address"
+                />
+                <FormInput
+                  label="Phone"
+                  type="tel"
+                  value={tenant.profile?.contactPhone || ""}
+                  onChange={(value: string) => handleProfileChange("contactPhone", value)}
+                  placeholder="Phone"
+                />
+                <FormInput
+                  label="Email"
+                  type="email"
+                  value={tenant.profile?.contactEmail || ""}
+                  onChange={(value: string) => handleProfileChange("contactEmail", value)}
+                  placeholder="Email"
+                />
+                <FormInput
+                  label="Year Established"
+                  type="text"
+                  value={tenant.profile?.yearEstablished || ""}
+                  onChange={(value: string) => handleProfileChange("yearEstablished", value)}
+                  placeholder="Year established"
+                />
+                <FormInput
+                  label="Winery Logo URL"
+                  type="url"
+                  value={tenant.profile?.wineryLogo || ""}
+                  onChange={(value: string) => handleProfileChange("wineryLogo", value)}
+                  placeholder="https://example.com/winery-logo.png"
+                />
+                <FormInput
+                  label="Hours of Operation"
+                  type="text"
+                  value={tenant.profile?.hoursOfOperation || ""}
+                  onChange={(value: string) => handleProfileChange("hoursOfOperation", value)}
+                  placeholder="Hours of operation"
+                />
+                <FormInput
+                  label="Social Media Links"
+                  type="text"
+                  value={tenant.profile?.socialMediaLinks || ""}
+                  onChange={(value: string) => handleProfileChange("socialMediaLinks", value)}
+                  placeholder="Social media links"
+                />
+                <FormInput
+                  label="Winery Description"
+                  type="text"
+                  value={tenant.profile?.wineryDescription || ""}
+                  onChange={(value: string) => handleProfileChange("wineryDescription", value)}
+                  placeholder="Winery description"
+                />
+              </>
+            ) : (
+              // Regular inputs for edit mode
+              <>
+                {Object.entries(tenant.profile).map(([key, value]) => (
+                  <div key={key} className="mb-2">
+                    <label style={typography.body1R} className="block mb-1">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</label>
+                    <input
+                      type="text"
+                      value={value}
+                      onChange={e => handleProfileChange(key, e.target.value)}
+                      className="w-full p-3 bg-white/5 border border-white/20 rounded-lg"
+                      placeholder={key}
+                    />
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
 
@@ -521,7 +448,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                 onChange={e => setSearch(e.target.value)}
                 className="flex-1 p-2 rounded bg-black/20 text-white border border-white/20"
               />
-              <Button onClick={handleAddWine} variant="secondary" hug className="ml-3">+ Add wine</Button>
+              <Button onClick={handleAddWine} variant="secondary">+ Add wine</Button>
             </div>
             {/* Wine list */}
             <div>
@@ -721,7 +648,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             onClick={handleSave}
             className="w-full text-lg font-medium py-4"
           >
-            {isCreateMode ? "Create" : isNewTenant ? "Add winery" : "Save"}
+            {isCreateMode ? "Create" : isNewTenant ? "Add Tenant" : "Save"}
           </Button>
         </div>
       </div>
