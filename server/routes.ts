@@ -2010,6 +2010,23 @@ Provide 8-10 detailed food pairings across different categories (appetizers, mai
     }
   })
 
+  app.get('/api/tenants/by-tenant-name/:tenantName', async (req, res) => {
+    try {
+      const { tenantName } = req.params
+      if (!tenantName) {
+        return res.status(400).json({ message: 'Missing tenantName' })
+      }
+      const tenant = await storage.getTenantByTenantName(tenantName)
+      if (!tenant) {
+        return res.status(404).json({ message: 'Tenant not found' })
+      }
+      res.json(tenant)
+    } catch (error) {
+      console.error('Error fetching tenant by tenantName:', error)
+      res.status(500).json({ message: 'Failed to fetch tenant by tenantName' })
+    }
+  })
+
   const httpServer = createServer(app)
   return httpServer
 }

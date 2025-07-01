@@ -85,15 +85,15 @@ const TenantAdmin: React.FC = () => {
 
   useEffect(() => {
     // Extract tenant from URL or get stored tenants
-    const storedTenants = localStorage.getItem('sommelier-tenants')
-    if (storedTenants && params.tenantName) {
-      const tenants = JSON.parse(storedTenants)
-      const tenant = tenants.find((t: any) => t.tenantName === params.tenantName)
-      if (tenant) {
-        setCurrentTenant({ name: tenant.name, tenantName: tenant.tenantName })
-      }
+    if (tenantName) {
+      fetch(`/api/tenants/by-tenant-name/${tenantName}`)
+        .then(res => res.json())
+        .then(tenant => {
+          setCurrentTenant({ name: tenant.profile?.wineryName, tenantName: tenant.profile?.tenantName })
+        })
+        .catch(() => setCurrentTenant(null))
     }
-  }, [params.tenantName])
+  }, [tenantName])
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {

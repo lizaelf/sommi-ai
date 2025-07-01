@@ -170,19 +170,16 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         setLoading(false)
         return
       }
-
       if (id === 'new') {
         setIsNewTenant(true)
         setTenant({ ...defaultTenant })
         setLoading(false)
         return
       }
-
       if (!tenantId) {
         setLoading(false)
         return
       }
-
       try {
         const data = await fetchTenantById(tenantId)
         setTenant(data)
@@ -193,7 +190,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       }
     }
     loadTenant()
-  }, [tenantId, isCreateMode]) // Використовуємо tenantId замість id
+  }, [tenantId, isCreateMode])
 
   useEffect(() => {
     if (isCreateMode) {

@@ -65,11 +65,10 @@ const SimpleWineEditRoute = () => <SimpleWineEdit />
 function Router() {
   return (
     <Switch>
-      ////////////// admin routes
-      <Route path='/tenant-admin' component={TenantAdmin} />
-      <Route path='/tenants-admin' component={TenantsAdmin} />
+      <Route path='/tenant-admin' component={TenantAdmin} /> /// deprecated ////////////// admin routes
+      <Route path='/admin' component={TenantsAdmin} />
       <Route path='/tenant-create' component={TenantCreate} />
-      <Route path='/tenant-edit/:tenantName' component={TenantEdit} />
+      <Route path='/tenant-edit/:id' component={TenantEdit} />
       ////////////// end-user routes
       <Route path='/:tenantName' component={HomeGlobal} />
       <Route path='/:tenantName/wine-details/:id' component={WineDetails} />

@@ -89,7 +89,7 @@ const TenantsAdmin: React.FC = () => {
               }}
             >
               <div className='flex items-center justify-between' style={{ gap: '16px' }}>
-                <Link href={`/tenant-edit/${tenant.profile?.tenantName}`} style={{ flexGrow: 1 }}>
+                <Link href={`/tenant-edit/${tenant.id}`} style={{ flexGrow: 1 }}>
                   <h3
                     style={{
                       fontFamily: 'Inter, sans-serif',
