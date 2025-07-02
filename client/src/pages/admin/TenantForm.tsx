@@ -286,8 +286,10 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   }
 
   // --- Додаю функції для роботи з масивом вин ---
-  const handleSaveWine = (wine: Wine) => {
+  const handleSaveWine = async (wine: Wine) => {
     console.log('handleSaveWine', wine)
+
+    // Оновлюємо локальний стан
     setTenant(prev => {
       if (!prev) return prev
       const wines = prev.wineEntries ? [...prev.wineEntries] : []
@@ -299,17 +301,58 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       }
       return { ...prev, wineEntries: wines }
     })
+
+    // Якщо це не новий tenant (тобто він вже існує в базі), зберігаємо зміни одразу
+    if (!isNewTenant && tenantId) {
+      try {
+        // Отримуємо поточний стан tenant з оновленими винами
+        const updatedTenant = {
+          ...tenant,
+          wineEntries: editingWineIndex === null ? [...(tenant?.wineEntries || []), wine] : tenant?.wineEntries?.map((w, idx) => (idx === editingWineIndex ? wine : w)) || [],
+        }
+
+        // Видаляємо createdAt/updatedAt перед оновленням
+        const { createdAt, updatedAt, ...dataToUpdate } = updatedTenant as any
+
+        await updateTenant(tenantId, dataToUpdate)
+        toastSuccess(editingWineIndex === null ? 'Wine added successfully' : 'Wine updated successfully')
+      } catch (error) {
+        console.error('Failed to save wine to database:', error)
+        toastError('Failed to save wine to database')
+      }
+    }
+
     setShowWineEditor(false)
     setEditingWineIndex(null)
   }
 
-  const handleDeleteWine = (wineIndex: number) => {
+  const handleDeleteWine = async (wineIndex: number) => {
+    // Оновлюємо локальний стан
     setTenant(prev => {
       if (!prev) return prev
       const wines = prev.wineEntries ? [...prev.wineEntries] : []
       wines.splice(wineIndex, 1)
       return { ...prev, wineEntries: wines }
     })
+
+    // Якщо це не новий tenant, зберігаємо зміни одразу
+    if (!isNewTenant && tenantId) {
+      try {
+        const updatedTenant = {
+          ...tenant,
+          wineEntries: tenant?.wineEntries?.filter((_, idx) => idx !== wineIndex) || [],
+        }
+
+        // Видаляємо createdAt/updatedAt перед оновленням
+        const { createdAt, updatedAt, ...dataToUpdate } = updatedTenant as any
+
+        await updateTenant(tenantId, dataToUpdate)
+        toastSuccess('Wine deleted successfully')
+      } catch (error) {
+        console.error('Failed to delete wine from database:', error)
+        toastError('Failed to delete wine from database')
+      }
+    }
   }
 
   if (loading) {
