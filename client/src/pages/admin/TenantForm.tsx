@@ -404,35 +404,20 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         {/* Tab content */}
         {activeTab === 'profile' && (
           <div className='space-y-6'>
-            {isCreateMode ? (
-              // FormInput components for create mode
-              <>
-                <FormInput label='Tenant Name (URL key)' type='text' value={tenant.profile.tenantName || ''} onChange={(value: string) => setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, tenantName: value } } : prev))} placeholder='example-tenant' required error={tenant.profile.tenantName && !validateTenantName(tenant.profile.tenantName) ? 'Only a-z, A-Z, 0-9, -, _ allowed' : undefined} />
-                <FormInput label='Winery Name' type='text' value={tenant.profile?.wineryName || ''} onChange={(value: string) => handleProfileChange('wineryName', value)} placeholder='Winery name' required />
-                <FormInput label='Website' type='url' value={tenant.profile?.websiteURL || ''} onChange={(value: string) => handleProfileChange('websiteURL', value)} placeholder='https://example.com' />
-                <FormInput label='Address' type='text' value={tenant.profile?.address || ''} onChange={(value: string) => handleProfileChange('address', value)} placeholder='Address' />
-                <FormInput label='Phone' type='tel' value={tenant.profile?.contactPhone || ''} onChange={(value: string) => handleProfileChange('contactPhone', value)} placeholder='Phone' />
-                <FormInput label='Email' type='email' value={tenant.profile?.contactEmail || ''} onChange={(value: string) => handleProfileChange('contactEmail', value)} placeholder='Email' />
-                <FormInput label='Year Established' type='text' value={tenant.profile?.yearEstablished || ''} onChange={(value: string) => handleProfileChange('yearEstablished', value)} placeholder='Year established' />
-                <FormInput label='Winery Logo URL' type='url' value={tenant.profile?.wineryLogo || ''} onChange={(value: string) => handleProfileChange('wineryLogo', value)} placeholder='https://example.com/winery-logo.png' />
-                <FormInput label='Hours of Operation' type='text' value={tenant.profile?.hoursOfOperation || ''} onChange={(value: string) => handleProfileChange('hoursOfOperation', value)} placeholder='Hours of operation' />
-                <FormInput label='Social Media Links' type='text' value={tenant.profile?.socialMediaLinks || ''} onChange={(value: string) => handleProfileChange('socialMediaLinks', value)} placeholder='Social media links' />
-                <FormInput label='Winery Description' type='text' value={tenant.profile?.wineryDescription || ''} onChange={(value: string) => handleProfileChange('wineryDescription', value)} placeholder='Winery description' />
-              </>
-            ) : (
-              // Regular inputs for edit mode
-              <>
-                {!isCreateMode && <FormInput label='Tenant Name (URL key)' type='text' value={tenant.profile.tenantName || ''} onChange={(value: string) => setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, tenantName: value } } : prev))} placeholder='example-tenant' required error={tenant.profile.tenantName && !validateTenantName(tenant.profile.tenantName) ? 'Only a-z, A-Z, 0-9, -, _ allowed' : undefined} />}
-                {Object.entries(tenant.profile).map(([key, value]) => (
-                  <div key={key} className='mb-2'>
-                    <label style={typography.body1R} className='block mb-1'>
-                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                    </label>
-                    <input type='text' value={value !== undefined && value !== null ? String(value) : ''} onChange={e => handleProfileChange(key, e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={key} />
-                  </div>
-                ))}
-              </>
-            )}
+            // FormInput components for create mode
+            <>
+              <FormInput label='Tenant Name (URL key)' type='text' value={tenant.profile.tenantName || ''} onChange={(value: string) => setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, tenantName: value } } : prev))} placeholder='example-tenant' required error={tenant.profile.tenantName && !validateTenantName(tenant.profile.tenantName) ? 'Only a-z, A-Z, 0-9, -, _ allowed' : undefined} />
+              <FormInput label='Winery Name' type='text' value={tenant.profile?.wineryName || ''} onChange={(value: string) => handleProfileChange('wineryName', value)} placeholder='Winery name' required />
+              <FormInput label='Website' type='url' value={tenant.profile?.websiteURL || ''} onChange={(value: string) => handleProfileChange('websiteURL', value)} placeholder='https://example.com' />
+              <FormInput label='Address' type='text' value={tenant.profile?.address || ''} onChange={(value: string) => handleProfileChange('address', value)} placeholder='Address' />
+              <FormInput label='Phone' type='tel' value={tenant.profile?.contactPhone || ''} onChange={(value: string) => handleProfileChange('contactPhone', value)} placeholder='Phone' />
+              <FormInput label='Email' type='email' value={tenant.profile?.contactEmail || ''} onChange={(value: string) => handleProfileChange('contactEmail', value)} placeholder='Email' />
+              <FormInput label='Year Established' type='text' value={tenant.profile?.yearEstablished || ''} onChange={(value: string) => handleProfileChange('yearEstablished', value)} placeholder='Year established' />
+              <FormInput label='Winery Logo URL' type='url' value={tenant.profile?.wineryLogo || ''} onChange={(value: string) => handleProfileChange('wineryLogo', value)} placeholder='https://example.com/winery-logo.png' />
+              <FormInput label='Hours of Operation' type='text' value={tenant.profile?.hoursOfOperation || ''} onChange={(value: string) => handleProfileChange('hoursOfOperation', value)} placeholder='Hours of operation' />
+              <FormInput label='Social Media Links' type='text' value={tenant.profile?.socialMediaLinks || ''} onChange={(value: string) => handleProfileChange('socialMediaLinks', value)} placeholder='Social media links' />
+              <FormInput label='Winery Description' type='text' value={tenant.profile?.wineryDescription || ''} onChange={(value: string) => handleProfileChange('wineryDescription', value)} placeholder='Winery description' />
+            </>
           </div>
         )}
 
