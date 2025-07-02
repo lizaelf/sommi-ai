@@ -58,6 +58,9 @@ export interface IStorage {
   updateWine(id: number, wine: Partial<InsertWine>): Promise<SharedWine | undefined>
   deleteWine(id: number): Promise<void>
   clearAllWines(): Promise<void>
+
+  // Додаємо функцію для генерації унікального ID для вина в рамках tenant
+  generateWineId(tenantId: number): Promise<number>
 }
 
 // Database storage implementation
@@ -302,6 +305,18 @@ export class DatabaseStorage implements IStorage {
 
   async clearAllWines(): Promise<void> {
     await db.delete(wines)
+  }
+
+  // Додаємо функцію для генерації унікального ID для вина в рамках tenant
+  async generateWineId(tenantId: number): Promise<number> {
+    const tenant = await this.getTenant(tenantId)
+    if (!tenant || !tenant.wineEntries) {
+      return 1
+    }
+
+    // Знаходимо максимальний ID серед існуючих вин
+    const maxId = Math.max(0, ...tenant.wineEntries.map(wine => wine.id || 0))
+    return maxId + 1
   }
 }
 

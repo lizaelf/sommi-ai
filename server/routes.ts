@@ -1863,6 +1863,22 @@ Provide 8-10 detailed food pairings across different categories (appetizers, mai
     }
   })
 
+  // Endpoint для генерації унікального ID для вина
+  app.get('/api/tenants/:id/generate-wine-id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id)
+      if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid tenant ID' })
+      }
+
+      const nextWineId = await storage.generateWineId(id)
+      res.json({ nextWineId })
+    } catch (error) {
+      console.error('Error generating wine ID:', error)
+      res.status(500).json({ message: 'Failed to generate wine ID' })
+    }
+  })
+
   const httpServer = createServer(app)
   return httpServer
 }

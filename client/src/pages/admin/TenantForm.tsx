@@ -289,26 +289,23 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const handleSaveWine = async (wine: Wine) => {
     console.log('handleSaveWine', wine)
 
-    // Оновлюємо локальний стан
-    setTenant(prev => {
-      if (!prev) return prev
-      const wines = prev.wineEntries ? [...prev.wineEntries] : []
-      if (editingWineIndex === null) {
-        wines.push(wine)
-      } else {
-        // Оновлюємо існуюче
-        wines[editingWineIndex] = wine
-      }
-      return { ...prev, wineEntries: wines }
-    })
-
     // Якщо це не новий tenant (тобто він вже існує в базі), зберігаємо зміни одразу
     if (!isNewTenant && tenantId) {
       try {
+        // Якщо це нове вино (id === 0), отримуємо унікальний ID з сервера
+        let wineWithId = wine
+        if (editingWineIndex === null && wine.id === 0) {
+          const response = await fetch(`/api/tenants/${tenantId}/generate-wine-id`)
+          if (response.ok) {
+            const { nextWineId } = await response.json()
+            wineWithId = { ...wine, id: nextWineId }
+          }
+        }
+
         // Отримуємо поточний стан tenant з оновленими винами
         const updatedTenant = {
           ...tenant,
-          wineEntries: editingWineIndex === null ? [...(tenant?.wineEntries || []), wine] : tenant?.wineEntries?.map((w, idx) => (idx === editingWineIndex ? wine : w)) || [],
+          wineEntries: editingWineIndex === null ? [...(tenant?.wineEntries || []), wineWithId] : tenant?.wineEntries?.map((w, idx) => (idx === editingWineIndex ? wineWithId : w)) || [],
         }
 
         // Видаляємо createdAt/updatedAt перед оновленням
@@ -316,10 +313,34 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
         await updateTenant(tenantId, dataToUpdate)
         toastSuccess(editingWineIndex === null ? 'Wine added successfully' : 'Wine updated successfully')
+
+        // Оновлюємо локальний стан після успішного збереження
+        setTenant(prev => {
+          if (!prev) return prev
+          const wines = prev.wineEntries ? [...prev.wineEntries] : []
+          if (editingWineIndex === null) {
+            wines.push(wineWithId)
+          } else {
+            wines[editingWineIndex] = wineWithId
+          }
+          return { ...prev, wineEntries: wines }
+        })
       } catch (error) {
         console.error('Failed to save wine to database:', error)
         toastError('Failed to save wine to database')
       }
+    } else {
+      // Для нових tenant просто оновлюємо локальний стан
+      setTenant(prev => {
+        if (!prev) return prev
+        const wines = prev.wineEntries ? [...prev.wineEntries] : []
+        if (editingWineIndex === null) {
+          wines.push(wine)
+        } else {
+          wines[editingWineIndex] = wine
+        }
+        return { ...prev, wineEntries: wines }
+      })
     }
 
     setShowWineEditor(false)
