@@ -1,14 +1,14 @@
 export interface Wine {
-  id: number;
+  id?: number;
   name: string;
-  year: number;
-  bottles: number;
+  year: string | number;
+  bottles?: string | number;
   image: string;
   ratings: {
-    vn: number;
-    jd: number;
-    ws: number;
-    abv: number;
+    vn: string | number;
+    jd: string | number;
+    ws: string | number;
+    abv: string | number;
   };
   description?: string;
   buyAgainLink?: string;

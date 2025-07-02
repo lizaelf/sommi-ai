@@ -60,8 +60,8 @@ const defaultTenant: Omit<Tenant, 'id'> = {
     hoursOfOperation: '',
     socialMediaLinks: '',
   },
-  wineEntries: [],
-  wineClub: {
+    wineEntries: [],
+    wineClub: {
     clubName: '',
     description: '',
     membershipTiers: '',
@@ -91,8 +91,8 @@ const defaultTenantWithData: Omit<Tenant, 'id'> = {
     hoursOfOperation: 'Mon-Fri: 10AM-6PM, Sat-Sun: 11AM-7PM',
     socialMediaLinks: 'Instagram: @testwinery, Facebook: /testwinery',
   },
-  wineEntries: [],
-  wineClub: {
+    wineEntries: [],
+    wineClub: {
     clubName: 'Test Winery Club',
     description: 'Exclusive wine club for connoisseurs',
     membershipTiers: 'Bronze, Silver, Gold, Platinum',
@@ -140,7 +140,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const [activeTab, setActiveTab] = useState(initialTab)
   const [search, setSearch] = useState('')
   const [scrolled, setScrolled] = useState(false)
-  const [editingWineIndex, setEditingWineIndex] = useState<number | null>(null)
+  const [editingWineId, setEditingWineId] = useState<number | null>(null)
   const [showWineEditor, setShowWineEditor] = useState(false)
 
   const isCreateMode = mode === 'create'
@@ -158,11 +158,11 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   }, [setLocation])
   const handleAddWine = useCallback(() => {
     console.log('handleAddWine - creating new wine')
-    setEditingWineIndex(null)
+    setEditingWineId(null)
     setShowWineEditor(true)
   }, [])
-  const handleEditWine = useCallback((wineIndex: number) => {
-    setEditingWineIndex(wineIndex)
+  const handleEditWine = useCallback((wineId: number) => {
+    setEditingWineId(wineId)
     setShowWineEditor(true)
   }, [])
   const handleSaveSuccess = useCallback(() => {
@@ -289,15 +289,21 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const handleSaveWine = async (wine: Wine) => {
     console.log('handleSaveWine', wine)
 
-    // Update local state
     setTenant(prev => {
       if (!prev) return prev
       const wines = prev.wineEntries ? [...prev.wineEntries] : []
-      if (editingWineIndex === null) {
-        wines.push(wine)
+      if (editingWineId === null) {
+        // Assign unique auto-incremented id
+        const existingIds = wines.map(w => Number(w.id)).filter(id => !isNaN(id))
+        let newId = 1
+        if (existingIds.length > 0) {
+          newId = Math.max(...existingIds) + 1
+          // Ensure no duplicates
+          while (existingIds.includes(newId)) newId++
+        }
+        wines.push({ ...wine, id: newId })
       } else {
-        // Update existing
-        wines[editingWineIndex] = wine
+        wines[editingWineId] = wine
       }
       return { ...prev, wineEntries: wines }
     })
@@ -308,14 +314,14 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         // Get the current tenant state with updated wines
         const updatedTenant = {
           ...tenant,
-          wineEntries: editingWineIndex === null ? [...(tenant?.wineEntries || []), wine] : tenant?.wineEntries?.map((w, idx) => (idx === editingWineIndex ? wine : w)) || [],
+          wineEntries: editingWineId === null ? [...(tenant?.wineEntries || []), wine] : tenant?.wineEntries?.map((w, idx) => (idx === editingWineId ? wine : w)) || [],
         }
 
         // Remove createdAt/updatedAt before updating
         const { createdAt, updatedAt, ...dataToUpdate } = updatedTenant as any
 
         await updateTenant(tenantId, dataToUpdate)
-        toastSuccess(editingWineIndex === null ? 'Wine added successfully' : 'Wine updated successfully')
+        toastSuccess(editingWineId === null ? 'Wine added successfully' : 'Wine updated successfully')
       } catch (error) {
         console.error('Failed to save wine to database:', error)
         toastError('Failed to save wine to database')
@@ -323,7 +329,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     }
 
     setShowWineEditor(false)
-    setEditingWineIndex(null)
+    setEditingWineId(null)
   }
 
   const handleDeleteWine = async (wineIndex: number) => {
@@ -432,7 +438,10 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             <div>
               {filteredWines.map((wine, idx) => (
                 <div key={idx} className='flex items-center p-2 border-b border-white/10'>
-                  <span className='text-white flex-1 cursor-pointer' onClick={() => handleEditWine(idx)}>
+                  <span
+                    className='text-white flex-1 cursor-pointer'
+                    onClick={() => wine.id !== undefined && handleEditWine(wine.id)}
+                  >
                     {wine.name}
                   </span>
                   <div style={{ width: 12 }} />
@@ -460,16 +469,13 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             {/* SimpleWineEdit modal */}
             {showWineEditor && (
               <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70'>
-                <div className='bg-white rounded-lg p-6 w-full max-w-lg'>
-                  <div className='mb-4'>
-                    <h2 className='text-lg font-semibold text-gray-800'>{editingWineIndex !== null ? 'Edit Wine' : 'Add New Wine'}</h2>
-                  </div>
+                <div className='w-full max-w-lg max-h-screen overflow-y-auto'>
                   <SimpleWineEdit
-                    wine={editingWineIndex !== null ? filteredWines[editingWineIndex] : null}
+                    wine={editingWineId !== null ? filteredWines.find(w => w.id === editingWineId) : null}
                     onSave={handleSaveWine}
                     onCancel={() => {
                       setShowWineEditor(false)
-                      setEditingWineIndex(null)
+                      setEditingWineId(null)
                     }}
                   />
                 </div>

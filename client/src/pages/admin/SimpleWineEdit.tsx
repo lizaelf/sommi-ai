@@ -15,16 +15,20 @@ interface SimpleWineEditProps {
   wine?: Wine | null
   onSave?: (updatedWine: Wine) => void
   onCancel?: () => void
+  onDelete?: () => void
 }
 
-const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave, onCancel }) => {
+const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave, onCancel, onDelete }) => {
   const { toastSuccess, toastError } = useStandardToast()
-  const [wine, setWine] = useState<Wine | null>(propWine || null)
+  const [wine, setWine] = useState<(Wine & { year: string | number }) | null>(propWine ? { ...propWine } : null)
   const [loading, setLoading] = useState(false)
   const [isNewWine, setIsNewWine] = useState(!propWine)
   const [uploading, setUploading] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [scrolled, setScrolled] = useState(false)
+
   useEffect(() => {
     if (propWine) {
       setWine(propWine)
@@ -32,12 +36,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
       console.log('Setting isNewWine to false (editing existing wine)')
     } else {
       setWine({
-        id: 0,
         name: '',
-        year: new Date().getFullYear(),
-        bottles: 0,
+        year: '',
+        bottles: '',
         image: '',
-        ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
+        ratings: { vn: '', jd: '', ws: '', abv: '' },
         description: '',
         buyAgainLink: '',
         qrCode: '',
@@ -66,6 +69,23 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
     }
   }, [wine])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (contentRef.current) {
+        setScrolled(contentRef.current.scrollTop > 0)
+      }
+    }
+    const node = contentRef.current
+    if (node) {
+      node.addEventListener('scroll', handleScroll)
+      // Initial check in case already scrolled
+      setScrolled(node.scrollTop > 0)
+    }
+    return () => {
+      if (node) node.removeEventListener('scroll', handleScroll)
+    }
+  }, [wine])
+
   const handleImageUpload = async (file: File) => {
     if (!wine) return
 
@@ -73,7 +93,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
     try {
       const formData = new FormData()
       formData.append('image', file)
-      formData.append('wineId', wine.id.toString())
+      formData.append('wineId', wine.id?.toString() || '')
       formData.append('wineName', wine.name || '')
 
       const response = await fetch('/api/upload-wine-image', {
@@ -90,7 +110,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         setImagePreview(result.imageUrl)
 
         // Automatically save the updated wine data to database
-        if (!isNewWine) {
+        if (!isNewWine && wine.id !== undefined) {
           try {
             await DataSyncManager.updateWine(wine.id, { image: result.imageUrl })
             console.log('Wine image URL saved to database:', result.imageUrl)
@@ -175,6 +195,16 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
     if (onSave) onSave(wine)
   }
 
+  const handleDeleteWine = () => {
+    if (window.confirm('Are you sure you want to delete this wine? This action cannot be undone.')) {
+      if (typeof onDelete === 'function') {
+        onDelete()
+      } else if (typeof onCancel === 'function') {
+        onCancel()
+      }
+    }
+  }
+
   if (loading) {
     return <div>Loading wine data...</div>
   }
@@ -183,24 +213,44 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   }
 
   return (
-    <div className='min-h-screen bg-black text-gray-600'>
-      <div className={`p-6 pb-32`}>
-        <div className='mb-4'>
-          <h2 className='text-lg font-semibold text-white'>{isNewWine ? 'Add New Wine' : 'Edit Wine'}</h2>
-        </div>
+    <div className='min-h-screen bg-black text-gray-600 flex flex-col'>
+      <AppHeader
+        title={isNewWine ? 'Add Wine' : 'Edit Wine'}
+        showBackButton={true}
+        onBack={onCancel}
+        className={scrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'}
+        rightContent={
+          !isNewWine && (
+            <ActionDropdown
+              actions={[{
+                label: 'Delete Wine',
+                icon: <Trash2 size={16} />,
+                onClick: handleDeleteWine,
+                colorClass: 'text-red-400',
+                disabled: false,
+              }]}
+            />
+          )
+        }
+      />
+      <div ref={contentRef} className='flex-1 overflow-y-auto p-6 pb-32 mt-[75px]'>
         <div className='space-y-6'>
           {/* Wine Image and QR Code Section */}
           <div className='grid grid-cols-2 gap-6 items-start'>
             {/* Wine Image Upload */}
-            <div className='min-w-0'>
+            <div className='min-w-0 justify-self-center'>
               {/* Image Preview */}
               {imagePreview ? (
                 <div className='mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent'>
-                  <img src={imagePreview} alt='Wine preview' className='max-w-full max-h-full object-contain' />
+                  <div className='flex items-center justify-center w-full h-full'>
+                    <img src={imagePreview} alt='Wine preview' className='max-w-full max-h-full object-contain' />
+                  </div>
                 </div>
               ) : (
                 <div className='mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent'>
-                  <img src={placeholderImage} alt='Placeholder wine preview' className='max-w-full max-h-full object-contain opacity-80' />
+                  <div className='flex items-center justify-center w-full h-full'>
+                    <img src={placeholderImage} alt='Placeholder wine preview' className='max-w-full max-h-full object-contain opacity-80' />
+                  </div>
                 </div>
               )}
 
@@ -234,7 +284,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
 
                   {/* QR Code Info */}
                   <div className='text-center'>
-                    <Button variant='secondary' onClick={downloadQRCode} className='flex items-center gap-2' type='button'>
+                    <Button variant='secondary' onClick={downloadQRCode} className='w-full flex items-center gap-2' type='button'>
                       <Download size={16} />
                       Download QR
                     </Button>
@@ -255,9 +305,15 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
           {/* Year */}
           <div>
             <label style={typography.body1R} className='block mb-2'>
-              Year<span style={{ color: '#FF6B6B', marginLeft: 4 }}>*</span>
+              Year
             </label>
-            <input type='number' value={wine.year} onChange={e => setWine({ ...wine, year: parseInt(e.target.value) || 0 })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={String(new Date().getFullYear())} required />
+            <input
+              type='number'
+              value={wine.year || ''}
+              onChange={e => setWine({ ...wine, year: e.target.value === '' ? '' : parseInt(e.target.value) })}
+              className='w-full p-3 bg-white/5 border border-white/20 rounded-lg'
+              placeholder='Year'
+            />
           </div>
 
           {/* Buy Again Link */}
@@ -416,11 +472,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             <input
               type='number'
               step='0.1'
-              value={wine.ratings.abv}
+              value={wine.ratings.abv || ''}
               onChange={e =>
                 setWine({
                   ...wine,
-                  ratings: { ...wine.ratings, abv: parseFloat(e.target.value) || 0 },
+                  ratings: { ...wine.ratings, abv: e.target.value },
                 })
               }
               className='w-full p-3 bg-white/5 border border-white/20 rounded-lg '
@@ -436,11 +492,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               </label>
               <input
                 type='number'
-                value={wine.ratings.vn}
+                value={wine.ratings.vn || ''}
                 onChange={e =>
                   setWine({
                     ...wine,
-                    ratings: { ...wine.ratings, vn: parseInt(e.target.value) || 0 },
+                    ratings: { ...wine.ratings, vn: e.target.value },
                   })
                 }
                 className='w-full p-3 bg-white/5 border border-white/20 rounded-lg '
@@ -453,11 +509,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               </label>
               <input
                 type='number'
-                value={wine.ratings.jd}
+                value={wine.ratings.jd || ''}
                 onChange={e =>
                   setWine({
                     ...wine,
-                    ratings: { ...wine.ratings, jd: parseInt(e.target.value) || 0 },
+                    ratings: { ...wine.ratings, jd: e.target.value },
                   })
                 }
                 className='w-full p-3 bg-white/5 border border-white/20 rounded-lg '
@@ -470,11 +526,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               </label>
               <input
                 type='number'
-                value={wine.ratings.ws}
+                value={wine.ratings.ws || ''}
                 onChange={e =>
                   setWine({
                     ...wine,
-                    ratings: { ...wine.ratings, ws: parseInt(e.target.value) || 0 },
+                    ratings: { ...wine.ratings, ws: e.target.value },
                   })
                 }
                 className='w-full p-3 bg-white/5 border border-white/20 rounded-lg '
@@ -498,9 +554,9 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
           {/* Bottles */}
           <div>
             <label style={typography.body1R} className='block mb-2'>
-              Bottles<span style={{ color: '#FF6B6B', marginLeft: 4 }}>*</span>
+              Bottles
             </label>
-            <input type='number' value={wine.bottles} onChange={e => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Number of bottles' required />
+            <input type='number' value={wine.bottles} onChange={e => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Number of bottles' />
           </div>
 
           {/* Description */}
@@ -513,12 +569,9 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
 
           {/* Save Button */}
           <div className='fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50'>
-            <div className='flex gap-2'>
-              <Button variant='primary' onClick={handleSave} className='flex-1'>
+            <div className='flex flex-col-reverse md:flex-row gap-2'>
+              <Button variant='primary' onClick={handleSave} className='w-full'>
                 {isNewWine ? 'Add Wine' : 'Save'}
-              </Button>
-              <Button variant='secondary' onClick={() => onCancel && onCancel()}>
-                Cancel
               </Button>
             </div>
           </div>

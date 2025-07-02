@@ -90,31 +90,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/login', async (req, res) => {
     try {
       const { email, password } = req.body
-
+      
       if (!email || !password) {
-        return res.status(400).json({
-          success: false,
+        return res.status(400).json({ 
+          success: false, 
           error: 'Email and password are required',
         })
       }
 
       const user = await storage.authenticateUser(email, password)
-
+      
       if (user) {
-        res.json({
-          success: true,
+        res.json({ 
+          success: true, 
           user: { id: user.id, email: user.email, username: user.username },
         })
       } else {
-        res.status(401).json({
-          success: false,
+        res.status(401).json({ 
+          success: false, 
           error: 'Invalid email or password',
         })
       }
     } catch (error) {
       console.error('Authentication error:', error)
-      res.status(500).json({
-        success: false,
+      res.status(500).json({ 
+        success: false, 
         error: 'Authentication failed',
       })
     }
@@ -123,10 +123,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/register', async (req, res) => {
     try {
       const { email, password, username } = req.body
-
+      
       if (!email || !password) {
-        return res.status(400).json({
-          success: false,
+        return res.status(400).json({ 
+          success: false, 
           error: 'Email and password are required',
         })
       }
@@ -134,26 +134,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email)
       if (existingUser) {
-        return res.status(400).json({
-          success: false,
+        return res.status(400).json({ 
+          success: false, 
           error: 'User with this email already exists',
         })
       }
 
-      const newUser = await storage.createUser({
-        email,
-        password,
+      const newUser = await storage.createUser({ 
+        email, 
+        password, 
         username: username || email.split('@')[0],
       })
-
-      res.json({
-        success: true,
+      
+      res.json({ 
+        success: true, 
         user: { id: newUser.id, email: newUser.email, username: newUser.username },
       })
     } catch (error) {
       console.error('Registration error:', error)
-      res.status(500).json({
-        success: false,
+      res.status(500).json({ 
+        success: false, 
         error: 'Registration failed',
       })
     }
@@ -163,14 +163,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/status', async (_req, res) => {
     try {
       const apiStatus = await checkApiStatus()
-      res.json({
+      res.json({ 
         status: 'online',
         openai: apiStatus.isValid ? 'connected' : 'error',
         message: apiStatus.message,
       })
     } catch (err) {
       const error = err as any
-      res.json({
+      res.json({ 
         status: 'online',
         openai: 'error',
         message: error?.message || 'Failed to check API status',
@@ -186,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { wineId, wineName } = req.body
-
+      
       if (!wineId) {
         return res.status(400).json({ error: 'Wine ID is required' })
       }
@@ -204,19 +204,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const originalUploadPromise = new Promise((resolve, reject) => {
         cloudinary.uploader
           .upload_stream(
-            {
-              resource_type: 'image',
-              public_id: publicId,
-              folder: 'wine-collection',
+          {
+            resource_type: 'image',
+            public_id: publicId,
+            folder: 'wine-collection',
               transformation: [{ width: 800, height: 800, crop: 'limit', quality: 'auto' }],
-            },
-            (error, result) => {
-              if (error) {
+          },
+          (error, result) => {
+            if (error) {
                 reject(error)
-              } else {
+            } else {
                 resolve(result)
-              }
             }
+          }
           )
           .end(req.file!.buffer)
       })
@@ -231,39 +231,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         // Create transparent version using Cloudinary's background removal
         const transparentId = `${publicId}-transparent`
-
+        
         const transparentUploadPromise = new Promise((resolve, reject) => {
           cloudinary.uploader
             .upload_stream(
-              {
-                resource_type: 'image',
-                public_id: transparentId,
-                folder: 'wine-collection',
-                transformation: [
-                  { effect: 'background_removal' }, // Remove background
-                  { width: 800, height: 800, crop: 'limit', quality: 'auto' },
+            {
+              resource_type: 'image',
+              public_id: transparentId,
+              folder: 'wine-collection',
+              transformation: [
+                { effect: 'background_removal' }, // Remove background
+                { width: 800, height: 800, crop: 'limit', quality: 'auto' },
                   { format: 'png' }, // Ensure PNG format for transparency
                 ],
-              },
-              (error, result) => {
-                if (error) {
+            },
+            (error, result) => {
+              if (error) {
                   console.log(`Background removal failed, using original: ${error.message}`)
                   resolve(null) // Don't reject, just use original
-                } else {
+              } else {
                   resolve(result)
-                }
               }
+            }
             )
             .end(req.file!.buffer)
         })
 
         const transparentResult = (await transparentUploadPromise) as any
-
+        
         if (transparentResult) {
           console.log(`Created transparent version: ${transparentResult.public_id}`)
           finalImageUrl = transparentResult.secure_url
           transparentPublicId = transparentResult.public_id
-
+          
           // Delete the original since we have the transparent version
           try {
             await cloudinary.uploader.destroy(originalResult.public_id)
@@ -275,11 +275,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (backgroundRemovalError) {
         console.log(`Background removal process failed, using original: ${backgroundRemovalError}`)
       }
-
+      
       console.log(`Final wine image URL: ${finalImageUrl}`)
-
-      res.json({
-        success: true,
+      
+      res.json({ 
+        success: true, 
         imageUrl: finalImageUrl,
         publicId: transparentPublicId || originalResult.public_id,
         size: originalResult.bytes,
@@ -295,14 +295,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/delete-wine-image', async (req, res) => {
     try {
       const { publicId } = req.body
-
+      
       if (!publicId) {
         return res.status(400).json({ error: 'Public ID is required' })
       }
 
       // Delete from Cloudinary
       const deleteResult = await cloudinary.uploader.destroy(publicId)
-
+      
       if (deleteResult.result === 'ok') {
         console.log(`Deleted wine image from Cloudinary: ${publicId}`)
         res.json({ success: true, message: 'Image deleted successfully' })
@@ -319,7 +319,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/generate-wine-description', async (req, res) => {
     try {
       const { wineName, year } = req.body
-
+      
       if (!wineName) {
         return res.status(400).json({ error: 'Wine name is required' })
       }
@@ -357,15 +357,15 @@ Format: Return only the description text, no quotes or additional formatting.`
       )
 
       const description = response.content.trim()
-
+      
       if (!description) {
         throw new Error('No description generated')
       }
 
       console.log(`Generated description for ${wineName} ${year || ''}: ${description.substring(0, 50)}...`)
-
-      res.json({
-        success: true,
+      
+      res.json({ 
+        success: true, 
         description: description,
         wineName,
         year,
@@ -393,7 +393,7 @@ Format: Return only the description text, no quotes or additional formatting.`
       if (req.file.size < 5000) {
         // Less than 5KB indicates insufficient audio
         console.log('Audio file too small - using fallback')
-        return res.json({
+        return res.json({ 
           text: 'Tell me about this wine',
           success: true,
           fallback: true,
@@ -403,10 +403,10 @@ Format: Return only the description text, no quotes or additional formatting.`
       // Basic audio header validation for WebM
       const buffer = req.file.buffer
       const isWebM = buffer[0] === 0x1a && buffer[1] === 0x45 && buffer[2] === 0xdf && buffer[3] === 0xa3
-
+      
       if (!isWebM && !req.file.mimetype?.includes('audio')) {
         console.log('Invalid audio format - using fallback')
-        return res.json({
+        return res.json({ 
           text: 'What can you tell me about this wine?',
           success: true,
           fallback: true,
@@ -416,7 +416,7 @@ Format: Return only the description text, no quotes or additional formatting.`
       // Create a File object with proper format detection
       let filename = req.file.originalname || 'audio.webm'
       let mimetype = req.file.mimetype
-
+      
       // Ensure proper audio format for Whisper
       if (!mimetype || !mimetype.includes('audio')) {
         mimetype = 'audio/webm'
@@ -446,23 +446,23 @@ Format: Return only the description text, no quotes or additional formatting.`
 
       console.log(`Transcription result: ${transcription.substring(0, 100)}...`)
 
-      res.json({
+      res.json({ 
         text: transcription,
         success: true,
       })
     } catch (error) {
       console.error('Transcription error:', error)
-
+      
       // If transcription fails, provide fallback response to prevent UI hanging
       if (error instanceof Error && error.message.includes('timeout')) {
         console.log('Transcription timeout - using fallback text')
-        res.json({
+        res.json({ 
           text: 'Tell me about this wine',
           success: true,
           fallback: true,
         })
       } else {
-        res.status(500).json({
+        res.status(500).json({ 
           error: 'Failed to transcribe audio',
           details: error instanceof Error ? error.message : 'Unknown error',
         })
@@ -480,16 +480,16 @@ Format: Return only the description text, no quotes or additional formatting.`
       res.status(500).json({ message: 'Failed to fetch conversations' })
     }
   })
-
+  
   // Get the most recent conversation
   app.get('/api/conversations/recent', async (_req, res) => {
     try {
       const conversation = await storage.getMostRecentConversation()
-
+      
       if (!conversation) {
         return res.status(404).json({ message: 'No conversations found' })
       }
-
+      
       res.json(conversation)
     } catch (error) {
       console.error('Error fetching most recent conversation:', error)
@@ -514,11 +514,11 @@ Format: Return only the description text, no quotes or additional formatting.`
     try {
       const id = parseInt(req.params.id)
       const conversation = await storage.getConversation(id)
-
+      
       if (!conversation) {
         return res.status(404).json({ message: 'Conversation not found' })
       }
-
+      
       res.json(conversation)
     } catch (error) {
       console.error('Error fetching conversation:', error)
@@ -530,7 +530,7 @@ Format: Return only the description text, no quotes or additional formatting.`
   // app.delete("/api/conversations/:id", async (req, res) => {
   //   try {
   //     const idParam = req.params.id;
-
+      
   //     if (idParam === "clear-all") {
   //       // Delete all conversations
   //       const conversations = await storage.getAllConversations();
@@ -583,37 +583,37 @@ Format: Return only the description text, no quotes or additional formatting.`
   app.post('/api/messages', async (req, res) => {
     try {
       const { content, role, conversationId } = req.body
-
+      
       // Validate required fields
       if (!content || !role || !conversationId) {
-        return res.status(400).json({
+        return res.status(400).json({ 
           message: 'Missing required fields',
           required: ['content', 'role', 'conversationId'],
         })
       }
-
+      
       // Validate role
       if (!['user', 'assistant', 'system'].includes(role)) {
-        return res.status(400).json({
+        return res.status(400).json({ 
           message: 'Invalid role. Must be user, assistant, or system',
         })
       }
-
+      
       // Check if conversation exists
       const conversation = await storage.getConversation(conversationId)
       if (!conversation) {
-        return res.status(404).json({
+        return res.status(404).json({ 
           message: 'Conversation not found',
         })
       }
-
+      
       // Create the message
       const message = await storage.createMessage({
         content,
         role,
         conversationId,
       })
-
+      
       res.status(201).json(message)
     } catch (error) {
       console.error('Error adding message:', error)
@@ -625,7 +625,7 @@ Format: Return only the description text, no quotes or additional formatting.`
   app.post('/api/chat', async (req, res) => {
     // Define here so it's accessible in the catch block
     let validatedData: ChatCompletionRequest | undefined
-
+    
     try {
       // Safari debugging: log the incoming request
       console.log('=== Chat API Request Debug ===')
@@ -633,17 +633,17 @@ Format: Return only the description text, no quotes or additional formatting.`
       console.log('Body type:', typeof req.body)
       console.log('Body content:', JSON.stringify(req.body, null, 2))
       console.log('User-Agent:', req.headers['user-agent'])
-
+      
       // Safari compatibility: detect Safari and use relaxed validation
       const userAgent = req.headers['user-agent'] || ''
       const isSafari = userAgent.includes('Safari') && !userAgent.includes('Chrome')
-
+      
       if (isSafari) {
         console.log('Safari detected - using relaxed validation')
-
+        
         // Safari compatibility: handle malformed or different request structure
         let requestBody = req.body
-
+        
         // Handle potential Safari request body issues
         if (typeof requestBody === 'string') {
           try {
@@ -653,13 +653,13 @@ Format: Return only the description text, no quotes or additional formatting.`
             throw new Error('Invalid JSON format')
           }
         }
-
+        
         // Manual validation for Safari with flexible field handling
         if (!requestBody.messages || !Array.isArray(requestBody.messages)) {
           console.log('Safari: Missing or invalid messages array')
           throw new Error('Messages array is required')
         }
-
+        
         // Validate message structure for Safari
         for (const msg of requestBody.messages) {
           if (!msg.role || !msg.content) {
@@ -667,7 +667,7 @@ Format: Return only the description text, no quotes or additional formatting.`
             throw new Error('Each message must have role and content')
           }
         }
-
+        
         // Create Safari-compatible validated data with type coercion
         validatedData = {
           messages: requestBody.messages,
@@ -675,7 +675,7 @@ Format: Return only the description text, no quotes or additional formatting.`
           wineData: requestBody.wineData || undefined,
           optimize_for_speed: Boolean(requestBody.optimize_for_speed),
         }
-
+        
         console.log('Safari validation successful:', {
           messageCount: validatedData.messages.length,
           hasConversationId: !!validatedData.conversationId,
@@ -685,14 +685,14 @@ Format: Return only the description text, no quotes or additional formatting.`
         // Validate request normally for other browsers
         validatedData = chatCompletionRequestSchema.parse(req.body)
       }
-
+      
       // Get messages from request
       const { messages, conversationId, wineData } = validatedData
-
+      
       // Check for text-only request flags
       const isTextOnly = req.body.text_only === true || req.body.disable_audio === true
       console.log('Chat request flags:', { text_only: req.body.text_only, disable_audio: req.body.disable_audio, isTextOnly })
-
+      
       // Handle conversation existence - create if needed
       let actualConversationId = conversationId
       if (conversationId) {
@@ -712,7 +712,7 @@ Format: Return only the description text, no quotes or additional formatting.`
           }
         }
       }
-
+      
       // Fetch previous messages for context if conversationId is provided
       let allMessages = messages
       if (actualConversationId) {
@@ -722,27 +722,27 @@ Format: Return only the description text, no quotes or additional formatting.`
           role: msg.role as any,
           content: msg.content,
         }))
-
+        
         // Use conversation summarization instead of message cropping
         const messagesWithoutSystem = formattedPreviousMessages.filter(msg => msg.role !== 'system')
-
+        
         if (messagesWithoutSystem.length > 10) {
           // Generate summary of older messages to preserve context
           const olderMessages = messagesWithoutSystem.slice(0, -6) // Keep last 6 messages
           const recentMessages = messagesWithoutSystem.slice(-6)
-
+          
           if (olderMessages.length > 0) {
             console.log(`Summarizing ${olderMessages.length} older messages for context preservation`)
-
+            
             // Create conversation summary
             const conversationSummary = await generateConversationSummary(olderMessages, wineData)
-
+            
             // Create summary message
             const summaryMessage = {
               role: 'assistant' as const,
               content: `[Previous conversation summary: ${conversationSummary}]`,
             }
-
+            
             // Combine summary with recent messages and current message
             allMessages = [summaryMessage, ...recentMessages, ...messages]
           } else {
@@ -753,16 +753,16 @@ Format: Return only the description text, no quotes or additional formatting.`
           allMessages = [...messagesWithoutSystem, ...messages]
         }
       }
-
+      
       // Check if streaming is requested
       const enableStreaming = process.env.ENABLE_STREAMING === 'true'
       const requestStreaming = req.headers['accept'] === 'text/event-stream'
-
+      
       if (enableStreaming && requestStreaming) {
         // LATENCY MEASUREMENT: Start timing the entire response pipeline
         const pipelineStartTime = performance.now()
         console.log('🚀 Starting streaming response pipeline with latency measurement')
-
+        
         // Set up Server-Sent Events for real-time streaming
         res.writeHead(200, {
           'Content-Type': 'text/event-stream',
@@ -771,12 +771,12 @@ Format: Return only the description text, no quotes or additional formatting.`
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Headers': 'Cache-Control',
         })
-
+        
         try {
           // LATENCY MEASUREMENT: OpenAI API call start
           const apiCallStart = performance.now()
           console.log('📡 Starting OpenAI API call')
-
+          
           // Start streaming response from OpenAI
           const stream = await chatCompletionStream(allMessages, wineData)
           let fullContent = ''
@@ -787,19 +787,19 @@ Format: Return only the description text, no quotes or additional formatting.`
           const apiCallEnd = performance.now()
           const apiLatency = apiCallEnd - apiCallStart
           console.log(`⚡ OpenAI API responded in: ${apiLatency.toFixed(2)}ms`)
-
+          
           for await (const chunk of stream) {
             const delta = chunk.choices?.[0]?.delta?.content
             if (delta) {
               tokenCount++
               fullContent += delta
-
+              
               // LATENCY MEASUREMENT: First token received
               if (!firstTokenReceived) {
                 firstTokenReceived = true
                 const firstTokenLatency = performance.now() - pipelineStartTime
                 console.log(`🎯 FIRST TOKEN RECEIVED: ${firstTokenLatency.toFixed(2)}ms total latency`)
-
+                
                 // Only start TTS for non-text-only requests
                 if (!isTextOnly) {
                   console.log('🔊 Starting progressive TTS with first token')
@@ -807,12 +807,12 @@ Format: Return only the description text, no quotes or additional formatting.`
                 } else {
                   console.log('📝 Text-only request - skipping TTS processing')
                 }
-
+                
                 res.write(
                   `data: ${JSON.stringify({
-                    type: 'first_token',
-                    content: delta,
-                    start_tts: !isTextOnly,
+                  type: 'first_token', 
+                  content: delta,
+                  start_tts: !isTextOnly,
                     latency: firstTokenLatency,
                   })}\n\n`
                 )
@@ -822,22 +822,22 @@ Format: Return only the description text, no quotes or additional formatting.`
                   await ttsProcessor.processTokens(delta)
                 }
               }
-
+              
               // Stream each token for real-time display
               res.write(
                 `data: ${JSON.stringify({
-                  type: 'token',
-                  content: delta,
+                type: 'token', 
+                content: delta,
                   token_number: tokenCount,
                 })}\n\n`
               )
             }
           }
-
+          
           // LATENCY MEASUREMENT: Complete response received
           const completeResponseLatency = performance.now() - pipelineStartTime
           console.log(`✅ Complete response received: ${completeResponseLatency.toFixed(2)}ms, ${tokenCount} tokens`)
-
+          
           // Get all processed TTS audio buffers (only for non-text-only requests)
           let audioBuffers: Buffer[] = []
           if (!isTextOnly) {
@@ -848,7 +848,7 @@ Format: Return only the description text, no quotes or additional formatting.`
           } else {
             console.log(`📝 Text-only request - no audio buffers generated`)
           }
-
+          
           // Save messages to storage
           if (actualConversationId) {
             await storage.createMessage({
@@ -856,18 +856,18 @@ Format: Return only the description text, no quotes or additional formatting.`
               role: 'user',
               conversationId: actualConversationId,
             })
-
+            
             await storage.createMessage({
               content: fullContent,
               role: 'assistant',
               conversationId: actualConversationId,
             })
           }
-
+          
           // Send completion signal
           res.write(
             `data: ${JSON.stringify({
-              type: 'complete',
+            type: 'complete', 
               conversationId: actualConversationId,
             })}\n\n`
           )
@@ -875,24 +875,24 @@ Format: Return only the description text, no quotes or additional formatting.`
           console.error('Streaming error:', streamError)
           res.write(
             `data: ${JSON.stringify({
-              type: 'error',
+            type: 'error', 
               message: 'Streaming failed, falling back to regular response',
             })}\n\n`
           )
         }
-
+        
         res.end()
         return
       }
-
+      
       // Fallback to regular response with timeout protection
       const chatPromise = chatCompletion(allMessages, wineData)
       const chatTimeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Chat completion timeout after 20 seconds')), 20000)
       })
-
+      
       const response = (await Promise.race([chatPromise, chatTimeoutPromise])) as any
-
+      
       // Generate audio only if not text-only request
       let audioBuffers: Buffer[] = []
       if (!isTextOnly && response.content) {
@@ -908,7 +908,7 @@ Format: Return only the description text, no quotes or additional formatting.`
       } else {
         console.log('📝 Text-only request - no audio generation for regular response')
       }
-
+      
       // Save message to storage if conversation exists
       if (actualConversationId) {
         // Save user message
@@ -917,7 +917,7 @@ Format: Return only the description text, no quotes or additional formatting.`
           role: 'user',
           conversationId: actualConversationId,
         })
-
+        
         // Save assistant response
         await storage.createMessage({
           content: response.content,
@@ -925,7 +925,7 @@ Format: Return only the description text, no quotes or additional formatting.`
           conversationId: actualConversationId,
         })
       }
-
+      
       // Return response with audio buffers (empty for text-only)
       res.json({
         message: {
@@ -941,27 +941,27 @@ Format: Return only the description text, no quotes or additional formatting.`
       console.error('Error stack:', error?.stack)
       console.error('Error type:', typeof error)
       console.error('Error properties:', Object.keys(error || {}))
-
+      
       // Handle validation errors with detailed Safari debugging
       if (error instanceof z.ZodError) {
         console.log('=== Validation Error Details ===')
         console.log('Zod errors:', JSON.stringify(error.errors, null, 2))
         console.log('Failed validation for request body:', JSON.stringify(req.body, null, 2))
-
-        return res.status(400).json({
+        
+        return res.status(400).json({ 
           message: 'Invalid request data',
           errors: error.errors,
           receivedData: req.body, // Safari debugging
         })
       }
-
+      
       // Check if it's a quota exceeded error
       const isQuotaError = error.message && (error.message.includes('quota') || error.message.includes('rate limit') || error.message.includes('insufficient_quota'))
-
+      
       // Handle quota exceeded error with a friendly message
       if (isQuotaError) {
         const friendlyMessage = "I apologize, but I'm currently experiencing issues with my service. " + 'The OpenAI API quota has been exceeded. Please try again later or contact support to update your API key quota.'
-
+        
         // Only try to save messages if we have valid data and a conversation ID
         const conversationId = validatedData?.conversationId
         if (conversationId && validatedData?.messages && validatedData.messages.length > 0) {
@@ -974,7 +974,7 @@ Format: Return only the description text, no quotes or additional formatting.`
                 role: 'user',
                 conversationId,
               })
-
+              
               // Save our error response
               await storage.createMessage({
                 content: friendlyMessage,
@@ -986,7 +986,7 @@ Format: Return only the description text, no quotes or additional formatting.`
             console.error('Error saving quota error message:', storageError)
           }
         }
-
+        
         // Return the friendly error message as an assistant response
         return res.json({
           message: {
@@ -997,11 +997,11 @@ Format: Return only the description text, no quotes or additional formatting.`
           conversationId,
         })
       }
-
+      
       // Handle timeout errors
       if (error?.message?.includes('timeout')) {
         const timeoutMessage = "I'm taking a moment to think about your question. Please try asking again."
-
+        
         // Save timeout message if we have conversation context
         const conversationId = validatedData?.conversationId
         if (conversationId && validatedData?.messages && validatedData.messages.length > 0) {
@@ -1013,7 +1013,7 @@ Format: Return only the description text, no quotes or additional formatting.`
                 role: 'user',
                 conversationId,
               })
-
+              
               await storage.createMessage({
                 content: timeoutMessage,
                 role: 'assistant',
@@ -1024,7 +1024,7 @@ Format: Return only the description text, no quotes or additional formatting.`
             console.error('Error saving timeout message:', storageError)
           }
         }
-
+        
         return res.json({
           message: {
             role: 'assistant',
@@ -1034,11 +1034,11 @@ Format: Return only the description text, no quotes or additional formatting.`
           conversationId,
         })
       }
-
+      
       // Handle network errors
       if (error?.code === 'ENOTFOUND' || error?.code === 'ECONNREFUSED') {
         const networkMessage = "I'm having trouble connecting right now. Please check your internet connection and try again."
-
+        
         return res.json({
           message: {
             role: 'assistant',
@@ -1047,11 +1047,11 @@ Format: Return only the description text, no quotes or additional formatting.`
           error: 'NETWORK_ERROR',
         })
       }
-
+      
       // Handle OpenAI API errors
       if (error?.status) {
         let apiErrorMessage = "I'm experiencing technical difficulties. Please try again in a moment."
-
+        
         if (error.status === 429) {
           apiErrorMessage = "I'm currently busy with other requests. Please wait a moment and try again."
         } else if (error.status === 503) {
@@ -1059,7 +1059,7 @@ Format: Return only the description text, no quotes or additional formatting.`
         } else if (error.status >= 400 && error.status < 500) {
           apiErrorMessage = 'There was an issue with your request. Please try rephrasing your question.'
         }
-
+        
         return res.json({
           message: {
             role: 'assistant',
@@ -1068,10 +1068,10 @@ Format: Return only the description text, no quotes or additional formatting.`
           error: `API_ERROR_${error.status}`,
         })
       }
-
+      
       // Generic fallback error with user-friendly message
       const fallbackMessage = 'I encountered an unexpected issue. Please try asking your question again.'
-
+      
       res.status(500).json({
         message: {
           role: 'assistant',
@@ -1086,21 +1086,21 @@ Format: Return only the description text, no quotes or additional formatting.`
   app.get('/api/suggestion-pills/:wineKey', async (req, res) => {
     try {
       const { wineKey } = req.params
-
+      
       // Get used pills for this wine
       const usedPills = await storage.getUsedSuggestionPills(wineKey)
       const usedPillIds = usedPills.map(pill => pill.suggestionId)
-
+      
       // Filter out used pills from available suggestions
       let availablePills = suggestionPillsData.suggestions.filter(suggestion => !usedPillIds.includes(suggestion.id))
-
+      
       // Keep suggestions stable - don't auto-cycle when all are used
       // Users can manually reset if they want to see suggestions again
       if (availablePills.length === 0) {
         console.log(`All suggestions used for wine ${wineKey} - returning empty set (no auto-cycle)`)
         availablePills = [] // Return empty array instead of cycling
       }
-
+      
       res.json({ suggestions: availablePills })
     } catch (error) {
       console.error('Error fetching suggestion pills:', error)
@@ -1139,7 +1139,7 @@ Format: Return only the description text, no quotes or additional formatting.`
 
   //     // Validate required fields
   //     if (!firstName || !lastName || !email || !phone) {
-  //       return res.status(400).json({
+  //       return res.status(400).json({ 
   //         message: "All fields are required",
   //         errors: {
   //           firstName: !firstName ? "First name is required" : "",
@@ -1168,16 +1168,16 @@ Format: Return only the description text, no quotes or additional formatting.`
   //     }
 
   //     // Return success response
-  //     res.json({
-  //       success: true,
-  //       message: "Contact information saved successfully"
+  //     res.json({ 
+  //       success: true, 
+  //       message: "Contact information saved successfully" 
   //     });
 
   //   } catch (error: any) {
   //     console.error("Error saving contact data:", error);
-  //     res.status(500).json({
+  //     res.status(500).json({ 
   //       message: "Failed to save contact information",
-  //       error: error?.message || "Unknown error"
+  //       error: error?.message || "Unknown error" 
   //     });
   //   }
   // });
@@ -1186,14 +1186,14 @@ Format: Return only the description text, no quotes or additional formatting.`
   app.get('/api/chat-stream', async (req, res) => {
     try {
       const { messages, conversationId, wineData, optimize_for_speed } = req.query
-
+      
       // Parse query parameters
       const parsedMessages = messages ? JSON.parse(messages as string) : []
       const parsedWineData = wineData ? JSON.parse(wineData as string) : null
       const actualConversationId = conversationId ? parseInt(conversationId as string) : null
 
       console.log('Starting streaming response for first-token TTS')
-
+      
       // Set up Server-Sent Events
       res.writeHead(200, {
         'Content-Type': 'text/event-stream',
@@ -1202,31 +1202,31 @@ Format: Return only the description text, no quotes or additional formatting.`
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Cache-Control',
       })
-
+      
       // Start streaming response with parallel TTS processing
       const streamStartTime = performance.now()
       const stream = await chatCompletionStream(parsedMessages, parsedWineData)
       let fullContent = ''
       let firstTokenReceived = false
       let tokenCount = 0
-
+      
       // Initialize parallel TTS processor for background audio generation
       const openaiModule = await import('./openai.js')
       const ttsProcessor = new openaiModule.ParallelTTSProcessor()
-
+      
       console.log('Server-Sent Events streaming with parallel TTS initiated')
-
+      
       for await (const chunk of stream) {
         const chunkReceiveTime = performance.now()
         const delta = chunk.choices?.[0]?.delta?.content
-
+        
         if (delta) {
           fullContent += delta
           tokenCount++
-
+          
           // Process tokens in parallel for TTS without blocking stream
           ttsProcessor.processTokens(delta)
-
+          
           // Send first token immediately for instant TTS trigger
           if (!firstTokenReceived) {
             firstTokenReceived = true
@@ -1235,21 +1235,21 @@ Format: Return only the description text, no quotes or additional formatting.`
 
             res.write(
               `data: ${JSON.stringify({
-                type: 'first_token',
-                content: delta,
-                start_tts: true,
+              type: 'first_token', 
+              content: delta,
+              start_tts: true,
                 latency: firstTokenLatency,
               })}\n\n`
             )
-
+            
             // Start immediate TTS with first token
             try {
               const { textToSpeech } = await import('./openai.js')
               const firstAudio = await textToSpeech(delta)
               res.write(
                 `data: ${JSON.stringify({
-                  type: 'audio_ready',
-                  audio_size: firstAudio.length,
+                type: 'audio_ready', 
+                audio_size: firstAudio.length,
                   is_first: true,
                 })}\n\n`
               )
@@ -1260,23 +1260,23 @@ Format: Return only the description text, no quotes or additional formatting.`
             // Stream subsequent tokens
             res.write(
               `data: ${JSON.stringify({
-                type: 'token',
-                content: delta,
+              type: 'token', 
+              content: delta,
                 token_count: tokenCount,
               })}\n\n`
             )
           }
         }
       }
-
+      
       // Get all processed audio from parallel TTS
       try {
         const audioBuffers = await ttsProcessor.getAllProcessedAudio()
         if (audioBuffers.length > 0) {
           res.write(
             `data: ${JSON.stringify({
-              type: 'parallel_audio_ready',
-              audio_chunks: audioBuffers.length,
+            type: 'parallel_audio_ready', 
+            audio_chunks: audioBuffers.length,
               total_size: audioBuffers.reduce((sum: number, buf: Buffer) => sum + buf.length, 0),
             })}\n\n`
           )
@@ -1284,7 +1284,7 @@ Format: Return only the description text, no quotes or additional formatting.`
       } catch (parallelAudioError) {
         console.error('Parallel TTS processing error:', parallelAudioError)
       }
-
+      
       // Save messages to storage
       if (actualConversationId) {
         await storage.createMessage({
@@ -1292,29 +1292,29 @@ Format: Return only the description text, no quotes or additional formatting.`
           role: 'user',
           conversationId: actualConversationId,
         })
-
+        
         await storage.createMessage({
           content: fullContent,
           role: 'assistant',
           conversationId: actualConversationId,
         })
       }
-
+      
       // Send completion signal
       res.write(
         `data: ${JSON.stringify({
-          type: 'complete',
+        type: 'complete', 
           conversationId: actualConversationId,
         })}\n\n`
       )
-
+      
       console.log('Streaming completed successfully')
       res.end()
     } catch (error) {
       console.error('Streaming error:', error)
       res.write(
         `data: ${JSON.stringify({
-          type: 'error',
+        type: 'error', 
           message: 'Streaming failed',
         })}\n\n`
       )
@@ -1329,18 +1329,18 @@ Format: Return only the description text, no quotes or additional formatting.`
   app.post('/api/text-to-speech', async (req, res) => {
     try {
       console.log('Received text-to-speech request')
-
+      
       // Create a schema for text-to-speech request
       const textToSpeechSchema = z.object({
         text: z.string().min(1).max(4000),
       })
-
+      
       // Log request body
       console.log('Text-to-speech request body received')
-
+      
       // Validate the request
       const validationResult = textToSpeechSchema.safeParse(req.body)
-
+      
       if (!validationResult.success) {
         console.log('Invalid text-to-speech request:', validationResult.error.format())
         return res.status(400).json({
@@ -1351,43 +1351,43 @@ Format: Return only the description text, no quotes or additional formatting.`
 
       const { text } = validationResult.data
       console.log('Received TTS request for text:', text.substring(0, 50) + '...')
-
+      
       // Create a unique request key for deduplication
       const requestKey = `${text.trim()}`
-
+      
       // Check if there's already an active request for this text
       if (activeRequests.has(requestKey)) {
         console.log('Deduplicating TTS request - using existing request')
         const audioBuffer = await activeRequests.get(requestKey)!
-
+        
         // Set proper headers
         res.set({
           'Content-Type': 'audio/mpeg',
           'Content-Length': audioBuffer.length.toString(),
           'Cache-Control': 'no-cache',
         })
-
+        
         // Send the audio file
         res.send(audioBuffer)
         console.log('Sent deduplicated audio response, size:', audioBuffer.length)
         return
       }
-
+      
       // Create new TTS request
       const requestPromise = textToSpeech(text)
       activeRequests.set(requestKey, requestPromise)
-
+      
       try {
         // Convert text to speech
         const audioBuffer = await requestPromise
-
+        
         // Set proper headers
         res.set({
           'Content-Type': 'audio/mpeg',
           'Content-Length': audioBuffer.length.toString(),
           'Cache-Control': 'no-cache',
         })
-
+        
         // Send the audio file
         res.send(audioBuffer)
         console.log('Sent audio response, size:', audioBuffer.length)
@@ -1398,10 +1398,10 @@ Format: Return only the description text, no quotes or additional formatting.`
     } catch (err) {
       const error = err as any
       console.error('Error in text-to-speech endpoint:', error)
-
+      
       // Check if this is a quota exceeded error
       const isQuotaError = error.message && (error.message.includes('quota') || error.message.includes('rate limit') || error.message.includes('insufficient_quota'))
-
+      
       if (isQuotaError) {
         // For TTS errors, we return a special status code that our client can recognize
         // The client will then fall back to browser-based speech synthesis
@@ -1411,7 +1411,7 @@ Format: Return only the description text, no quotes or additional formatting.`
           fallback: true,
         })
       }
-
+      
       // For other errors
       res.status(500).json({
         message: 'Failed to convert text to speech',
@@ -1437,12 +1437,12 @@ Format: Return only the description text, no quotes or additional formatting.`
       if (isNaN(id)) {
         return res.status(400).json({ message: 'Invalid tenant ID' })
       }
-
+      
       const tenant = await storage.getTenant(id)
       if (!tenant) {
         return res.status(404).json({ message: 'Winary not found' })
       }
-
+      
       res.json(tenant)
     } catch (error) {
       console.error('Error fetching tenant:', error)
@@ -1454,11 +1454,11 @@ Format: Return only the description text, no quotes or additional formatting.`
     try {
       const slug = req.params.slug
       const tenant = await storage.getTenantByTenantName(slug)
-
+      
       if (!tenant) {
         return res.status(404).json({ message: 'Winary not found' })
       }
-
+      
       res.json(tenant)
     } catch (error) {
       console.error('Error fetching tenant by slug:', error)
@@ -1476,7 +1476,7 @@ Format: Return only the description text, no quotes or additional formatting.`
       res.status(201).json(tenant)
     } catch (error) {
       console.error('Error creating tenant:', error)
-      res.status(500).json({
+      res.status(500).json({ 
         message: 'Failed to create winary',
         error: error instanceof Error ? error.message : String(error),
       })
@@ -1510,7 +1510,7 @@ Format: Return only the description text, no quotes or additional formatting.`
       if (isNaN(id)) {
         return res.status(400).json({ message: 'Invalid winary ID' })
       }
-
+      
       await storage.deleteTenant(id)
       res.status(204).send()
     } catch (error) {
@@ -1650,7 +1650,7 @@ Format: Return only the description text, no quotes or additional formatting.`
       const { detectWineType, getWineTypeImagePath } = await import('../shared/wineTypeDetection.js')
       const detectedType = detectWineType(wineName)
       const imagePath = getWineTypeImagePath(detectedType)
-
+      
       res.json({
         wineName,
         detectedType,
@@ -1666,9 +1666,9 @@ Format: Return only the description text, no quotes or additional formatting.`
   app.post('/api/generate-tasting-notes', async (req, res) => {
     try {
       console.log('Received AI tasting notes generation request')
-
+      
       const { wineName, wineYear, wineLocation, wineDescription, abv } = req.body
-
+      
       if (!wineName) {
         return res.status(400).json({ error: 'Wine name is required' })
       }
@@ -1722,7 +1722,7 @@ Provide 6 detailed tasting note categories with professional sommelier-level des
       }))
 
       console.log(`Generated ${formattedNotes.length} tasting notes for ${wineName}`)
-
+      
       res.json({
         tastingNotes: formattedNotes,
         wine: {
@@ -1733,15 +1733,15 @@ Provide 6 detailed tasting note categories with professional sommelier-level des
       })
     } catch (error) {
       console.error('Error generating tasting notes:', error)
-
+      
       // Check for quota errors
       if (error instanceof Error && error.message.includes('quota')) {
-        return res.status(429).json({
+        return res.status(429).json({ 
           error: 'API quota exceeded. Please try again later.',
         })
       }
-
-      res.status(500).json({
+      
+      res.status(500).json({ 
         error: 'Failed to generate tasting notes. Please try again.',
       })
     }
@@ -1751,9 +1751,9 @@ Provide 6 detailed tasting note categories with professional sommelier-level des
   app.post('/api/generate-food-pairings', async (req, res) => {
     try {
       console.log('Received AI food pairing generation request')
-
+      
       const { wineName, wineYear, wineLocation, wineDescription, abv } = req.body
-
+      
       if (!wineName) {
         return res.status(400).json({ error: 'Wine name is required' })
       }
@@ -1809,7 +1809,7 @@ Provide 8-10 detailed food pairings across different categories (appetizers, mai
       }))
 
       console.log(`Generated ${formattedPairings.length} food pairings for ${wineName}`)
-
+      
       res.json({
         foodPairings: formattedPairings,
         wine: {
@@ -1820,15 +1820,15 @@ Provide 8-10 detailed food pairings across different categories (appetizers, mai
       })
     } catch (error) {
       console.error('Error generating food pairings:', error)
-
+      
       // Check for quota errors
       if (error instanceof Error && error.message.includes('quota')) {
-        return res.status(429).json({
+        return res.status(429).json({ 
           error: 'API quota exceeded. Please try again later.',
         })
       }
-
-      res.status(500).json({
+      
+      res.status(500).json({ 
         error: 'Failed to generate food pairings. Please try again.',
       })
     }
