@@ -5,22 +5,7 @@ import AppHeader, { HeaderSpacer } from '@/components/layout/AppHeader'
 import Button from '@/components/ui/buttons/Button'
 import typography from '@/styles/typography'
 import { DataSyncManager } from '@/utils/dataSync'
-
-interface Wine {
-  id: number
-  name: string
-  year?: number
-  image: string
-  bottles: number
-  ratings: {
-    vn: number
-    jd: number
-    ws: number
-    abv: number
-  }
-  location?: string
-  description?: string
-}
+import { Wine } from '@/types/wine'
 
 interface FoodPairing {
   id: string
