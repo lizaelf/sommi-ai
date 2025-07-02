@@ -1431,6 +1431,25 @@ Format: Return only the description text, no quotes or additional formatting.`
     }
   })
 
+  app.get('/api/tenantByName/:tenantName', async (req, res) => {
+    try {
+      const { tenantName } = req.params
+      console.log('Searching for tenant with name:', tenantName)
+
+      const tenant = await storage.getTenantByTenantName(tenantName)
+      console.log('Found tenant:', tenant ? 'yes' : 'no')
+
+      if (!tenant) {
+        return res.status(404).json({ message: 'Winary not found' })
+      }
+
+      res.json(tenant)
+    } catch (error) {
+      console.error('Error fetching tenant by tenantName:', error)
+      res.status(500).json({ message: 'Failed to fetch winary' })
+    }
+  })
+
   app.get('/api/tenants/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id)
@@ -1446,22 +1465,6 @@ Format: Return only the description text, no quotes or additional formatting.`
       res.json(tenant)
     } catch (error) {
       console.error('Error fetching tenant:', error)
-      res.status(500).json({ message: 'Failed to fetch winary' })
-    }
-  })
-
-  app.get('/api/tenantByName/:tenantName', async (req, res) => {
-    try {
-      const tenantName = req.params.tenantName
-      const tenant = await storage.getTenantByTenantName(tenantName)
-
-      if (!tenant) {
-        return res.status(404).json({ message: 'Winary not found' })
-      }
-
-      res.json(tenant)
-    } catch (error) {
-      console.error('Error fetching tenant by tenantName', error)
       res.status(500).json({ message: 'Failed to fetch winary' })
     }
   })
