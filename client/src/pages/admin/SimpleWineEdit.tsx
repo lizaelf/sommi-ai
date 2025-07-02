@@ -25,9 +25,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   const [uploading, setUploading] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  console.log('SimpleWineEdit', wine)
   useEffect(() => {
-    console.log('SimpleWineEdit useEffect:', { propWine: !!propWine, propWineId: propWine?.id })
     if (propWine) {
       setWine(propWine)
       setIsNewWine(false)
@@ -176,10 +174,6 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
     }
     if (onSave) onSave(wine)
   }
-
-  const pageTitle = isNewWine ? 'Add New Wine' : 'Edit Wine'
-
-  console.log('SimpleWineEdit render:', { isNewWine, propWine: !!propWine, wineId: wine?.id })
 
   if (loading) {
     return <div>Loading wine data...</div>
