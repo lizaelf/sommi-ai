@@ -12,7 +12,6 @@ import HomeGlobal from '@/pages/end-user/HomeGlobal'
 import WineScan from '@/pages/end-user/WineScan'
 import SimpleWineEdit from '@/pages/admin/SimpleWineEdit'
 
-import TenantAdmin from '@/pages/admin/TenantAdmin'
 import Admin from '@/pages/admin/Admin'
 import TenantCreate from '@/pages/admin/TenantCreate'
 import QRCodes from '@/pages/end-user/QRCodes'
@@ -65,7 +64,6 @@ const SimpleWineEditRoute = () => <SimpleWineEdit />
 function Router() {
   return (
     <Switch>
-      <Route path='/tenant-admin' component={TenantAdmin} /> /// deprecated ////////////// admin routes
       <Route path='/admin' component={Admin} />
       <Route path='/tenant-create' component={TenantCreate} />
       <Route path='/tenant-edit/:id' component={TenantEdit} />
