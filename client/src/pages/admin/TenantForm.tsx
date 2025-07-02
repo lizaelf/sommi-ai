@@ -125,7 +125,7 @@ function getQueryParam(search: string, key: string): string | null {
   return params.get(key)
 }
 
-// Додаю валідацію tenantName
+// Add tenantName validation
 const validateTenantName = (name: string) => /^[a-zA-Z0-9_-]+$/.test(name)
 
 const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
@@ -145,14 +145,14 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
   const isCreateMode = mode === 'create'
 
-  // Мемоізуємо tenantId для запобігання зайвих ре-рендерів
+  // Memoize tenantId to avoid unnecessary re-renders
   const tenantId = useMemo(() => {
     if (!id || id === 'new') return null
     const parsed = parseInt(id)
     return isNaN(parsed) ? null : parsed
   }, [id])
 
-  // Використовуємо useCallback для стабільних функцій
+  // Use useCallback for stable functions
   const handleCancel = useCallback(() => {
     setLocation(`/admin`)
   }, [setLocation])
@@ -239,7 +239,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
           toastError('Invalid tenant ID')
           return
         }
-        // Видаляємо createdAt/updatedAt перед оновленням
+        // Remove createdAt/updatedAt before updating
         const { createdAt, updatedAt, ...dataToUpdate } = tenant as any
         await updateTenant(tenantId, dataToUpdate)
         toastSuccess('Tenant updated successfully')
@@ -285,33 +285,33 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     setLocation(`${base}?tab=${key}`)
   }
 
-  // --- Додаю функції для роботи з масивом вин ---
+  // --- Add functions for working with the wine array ---
   const handleSaveWine = async (wine: Wine) => {
     console.log('handleSaveWine', wine)
 
-    // Оновлюємо локальний стан
+    // Update local state
     setTenant(prev => {
       if (!prev) return prev
       const wines = prev.wineEntries ? [...prev.wineEntries] : []
       if (editingWineIndex === null) {
         wines.push(wine)
       } else {
-        // Оновлюємо існуюче
+        // Update existing
         wines[editingWineIndex] = wine
       }
       return { ...prev, wineEntries: wines }
     })
 
-    // Якщо це не новий tenant (тобто він вже існує в базі), зберігаємо зміни одразу
+    // If this is not a new tenant (i.e., it already exists in the database), save changes immediately
     if (!isNewTenant && tenantId) {
       try {
-        // Отримуємо поточний стан tenant з оновленими винами
+        // Get the current tenant state with updated wines
         const updatedTenant = {
           ...tenant,
           wineEntries: editingWineIndex === null ? [...(tenant?.wineEntries || []), wine] : tenant?.wineEntries?.map((w, idx) => (idx === editingWineIndex ? wine : w)) || [],
         }
 
-        // Видаляємо createdAt/updatedAt перед оновленням
+        // Remove createdAt/updatedAt before updating
         const { createdAt, updatedAt, ...dataToUpdate } = updatedTenant as any
 
         await updateTenant(tenantId, dataToUpdate)
@@ -327,7 +327,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   }
 
   const handleDeleteWine = async (wineIndex: number) => {
-    // Оновлюємо локальний стан
+    // Update local state
     setTenant(prev => {
       if (!prev) return prev
       const wines = prev.wineEntries ? [...prev.wineEntries] : []
@@ -335,7 +335,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
       return { ...prev, wineEntries: wines }
     })
 
-    // Якщо це не новий tenant, зберігаємо зміни одразу
+    // If this is not a new tenant, save changes immediately
     if (!isNewTenant && tenantId) {
       try {
         const updatedTenant = {
@@ -343,7 +343,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
           wineEntries: tenant?.wineEntries?.filter((_, idx) => idx !== wineIndex) || [],
         }
 
-        // Видаляємо createdAt/updatedAt перед оновленням
+        // Remove createdAt/updatedAt before updating
         const { createdAt, updatedAt, ...dataToUpdate } = updatedTenant as any
 
         await updateTenant(tenantId, dataToUpdate)
@@ -424,7 +424,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
           <div>
             <div className='flex items-center mb-4'>
               <input type='text' placeholder='Search wines...' value={search} onChange={e => setSearch(e.target.value)} className='flex-1 p-2 rounded bg-black/20 text-white border border-white/20' />
-              <Button onClick={handleAddWine} variant='secondary'>
+              <Button onClick={handleAddWine} variant='secondary' className='w-auto'>
                 + Add wine
               </Button>
             </div>
@@ -435,10 +435,19 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                   <span className='text-white flex-1 cursor-pointer' onClick={() => handleEditWine(idx)}>
                     {wine.name}
                   </span>
-                  <button className='ml-2 text-red-400' onClick={() => handleDeleteWine(idx)}>
-                    Видалити
-                  </button>
+                  <div style={{ width: 12 }} />
                   <span className='text-xs text-gray-400 ml-2'>ID: {idx + 1}</span>
+                  <div style={{ marginLeft: 12 }}>
+                    <ActionDropdown
+                      actions={[{
+                        label: 'Delete Wine',
+                        icon: <Trash2 size={16} />,
+                        onClick: () => handleDeleteWine(idx),
+                        colorClass: 'text-red-400',
+                        disabled: false,
+                      }]}
+                    />
+                  </div>
                 </div>
               ))}
               {filteredWines.length === 0 && (
