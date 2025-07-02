@@ -404,7 +404,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         {/* Tab content */}
         {activeTab === 'profile' && (
           <div className='space-y-6'>
-            // FormInput components for create mode
             <>
               <FormInput label='Tenant Name (URL key)' type='text' value={tenant.profile.tenantName || ''} onChange={(value: string) => setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, tenantName: value } } : prev))} placeholder='example-tenant' required error={tenant.profile.tenantName && !validateTenantName(tenant.profile.tenantName) ? 'Only a-z, A-Z, 0-9, -, _ allowed' : undefined} />
               <FormInput label='Winery Name' type='text' value={tenant.profile?.wineryName || ''} onChange={(value: string) => handleProfileChange('wineryName', value)} placeholder='Winery name' required />
