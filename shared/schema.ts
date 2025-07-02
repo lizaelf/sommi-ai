@@ -233,3 +233,44 @@ export const insertWineSchema = createInsertSchema(wines).pick({
 
 export type InsertWine = z.infer<typeof insertWineSchema>
 export type Wine = typeof wines.$inferSelect
+
+// Model for wine-specific conversations with device-based user identification
+export const wineConversations = pgTable('wine_conversations', {
+  id: serial('id').primaryKey(),
+  conversationKey: text('conversation_key').notNull().unique(), // tenantName_wineId_deviceId
+  tenantName: text('tenant_name').notNull(),
+  wineId: integer('wine_id').notNull(),
+  deviceId: text('device_id').notNull(), // Unique device identifier
+  title: text('title').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastActivity: timestamp('last_activity').defaultNow().notNull(),
+})
+
+export const insertWineConversationSchema = createInsertSchema(wineConversations).pick({
+  conversationKey: true,
+  tenantName: true,
+  wineId: true,
+  deviceId: true,
+  title: true,
+})
+
+export type InsertWineConversation = z.infer<typeof insertWineConversationSchema>
+export type WineConversation = typeof wineConversations.$inferSelect
+
+// Model for messages in wine conversations
+export const wineMessages = pgTable('wine_messages', {
+  id: serial('id').primaryKey(),
+  conversationKey: text('conversation_key').notNull(),
+  content: text('content').notNull(),
+  role: text('role').notNull(), // "user" or "assistant"
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const insertWineMessageSchema = createInsertSchema(wineMessages).pick({
+  conversationKey: true,
+  content: true,
+  role: true,
+})
+
+export type InsertWineMessage = z.infer<typeof insertWineMessageSchema>
+export type WineMessage = typeof wineMessages.$inferSelect

@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, messages, type Message, type InsertMessage, conversations, type Conversation, type InsertConversation, tenants, type Tenant, type InsertTenant, usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill, foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory, wineTypes, type WineType, type InsertWineType, wines, type Wine as SharedWine, type InsertWine } from '@shared/schema'
+import { users, type User, type InsertUser, messages, type Message, type InsertMessage, conversations, type Conversation, type InsertConversation, tenants, type Tenant, type InsertTenant, usedSuggestionPills, type UsedSuggestionPill, type InsertUsedSuggestionPill, foodPairingCategories, type FoodPairingCategory, type InsertFoodPairingCategory, wineTypes, type WineType, type InsertWineType, wines, type Wine as SharedWine, type InsertWine, wineConversations, type WineConversation, type InsertWineConversation, wineMessages, type WineMessage, type InsertWineMessage } from '@shared/schema'
 import { db } from './db'
 import { eq, desc, sql } from 'drizzle-orm'
 
@@ -64,6 +64,13 @@ export interface IStorage {
 
   // Wine operations within tenant
   getWineByTenantAndId(tenantName: string, wineId: number): Promise<SharedWine | undefined>
+
+  // Wine conversation operations
+  getWineConversation(conversationKey: string): Promise<WineConversation | undefined>
+  createWineConversation(conversation: InsertWineConversation): Promise<WineConversation>
+  getWineMessages(conversationKey: string): Promise<WineMessage[]>
+  addWineMessage(message: InsertWineMessage): Promise<WineMessage>
+  updateWineConversationActivity(conversationKey: string): Promise<void>
 }
 
 // Database storage implementation
@@ -331,6 +338,34 @@ export class DatabaseStorage implements IStorage {
     // Шукаємо вино з вказаним ID в wineEntries tenant
     const wine = tenant.wineEntries.find(wine => wine.id === wineId)
     return wine || undefined
+  }
+
+  // Get wine conversation by key
+  async getWineConversation(conversationKey: string): Promise<WineConversation | undefined> {
+    const [conversation] = await db.select().from(wineConversations).where(eq(wineConversations.conversationKey, conversationKey))
+    return conversation || undefined
+  }
+
+  // Create new wine conversation
+  async createWineConversation(conversation: InsertWineConversation): Promise<WineConversation> {
+    const [created] = await db.insert(wineConversations).values(conversation).returning()
+    return created
+  }
+
+  // Get messages for wine conversation
+  async getWineMessages(conversationKey: string): Promise<WineMessage[]> {
+    return await db.select().from(wineMessages).where(eq(wineMessages.conversationKey, conversationKey)).orderBy(wineMessages.createdAt)
+  }
+
+  // Add message to wine conversation
+  async addWineMessage(message: InsertWineMessage): Promise<WineMessage> {
+    const [created] = await db.insert(wineMessages).values(message).returning()
+    return created
+  }
+
+  // Update conversation last activity
+  async updateWineConversationActivity(conversationKey: string): Promise<void> {
+    await db.update(wineConversations).set({ lastActivity: new Date() }).where(eq(wineConversations.conversationKey, conversationKey))
   }
 }
 

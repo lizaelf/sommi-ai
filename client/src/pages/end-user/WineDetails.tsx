@@ -161,7 +161,7 @@ export default function WineDetails() {
       <WineRecommendationsSection currentWineId={wine?.id || 1} />
 
       {/* Wine Chat Section */}
-      <WineChatSection wine={wine} isScannedPage={isScannedPage} />
+      <WineChatSection wine={wine} isScannedPage={isScannedPage} tenantName={tenantName} />
 
       {/* QR Modal */}
       <QRScanModal

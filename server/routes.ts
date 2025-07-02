@@ -1902,6 +1902,81 @@ Provide 8-10 detailed food pairings across different categories (appetizers, mai
     }
   })
 
+  // Wine conversation endpoints
+  app.get('/api/wine-conversations/:conversationKey', async (req, res) => {
+    try {
+      const { conversationKey } = req.params
+      const conversation = await storage.getWineConversation(conversationKey)
+
+      if (!conversation) {
+        return res.status(404).json({ message: 'Conversation not found' })
+      }
+
+      res.json(conversation)
+    } catch (error) {
+      console.error('Error fetching wine conversation:', error)
+      res.status(500).json({ message: 'Failed to fetch conversation' })
+    }
+  })
+
+  app.post('/api/wine-conversations', async (req, res) => {
+    try {
+      const { conversationKey, tenantName, wineId, deviceId, title } = req.body
+
+      if (!conversationKey || !tenantName || !wineId || !deviceId) {
+        return res.status(400).json({ message: 'Missing required fields' })
+      }
+
+      const conversation = await storage.createWineConversation({
+        conversationKey,
+        tenantName,
+        wineId,
+        deviceId,
+        title: title || `Wine ${wineId} Conversation`,
+      })
+
+      res.status(201).json(conversation)
+    } catch (error) {
+      console.error('Error creating wine conversation:', error)
+      res.status(500).json({ message: 'Failed to create conversation' })
+    }
+  })
+
+  app.get('/api/wine-conversations/:conversationKey/messages', async (req, res) => {
+    try {
+      const { conversationKey } = req.params
+      const messages = await storage.getWineMessages(conversationKey)
+      res.json(messages)
+    } catch (error) {
+      console.error('Error fetching wine messages:', error)
+      res.status(500).json({ message: 'Failed to fetch messages' })
+    }
+  })
+
+  app.post('/api/wine-messages', async (req, res) => {
+    try {
+      const { conversationKey, content, role } = req.body
+
+      if (!conversationKey || !content || !role) {
+        return res.status(400).json({ message: 'Missing required fields' })
+      }
+
+      const message = await storage.addWineMessage({
+        conversationKey,
+        content,
+        role,
+      })
+
+      // Update conversation activity
+      await storage.updateWineConversationActivity(conversationKey)
+
+      res.status(201).json(message)
+    } catch (error) {
+      console.error('Error adding wine message:', error)
+      res.status(500).json({ message: 'Failed to add message' })
+    }
+  })
+
   const httpServer = createServer(app)
   return httpServer
 }
