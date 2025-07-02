@@ -147,7 +147,7 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
   - `/navigation/` - ButtonIcon (navigation-related components)
   - `/animations/` - CircleAnimation, ShiningText (animation components)
   - `/food/` - FoodPairing (food pairing components)
-  - `/misc/` - DropdownMenuItem, HomeGlobalSkeleton, MicrophoneButton, ScrollToBottomButton, SegmentedPicker (miscellaneous utilities)
+  - `/misc/` - DropdownMenuItem, HomeGlobalSkeleton, MicrophoneButton, ScrollToBottomButton, (miscellaneous utilities)
 - **Complete Import Path Updates**: Updated all component import references throughout application to use new organized folder structure
 - **Index File Creation**: Created index.ts files for all organized folders providing clean component exports
 - **Zero Root Components**: Eliminated all components from root components directory, achieving complete folder organization

@@ -1,2 +1,1 @@
-export { AdminHeader } from './AdminHeader';
-export { TabNavigation } from '../nav/TabNavigation';
+export { AdminHeader } from './AdminHeader'
