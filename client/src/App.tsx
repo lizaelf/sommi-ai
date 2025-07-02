@@ -14,7 +14,6 @@ import SimpleWineEdit from '@/pages/admin/SimpleWineEdit'
 
 import Admin from '@/pages/admin/Admin'
 import TenantCreate from '@/pages/admin/TenantCreate'
-import QRCodes from '@/pages/end-user/QRCodes'
 import QRDemo from '@/pages/end-user/QRDemo'
 import { useEffect } from 'react'
 import TenantEdit from './pages/admin/TenantEdit'
@@ -76,7 +75,6 @@ function Router() {
       <Route path='/:tenantName/food-pairings-ai' component={FoodPairingSuggestionsPage} />
       {/* <Route path="/tmp" component={WineManagement} /> */}
       <Route path='/scan-wine/:id' component={WineScan} />
-      <Route path='/qr-codes' component={QRCodes} />
       <Route path='/qr-demo' component={QRDemo} />
       <Route component={NotFound} />
     </Switch>
