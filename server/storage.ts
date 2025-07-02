@@ -174,7 +174,6 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .insert(tenants)
       .values({
-        ...insertTenant,
         profile: insertTenant.profile as Tenant['profile'],
         wineEntries: (insertTenant.wineEntries ?? []) as SharedWine[],
         wineClub: insertTenant.wineClub as Tenant['wineClub'],
@@ -188,7 +187,6 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .update(tenants)
       .set({
-        ...data,
         profile: data.profile as Tenant['profile'],
         wineEntries: (data.wineEntries ?? []) as SharedWine[],
         wineClub: data.wineClub as Tenant['wineClub'],

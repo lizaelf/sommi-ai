@@ -96,22 +96,22 @@ export const tenants = pgTable('tenants', {
     hoursOfOperation: string
     socialMediaLinks: string
   }>(),
-  wineEntries: json('wine_entries').$type<Wine[]>(),
-  wineClub: json('wine_club').$type<{
+  wineEntries: json('wineEntries').$type<Wine[]>(),
+  wineClub: json('wineClub').$type<{
     clubName: string
     description: string
     membershipTiers: string
     pricing: string
     clubBenefits: string
   }>(),
-  aiModel: json('ai_model').$type<{
+  aiModel: json('aiModel').$type<{
     knowledgeScope: 'winery-only' | 'winery-plus-global'
     personalityStyle: 'educator' | 'sommelier' | 'tasting-room-host' | 'luxury-concierge' | 'casual-friendly'
     brandGuide: string
     tonePreferences: string
     knowledgeDocuments: string
   }>(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
 })
 
 export const insertTenantSchema = createInsertSchema(tenants).pick({

@@ -1471,7 +1471,7 @@ Format: Return only the description text, no quotes or additional formatting.`
 
   app.post('/api/tenants', async (req, res) => {
     try {
-      const { profile, wineEntries, wineClub, aiModel } = req.body
+      const { profile, wineEntries, wineClub, aiModel } = req.body // camelCase
       if (!profile?.tenantName || !/^[a-zA-Z0-9_-]+$/.test(profile.tenantName)) {
         return res.status(400).json({ message: 'Invalid or missing tenantName. Use only a-z, A-Z, 0-9, -, _' })
       }
@@ -1488,7 +1488,7 @@ Format: Return only the description text, no quotes or additional formatting.`
 
   app.put('/api/tenants/:id', async (req, res) => {
     try {
-      const { profile, wineEntries, wineClub, aiModel } = req.body
+      const { profile, wineEntries, wineClub, aiModel } = req.body // camelCase
       if (!profile?.tenantName || !/^[a-zA-Z0-9_-]+$/.test(profile.tenantName)) {
         return res.status(400).json({ message: 'Invalid or missing tenantName. Use only a-z, A-Z, 0-9, -, _' })
       }

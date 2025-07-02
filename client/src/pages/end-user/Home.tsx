@@ -4,6 +4,7 @@ import AppHeader, { HeaderSpacer } from '@/components/layout/AppHeader'
 import { WelcomeSection } from '@/components/home-global/WelcomeSection'
 import { WineCollection } from '@/components/home-global/WineCollection'
 import { Wine } from '@/types/wine'
+import { Tenant } from '@/types/tenant'
 
 const Home = () => {
   const [location, setLocation] = useLocation()
@@ -15,17 +16,20 @@ const Home = () => {
   const handleWineClick = (wineId: number) => {
     setLocation(`/${tenantName}/wine-details/${wineId}`)
   }
-
+  console.log('wines', wines)
   useEffect(() => {
     setIsLoading(true)
     setError(null)
-    fetch('/api/wines')
+    fetch(`/api/tenantByName/${tenantName}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch wines')
         return res.json()
       })
-      .then((data: Wine[]) => {
-        setWines(data)
+      .then((data: Tenant) => {
+        const tenant = data
+        const wines = tenant.wineEntries || []
+        console.log('tenant', tenant)
+        setWines(wines)
         setIsLoading(false)
       })
       .catch(err => {

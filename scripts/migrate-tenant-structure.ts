@@ -1,44 +1,25 @@
 import 'dotenv/config'
-import { neon } from '@neondatabase/serverless'
-import { drizzle } from 'drizzle-orm/neon-http'
-
-const sql = neon(process.env.DATABASE_URL!)
-const db = drizzle(sql)
+import { db } from '../server/db'
+import { sql } from 'drizzle-orm'
 
 async function migrateTenantStructure() {
-  // Вибираємо всі tenants, у яких є cms
-  const { rows: tenants } = await db.execute(`SELECT id, cms FROM tenants WHERE cms IS NOT NULL`)
+  try {
+    console.log('Starting tenant structure migration...')
 
-  let migrated = 0
+    // Перейменовуємо колонки на camelCase
+    await db.execute(sql`ALTER TABLE tenants RENAME COLUMN wine_entries TO "wineEntries"`)
+    await db.execute(sql`ALTER TABLE tenants RENAME COLUMN wine_club TO "wineClub"`)
+    await db.execute(sql`ALTER TABLE tenants RENAME COLUMN ai_model TO "aiModel"`)
+    await db.execute(sql`ALTER TABLE tenants RENAME COLUMN created_at TO "createdAt"`)
 
-  for (const tenant of tenants) {
-    if (!tenant.cms) continue
-
-    const cms = tenant.cms as any
-    const wineEntries = cms.wineEntries || []
-    const wineClub = cms.wineClub || {
-      clubName: '',
-      description: '',
-      membershipTiers: '',
-      pricing: '',
-      clubBenefits: '',
-    }
-
-    // Екрануємо одинарні лапки для SQL
-    const wineEntriesStr = JSON.stringify(wineEntries).replace(/'/g, "''")
-    const wineClubStr = JSON.stringify(wineClub).replace(/'/g, "''")
-
-    console.log(`3. Мігруємо tenant id=${tenant.id}...`)
-    await db.execute(`UPDATE tenants SET wine_entries = '${wineEntriesStr}', wine_club = '${wineClubStr}', cms = NULL WHERE id = ${tenant.id}`)
-
-    migrated++
-    console.log(`✓ Мігровано tenant id=${tenant.id}`)
+    console.log('Migration completed successfully!')
+  } catch (error) {
+    console.error('Migration failed:', error)
+    throw error
   }
-
-  console.log(`Done. Migrated ${migrated} tenants.`)
 }
 
-migrateTenantStructure().catch(e => {
-  console.error('Migration error:', e)
-  process.exit(1)
-})
+// Запускаємо міграцію
+migrateTenantStructure()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1))

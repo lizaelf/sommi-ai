@@ -24,7 +24,12 @@ const createTenant = async (data: Omit<Tenant, 'id'>) => {
   const res = await fetch('/api/tenants', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      profile: data.profile,
+      wineEntries: data.wineEntries,
+      wineClub: data.wineClub,
+      aiModel: data.aiModel,
+    }),
   })
   if (!res.ok) throw new Error('Failed to create tenant')
   return res.json()
@@ -34,7 +39,12 @@ const updateTenant = async (id: number, data: Partial<Tenant>) => {
   const res = await fetch(`/api/tenants/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      profile: data.profile,
+      wineEntries: data.wineEntries,
+      wineClub: data.wineClub,
+      aiModel: data.aiModel,
+    }),
   })
   if (!res.ok) throw new Error('Failed to update tenant')
   return res.json()
