@@ -5,7 +5,7 @@ import { WelcomeSection } from '@/components/home-global/WelcomeSection'
 import { WineCollection } from '@/components/home-global/WineCollection'
 import { Wine } from '@/types/wine'
 
-const HomeGlobal = () => {
+const Home = () => {
   const [location, setLocation] = useLocation()
   const { tenantName } = useParams()
   const [wines, setWines] = useState<Wine[]>([])
@@ -45,4 +45,4 @@ const HomeGlobal = () => {
   )
 }
 
-export default HomeGlobal
+export default Home

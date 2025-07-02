@@ -142,7 +142,6 @@ export default function WineDetails() {
 
   return (
     <div className='bg-red-500 min-h-screen'>
-      {/* Header - Same as HomeGlobal */}
       <AppHeader showMyCellarLink={true} />
       <HeaderSpacer />
 

@@ -8,7 +8,7 @@ import WineDetails from '@/pages/end-user/WineDetails'
 import Cellar from '@/pages/end-user/Cellar'
 import FoodPairingSuggestionsPage from '@/pages/end-user/FoodPairingSuggestionsPage'
 
-import HomeGlobal from '@/pages/end-user/HomeGlobal'
+import Home from '@/pages/end-user/Home'
 import WineScan from '@/pages/end-user/WineScan'
 import SimpleWineEdit from '@/pages/admin/SimpleWineEdit'
 
@@ -69,7 +69,7 @@ function Router() {
       <Route path='/tenant-edit/:id' component={TenantEdit} />
       <Route path='/wine-edit/:id' component={SimpleWineEditRoute} />
       ////////////// end-user routes
-      <Route path='/:tenantName' component={HomeGlobal} />
+      <Route path='/:tenantName' component={Home} />
       <Route path='/:tenantName/wine-details/:id' component={WineDetails} />
       <Route path='/:tenantName/cellar' component={Cellar} />
       <Route path='/:tenantName/food-pairings-ai' component={FoodPairingSuggestionsPage} />
