@@ -1450,10 +1450,10 @@ Format: Return only the description text, no quotes or additional formatting.`
     }
   })
 
-  app.get('/api/tenants/slug/:slug', async (req, res) => {
+  app.get('/api/tenantByName/:tenantName', async (req, res) => {
     try {
-      const slug = req.params.slug
-      const tenant = await storage.getTenantByTenantName(slug)
+      const tenantName = req.params.tenantName
+      const tenant = await storage.getTenantByTenantName(tenantName)
 
       if (!tenant) {
         return res.status(404).json({ message: 'Winary not found' })
@@ -1461,7 +1461,7 @@ Format: Return only the description text, no quotes or additional formatting.`
 
       res.json(tenant)
     } catch (error) {
-      console.error('Error fetching tenant by slug:', error)
+      console.error('Error fetching tenant by tenantName', error)
       res.status(500).json({ message: 'Failed to fetch winary' })
     }
   })
