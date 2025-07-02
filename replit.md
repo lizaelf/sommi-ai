@@ -8,13 +8,13 @@ An intelligent multi-tenant wine exploration platform that transforms wine disco
 
 ## Key Features
 
-- AI-powered wine conversations with GPT-4o
-- QR code wine scanning and identification
-- Admin panel for wine collection management
-- Voice assistant with text-to-speech
-- Horizontal scrolling wine recommendations
-- Multi-tenant architecture with PostgreSQL
-- Responsive design with clean, minimal UI
+- AI-powered wine conversations with GPT-4o.
+- QR code wine scanning and identification.
+- Admin panel for wine collection management.
+- Voice assistant with text-to-speech.
+- Horizontal scrolling wine recommendations.
+- Multi-tenant architecture with PostgreSQL.
+- Responsive design with clean, minimal UI.
 
 ## Project Architecture
 
