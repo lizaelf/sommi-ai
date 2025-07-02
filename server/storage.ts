@@ -61,6 +61,9 @@ export interface IStorage {
 
   // Додаємо функцію для генерації унікального ID для вина в рамках tenant
   generateWineId(tenantId: number): Promise<number>
+
+  // Wine operations within tenant
+  getWineByTenantAndId(tenantName: string, wineId: number): Promise<SharedWine | undefined>
 }
 
 // Database storage implementation
@@ -315,6 +318,19 @@ export class DatabaseStorage implements IStorage {
     // Знаходимо максимальний ID серед існуючих вин
     const maxId = Math.max(0, ...tenant.wineEntries.map(wine => wine.id || 0))
     return maxId + 1
+  }
+
+  // Get wine by ID within a specific tenant
+  async getWineByTenantAndId(tenantName: string, wineId: number): Promise<SharedWine | undefined> {
+    const tenant = await this.getTenantByTenantName(tenantName)
+
+    if (!tenant || !tenant.wineEntries) {
+      return undefined
+    }
+
+    // Шукаємо вино з вказаним ID в wineEntries tenant
+    const wine = tenant.wineEntries.find(wine => wine.id === wineId)
+    return wine || undefined
   }
 }
 

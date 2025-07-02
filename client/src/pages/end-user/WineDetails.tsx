@@ -19,13 +19,13 @@ export default function WineDetails() {
   useEffect(() => {
     const loadWineData = async () => {
       setLoadingState('loading')
-      if (!id) {
+      if (!id || !tenantName) {
         setLoadingState('notfound')
         setWine(null)
         return
       }
       try {
-        const response = await fetch(`/api/wines/${id}`)
+        const response = await fetch(`/api/tenants/${tenantName}/wines/${id}`)
         if (response.ok) {
           const wineData = await response.json()
           const transformedWine: Wine = {
@@ -55,7 +55,7 @@ export default function WineDetails() {
       }
     }
     loadWineData()
-  }, [id, location])
+  }, [id, tenantName, location])
 
   // Detect QR code access and show interaction choice
   useEffect(() => {

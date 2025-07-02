@@ -1879,6 +1879,29 @@ Provide 8-10 detailed food pairings across different categories (appetizers, mai
     }
   })
 
+  // Get wine by ID within a specific tenant
+  app.get('/api/tenants/:tenantName/wines/:wineId', async (req, res) => {
+    try {
+      const { tenantName, wineId } = req.params
+      const wineIdNum = parseInt(wineId)
+
+      if (isNaN(wineIdNum)) {
+        return res.status(400).json({ message: 'Invalid wine ID' })
+      }
+
+      const wine = await storage.getWineByTenantAndId(tenantName, wineIdNum)
+
+      if (!wine) {
+        return res.status(404).json({ message: 'Wine not found' })
+      }
+
+      res.json(wine)
+    } catch (error) {
+      console.error('Error fetching wine:', error)
+      res.status(500).json({ message: 'Failed to fetch wine' })
+    }
+  })
+
   const httpServer = createServer(app)
   return httpServer
 }
