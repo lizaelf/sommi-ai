@@ -472,7 +472,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         {activeTab === 'wineclub' && (
           <div className='space-y-6'>
             {isCreateMode ? (
-              // FormInput components for create mode
               <>
                 <FormInput label='Club Name' type='text' value={tenant.wineClub?.clubName || ''} onChange={(value: string) => handleWineClubChange('clubName', value)} placeholder='Club name' />
                 <FormInput label='Club Description' type='text' value={tenant.wineClub?.description || ''} onChange={(value: string) => handleWineClubChange('description', value)} placeholder='Club description' />
@@ -481,7 +480,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                 <FormInput label='Club Benefits' type='text' value={tenant.wineClub?.clubBenefits || ''} onChange={(value: string) => handleWineClubChange('clubBenefits', value)} placeholder='Club benefits' />
               </>
             ) : (
-              // Regular inputs for edit mode
               <>
                 {Object.entries(tenant.wineClub).map(([key, value]) => (
                   <div key={key} className='mb-2'>
