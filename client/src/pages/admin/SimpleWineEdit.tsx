@@ -529,7 +529,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               <Button variant='primary' onClick={handleSave} className='flex-1'>
                 {isNewWine ? 'Add Wine' : 'Save'}
               </Button>
-              <Button variant='secondary' onClick={() => onCancel && onCancel()}>
+              <Button variant='secondary' onClick={() => onCancel && onCancel()} className='flex-1'>
                 Cancel
               </Button>
             </div>
