@@ -43,12 +43,12 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
     <div
       style={{
         display: 'flex',
-        alignItems: 'stretch',
+        alignItems: 'center',
         gap: '12px',
         padding: '0 16px',
       }}
     >
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minHeight: '140px' }}>
         <TechnicalDetailItem
           label='Varietal'
           value={
