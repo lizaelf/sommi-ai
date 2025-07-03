@@ -176,8 +176,8 @@ const Cellar = () => {
                         alt={wine.name}
                         style={{
                           height: '186px',
-                          width: '60px',
-                          objectFit: 'cover',
+                          width: '100%',
+                          objectFit: 'contain',
                           borderRadius: '4px',
                           marginBottom: '2px',
                         }}
