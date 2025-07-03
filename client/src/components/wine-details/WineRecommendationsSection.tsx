@@ -32,7 +32,7 @@ const WineRecommendationsSection: React.FC<WineRecommendationsSectionProps> = ({
       loadRecommendedWines()
     }
   }, [currentWineId, tenantName])
-
+  console.log('recommendedWines', recommendedWines)
   return (
     <div
       style={{
