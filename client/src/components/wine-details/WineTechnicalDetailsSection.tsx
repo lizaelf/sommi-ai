@@ -70,7 +70,7 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
 
         <TechnicalDetailItem label='Appellation' value={wine?.location ? wine.location : '–'} />
 
-        <TechnicalDetailItem label='Aging' value={wine?.technicalDetails?.aging ? (wine.technicalDetails.aging.ageUpTo ? `Age up to ${wine.technicalDetails.aging.ageUpTo}` : 'Drink now') : wine?.name ? (getAgingRecommendations(wine?.name || '', wine?.year).drinkNow && getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo ? `Drink now or age up to ${getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo}` : 'Drink now') : '–'} />
+        <TechnicalDetailItem label='Aging' value={wine?.technicalDetails?.aging ? (wine.technicalDetails.aging.ageUpTo ? `Age up to ${wine.technicalDetails.aging.ageUpTo} years` : 'Drink now') : wine?.name ? (getAgingRecommendations(wine?.name || '', wine?.year).drinkNow && getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo ? `Drink now or age up to ${getAgingRecommendations(wine?.name || '', wine?.year).ageUpTo}` : 'Drink now') : '–'} />
 
         <TechnicalDetailItem label='ABV' value={wine?.ratings?.abv ? `${wine.ratings.abv}%` : '–'} />
 
