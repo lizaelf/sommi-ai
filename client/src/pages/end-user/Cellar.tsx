@@ -24,7 +24,7 @@ const Cellar = () => {
       <AppHeader
         title='Cellar'
         showBackButton={true}
-        onBack={() => setLocation('/')}
+        onBack={() => setLocation(`/${tenantName}`)}
         rightContent={
           <>
             {/* Search Icon */}
