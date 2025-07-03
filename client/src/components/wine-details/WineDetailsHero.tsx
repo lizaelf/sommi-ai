@@ -1,7 +1,4 @@
 import React from 'react'
-import { MapPin } from 'lucide-react'
-
-import WineRating from './WineRating'
 import WineTechnicalDetailsSection from './WineTechnicalDetailsSection'
 import typography from '@/styles/typography'
 import { Wine } from '@/types/wine'

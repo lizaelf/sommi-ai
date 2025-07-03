@@ -28,19 +28,7 @@ export default function WineDetails() {
         const response = await fetch(`/api/tenants/${tenantName}/wines/${id}`)
         if (response.ok) {
           const wineData = await response.json()
-          const transformedWine: Wine = {
-            id: wineData.id,
-            name: wineData.name,
-            year: wineData.year,
-            bottles: wineData.bottles,
-            image: wineData.image,
-            ratings: wineData.ratings,
-            buyAgainLink: wineData.buyAgainLink,
-            qrCode: wineData.qrCode,
-            qrLink: wineData.qrLink,
-            description: wineData.description,
-          }
-          setWine(transformedWine)
+          setWine(wineData)
           setLoadingState('loaded')
         } else if (response.status === 404) {
           setWine(null)
