@@ -72,7 +72,7 @@ function Router() {
       <Route path='/:tenantName' component={Home} />
       <Route path='/:tenantName/wine-details/:id' component={WineDetails} />
       <Route path='/:tenantName/cellar' component={Cellar} />
-      <Route path='/:tenantName/food-pairings-ai' component={FoodPairingSuggestionsPage} />
+      <Route path='/:tenantName/food-pairings-ai/:id' component={FoodPairingSuggestionsPage} />
       {/* <Route path="/tmp" component={WineManagement} /> */}
       <Route path='/scan-wine/:id' component={WineScan} />
       <Route path='/qr-demo' component={QRDemo} />

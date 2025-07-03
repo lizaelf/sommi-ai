@@ -6,6 +6,7 @@ import Button from '@/components/ui/buttons/Button'
 import typography from '@/styles/typography'
 import { DataSyncManager } from '@/utils/dataSync'
 import { Wine } from '@/types/wine'
+import { useWines } from '@/hooks/useWines'
 
 interface FoodPairing {
   id: string
@@ -34,36 +35,14 @@ function getDishEmoji(dish: string) {
 }
 
 const FoodPairingSuggestionsPage: React.FC = () => {
-  const [, setLocation] = useLocation()
   const { tenantName } = useParams()
-  const [currentWine, setCurrentWine] = useState<Wine | null>(null)
+  const { id } = useParams()
+  // const [currentWine, setCurrentWine] = useState<Wine | null>(null)
   const [foodPairings, setFoodPairings] = useState<FoodPairing[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  // Load current wine data
-  useEffect(() => {
-    const loadWineData = async () => {
-      try {
-        const wines = await DataSyncManager.getUnifiedWineData()
-        // Use the first wine as default for food pairing context
-        if (wines.length > 0) {
-          setCurrentWine(wines[0])
-        }
-      } catch (error) {
-        console.error('Failed to load wine data:', error)
-      }
-    }
-
-    loadWineData()
-  }, [])
-
-  // Generate food pairings when wine is loaded
-  useEffect(() => {
-    if (currentWine) {
-      loadFoodPairings()
-    }
-  }, [currentWine])
+  const { wines } = useWines(tenantName)
+  const currentWine = wines.find(wine => wine.id === parseInt(id || '0'))
 
   const getCacheKey = (wine: Wine) => {
     return `food_pairings_${wine.id}`
