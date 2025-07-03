@@ -10,40 +10,6 @@ interface WineTechnicalDetailsSectionProps {
 
 const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = ({ wine }) => {
   // Helper function to extract varietal information dynamically from wine name
-  const extractVarietalInfo = (wineName: string) => {
-    const name = wineName.toLowerCase()
-
-    if (name.includes('zinfandel')) {
-      return {
-        primary: 'Zinfandel',
-        primaryPercentage: 67,
-        secondary: 'Carignane',
-        secondaryPercentage: 11,
-      }
-    } else if (name.includes('cabernet')) {
-      return {
-        primary: 'Cabernet Sauvignon',
-        primaryPercentage: 85,
-        secondary: 'Merlot',
-        secondaryPercentage: 15,
-      }
-    } else if (name.includes('chardonnay')) {
-      return {
-        primary: 'Chardonnay',
-        primaryPercentage: 100,
-      }
-    } else if (name.includes('pinot')) {
-      return {
-        primary: 'Pinot Noir',
-        primaryPercentage: 100,
-      }
-    }
-
-    return {
-      primary: 'Red Blend',
-      primaryPercentage: 100,
-    }
-  }
 
   // Helper function to get aging recommendations
   const getAgingRecommendations = (wineName: string, year?: number) => {
@@ -96,19 +62,6 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
                   </>
                 )}
               </>
-            ) : wine?.name ? (
-              extractVarietalInfo(wine?.name || '').primary ? (
-                extractVarietalInfo(wine?.name || '').secondary ? (
-                  <>
-                    {extractVarietalInfo(wine?.name || '').primary} {extractVarietalInfo(wine?.name || '').primaryPercentage}%<br />
-                    {extractVarietalInfo(wine?.name || '').secondary} {extractVarietalInfo(wine?.name || '').secondaryPercentage}%
-                  </>
-                ) : (
-                  `${extractVarietalInfo(wine?.name || '').primary} ${extractVarietalInfo(wine?.name || '').primaryPercentage}%`
-                )
-              ) : (
-                '–'
-              )
             ) : (
               '–'
             )
