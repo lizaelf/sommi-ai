@@ -13,8 +13,6 @@ const Home = () => {
     setLocation(`/${tenantName}/wine-details/${wineId}`)
   }
 
-  console.log('wines', wines)
-
   return (
     <div className='min-h-screen bg-black text-white mx-auto' style={{ maxWidth: '1200px' }}>
       <AppHeader showMyCellarLink={true} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { ArrowLeft } from 'lucide-react'
-import { Link } from 'wouter'
+import { Link, useParams } from 'wouter'
 import Logo from '@/components/layout/Logo'
 import { IconButton } from '@/components/ui/buttons/IconButton'
 import { Button } from '@/components/ui/buttons/Button'
@@ -17,7 +17,7 @@ interface AppHeaderProps {
 export function AppHeader({ title, onBack, rightContent, className = '', showBackButton = false, showMyCellarLink = false }: AppHeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
-
+  const { tenantName } = useParams()
   // Initialize header component
   useEffect(() => {
     setIsLoaded(true)
@@ -86,8 +86,8 @@ export function AppHeader({ title, onBack, rightContent, className = '', showBac
           {/* Right side - Custom content */}
           <div className='flex items-center gap-3'>
             {rightContent}
-            {showMyCellarLink && (
-              <Link href='/cellar'>
+            {showMyCellarLink && tenantName && (
+              <Link href={`/${tenantName}/cellar`}>
                 <Button variant='secondary' size='md'>
                   My Cellar
                 </Button>
