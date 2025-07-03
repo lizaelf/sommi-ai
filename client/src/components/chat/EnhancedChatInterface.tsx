@@ -374,6 +374,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
       if (responseData.message && responseData.message.content) {
         // Додаємо відповідь асистента через handleAddMessage для показу кнопки Unmute
         await handleAddMessage({
+          id: Date.now(),
+          conversationId: parseInt(conversationKey as string) || 0,
           content: responseData.message.content,
           role: 'assistant',
           createdAt: new Date().toISOString(),
