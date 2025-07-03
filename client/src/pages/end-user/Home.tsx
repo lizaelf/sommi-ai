@@ -1,42 +1,19 @@
-import { useState, useEffect } from 'react'
 import { useLocation, useParams } from 'wouter'
 import AppHeader, { HeaderSpacer } from '@/components/layout/AppHeader'
 import { WelcomeSection } from '@/components/home-global/WelcomeSection'
 import { WineCollection } from '@/components/home-global/WineCollection'
-import { Wine } from '@/types/wine'
-import { Tenant } from '@/types/tenant'
+import { useWines } from '@/hooks/useWines'
 
 const Home = () => {
   const [location, setLocation] = useLocation()
   const { tenantName } = useParams()
-  const [wines, setWines] = useState<Wine[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { wines, isLoading, error } = useWines(tenantName)
 
   const handleWineClick = (wineId: number) => {
     setLocation(`/${tenantName}/wine-details/${wineId}`)
   }
+
   console.log('wines', wines)
-  useEffect(() => {
-    setIsLoading(true)
-    setError(null)
-    fetch(`/api/tenantByName/${tenantName}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch wines')
-        return res.json()
-      })
-      .then((data: Tenant) => {
-        const tenant = data
-        const wines = tenant.wineEntries || []
-        console.log('tenant', tenant)
-        setWines(wines)
-        setIsLoading(false)
-      })
-      .catch(err => {
-        setError('Wines could not be loaded. Try again later.')
-        setIsLoading(false)
-      })
-  }, [])
 
   return (
     <div className='min-h-screen bg-black text-white mx-auto' style={{ maxWidth: '1200px' }}>
