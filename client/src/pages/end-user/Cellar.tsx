@@ -1,8 +1,10 @@
 import { useLocation, useParams } from 'wouter'
 import { useState } from 'react'
+import { X } from 'lucide-react'
 
 import AppHeader from '@/components/layout/AppHeader'
 import { useWines } from '@/hooks/useWines'
+import { IconButton } from '@/components/ui/buttons/IconButton'
 
 // Компонент для відображення однієї пляшки вина у Cellar
 const CellarWineBottle = ({ wine, onClick }: { wine: any, onClick: (id: number) => void }) => (
@@ -86,6 +88,19 @@ const Cellar = () => {
             backdropFilter: 'blur(20px)',
           }}
         >
+          {/* Close search */}
+          <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 2 }}>
+            <IconButton
+              icon={X}
+              variant='secondaryIcon'
+              size='iconLg'
+              aria-label='Close search'
+              onClick={() => {
+                setShowWineSearch(false)
+                setWineSearchQuery('')
+              }}
+            />
+          </div>
           <div style={{ position: 'relative' }}>
             <div
               style={{
