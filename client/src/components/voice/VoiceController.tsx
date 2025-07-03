@@ -4,16 +4,21 @@ import VoiceAssistantBottomSheet from './VoiceAssistantBottomSheet'
 const SILENCE_THRESHOLD = 150
 const SILENCE_DURATION = 2000
 
+// --- Welcome message templates ---
+const WELCOME_MESSAGE_TEMPLATE = (wineName?: string) => `Hello, I see you're looking at ${wineName ? wineName : 'this wine'}, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.`;
+const FALLBACK_WELCOME_MESSAGE = "Hello, I see you have an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like.";
+
 interface VoiceControllerProps {
   onSendMessage?: (message: string, options?: any) => void
   onAddMessage?: (message: any) => void
   conversationId?: number | string
   isProcessing?: boolean
   wineKey?: string
+  wineName?: string
 }
 
 const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
-  const { onSendMessage, onAddMessage, conversationId, isProcessing, wineKey = '' } = props
+  const { onSendMessage, onAddMessage, conversationId, isProcessing, wineKey = '', wineName } = props
   const [isListening, setIsListening] = useState(false)
   const [showBottomSheet, setShowBottomSheet] = useState(false)
   const [isResponding, setIsResponding] = useState(false)
@@ -372,35 +377,60 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
         }
       } else {
         // Generate welcome message if not cached
-        const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like."
-
-        const response = await fetch('/api/text-to-speech', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: welcomeMessage }),
-        })
-
-        if (response.ok) {
-          const audioBlob = await response.blob()
-          const audioUrl = URL.createObjectURL(audioBlob)
-          welcomeAudioCacheRef.current = audioUrl
-
-          const audio = new Audio(audioUrl)
-          audio.volume = 1.0
-          currentAudioRef.current = audio
-
-          const playPromise = audio.play()
-          if (playPromise !== undefined) {
-            await playPromise
-
-            audio.onended = () => {
-              setIsPlayingAudio(false)
-              setIsResponding(false)
-              // Показуємо кнопку Ask після завершення welcome message
-              setShowAskButton(true)
-              setShowUnmuteButton(false)
-              currentAudioRef.current = null
-              URL.revokeObjectURL(audioUrl)
+        const welcomeMessage = WELCOME_MESSAGE_TEMPLATE(wineName);
+        let response: Response, audioBlob: Blob, audioUrl: string, audio: HTMLAudioElement;
+        try {
+          response = await fetch('/api/text-to-speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: welcomeMessage }),
+          })
+          if (response.ok) {
+            audioBlob = await response.blob()
+            audioUrl = URL.createObjectURL(audioBlob)
+            welcomeAudioCacheRef.current = audioUrl
+            audio = new Audio(audioUrl)
+            audio.volume = 1.0
+            currentAudioRef.current = audio
+            const playPromise = audio.play()
+            if (playPromise !== undefined) {
+              await playPromise
+              audio.onended = () => {
+                setIsPlayingAudio(false)
+                setIsResponding(false)
+                setShowAskButton(true)
+                setShowUnmuteButton(false)
+                currentAudioRef.current = null
+                URL.revokeObjectURL(audioUrl)
+              }
+            }
+          } else {
+            throw new Error('TTS fetch failed')
+          }
+        } catch (error) {
+          // Якщо не вдалося завантажити кастомний welcome message, показати дефолтний короткий текст
+          const fallbackAudioResponse = await fetch('/api/text-to-speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: FALLBACK_WELCOME_MESSAGE }),
+          })
+          if (fallbackAudioResponse.ok) {
+            const fallbackAudioBlob = await fallbackAudioResponse.blob()
+            const fallbackAudioUrl = URL.createObjectURL(fallbackAudioBlob)
+            const fallbackAudio = new Audio(fallbackAudioUrl)
+            fallbackAudio.volume = 1.0
+            currentAudioRef.current = fallbackAudio
+            const playPromise = fallbackAudio.play()
+            if (playPromise !== undefined) {
+              await playPromise
+              fallbackAudio.onended = () => {
+                setIsPlayingAudio(false)
+                setIsResponding(false)
+                setShowAskButton(true)
+                setShowUnmuteButton(false)
+                currentAudioRef.current = null
+                URL.revokeObjectURL(fallbackAudioUrl)
+              }
             }
           }
         }
@@ -512,28 +542,40 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
         return
       }
 
-      const welcomeMessage = "Hello, I see you're looking at the 2021 Ridge Vineyards Lytton Springs, an excellent choice. Are you planning to open a bottle soon? I can suggest serving tips or food pairings if you'd like."
-
+      const welcomeMessage = WELCOME_MESSAGE_TEMPLATE(wineName);
       try {
         const response = await fetch('/api/text-to-speech', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: welcomeMessage }),
         })
-
         if (response.ok) {
           const audioBlob = await response.blob()
           const audioUrl = URL.createObjectURL(audioBlob)
           welcomeAudioCacheRef.current = audioUrl
           ;(window as any).globalWelcomeAudioCache = audioUrl
+        } else {
+          // Якщо не вдалося завантажити кастомний welcome message, кешуємо дефолтний короткий текст
+          const fallbackAudioResponse = await fetch('/api/text-to-speech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: FALLBACK_WELCOME_MESSAGE }),
+          })
+          if (fallbackAudioResponse.ok) {
+            const fallbackAudioBlob = await fallbackAudioResponse.blob()
+            const fallbackAudioUrl = URL.createObjectURL(fallbackAudioBlob)
+            welcomeAudioCacheRef.current = fallbackAudioUrl
+            ;(window as any).globalWelcomeAudioCache = fallbackAudioUrl
+          }
         }
       } catch (error) {
+        // Якщо взагалі нічого не вдалося — нічого не кешуємо
         console.warn('Failed to pre-cache welcome message:', error)
       }
     }
 
     initializeWelcomeCache()
-  }, [])
+  }, [wineName])
 
   // Handle voice assistant events
   useEffect(() => {
