@@ -324,12 +324,13 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
     })
   }
 
-  // Обертка для addMessage, чтобы показывать Unmute и готовить текст для озвучки
+  // Обертка для addMessage, щоб одразу озвучувати відповідь асистента у voice-режимі
   const handleAddMessage = (message: ClientMessage) => {
-    if (message.role === 'assistant' && voiceControllerRef.current?.showUnmuteForText) {
-      voiceControllerRef.current.showUnmuteForText(message.content)
-    }
     addMessage(message)
+    // Якщо це відповідь асистента і є voiceController, одразу озвучуємо
+    if (message.role === 'assistant' && voiceControllerRef.current?.handleVoiceResponse) {
+      voiceControllerRef.current.handleVoiceResponse(message.content)
+    }
   }
 
   // Handle sending a message
@@ -372,7 +373,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
       const responseData = await response.json()
 
       if (responseData.message && responseData.message.content) {
-        // Додаємо відповідь асистента через handleAddMessage для показу кнопки Unmute
+        // Додаємо відповідь асистента через handleAddMessage — одразу озвучить
         await handleAddMessage({
           id: Date.now(),
           conversationId: parseInt(conversationKey as string) || 0,

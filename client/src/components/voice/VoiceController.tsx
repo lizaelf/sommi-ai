@@ -1074,6 +1074,13 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
       const audio = new Audio(audioUrl)
       currentAudioRef.current = audio
 
+      // Встановлюємо стани для "вокі-токі" режиму
+      setIsPlayingAudio(true)
+      setIsResponding(true)
+      setShowUnmuteButton(false) // Не показуємо кнопку Unmute
+      setShowAskButton(false)
+      setHasAssistantResponded(true)
+
       console.log('🎤 VoiceController: Starting audio playback')
       await audio.play()
 
@@ -1081,24 +1088,18 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
         console.log('🎤 VoiceController: Audio playback ended naturally')
         setIsPlayingAudio(false)
         setIsResponding(false)
-
-        // Mark that assistant has responded and show unmute button after first response
-        console.log('🎤 VoiceController: Setting hasAssistantResponded = true and showing unmute button')
-        setHasAssistantResponded(true)
-        setShowUnmuteButton(true)
-        setShowAskButton(false)
-
+        setHasAssistantResponded(false)
+        setShowUnmuteButton(false)
+        setShowAskButton(true) // Показуємо кнопку Ask після завершення
         currentAudioRef.current = null
         currentTTSRequestRef.current = null
         URL.revokeObjectURL(audioUrl)
       }
 
-      // Зберігаємо текст для кнопки Unmute
+      // Зберігаємо текст для можливого повторного відтворення
       setLastAssistantText(responseText)
 
-      if (responseText && onSendMessage) {
-        onSendMessage(responseText.trim())
-      }
+      // НЕ викликаємо onSendMessage тут, бо це вже зроблено в EnhancedChatInterface
     } catch (error: any) {
       if (error?.name === 'AbortError') {
         console.log('🛑 VoiceController: TTS request was aborted by stop button')
@@ -1304,8 +1305,8 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
 
   const onAssistantMessageReceived = (text: string) => {
     setIsThinking(false)
-    setShowUnmuteButton(true)
-    setShowAskButton(false)
+    setShowUnmuteButton(false) // Не показуємо кнопку Unmute в "вокі-токі" режимі
+    setShowAskButton(true) // Показуємо кнопку Ask
     setLastAssistantText(text)
   }
 

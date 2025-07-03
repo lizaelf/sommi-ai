@@ -5,6 +5,7 @@ import { ShiningText } from '../animations/ShiningText'
 import Button from '@/components/ui/buttons/Button'
 import SuggestionPills from '../chat/SuggestionPills'
 import { Wine } from '@/types/wine'
+import { X } from 'lucide-react'
 
 interface VoiceAssistantBottomSheetProps {
   isOpen: boolean
