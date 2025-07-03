@@ -72,7 +72,6 @@ const WineTechnicalDetailsSection: React.FC<WineTechnicalDetailsSectionProps> = 
       ageUpTo: '2028',
     }
   }
-  console.log('вінішко', wine)
 
   return (
     <div
