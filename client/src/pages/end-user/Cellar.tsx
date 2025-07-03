@@ -19,6 +19,11 @@ const Cellar = () => {
     setLocation(`/${tenantName}/wine-details/${wineId}`)
   }
 
+  // Додаємо фільтрацію вин за назвою
+  const filteredWines = wineSearchQuery
+    ? wines.filter(wine => wine.name.toLowerCase().includes(wineSearchQuery.toLowerCase()))
+    : [];
+
   return (
     <div className='min-h-screen bg-black text-white relative mobile-fullscreen'>
       <AppHeader
@@ -107,43 +112,51 @@ const Cellar = () => {
 
           {/* Search Results */}
           {wineSearchQuery && (
-            <div style={{ marginTop: '12px' }}>
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)')}
-                onClick={() => {
-                  setShowWineSearch(false)
-                  setWineSearchQuery('')
-                  handleWineClick(1)
-                }}
-              >
-                <div
-                  style={{
-                    color: 'white',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                  }}
-                >
-                  Sassicaia 2018
-                </div>
-                <div
-                  style={{
-                    color: '#CECECE',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '12px',
-                    marginTop: '4px',
-                  }}
-                >
-                  Tuscany, Italy • Cabernet Sauvignon
-                </div>
-              </div>
+            <div style={{ marginTop: '12px', maxHeight: '220px', overflowY: 'auto' }}>
+              {filteredWines.length > 0 ? (
+                filteredWines.map(wine => (
+                  <div
+                    key={wine.id}
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      cursor: 'pointer',
+                      marginBottom: '6px',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)')}
+                    onClick={() => {
+                      setShowWineSearch(false)
+                      setWineSearchQuery('')
+                      handleWineClick(wine.id)
+                    }}
+                  >
+                    <div
+                      style={{
+                        color: 'white',
+                        fontFamily: 'Inter, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      }}
+                    >
+                      {wine.year} {wine.name}
+                    </div>
+                    <div
+                      style={{
+                        color: '#CECECE',
+                        fontFamily: 'Inter, sans-serif',
+                        fontSize: '12px',
+                        marginTop: '4px',
+                      }}
+                    >
+                      {wine.location || ''} {wine.technicalDetails?.varietal?.primary ? `• ${wine.technicalDetails.varietal.primary}` : ''}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ color: '#CECECE', padding: '12px 16px', fontSize: '14px' }}>No wines found</div>
+              )}
             </div>
           )}
         </div>
