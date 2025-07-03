@@ -37,7 +37,6 @@ function getDishEmoji(dish: string) {
 const FoodPairingSuggestionsPage: React.FC = () => {
   const { tenantName } = useParams()
   const { id } = useParams()
-  // const [currentWine, setCurrentWine] = useState<Wine | null>(null)
   const [foodPairings, setFoodPairings] = useState<FoodPairing[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
