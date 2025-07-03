@@ -324,6 +324,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
     })
   }
 
+  // Обертка для addMessage, чтобы показывать Unmute и готовить текст для озвучки
+  const handleAddMessage = (message: ClientMessage) => {
+    if (message.role === 'assistant' && voiceControllerRef.current?.showUnmuteForText) {
+      voiceControllerRef.current.showUnmuteForText(message.content)
+    }
+    addMessage(message)
+  }
+
   // Handle sending a message
   const handleSendMessage = async (content: string) => {
     if (content.trim() === '' || !conversationKey) return
@@ -364,8 +372,8 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
       const responseData = await response.json()
 
       if (responseData.message && responseData.message.content) {
-        // Додаємо відповідь асистента
-        await addMessage({
+        // Додаємо відповідь асистента через handleAddMessage для показу кнопки Unmute
+        await handleAddMessage({
           content: responseData.message.content,
           role: 'assistant',
           createdAt: new Date().toISOString(),
@@ -387,14 +395,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({ showBuyBu
       }
     }
   }, [currentEventSource])
-
-  // Обертка для addMessage, чтобы показывать Unmute и готовить текст для озвучки
-  const handleAddMessage = (message: ClientMessage) => {
-    if (message.role === 'assistant' && voiceControllerRef.current?.showUnmuteForText) {
-      voiceControllerRef.current.showUnmuteForText(message.content)
-    }
-    addMessage(message)
-  }
 
   // Show loading state while initializing
   if (!isComponentReady || !conversationKey) {

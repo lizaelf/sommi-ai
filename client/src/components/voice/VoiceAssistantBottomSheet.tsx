@@ -1,64 +1,39 @@
-import React, { useRef } from 'react';
-import { createPortal } from 'react-dom';
-import CircleAnimation from '../animations/CircleAnimation';
-import { ShiningText } from '../animations/ShiningText';
-import Button from '@/components/ui/buttons/Button';
-import SuggestionPills from '../chat/SuggestionPills';
-import { Wine } from '@/types/wine';
+import React, { useRef } from 'react'
+import { createPortal } from 'react-dom'
+import CircleAnimation from '../animations/CircleAnimation'
+import { ShiningText } from '../animations/ShiningText'
+import Button from '@/components/ui/buttons/Button'
+import SuggestionPills from '../chat/SuggestionPills'
+import { Wine } from '@/types/wine'
 
 interface VoiceAssistantBottomSheetProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onMute: () => void;
-  onAsk: () => void;
-  isListening?: boolean;
-  isResponding?: boolean;
-  isThinking?: boolean;
-  showSuggestions?: boolean;
-  showListenButton?: boolean;
-  showAskButton?: boolean;
-  showUnmuteButton: boolean;
-  isLoadingAudio?: boolean;
-  isVoiceActive?: boolean;
-  isPlayingAudio?: boolean;
-  wineKey?: string;
-  onSuggestionClick?: (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void;
-  onListenResponse?: () => void;
-  onUnmute?: () => void;
-  onStopAudio?: () => void;
-  onSendMessage?: (message: string) => void;
-  addMessage?: (message: any) => void;
-  conversationId?: string;
-  wine?: Wine;
+  isOpen: boolean
+  onClose: () => void
+  onMute: () => void
+  onAsk: () => void
+  isListening?: boolean
+  isResponding?: boolean
+  isThinking?: boolean
+  showSuggestions?: boolean
+  showListenButton?: boolean
+  showAskButton?: boolean
+  showUnmuteButton: boolean
+  isLoadingAudio?: boolean
+  isVoiceActive?: boolean
+  isPlayingAudio?: boolean
+  wineKey?: string
+  onSuggestionClick?: (suggestion: string, pillId?: string, options?: { textOnly?: boolean; instantResponse?: string }) => void
+  onListenResponse?: () => void
+  onUnmute?: () => void
+  onStopAudio?: () => void
+  onSendMessage?: (message: string) => void
+  addMessage?: (message: any) => void
+  conversationId?: string
+  wine?: Wine
 }
 
-const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
-  isOpen,
-  onClose,
-  onMute,
-  onAsk,
-  isListening = false,
-  isResponding = false,
-  isThinking = false,
-  showSuggestions = true,
-  showListenButton = false,
-  showAskButton = false,
-  showUnmuteButton = false,
-  isLoadingAudio = false,
-  isVoiceActive = false,
-  isPlayingAudio = false,
-  wineKey = '',
-  onSuggestionClick,
-  onListenResponse,
-  onUnmute,
-  onStopAudio,
-  onSendMessage,
-  addMessage,
-  conversationId,
-  wine,
-}) => {
-
-  if (!isOpen) return null;
+const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({ isOpen, onClose, onMute, onAsk, isListening = false, isResponding = false, isThinking = false, showSuggestions = true, showListenButton = false, showAskButton = false, showUnmuteButton = false, isLoadingAudio = false, isVoiceActive = false, isPlayingAudio = false, wineKey = '', onSuggestionClick, onListenResponse, onUnmute, onStopAudio, onSendMessage, addMessage, conversationId, wine }) => {
+  if (!isOpen) return null
 
   const content = (
     <>
@@ -96,9 +71,9 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
           flexDirection: 'column',
           alignItems: 'center',
           boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {/* Close button */}
         <div
@@ -117,133 +92,130 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
           }}
           onClick={onClose}
         >
-          <img 
-            src="/icons/x.svg" 
-            alt="Close"
-            width="20" 
-            height="20"
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
+          <img src='/icons/x.svg' alt='Close' width='20' height='20' style={{ filter: 'brightness(0) invert(1)' }} />
         </div>
 
         {/* Wine glass animation container */}
-        <div style={{ 
-          width: '272px', 
-          height: '272px', 
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'relative'
-        }}>
+        <div
+          style={{
+            width: '272px',
+            height: '272px',
+            marginBottom: '24px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative',
+          }}
+        >
           <CircleAnimation isAnimating={isListening || isResponding} size={156} />
         </div>
 
         {/* Status Content */}
         {isListening ? (
           <>
-            <div style={{ 
-              width: '100%', 
-              maxWidth: '320px', 
-              height: '56px', 
-              display: 'flex', 
-              justifyContent: 'center', 
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '320px',
+                height: '56px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                boxSizing: 'border-box',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <ShiningText text='Listening...' />
+              </div>
+            </div>
+          </>
+        ) : isThinking ? (
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '320px',
+              height: '56px',
+              display: 'flex',
+              justifyContent: 'center',
               alignItems: 'center',
               paddingLeft: '16px',
               paddingRight: '16px',
-              boxSizing: 'border-box'
-            }}>
-              <div style={{
+              boxSizing: 'border-box',
+            }}
+          >
+            <div
+              style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
-              }}>
-                <ShiningText text="Listening..." />
-              </div>
-            </div>
-            {/* {onSuggestionClick && (
-              <div style={{ marginTop: 24, width: "100%", padding: "0 16px" }}>
-                <SuggestionPills
-                  wineKey={wineKey}
-                  onSuggestionClick={onSuggestionClick}
-                  isDisabled={false}
-                  preferredResponseType="voice"
-                  context="voice-assistant"
-                />
-              </div>
-            )} */}
-          </>
-        ) : isThinking ? (
-          <div style={{ 
-            width: '100%', 
-            maxWidth: '320px', 
-            height: '56px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            paddingLeft: '16px',
-            paddingRight: '16px',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <ShiningText text="Thinking..." />
+                gap: '8px',
+              }}
+            >
+              <ShiningText text='Thinking...' />
             </div>
           </div>
         ) : isLoadingAudio ? (
-          <div style={{ 
-            width: '100%', 
-            maxWidth: '320px', 
-            height: '56px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            paddingLeft: '16px',
-            paddingRight: '16px',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '320px',
+              height: '56px',
               display: 'flex',
+              justifyContent: 'center',
               alignItems: 'center',
-              gap: '8px'
-            }}>
-              <ShiningText text="Loading..." />
+              paddingLeft: '16px',
+              paddingRight: '16px',
+              boxSizing: 'border-box',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <ShiningText text='Loading...' />
             </div>
           </div>
-        ) : (isResponding || isPlayingAudio) ? (
+        ) : isResponding || isPlayingAudio ? (
           <div style={{ paddingLeft: '16px', paddingRight: '16px', width: '100%' }}>
             <Button
               onClick={() => {
                 if (onMute) {
-                  console.log("🛑 Calling onMute prop");
-                  onMute();
+                  console.log('🛑 Calling onMute prop')
+                  onMute()
                 }
                 if ((window as any).stopVoiceAudio) {
-                  console.log("🛑 Calling global stopVoiceAudio");
-                  (window as any).stopVoiceAudio();
+                  console.log('🛑 Calling global stopVoiceAudio')
+                  ;(window as any).stopVoiceAudio()
                 }
                 try {
-                  const audioElements = document.querySelectorAll('audio');
-                  audioElements.forEach((audio) => {
+                  const audioElements = document.querySelectorAll('audio')
+                  audioElements.forEach(audio => {
                     if (!audio.paused) {
-                      audio.pause();
-                      audio.currentTime = 0;
-                      console.log("🛑 Stopped audio element directly");
+                      audio.pause()
+                      audio.currentTime = 0
+                      console.log('🛑 Stopped audio element directly')
                     }
-                  });
+                  })
                 } catch (error) {
-                  console.warn("Error stopping audio elements:", error);
+                  console.warn('Error stopping audio elements:', error)
                 }
-                window.dispatchEvent(new CustomEvent('stopVoiceAudio'));
-                window.dispatchEvent(new CustomEvent('tts-audio-stop'));
-                window.dispatchEvent(new CustomEvent('deploymentAudioStopped'));
-                console.log("🛑 Stop button processing complete");
+                window.dispatchEvent(new CustomEvent('stopVoiceAudio'))
+                window.dispatchEvent(new CustomEvent('tts-audio-stop'))
+                window.dispatchEvent(new CustomEvent('deploymentAudioStopped'))
+                console.log('🛑 Stop button processing complete')
               }}
-              variant="brand"
-              className="w-full rounded-[32px] h-14 flex justify-center items-center gap-2 font-medium text-[16px]"
+              variant='brand'
+              className='w-full rounded-[32px] h-14 flex justify-center items-center gap-2 font-medium text-[16px]'
               style={{
                 border: 'none',
                 outline: 'none',
@@ -252,49 +224,31 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                 fontFamily: 'Inter, sans-serif',
               }}
             >
-              <img 
-                src="/icons/stop.svg" 
-                alt="Stop"
-                width="20" 
-                height="20"
-                style={{ filter: 'brightness(0) invert(1)' }}
-              />
+              <img src='/icons/stop.svg' alt='Stop' width='20' height='20' style={{ filter: 'brightness(0) invert(1)' }} />
               Stop
             </Button>
           </div>
         ) : (
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            width: '100%'
-          }}>
-            
-            {/* Suggestions Section */}
-            {showSuggestions && onSuggestionClick && showAskButton && (
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '12px',
-                marginBottom: '16px',
-                justifyContent: 'center',
-                width: '100%',
-                paddingLeft: '16px',
-                paddingRight: '16px'
-              }}>
-                {/* Wine-specific suggestion pills with text+voice responses */}
-              </div>
-            )}
-
-            {/* Unmute Button */}
-            {showUnmuteButton && onUnmute && !showAskButton && !isThinking && (
-              <div style={{
-                width: '100%',
-                paddingLeft: '16px',
-                paddingRight: '16px'
-              }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+            }}
+          >
+            {/* Unmute Button - показуємо першим */}
+            {showUnmuteButton && onUnmute && !isThinking && (
+              <div
+                style={{
+                  width: '100%',
+                  paddingLeft: '16px',
+                  paddingRight: '16px',
+                  marginBottom: '12px',
+                }}
+              >
                 <Button
                   onClick={onUnmute}
-                  variant="primary"
+                  variant='primary'
                   style={{
                     width: '100%',
                     borderRadius: '32px',
@@ -307,30 +261,27 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                     gap: '8px',
                     outline: 'none',
                     transition: 'none',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
                   }}
                 >
-                  <img 
-                    src="/icons/volume-2.svg" 
-                    alt="Unmute"
-                    width="20" 
-                    height="20"
-                  />
+                  <img src='/icons/volume-2.svg' alt='Unmute' width='20' height='20' />
                   Unmute
                 </Button>
               </div>
             )}
 
-            {/* Listen Response Button */}
-            {showListenButton && onListenResponse && !showUnmuteButton && !showAskButton && !isThinking && (
-              <div style={{
-                width: '100%',
-                paddingLeft: '16px',
-                paddingRight: '16px'
-              }}>
+            {/* Ask Button - показуємо другим */}
+            {showAskButton && !isThinking && (
+              <div
+                style={{
+                  width: '100%',
+                  paddingLeft: '16px',
+                  paddingRight: '16px',
+                }}
+              >
                 <Button
-                  onClick={onListenResponse}
-                  variant="secondary"
+                  onClick={onAsk}
+                  variant='primary'
                   style={{
                     width: '100%',
                     borderRadius: '32px',
@@ -343,30 +294,27 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                     gap: '8px',
                     outline: 'none',
                     transition: 'none',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
                   }}
                 >
-                  <img 
-                    src="/icons/volume-2.svg" 
-                    alt="Listen"
-                    width="20" 
-                    height="20"
-                  />
-                  Listen to response
+                  <img src='/icons/mic.svg' alt='Ask' width='20' height='20' />
+                  Ask
                 </Button>
               </div>
             )}
 
-            {/* Ask Button */}
-            {showAskButton && !isThinking && (
-              <div style={{
-                width: '100%',
-                paddingLeft: '16px',
-                paddingRight: '16px'
-              }}>
+            {/* Listen Response Button - показуємо останнім */}
+            {showListenButton && onListenResponse && !showUnmuteButton && !showAskButton && !isThinking && (
+              <div
+                style={{
+                  width: '100%',
+                  paddingLeft: '16px',
+                  paddingRight: '16px',
+                }}
+              >
                 <Button
-                  onClick={onAsk}
-                  variant="primary"
+                  onClick={onListenResponse}
+                  variant='secondary'
                   style={{
                     width: '100%',
                     borderRadius: '32px',
@@ -379,27 +327,21 @@ const VoiceAssistantBottomSheet: React.FC<VoiceAssistantBottomSheetProps> = ({
                     gap: '8px',
                     outline: 'none',
                     transition: 'none',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
                   }}
                 >
-                  <img 
-                    src="/icons/mic.svg" 
-                    alt="Ask"
-                    width="20" 
-                    height="20"
-                  />
-                  Ask
+                  <img src='/icons/volume-2.svg' alt='Listen' width='20' height='20' />
+                  Listen to response
                 </Button>
               </div>
             )}
           </div>
         )}
       </div>
-
     </>
-  );
+  )
 
-  return createPortal(content, document.body);
-};
+  return createPortal(content, document.body)
+}
 
-export default VoiceAssistantBottomSheet;
+export default VoiceAssistantBottomSheet

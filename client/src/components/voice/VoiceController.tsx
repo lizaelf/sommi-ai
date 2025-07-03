@@ -364,6 +364,9 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
           audio.onended = () => {
             setIsPlayingAudio(false)
             setIsResponding(false)
+            // Показуємо кнопку Ask після завершення welcome message
+            setShowAskButton(true)
+            setShowUnmuteButton(false)
             currentAudioRef.current = null
           }
         }
@@ -393,6 +396,9 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
             audio.onended = () => {
               setIsPlayingAudio(false)
               setIsResponding(false)
+              // Показуємо кнопку Ask після завершення welcome message
+              setShowAskButton(true)
+              setShowUnmuteButton(false)
               currentAudioRef.current = null
               URL.revokeObjectURL(audioUrl)
             }
@@ -403,6 +409,9 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
       console.error('Failed to play welcome message:', error)
       setIsPlayingAudio(false)
       setIsResponding(false)
+      // Показуємо кнопку Ask навіть при помилці
+      setShowAskButton(true)
+      setShowUnmuteButton(false)
     }
   }
 
@@ -537,12 +546,12 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
       isVoiceButtonTriggered = true
 
       setShowBottomSheet(true)
-      setShowAskButton(false)
+      setShowAskButton(false) // Спочатку приховуємо
+      setShowUnmuteButton(false)
       setIsListening(false)
       setIsResponding(true)
       setIsThinking(false)
       setIsPlayingAudio(true)
-      setShowUnmuteButton(false)
 
       await handleWelcomeMessage()
 
@@ -1083,6 +1092,9 @@ const VoiceController = forwardRef<any, VoiceControllerProps>((props, ref) => {
         currentTTSRequestRef.current = null
         URL.revokeObjectURL(audioUrl)
       }
+
+      // Зберігаємо текст для кнопки Unmute
+      setLastAssistantText(responseText)
 
       if (responseText && onSendMessage) {
         onSendMessage(responseText.trim())
