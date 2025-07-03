@@ -39,7 +39,7 @@ const Cellar = () => {
             </div>
           </>
         }
-        showMyCellarLink={true}
+        showMyCellarLink={false}
       />
 
       {/* Wine Search Interface */}
