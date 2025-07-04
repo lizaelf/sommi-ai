@@ -153,6 +153,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   const [scrolled, setScrolled] = useState(false)
   const [editingWineIndex, setEditingWineIndex] = useState<number | null>(null)
   const [showWineEditor, setShowWineEditor] = useState(false)
+  const [urlKeyManuallyEdited, setUrlKeyManuallyEdited] = useState(false)
 
   const isCreateMode = mode === 'create'
 
@@ -220,7 +221,29 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
 
   // Handlers for all fields
   const handleProfileChange = (field: string, value: string) => {
-    setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, [field]: value } } : prev))
+    setTenant(prev => {
+      if (!prev) return prev;
+      // If editing wineryName and urlKey was not manually edited, auto-generate tenantName
+      if (field === 'wineryName' && !urlKeyManuallyEdited) {
+        const autoUrlKey = value
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-_]/g, '');
+        return {
+          ...prev,
+          profile: {
+            ...prev.profile,
+            wineryName: value,
+            tenantName: autoUrlKey,
+          },
+        };
+      }
+      // If editing tenantName directly, mark as manually edited
+      if (field === 'tenantName') {
+        setUrlKeyManuallyEdited(true);
+      }
+      return { ...prev, profile: { ...prev.profile, [field]: value } };
+    });
   }
 
   const handleWineClubChange = (field: string, value: string) => {
@@ -431,7 +454,6 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
           <div className='space-y-6'>
             <>
               <FormInput label='Winery Name' type='text' value={tenant.profile?.wineryName || ''} onChange={(value: string) => handleProfileChange('wineryName', value)} placeholder='Winery name' required />
-              <FormInput label='URL key' type='text' value={tenant.profile.tenantName || ''} onChange={(value: string) => setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, tenantName: value } } : prev))} placeholder='example-tenant' required error={tenant.profile.tenantName && !validateTenantName(tenant.profile.tenantName) ? 'Only a-z, A-Z, 0-9, -, _ allowed' : undefined} />
               <FormInput label='Website' type='url' value={tenant.profile?.websiteURL || ''} onChange={(value: string) => handleProfileChange('websiteURL', value)} placeholder='https://example.com' />
               <FormInput label='Address' type='text' value={tenant.profile?.address || ''} onChange={(value: string) => handleProfileChange('address', value)} placeholder='Address' />
               <FormInput label='Phone' type='tel' value={tenant.profile?.contactPhone || ''} onChange={(value: string) => handleProfileChange('contactPhone', value)} placeholder='Phone' />
@@ -446,6 +468,10 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                 onChange={e => handleProfileChange('wineryDescription', e.target.value)}
                 placeholder='Winery description'
               />
+              <div className='flex flex-col'>
+                <label className='text-gray-400 text-xs mb-0'>URL</label>
+                <span className='text-gray-400 text-sm'>https://sommi-ai.replit.app/{tenant.profile.tenantName || ''}</span>
+              </div>
             </>
           </div>
         )}
