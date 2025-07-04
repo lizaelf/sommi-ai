@@ -455,7 +455,8 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
           <div>
             <div className='flex items-center mb-4'>
               <input type='text' placeholder='Search wines...' value={search} onChange={e => setSearch(e.target.value)} className='flex-1 p-2 rounded bg-black/20 text-white border border-white/20' />
-              <Button onClick={handleAddWine} variant='secondary'>
+              <div style={{ width: 12 }} />
+              <Button onClick={handleAddWine} variant='secondary' className='w-auto min-w-0 px-4'>
                 + Add wine
               </Button>
             </div>
