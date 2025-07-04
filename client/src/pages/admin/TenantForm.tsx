@@ -13,6 +13,7 @@ import DropdownInput from '@/components/ui/forms/DropdownInput'
 import SimpleWineEdit from './SimpleWineEdit'
 import { Wine } from '@/types/wine'
 import CustomTextarea from '@/components/ui/forms/Textarea'
+import TenantCard from '@/components/admin/TenantCard'
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -462,25 +463,27 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
             {/* Wine list */}
             <div>
               {filteredWines.map((wine, idx) => (
-                <div key={idx} className='flex items-center p-2 border-b border-white/10'>
-                  <span className='text-white flex-1 cursor-pointer' onClick={() => handleEditWine(idx)}>
-                    {wine.name}
-                  </span>
-                  <span className='text-xs text-gray-400 ml-2'>ID: {idx + 1}</span>
-                  <div style={{ marginLeft: 12 }}>
-                    <ActionDropdown
-                      actions={[
-                        {
-                          label: 'Delete Wine',
-                          icon: <Trash2 size={16} />,
-                          onClick: () => handleDeleteWine(idx),
-                          colorClass: 'text-red-400',
-                          disabled: false,
-                        },
-                      ]}
-                    />
+                <TenantCard key={wine.id || idx} tenant={{ id: wine.id, profile: { wineryName: wine.name, tenantName: '', wineryDescription: '', yearEstablished: '', wineryLogo: '', contactEmail: '', contactPhone: '', websiteURL: '', address: '', hoursOfOperation: '', socialMediaLinks: '' }, wineEntries: [], wineClub: {}, aiModel: {} }} onDelete={() => handleDeleteWine(idx)}>
+                  <div className='flex items-center p-2 border-b border-white/10'>
+                    <span className='text-white flex-1 cursor-pointer' onClick={() => handleEditWine(idx)}>
+                      {wine.name}
+                    </span>
+                    <span className='text-xs text-gray-400 ml-2'>ID: {idx + 1}</span>
+                    <div style={{ marginLeft: 12 }}>
+                      <ActionDropdown
+                        actions={[
+                          {
+                            label: 'Delete Wine',
+                            icon: <Trash2 size={16} />, 
+                            onClick: () => handleDeleteWine(idx),
+                            colorClass: 'text-red-400',
+                            disabled: false,
+                          },
+                        ]}
+                      />
+                    </div>
                   </div>
-                </div>
+                </TenantCard>
               ))}
               {filteredWines.length === 0 && (
                 <div className='text-center py-8 text-gray-400'>

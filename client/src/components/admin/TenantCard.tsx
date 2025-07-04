@@ -35,6 +35,11 @@ const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete }) => (
           }}
         >
           {tenant.profile?.wineryName || `Tenant ${tenant.id}`}
+          {tenant.id ? (
+            <span style={{ color: '#aaa', fontSize: '14px', marginLeft: 8 }}>
+              (id: {tenant.id})
+            </span>
+          ) : null}
           <span style={{ color: '#aaa', fontSize: '14px', marginLeft: 8 }}>{tenant.profile?.tenantName ? `(${tenant.profile.tenantName})` : ''}</span>
         </h3>
       </Link>
