@@ -516,9 +516,9 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
           {/* Bottles */}
           <div>
             <label style={typography.body1R} className='block mb-2'>
-              Bottles<span style={{ color: '#FF6B6B', marginLeft: 4 }}>*</span>
+              Bottles
             </label>
-            <input type='number' value={wine.bottles} onChange={e => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Number of bottles' required />
+            <input type='number' value={wine.bottles} onChange={e => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Number of bottles' />
           </div>
 
           {/* Description */}
