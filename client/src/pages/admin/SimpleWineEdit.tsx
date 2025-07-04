@@ -16,9 +16,10 @@ interface SimpleWineEditProps {
   wine?: Wine | null
   onSave?: (updatedWine: Wine) => void
   onCancel?: () => void
+  tenantName?: string
 }
 
-const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave, onCancel }) => {
+const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave, onCancel, tenantName }) => {
   const { toastSuccess, toastError } = useStandardToast()
   const [wine, setWine] = useState<Wine | null>(propWine || null)
   const [loading, setLoading] = useState(false)
@@ -176,6 +177,9 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
     if (onSave) onSave(wine)
   }
 
+  // QR code value for deployed wine details page
+  const qrLink = `https://sommi-ai.replit.app/${tenantName || ''}/wine-details/${wine?.id || ''}`;
+
   if (loading) {
     return <div>Loading wine data...</div>
   }
@@ -245,7 +249,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
                 <div className='flex flex-col items-center gap-4'>
                   {/* QR Code Display */}
                   <div id='wine-qr-code' className='p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent'>
-                    <QRCodeReact.QRCodeSVG value={generateQRCodeValue()} size={110} bgColor='#000000' fgColor='#ffffff' level='M' style={{ width: '100%', height: '100%' }} />
+                    <QRCodeReact.QRCodeSVG value={qrLink} size={110} bgColor='#000000' fgColor='#ffffff' level='M' style={{ width: '100%', height: '100%' }} />
                   </div>
 
                   {/* QR Code Info */}
