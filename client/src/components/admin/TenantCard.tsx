@@ -8,10 +8,9 @@ interface TenantCardProps {
   tenant: Tenant;
   onDelete: (tenantId: string) => void;
   showId?: boolean;
-  children?: React.ReactNode;
 }
 
-const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete, showId = true, children }) => (
+const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete, showId = true }) => (
   <div
     className='rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5'
     style={{
@@ -56,7 +55,6 @@ const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete, showId = true
         ]}
       />
     </div>
-    {children}
   </div>
 );
 
