@@ -74,7 +74,7 @@ export function AppHeader({ title, onBack, rightContent, className = '', showBac
   }
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 ${className}`} style={headerStyles}>
+    <div className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-white/10 ${className}`} style={headerStyles}>
       <div className='mx-auto max-w-[1200px] h-[75px] px-4 py-4'>
         <div className='relative flex items-center justify-between h-full'>
           {/* Left side - Back button or Logo + Title */}
