@@ -12,6 +12,7 @@ import TenantTabs from '../../components/ui/TenantTabs'
 import DropdownInput from '@/components/ui/forms/DropdownInput'
 import SimpleWineEdit from './SimpleWineEdit'
 import { Wine } from '@/types/wine'
+import CustomTextarea from '@/components/ui/forms/Textarea'
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -446,7 +447,12 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
               <FormInput label='Winery Logo URL' type='url' value={tenant.profile?.wineryLogo || ''} onChange={(value: string) => handleProfileChange('wineryLogo', value)} placeholder='https://example.com/winery-logo.png' />
               <FormInput label='Hours of Operation' type='text' value={tenant.profile?.hoursOfOperation || ''} onChange={(value: string) => handleProfileChange('hoursOfOperation', value)} placeholder='Hours of operation' />
               <FormInput label='Social Media Links' type='text' value={tenant.profile?.socialMediaLinks || ''} onChange={(value: string) => handleProfileChange('socialMediaLinks', value)} placeholder='Social media links' />
-              <FormInput label='Winery Description' type='text' value={tenant.profile?.wineryDescription || ''} onChange={(value: string) => handleProfileChange('wineryDescription', value)} placeholder='Winery description' />
+              <CustomTextarea
+                label='Winery Description'
+                value={tenant.profile?.wineryDescription || ''}
+                onChange={e => handleProfileChange('wineryDescription', e.target.value)}
+                placeholder='Winery description'
+              />
             </>
           </div>
         )}
