@@ -210,11 +210,11 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             <div className='min-w-0'>
               {/* Image Preview */}
               {imagePreview ? (
-                <div className='mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent'>
+                <div className='mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent mx-auto'>
                   <img src={imagePreview} alt='Wine preview' className='max-w-full max-h-full object-contain' />
                 </div>
               ) : (
-                <div className='mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent'>
+                <div className='mb-4 flex items-center justify-center p-4 rounded-lg border border-white/20 w-[150px] h-[150px] bg-transparent mx-auto'>
                   <img src={placeholderImage} alt='Placeholder wine preview' className='max-w-full max-h-full object-contain opacity-80' />
                 </div>
               )}
