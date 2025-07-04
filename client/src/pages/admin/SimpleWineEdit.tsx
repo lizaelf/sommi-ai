@@ -201,7 +201,6 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         title={isNewWine ? 'Add Wine' : 'Edit Wine'}
         showBackButton={true}
         onBack={onCancel}
-        className='bg-black/90 backdrop-blur-sm border-b border-white/10'
       />
       <div className={`p-6 pb-32 pt-[75px]`} style={{ maxWidth: 600, margin: '0 auto' }}>
         <div className='space-y-6'>
