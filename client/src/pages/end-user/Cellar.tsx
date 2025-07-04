@@ -6,29 +6,6 @@ import AppHeader from '@/components/layout/AppHeader'
 import { useWines } from '@/hooks/useWines'
 import { IconButton } from '@/components/ui/buttons/IconButton'
 
-// Компонент для відображення однієї пляшки вина у Cellar
-const CellarWineBottle = ({ wine, onClick }: { wine: any, onClick: (id: number) => void }) => (
-  <div className='cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center' onClick={() => wine && onClick(wine.id)}>
-    {wine && wine.image && (
-      <img
-        src={wine.image}
-        alt={wine.name}
-        style={{
-          height: '186px',
-          width: '100%',
-          objectFit: 'contain',
-          borderRadius: '4px',
-          marginBottom: '2px',
-        }}
-        onError={e => {
-          // Hide image if it fails to load
-          e.currentTarget.style.display = 'none'
-        }}
-      />
-    )}
-  </div>
-)
-
 const Cellar = () => {
   const { tenantName } = useParams()
   const { wines, isLoading, error } = useWines(tenantName)
@@ -208,7 +185,7 @@ const Cellar = () => {
             margin: '0 16px 0 16px',
           }}
         >
-          {/* Wine Rack Rows */}
+          {/* First Wine Rack Container */}
           <div
             className='bg-cover bg-center bg-no-repeat relative'
             style={{
@@ -216,38 +193,31 @@ const Cellar = () => {
               height: '236px',
             }}
           >
+            {/* Wine bottles display */}
             <div className='absolute inset-0 grid grid-cols-3 gap-1 h-full'>
-              {wines.slice(0, 3).map((wine, index) => (
-                <CellarWineBottle key={index} wine={wine} onClick={handleWineClick} />
-              ))}
-            </div>
-          </div>
-          {/* Second row */}
-          <div
-            className='bg-cover bg-center bg-no-repeat relative mt-4'
-            style={{
-              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 61.11%, rgba(255, 255, 255, 0.20) 95.67%, rgba(255, 255, 255, 0.30) 98.56%)',
-              height: '236px',
-            }}
-          >
-            <div className='absolute inset-0 grid grid-cols-3 gap-1 h-full'>
-              {wines.slice(3, 6).map((wine, index) => (
-                <CellarWineBottle key={index + 3} wine={wine} onClick={handleWineClick} />
-              ))}
-            </div>
-          </div>
-          {/* Third row */}
-          <div
-            className='bg-cover bg-center bg-no-repeat relative mt-4'
-            style={{
-              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 61.11%, rgba(255, 255, 255, 0.20) 95.67%, rgba(255, 255, 255, 0.30) 98.56%)',
-              height: '236px',
-            }}
-          >
-            <div className='absolute inset-0 grid grid-cols-3 gap-1 h-full'>
-              {wines.slice(6, 9).map((wine, index) => (
-                <CellarWineBottle key={index + 6} wine={wine} onClick={handleWineClick} />
-              ))}
+              {cellarWines.map((wine, index) => {
+                return (
+                  <div key={index} className='cursor-pointer hover:bg-white hover:bg-opacity-10 transition-colors flex items-end justify-center' onClick={() => wine && handleWineClick(wine.id)}>
+                    {wine && wine.image && (
+                      <img
+                        src={wine.image}
+                        alt={wine.name}
+                        style={{
+                          height: '186px',
+                          width: '100%',
+                          objectFit: 'contain',
+                          borderRadius: '4px',
+                          marginBottom: '2px',
+                        }}
+                        onError={e => {
+                          // Hide image if it fails to load
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
