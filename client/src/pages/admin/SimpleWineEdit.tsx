@@ -34,7 +34,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
       setWine({
         id: 0,
         name: '',
-        year: new Date().getFullYear(),
+        year: 0,
         bottles: 0,
         image: '',
         ratings: { vn: 0, jd: 0, ws: 0, abv: 0 },
@@ -275,7 +275,13 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             <label style={typography.body1R} className='block mb-2'>
               Year<span style={{ color: '#FF6B6B', marginLeft: 4 }}>*</span>
             </label>
-            <input type='number' value={wine.year} onChange={e => setWine({ ...wine, year: parseInt(e.target.value) || 0 })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={String(new Date().getFullYear())} required />
+            <input
+              type='number'
+              value={wine.year === 0 ? '' : wine.year}
+              onChange={e => setWine({ ...wine, year: parseInt(e.target.value) || 0 })}
+              className='w-full p-3 bg-white/5 border border-white/20 rounded-lg '
+              placeholder='Year'
+            />
           </div>
 
           {/* Buy Again Link */}
@@ -434,7 +440,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             <input
               type='number'
               step='0.1'
-              value={wine.ratings.abv}
+              value={wine.ratings.abv === 0 ? '' : wine.ratings.abv}
               onChange={e =>
                 setWine({
                   ...wine,
@@ -454,7 +460,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               </label>
               <input
                 type='number'
-                value={wine.ratings.vn}
+                value={wine.ratings.vn === 0 ? '' : wine.ratings.vn}
                 onChange={e =>
                   setWine({
                     ...wine,
@@ -471,7 +477,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               </label>
               <input
                 type='number'
-                value={wine.ratings.jd}
+                value={wine.ratings.jd === 0 ? '' : wine.ratings.jd}
                 onChange={e =>
                   setWine({
                     ...wine,
@@ -488,7 +494,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               </label>
               <input
                 type='number'
-                value={wine.ratings.ws}
+                value={wine.ratings.ws === 0 ? '' : wine.ratings.ws}
                 onChange={e =>
                   setWine({
                     ...wine,
@@ -518,7 +524,13 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             <label style={typography.body1R} className='block mb-2'>
               Bottles
             </label>
-            <input type='number' value={wine.bottles} onChange={e => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Number of bottles' />
+            <input
+              type='number'
+              value={wine.bottles === 0 ? '' : wine.bottles}
+              onChange={e => setWine({ ...wine, bottles: parseInt(e.target.value) || 0 })}
+              className='w-full p-3 bg-white/5 border border-white/20 rounded-lg '
+              placeholder='Bottles'
+            />
           </div>
 
           {/* Description */}
