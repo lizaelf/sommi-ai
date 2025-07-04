@@ -284,7 +284,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
     },
   ]
 
-  const pageTitle = isNewTenant ? 'Add New Tenant' : 'Edit Tenant'
+  const pageTitle = isNewTenant ? 'Add Winery' : 'Edit Winery'
 
   // Filtered wines for CMS tab
   const filteredWines = tenant?.wineEntries || [] //.filter(wine => wine.name.toLowerCase().includes(search.toLowerCase())) || []
