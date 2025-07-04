@@ -69,6 +69,18 @@ const Admin: React.FC = () => {
     }
   }
 
+  if (!tenants || tenants.length === 0) {
+    // Show loading state if tenants are not loaded yet
+    return (
+      <div className='min-h-screen bg-black text-white'>
+        <AppHeader title='Somm tenant admin' />
+        <div className='pt-[75px] p-6'>
+          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, color: '#fff', opacity: 0.7 }}>Loading tenant data...</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className='min-h-screen mobile-fullscreen' style={{ backgroundColor: '#3a3a3a' }}>
       <AppHeader title='Somm tenant admin' rightContent={<IconButton icon={Plus} onClick={() => (window.location.href = '/tenant-create')} variant='headerIcon' size='md' title='Create new tenant' />} />
@@ -80,11 +92,11 @@ const Admin: React.FC = () => {
         }}
       >
         {/* Tenants Cards */}
-        <div style={{ display: 'block', width: '100%' }}>
+        <div className='flex flex-col w-full mb-2'>
           {tenants.map(tenant => (
             <div
               key={tenant.id}
-              className='rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5'
+              className='rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5 mb-2'
               style={{
                 border: '1px solid #494949',
                 width: '100%',
