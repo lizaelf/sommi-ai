@@ -12,7 +12,7 @@ interface TenantCardProps {
 
 const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete, showId = true }) => (
   <div
-    className='rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5 mb-2'
+    className='rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5'
     style={{
       border: '1px solid #494949',
       width: '100%',
