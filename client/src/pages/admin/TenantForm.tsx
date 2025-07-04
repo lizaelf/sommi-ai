@@ -436,8 +436,8 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
         {activeTab === 'profile' && (
           <div className='space-y-6'>
             <>
-              <FormInput label='Tenant Name (URL key)' type='text' value={tenant.profile.tenantName || ''} onChange={(value: string) => setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, tenantName: value } } : prev))} placeholder='example-tenant' required error={tenant.profile.tenantName && !validateTenantName(tenant.profile.tenantName) ? 'Only a-z, A-Z, 0-9, -, _ allowed' : undefined} />
               <FormInput label='Winery Name' type='text' value={tenant.profile?.wineryName || ''} onChange={(value: string) => handleProfileChange('wineryName', value)} placeholder='Winery name' required />
+              <FormInput label='Tenant Name (URL key)' type='text' value={tenant.profile.tenantName || ''} onChange={(value: string) => setTenant(prev => (prev ? { ...prev, profile: { ...prev.profile, tenantName: value } } : prev))} placeholder='example-tenant' required error={tenant.profile.tenantName && !validateTenantName(tenant.profile.tenantName) ? 'Only a-z, A-Z, 0-9, -, _ allowed' : undefined} />
               <FormInput label='Website' type='url' value={tenant.profile?.websiteURL || ''} onChange={(value: string) => handleProfileChange('websiteURL', value)} placeholder='https://example.com' />
               <FormInput label='Address' type='text' value={tenant.profile?.address || ''} onChange={(value: string) => handleProfileChange('address', value)} placeholder='Address' />
               <FormInput label='Phone' type='tel' value={tenant.profile?.contactPhone || ''} onChange={(value: string) => handleProfileChange('contactPhone', value)} placeholder='Phone' />
