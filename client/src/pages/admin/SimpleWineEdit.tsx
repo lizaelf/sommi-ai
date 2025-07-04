@@ -202,7 +202,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
         showBackButton={true}
         onBack={onCancel}
       />
-      <div className={`p-6 pb-32 pt-[75px]`} style={{ maxWidth: 600, margin: '0 auto' }}>
+      <div className={`p-6 pb-32 pt-[75px]`} style={{ maxWidth: 700, margin: '0 auto' }}>
         <div className='space-y-6'>
           {/* Wine Image and QR Code Section */}
           <div className='grid grid-cols-2 gap-6 items-start'>
@@ -248,12 +248,15 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
                   </div>
 
                   {/* QR Code Info */}
-                  <div className='text-center'>
-                    <Button variant='secondary' onClick={downloadQRCode} className='flex items-center gap-2' type='button'>
-                      <Download size={16} />
-                      Download QR
-                    </Button>
-                  </div>
+                  <Button
+                    variant="secondary"
+                    onClick={downloadQRCode}
+                    className="flex items-center gap-2 w-full"
+                    type="button"
+                  >
+                    <Download size={16} />
+                    Download QR
+                  </Button>
                 </div>
               )}
             </div>
