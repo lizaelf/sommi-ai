@@ -10,6 +10,7 @@ import * as QRCodeReact from 'qrcode.react'
 import ActionDropdown, { ActionDropdownItem } from '@/components/admin/ActionDropdown'
 import placeholderImage from '@assets/Placeholder.png'
 import AppHeader from '@/components/layout/AppHeader'
+import CustomTextarea from '@/components/ui/forms/Textarea'
 
 interface SimpleWineEditProps {
   wine?: Wine | null
@@ -534,12 +535,12 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
           </div>
 
           {/* Description */}
-          <div>
-            <label style={typography.body1R} className='block mb-2'>
-              Description
-            </label>
-            <textarea value={wine.description || ''} onChange={e => setWine({ ...wine, description: e.target.value })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Wine description' />
-          </div>
+          <CustomTextarea
+            value={wine.description || ''}
+            onChange={e => setWine({ ...wine, description: e.target.value })}
+            placeholder='Wine description'
+            label='Description'
+          />
 
           {/* Save Button */}
           <div className='fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50'>
