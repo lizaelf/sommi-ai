@@ -1,19 +1,17 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface CustomTextareaProps {
+interface TextareaProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
-  className?: string;
   label?: string;
 }
 
-const CustomTextarea: React.FC<CustomTextareaProps> = ({
+const Textarea: React.FC<TextareaProps> = ({
   value,
   onChange,
   placeholder = '',
-  className = '',
   label,
 }) => (
   <div className="w-full">
@@ -27,7 +25,6 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({
       onChange={onChange}
       className={cn(
         "w-full p-3 h-24 bg-transparent border border-white/20 text-white font-inter text-base outline-none box-border rounded-xl transition-all duration-200 placeholder:text-[#999999]",
-        className
       )}
       style={{ borderRadius: 16 }}
       placeholder={placeholder}
@@ -35,4 +32,4 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({
   </div>
 );
 
-export default CustomTextarea; 
+export default Textarea; 
