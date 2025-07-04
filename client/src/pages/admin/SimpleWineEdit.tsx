@@ -9,6 +9,7 @@ import { Upload, Image as ImageIcon, Download, QrCode, Trash2 } from 'lucide-rea
 import * as QRCodeReact from 'qrcode.react'
 import ActionDropdown, { ActionDropdownItem } from '@/components/admin/ActionDropdown'
 import placeholderImage from '@assets/Placeholder.png'
+import AppHeader from '@/components/layout/AppHeader'
 
 interface SimpleWineEditProps {
   wine?: Wine | null
@@ -187,19 +188,22 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
       style={{
         maxHeight: '100vh',
         overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch', // для плавного скролу на iOS
+        WebkitOverflowScrolling: 'touch',
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 1000, // перекриває інші елементи
+        zIndex: 1000,
       }}
     >
-      <div className={`p-6 pb-32`} style={{ maxWidth: 600, margin: '0 auto' }}>
-        <div className='mb-4'>
-          <h2 className='text-lg font-semibold text-white'>{isNewWine ? 'Add New Wine' : 'Edit Wine'}</h2>
-        </div>
+      <AppHeader
+        title={isNewWine ? 'Add Wine' : 'Edit Wine'}
+        showBackButton={true}
+        onBack={onCancel}
+        className='bg-black/90 backdrop-blur-sm border-b border-white/10'
+      />
+      <div className={`p-6 pb-32 pt-[75px]`} style={{ maxWidth: 600, margin: '0 auto' }}>
         <div className='space-y-6'>
           {/* Wine Image and QR Code Section */}
           <div className='grid grid-cols-2 gap-6 items-start'>
