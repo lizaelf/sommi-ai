@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import ActionDropdown from '@/components/admin/ActionDropdown';
 import { Trash2 } from 'lucide-react';
 import { Tenant } from '@/types/tenant';
+import typography from '@/styles/typography';
 
 interface TenantCardProps {
   tenant: Tenant;
@@ -18,7 +19,7 @@ const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete }) => (
     }}
   >
     <div className='flex items-center justify-between' style={{ gap: '16px' }}>
-      <Link href={`/tenant-edit/${tenant.id}`} style={{ flexGrow: 1 }}>
+      <Link href={`/tenant-edit/${tenant.id}`} style={{ flexGrow: 1, minWidth: 0 }}>
         <h3
           style={{
             fontFamily: 'Inter, sans-serif',
@@ -32,11 +33,26 @@ const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete }) => (
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            display: 'block',
+            minWidth: 0,
           }}
         >
           {tenant.profile?.wineryName || `Tenant ${tenant.id}`}
-          <span style={{ color: '#aaa', fontSize: '14px', marginLeft: 8 }}>{tenant.profile?.tenantName ? `(${tenant.profile.tenantName})` : ''}</span>
         </h3>
+        {tenant.profile?.tenantName && (
+          <div
+            style={{
+              ...typography.body1R,
+              color: '#aaa',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              marginTop: 2,
+            }}
+          >
+            {tenant.profile.tenantName}
+          </div>
+        )}
       </Link>
       <ActionDropdown
         actions={[
