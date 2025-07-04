@@ -30,15 +30,15 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
 
   return (
     <div className="relative">
-      <Button
+      <button
         onClick={() => setShowDropdown(!showDropdown)}
-        variant="secondary"
-        size="default"
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 bg-transparent hover:bg-white/10 rounded p-2 transition-colors"
         disabled={buttonDisabled}
+        style={{ border: 'none' }}
+        aria-label="More actions"
       >
         <MoreVertical size={16} />
-      </Button>
+      </button>
       {showDropdown && (
         <>
           <div className="absolute right-0 top-full mt-2 w-48 bg-black/90 border border-white/20 rounded-lg shadow-lg z-50">
