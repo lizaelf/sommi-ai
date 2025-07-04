@@ -466,10 +466,20 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                   <span className='text-white flex-1 cursor-pointer' onClick={() => handleEditWine(idx)}>
                     {wine.name}
                   </span>
-                  <button className='ml-2 text-red-400' onClick={() => handleDeleteWine(idx)}>
-                    Видалити
-                  </button>
                   <span className='text-xs text-gray-400 ml-2'>ID: {idx + 1}</span>
+                  <div style={{ marginLeft: 12 }}>
+                    <ActionDropdown
+                      actions={[
+                        {
+                          label: 'Delete Wine',
+                          icon: <Trash2 size={16} />,
+                          onClick: () => handleDeleteWine(idx),
+                          colorClass: 'text-red-400',
+                          disabled: false,
+                        },
+                      ]}
+                    />
+                  </div>
                 </div>
               ))}
               {filteredWines.length === 0 && (
