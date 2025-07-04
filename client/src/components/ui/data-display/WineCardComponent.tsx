@@ -57,6 +57,7 @@ export const WineCardComponent: React.FC<WineCardComponentProps> = ({
             className="font-medium mb-1"
             style={{
               ...typography.h2,
+              color: "white",
             }}
           >
             {wine.year} {wine.name}

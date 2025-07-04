@@ -13,6 +13,7 @@ import DropdownInput from '@/components/ui/forms/DropdownInput'
 import SimpleWineEdit from './SimpleWineEdit'
 import { Wine } from '@/types/wine'
 import Textarea from '@/components/ui/forms/Textarea'
+import { WineCard } from '@/components/home-global/WineCard'
 
 // API helpers
 const fetchTenantById = async (id: number) => {
@@ -460,24 +461,22 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
               </Button>
             </div>
             {/* Wine list */}
-            <div>
+            <div className="space-y-4">
               {filteredWines.map((wine, idx) => (
-                <div key={idx} className='flex items-center p-2 border-b border-white/10'>
-                  <span className='text-white flex-1 cursor-pointer' onClick={() => handleEditWine(idx)}>
-                    {wine.name}
-                  </span>
-                  <span className='text-xs text-gray-400 ml-2'>ID: {idx + 1}</span>
-                  <div style={{ marginLeft: 12 }}>
+                <div key={wine.id || idx} className="relative">
+                  <WineCard
+                    wine={wine}
+                    onClick={() => handleEditWine(idx)}
+                  />
+                  <div className="absolute top-4 right-4 z-10">
                     <ActionDropdown
-                      actions={[
-                        {
-                          label: 'Delete Wine',
-                          icon: <Trash2 size={16} />,
-                          onClick: () => handleDeleteWine(idx),
-                          colorClass: 'text-red-400',
-                          disabled: false,
-                        },
-                      ]}
+                      actions={[{
+                        label: 'Delete Wine',
+                        icon: <Trash2 size={16} />,
+                        onClick: () => handleDeleteWine(idx),
+                        colorClass: 'text-red-400',
+                        disabled: false,
+                      }]}
                     />
                   </div>
                 </div>
@@ -524,7 +523,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
               <>
                 {Object.entries(tenant.wineClub).map(([key, value]) => (
                   <div key={key} className='mb-2'>
-                    <label style={typography.body1R} className='block mb-1'>
+                    <label style={typography.body1R} className='block mb-1 text-white'>
                       {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     </label>
                     <input type='text' value={value !== undefined && value !== null ? String(value) : ''} onChange={e => handleWineClubChange(key, e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder={key} />
@@ -588,19 +587,19 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                   </select>
                 </div>
                 <div>
-                  <label style={typography.body1R} className='block mb-2'>
+                  <label style={typography.body1R} className='block mb-2 text-white'>
                     Brand Guide
                   </label>
                   <input type='text' value={tenant.aiModel.brandGuide} onChange={e => handleAiModelChange('brandGuide', e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Brand Guide' />
                 </div>
                 <div>
-                  <label style={typography.body1R} className='block mb-2'>
+                  <label style={typography.body1R} className='block mb-2 text-white'>
                     Tone Preferences
                   </label>
                   <input type='text' value={tenant.aiModel.tonePreferences} onChange={e => handleAiModelChange('tonePreferences', e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Tone Preferences' />
                 </div>
                 <div>
-                  <label style={typography.body1R} className='block mb-2'>
+                  <label style={typography.body1R} className='block mb-2 text-white'>
                     Knowledge Documents
                   </label>
                   <input type='text' value={tenant.aiModel.knowledgeDocuments} onChange={e => handleAiModelChange('knowledgeDocuments', e.target.value)} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='Knowledge Documents' />
