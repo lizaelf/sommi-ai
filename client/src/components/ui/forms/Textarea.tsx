@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface CustomTextareaProps {
   value: string;
@@ -15,7 +16,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({
   className = '',
   label,
 }) => (
-  <div>
+  <div className="w-full">
     {label && (
       <label className="block mb-2">
         {label}
@@ -24,8 +25,11 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({
     <textarea
       value={value}
       onChange={onChange}
-      className={`w-full p-3 bg-transparent border border-white/20 text-white ${className}`}
-      style={{ borderRadius: 16}}
+      className={cn(
+        "w-full p-3 h-24 bg-transparent border border-white/20 text-white font-inter text-base outline-none box-border rounded-xl transition-all duration-200 placeholder:text-[#999999]",
+        className
+      )}
+      style={{ borderRadius: 16 }}
       placeholder={placeholder}
     />
   </div>
