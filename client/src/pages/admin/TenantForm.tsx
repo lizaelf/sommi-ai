@@ -412,24 +412,17 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
   return (
     <div className='min-h-screen mobile-fullscreen text-gray-600' style={{ backgroundColor: '#3a3a3a' }}>
       {/* Header */}
-      {isCreateMode ? (
-        // Fixed Header for create mode
-        <div className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 transition-all duration-200 ${scrolled ? 'bg-black/90 backdrop-blur-sm border-b border-white/10' : 'bg-transparent'}`}>
-          <button onClick={handleCancel} className='tertiary-button flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors'>
-            <ArrowLeft className='w-5 h-5 text-white' />
-          </button>
-          <h1 className='text-lg font-medium' style={{ color: 'white' }}>
-            Create New Tenant
-          </h1>
-          <div className='w-10'></div>
-        </div>
-      ) : (
-        // AppHeader for edit mode
-        <AppHeader title={pageTitle} showBackButton onBack={handleCancel} rightContent={!isNewTenant && tenantId ? <ActionDropdown actions={actions} /> : null} />
-      )}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
+        <AppHeader
+          title={pageTitle}
+          showBackButton
+          onBack={handleCancel}
+          rightContent={!isNewTenant && tenantId ? <ActionDropdown actions={actions} /> : null}
+        />
+      </div>
 
       {/* Content */}
-      <div className={`${isCreateMode ? 'mt-20' : 'pt-[75px]'} p-6 pb-32`}>
+      <div className={'p-6 pb-32 pt-[75px]'}>
         {/* Tabs */}
         <TenantTabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 

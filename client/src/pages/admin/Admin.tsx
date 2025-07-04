@@ -130,7 +130,7 @@ const Admin: React.FC = () => {
         {tenants.length === 0 && (
           <div className='text-center py-12'>
             <div className='text-gray-400 mb-4'>No tenants available.</div>
-            <IconButton icon={Plus} onClick={() => (window.location.href = '/tenant-create')} variant='primary' size='lg' className='px-4 py-2'>
+            <IconButton icon={Plus} onClick={() => (window.location.href = '/tenant-create')} variant='headerIcon' size='lg' className='px-4 py-2'>
               Create Your First Tenant
             </IconButton>
           </div>
