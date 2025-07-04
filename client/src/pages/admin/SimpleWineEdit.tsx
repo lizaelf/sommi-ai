@@ -293,14 +293,6 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             <input type='text' value={wine.buyAgainLink || ''} onChange={e => setWine({ ...wine, buyAgainLink: e.target.value })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='https://...' />
           </div>
 
-          {/* QR Link */}
-          <div>
-            <label style={typography.body1R} className='block mb-2'>
-              QR Link
-            </label>
-            <input type='text' value={wine.qrLink || ''} onChange={e => setWine({ ...wine, qrLink: e.target.value })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='https://...' />
-          </div>
-
           {/* Technical Details: Varietal (2 columns) */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {/* Primary varietal and percentage */}
