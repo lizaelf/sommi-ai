@@ -502,6 +502,7 @@ const TenantForm: React.FC<TenantFormProps> = ({ mode }) => {
                       setShowWineEditor(false)
                       setEditingWineIndex(null)
                     }}
+                    tenantName={tenant.profile.tenantName}
                   />
                 </div>
               </div>

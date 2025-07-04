@@ -68,6 +68,13 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
     }
   }, [wine])
 
+  useEffect(() => {
+    if (wine && (!wine.qrLink || wine.qrLink.trim() === '')) {
+      const autoQrLink = `https://sommi-ai.replit.app/${tenantName}/wine-details/${wine.id}`;
+      setWine(prev => prev ? { ...prev, qrLink: autoQrLink } : prev);
+    }
+  }, [tenantName, wine?.id]);
+
   const handleImageUpload = async (file: File) => {
     if (!wine) return
 
@@ -136,7 +143,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
     if (!wine) return ''
     // Generate QR code value based on wine details
     const baseUrl = window.location.origin
-    return wine.qrLink || `${baseUrl}/wine-details/${wine.id}`
+    return wine.qrLink || `${baseUrl}/${tenantName}/wine-details/${wine.id}`
   }
 
   const downloadQRCode = () => {
@@ -178,7 +185,7 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
   }
 
   // QR code value for deployed wine details page
-  const qrLink = `https://sommi-ai.replit.app/${tenantName || ''}/wine-details/${wine?.id || ''}`;
+  const qrLink = `https://sommi-ai.replit.app/${tenantName}/wine-details/${wine?.id || ''}`;
 
   if (loading) {
     return <div>Loading wine data...</div>
@@ -295,14 +302,6 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
               Buy Again Link
             </label>
             <input type='text' value={wine.buyAgainLink || ''} onChange={e => setWine({ ...wine, buyAgainLink: e.target.value })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='https://...' />
-          </div>
-
-          {/* QR Link */}
-          <div>
-            <label style={typography.body1R} className='block mb-2'>
-              QR Link
-            </label>
-            <input type='text' value={wine.qrLink || ''} onChange={e => setWine({ ...wine, qrLink: e.target.value })} className='w-full p-3 bg-white/5 border border-white/20 rounded-lg' placeholder='https://...' />
           </div>
 
           {/* Technical Details: Varietal (2 columns) */}
@@ -545,6 +544,14 @@ const SimpleWineEdit: React.FC<SimpleWineEditProps> = ({ wine: propWine, onSave,
             placeholder='Wine description'
             label='Description'
           />
+
+          {/* QR Link (read-only, below description) */}
+          <div className='mt-4'>
+            <label style={typography.body1R} className='block mb-1'>Link</label>
+            <div style={{ ...typography.body, color: '#999' }}>
+              {wine.qrLink}
+            </div>
+          </div>
 
           {/* Save Button */}
           <div className='fixed bottom-0 left-0 right-0 p-4 bg-black/90 backdrop-blur-sm border-t border-white/10 z-50'>
