@@ -7,9 +7,10 @@ import { Tenant } from '@/types/tenant';
 interface TenantCardProps {
   tenant: Tenant;
   onDelete: (tenantId: string) => void;
+  showId?: boolean;
 }
 
-const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete }) => (
+const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete, showId = true }) => (
   <div
     className='rounded-xl p-4 transition-colors cursor-pointer hover:bg-white/5 mb-2'
     style={{
@@ -35,7 +36,7 @@ const TenantCard: React.FC<TenantCardProps> = ({ tenant, onDelete }) => (
           }}
         >
           {tenant.profile?.wineryName || `Tenant ${tenant.id}`}
-          {tenant.id ? (
+          {showId && tenant.id ? (
             <span style={{ color: '#aaa', fontSize: '14px', marginLeft: 8 }}>
               (id: {tenant.id})
             </span>

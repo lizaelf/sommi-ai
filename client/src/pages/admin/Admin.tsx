@@ -95,7 +95,7 @@ const Admin: React.FC = () => {
         {/* Tenants Cards */}
         <div className='flex flex-col w-full'>
           {tenants.map(tenant => (
-            <TenantCard key={tenant.id} tenant={tenant} onDelete={handleDeleteTenant} />
+            <TenantCard key={tenant.id} tenant={tenant} onDelete={handleDeleteTenant} showId={false} />
           ))}
         </div>
 
